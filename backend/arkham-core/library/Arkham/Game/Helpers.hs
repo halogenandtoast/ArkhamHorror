@@ -297,10 +297,12 @@ getCanAffordUse iid ability window = do
       FastAbility _ -> pure True
       AbilityEffect _ -> pure True
       Objective{} -> pure True
-    PlayerLimit (PerSearch (Just _)) n ->
-      pure . (< n) . maybe 0 usedTimes $ find
-        ((== ability) . usedAbility)
+    PlayerLimit (PerSearch trait) n -> do
+      traitMatchingUsedAbilities <- filterM
+        (fmap (elem trait) . sourceTraits . abilitySource . usedAbility)
         usedAbilities
+      let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
+      pure $ usedCount < n
     PlayerLimit _ n -> pure . (< n) . maybe 0 usedTimes $ find
       ((== ability) . usedAbility)
       usedAbilities
@@ -446,8 +448,7 @@ getActionsWith
   -> (Ability -> Ability)
   -> m [Ability]
 getActionsWith iid window f = do
-  modifiersForFilter <- getModifiers
-    (InvestigatorTarget iid)
+  modifiersForFilter <- getModifiers (InvestigatorTarget iid)
   let
     abilityFilters = mapMaybe
       (\case
@@ -480,10 +481,8 @@ getActionsWith iid window f = do
   actions'' <- catMaybes <$> for
     actionsWithSources
     \ability -> do
-      modifiers' <- getModifiers
-        (sourceToTarget $ abilitySource ability)
-      investigatorModifiers <- getModifiers
-        (InvestigatorTarget iid)
+      modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
+      investigatorModifiers <- getModifiers (InvestigatorTarget iid)
       cardClasses <- case abilitySource ability of
         AssetSource aid -> field AssetClasses aid
         _ -> pure $ singleton Neutral
@@ -665,8 +664,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
   = withDepthGuard 3 False $ do
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> do
-      modifiers <- getModifiers
-        (InvestigatorTarget iid')
+      modifiers <- getModifiers (InvestigatorTarget iid')
       pure (iid', modifiers)
     canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
       flip anyM modifiers $ \case
@@ -708,8 +706,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
     canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)
-    cardModifiers <- getModifiers
-      (CardIdTarget $ toCardId c)
+    cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x
@@ -1077,8 +1074,7 @@ passesEnemyCriteria _iid source windows' criterion = selectAny
 getModifiedCardCost :: (Monad m, HasGame m) => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  cardModifiers <- getModifiers
-    (CardIdTarget $ toCardId c)
+  cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
@@ -2047,8 +2043,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.FirstLocation ms ->
       anyM (locationMatches investigatorId source window locationId) ms -- a bit weird here since first means nothing
     Matcher.InvestigatableLocation -> do
-      modifiers <- getModifiers
-        (LocationTarget locationId)
+      modifiers <- getModifiers (LocationTarget locationId)
       pure $ CannotInvestigate `notElem` modifiers
 
 skillTestMatches
@@ -2126,10 +2121,7 @@ matchPhase p = \case
   Matcher.AnyPhase -> pure True
   Matcher.PhaseIs p' -> pure $ p == p'
 
-getModifiedTokenFaces
-  :: (Monad m, HasGame m)
-  => [Token]
-  -> m [TokenFace]
+getModifiedTokenFaces :: (Monad m, HasGame m) => [Token] -> m [TokenFace]
 getModifiedTokenFaces tokens = flip
   concatMapM
   tokens

@@ -31,6 +31,6 @@ data AbilityLimitType
   | PerTurn
   | PerWindow
   | PerTestOrAbility
-  | PerSearch (Maybe Trait)
+  | PerSearch Trait
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

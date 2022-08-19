@@ -41,9 +41,10 @@ const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
-    return true
+  if (c.tag === "TargetLabel") {
+    return c.target.contents === id.value
   }
+
   return false
 }
 

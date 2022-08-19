@@ -1,5 +1,5 @@
-{-# LANGAUGE NoFieldSelectors #-}
-{-# LANGAUGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 module Arkham.ChaosBagStepState
   ( ChaosBagStepState(..)
   , ChaosBagStep(..)

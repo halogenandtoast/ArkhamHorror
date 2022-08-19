@@ -78,11 +78,6 @@ export function choices(game: Game, investigatorId: string): Message[] {
         return toContents(q.contents[1]);
       case 'Read':
         return q.readChoices;
-      case 'ChooseOneFromSource':
-      {
-        const { choices: sourceChoices } = q.contents;
-        return sourceChoices;
-      }
       default:
         return [];
     }
@@ -103,11 +98,6 @@ export function choicesSource(game: Game, investigatorId: string): Source | null
       return null;
     case 'ChooseOneAtATime':
       return null;
-    case 'ChooseOneFromSource':
-    {
-      const { source } = question.contents;
-      return source;
-    }
     default:
       return null;
   }

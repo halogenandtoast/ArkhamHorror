@@ -149,9 +149,16 @@ const resolutions = computed(() => {
     <div class="modal-contents amount-contents">
       <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
         <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="[investigator, bounds] in amountsChoices" :key="investigator">
-          <div v-if="bounds[1] !== 0">
-            {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" onclick="this.select()" />
+        <template v-for="amountChoice in amountsChoices" :key="amountChoice.investigatorId">
+          <div v-if="amountChoice.maxBound !== 0">
+            {{investigatorName(amountChoice.investigatorId)}}
+            <input
+              type="number"
+              :min="amountChoice.minBound"
+              :max="amountChoice.maxBound"
+              v-model.number="amountSelections[amountChoice.investigatorId]"
+              onclick="this.select()"
+            />
           </div>
         </template>
         <button :disabled="unmetAmountRequirements">Submit</button>
@@ -162,9 +169,9 @@ const resolutions = computed(() => {
     <div class="modal-contents amount-contents">
       <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
         <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="[label, bounds] in amountsChoices" :key="label">
-          <div v-if="bounds[1] !== 0">
-            {{label}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[label]" onclick="this.select()" />
+        <template v-for="[label, paymentChoice] in amountsChoices" :key="label">
+          <div v-if="paymentChoice.maxBound !== 0">
+            {{label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[label]" onclick="this.select()" />
           </div>
         </template>
         <button :disabled="unmetAmountRequirements">Submit</button>

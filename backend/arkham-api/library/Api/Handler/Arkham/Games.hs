@@ -448,7 +448,7 @@ handleAnswer Game {..} investigatorId = \case
       Just (ChoosePaymentAmounts _ _ info) ->
         let
           costMap =
-            HashMap.fromList $ map (\(iid, _, cost) -> (iid, cost)) info
+            HashMap.fromList $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
         in
           concatMap
               (\(iid, n) ->

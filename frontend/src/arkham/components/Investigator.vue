@@ -20,45 +20,13 @@ const id = computed(() => props.player.id)
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
-const searchTopOfDeckAction = computed(() => {
-  return -1
-  // return props.choices
-  //   .findIndex((c) => c.tag === MessageType.SEARCH
-  //     && c.contents[2].contents === id.value);
-})
-
-const runSkillTestAction = computed(() => {
-  // if (props.choices.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
-  //   && c.contents[0] === id.value).length === 1) {
-  //   return props.choices
-  //     .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
-  // }
-
-  return -1
-})
-
 function canActivateAbility(c: Message): boolean {
   if (c.tag  === "AbilityLabel") {
     return c.ability.source.contents === id.value
   }
   return false
-  // switch (c.tag) {
-  //   case MessageType.ACTIVATE_ABILITY:
-  //     return c.contents[1].source.contents === id.value;
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canActivateAbility(c1));
-  //   default:
-  //     return false;
-  // }
 }
 const activateAbilityAction = computed(() => props.choices.findIndex(canActivateAbility))
-
-const enemyEngageInvestigatorAction = computed(() => {
-  return -1
-  // return props.choices
-  //   .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
-  //     && c.contents[1] === id.value)
-})
 
 const labelAction = computed(() => {
   return props.choices
@@ -69,18 +37,6 @@ const labelAction = computed(() => {
 const investigatorAction = computed(() => {
   if (labelAction.value !== -1) {
     return labelAction.value
-  }
-
-  if (searchTopOfDeckAction.value !== -1) {
-    return searchTopOfDeckAction.value
-  }
-
-  if (runSkillTestAction.value !== -1) {
-    return runSkillTestAction.value
-  }
-
-  if (enemyEngageInvestigatorAction.value !== -1) {
-    return enemyEngageInvestigatorAction.value
   }
 
   return activateAbilityAction.value
@@ -114,10 +70,13 @@ const takeResourceAction = computed(() => {
 })
 
 const spendCluesAction = computed(() => {
-  return -1
-  // return props.choices
-  //   .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
-  //     && c.contents[0] === id.value);
+  return props.choices
+    .findIndex((c) => {
+      if (c.tag === "ComponentLabel" && c.component.tokenType === "ClueToken") {
+        return c.component.investigatorId === id.value
+      }
+      return false
+    });
 })
 
 const endTurnAction = computed(() => {

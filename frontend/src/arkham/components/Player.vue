@@ -41,10 +41,7 @@ const topOfDeck = computed(() => {
 })
 
 const playTopOfDeckAction = computed(() => {
-  return -1
-  // return choices.value.findIndex((c) => {
-    //return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.deck[0].id
-  //})
+  return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.player.deck[0].id)
 })
 
 const viewingDiscard = ref(false)

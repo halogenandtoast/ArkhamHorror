@@ -29,71 +29,16 @@ const id = computed(() => props.enemy.id)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const attackAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
-})
-
-const labelAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents === id.value)
-})
-
-const moveAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === id.value)
-})
-
-const placeDoomAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === id.value)
-})
-
-const damageAction = computed(() => {
-  return -1
-  // const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
-  //   && c.contents[0]
-  //   && c.contents[0].tag === MessageType.ENEMY_DAMAGE
-  //   && c.contents[0].contents[0] === id.value);
-
-  // if (isRunDamage !== -1) {
-  //   return isRunDamage;
-  // }
-
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === id.value);
-})// 
-
-const cardAction = computed(() => {
-  if (labelAction.value !== -1) {
-    return labelAction.value;
+function canInteract(c: Message): boolean {
+  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+    return true
   }
+  return false
+}
 
-  if (attackAction.value !== -1) {
-    return attackAction.value;
-  }
+const cardAction = computed(() => choices.value.findIndex(canInteract))
 
-  if (moveAction.value !== -1) {
-    return moveAction.value;
-  }
-
-  if (placeDoomAction.value !== -1) {
-    return placeDoomAction.value;
-  }
-
-  return damageAction.value;
-});
-
-function isActivate(v: Message) {
+function isAbility(v: Message) {
   if (v.tag === 'EvadeLabel' && v.enemyId === id.value) {
     return true
   }
@@ -106,15 +51,13 @@ function isActivate(v: Message) {
     return false
   }
 
-  const { tag, contents } = v.ability.source;
+  const { tag } = v.ability.source;
 
-  if (tag === 'EnemySource' && contents === id.value) {
-    return true
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'EnemySource') {
+    return v.ability.source.contents === id.value
   }
-
-  // if (tag === 'ProxySource' && contents[0].tag === 'EnemySource' && contents[0].contents === id.value) {
-  //   return true
-  // }
 
   return false
 }
@@ -123,7 +66,7 @@ const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (isActivate(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 

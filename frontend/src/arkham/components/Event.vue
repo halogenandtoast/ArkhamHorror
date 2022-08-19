@@ -29,22 +29,10 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.DISCARD:
-      return c.contents.contents === id.value
-    case MessageType.READY:
-      return c.contents.contents === id.value
-    case MessageType.REMOVE_DOOM:
-      return c.contents[0].contents === id.value
-    case MessageType.USE_CARD_ABILITY:
-      return c.contents[1].contents === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canInteract(c1))
-    case MessageType.TARGET_LABEL:
-      return c.contents[0].tag === "EventTarget" && c.contents[0].contents === id.value
-    default:
-      return false;
+  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+    return true
   }
+  return false
 }
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
@@ -54,14 +42,12 @@ function isActivate(v: Message) {
     return false
   }
 
-  const { tag, contents } = v.contents[1].source;
+  const { tag } = v.ability.source;
 
-  if (tag === 'EventSource' && contents === id.value) {
-    return true
-  }
-
-  if (tag === 'ProxySource' && contents[0].tag === 'EventSource' && contents[0].contents === id.value) {
-    return true
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'EventSource') {
+    return v.ability.source.contents === id.value
   }
 
   return false

@@ -2,8 +2,8 @@ module Api.Arkham.Export where
 
 import Import.NoFoundation
 
-import Arkham.Game
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.Game
 import Json
 
 data ArkhamExport = ArkhamExport

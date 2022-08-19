@@ -4,7 +4,7 @@ module Types where
 import Data.Text
 import GHC.Generics
 import Json
-import Prelude (Maybe(Just), ($))
+import Prelude ( Maybe (Just), ($) )
 
 newtype Token = Token { getToken :: Text }
 

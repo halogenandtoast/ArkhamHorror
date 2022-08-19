@@ -669,7 +669,10 @@ chooseN iid n msgs = Ask iid (ChooseN n msgs)
 chooseAmounts
   :: InvestigatorId -> Text -> Int -> [(Text, (Int, Int))] -> Target -> Message
 chooseAmounts iid label total choiceMap target =
-  Ask iid (ChooseAmounts label total choiceMap target)
+  Ask iid (ChooseAmounts label total amountChoices target)
+  where
+    amountChoices = map toAmountChoice choiceMap
+    toAmountChoice (l, (m,  n)) = AmountChoice l m n
 
 chooseUpgradeDeck :: InvestigatorId -> Message
 chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck

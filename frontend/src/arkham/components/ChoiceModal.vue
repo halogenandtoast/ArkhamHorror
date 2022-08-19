@@ -41,7 +41,7 @@ const paymentAmountsLabel = computed(() => {
 const amountsLabel = computed(() => {
   const question = props.game.question[props.investigatorId]
   if (question?.tag == 'ChooseAmounts') {
-    return question.contents[0]
+    return question.label
   }
 
   return null
@@ -55,7 +55,7 @@ const amountsChoices = computed(() => {
   if (question.value?.tag == 'ChoosePaymentAmounts') {
     return question.value.paymentAmountChoices
   } else if (question.value?.tag == 'ChooseAmounts') {
-    return question.value.contents[2]
+    return question.value.amountChoices
   }
 
   return null
@@ -89,7 +89,7 @@ const unmetAmountRequirements = computed(() => {
 
     return false
   } else if (question.value?.tag == 'ChooseAmounts') {
-    const maxBound = question.value.contents[1]
+    const maxBound = question.value.amountTargetValue
     if (maxBound) {
       const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
       return total > maxBound
@@ -169,9 +169,9 @@ const resolutions = computed(() => {
     <div class="modal-contents amount-contents">
       <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
         <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="[label, paymentChoice] in amountsChoices" :key="label">
+        <template v-for="paymentChoice in amountsChoices" :key="paymentChoice.label">
           <div v-if="paymentChoice.maxBound !== 0">
-            {{label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[label]" onclick="this.select()" />
+            {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.label]" onclick="this.select()" />
           </div>
         </template>
         <button :disabled="unmetAmountRequirements">Submit</button>

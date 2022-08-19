@@ -2,7 +2,8 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
-import type { MessageType, AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
+import type { AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
 
 export interface Props {
  ability: AbilityLabel | FightLabel | EvadeLabel

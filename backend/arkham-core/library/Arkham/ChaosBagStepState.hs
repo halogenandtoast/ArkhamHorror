@@ -1,3 +1,5 @@
+{-# LANGAUGE NoFieldSelectors #-}
+{-# LANGAUGE DuplicateRecordFields #-}
 module Arkham.ChaosBagStepState
   ( ChaosBagStepState(..)
   , ChaosBagStep(..)
@@ -9,16 +11,16 @@ import Arkham.Token
 import Arkham.Matcher
 
 data ChaosBagStepState
-  = Resolved [Token]
-  | Decided ChaosBagStep
-  | Undecided ChaosBagStep
-  | Deciding ChaosBagStep
+  = Resolved { tokens :: [Token] }
+  | Decided { step :: ChaosBagStep }
+  | Undecided { step :: ChaosBagStep }
+  | Deciding { step :: ChaosBagStep }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
 data ChaosBagStep
   = Draw
-  | Choose Int [ChaosBagStepState] [[Token]]
-  | ChooseMatch Int [ChaosBagStepState] [[Token]] TokenMatcher
+  | Choose { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]] }
+  | ChooseMatch { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]], tokenMatcher ::  TokenMatcher }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

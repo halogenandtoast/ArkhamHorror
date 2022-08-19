@@ -97,8 +97,8 @@ const tokenFaces = computed(() => [...new Set(props.chaosBag.tokens.map(t => t.t
 const tokenGroups = computed(() => {
   return Object.
     entries(choices.value).
-    filter(([, el]) => el.tag == "ChooseTokenGroups").
-    map(([idx, el]) => [idx, el.contents[2].contents[2]])
+    filter(([, el]) => el.tag == "TokenGroupChoice").
+    map(([idx, el]) => [idx, el.step.tokenGroups])
 })
 
 const choose = (idx: number) => emit('choose', idx)
@@ -126,7 +126,7 @@ const choose = (idx: number) => emit('choose', idx)
         />
         </div>
     </template>
-    <ChaosBagChoice v-if="chaosBag.choice" :choice="chaosBag.choice" />
+    <ChaosBagChoice v-if="chaosBag.choice" :choice="chaosBag.choice" :game="game" :investigatorId="investigatorId" @choose="choose" />
     <div v-for="tokenGroup in tokenGroups" :key="tokenGroup[0]">
       <div v-for="(group, idx) in tokenGroup[1]" :key="idx" @click="choose(parseInt(tokenGroup[0]))">
         <img

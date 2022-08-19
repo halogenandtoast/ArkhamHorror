@@ -39,7 +39,7 @@ data UI msg
   | EndTurnButton { investigatorId :: InvestigatorId, messages :: [msg] }
   | StartSkillTestButton { investigatorId :: InvestigatorId }
   | SkillTestApplyResultsButton
-  | TokenGroupChoice { source :: Source, investigatorId ::  InvestigatorId, step :: ChaosBagStep }
+  | TokenGroupChoice { source :: Source, investigatorId :: InvestigatorId, step :: ChaosBagStep }
   | Done { label :: Text }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
+import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
 
 export enum MessageType {
   DONE = 'Done',
@@ -158,7 +159,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly('SkillTestApplyResultsButton'),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done;
+export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -190,6 +191,19 @@ export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
     investigatorId: JsonDecoder.string,
   }, 'EndTurnButton')
 
+export interface TokenGroupChoice {
+  tag: 'TokenGroupChoice';
+  investigatorId: string;
+  step: ChaosBagStep
+}
+
+export const tokenGroupChoiceDecoder = JsonDecoder.object<TokenGroupChoice>(
+  {
+    tag: JsonDecoder.isExactly('TokenGroupChoice'),
+    investigatorId: JsonDecoder.string,
+    step: chaosBagStepDecoder
+  }, 'TokenGroupChoice')
+
 
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
@@ -203,6 +217,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     fightLabelDecoder,
     evadeLabelDecoder,
     doneDecoder,
+    tokenGroupChoiceDecoder,
   ],
   'Message',
 );

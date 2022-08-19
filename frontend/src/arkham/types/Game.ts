@@ -75,7 +75,7 @@ export function choices(game: Game, investigatorId: string): Message[] {
       case 'ChooseOneAtATime':
         return q.choices;
       case 'QuestionLabel':
-        return toContents(q.contents[1]);
+        return toContents(q.question);
       case 'Read':
         return q.readChoices;
       default:

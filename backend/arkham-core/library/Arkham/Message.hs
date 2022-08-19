@@ -624,8 +624,8 @@ uiToRun :: UI Message -> Message
 uiToRun = \case
   Label _ msgs -> Run msgs
   TooltipLabel _ _ msgs -> Run msgs
-  LabelGroup _ msgs -> Run msgs
   CardLabel _ msgs -> Run msgs
+  PortraitLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs
   SkillLabel _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
@@ -644,6 +644,9 @@ targetLabel entityId = TargetLabel (idToTarget entityId)
 chooseOrRunOne :: InvestigatorId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x
 chooseOrRunOne iid msgs = chooseOne iid msgs
+
+questionLabel :: Text -> InvestigatorId -> Question Message -> Message
+questionLabel lbl iid q = Ask iid (QuestionLabel lbl q)
 
 chooseOne :: InvestigatorId -> [UI Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"

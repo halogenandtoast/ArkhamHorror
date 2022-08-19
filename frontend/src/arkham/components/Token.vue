@@ -61,6 +61,11 @@ const revealedTokenAction = computed(() => {
     if (c.tag === "TokenGroupChoice") {
       return c.step.tokenGroups.some((g) => g.some((t) => t.tokenId === props.token.tokenId))
     }
+
+    if (c.tag === "TargetLabel") {
+      return c.target.tag === "TokenFaceTarget" && props.token.tokenFace === c.target.contents
+    }
+
     return false
   })
 })

@@ -23,8 +23,9 @@ export interface ChooseOne {
 }
 
 export interface QuestionLabel {
-  tag: 'QuestionLabel';
-  contents: [string, Question];
+  tag: 'QuestionLabel'
+  label: string
+  question: Question
 }
 
 export interface FlavorText {
@@ -130,7 +131,8 @@ export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
 export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDecoder.object<QuestionLabel>(
   {
     tag: JsonDecoder.isExactly('QuestionLabel'),
-    contents: JsonDecoder.lazy(() => JsonDecoder.tuple([JsonDecoder.string, questionDecoder], '[label, question]')),
+    label: JsonDecoder.string,
+    question: JsonDecoder.lazy(() => questionDecoder)
   },
   'QuestionLabel',
 );

@@ -32,14 +32,16 @@ const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
-    return true
+  if (c.tag === "TargetLabel") {
+     return c.target.contents === id.value
   }
 
-  // we also make the move ability a click to move
-  return choices
-    .value
-    .findIndex((c) => c.tag === "AbilityLabel" && c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value);
+  // we also allow the move action to cause card interaction
+  if (c.tag == "AbilityLabel") {
+    return c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value
+  }
+
+  return false
 }
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))

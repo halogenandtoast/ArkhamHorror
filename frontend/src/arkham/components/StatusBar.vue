@@ -30,10 +30,15 @@ const cardLabelImage = (cardCode: string) => {
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
 }
 
+const portraitLabelImage = (investigatorId: string) => {
+  return `${baseUrl}/img/arkham/portraits/${investigatorId.replace('c', '')}.jpg`;
+}
+
 const cardLabels = computed(() =>
   choices.value.
-    flatMap<[Message, number][]>((choice, index) =>
-      choice.tag === "WOMBAT" ? [[choice, index]] : []))
+    flatMap<[Message, number][]>((choice, index) => {
+      return choice.tag === "CardLabel" ? [[choice, index]] : []
+    }))
 
 const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
 
@@ -76,17 +81,22 @@ const testResult = computed(() => {
     <div v-if="cardLabels.length > 0">
       <template v-for="[choice, index] in cardLabels" :key="index">
         <a href='#' @click.prevent="choose(index)">
-          <img class="card" :src="cardLabelImage(choice.contents[0])"/>
+          <img class="card" :src="cardLabelImage(choice.cardCode)"/>
         </a>
       </template>
     </div>
 
     <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">
-      <p>{{question.contents[0]}}</p>
+      <p>{{question.label}}</p>
       <div class="label-choices">
-        <template v-for="(choice, index) in question.contents[1].contents" :key="index">
+        <template v-for="(choice, index) in question.question.choices" :key="index">
           <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
             <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
+          </template>
+          <template v-if="choice.tag === 'PortraitLabel'">
+            <a href='#' @click.prevent="choose(index)">
+              <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
+            </a>
           </template>
         </template>
       </div>
@@ -325,4 +335,16 @@ button {
     margin-left: 10px;
   }
 }
+
+.portrait {
+  border-radius: 3px;
+  width: $card-width;
+  margin-right: 2px;
+
+  &.active {
+    border: 1px solid $select;
+    cursor:pointer;
+  }
+}
+
 </style>

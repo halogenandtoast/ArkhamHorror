@@ -23,11 +23,12 @@ thePathToTheHill :: ActCard ThePathToTheHill
 thePathToTheHill = act (1, A) ThePathToTheHill Cards.thePathToTheHill Nothing
 
 instance HasAbilities ThePathToTheHill where
-  getAbilities (ThePathToTheHill x) =
+  getAbilities (ThePathToTheHill x) | onSide A x =
     [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
         AnyWindow
         (GroupClueCost (PerPlayer 2) Anywhere)
     ]
+  getAbilities _ = []
 
 instance RunMessage ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of

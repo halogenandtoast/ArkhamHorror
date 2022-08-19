@@ -6,18 +6,17 @@ module Arkham.Act.Cards.BeginnersLuck
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
-import Arkham.Helpers.ChaosBag
 import Arkham.GameValue
+import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (RevealToken)
+import Arkham.Message hiding ( RevealToken )
 import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -36,11 +35,10 @@ beginnersLuck = act (1, A) BeginnersLuck Cards.beginnersLuck Nothing
 instance HasAbilities BeginnersLuck where
   getAbilities (BeginnersLuck x) = withBaseAbilities x $ if onSide A x
     then
-      [ mkAbility
-          x
-          1
-          (ReactionAbility (RevealChaosToken Timing.When Anyone AnyToken) Free)
-        & (abilityLimitL .~ GroupLimit PerRound 1)
+      [ limitedAbility (GroupLimit PerRound 1) $ mkAbility
+        x
+        1
+        (ReactionAbility (RevealChaosToken Timing.When Anyone AnyToken) Free)
       , mkAbility x 2 $ Objective $ ForcedAbilityWithCost
         AnyWindow
         (GroupClueCost (PerPlayer 4) Anywhere)
@@ -52,7 +50,7 @@ instance RunMessage BeginnersLuck where
     UseCardAbility iid source [Window Timing.When (RevealToken _ token)] 1 _
       | isSource attrs source -> do
         tokensInBag <- getTokensInBag
-        a <$ pushAll
+        pushAll
           [ FocusTokens tokensInBag
           , chooseOne
             iid
@@ -71,6 +69,7 @@ instance RunMessage BeginnersLuck where
             ]
           , Remember Cheated
           ]
+        pure a
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do

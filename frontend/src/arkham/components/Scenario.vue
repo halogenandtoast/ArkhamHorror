@@ -12,8 +12,6 @@ import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
-import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
-import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
@@ -210,12 +208,6 @@ const phase = computed(() => props.game.phase)
   <div v-if="!game.gameOver" id="scenario" class="scenario">
     <div class="scenario-body">
       <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
-      <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="choose" />
-      <PlayerSelector
-        :game="game"
-        :investigatorId="investigatorId"
-        @choose="choose"
-      />
       <CommittedSkills
         v-if="(game.skillTest?.committedCards?.length || 0) > 0"
         :game="game"

@@ -40,7 +40,7 @@ instance HasModifiersFor PlanningTheEscape where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PlanningTheEscape where
-  getAbilities (PlanningTheEscape x) =
+  getAbilities (PlanningTheEscape x) | onSide A x =
     [ restrictedAbility
           x
           1
@@ -57,6 +57,7 @@ instance HasAbilities PlanningTheEscape where
         $ Objective
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage PlanningTheEscape where
   runMessage msg a@(PlanningTheEscape attrs) = case msg of

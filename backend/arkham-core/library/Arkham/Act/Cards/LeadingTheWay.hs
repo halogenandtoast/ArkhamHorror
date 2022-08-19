@@ -33,7 +33,7 @@ instance HasModifiersFor LeadingTheWay where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LeadingTheWay where
-  getAbilities (LeadingTheWay a) =
+  getAbilities (LeadingTheWay a) | onSide A a =
     [ restrictedAbility
           a
           1
@@ -43,6 +43,7 @@ instance HasAbilities LeadingTheWay where
         $ Objective
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage LeadingTheWay where
   runMessage msg a@(LeadingTheWay attrs) = case msg of

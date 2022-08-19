@@ -24,7 +24,7 @@ theyMustBeDestroyed =
   act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed Nothing
 
 instance HasAbilities TheyMustBeDestroyed where
-  getAbilities (TheyMustBeDestroyed x) =
+  getAbilities (TheyMustBeDestroyed x) | onSide A x =
     [ restrictedAbility
           x
           1
@@ -36,6 +36,7 @@ instance HasAbilities TheyMustBeDestroyed where
           )
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs) = case msg of

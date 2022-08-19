@@ -34,7 +34,7 @@ madnessCoils = agenda
   (Static 7)
 
 instance HasAbilities MadnessCoils where
-  getAbilities (MadnessCoils (a `With` _)) =
+  getAbilities (MadnessCoils (a `With` _)) | onSide A a=
     [ restrictedAbility
           a
           1
@@ -47,6 +47,7 @@ instance HasAbilities MadnessCoils where
         $ Objective
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage MadnessCoils where
   runMessage msg a@(MadnessCoils (attrs `With` metadata)) = case msg of

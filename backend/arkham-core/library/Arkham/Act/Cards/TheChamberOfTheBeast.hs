@@ -28,7 +28,7 @@ theChamberOfTheBeast =
   act (2, A) TheChamberOfTheBeast Cards.theChamberOfTheBeast Nothing
 
 instance HasAbilities TheChamberOfTheBeast where
-  getAbilities (TheChamberOfTheBeast x) =
+  getAbilities (TheChamberOfTheBeast x) | onSide A x =
     [ mkAbility x 1
     $ Objective
     $ ForcedAbility
@@ -44,6 +44,7 @@ instance HasAbilities TheChamberOfTheBeast where
     $ Objective
     $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage TheChamberOfTheBeast where
   runMessage msg a@(TheChamberOfTheBeast attrs) = case msg of

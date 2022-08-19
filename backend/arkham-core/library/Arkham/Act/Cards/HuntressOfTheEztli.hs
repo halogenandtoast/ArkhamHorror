@@ -35,7 +35,7 @@ huntressOfTheEztli =
   act (2, A) HuntressOfTheEztli Cards.huntressOfTheEztli Nothing
 
 instance HasAbilities HuntressOfTheEztli where
-  getAbilities (HuntressOfTheEztli x) =
+  getAbilities (HuntressOfTheEztli x) | onSide A x =
     [ mkAbility x 1 $ Objective $ ForcedAbility
       (EnemyDefeated Timing.After Anyone $ EnemyWithTitle "Ichtaca")
     , restrictedAbility
@@ -47,6 +47,7 @@ instance HasAbilities HuntressOfTheEztli where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage HuntressOfTheEztli where
   runMessage msg a@(HuntressOfTheEztli attrs) = case msg of

@@ -29,7 +29,7 @@ uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
 instance HasAbilities UncoveringTheConspiracy where
-  getAbilities (UncoveringTheConspiracy a) =
+  getAbilities (UncoveringTheConspiracy a) | onSide A a =
     [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
       $ ActionAbility Nothing
       $ ActionCost 1
@@ -44,6 +44,7 @@ instance HasAbilities UncoveringTheConspiracy where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of

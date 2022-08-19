@@ -29,7 +29,7 @@ pursuingShadows :: ActCard PursuingShadows
 pursuingShadows = act (2, A) PursuingShadows Cards.pursuingShadows Nothing
 
 instance HasAbilities PursuingShadows where
-  getAbilities (PursuingShadows a) =
+  getAbilities (PursuingShadows a) | onSide A a =
     [ reaction a 1 NoRestriction (GroupClueCost (Static 1) YourLocation)
       $ EnemyAttacked Timing.After You AnySource (EnemyWithTitle "The Organist")
     , restrictedAbility
@@ -43,6 +43,7 @@ instance HasAbilities PursuingShadows where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage PursuingShadows where
   runMessage msg a@(PursuingShadows attrs) = case msg of

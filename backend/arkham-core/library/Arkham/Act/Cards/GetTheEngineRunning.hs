@@ -24,7 +24,7 @@ getTheEngineRunning =
   act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
 
 instance HasAbilities GetTheEngineRunning where
-  getAbilities (GetTheEngineRunning x) =
+  getAbilities (GetTheEngineRunning x) | onSide A x =
     [ restrictedAbility
         x
         1
@@ -33,6 +33,7 @@ instance HasAbilities GetTheEngineRunning where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of

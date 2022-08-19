@@ -32,7 +32,7 @@ const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>
 const paymentAmountsLabel = computed(() => {
   const question = props.game.question[props.investigatorId]
   if (question?.tag == 'ChoosePaymentAmounts') {
-    return question.contents[0]
+    return question.label
   } else if (question?.tag == 'ChooseDynamicCardAmounts') {
     return "Pay Dynamic Cost"
   }
@@ -55,7 +55,7 @@ const investigatorName = (iid: string) => props.game.investigators[iid].name.tit
 
 const amountsChoices = computed(() => {
   if (question.value?.tag == 'ChoosePaymentAmounts') {
-    return question.value.contents[2]
+    return question.value.paymentAmountChoices
   } else if (question.value?.tag == 'ChooseAmounts') {
     return question.value.contents[2]
   } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
@@ -85,7 +85,7 @@ watch(
 
 const unmetAmountRequirements = computed(() => {
   if (question.value?.tag == 'ChoosePaymentAmounts') {
-    const requiredTotal = question.value.contents[1]
+    const requiredTotal = question.value.paymentAmountTargetValue
     if (requiredTotal) {
       const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
       return total !== requiredTotal

@@ -69,7 +69,7 @@ export function choices(game: Game, investigatorId: string): Message[] {
       case 'ChooseN':
         return q.choices;
       case 'ChooseUpToN':
-        return q.contents;
+        return q.choices;
       case 'ChooseSome':
         return q.contents;
       case 'ChooseOneAtATime':

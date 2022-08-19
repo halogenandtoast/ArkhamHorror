@@ -126,6 +126,28 @@ export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
     enemyId: JsonDecoder.string,
   }, 'EvadeLabel')
 
+export interface CardLabel {
+  tag: 'CardLabel';
+  cardCode: string;
+}
+
+export const cardLabelDecoder = JsonDecoder.object<CardLabel>(
+  {
+    tag: JsonDecoder.isExactly('CardLabel'),
+    cardCode: JsonDecoder.string,
+  }, 'CardLabel')
+
+export interface PortraitLabel {
+  tag: 'PortraitLabel';
+  investigatorId: string;
+}
+
+export const portraitLabelDecoder = JsonDecoder.object<PortraitLabel>(
+  {
+    tag: JsonDecoder.isExactly('PortraitLabel'),
+    investigatorId: JsonDecoder.string,
+  }, 'PortraitLabel')
+
 export interface AbilityLabel {
   tag: 'AbilityLabel';
   investigatorId: string;
@@ -159,7 +181,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly('SkillTestApplyResultsButton'),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice;
+export type Message = Label | TargetLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -209,6 +231,8 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
     targetLabelDecoder,
+    cardLabelDecoder,
+    portraitLabelDecoder,
     componentLabelDecoder,
     abilityLabelDecoder,
     endTurnButtonDecoder,

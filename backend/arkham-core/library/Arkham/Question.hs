@@ -28,8 +28,8 @@ data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | Doo
 data UI msg
   = Label { label :: Text, messages :: [msg] }
   | TooltipLabel { label :: Text, tooltip :: Tooltip, messages :: [msg] }
-  | LabelGroup { label :: Text, messages :: [msg] }
   | CardLabel { cardCode :: CardCode, messages :: [msg] }
+  | PortraitLabel { investigatorId :: InvestigatorId, messages :: [msg] }
   | TargetLabel { target :: Target, messages :: [msg] }
   | SkillLabel { skillType :: SkillType, messages :: [msg] }
   | EvadeLabel { enemyId :: EnemyId, messages :: [msg] }

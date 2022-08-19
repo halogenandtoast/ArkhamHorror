@@ -27,7 +27,7 @@ getToTheBoats :: ActCard GetToTheBoats
 getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 
 instance HasAbilities GetToTheBoats where
-  getAbilities (GetToTheBoats x) =
+  getAbilities (GetToTheBoats x) | onSide A x =
     [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.After $ PhaseIs
       MythosPhase
     , restrictedAbility
@@ -39,6 +39,7 @@ instance HasAbilities GetToTheBoats where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage GetToTheBoats where
   runMessage msg a@(GetToTheBoats attrs) = case msg of

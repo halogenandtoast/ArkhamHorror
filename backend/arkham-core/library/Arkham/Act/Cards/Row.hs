@@ -29,7 +29,7 @@ row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
 instance HasAbilities Row where
-  getAbilities (Row x) =
+  getAbilities (Row x) | onSide A x =
     [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard
       Timing.When
       You
@@ -42,6 +42,7 @@ instance HasAbilities Row where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage Row where
   runMessage msg a@(Row attrs) = case msg of

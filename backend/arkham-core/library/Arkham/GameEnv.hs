@@ -19,7 +19,7 @@ import Arkham.Target
 import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
-  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO)
+  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
 class HasGame m where
   getGame :: m Game

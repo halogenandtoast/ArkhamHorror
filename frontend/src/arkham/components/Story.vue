@@ -3,12 +3,14 @@ import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
+import * as ArkhamGame from '@/arkham/types/Game';
 
 export interface Props {
   game: Game
   investigatorId: string
 }
 
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const question = computed(() => props.game.question[props.investigatorId])
@@ -22,6 +24,19 @@ const choose = (idx: number) => emit('choose', idx)
       :question="question"
       @choose="choose"
     />
+  </template>
+
+  <template v-if="choices.length > 0">
+    <div class="choices">
+      <template v-for="(choice, index) in choices" :key="index">
+        <div v-if="choice.tag === 'Done'">
+          <button @click="choose(index)">{{choice.label}}</button>
+        </div>
+        <div v-if="choice.tag === 'Label'">
+          <button @click="choose(index)">{{choice.label}}</button>
+        </div>
+      </template>
+    </div>
   </template>
 
   <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">

@@ -111,6 +111,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
+import Control.Exception ( throw )
 import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen, mkStdGen )
 import Control.Monad.Reader ( runReader )
@@ -1643,14 +1644,18 @@ getAgenda aid =
     <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
-getAsset :: (HasCallStack, Monad m, HasGame m) => AssetId -> m Asset
+data MissingEntity = MissingEntity Text
+  deriving stock Show
+
+instance Exception MissingEntity
+
+getAsset :: (Monad m, HasGame m) => AssetId -> m Asset
 getAsset aid = do
   g <- getGame
-  pure
-    $ fromJustNote missingAsset
+  maybe (throw missingAsset) pure
     $ preview (entitiesL . assetsL . ix aid) g
     <|> getInDiscardEntity assetsL aid g
-  where missingAsset = "Unknown asset: " <> show aid
+  where missingAsset = MissingEntity $ "Unknown asset: " <> tshow aid
 
 getTreachery :: (Monad m, HasGame m) => TreacheryId -> m Treachery
 getTreachery tid =
@@ -2382,9 +2387,15 @@ runMessages mLogger = do
               case playingInvestigators of
                 [] -> pushEnd EndInvestigation
                 [x] -> push $ ChoosePlayer x SetTurnPlayer
-                xs -> push $ chooseOne
-                  (g ^. leadInvestigatorIdL)
-                  [ targetLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs ]
+                xs ->
+                  push
+                    $ questionLabel
+                        "Choose player to take turn"
+                        (g ^. leadInvestigatorIdL)
+                    $ ChooseOne
+                        [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
+                        | iid <- xs
+                        ]
 
               runMessages mLogger
             else do
@@ -2655,11 +2666,13 @@ runGameMessage msg g = case msg of
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> do
-    when (length (g ^. entitiesL . investigatorsL) > 1) $ push $ chooseOne
-      (g ^. leadInvestigatorIdL)
-      [ targetLabel iid [ChoosePlayer iid SetLeadInvestigator]
-      | iid <- g ^. entitiesL . investigatorsL . to keys
-      ]
+    when (length (g ^. entitiesL . investigatorsL) > 1)
+      $ push
+      $ questionLabel "Choose lead investigator" (g ^. leadInvestigatorIdL)
+      $ ChooseOne
+          [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
+          | iid <- g ^. entitiesL . investigatorsL . to keys
+          ]
     pure g
   ChoosePlayer iid SetLeadInvestigator -> do
     let allPlayers = view playerOrderL g
@@ -2886,7 +2899,10 @@ runGameMessage msg g = case msg of
         PutBackInAnyOrder -> do
           when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
           push $ chooseOneAtATime iid $ map
-            (\c -> TargetLabel (CardIdTarget $ toCardId c) [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c])
+            (\c -> TargetLabel
+              (CardIdTarget $ toCardId c)
+              [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c]
+            )
             (findWithDefault [] Zone.FromDeck foundCards)
         ShuffleBackIn -> do
           when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
@@ -3265,9 +3281,9 @@ runGameMessage msg g = case msg of
       [iid] -> pushAll [phaseBeginsWindow, ChoosePlayer iid SetTurnPlayer]
       xs -> pushAll
         [ phaseBeginsWindow
-        , chooseOne
-          (g ^. leadInvestigatorIdL)
-          [ targetLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs ]
+        , questionLabel "Choose player to take turn" (g ^. leadInvestigatorIdL)
+          $ ChooseOne
+              [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs ]
         ]
     pure $ g & phaseL .~ InvestigationPhase
   BeginTurn x -> do
@@ -3285,9 +3301,12 @@ runGameMessage msg g = case msg of
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
     push $ chooseOne
       (gameLeadInvestigatorId g)
-      [ targetLabel iid [ChoosePlayerOrder
-          (filter (/= iid) investigatorIds)
-          (orderedInvestigatorIds <> [iid])]
+      [ targetLabel
+          iid
+          [ ChoosePlayerOrder
+              (filter (/= iid) investigatorIds)
+              (orderedInvestigatorIds <> [iid])
+          ]
       | iid <- investigatorIds
       ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
@@ -3402,7 +3421,14 @@ runGameMessage msg g = case msg of
   AllDrawEncounterCard -> do
     playerIds <- filterM (fmap not . isEliminated) (view playerOrderL g)
     pushAll
-      $ [ chooseOne iid [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard iid]] | iid <- playerIds ]
+      $ [ chooseOne
+            iid
+            [ TargetLabel
+                EncounterDeckTarget
+                [InvestigatorDrawEncounterCard iid]
+            ]
+        | iid <- playerIds
+        ]
       <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
     pure g
   EndMythos -> do
@@ -3773,22 +3799,23 @@ runGameMessage msg g = case msg of
   ResolvedAbility _ -> pure $ g & activeAbilitiesL %~ drop 1
   Discarded (AssetTarget aid) (EncounterCard _) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid
-  Discarded (AssetTarget aid) _ -> do
-    asset <- getAsset aid
-    let
-      discardLens = if gameInAction g
-        then case assetOwner (toAttrs asset) of
-          Nothing -> id
-          Just iid ->
-            let
-              dEntities =
-                fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
-            in
-              inDiscardEntitiesL
-              . at iid
-              ?~ (dEntities & assetsL . at aid ?~ asset)
-        else id
-    pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
+  Discarded (AssetTarget aid) _ ->
+    flip catch (\(_ :: MissingEntity) -> pure g) $ do
+      asset <- getAsset aid
+      let
+        discardLens = if gameInAction g
+          then case assetOwner (toAttrs asset) of
+            Nothing -> id
+            Just iid ->
+              let
+                dEntities = fromMaybe defaultEntities
+                  $ view (inDiscardEntitiesL . at iid) g
+              in
+                inDiscardEntitiesL
+                . at iid
+                ?~ (dEntities & assetsL . at aid ?~ asset)
+          else id
+      pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
   DiscardedCost (AssetTarget aid) -> do
     -- When discarded as a cost, the entity may still need to be in the environment to handle ability resolution
     asset <- getAsset aid

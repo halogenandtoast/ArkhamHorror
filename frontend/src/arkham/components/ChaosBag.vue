@@ -74,10 +74,10 @@ const revealedTokens = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === "StartSkillTestButton"))
+const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 
 const investigatorPortrait = computed(() => {
-  const choice = choices.value.find((c) => c.tag === "StartSkillTestButton");
+  const choice = choices.value.find((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
     return `${baseUrl}/img/arkham/portraits/${choice.investigatorId.replace('c', '')}.jpg`;
   }

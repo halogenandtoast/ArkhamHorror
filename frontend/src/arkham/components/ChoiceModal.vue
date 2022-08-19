@@ -2,7 +2,7 @@
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 
 export interface Props {
@@ -31,7 +31,7 @@ const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>
 
 const paymentAmountsLabel = computed(() => {
   const question = props.game.question[props.investigatorId]
-  if (question?.tag == 'ChoosePaymentAmounts') {
+  if (question?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return question.label
   }
 
@@ -40,7 +40,7 @@ const paymentAmountsLabel = computed(() => {
 
 const amountsLabel = computed(() => {
   const question = props.game.question[props.investigatorId]
-  if (question?.tag == 'ChooseAmounts') {
+  if (question?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.label
   }
 
@@ -52,9 +52,9 @@ const question = computed(() => props.game.question[props.investigatorId])
 const investigatorName = (iid: string) => props.game.investigators[iid].name.title
 
 const amountsChoices = computed(() => {
-  if (question.value?.tag == 'ChoosePaymentAmounts') {
+  if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return question.value.paymentAmountChoices
-  } else if (question.value?.tag == 'ChooseAmounts') {
+  } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.value.amountChoices
   }
 
@@ -64,7 +64,7 @@ const amountsChoices = computed(() => {
 const amountSelections = ref<Record<string, number>>({})
 
 const setInitialAmounts = () => {
-    const labels = question.value?.tag == 'ChooseAmounts'
+    const labels = question.value?.tag === QuestionType.CHOOSE_AMOUNTS
       ? question.value.contents[2].map(([label]) => label)
       : Object.keys(props.game.investigators)
     amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
@@ -80,7 +80,7 @@ watch(
   setInitialAmounts)
 
 const unmetAmountRequirements = computed(() => {
-  if (question.value?.tag == 'ChoosePaymentAmounts') {
+  if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     const requiredTotal = question.value.paymentAmountTargetValue
     if (requiredTotal) {
       const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
@@ -88,7 +88,7 @@ const unmetAmountRequirements = computed(() => {
     }
 
     return false
-  } else if (question.value?.tag == 'ChooseAmounts') {
+  } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     const maxBound = question.value.amountTargetValue
     if (maxBound) {
       const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
@@ -112,13 +112,6 @@ const submitAmounts = async () => {
     chooseAmounts(amountSelections.value)
   }
 }
-
-const resolutions = computed(() => {
-  return choices
-    .value
-    .map((choice, idx) => ({ choice, idx }))
-    .filter(({ choice }) => choice.tag === "WOMBAT");
-})
 </script>
 
 <template>
@@ -132,17 +125,6 @@ const resolutions = computed(() => {
         :key="index"
         @choose="$emit('choose', $event)"
       />
-    </div>
-  </div>
-  <div v-else-if="resolutions.length > 0" class="modal">
-    <div class="modal-contents">
-      <button
-        v-for="{ choice, idx } in resolutions"
-        :key="idx"
-        @click="$emit('choose', idx)"
-      >
-        Resolution {{choice.contents}}
-      </button>
     </div>
   </div>
   <div v-else-if="paymentAmountsLabel" class="modal amount-modal">

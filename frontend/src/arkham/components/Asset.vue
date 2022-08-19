@@ -43,7 +43,7 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel") {
+  if (c.tag === MessageType.TARGET_LABEL) {
     return c.target.contents === id.value
   }
 
@@ -51,14 +51,14 @@ function canInteract(c: Message): boolean {
 }
 
 function canAdjustHealth(c: Message): boolean {
-  if (c.tag === "ComponentLabel" && c.component.tokenType === "DamageToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "DamageToken") {
     return c.component.assetId === id.value
   }
   return false
 }
 
 function canAdjustSanity(c: Message): boolean {
-  if (c.tag === "ComponentLabel" && c.component.tokenType === "HorrorToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "HorrorToken") {
     return c.component.assetId === id.value
   }
   return false
@@ -69,7 +69,7 @@ const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
 function isAbility(v: Message) {
-  if (v.tag !== 'AbilityLabel') {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 

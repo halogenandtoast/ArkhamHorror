@@ -3,7 +3,6 @@ import { computed, inject } from 'vue'
 import * as Arkham from '@/arkham/types/Investigator'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
-import { QuestionType } from '@/arkham/types/Question'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 
 export interface Props {
@@ -21,7 +20,7 @@ const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
 function canActivateAbility(c: Message): boolean {
-  if (c.tag  === "AbilityLabel") {
+  if (c.tag  === MessageType.ABILITY_LABEL) {
     return c.ability.source.contents === id.value
   }
   return false
@@ -30,7 +29,7 @@ const activateAbilityAction = computed(() => props.choices.findIndex(canActivate
 
 const labelAction = computed(() => {
   return props.choices
-    .findIndex((c) => c.tag === "TargetLabel"
+    .findIndex((c) => c.tag === MessageType.TARGET_LABEL
       && c.target.tag === "InvestigatorTarget" && c.target.contents === id.value)
 })
 
@@ -43,14 +42,14 @@ const investigatorAction = computed(() => {
 })
 
 function canAdjustHealth(c: Message): boolean {
-  if (c.tag === "ComponentLabel" && c.component.tokenType === "DamageToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "DamageToken") {
     return c.component.investigatorId === id.value
   }
   return false
 }
 
 function canAdjustSanity(c: Message): boolean {
-  if (c.tag === "ComponentLabel" && c.component.tokenType === "HorrorToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "HorrorToken") {
     return c.component.investigatorId === id.value
   }
   return false
@@ -62,7 +61,7 @@ const sanityAction = computed(() => props.choices.findIndex(canAdjustSanity))
 const takeResourceAction = computed(() => {
   return props.choices
     .findIndex((c) => {
-      if (c.tag === "ComponentLabel" && c.component.tokenType === "ResourceToken") {
+      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "ResourceToken") {
         return c.component.investigatorId === id.value
       }
       return false
@@ -72,7 +71,7 @@ const takeResourceAction = computed(() => {
 const spendCluesAction = computed(() => {
   return props.choices
     .findIndex((c) => {
-      if (c.tag === "ComponentLabel" && c.component.tokenType === "ClueToken") {
+      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "ClueToken") {
         return c.component.investigatorId === id.value
       }
       return false
@@ -81,7 +80,7 @@ const spendCluesAction = computed(() => {
 
 const endTurnAction = computed(() => {
   return props.choices
-    .findIndex((c) => c.tag === 'EndTurnButton' && c.investigatorId === id.value);
+    .findIndex((c) => c.tag === MessageType.END_TURN_BUTTON && c.investigatorId === id.value);
 })
 
 const baseUrl = inject('baseUrl')

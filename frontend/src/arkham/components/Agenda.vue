@@ -36,7 +36,7 @@ const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+  if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
     return true
   }
   return false
@@ -45,7 +45,7 @@ function canInteract(c: Message): boolean {
 const interactAction = computed(() => choices.value.findIndex(canInteract));
 
 function isAbility(v: Message) {
-  if (v.tag !== 'AbilityLabel') {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
@@ -63,9 +63,7 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
   return choices.value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && v.contents[0] && isAbility(v.contents[0])) {
-        return [...acc, i];
-      } else if (v.tag && isAbility(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 

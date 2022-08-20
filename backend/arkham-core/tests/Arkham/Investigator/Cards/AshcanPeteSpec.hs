@@ -43,7 +43,7 @@ spec = describe "\"Ashcan\" Pete" $ do
             chooseOptionMatching
               "activate ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "discard card"

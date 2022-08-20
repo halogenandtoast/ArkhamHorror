@@ -39,7 +39,7 @@ spec = do
             chooseOptionMatching
               "skip ability"
               (\case
-                Continue{} -> True
+                Label{} -> True
                 _ -> False
               )
             chooseOnlyOption "start skill test"
@@ -67,13 +67,13 @@ spec = do
                 chooseOptionMatching
                   "use ability"
                   (\case
-                    Run{} -> True
+                    AbilityLabel{} -> True
                     _ -> False
                   )
                 chooseOptionMatching
                   "use ability again"
                   (\case
-                    Run{} -> True
+                    AbilityLabel{} -> True
                     _ -> False
                   )
                 fieldAssert InvestigatorResources (== 2) zoeySamaras

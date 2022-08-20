@@ -67,25 +67,25 @@ spec = describe "Fire Axe" $ do
           chooseOptionMatching
             "spend resource"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           chooseOptionMatching
             "Skip playing fast cards or using reactions and continue"
             (\case
-              Continue{} -> True
+              Label{} -> True
               _ -> False
             )
           chooseOptionMatching
             "Start Skill Test"
             (\case
-              StartSkillTest{} -> True
+              StartSkillTestButton{} -> True
               _ -> False
             )
           chooseOptionMatching
             "Skip playing fast cards or using reactions and continue"
             (\case
-              Continue{} -> True
+              Label{} -> True
               _ -> False
             )
           chooseOnlyOption "Apply Results"
@@ -118,13 +118,13 @@ spec = describe "Fire Axe" $ do
           chooseOptionMatching
             "spend resource"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           chooseOptionMatching
             "Start Skill Test"
             (\case
-              StartSkillTest{} -> True
+              StartSkillTestButton{} -> True
               _ -> False
             )
           chooseOnlyOption "Apply Results"
@@ -157,19 +157,19 @@ spec = describe "Fire Axe" $ do
           chooseOptionMatching
             "spend resource"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           chooseOptionMatching
             "spend resource"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           chooseOptionMatching
             "spend resource"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           chooseOnlyOption "Start skill test"

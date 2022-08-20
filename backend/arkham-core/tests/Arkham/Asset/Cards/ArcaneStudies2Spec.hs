@@ -28,23 +28,19 @@ spec = describe "Arcane Studies (2)" $ do
         chooseOptionMatching
           "use ability"
           ( \case
-              Run (x : _) -> case x of
-                UseAbility _ a _ -> abilityIndex a == 1
-                _ -> False
-              _ -> False
+            AbilityLabel {ability} -> abilityIndex ability == 1
+            _ -> False
           )
         chooseOptionMatching
           "use ability"
           ( \case
-              Run (x : _) -> case x of
-                UseAbility _ a _ -> abilityIndex a == 1
-                _ -> False
-              _ -> False
+            AbilityLabel {ability} -> abilityIndex ability == 1
+            _ -> False
           )
         chooseOptionMatching
           "start skill test"
           ( \case
-              StartSkillTest {} -> True
+              StartSkillTestButton {} -> True
               _ -> False
           )
         chooseOnlyOption "apply results"
@@ -69,23 +65,19 @@ spec = describe "Arcane Studies (2)" $ do
         chooseOptionMatching
           "use ability"
           ( \case
-              Run (x : _) -> case x of
-                UseAbility _ a _ -> abilityIndex a == 2
-                _ -> False
-              _ -> False
+            AbilityLabel {ability} -> abilityIndex ability == 2
+            _ -> False
           )
         chooseOptionMatching
           "use ability"
           ( \case
-              Run (x : _) -> case x of
-                UseAbility _ a _ -> abilityIndex a == 2
-                _ -> False
-              _ -> False
+            AbilityLabel {ability} -> abilityIndex ability  == 2
+            _ -> False
           )
         chooseOptionMatching
           "start skill test"
           ( \case
-              StartSkillTest {} -> True
+              StartSkillTestButton {} -> True
               _ -> False
           )
         chooseOnlyOption "apply results"

@@ -29,9 +29,9 @@ spec = describe "Guard Dog" $ do
       $ do
         runMessages
         chooseOptionMatching "damage guard dog" $ \case
-          Run (AssetDamage {}:_) -> True
+          ComponentLabel (AssetComponent{}) _ -> True
           _ -> False
         chooseOptionMatching "use reaction" $ \case
-          Run (UseAbility {}:_) -> True
+          AbilityLabel {} -> True
           _ -> False
         fieldAssert EnemyDamage (== 1) enemy

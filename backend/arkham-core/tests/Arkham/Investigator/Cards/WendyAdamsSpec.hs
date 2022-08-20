@@ -29,7 +29,7 @@ spec = describe "Wendy Adams" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "discard card"

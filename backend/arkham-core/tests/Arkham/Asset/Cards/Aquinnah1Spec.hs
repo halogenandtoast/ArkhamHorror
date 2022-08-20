@@ -5,7 +5,6 @@ module Arkham.Asset.Cards.Aquinnah1Spec
 import TestImport hiding (EnemyDamage)
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Message qualified as Msg
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
@@ -39,14 +38,14 @@ spec = describe "Aquinnah (1)" $ do
           chooseOptionMatching
             "use ability"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           chooseOnlyOption "damage enemy2"
           chooseOptionMatching
             "assign sanity damage to investigator"
             (\case
-              Run (Msg.InvestigatorDamage{} : _) -> True
+              ComponentLabel InvestigatorComponent{} _ -> True
               _ -> False
             )
           fieldAssert InvestigatorHorror (== 1) investigator

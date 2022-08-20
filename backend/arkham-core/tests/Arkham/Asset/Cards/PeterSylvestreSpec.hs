@@ -37,7 +37,7 @@ spec = describe "Peter Sylvestre" $ do
           chooseOptionMatching
             "use ability"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           assert $ fieldP Asset.AssetHorror (== 1) (toId peterSylvestre)

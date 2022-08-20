@@ -33,7 +33,7 @@ spec = do
               chooseOptionMatching
                 "use ability"
                 (\case
-                  Run{} -> True
+                  AbilityLabel{} -> True
                   _ -> False
                 )
               fieldAssert EnemyDamage (== 1) enemy

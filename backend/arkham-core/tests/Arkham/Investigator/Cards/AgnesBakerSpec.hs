@@ -29,7 +29,7 @@ spec = describe "Agnes Baker" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "damage enemy"

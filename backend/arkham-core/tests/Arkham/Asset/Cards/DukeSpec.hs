@@ -63,6 +63,7 @@ spec = describe "Duke" $ do
             [_, investigateAction] <- field AssetAbilities (toId duke)
             push $ UseAbility (toId investigator) investigateAction [Window Timing.When (DuringTurn $ toId investigator)]
             runMessages
+            chooseOnlyOption "Investigate current location"
             chooseOnlyOption "Start skill test"
             chooseOnlyOption "Apply results"
             fieldAssert InvestigatorClues (== 1) investigator

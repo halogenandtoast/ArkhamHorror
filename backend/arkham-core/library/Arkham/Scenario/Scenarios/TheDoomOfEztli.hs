@@ -5,6 +5,9 @@ module Arkham.Scenario.Scenarios.TheDoomOfEztli
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
@@ -15,7 +18,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types
-import Arkham.Matcher
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -53,8 +56,42 @@ instance HasTokenValue TheDoomOfEztli where
     ElderThing -> pure $ TokenValue ElderThing NoModifier
     otherFace -> getTokenValue iid otherFace attrs
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFive
+  , Skull
+  , Skull
+  , Cultist
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
+standaloneCampaignLog :: CampaignLog
+standaloneCampaignLog = mkCampaignLog
+  { campaignLogRecorded = setFromList
+    [TheInvestigatorsClearedAPathToTheEztliRuins]
+  }
+
 instance RunMessage TheDoomOfEztli where
   runMessage msg s@(TheDoomOfEztli attrs) = case msg of
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+      pure s
+    StandaloneSetup ->
+      pure
+        . TheDoomOfEztli
+        $ attrs
+        & standaloneCampaignLogL
+        .~ standaloneCampaignLog
     Setup -> do
       iids <- getInvestigatorIds
       -- | Determine intro
@@ -82,7 +119,22 @@ instance RunMessage TheDoomOfEztli where
         , SetAgendaDeck
         , SetActDeck
         , PlaceLocation entryway
+        , RevealLocation Nothing (toLocationId entryway)
         , MoveAllTo (toSource attrs) (toLocationId entryway)
         ]
-      pure s
+
+      -- & (setAsideCardsL .~ setAsideCards)
+      -- & (decksL . at ExplorationDeck ?~ explorationDeck)
+      TheDoomOfEztli <$> runMessage
+        msg
+        (attrs
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.somethingStirs, Agendas.theTempleWarden]
+          )
+        & (actStackL
+          . at 1
+          ?~ [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
+          )
+        )
     _ -> TheDoomOfEztli <$> runMessage msg attrs

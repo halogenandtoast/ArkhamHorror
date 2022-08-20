@@ -30,6 +30,7 @@ library
       Arkham.Act.Cards.CurtainCall
       Arkham.Act.Cards.DiscoveringTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
+      Arkham.Act.Cards.EscapeTheRuins
       Arkham.Act.Cards.ExploringTheRainforest
       Arkham.Act.Cards.FindingANewWay
       Arkham.Act.Cards.FindingAWayInside
@@ -42,8 +43,10 @@ library
       Arkham.Act.Cards.InLostCarcosa
       Arkham.Act.Cards.IntoTheBeyond
       Arkham.Act.Cards.IntoTheDarkness
+      Arkham.Act.Cards.IntoTheRuins
       Arkham.Act.Cards.InvestigatingTheTrail
       Arkham.Act.Cards.LeadingTheWay
+      Arkham.Act.Cards.MagicAndScience
       Arkham.Act.Cards.MistakesOfThePast
       Arkham.Act.Cards.MysteriousGateway
       Arkham.Act.Cards.NightAtTheMuseum
@@ -138,6 +141,7 @@ library
       Arkham.Agenda.Cards.RollingBackwards
       Arkham.Agenda.Cards.SecretsBetterLeftHidden
       Arkham.Agenda.Cards.ShadowsDeepen
+      Arkham.Agenda.Cards.SomethingStirs
       Arkham.Agenda.Cards.StrangeDisappearances
       Arkham.Agenda.Cards.SwallowedSky
       Arkham.Agenda.Cards.TheArkhamWoods
@@ -157,6 +161,7 @@ library
       Arkham.Agenda.Cards.TheRougarouFeeds
       Arkham.Agenda.Cards.TheSecondNight
       Arkham.Agenda.Cards.TheShadowOfTheEclipse
+      Arkham.Agenda.Cards.TheTempleWarden
       Arkham.Agenda.Cards.TheTerrifyingTruth
       Arkham.Agenda.Cards.TheThirdAct
       Arkham.Agenda.Cards.TheThirdNight

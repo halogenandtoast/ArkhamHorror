@@ -6,6 +6,8 @@ import {
   encounterCardContentsDecoder,
 } from '@/arkham/types/Card';
 import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
+import { logContentsDecoder } from '@/arkham/types/Campaign';
+import type { LogContents } from '@/arkham/types/Campaign';
 
 export interface ScenarioName {
   title: string;
@@ -38,6 +40,7 @@ export interface Scenario {
   chaosBag: ChaosBag;
   discard: EncounterCardContents[];
   victoryDisplay: Card[];
+  standaloneCampaignLog: LogContents | null;
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -58,4 +61,5 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  standaloneCampaignLog: logContentsDecoder,
 }, 'Scenario');

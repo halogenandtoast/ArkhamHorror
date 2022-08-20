@@ -122,6 +122,9 @@ allAgendas = mapFromList $ map
   -- The Untamed Wilds
   , SomeAgendaCard expeditionIntoTheWild
   , SomeAgendaCard intruders
+  -- The Doom of Eztli
+  , SomeAgendaCard somethingStirs
+  , SomeAgendaCard theTempleWarden
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

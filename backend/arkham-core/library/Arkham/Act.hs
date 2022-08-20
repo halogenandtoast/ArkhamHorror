@@ -123,6 +123,10 @@ allActs = mapFromList $ map
   , SomeActCard huntressOfTheEztli
   , SomeActCard searchForTheRuins
   , SomeActCard theGuardedRuins
+  -- The Doom of Eztli
+  , SomeActCard intoTheRuins
+  , SomeActCard magicAndScience
+  , SomeActCard escapeTheRuins
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

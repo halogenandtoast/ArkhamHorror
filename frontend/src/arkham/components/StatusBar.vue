@@ -133,11 +133,11 @@ const testResult = computed(() => {
         </div>
 
         <a
-          v-if="choice.tag === QuestionType.SKILL_LABEL"
+          v-if="choice.tag === MessageType.SKILL_LABEL"
           class="button"
           @click="choose(index)"
         >
-          Use <i :class="`icon${choice.contents[0]}`"></i>
+          Use <i :class="`icon${choice.skillType}`"></i>
         </a>
 
         <button

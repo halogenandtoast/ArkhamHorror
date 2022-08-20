@@ -71,6 +71,7 @@ allActCards = mapFromList $ map
   , curtainCall
   , discoveringTheTruth
   , disruptingTheRitual
+  , escapeTheRuins
   , exploringTheRainforest
   , findingANewWay
   , findingAWayInside
@@ -82,9 +83,11 @@ allActCards = mapFromList $ map
   , huntressOfTheEztli
   , intoTheBeyond
   , intoTheDarkness
+  , intoTheRuins
   , inLostCarcosa
   , investigatingTheTrail
   , leadingTheWay
+  , magicAndScience
   , mistakesOfThePast
   , mysteriousGateway
   , nightAtTheMuseum
@@ -338,6 +341,15 @@ searchForTheRuins = act "04048" "Search for the Ruins" 3 TheUntamedWilds
 
 theGuardedRuins :: CardDef
 theGuardedRuins = act "04049" "The Guarded Ruins" 3 TheUntamedWilds
+
+intoTheRuins :: CardDef
+intoTheRuins = act "04057" "Into the Ruins" 1 TheDoomOfEztli
+
+magicAndScience :: CardDef
+magicAndScience = act "04058" "Magic and Science" 2 TheDoomOfEztli
+
+escapeTheRuins :: CardDef
+escapeTheRuins = act "04059" "Escape the Ruins" 3 TheDoomOfEztli
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

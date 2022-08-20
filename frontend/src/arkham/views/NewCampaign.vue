@@ -10,35 +10,45 @@ import type { Difficulty } from '@/arkham/types/Difficulty';
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
 
-const scenarios = [
-  { id: '02118', name: 'The Miskatonic Museum', },
-  { id: '02159', name: 'The Essex County Express', },
-  { id: '02195', name: 'Blood on the Altar', },
-  { id: '02236', name: 'Undimensioned and Unseen', },
-  { id: '02274', name: 'Where Doom Awaits', },
-  { id: '02311', name: 'Lost in Time and Space', },
-  { id: '03061', name: 'The Last King', },
-  { id: '03120', name: 'Echoes of the Past', },
-  { id: '03159', name: 'The Unspeakable Oath', },
-  { id: '03200', name: 'A Phantom of Truth', },
-  { id: '03240', name: 'The Pallid Mask', },
-  { id: '03274', name: 'Black Stars Rise', },
-  { id: '03316', name: 'Dim Carcosa', },
-  { id: '81001', name: 'Curse of the Rougarou', },
-  { id: '82001', name: 'Carnevale of Horrors', },
-]
+const scenarios = computed(() => {
+  return [
+    { id: '02118', name: 'The Miskatonic Museum', },
+    { id: '02159', name: 'The Essex County Express', },
+    { id: '02195', name: 'Blood on the Altar', },
+    { id: '02236', name: 'Undimensioned and Unseen', },
+    { id: '02274', name: 'Where Doom Awaits', },
+    { id: '02311', name: 'Lost in Time and Space', },
+    { id: '03061', name: 'The Last King', },
+    { id: '03120', name: 'Echoes of the Past', },
+    { id: '03159', name: 'The Unspeakable Oath', },
+    { id: '03200', name: 'A Phantom of Truth', },
+    { id: '03240', name: 'The Pallid Mask', },
+    { id: '03274', name: 'Black Stars Rise', },
+    { id: '03316', name: 'Dim Carcosa', },
+    { id: '04054', name: 'The Doom of Eztli', beta: true },
+    { id: '81001', name: 'Curse of the Rougarou', },
+    { id: '82001', name: 'Carnevale of Horrors', },
+  ].filter((s) => {
+    if (s.beta) {
+      return currentUser.value && currentUser.value.beta
+    }
+    return true
+  })
+})
 
 
 const campaigns = computed(() => {
-  const betaCampaigns = currentUser.value && currentUser.value.beta
-    ? [ { id: '04', name: 'The Forgotten Age' } ]
-    : []
   return [
     { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
     { id: '02', name: 'The Dunwich Legacy', },
     { id: '03', name: 'The Path to Carcosa', },
-    ...betaCampaigns
-  ]
+    { id: '04', name: 'The Forgotten Age', beta: true },
+  ].filter((c) => {
+    if (c.beta) {
+      return currentUser.value && currentUser.value.beta
+    }
+    return true
+  })
 })
 
 const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
@@ -81,7 +91,7 @@ const disabled = computed(() => {
 
 const defaultCampaignName = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-  const scenario = scenarios.find((c) => c.id === selectedScenario.value);
+  const scenario = scenarios.value.find((c) => c.id === selectedScenario.value);
 
   if (!standalone.value && campaign) {
     const returnToPrefix = returnTo.value ? "Return to " : ""
@@ -105,7 +115,7 @@ const currentCampaignName = computed(() => {
 
 async function start() {
   if (standalone.value) {
-    const mscenario = scenarios.find((scenario) => scenario.id === selectedScenario.value);
+    const mscenario = scenarios.value.find((scenario) => scenario.id === selectedScenario.value);
     if (mscenario && currentCampaignName.value) {
       newGame(
         deckIds.value,

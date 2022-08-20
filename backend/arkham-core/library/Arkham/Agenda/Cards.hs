@@ -96,6 +96,7 @@ allAgendaCards = mapFromList $ map
   , rollingBackwards
   , secretsBetterLeftHidden
   , shadowsDeepen
+  , somethingStirs
   , strangeDisappearances
   , swallowedSky
   , theArkhamWoods
@@ -115,6 +116,7 @@ allAgendaCards = mapFromList $ map
   , theRougarouFeeds
   , theSecondNight
   , theShadowOfTheEclipse
+  , theTempleWarden
   , theTerrifyingTruth
   , theThirdAct
   , theThirdNight
@@ -320,6 +322,12 @@ expeditionIntoTheWild = agenda "04044" "Expedition into the Wild" 1 TheUntamedWi
 
 intruders :: CardDef
 intruders = agenda "04045" "Intruders" 2 TheUntamedWilds
+
+somethingStirs :: CardDef
+somethingStirs = agenda "04055" "Something Stirs..." 1 TheDoomOfEztli
+
+theTempleWarden :: CardDef
+theTempleWarden = agenda "04056" "The Temple Warden" 2 TheDoomOfEztli
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

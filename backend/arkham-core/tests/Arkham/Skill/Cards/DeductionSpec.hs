@@ -35,7 +35,7 @@ spec = describe "Deduction" $ do
           chooseOptionMatching
             "start skill test"
             (\case
-              StartSkillTest{} -> True
+              StartSkillTestButton{} -> True
               _ -> False
             )
           chooseOnlyOption "apply results"

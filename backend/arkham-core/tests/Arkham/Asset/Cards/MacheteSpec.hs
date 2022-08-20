@@ -101,7 +101,7 @@ spec = describe "Machete" $ do
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching "choose enemy1" $ \case
-            FightEnemy _ eid _ _ _ _ -> eid == toId enemy1
+            FightLabel {enemyId} -> enemyId == toId enemy1
             _ -> False
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"

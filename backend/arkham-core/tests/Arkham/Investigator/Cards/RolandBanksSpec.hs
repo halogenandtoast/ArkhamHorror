@@ -35,7 +35,7 @@ spec = describe "Roland Banks" $ do
                 chooseOptionMatching
                   "use ability"
                   (\case
-                    Run{} -> True
+                    AbilityLabel{} -> True
                     _ -> False
                   )
                 fieldAssert InvestigatorClues (== 1) rolandBanks

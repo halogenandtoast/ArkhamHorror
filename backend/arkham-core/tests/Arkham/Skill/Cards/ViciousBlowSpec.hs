@@ -34,7 +34,7 @@ spec = describe "Vicious Blow" $ do
             TargetLabel (CardIdTarget _) _ -> True
             _ -> False
           chooseOptionMatching "Begin skill test" $ \case
-            StartSkillTest _ -> True
+            StartSkillTestButton {} -> True
             _ -> False
           chooseOnlyOption "Apply results"
           fieldAssert EnemyDamage (== 2) enemy

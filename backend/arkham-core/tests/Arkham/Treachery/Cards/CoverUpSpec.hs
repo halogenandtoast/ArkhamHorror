@@ -43,7 +43,7 @@ spec = describe "Cover Up" $ do
           chooseOptionMatching
             "Use ability"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           coverUpId <- selectJust $ treacheryIs Cards.coverUp
@@ -84,7 +84,7 @@ spec = describe "Cover Up" $ do
           chooseOptionMatching
             "Use ability"
             (\case
-              Run{} -> True
+              AbilityLabel{} -> True
               _ -> False
             )
           coverUpId <- selectJust $ treacheryIs Cards.coverUp

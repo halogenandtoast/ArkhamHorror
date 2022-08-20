@@ -342,9 +342,9 @@ chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne [msg] -> push msg <* runMessages
-      ChooseOneAtATime [msg] -> push msg <* runMessages
-      ChooseN _ [msg] -> push msg <* runMessages
+      ChooseOne [msg] -> push (uiToRun msg) <* runMessages
+      ChooseOneAtATime [msg] -> push (uiToRun msg) <* runMessages
+      ChooseN _ [msg] -> push (uiToRun msg) <* runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
@@ -353,21 +353,21 @@ chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne (msg : _) -> push msg >> runMessages
-      ChooseOneAtATime (msg : _) -> push msg >> runMessages
+      ChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
+      ChooseOneAtATime (msg : _) -> push (uiToRun msg) >> runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
-chooseOptionMatching :: String -> (Message -> Bool) -> TestAppT ()
+chooseOptionMatching :: String -> (UI Message -> Bool) -> TestAppT ()
 chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
-        Just msg -> push msg <* runMessages
+        Just msg -> push (uiToRun msg) <* runMessages
         Nothing -> error "could not find a matching message"
       ChooseN _ msgs -> case find f msgs of
-        Just msg -> push msg <* runMessages
+        Just msg -> push (uiToRun msg) <* runMessages
         Nothing -> error "could not find a matching message"
       _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"

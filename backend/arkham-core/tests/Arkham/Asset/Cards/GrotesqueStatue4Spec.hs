@@ -36,25 +36,25 @@ spec = describe "Grotesque Statue (4)" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOptionMatching
               "skip use ability"
               (\case
-                Continue{} -> True
+                Label{} -> True
                 _ -> False
               )
             chooseOptionMatching
               "skip use ability"
               (\case
-                Continue{} -> True
+                Label{} -> True
                 _ -> False
               )
             chooseOptionMatching
               "choose zero token"
               (\case
-                ChooseTokenGroups _ _ (Choose 1 _ [[Token _ Zero]]) -> True
+                TokenGroupChoice _ _ (Choose 1 _ [[Token _ Zero]]) -> True
                 _ -> False
               )
             chooseOnlyOption "apply results"

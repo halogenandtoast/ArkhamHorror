@@ -33,7 +33,7 @@ spec = describe "Jim's Trumpet" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "choose self"
@@ -62,7 +62,7 @@ spec = describe "Jim's Trumpet" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "choose investigator at same location"
@@ -91,7 +91,7 @@ spec = describe "Jim's Trumpet" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "choose investigator at same location"
@@ -126,7 +126,7 @@ spec = describe "Jim's Trumpet" $ do
             chooseOptionMatching
               "use ability"
               (\case
-                Run{} -> True
+                AbilityLabel{} -> True
                 _ -> False
               )
             chooseOnlyOption "choose investigator at connected location"

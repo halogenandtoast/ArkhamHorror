@@ -47,13 +47,13 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "fight enemy 1"
             (\case
-              FightEnemy _ eid _ _ _ _ -> eid == toId enemy
+              FightLabel {enemyId} -> enemyId == toId enemy
               _ -> False
             )
           chooseOptionMatching
             "start skill test"
             (\case
-              StartSkillTest _ -> True
+              StartSkillTestButton {} -> True
               _ -> False
             )
           chooseOnlyOption "apply results"
@@ -99,13 +99,13 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "fight enemy 1"
             (\case
-              FightEnemy _ eid _ _ _ _ -> eid == toId enemy
+              FightLabel {enemyId} -> enemyId == toId enemy
               _ -> False
             )
           chooseOptionMatching
             "start skill test"
             (\case
-              StartSkillTest _ -> True
+              StartSkillTestButton{} -> True
               _ -> False
             )
           chooseOnlyOption "apply results"
@@ -151,13 +151,13 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "fight enemy 1"
             (\case
-              FightEnemy _ eid _ _ _ _ -> eid == toId enemy
+              FightLabel {enemyId} -> enemyId == toId enemy
               _ -> False
             )
           chooseOptionMatching
             "start skill test"
             (\case
-              StartSkillTest _ -> True
+              StartSkillTestButton{} -> True
               _ -> False
             )
           chooseOnlyOption "apply results"

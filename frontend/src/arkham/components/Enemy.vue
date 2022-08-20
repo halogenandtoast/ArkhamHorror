@@ -39,7 +39,7 @@ function canInteract(c: Message): boolean {
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
 function isAbility(v: Message) {
-  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
+  if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
   }
 

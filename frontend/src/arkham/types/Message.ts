@@ -1,10 +1,13 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
+import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
 
 export enum MessageType {
   LABEL = 'Label',
   TARGET_LABEL = 'TargetLabel',
+  TOOLTIP_LABEL = 'TooltipLabel',
+  SKILL_LABEL = 'SkillLabel',
   CARD_LABEL = 'CardLabel',
   PORTRAIT_LABEL = 'PortraitLabel',
   COMPONENT_LABEL = 'ComponentLabel',
@@ -26,6 +29,17 @@ export interface Done {
 export interface Label {
   tag: MessageType.LABEL
   label: string
+}
+
+export interface TooltipLabel {
+  tag: MessageType.TOOLTIP_LABEL
+  label: string
+  tooltip: string
+}
+
+export interface SkillLabel {
+  tag: MessageType.SKILL_LABEL
+  skillType: SkillType
 }
 
 export interface Target {
@@ -190,7 +204,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TargetLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -203,6 +217,19 @@ export const labelDecoder = JsonDecoder.object<Label>(
     tag: JsonDecoder.isExactly(MessageType.LABEL),
     label: JsonDecoder.string
   }, 'Label')
+
+export const tooltipLabelDecoder = JsonDecoder.object<TooltipLabel>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.TOOLTIP_LABEL),
+    label: JsonDecoder.string,
+    tooltip: JsonDecoder.string,
+  }, 'TooltipLabel')
+
+export const skillLabelDecoder = JsonDecoder.object<SkillLabel>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.SKILL_LABEL),
+    skillType: skillTypeDecoder
+  }, 'SkillLabel')
 
 export const targetLabelDecoder = JsonDecoder.object<TargetLabel>(
   {
@@ -239,6 +266,8 @@ export const tokenGroupChoiceDecoder = JsonDecoder.object<TokenGroupChoice>(
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
+    tooltipLabelDecoder,
+    skillLabelDecoder,
     targetLabelDecoder,
     cardLabelDecoder,
     portraitLabelDecoder,

@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -23,7 +24,10 @@ import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
+import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -145,4 +149,11 @@ instance RunMessage TheDoomOfEztli where
           ?~ [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
           )
         )
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher
+      pure s
     _ -> TheDoomOfEztli <$> runMessage msg attrs

@@ -132,6 +132,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , goatSpawn
   , grapplingHorror
   , graveEater
+  , harbingerOfValusia
   , hasturLordOfCarcosa
   , hasturTheKingInYellow
   , hasturTheTatteredKing
@@ -831,6 +832,13 @@ ichtaca = (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1
   { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
   , cdVictoryPoints = Just 1
+  }
+
+harbingerOfValusia :: CardDef
+harbingerOfValusia = (enemy "04052" ("Harbinger of Valusia" <:> "The Sleeper Awakens") TheDoomOfEztli 1)
+  { cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
+  , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+  , cdVengeancePoints = Just 5
   }
 
 pitViper :: CardDef

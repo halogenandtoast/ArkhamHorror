@@ -276,6 +276,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , randallCho
   , relentless
   , relicHunter3
+  , relicOfAgesADeviceOfSomeSort
   , researchLibrarian
   , riteOfSeeking
   , riteOfSeeking4
@@ -2063,6 +2064,13 @@ alejandroVela = (storyAsset "04051" ("Alejandro Vela" <:> "Renowned Historian") 
   { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
+  , cdUnique = True
+  }
+
+relicOfAgesADeviceOfSomeSort :: CardDef
+relicOfAgesADeviceOfSomeSort = (storyAsset "04061" ("Relic of Ages" <:> "...A Device, of Some Sort") 2 TheDoomOfEztli)
+  { cdSkills = [SkillWild, SkillWild, SkillWild]
+  , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
   }
 

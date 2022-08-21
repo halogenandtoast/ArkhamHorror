@@ -372,6 +372,7 @@ library
       Arkham.Asset.Cards.RandallCho
       Arkham.Asset.Cards.Relentless
       Arkham.Asset.Cards.RelicHunter3
+      Arkham.Asset.Cards.RelicOfAgesADeviceOfSomeSort
       Arkham.Asset.Cards.ResearchLibrarian
       Arkham.Asset.Cards.RiteOfSeeking
       Arkham.Asset.Cards.RiteOfSeeking4
@@ -629,6 +630,7 @@ library
       Arkham.Enemy.Cards.GrapplingHorror
       Arkham.Enemy.Cards.GraveEater
       Arkham.Enemy.Cards.GraveyardGhouls
+      Arkham.Enemy.Cards.HarbingerOfValusia
       Arkham.Enemy.Cards.HasturLordOfCarcosa
       Arkham.Enemy.Cards.HasturTheKingInYellow
       Arkham.Enemy.Cards.HasturTheTatteredKing
@@ -1347,11 +1349,13 @@ library
       Arkham.Treachery.Cards.AcrossSpaceAndTime
       Arkham.Treachery.Cards.AlteredBeast
       Arkham.Treachery.Cards.Amnesia
+      Arkham.Treachery.Cards.AncestralFear
       Arkham.Treachery.Cards.AncientEvils
       Arkham.Treachery.Cards.AngeredSpirits
       Arkham.Treachery.Cards.ArcaneBarrier
       Arkham.Treachery.Cards.ArousingSuspicions
       Arkham.Treachery.Cards.ArrowsFromTheTrees
+      Arkham.Treachery.Cards.ATearInTime
       Arkham.Treachery.Cards.AttractingAttention
       Arkham.Treachery.Cards.Atychiphobia
       Arkham.Treachery.Cards.BeastOfTheBayou
@@ -1379,6 +1383,7 @@ library
       Arkham.Treachery.Cards.CurseOfYig
       Arkham.Treachery.Cards.DanceOfTheYellowKing
       Arkham.Treachery.Cards.DeadlyFate
+      Arkham.Treachery.Cards.DeepDark
       Arkham.Treachery.Cards.DescentIntoMadness
       Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DissonantVoices
@@ -1387,9 +1392,11 @@ library
       Arkham.Treachery.Cards.DrawingTheSign
       Arkham.Treachery.Cards.DreamsOfRlyeh
       Arkham.Treachery.Cards.EagerForDeath
+      Arkham.Treachery.Cards.Entombed
       Arkham.Treachery.Cards.EphemeralExhibits
       Arkham.Treachery.Cards.EyesInTheWalls
       Arkham.Treachery.Cards.FalseLead
+      Arkham.Treachery.Cards.FinalMistake
       Arkham.Treachery.Cards.FinalRhapsody
       Arkham.Treachery.Cards.FineDining
       Arkham.Treachery.Cards.FrozenInFear
@@ -1403,6 +1410,7 @@ library
       Arkham.Treachery.Cards.HuntedDown
       Arkham.Treachery.Cards.HuntingShadow
       Arkham.Treachery.Cards.Hypochondria
+      Arkham.Treachery.Cards.IllOmen
       Arkham.Treachery.Cards.Indebted
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
@@ -1411,6 +1419,7 @@ library
       Arkham.Treachery.Cards.LightOfAforgomon
       Arkham.Treachery.Cards.LockedDoor
       Arkham.Treachery.Cards.LostInTheWilds
+      Arkham.Treachery.Cards.LostInTime
       Arkham.Treachery.Cards.LostInVenice
       Arkham.Treachery.Cards.LostSoul
       Arkham.Treachery.Cards.LowOnSupplies

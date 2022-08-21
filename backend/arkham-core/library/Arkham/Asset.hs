@@ -229,6 +229,7 @@ allAssets = mapFromList $ map
   , SomeAssetCard yaotl1
   , SomeAssetCard backpack
   , SomeAssetCard alejandroVela
+  , SomeAssetCard relicOfAgesADeviceOfSomeSort
   , SomeAssetCard trackShoes
   , SomeAssetCard meatCleaver
   , SomeAssetCard drawingThin

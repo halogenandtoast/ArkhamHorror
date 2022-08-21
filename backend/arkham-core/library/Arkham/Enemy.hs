@@ -183,6 +183,8 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard serpentsOfYig
   -- The Untamed Wilds
   , SomeEnemyCard ichtaca
+  -- The Doom of Eztli
+  , SomeEnemyCard harbingerOfValusia
   -- Serpents
   , SomeEnemyCard pitViper
   , SomeEnemyCard boaConstrictor

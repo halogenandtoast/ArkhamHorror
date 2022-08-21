@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -14,6 +15,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -26,6 +29,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -104,7 +108,8 @@ instance RunMessage TheDoomOfEztli where
       let intro = if forcedToWaitForAdditionalSupplies then intro1 else intro2
       -- | Setup
       -- -- | Gather cards
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [Enemies.harbingerOfValusia]
         [ EncounterSet.TheDoomOfEztli
         , EncounterSet.AgentsOfYig
         , EncounterSet.YigsVenom
@@ -114,6 +119,18 @@ instance RunMessage TheDoomOfEztli where
         , EncounterSet.Poison
         , EncounterSet.ChillingCold
         ]
+
+      let
+        encounterDeck' = flip withDeck encounterDeck $ \cards -> foldl'
+          (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs)
+          cards
+          [ Treacheries.illOmen
+          , Treacheries.deepDark
+          , Treacheries.finalMistake
+          , Treacheries.entombed
+          , Treacheries.cryptChill
+          ]
+
       -- Put entryway into play investigators start there
       entryway <- genCard Locations.entryway
       -- | Messages
@@ -125,10 +142,26 @@ instance RunMessage TheDoomOfEztli where
         , Locations.burialPit
         , Locations.undergroundRuins
         , Locations.secretPassage
+        , Treacheries.illOmen
+        , Treacheries.deepDark
+        , Treacheries.finalMistake
+        , Treacheries.entombed
+        , Treacheries.cryptChill
         ]
+
+      setAsidePoisonedCount <- getSetAsidePoisonedCount
+
+      setAsideCards <-
+        traverse genCard
+        $ [ Locations.chamberOfTime
+          , Assets.relicOfAgesADeviceOfSomeSort
+          , Enemies.harbingerOfValusia
+          ]
+        <> replicate setAsidePoisonedCount Treacheries.poisoned
+
       pushAll
         [ story iids intro
-        , SetEncounterDeck encounterDeck
+        , SetEncounterDeck encounterDeck'
         , SetAgendaDeck
         , SetActDeck
         , PlaceLocation entryway
@@ -140,6 +173,7 @@ instance RunMessage TheDoomOfEztli where
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
+        & (setAsideCardsL .~ setAsideCards)
         & (agendaStackL
           . at 1
           ?~ [Agendas.somethingStirs, Agendas.theTempleWarden]

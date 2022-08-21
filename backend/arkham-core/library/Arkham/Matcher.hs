@@ -573,6 +573,7 @@ data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
   | InHandOf Who
+  | InDeckOf Who
   | InDiscardOf Who
   | TopOfDeckOf Who
   | EligibleForCurrentSkillTest

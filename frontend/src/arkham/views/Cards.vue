@@ -2,12 +2,17 @@
 import { ref, inject } from 'vue';
 import { fetchCards } from '@/arkham/api';
 import * as Arkham from '@/arkham/types/CardDef';
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const cards = ref<Arkham.CardDef[]>([])
 const ready = ref(false)
 const baseUrl = inject('baseUrl')
+const { encounter } = route.query
 
-fetchCards().then((response) => {
+const includeEncounter = encounter !== undefined
+
+fetchCards(includeEncounter).then((response) => {
   cards.value = response.sort((a, b) => {
     if (a.art < b.art) {
       return -1

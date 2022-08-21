@@ -119,6 +119,7 @@ data ModifierType
   | DamageTaken Int
   | Difficulty Int
   | DiscoveredClues Int
+  | DoNotRemoveDoom
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
   | DoomSubtracts

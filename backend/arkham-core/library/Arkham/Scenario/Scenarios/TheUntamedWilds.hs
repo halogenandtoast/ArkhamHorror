@@ -18,7 +18,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.Helpers
+import Arkham.Helpers.Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -128,9 +128,8 @@ instance RunMessage TheUntamedWilds where
         , EncounterSet.AncientEvils
         ]
       let
-        encounterDeck' = flip withDeck encounterDeck $ \cards -> foldl'
-          (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs)
-          cards
+        encounterDeck' = removeEachFromDeck
+          encounterDeck
           [ Treacheries.lostInTheWilds
           , Treacheries.overgrowth
           , Treacheries.snakeBite
@@ -211,7 +210,7 @@ instance RunMessage TheUntamedWilds where
             <> [ Record AlejandroChoseToRemainAtCamp | leadingTheWay ]
             <> [RecordCount YigsFury vengeance]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [ EndOfGame Nothing ]
+            <> [EndOfGame Nothing]
         Resolution 1 -> do
           pushAll
             $ [ story investigatorIds resolution1
@@ -221,7 +220,7 @@ instance RunMessage TheUntamedWilds where
               , RecordCount YigsFury vengeance
               ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [ EndOfGame Nothing ]
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
             $ [ story investigatorIds resolution2
@@ -237,7 +236,7 @@ instance RunMessage TheUntamedWilds where
                , RecordCount YigsFury vengeance
                ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [ EndOfGame Nothing ]
+            <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUntamedWilds <$> runMessage msg attrs

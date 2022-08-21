@@ -1,9 +1,9 @@
 module Arkham.Helpers where
 
-import Arkham.Prelude hiding (toLower, toUpper, unpack)
+import Arkham.Prelude hiding ( toLower, toUpper, unpack )
 
-import Data.Char (isLetter, toLower, toUpper)
-import Data.Foldable (foldrM)
+import Data.Char ( isLetter, toLower, toUpper )
+import Data.Foldable ( foldrM )
 
 toLabel :: String -> String
 toLabel [] = []
@@ -31,12 +31,6 @@ drawCard (x : xs) = (Just x, xs)
 
 newtype Deck a = Deck { unDeck :: [a] }
   deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq)
-
-withDeck :: ([a] -> [a]) -> Deck a -> Deck a
-withDeck f (Deck xs) = Deck (f xs)
-
-withDeckM :: Functor f => ([a] -> f [a]) -> Deck a -> f (Deck a)
-withDeckM f (Deck xs) = Deck <$> f xs
 
 instance Show (Deck a) where
   show _ = "<Deck>"

@@ -45,6 +45,11 @@ getExplorationDeck = scenarioFieldMap
   ScenarioDecks
   (findWithDefault (error "missing deck") ExplorationDeck)
 
+getSetAsidePoisonedCount :: (HasGame m, Monad m) => m Int
+getSetAsidePoisonedCount = do
+  n <- selectCount $ InDeckOf Anyone <> BasicCardMatch (cardIs Treacheries.poisoned)
+  pure $ 4 - n
+
 getIsPoisoned :: (HasGame m, Monad m) => InvestigatorId -> m Bool
 getIsPoisoned iid =
   selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid

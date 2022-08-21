@@ -1977,6 +1977,14 @@ instance Query ExtendedCardMatcher where
         iids <- selectList who
         cards <- concat <$> traverse (field InvestigatorHand) iids
         pure $ c `elem` cards
+      InDeckOf who -> do
+        iids <- selectList who
+        cards <-
+          concat
+            <$> traverse
+                  (fieldMap InvestigatorDeck (map PlayerCard . unDeck))
+                  iids
+        pure $ c `elem` cards
       TopOfDeckOf who -> do
         iids <- selectList who
         cards <-

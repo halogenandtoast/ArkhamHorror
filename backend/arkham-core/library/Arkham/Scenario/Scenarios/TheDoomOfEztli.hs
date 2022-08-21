@@ -20,13 +20,16 @@ import Arkham.Helpers
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -189,5 +192,17 @@ instance RunMessage TheDoomOfEztli where
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher
+      pure s
+    ResolveToken _ ElderThing iid -> do
+      when (isHardExpert attrs) $ do
+        mlid <- field InvestigatorLocation iid
+        for_ mlid $ \lid -> push $ PlaceDoom (LocationTarget lid) 1
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
+        ElderThing | isEasyStandard attrs -> do
+          mlid <- field InvestigatorLocation iid
+          for_ mlid $ \lid -> push $ PlaceDoom (LocationTarget lid) 1
+        _ -> pure ()
       pure s
     _ -> TheDoomOfEztli <$> runMessage msg attrs

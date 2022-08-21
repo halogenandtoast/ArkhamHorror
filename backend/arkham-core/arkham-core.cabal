@@ -936,6 +936,7 @@ library
       Arkham.Location.Cards.AdministrationOffice_130
       Arkham.Location.Cards.AdministrationOffice_131
       Arkham.Location.Cards.AlchemyLabs
+      Arkham.Location.Cards.AncientHall
       Arkham.Location.Cards.AnotherDimension
       Arkham.Location.Cards.ArkhamWoodsCliffside
       Arkham.Location.Cards.ArkhamWoodsCorpseRiddenClearing
@@ -978,12 +979,14 @@ library
       Arkham.Location.Cards.Broadmoor
       Arkham.Location.Cards.BrokenSteps_289
       Arkham.Location.Cards.BrokenSteps_290
+      Arkham.Location.Cards.BurialPit
       Arkham.Location.Cards.BurnedRuins_204
       Arkham.Location.Cards.BurnedRuins_205
       Arkham.Location.Cards.CanalSaintMartin
       Arkham.Location.Cards.CanalSide
       Arkham.Location.Cards.CandlelitTunnels
       Arkham.Location.Cards.Cellar
+      Arkham.Location.Cards.ChamberOfTime
       Arkham.Location.Cards.ChapelOfStAubertThePathIsOpen
       Arkham.Location.Cards.ChapelOfStAubertWatersForbidden
       Arkham.Location.Cards.ChoeurGothique_292
@@ -1052,6 +1055,7 @@ library
       Arkham.Location.Cards.GardensOfLuxembourg
       Arkham.Location.Cards.GareDOrsay
       Arkham.Location.Cards.Gondola
+      Arkham.Location.Cards.GrandChamber
       Arkham.Location.Cards.GrandGuignol
       Arkham.Location.Cards.GrandRue
       Arkham.Location.Cards.Graveyard
@@ -1144,6 +1148,7 @@ library
       Arkham.Location.Cards.Schoolhouse_212
       Arkham.Location.Cards.Schoolhouse_213
       Arkham.Location.Cards.ScienceBuilding
+      Arkham.Location.Cards.SecretPassage
       Arkham.Location.Cards.SecurityOffice_128
       Arkham.Location.Cards.SecurityOffice_129
       Arkham.Location.Cards.SentinelPeak
@@ -1175,6 +1180,7 @@ library
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
       Arkham.Location.Cards.TwistedUnderbrush
+      Arkham.Location.Cards.UndergroundRuins
       Arkham.Location.Cards.UprootedWoods
       Arkham.Location.Cards.VenetianGarden
       Arkham.Location.Cards.VillageCommons

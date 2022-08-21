@@ -284,6 +284,12 @@ allLocations = mapFromList $ map
   , SomeLocationCard ruinsOfEztli
   -- The Doom of Eztli
   , SomeLocationCard entryway
+  , SomeLocationCard ancientHall
+  , SomeLocationCard grandChamber
+  , SomeLocationCard burialPit
+  , SomeLocationCard undergroundRuins
+  , SomeLocationCard secretPassage
+  , SomeLocationCard chamberOfTime
   -- Rainforest
   , SomeLocationCard pathOfThorns
   , SomeLocationCard riverCanyon

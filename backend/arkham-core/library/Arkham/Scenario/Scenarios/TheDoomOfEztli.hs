@@ -113,6 +113,15 @@ instance RunMessage TheDoomOfEztli where
       -- Put entryway into play investigators start there
       entryway <- genCard Locations.entryway
       -- | Messages
+
+      explorationDeck <- shuffleM =<< traverse
+        genCard
+        [ Locations.ancientHall
+        , Locations.grandChamber
+        , Locations.burialPit
+        , Locations.undergroundRuins
+        , Locations.secretPassage
+        ]
       pushAll
         [ story iids intro
         , SetEncounterDeck encounterDeck
@@ -123,11 +132,10 @@ instance RunMessage TheDoomOfEztli where
         , MoveAllTo (toSource attrs) (toLocationId entryway)
         ]
 
-      -- & (setAsideCardsL .~ setAsideCards)
-      -- & (decksL . at ExplorationDeck ?~ explorationDeck)
       TheDoomOfEztli <$> runMessage
         msg
         (attrs
+        & (decksL . at ExplorationDeck ?~ explorationDeck)
         & (agendaStackL
           . at 1
           ?~ [Agendas.somethingStirs, Agendas.theTempleWarden]

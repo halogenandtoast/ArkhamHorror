@@ -129,9 +129,11 @@ allPlayerTreacheryCards = mapFromList $ concatMap
 allEncounterTreacheryCards :: HashMap CardCode CardDef
 allEncounterTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
-  [ abduction
+  [ aTearInTime
+  , abduction
   , acridMiasma
   , alteredBeast
+  , ancestralFear
   , ancientEvils
   , arcaneBarrier
   , arousingSuspicions
@@ -154,14 +156,17 @@ allEncounterTreacheryCards = mapFromList $ map
   , cursedSwamp
   , danceOfTheYellowKing
   , deadlyFate
+  , deepDark
   , descentIntoMadness
   , dissonantVoices
   , draggedUnder
   , dreamsOfRlyeh
   , eagerForDeath
+  , entombed
   , ephemeralExhibits
   , eyesInTheWalls
   , falseLead
+  , finalMistake
   , fineDining
   , frozenInFear
   , frozenInFearAPhantomOfTruth
@@ -171,12 +176,14 @@ allEncounterTreacheryCards = mapFromList $ map
   , huntedByByakhee
   , huntedDown
   , huntingShadow
+  , illOmen
   , insatiableBloodlust
   , kidnapped
   , ledAstray
   , lightOfAforgomon
   , lockedDoor
   , lostInTheWilds
+  , lostInTime
   , lostInVenice
   , lowOnSupplies
   , markedByTheSign
@@ -933,6 +940,50 @@ arrowsFromTheTrees :: CardDef
 arrowsFromTheTrees =
   (treachery "04087" "Arrows from the Trees" GuardiansOfTime 2)
     { cdCardTraits = singleton Scheme
+    }
+
+finalMistake :: CardDef
+finalMistake =
+  (treachery "04088" "Final Mistake" DeadlyTraps 3)
+    { cdCardTraits = singleton Trap
+    }
+
+entombed :: CardDef
+entombed =
+  (treachery "04089" "Entombed" DeadlyTraps 2)
+    { cdCardTraits = singleton Trap
+    }
+
+aTearInTime :: CardDef
+aTearInTime =
+  (treachery "04090" "A Tear in Time" TemporalFlux 3)
+    { cdCardTraits = singleton Hex
+    }
+
+lostInTime :: CardDef
+lostInTime =
+  (treachery "04091" "Lost in Time" TemporalFlux 2)
+    { cdCardTraits = singleton Hex
+    }
+
+illOmen :: CardDef
+illOmen =
+  (treachery "04092" "Ill Omen" ForgottenRuins 2)
+    { cdCardTraits = setFromList [Omen, Terror]
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+ancestralFear :: CardDef
+ancestralFear =
+  (treachery "04093" "Ancestral Fear" ForgottenRuins 2)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Surge]
+    }
+
+deepDark :: CardDef
+deepDark =
+  (treachery "04094" "Deep Dark" ForgottenRuins 3)
+    { cdCardTraits = singleton Hazard
     }
 
 creepingPoison :: CardDef

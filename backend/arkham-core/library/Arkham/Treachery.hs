@@ -227,6 +227,16 @@ allTreacheries = mapFromList $ map
   , SomeTreacheryCard curseOfYig
   -- Guardians of Time
   , SomeTreacheryCard arrowsFromTheTrees
+  -- Deadly Trap
+  , SomeTreacheryCard finalMistake
+  , SomeTreacheryCard entombed
+  -- Temporal Flux
+  , SomeTreacheryCard aTearInTime
+  , SomeTreacheryCard lostInTime
+  -- Forgotten Ruins
+  , SomeTreacheryCard illOmen
+  , SomeTreacheryCard ancestralFear
+  , SomeTreacheryCard deepDark
   -- Poison
   , SomeTreacheryCard creepingPoison
   , SomeTreacheryCard poisoned

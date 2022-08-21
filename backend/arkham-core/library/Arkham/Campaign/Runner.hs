@@ -8,6 +8,7 @@ import Arkham.Campaign.Types as X
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Helpers
+import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message

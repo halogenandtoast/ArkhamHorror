@@ -17,7 +17,7 @@ newtype TheTempleWarden = TheTempleWarden AgendaAttrs
 
 theTempleWarden :: AgendaCard TheTempleWarden
 theTempleWarden =
-  agenda (2, A) TheTempleWarden Cards.theTempleWarden (Static 12)
+  agenda (2, A) TheTempleWarden Cards.theTempleWarden (StaticWithPerPlayer 12 1)
 
 instance RunMessage TheTempleWarden where
   runMessage msg a@(TheTempleWarden attrs) = case msg of

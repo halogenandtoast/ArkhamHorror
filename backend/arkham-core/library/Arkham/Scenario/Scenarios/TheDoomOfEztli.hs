@@ -16,7 +16,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers
+import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -124,9 +124,8 @@ instance RunMessage TheDoomOfEztli where
         ]
 
       let
-        encounterDeck' = flip withDeck encounterDeck $ \cards -> foldl'
-          (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs)
-          cards
+        encounterDeck' = removeEachFromDeck
+          encounterDeck
           [ Treacheries.illOmen
           , Treacheries.deepDark
           , Treacheries.finalMistake

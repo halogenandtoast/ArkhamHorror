@@ -25,6 +25,7 @@ import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Deck
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.Id

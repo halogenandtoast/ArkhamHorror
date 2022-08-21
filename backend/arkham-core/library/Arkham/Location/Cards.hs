@@ -104,6 +104,7 @@ allLocationCards = mapFromList $ map
   , administrationOffice_130
   , administrationOffice_131
   , alchemyLabs
+  , ancientHall
   , anotherDimension
   , arkhamWoodsCliffside
   , arkhamWoodsCorpseRiddenClearing
@@ -145,12 +146,14 @@ allLocationCards = mapFromList $ map
   , broadmoor
   , brokenSteps_289
   , brokenSteps_290
+  , burialPit
   , burnedRuins_204
   , burnedRuins_205
   , canalSaintMartin
   , canalSide
   , candlelitTunnels
   , cellar
+  , chamberOfTime
   , chapelOfStAubertThePathIsOpen
   , chapelOfStAubertWatersForbidden
   , choeurGothique_292
@@ -219,6 +222,7 @@ allLocationCards = mapFromList $ map
   , gardensOfLuxembourg
   , gareDOrsay
   , gondola
+  , grandChamber
   , grandGuignol
   , grandRue
   , graveyard
@@ -311,6 +315,7 @@ allLocationCards = mapFromList $ map
   , schoolhouse_212
   , schoolhouse_213
   , scienceBuilding
+  , secretPassage
   , securityOffice_128
   , securityOffice_129
   , sentinelPeak
@@ -342,6 +347,7 @@ allLocationCards = mapFromList $ map
   , trapRoom
   , trappersCabin
   , twistedUnderbrush
+  , undergroundRuins
   , uprootedWoods
   , venetianGarden
   , villageCommons
@@ -2483,12 +2489,90 @@ ruinsOfEztli = (location
 
 entryway :: CardDef
 entryway = location
-                 "04060"
-                 "Entryway"
+  "04060"
+  "Entryway"
+  [Ancient, Ruins]
+  Circle
+  [Square, Star]
+  TheDoomOfEztli
+
+ancientHall :: CardDef
+ancientHall = (location
+                "04063"
+                "Ancient Hall"
+                [Ancient, Ruins]
+                Square
+                [Circle, Star, Diamond]
+                TheDoomOfEztli
+              )
+  { cdDoubleSided = False
+  }
+
+grandChamber :: CardDef
+grandChamber = (location
+                 "04064"
+                 "Grand Chamber"
                  [Ancient, Ruins]
-                 Circle
-                 [Square, Star]
+                 Star
+                 [Circle, Square, Triangle]
                  TheDoomOfEztli
+               )
+  { cdVictoryPoints = Just 1
+  , cdDoubleSided = False
+  }
+
+burialPit :: CardDef
+burialPit = (location
+              "04065"
+              "Burial Pit"
+              [Ancient, Ruins]
+              Triangle
+              [Star, Diamond, Squiggle]
+              TheDoomOfEztli
+            )
+  { cdVictoryPoints = Just 1
+  , cdDoubleSided = False
+  }
+
+undergroundRuins :: CardDef
+undergroundRuins = (location
+                     "04066"
+                     "Underground Ruins"
+                     [Ancient, Ruins]
+                     Diamond
+                     [Square, Triangle, Squiggle]
+                     TheDoomOfEztli
+                   )
+  { cdVengeancePoints = Just 1
+  , cdDoubleSided = False
+  }
+
+secretPassage :: CardDef
+secretPassage = (location
+                  "04067"
+                  "Secret Passage"
+                  [Ancient, Ruins]
+                  Squiggle
+                  [Diamond, Triangle, Hourglass]
+                  TheDoomOfEztli
+                )
+  { cdVictoryPoints = Just 1
+  , cdDoubleSided = False
+  }
+
+chamberOfTime :: CardDef
+chamberOfTime = (location
+                  "04068"
+                  "Chamber of Time"
+                  [Forgotten, Ruins]
+                  Hourglass
+                  [Squiggle]
+                  TheDoomOfEztli
+                )
+  { cdVictoryPoints = Just 2
+  , cdVengeancePoints = Just 2
+  , cdDoubleSided = False
+  }
 
 pathOfThorns :: CardDef
 pathOfThorns = (location

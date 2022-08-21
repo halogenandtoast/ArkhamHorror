@@ -75,6 +75,7 @@ data Trait
   | Firearm
   | Flaw
   | Footwear
+  | Forgotten
   | Fortune
   | Gambit
   | Geist

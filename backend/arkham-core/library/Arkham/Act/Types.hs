@@ -27,6 +27,7 @@ data instance Field Act :: Type -> Type where
   ActSequence :: Field Act AS.ActSequence
   ActClues :: Field Act Int
   ActAbilities :: Field Act [Ability]
+  ActCard :: Field Act Card
 
 data ActAttrs = ActAttrs
   { actId :: ActId

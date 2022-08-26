@@ -1826,6 +1826,7 @@ instance Projection Act where
       ActSequence -> pure actSequence
       ActClues -> pure actClues
       ActAbilities -> pure $ getAbilities a
+      ActCard -> pure $ lookupCard (unActId aid) (CardId nil)
 
 instance Projection Enemy where
   field f eid = do

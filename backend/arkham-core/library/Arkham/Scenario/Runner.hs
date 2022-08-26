@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Types as X
 
 import Arkham.Act.Sequence
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.Card
@@ -303,6 +304,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & discardL %~ (ec :)
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
+    pure $ a & (victoryDisplayL %~ (card :))
+  AddToVictory (ActTarget aid) -> do
+    card <- field ActCard aid
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
@@ -651,15 +655,35 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & decksL . at deckKey ?~ deck'
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
-    locations <- selectListMap LocationTarget (removeDoomLocations <> Matcher.LocationWithAnyDoom)
+    locations <- selectListMap
+      LocationTarget
+      (removeDoomLocations <> Matcher.LocationWithAnyDoom)
     investigators <- selectListMap InvestigatorTarget removeDoomInvestigators
-    enemies <- selectListMap EnemyTarget (removeDoomEnemies <> Matcher.EnemyWithAnyDoom)
-    assets <- selectListMap AssetTarget (removeDoomAssets <> Matcher.AssetWithAnyDoom)
+    enemies <- selectListMap
+      EnemyTarget
+      (removeDoomEnemies <> Matcher.EnemyWithAnyDoom)
+    assets <- selectListMap
+      AssetTarget
+      (removeDoomAssets <> Matcher.AssetWithAnyDoom)
     acts <- selectListMap ActTarget removeDoomActs
-    agendas <- selectListMap AgendaTarget (removeDoomAgendas <> Matcher.AgendaWithAnyDoom)
+    agendas <- selectListMap
+      AgendaTarget
+      (removeDoomAgendas <> Matcher.AgendaWithAnyDoom)
     treacheries <- selectListMap TreacheryTarget removeDoomTreacheries
     events <- selectListMap EventTarget removeDoomEvents
     skills <- selectListMap SkillTarget removeDoomSkills
-    pushAll [RemoveAllDoom target | target <- locations <> investigators <> enemies <> assets <> acts <> agendas <> treacheries <> events <> skills]
+    pushAll
+      [ RemoveAllDoom target
+      | target <-
+        locations
+        <> investigators
+        <> enemies
+        <> assets
+        <> acts
+        <> agendas
+        <> treacheries
+        <> events
+        <> skills
+      ]
     pure a
   _ -> pure a

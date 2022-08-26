@@ -923,8 +923,17 @@ data AgendaMatcher
   | AgendaWithSequence AgendaSequence
   | AgendaWithSide AgendaSide
   | NotAgenda AgendaMatcher
+  | AgendaMatches [AgendaMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup AgendaMatcher where
+  AnyAgenda <> x = x
+  x <> AnyAgenda = x
+  AgendaMatches xs <> AgendaMatches ys = AgendaMatches (xs <> ys)
+  AgendaMatches xs <> x = AgendaMatches (x : xs)
+  x <> AgendaMatches xs = AgendaMatches (x : xs)
+  x <> y = AgendaMatches [x, y]
 
 data ActMatcher
   = ActWithId ActId
@@ -1027,3 +1036,31 @@ replaceYourLocation iid (Just lid) = go
     ClosestPathLocation{} -> matcher
     BlockedLocation -> matcher
     ThisLocation -> matcher
+
+data RemoveDoomMatchers = RemoveDoomMatchers
+  { removeDoomLocations :: LocationMatcher
+  , removeDoomInvestigators :: InvestigatorMatcher
+  , removeDoomEnemies :: EnemyMatcher
+  , removeDoomAssets :: AssetMatcher
+  , removeDoomActs :: ActMatcher
+  , removeDoomAgendas :: AgendaMatcher
+  , removeDoomTreacheries :: TreacheryMatcher
+  , removeDoomEvents :: EventMatcher
+  , removeDoomSkills :: SkillMatcher
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+defaultRemoveDoomMatchers :: RemoveDoomMatchers
+defaultRemoveDoomMatchers = RemoveDoomMatchers
+  { removeDoomLocations = Anywhere
+  , removeDoomInvestigators = Anyone
+  , removeDoomEnemies = AnyEnemy
+  , removeDoomAssets = AnyAsset
+  , removeDoomActs = AnyAct
+  , removeDoomAgendas = AnyAgenda
+  , removeDoomTreacheries = AnyTreachery
+  , removeDoomEvents = AnyEvent
+  , removeDoomSkills = AnySkill
+  }
+

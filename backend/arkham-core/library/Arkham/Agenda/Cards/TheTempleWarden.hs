@@ -9,6 +9,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 
 newtype TheTempleWarden = TheTempleWarden AgendaAttrs
@@ -21,6 +22,8 @@ theTempleWarden =
 
 instance RunMessage TheTempleWarden where
   runMessage msg a@(TheTempleWarden attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      iids <- selectList UneliminatedInvestigator
+      pushAll $ map (InvestigatorDefeated (toSource attrs)) iids
+      pure a
     _ -> TheTempleWarden <$> runMessage msg attrs

@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: nightly-2022-08-04
+resolver: nightly-2022-08-15
 
 ghc-options:
   "$locals":

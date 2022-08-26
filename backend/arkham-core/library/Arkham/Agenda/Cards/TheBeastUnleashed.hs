@@ -52,7 +52,7 @@ instance RunMessage TheBeastUnleashed where
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       experimentId <- getTheExperiment
       pushAll
-        [ RemoveAllDoom (toSource attrs)
+        [ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
         , MoveToward
           (EnemyTarget experimentId)
           (LocationWithTitle "Dormitories")

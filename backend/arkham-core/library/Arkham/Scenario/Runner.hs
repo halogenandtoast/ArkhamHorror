@@ -649,4 +649,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
     deck' <- shuffleM $ cards <> fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
+  RemoveAllDoomFromPlay matchers -> do
+    let Matcher.RemoveDoomMatchers {..} = matchers
+    locations <- selectListMap LocationTarget (removeDoomLocations <> Matcher.LocationWithAnyDoom)
+    investigators <- selectListMap InvestigatorTarget removeDoomInvestigators
+    enemies <- selectListMap EnemyTarget (removeDoomEnemies <> Matcher.EnemyWithAnyDoom)
+    assets <- selectListMap AssetTarget (removeDoomAssets <> Matcher.AssetWithAnyDoom)
+    acts <- selectListMap ActTarget removeDoomActs
+    agendas <- selectListMap AgendaTarget (removeDoomAgendas <> Matcher.AgendaWithAnyDoom)
+    treacheries <- selectListMap TreacheryTarget removeDoomTreacheries
+    events <- selectListMap EventTarget removeDoomEvents
+    skills <- selectListMap SkillTarget removeDoomSkills
+    pushAll [RemoveAllDoom target | target <- locations <> investigators <> enemies <> assets <> acts <> agendas <> treacheries <> events <> skills]
+    pure a
   _ -> pure a

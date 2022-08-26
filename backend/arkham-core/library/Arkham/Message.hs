@@ -473,7 +473,8 @@ data Message
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemovePlayerCardFromGame Card
   | RemoveAllClues Target
-  | RemoveAllDoom Source
+  | RemoveAllDoomFromPlay RemoveDoomMatchers
+  | RemoveAllDoom Target
   | RemoveCampaignCardFromDeck InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId

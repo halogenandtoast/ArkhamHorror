@@ -88,12 +88,10 @@ instance RunMessage AgendaAttrs
           [ CheckWindow
             [leadInvestigatorId]
             [Window Timing.When (Window.AgendaAdvance agendaId)]
-          , RemoveAllDoom (toSource a)
+          , RemoveAllDoomFromPlay agendaRemoveDoomMatchers
           , AdvanceAgenda agendaId
           ]
       pure a
-    RemoveAllDoom source -> do
-      if toSource a == source then pure $ a & doomL .~ 0 else pure a
     RevertAgenda aid | aid == agendaId && onSide B a ->
       pure
         $ a

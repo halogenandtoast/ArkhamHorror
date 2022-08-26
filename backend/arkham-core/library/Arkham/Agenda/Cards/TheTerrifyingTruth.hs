@@ -47,7 +47,7 @@ instance RunMessage TheTerrifyingTruth where
         (x : xs) -> do
           card <- sample $ x :| xs
           pure $ ReadStory iid $ toCardDef card
-      a <$ pushAll [RemoveAllDoom (toSource attrs), result]
+      a <$ pushAll [RemoveAllDoomFromPlay defaultRemoveDoomMatchers, result]
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 3)
     _ -> TheTerrifyingTruth <$> runMessage msg attrs

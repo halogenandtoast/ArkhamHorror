@@ -843,6 +843,7 @@ getAgendasMatching matcher = do
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . agendaSequence . toAttrs
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
+    AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
 
 getActsMatching :: (Monad m, HasGame m) => ActMatcher -> m [Act]
 getActsMatching matcher = do

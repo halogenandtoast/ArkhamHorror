@@ -14,6 +14,7 @@ import Arkham.Classes.RunMessage.Internal
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
+import Arkham.Matcher
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
@@ -38,8 +39,13 @@ data AgendaAttrs = AgendaAttrs
   , agendaTreacheries :: HashSet TreacheryId
   , agendaCardsUnderneath :: [Card]
   , agendaDeckId :: Int
+  , agendaRemoveDoomMatchers :: RemoveDoomMatchers
   }
   deriving stock (Show, Eq, Generic)
+
+removeDoomMatchersL :: Lens' AgendaAttrs RemoveDoomMatchers
+removeDoomMatchersL =
+  lens agendaRemoveDoomMatchers $ \m x -> m { agendaRemoveDoomMatchers = x }
 
 cardsUnderneathL :: Lens' AgendaAttrs [Card]
 cardsUnderneathL =
@@ -118,6 +124,7 @@ agendaWith (n, side) f cardDef threshold g = CardBuilder
     , agendaTreacheries = mempty
     , agendaCardsUnderneath = mempty
     , agendaDeckId = deckId
+    , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
     }
   }
 

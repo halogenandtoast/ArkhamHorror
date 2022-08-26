@@ -722,9 +722,10 @@ instance RunMessage EnemyAttrs where
       enemyAssets <- selectList $ EnemyAsset eid
       let
         victory = cdVictoryPoints $ toCardDef a
-        victoryMsgs = [ DefeatedAddToVictory $ toTarget a | isJust victory ]
+        vengeance = cdVengeancePoints $ toCardDef a
+        victoryMsgs = [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance)]
         defeatMsgs =
-          if isJust victory then [RemoveEnemy eid] else [Discard $ toTarget a]
+          if isJust (victory <|> vengeance) then [RemoveEnemy eid] else [Discard $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 

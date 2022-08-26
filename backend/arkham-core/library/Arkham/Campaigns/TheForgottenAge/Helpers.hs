@@ -37,7 +37,7 @@ getInvestigatorsWithoutSupply s = getInvestigatorIds >>= filterM (fmap not . (`g
 getVengeanceInVictoryDisplay :: (HasGame m, Monad m) => m Int
 getVengeanceInVictoryDisplay =
   sum
-    . map (fromMaybe 0 . cdVictoryPoints . toCardDef)
+    . map (fromMaybe 0 . cdVengeancePoints . toCardDef)
     <$> scenarioField ScenarioVictoryDisplay
 
 getExplorationDeck :: (HasGame m, Monad m) => m [Card]

@@ -28,6 +28,9 @@ getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 getSupplyCount :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Int
 getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
+getAnyHasSupply :: (HasGame m, Monad m) => Supply -> m Bool
+getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
+
 getInvestigatorsWithSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s = getInvestigatorIds >>= filterM (`getHasSupply` s)
 

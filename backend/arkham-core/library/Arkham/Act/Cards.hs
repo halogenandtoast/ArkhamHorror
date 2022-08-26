@@ -1,6 +1,6 @@
 module Arkham.Act.Cards where
 
-import Arkham.Prelude hiding (fold)
+import Arkham.Prelude hiding ( fold )
 
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
@@ -319,19 +319,23 @@ inLostCarcosa :: CardDef
 inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
 
 searchForTheStrangerV1 :: CardDef
-searchForTheStrangerV1 = act "03321" "Search For The Stanger (v. I)" 2 DimCarcosa
+searchForTheStrangerV1 =
+  act "03321" "Search For The Stanger (v. I)" 2 DimCarcosa
 
 searchForTheStrangerV2 :: CardDef
-searchForTheStrangerV2 = act "03322" "Search For The Stanger (v. II)" 2 DimCarcosa
+searchForTheStrangerV2 =
+  act "03322" "Search For The Stanger (v. II)" 2 DimCarcosa
 
 searchForTheStrangerV3 :: CardDef
-searchForTheStrangerV3 = act "03323" "Search For The Stanger (v. III)" 2 DimCarcosa
+searchForTheStrangerV3 =
+  act "03323" "Search For The Stanger (v. III)" 2 DimCarcosa
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa
 
 exploringTheRainforest :: CardDef
-exploringTheRainforest = act "04046" "Exploring the Rainforest" 1 TheUntamedWilds
+exploringTheRainforest =
+  act "04046" "Exploring the Rainforest" 1 TheUntamedWilds
 
 huntressOfTheEztli :: CardDef
 huntressOfTheEztli = act "04047" "Huntress of the Eztli" 2 TheUntamedWilds
@@ -342,8 +346,10 @@ searchForTheRuins = act "04048" "Search for the Ruins" 3 TheUntamedWilds
 theGuardedRuins :: CardDef
 theGuardedRuins = act "04049" "The Guarded Ruins" 3 TheUntamedWilds
 
+-- vengeance does not exist unless in victory pile, but this simplifies the logic
 intoTheRuins :: CardDef
-intoTheRuins = act "04057" "Into the Ruins" 1 TheDoomOfEztli
+intoTheRuins =
+  (act "04057" "Into the Ruins" 1 TheDoomOfEztli) { cdVengeancePoints = Just 1 }
 
 magicAndScience :: CardDef
 magicAndScience = act "04058" "Magic and Science" 2 TheDoomOfEztli

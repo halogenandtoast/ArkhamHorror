@@ -9,10 +9,15 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
+import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
@@ -39,5 +44,16 @@ instance RunMessage IntoTheRuins where
         iid
         source
         (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      pure a
+    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+      chamberOfTime <- getSetAsideCard Locations.chamberOfTime
+      hasChalk <- getAnyHasSupply Chalk
+      pushAll
+        $ [ ShuffleCardsIntoDeck
+              (Deck.ScenarioDeckByKey ExplorationDeck)
+              [chamberOfTime]
+          ]
+        <> [ AddToVictory (toTarget attrs) | not hasChalk ]
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> IntoTheRuins <$> runMessage msg attrs

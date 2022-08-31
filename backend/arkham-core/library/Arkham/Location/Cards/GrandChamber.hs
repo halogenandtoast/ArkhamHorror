@@ -1,13 +1,13 @@
 module Arkham.Location.Cards.GrandChamber
   ( grandChamber
   , GrandChamber(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Direction
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype GrandChamber = GrandChamber LocationAttrs
@@ -15,13 +15,16 @@ newtype GrandChamber = GrandChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandChamber :: LocationCard GrandChamber
-grandChamber = location GrandChamber Cards.grandChamber 2 (PerPlayer 1)
+grandChamber = locationWith
+  GrandChamber
+  Cards.grandChamber
+  2
+  (PerPlayer 1)
+  (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasAbilities GrandChamber where
-  getAbilities (GrandChamber attrs) =
-    getAbilities attrs
+  getAbilities (GrandChamber attrs) = getAbilities attrs
     -- withBaseAbilities attrs []
 
 instance RunMessage GrandChamber where
-  runMessage msg (GrandChamber attrs) =
-    GrandChamber <$> runMessage msg attrs
+  runMessage msg (GrandChamber attrs) = GrandChamber <$> runMessage msg attrs

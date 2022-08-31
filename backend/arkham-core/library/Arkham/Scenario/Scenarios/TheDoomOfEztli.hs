@@ -40,16 +40,21 @@ newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+-- | The Doom of Eztli
+--
+-- For the layout Magic and Science will caust the layout to switch to using
+-- the bottom line
 theDoomOfEztli :: Difficulty -> TheDoomOfEztli
 theDoomOfEztli difficulty = scenario
   TheDoomOfEztli
   "04054"
   "The Doom of Eztli"
   difficulty
-  [ ".        ancientHall  undergroundRuins .             ."
-  , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime"
-  , "entryway grandChamber burialPit        secretPassage chamberOfTime"
-  , ".        grandChamber burialPit        .             ."
+  [ ".        ancientHall  undergroundRuins .             .             .    ."
+  , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
+  , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
+  , ".        grandChamber burialPit        .             .             .    ."
+  , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
   ]
 
 instance HasTokenValue TheDoomOfEztli where

@@ -13,6 +13,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Deck qualified as Deck
+import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
@@ -27,7 +28,12 @@ newtype Entryway = Entryway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entryway :: LocationCard Entryway
-entryway = location Entryway Cards.entryway 2 (PerPlayer 1)
+entryway = locationWith
+  Entryway
+  Cards.entryway
+  2
+  (PerPlayer 1)
+  (connectsToL .~ singleton LeftOf)
 
 instance HasAbilities Entryway where
   getAbilities (Entryway attrs) = withResignAction

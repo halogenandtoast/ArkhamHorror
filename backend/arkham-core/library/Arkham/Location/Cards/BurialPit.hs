@@ -1,13 +1,13 @@
 module Arkham.Location.Cards.BurialPit
   ( burialPit
   , BurialPit(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Direction
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype BurialPit = BurialPit LocationAttrs
@@ -15,13 +15,16 @@ newtype BurialPit = BurialPit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burialPit :: LocationCard BurialPit
-burialPit = location BurialPit Cards.burialPit 3 (PerPlayer 1)
+burialPit = locationWith
+  BurialPit
+  Cards.burialPit
+  3
+  (PerPlayer 1)
+  (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasAbilities BurialPit where
-  getAbilities (BurialPit attrs) =
-    getAbilities attrs
+  getAbilities (BurialPit attrs) = getAbilities attrs
     -- withBaseAbilities attrs []
 
 instance RunMessage BurialPit where
-  runMessage msg (BurialPit attrs) =
-    BurialPit <$> runMessage msg attrs
+  runMessage msg (BurialPit attrs) = BurialPit <$> runMessage msg attrs

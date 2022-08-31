@@ -14,6 +14,8 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Deck qualified as Deck
+import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
@@ -27,13 +29,18 @@ newtype IntoTheRuins = IntoTheRuins ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 intoTheRuins :: ActCard IntoTheRuins
-intoTheRuins = act (1, A) IntoTheRuins Cards.intoTheRuins Nothing
+intoTheRuins = act
+  (1, A)
+  IntoTheRuins
+  Cards.intoTheRuins
+  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance HasAbilities IntoTheRuins where
-  getAbilities (IntoTheRuins a) =
+  getAbilities (IntoTheRuins a) = withBaseAbilities
+    a
     [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility (Just Action.Explore)
-        $ ActionCost 1
+      $ ActionAbility (Just Action.Explore)
+      $ ActionCost 1
     ]
 
 instance RunMessage IntoTheRuins where

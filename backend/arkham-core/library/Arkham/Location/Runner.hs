@@ -64,37 +64,30 @@ instance RunMessage LocationAttrs where
       pure newAttrs
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
-      if allowed
-        then do
-          shroudValue' <- getModifiedShroudValueFor a
-          a <$ push
-            (BeginSkillTest
-              iid
-              source
-              (maybe
-                (LocationTarget lid)
-                (ProxyTarget (LocationTarget lid))
-                mTarget
-              )
-              (Just Action.Investigate)
-              skillType
-              shroudValue'
-            )
-        else pure a
+      when allowed $ do
+        shroudValue' <- getModifiedShroudValueFor a
+        push $ BeginSkillTest
+          iid
+          source
+          (maybe (LocationTarget lid) (ProxyTarget (LocationTarget lid)) mTarget
+          )
+          (Just Action.Investigate)
+          skillType
+          shroudValue'
+      pure a
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ n
       | isTarget a target
       -> a <$ push (Successful (Action.Investigate, target) iid source target n)
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ n
       | isTarget a target
-      -> a
-        <$ push
-             (Successful
-               (Action.Investigate, target)
-               iid
-               source
-               investigationTarget
-               n
-             )
+      -> do
+        push $ Successful
+          (Action.Investigate, target)
+          iid
+          source
+          investigationTarget
+          n
+        pure a
     Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (LocationTarget lid)
@@ -103,18 +96,12 @@ instance RunMessage LocationAttrs where
         [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
       afterWindowMsg <- checkWindows
         [Window Timing.After (Window.SuccessfulInvestigation iid lid)]
-      a <$ unless
-        (AlternateSuccessfullInvestigation `elem` modifiers')
-        (pushAll
-          [ whenWindowMsg
-          , InvestigatorDiscoverClues
-            iid
-            lid
-            clueAmount
-            (Just Action.Investigate)
-          , afterWindowMsg
-          ]
-        )
+      unless (AlternateSuccessfullInvestigation `elem` modifiers') $ pushAll
+        [ whenWindowMsg
+        , InvestigatorDiscoverClues iid lid clueAmount (Just Action.Investigate)
+        , afterWindowMsg
+        ]
+      pure a
     PlaceUnderneath target cards | isTarget a target ->
       pure $ a & cardsUnderneathL <>~ cards
     SetLocationLabel lid label' | lid == locationId ->

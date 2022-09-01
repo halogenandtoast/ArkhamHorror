@@ -138,6 +138,11 @@ instance RunMessage LocationAttrs where
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
+    SetConnections lid connections | lid == locationId -> do
+      pure
+        $ a
+        & (connectedMatchersL .~ connections)
+        & (revealedConnectedMatchersL .~ connections)
     AddDirectConnection fromLid toLid | fromLid == locationId -> do
       pure
         $ a

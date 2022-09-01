@@ -101,9 +101,12 @@ instance RunMessage MagicAndScience where
           , UnfocusCards
           ]
       pushAll
-        $ [ SetLocationLabel chamberOfTime "pos1"
+        $ [ SetConnections chamberOfTime []
+          , SetLocationLabel chamberOfTime "pos1"
+          , SetConnections entryway []
           , SetLocationLabel entryway "pos7"
           ]
+        <> [SetConnections lid [] | lid <- otherLocations]
         <> concatMap handleCandidateGroup candidateGroups
         <> [ NextAdvanceActStep (toId attrs) 1
            , AdvanceActDeck (actDeckId attrs) (toSource attrs)

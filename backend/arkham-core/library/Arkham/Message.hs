@@ -142,6 +142,7 @@ data Message
   | HandleNoRemainingInvestigators Target
   | CheckForRemainingInvestigators
   | AddDirectConnection LocationId LocationId
+  | SetConnections LocationId [LocationMatcher]
   | AddCampaignCardToDeck InvestigatorId CardDef
   | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
   | AddCardToDeckForCampaign InvestigatorId PlayerCard

@@ -174,7 +174,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetNoRemainingInvestigatorsHandler target -> do
     pure $ a & noRemainingInvestigatorsHandlerL .~ target
   HandleNoRemainingInvestigators target | isTarget a target -> do
-    clearQueue @Message
+    clearQueue
     push (ScenarioResolution NoResolution)
     pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
   InvestigatorWhenEliminated _ iid -> do
@@ -193,7 +193,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResolveToken _drawnToken token _iid | token == AutoFail ->
     a <$ push FailSkillTest
   EndOfScenario mNextCampaignStep -> do
-    clearQueue @Message
+    clearQueue
     standalone <- getIsStandalone
     a <$ push
       (if standalone

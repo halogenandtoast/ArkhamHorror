@@ -4,49 +4,37 @@ module Arkham.Classes.HasQueue
 
 import Arkham.Prelude
 
-class HasQueue msg m where
+class HasQueue msg m | m -> msg where
   messageQueue :: m (IORef [msg])
 
-withQueue
-  :: (MonadIO m, HasQueue msg m)
-  => ([msg] -> ([msg], r))
-  -> m r
+withQueue :: (MonadIO m, HasQueue msg m) => ([msg] -> ([msg], r)) -> m r
 withQueue body = do
   ref <- messageQueue
   liftIO $ atomicModifyIORef' ref body
 
-withQueue_
-  :: (MonadIO m, HasQueue msg m)
-  => ([msg] -> [msg])
-  -> m ()
+withQueue_ :: (MonadIO m, HasQueue msg m) => ([msg] -> [msg]) -> m ()
 withQueue_ body = withQueue ((, ()) . body)
 
-fromQueue
-  :: (MonadIO m, HasQueue msg m) => ([msg] -> r) -> m r
+fromQueue :: (MonadIO m, HasQueue msg m) => ([msg] -> r) -> m r
 fromQueue f = f <$> (readIORef =<< messageQueue)
 
-findFromQueue
-  :: (MonadIO m, HasQueue msg m)
-  => (msg -> Bool)
-  -> m (Maybe msg)
+findFromQueue :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m (Maybe msg)
 findFromQueue f = fromQueue (find f)
 
-popMessage :: forall msg m. (MonadIO m, HasQueue msg m) => m (Maybe msg)
+popMessage :: (MonadIO m, HasQueue msg m) => m (Maybe msg)
 popMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (ms, Just m)
 
-clearQueue :: forall msg m. (MonadIO m, HasQueue msg m) => m ()
-clearQueue = withQueue_ @_ @msg $ const []
+clearQueue :: (MonadIO m, HasQueue msg m) => m ()
+clearQueue = withQueue_ $ const []
 
-peekMessage
-  :: (MonadIO m, HasQueue msg m) => m (Maybe msg)
+peekMessage :: (MonadIO m, HasQueue msg m) => m (Maybe msg)
 peekMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (m : ms, Just m)
 
-peekQueue
-  :: forall msg m. (MonadIO m, HasQueue msg m) => m [msg]
+peekQueue :: (MonadIO m, HasQueue msg m) => m [msg]
 peekQueue = withQueue $ \q -> (q, q)
 
 pushEnd :: (MonadIO m, HasQueue msg m) => msg -> m ()
@@ -61,19 +49,12 @@ push = pushAll . pure
 pushAll :: (MonadIO m, HasQueue msg m) => [msg] -> m ()
 pushAll msgs = withQueue \queue -> (msgs <> queue, ())
 
-replaceMessage
-  :: (MonadIO m, HasQueue msg m, Eq msg)
-  => msg
-  -> [msg]
-  -> m ()
+replaceMessage :: (MonadIO m, HasQueue msg m, Eq msg) => msg -> [msg] -> m ()
 replaceMessage msg replacement =
   replaceMessageMatching (== msg) (const replacement)
 
 replaceMessageMatching
-  :: (MonadIO m, HasQueue msg m)
-  => (msg -> Bool)
-  -> (msg -> [msg])
-  -> m ()
+  :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> (msg -> [msg]) -> m ()
 replaceMessageMatching matcher replacer = withQueue \queue ->
   let (before, after) = break matcher queue
   in
@@ -81,17 +62,11 @@ replaceMessageMatching matcher replacer = withQueue \queue ->
       [] -> (before, ())
       (msg' : rest) -> (before <> replacer msg' <> rest, ())
 
-pushAfter
-  :: (MonadIO m, HasQueue msg m)
-  => (msg -> Bool)
-  -> msg
-  -> m ()
+pushAfter :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> msg -> m ()
 pushAfter matcher msg = replaceMessageMatching matcher (\m -> [m, msg])
 
 popMessageMatching
-  :: (MonadIO m, HasQueue msg m)
-  => (msg -> Bool)
-  -> m (Maybe msg)
+  :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m (Maybe msg)
 popMessageMatching matcher = withQueue \queue ->
   let (before, after) = break matcher queue
   in
@@ -99,8 +74,7 @@ popMessageMatching matcher = withQueue \queue ->
       [] -> (before, Nothing)
       (msg' : rest) -> (before <> rest, Just msg')
 
-popMessageMatching_
-  :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m ()
+popMessageMatching_ :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m ()
 popMessageMatching_ = void . popMessageMatching
 
 removeAllMessagesMatching
@@ -108,13 +82,10 @@ removeAllMessagesMatching
 removeAllMessagesMatching matcher = withQueue_ $ filter (not . matcher)
 
 insertAfterMatching
-  :: (MonadIO m, HasQueue msg m)
-  => [msg]
-  -> (msg -> Bool)
-  -> m ()
+  :: (MonadIO m, HasQueue msg m) => [msg] -> (msg -> Bool) -> m ()
 insertAfterMatching msgs p = withQueue_ \queue ->
-  let
-    (before, rest) = break p queue
-  in case rest of
-    (x : xs) -> before <> (x : msgs <> xs)
-    _ -> queue
+  let (before, rest) = break p queue
+  in
+    case rest of
+      (x : xs) -> before <> (x : msgs <> xs)
+      _ -> queue

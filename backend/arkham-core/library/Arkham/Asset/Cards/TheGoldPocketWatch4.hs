@@ -36,6 +36,6 @@ instance RunMessage TheGoldPocketWatch4 where
       a <$ pushAll [RemoveFromGame (toTarget attrs), EndPhase]
     UseCardAbility _ source [Window _ (Window.PhaseEnds phase)] 2 _
       | isSource attrs source -> do
-        clearQueue @Message
+        clearQueue
         a <$ pushAll [RemoveFromGame (toTarget attrs), Begin phase]
     _ -> TheGoldPocketWatch4 <$> runMessage msg attrs

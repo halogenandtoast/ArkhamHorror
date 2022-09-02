@@ -84,3 +84,7 @@ data Question msg
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+targetLabel :: IdToTarget entityId => entityId -> [msg] -> UI msg
+targetLabel entityId = TargetLabel (idToTarget entityId)
+

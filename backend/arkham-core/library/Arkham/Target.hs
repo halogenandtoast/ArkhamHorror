@@ -4,7 +4,7 @@ module Arkham.Target (
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.Ability
+import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id

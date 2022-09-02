@@ -2,7 +2,7 @@ module Arkham.Window where
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.Attack
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)

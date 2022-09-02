@@ -60,6 +60,9 @@ cluesToDiscover investigatorId startValue = do
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
+    FlipClues target n | isTarget a target -> do
+      let flipCount = min n locationClues
+      pure $ a & cluesL %~ max 0 . subtract n & doomL +~ flipCount
     UpdateLocation newAttrs lid | lid == locationId -> do
       pure newAttrs
     Investigate iid lid source mTarget skillType False | lid == locationId -> do

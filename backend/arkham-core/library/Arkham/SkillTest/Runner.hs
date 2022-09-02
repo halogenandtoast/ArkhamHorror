@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-
 module Arkham.SkillTest.Runner
   ( module X
   ) where
@@ -400,27 +399,51 @@ instance RunMessage SkillTest where
           SucceededBy b m -> SucceededBy b (max 0 (m + n))
           FailedBy b m -> FailedBy b (max 0 (m + n))
         modifySkillTestResult r _ = r
-      s <$ case modifiedSkillTestResult of
-        SucceededBy _ n -> pushAll $ cycleN
-          successTimes
-          ([ PassedSkillTest
-               skillTestInvestigator
-               skillTestAction
-               skillTestSource
-               target
-               skillTestSkillType
-               n
-           | target <- skillTestSubscribers
-           ]
-          <> [ PassedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 (SkillTestInitiatorTarget skillTestTarget)
-                 skillTestSkillType
-                 n
-             ]
-          )
+      case modifiedSkillTestResult of
+        SucceededBy _ n -> do
+          pushAll
+            $ [ When
+                  (PassedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    target
+                    skillTestSkillType
+                    n
+                  )
+              | target <- skillTestSubscribers
+              ]
+            <> [ When
+                   (PassedSkillTest
+                     skillTestInvestigator
+                     skillTestAction
+                     skillTestSource
+                     (SkillTestInitiatorTarget skillTestTarget)
+                     skillTestSkillType
+                     n
+                   )
+               ]
+            <> (cycleN
+                 successTimes
+                 ([ PassedSkillTest
+                      skillTestInvestigator
+                      skillTestAction
+                      skillTestSource
+                      target
+                      skillTestSkillType
+                      n
+                  | target <- skillTestSubscribers
+                  ]
+                 <> [ PassedSkillTest
+                        skillTestInvestigator
+                        skillTestAction
+                        skillTestSource
+                        (SkillTestInitiatorTarget skillTestTarget)
+                        skillTestSkillType
+                        n
+                    ]
+                 )
+               )
         FailedBy _ n -> pushAll
           ([ When
                (FailedSkillTest
@@ -462,6 +485,7 @@ instance RunMessage SkillTest where
              ]
           )
         Unrun -> pure ()
+      pure s
     RerunSkillTest -> case skillTestResult of
       FailedBy True _ -> pure s
       _ -> do

@@ -2,13 +2,13 @@ module Arkham.Criteria where
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait
-import Arkham.Campaigns.TheForgottenAge.Supply
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
   deriving stock (Show, Eq, Generic)

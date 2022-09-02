@@ -184,7 +184,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else
         chooseOne iid
         $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
-        : [ TargetLabel (CardIdTarget $ toCardId card) [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
+        : [ TargetLabel
+              (CardIdTarget $ toCardId card)
+              [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
           ]
     )
@@ -306,7 +308,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
       (assetMatcher <> DiscardableAsset <> AssetControlledBy You)
-    push $ chooseOrRunOne iid $ map (\aid -> targetLabel aid [Discard $ AssetTarget aid]) discardableAssetIds
+    push $ chooseOrRunOne iid $ map
+      (\aid -> targetLabel aid [Discard $ AssetTarget aid])
+      discardableAssetIds
     pure a
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
@@ -320,13 +324,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CheckHandSize iid | iid == investigatorId -> do
     handSize <- getHandSize a
     inHandCount <- getInHandCount a
-    when (inHandCount > handSize) $ push
-      $ chooseOne
-        iid
-        [ TargetLabel (CardIdTarget $ toCardId card) [DiscardCard iid (toCardId card), CheckHandSize iid]
-        | card <- filter (isNothing . cdCardSubType . toCardDef)
-          $ mapMaybe (preview _PlayerCard) investigatorHand
-        ]
+    when (inHandCount > handSize) $ push $ chooseOne
+      iid
+      [ TargetLabel
+          (CardIdTarget $ toCardId card)
+          [DiscardCard iid (toCardId card), CheckHandSize iid]
+      | card <- filter (isNothing . cdCardSubType . toCardDef)
+        $ mapMaybe (preview _PlayerCard) investigatorHand
+      ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
   ChooseAndDiscardCard iid | iid == investigatorId -> do
@@ -1995,24 +2000,56 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             Action.Investigate -> case mTarget of
               Just (LocationTarget lid) ->
                 [ Window
-                    Timing.After
-                    (Window.FailInvestigationSkillTest iid lid n)
+                  Timing.When
+                  (Window.FailInvestigationSkillTest iid lid n)
+                , Window
+                  Timing.After
+                  (Window.FailInvestigationSkillTest iid lid n)
                 ]
               _ ->
                 [ Window
-                    Timing.After
-                    (Window.FailInvestigationSkillTest
-                      iid
-                      investigatorLocation
-                      n
-                    )
+                  Timing.When
+                  (Window.FailInvestigationSkillTest iid investigatorLocation n)
+                , Window
+                  Timing.After
+                  (Window.FailInvestigationSkillTest iid investigatorLocation n)
                 ]
             _ -> []
           )
           mAction
-      windowMsg <- checkWindows
-        (Window Timing.After (Window.FailSkillTest iid n) : windows)
+      windowMsg <-
+        checkWindows
+        $ Window Timing.When (Window.FailSkillTest iid n)
+        : Window Timing.After (Window.FailSkillTest iid n)
+        : windows
       a <$ push windowMsg
+  When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
+    | iid == iid' && iid == investigatorId -> do
+      mTarget <- getSkillTestTarget
+      let
+        windows = maybe
+          []
+          (\case
+            Action.Investigate -> case mTarget of
+              Just (ProxyTarget (LocationTarget lid) _) ->
+                [ Window
+                    Timing.When
+                    (Window.PassInvestigationSkillTest iid lid n)
+                ]
+              Just (LocationTarget lid) ->
+                [ Window
+                    Timing.When
+                    (Window.PassInvestigationSkillTest iid lid n)
+                ]
+              _ -> error "expecting location source for investigate"
+            _ -> []
+          )
+          mAction
+      window <- checkWindows
+        (Window Timing.When (Window.PassSkillTest mAction source iid n)
+        : windows
+        )
+      a <$ push window
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
       mTarget <- getSkillTestTarget

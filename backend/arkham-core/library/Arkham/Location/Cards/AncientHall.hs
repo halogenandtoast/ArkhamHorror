@@ -5,10 +5,17 @@ module Arkham.Location.Cards.AncientHall
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Timing qualified as Timing
 
 newtype AncientHall = AncientHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,8 +30,30 @@ ancientHall = locationWith
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasAbilities AncientHall where
-  getAbilities (AncientHall attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (AncientHall attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        (CluesOnThis $ AtLeast $ Static 1)
+        (ForcedAbility $ RoundEnds $ Timing.When)
+    ]
 
 instance RunMessage AncientHall where
-  runMessage msg (AncientHall attrs) = AncientHall <$> runMessage msg attrs
+  runMessage msg l@(AncientHall attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      iids <-
+        selectList
+        $ InvestigatorAt (LocationWithId $ toId attrs)
+        <> InvestigatorCanSpendResources (Static 3)
+      leadInvestigatorId <- getLeadInvestigatorId
+      let flipClue = FlipClues (toTarget attrs) 1
+      if null iids
+        then
+          push
+          $ chooseOne leadInvestigatorId
+          $ Label "Do not spend 3 resources to cancel this effect" [flipClue]
+          : [ targetLabel iid [SpendResources iid 3] | iid <- iids ]
+        else push flipClue
+      pure l
+    _ -> AncientHall <$> runMessage msg attrs

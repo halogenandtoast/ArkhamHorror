@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Act (
-  Act (..),
-  lookupAct,
-) where
+module Arkham.Act
+  ( Act(..)
+  , lookupAct
+  ) where
 
-import Arkham.Prelude hiding (fold)
+import Arkham.Prelude hiding ( fold )
 
 import Arkham.Act.Acts
 import Arkham.Act.Types
@@ -21,14 +21,10 @@ instance FromJSON Act where
     cCode :: CardCode <- o .: "id"
     withActCardCode cCode $ \(_ :: ActCard a) -> Act <$> parseJSON @a v
 
-withActCardCode
-  :: CardCode
-  -> (forall a. IsAct a => ActCard a -> r)
-  -> r
-withActCardCode cCode f =
-  case lookup cCode allActs of
-    Nothing -> error $ "Unknown act: " <> show cCode
-    Just (SomeActCard a) -> f a
+withActCardCode :: CardCode -> (forall a . IsAct a => ActCard a -> r) -> r
+withActCardCode cCode f = case lookup cCode allActs of
+  Nothing -> error $ "Unknown act: " <> show cCode
+  Just (SomeActCard a) -> f a
 
 allActs :: HashMap CardCode SomeActCard
 allActs = mapFromList $ map

@@ -266,7 +266,9 @@ instance RunMessage ActiveCost where
             (push $ Ask iid $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [PaymentAmountChoice iid 0 n $ PayCost acId iid skipAdditionalCosts cost']
+              [ PaymentAmountChoice iid 0 n
+                  $ PayCost acId iid skipAdditionalCosts cost'
+              ]
             )
             --   iid
             --   [ Label
@@ -417,8 +419,11 @@ instance RunMessage ActiveCost where
                         ("Pay " <> tshow x <> " resources")
                         (Just x)
                     $ map
-                        (\(iid', resources) ->
-                          PaymentAmountChoice iid' 0 resources (SpendResources iid' 1)
+                        (\(iid', resources) -> PaymentAmountChoice
+                          iid'
+                          0
+                          resources
+                          (SpendResources iid' 1)
                         )
                         iidsWithResources
                     )
@@ -489,8 +494,11 @@ instance RunMessage ActiveCost where
             _ -> do
               let
                 paymentOptions = map
-                  (\(iid', clues) ->
-                    PaymentAmountChoice iid' 0 clues (PayCost acId iid' True (ClueCost 1))
+                  (\(iid', clues) -> PaymentAmountChoice
+                    iid'
+                    0
+                    clues
+                    (PayCost acId iid' True (ClueCost 1))
                   )
                   iidsWithClues
               leadInvestigatorId <- getLeadInvestigatorId
@@ -563,14 +571,16 @@ instance RunMessage ActiveCost where
               handCards
             cardMsgs = map
               (\(n, card) -> if n >= x
-                then TargetLabel (CardIdTarget $ toCardId card)
+                then TargetLabel
+                  (CardIdTarget $ toCardId card)
                   [ DiscardCard iid (toCardId card)
                   , PaidAbilityCost
                     iid
                     Nothing
                     (SkillIconPayment $ cdSkills $ toCardDef card)
                   ]
-                else TargetLabel (CardIdTarget $ toCardId card)
+                else TargetLabel
+                  (CardIdTarget $ toCardId card)
                   [ DiscardCard iid (toCardId card)
                   , PaidAbilityCost
                     iid

@@ -2,7 +2,7 @@ module Arkham.Matcher where
 
 import Arkham.Prelude
 
-import Arkham.Action (Action)
+import Arkham.Action ( Action )
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
@@ -13,8 +13,8 @@ import Arkham.ClassSymbol
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Keyword (Keyword)
-import qualified Arkham.Keyword as Keyword
+import Arkham.Keyword ( Keyword )
+import Arkham.Keyword qualified as Keyword
 import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
@@ -72,6 +72,13 @@ pattern InvestigatorWithAnyResources <-
   InvestigatorWithResources (GreaterThan (Static 0)) where
   InvestigatorWithAnyResources =
     InvestigatorWithResources (GreaterThan (Static 0))
+
+-- placeholder in case a modifier prevents spending resources
+pattern InvestigatorCanSpendResources :: GameValue Int -> InvestigatorMatcher
+pattern InvestigatorCanSpendResources value <-
+  InvestigatorWithResources (AtLeast value) where
+  InvestigatorCanSpendResources value =
+    InvestigatorWithResources (AtLeast value)
 
 pattern InvestigatorCanMove :: InvestigatorMatcher
 pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
@@ -340,8 +347,7 @@ instance Semigroup EventMatcher where
 type Where = LocationMatcher
 
 pattern LocationWithAnyDoom :: LocationMatcher
-pattern LocationWithAnyDoom <-
-  LocationWithDoom (GreaterThan (Static 0)) where
+pattern LocationWithAnyDoom <- LocationWithDoom (GreaterThan (Static 0)) where
   LocationWithAnyDoom = LocationWithDoom (GreaterThan (Static 0))
 
 pattern LocationWithAnyClues :: LocationMatcher
@@ -821,6 +827,7 @@ data SkillTestResultMatcher
   = FailureResult ValueMatcher
   | SuccessResult ValueMatcher
   | AnyResult
+  | ResultOneOf [SkillTestResultMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

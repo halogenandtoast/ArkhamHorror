@@ -87,25 +87,9 @@ story iids flavor = AskMap
     [ (iid, Read flavor [Label "Continue" []]) | iid <- iids ]
   )
 
--- TODO: Better handle in play and out of play
--- Out of play refers to player's hand, in any deck,
--- in any discard pile, the victory display, and
--- cards that have been set aside
-
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
-
-{- | Masking rules
-UseCardAbility: Because some abilities have a discard self cost, the card of
-the ability will have already been discarded when we go to resolve this. While
-we could use InDiscard in the RunMessage instance for that card's entity, there
-may be cases where we can trigger abilities without paying the cost, so we want
-it to be accessible from both.
--}
-doNotMask :: Message -> Bool
-doNotMask UseCardAbility{} = True
-doNotMask _ = False
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -639,9 +623,6 @@ uiToRun = \case
   SkillTestApplyResultsButton -> Run [SkillTestApplyResults]
   TokenGroupChoice source iid step -> Run [ChooseTokenGroups source iid step]
   Done _ -> Run []
-
-targetLabel :: IdToTarget entityId => entityId -> [Message] -> UI Message
-targetLabel entityId = TargetLabel (idToTarget entityId)
 
 chooseOrRunOne :: InvestigatorId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x

@@ -13,6 +13,8 @@ library
       Arkham.Ability
       Arkham.Ability.Limit
       Arkham.Ability.Type
+      Arkham.Ability.Types
+      Arkham.Ability.Used
       Arkham.Act
       Arkham.Act.Acts
       Arkham.Act.Cards

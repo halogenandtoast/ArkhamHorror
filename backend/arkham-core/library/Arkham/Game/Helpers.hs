@@ -1363,21 +1363,25 @@ windowMatches iid source window' = \case
       andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
     _ -> pure False
   Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher
-    -> case skillTestResultMatcher of
-      Matcher.FailureResult _ -> case window' of
-        Window t (Window.WouldFailSkillTest who) | t == whenMatcher ->
-          matchWho iid who whoMatcher
-        _ -> pure False
-      Matcher.SuccessResult _ -> case window' of
-        Window t (Window.WouldPassSkillTest who) | t == whenMatcher ->
-          matchWho iid who whoMatcher
-        _ -> pure False
-      Matcher.AnyResult -> case window' of
-        Window Timing.When (Window.WouldFailSkillTest who) ->
-          matchWho iid who whoMatcher
-        Window Timing.When (Window.WouldPassSkillTest who) ->
-          matchWho iid who whoMatcher
-        _ -> pure False
+    -> do
+      let
+        isWindowMatch = \case
+          Matcher.ResultOneOf xs -> anyM isWindowMatch xs
+          Matcher.FailureResult _ -> case window' of
+            Window t (Window.WouldFailSkillTest who) | t == whenMatcher ->
+              matchWho iid who whoMatcher
+            _ -> pure False
+          Matcher.SuccessResult _ -> case window' of
+            Window t (Window.WouldPassSkillTest who) | t == whenMatcher ->
+              matchWho iid who whoMatcher
+            _ -> pure False
+          Matcher.AnyResult -> case window' of
+            Window Timing.When (Window.WouldFailSkillTest who) ->
+              matchWho iid who whoMatcher
+            Window Timing.When (Window.WouldPassSkillTest who) ->
+              matchWho iid who whoMatcher
+            _ -> pure False
+      isWindowMatch skillTestResultMatcher
   Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher valueMatcher
     -> case window' of
       Window t (Window.InitiatedSkillTest who _ skillType difficulty)
@@ -1402,75 +1406,79 @@ windowMatches iid source window' = \case
         Just st -> skillTestMatches iid source st skillMatcher
       if not matchSkillTest
         then pure False
-        else case skillTestResultMatcher of
-          Matcher.FailureResult gameValueMatcher -> case window' of
-            Window t (Window.FailInvestigationSkillTest who lid n)
-              | whenMatcher == t -> case skillMatcher of
-                Matcher.WhileInvestigating whereMatcher -> andM
-                  [ matchWho iid who whoMatcher
-                  , gameValueMatches n gameValueMatcher
-                  , locationMatches iid source window' lid whereMatcher
-                  ]
+        else do
+          let
+            isWindowMatch = \case
+              Matcher.ResultOneOf xs -> traceShowId <$> anyM isWindowMatch xs
+              Matcher.FailureResult gameValueMatcher -> case traceShowId window' of
+                Window t (Window.FailInvestigationSkillTest who lid n)
+                  | whenMatcher == t -> case skillMatcher of
+                    Matcher.WhileInvestigating whereMatcher -> andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      , locationMatches iid source window' lid whereMatcher
+                      ]
+                    _ -> pure False
+                Window t (Window.FailAttackEnemy who enemyId n)
+                  | whenMatcher == t -> case skillMatcher of
+                    Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      , enemyMatches enemyId enemyMatcher
+                      ]
+                    _ -> pure False
+                Window t (Window.FailEvadeEnemy who enemyId n) | whenMatcher == t ->
+                  case skillMatcher of
+                    Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      , enemyMatches enemyId enemyMatcher
+                      ]
+                    _ -> pure False
+                Window t (Window.FailSkillTest who n) | whenMatcher == t ->
+                  andM
+                    [ matchWho iid who whoMatcher
+                    , gameValueMatches n gameValueMatcher
+                    ]
                 _ -> pure False
-            Window t (Window.FailAttackEnemy who enemyId n)
-              | whenMatcher == t -> case skillMatcher of
-                Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
-                  [ matchWho iid who whoMatcher
-                  , gameValueMatches n gameValueMatcher
-                  , enemyMatches enemyId enemyMatcher
-                  ]
+              Matcher.SuccessResult gameValueMatcher -> case window' of
+                Window t (Window.PassInvestigationSkillTest who lid n)
+                  | whenMatcher == t -> case skillMatcher of
+                    Matcher.WhileInvestigating whereMatcher -> andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      , locationMatches iid source window' lid whereMatcher
+                      ]
+                    _ -> pure False
+                Window t (Window.SuccessfulAttackEnemy who enemyId n)
+                  | whenMatcher == t -> case skillMatcher of
+                    Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      , enemyMatches enemyId enemyMatcher
+                      ]
+                    _ -> pure False
+                Window t (Window.SuccessfulEvadeEnemy who enemyId n)
+                  | whenMatcher == t -> case skillMatcher of
+                    Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      , enemyMatches enemyId enemyMatcher
+                      ]
+                    _ -> pure False
+                Window t (Window.PassSkillTest _ _ who n)
+                  | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
+                    (&&)
+                    (matchWho iid who whoMatcher)
+                    (gameValueMatches n gameValueMatcher)
                 _ -> pure False
-            Window t (Window.FailEvadeEnemy who enemyId n) | whenMatcher == t ->
-              case skillMatcher of
-                Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
-                  [ matchWho iid who whoMatcher
-                  , gameValueMatches n gameValueMatcher
-                  , enemyMatches enemyId enemyMatcher
-                  ]
+              Matcher.AnyResult -> case window' of
+                Window t (Window.FailSkillTest who _) | whenMatcher == t ->
+                  matchWho iid who whoMatcher
+                Window t (Window.PassSkillTest _ _ who _) | whenMatcher == t ->
+                  matchWho iid who whoMatcher
                 _ -> pure False
-            Window t (Window.FailSkillTest who n) | whenMatcher == t ->
-              andM
-                [ matchWho iid who whoMatcher
-                , gameValueMatches n gameValueMatcher
-                ]
-            _ -> pure False
-          Matcher.SuccessResult gameValueMatcher -> case window' of
-            Window t (Window.PassInvestigationSkillTest who lid n)
-              | whenMatcher == t -> case skillMatcher of
-                Matcher.WhileInvestigating whereMatcher -> andM
-                  [ matchWho iid who whoMatcher
-                  , gameValueMatches n gameValueMatcher
-                  , locationMatches iid source window' lid whereMatcher
-                  ]
-                _ -> pure False
-            Window t (Window.SuccessfulAttackEnemy who enemyId n)
-              | whenMatcher == t -> case skillMatcher of
-                Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
-                  [ matchWho iid who whoMatcher
-                  , gameValueMatches n gameValueMatcher
-                  , enemyMatches enemyId enemyMatcher
-                  ]
-                _ -> pure False
-            Window t (Window.SuccessfulEvadeEnemy who enemyId n)
-              | whenMatcher == t -> case skillMatcher of
-                Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
-                  [ matchWho iid who whoMatcher
-                  , gameValueMatches n gameValueMatcher
-                  , enemyMatches enemyId enemyMatcher
-                  ]
-                _ -> pure False
-            Window t (Window.PassSkillTest _ _ who n)
-              | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
-                (&&)
-                (matchWho iid who whoMatcher)
-                (gameValueMatches n gameValueMatcher)
-            _ -> pure False
-          Matcher.AnyResult -> case window' of
-            Window t (Window.FailSkillTest who _) | whenMatcher == t ->
-              matchWho iid who whoMatcher
-            Window t (Window.PassSkillTest _ _ who _) | whenMatcher == t ->
-              matchWho iid who whoMatcher
-            _ -> pure False
+          isWindowMatch skillTestResultMatcher
   Matcher.DuringTurn whoMatcher -> case window' of
     Window Timing.When Window.NonFast -> matchWho iid iid whoMatcher
     Window Timing.When (Window.DuringTurn who) -> matchWho iid who whoMatcher

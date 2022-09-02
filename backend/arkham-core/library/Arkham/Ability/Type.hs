@@ -4,8 +4,8 @@ module Arkham.Ability.Type where
 
 import Arkham.Prelude
 
-import Arkham.Action
 import Arkham.Ability.Limit
+import Arkham.Action
 import Arkham.Cost
 import Arkham.Matcher
 import Arkham.Modifier
@@ -28,7 +28,7 @@ data AbilityType
 abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case
   FastAbility _ -> Nothing
-  ReactionAbility {} -> Nothing
+  ReactionAbility{} -> Nothing
   ActionAbility mAction _ -> mAction
   ActionAbilityWithSkill mAction _ _ -> mAction
   ActionAbilityWithBefore mAction _ _ -> mAction
@@ -61,8 +61,8 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbilityWithSkill mAction skill cost ->
     ActionAbilityWithSkill mAction skill $ applyCostModifiers cost modifiers
   ActionAbilityWithBefore mAction mBeforeAction cost ->
-    ActionAbilityWithBefore mAction mBeforeAction $
-      applyCostModifiers cost modifiers
+    ActionAbilityWithBefore mAction mBeforeAction
+      $ applyCostModifiers cost modifiers
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
@@ -89,9 +89,9 @@ applyCostModifier cost _ = cost
 defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
   FastAbility _ -> FastPlayerWindow
-  ActionAbility {} -> DuringTurn You
-  ActionAbilityWithBefore {} -> DuringTurn You
-  ActionAbilityWithSkill {} -> DuringTurn You
+  ActionAbility{} -> DuringTurn You
+  ActionAbilityWithBefore{} -> DuringTurn You
+  ActionAbilityWithSkill{} -> DuringTurn You
   ForcedAbility window -> window
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
@@ -101,55 +101,55 @@ defaultAbilityWindow = \case
 
 isFastAbilityType :: AbilityType -> Bool
 isFastAbilityType = \case
-  FastAbility {} -> True
-  ForcedAbility {} -> False
-  SilentForcedAbility {} -> False
-  ForcedAbilityWithCost {} -> False
+  FastAbility{} -> True
+  ForcedAbility{} -> False
+  SilentForcedAbility{} -> False
+  ForcedAbilityWithCost{} -> False
   Objective aType -> isFastAbilityType aType
-  ReactionAbility {} -> False
-  ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
-  AbilityEffect {} -> False
+  ReactionAbility{} -> False
+  ActionAbility{} -> False
+  ActionAbilityWithSkill{} -> False
+  ActionAbilityWithBefore{} -> False
+  AbilityEffect{} -> False
 
 isForcedAbilityType :: AbilityType -> Bool
 isForcedAbilityType = \case
-  SilentForcedAbility {} -> True
-  ForcedAbility {} -> True
-  ForcedAbilityWithCost {} -> True
+  SilentForcedAbility{} -> True
+  ForcedAbility{} -> True
+  ForcedAbilityWithCost{} -> True
   Objective aType -> isForcedAbilityType aType
-  FastAbility {} -> False
-  ReactionAbility {} -> False
-  ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
-  AbilityEffect {} -> False
+  FastAbility{} -> False
+  ReactionAbility{} -> False
+  ActionAbility{} -> False
+  ActionAbilityWithSkill{} -> False
+  ActionAbilityWithBefore{} -> False
+  AbilityEffect{} -> False
 
 isReactionAbilityType :: AbilityType -> Bool
 isReactionAbilityType = \case
-  SilentForcedAbility {} -> False
-  ForcedAbility {} -> False
-  ForcedAbilityWithCost {} -> False
+  SilentForcedAbility{} -> False
+  ForcedAbility{} -> False
+  ForcedAbilityWithCost{} -> False
   Objective aType -> isReactionAbilityType aType
-  FastAbility {} -> False
-  ReactionAbility {} -> True
-  ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
-  AbilityEffect {} -> False
+  FastAbility{} -> False
+  ReactionAbility{} -> True
+  ActionAbility{} -> False
+  ActionAbilityWithSkill{} -> False
+  ActionAbilityWithBefore{} -> False
+  AbilityEffect{} -> False
 
 isSilentForcedAbilityType :: AbilityType -> Bool
 isSilentForcedAbilityType = \case
-  SilentForcedAbility {} -> True
-  ForcedAbility {} -> False
-  ForcedAbilityWithCost {} -> False
+  SilentForcedAbility{} -> True
+  ForcedAbility{} -> False
+  ForcedAbilityWithCost{} -> False
   Objective aType -> isSilentForcedAbilityType aType
-  FastAbility {} -> False
-  ReactionAbility {} -> False
-  ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
-  AbilityEffect {} -> False
+  FastAbility{} -> False
+  ReactionAbility{} -> False
+  ActionAbility{} -> False
+  ActionAbilityWithSkill{} -> False
+  ActionAbilityWithBefore{} -> False
+  AbilityEffect{} -> False
 
 isPerWindowLimit :: AbilityLimit -> Bool
 isPerWindowLimit = \case
@@ -166,7 +166,7 @@ defaultAbilityLimit = \case
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
   FastAbility _ -> NoLimit
   ActionAbility _ _ -> NoLimit
-  ActionAbilityWithBefore {} -> NoLimit
-  ActionAbilityWithSkill {} -> NoLimit
+  ActionAbilityWithBefore{} -> NoLimit
+  ActionAbilityWithSkill{} -> NoLimit
   AbilityEffect _ -> NoLimit
   Objective aType -> defaultAbilityLimit aType

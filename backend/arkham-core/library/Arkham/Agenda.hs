@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Agenda (
-  module Arkham.Agenda,
-) where
+module Arkham.Agenda
+  ( module Arkham.Agenda
+  ) where
 
 import Arkham.Prelude
 
@@ -25,13 +25,10 @@ instance FromJSON Agenda where
     withAgendaCardCode cCode $ \(_ :: AgendaCard a) -> Agenda <$> parseJSON @a v
 
 withAgendaCardCode
-  :: CardCode
-  -> (forall a. IsAgenda a => AgendaCard a -> r)
-  -> r
-withAgendaCardCode cCode f =
-  case lookup cCode allAgendas of
-    Nothing -> error $ "Unknown agenda: " <> show cCode
-    Just (SomeAgendaCard a) -> f a
+  :: CardCode -> (forall a . IsAgenda a => AgendaCard a -> r) -> r
+withAgendaCardCode cCode f = case lookup cCode allAgendas of
+  Nothing -> error $ "Unknown agenda: " <> show cCode
+  Just (SomeAgendaCard a) -> f a
 
 allAgendas :: HashMap CardCode SomeAgendaCard
 allAgendas = mapFromList $ map

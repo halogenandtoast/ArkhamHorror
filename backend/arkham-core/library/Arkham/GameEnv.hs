@@ -43,15 +43,15 @@ instance HasStdGen GameEnv where
 instance HasGame GameT where
   getGame = asks $ gameEnvGame
 
-instance HasQueue GameEnv where
-  messageQueue = lens gameEnvQueue $ \m x -> m { gameEnvQueue = x }
+instance HasQueue Message GameT where
+  messageQueue = asks gameEnvQueue
 
 instance HasGameLogger GameEnv where
   gameLoggerL = lens gameLogger $ \m x -> m { gameLogger = x }
 
 toGameEnv
   :: ( HasGameRef env
-     , HasQueue env
+     , HasQueue Message m
      , HasStdGen env
      , HasGameLogger env
      , MonadReader env m
@@ -61,13 +61,13 @@ toGameEnv
 toGameEnv = do
   game <- readIORef =<< view gameRefL
   gen <- view genL
-  queueRef <- view messageQueue
+  queueRef <- messageQueue
   logger <- view gameLoggerL
   pure $ GameEnv game queueRef gen logger
 
 runWithEnv
   :: ( HasGameRef env
-     , HasQueue env
+     , HasQueue Message m
      , HasStdGen env
      , HasGameLogger env
      , MonadReader env m

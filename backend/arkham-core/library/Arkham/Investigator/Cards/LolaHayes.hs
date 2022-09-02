@@ -49,7 +49,7 @@ instance HasAbilities LolaHayes where
     ]
 
 switchRole
-  :: (MonadIO m, MonadReader env m, HasQueue env) => InvestigatorAttrs -> m ()
+  :: (MonadIO m, HasQueue Message m) => InvestigatorAttrs -> m ()
 switchRole attrs = push $ chooseOne
   (toId attrs)
   [ Label (tshow role) [SetRole (toId attrs) role]

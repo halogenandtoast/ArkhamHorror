@@ -4,77 +4,75 @@ module Arkham.Classes.HasQueue
 
 import Arkham.Prelude
 
-import Arkham.Message
-
-class HasQueue a where
-  messageQueue :: Lens' a (IORef [Message])
+class HasQueue msg m where
+  messageQueue :: m (IORef [msg])
 
 withQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => ([Message] -> ([Message], r))
+  :: (MonadIO m, HasQueue msg m)
+  => ([msg] -> ([msg], r))
   -> m r
 withQueue body = do
-  ref <- view messageQueue
+  ref <- messageQueue
   liftIO $ atomicModifyIORef' ref body
 
 withQueue_
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => ([Message] -> [Message])
+  :: (MonadIO m, HasQueue msg m)
+  => ([msg] -> [msg])
   -> m ()
 withQueue_ body = withQueue ((, ()) . body)
 
 fromQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env) => ([Message] -> r) -> m r
-fromQueue f = f <$> (readIORef =<< view messageQueue)
+  :: (MonadIO m, HasQueue msg m) => ([msg] -> r) -> m r
+fromQueue f = f <$> (readIORef =<< messageQueue)
 
 findFromQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => (Message -> Bool)
-  -> m (Maybe Message)
+  :: (MonadIO m, HasQueue msg m)
+  => (msg -> Bool)
+  -> m (Maybe msg)
 findFromQueue f = fromQueue (find f)
 
-popMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
+popMessage :: forall msg m. (MonadIO m, HasQueue msg m) => m (Maybe msg)
 popMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (ms, Just m)
 
-clearQueue :: (MonadIO m, MonadReader env m, HasQueue env) => m ()
-clearQueue = withQueue $ const ([], ())
+clearQueue :: forall msg m. (MonadIO m, HasQueue msg m) => m ()
+clearQueue = withQueue_ @_ @msg $ const []
 
 peekMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
+  :: (MonadIO m, HasQueue msg m) => m (Maybe msg)
 peekMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (m : ms, Just m)
 
 peekQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env) => m [Message]
+  :: forall msg m. (MonadIO m, HasQueue msg m) => m [msg]
 peekQueue = withQueue $ \q -> (q, q)
 
-pushEnd :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
+pushEnd :: (MonadIO m, HasQueue msg m) => msg -> m ()
 pushEnd = pushAllEnd . pure
 
-pushAllEnd :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
+pushAllEnd :: (MonadIO m, HasQueue msg m) => [msg] -> m ()
 pushAllEnd msgs = withQueue \queue -> (queue <> msgs, ())
 
-push :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
+push :: (MonadIO m, HasQueue msg m) => msg -> m ()
 push = pushAll . pure
 
-pushAll :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
+pushAll :: (MonadIO m, HasQueue msg m) => [msg] -> m ()
 pushAll msgs = withQueue \queue -> (msgs <> queue, ())
 
 replaceMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => Message
-  -> [Message]
+  :: (MonadIO m, HasQueue msg m, Eq msg)
+  => msg
+  -> [msg]
   -> m ()
 replaceMessage msg replacement =
   replaceMessageMatching (== msg) (const replacement)
 
 replaceMessageMatching
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => (Message -> Bool)
-  -> (Message -> [Message])
+  :: (MonadIO m, HasQueue msg m)
+  => (msg -> Bool)
+  -> (msg -> [msg])
   -> m ()
 replaceMessageMatching matcher replacer = withQueue \queue ->
   let (before, after) = break matcher queue
@@ -84,16 +82,16 @@ replaceMessageMatching matcher replacer = withQueue \queue ->
       (msg' : rest) -> (before <> replacer msg' <> rest, ())
 
 pushAfter
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => (Message -> Bool)
-  -> Message
+  :: (MonadIO m, HasQueue msg m)
+  => (msg -> Bool)
+  -> msg
   -> m ()
 pushAfter matcher msg = replaceMessageMatching matcher (\m -> [m, msg])
 
 popMessageMatching
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => (Message -> Bool)
-  -> m (Maybe Message)
+  :: (MonadIO m, HasQueue msg m)
+  => (msg -> Bool)
+  -> m (Maybe msg)
 popMessageMatching matcher = withQueue \queue ->
   let (before, after) = break matcher queue
   in
@@ -102,17 +100,17 @@ popMessageMatching matcher = withQueue \queue ->
       (msg' : rest) -> (before <> rest, Just msg')
 
 popMessageMatching_
-  :: (MonadIO m, MonadReader env m, HasQueue env) => (Message -> Bool) -> m ()
+  :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m ()
 popMessageMatching_ = void . popMessageMatching
 
 removeAllMessagesMatching
-  :: (MonadIO m, MonadReader env m, HasQueue env) => (Message -> Bool) -> m ()
+  :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m ()
 removeAllMessagesMatching matcher = withQueue_ $ filter (not . matcher)
 
 insertAfterMatching
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => [Message]
-  -> (Message -> Bool)
+  :: (MonadIO m, HasQueue msg m)
+  => [msg]
+  -> (msg -> Bool)
   -> m ()
 insertAfterMatching msgs p = withQueue_ \queue ->
   let

@@ -316,14 +316,14 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
+  :: (MonadIO m, MonadReader env m, HasQueue Message m, HasGameRef env)
   => Investigator
   -> [PlayerCard]
   -> m ()
 addInvestigator i d = do
   gameRef <- view gameRefL
   game <- liftIO $ readIORef gameRef
-  queueRef <- view messageQueue
+  queueRef <- messageQueue
 
   let
     iid = toId i
@@ -2356,7 +2356,7 @@ runMessages
   :: ( MonadIO m
      , HasGameRef env
      , HasStdGen env
-     , HasQueue env
+     , HasQueue Message m
      , MonadReader env m
      , HasGameLogger env
      )
@@ -2366,10 +2366,10 @@ runMessages mLogger = do
   g <- readGame
   debugLevel <- fromMaybe @Int 0 . join . fmap readMay <$> liftIO
     (lookupEnv "DEBUG")
-  when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
+  when (debugLevel == 2) $ peekQueue @Message >>= pPrint >> putStrLn "\n"
 
   unless (g ^. gameStateL /= IsActive) $ do
-    mmsg <- popMessage
+    mmsg <- popMessage @Message
     case mmsg of
       Nothing -> case gamePhase g of
         CampaignPhase -> pure ()
@@ -2448,7 +2448,7 @@ runPreGameMessage msg g = case msg of
   -- We want to empty the queue for triggering a resolution
   EndCheckWindow -> pure $ g & windowDepthL -~ 1
   ScenarioResolution _ -> do
-    clearQueue
+    clearQueue @Message
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
   _ -> pure g
 
@@ -2734,7 +2734,7 @@ runGameMessage msg g = case msg of
         push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
         pure $ g & (foundCardsL .~ foundCards)
   GameOver -> do
-    clearQueue
+    clearQueue @Message
     pure $ g & gameStateL .~ IsOver
   PlaceLocation card ->
     if isNothing $ g ^. entitiesL . locationsL . at (toLocationId card)
@@ -3080,7 +3080,7 @@ runGameMessage msg g = case msg of
     mNextMessage <- peekMessage
     case mNextMessage of
       Just (SkillTestAsk (Ask iid2 (ChooseOne c2))) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         push $ SkillTestAsk $ AskMap $ mapFromList
           [(iid1, ChooseOne c1), (iid2, ChooseOne c2)]
       _ -> push (chooseOne iid1 c1)
@@ -3089,7 +3089,7 @@ runGameMessage msg g = case msg of
     mNextMessage <- peekMessage
     case mNextMessage of
       Just (SkillTestAsk (Ask iid2 (ChooseOne c2))) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         push $ SkillTestAsk $ AskMap $ insertWith
           (\x y -> case (x, y) of
             (ChooseOne m, ChooseOne n) -> ChooseOne $ m <> n
@@ -3104,7 +3104,7 @@ runGameMessage msg g = case msg of
     mNextMessage <- peekMessage
     case mNextMessage of
       Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         push $ AskPlayer $ AskMap $ mapFromList
           [(iid1, ChooseOne c1), (iid2, ChooseOne c2)]
       _ -> push (chooseOne iid1 c1)
@@ -3113,7 +3113,7 @@ runGameMessage msg g = case msg of
     mNextMessage <- peekMessage
     case mNextMessage of
       Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         push $ AskPlayer $ AskMap $ insertWith
           (\x y -> case (x, y) of
             (ChooseOne m, ChooseOne n) -> ChooseOne $ m <> n
@@ -3137,14 +3137,14 @@ runGameMessage msg g = case msg of
         mNextMessage <- peekMessage
         case mNextMessage of
           Just (EnemyAttacks as) -> do
-            _ <- popMessage
+            _ <- popMessage @Message
             push $ EnemyAttacks
               (EnemyAttack iid eid damageStrategy attackType : as)
           Just aoo@(CheckAttackOfOpportunity _ _) -> do
-            _ <- popMessage
+            _ <- popMessage @Message
             pushAll [aoo, msg]
           Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
-            _ <- popMessage
+            _ <- popMessage @Message
             modifiers2' <- getModifiers (InvestigatorTarget iid2)
             traits2 <- field EnemyTraits eid2
             let
@@ -3171,13 +3171,13 @@ runGameMessage msg g = case msg of
         _ -> error "unhandled"
     case mNextMessage of
       Just (EnemyAttacks as2) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         push $ EnemyAttacks $ as ++ as2
       Just aoo@(CheckAttackOfOpportunity _ _) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         pushAll [aoo, msg]
       Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
-        _ <- popMessage
+        _ <- popMessage @Message
         push $ EnemyAttacks
           (EnemyAttack iid2 eid2 damageStrategy2 attackType2 : as)
       _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) $ map toUI as
@@ -3329,7 +3329,7 @@ runGameMessage msg g = case msg of
   EndTurn _ ->
     pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
   EndPhase -> do
-    clearQueue
+    clearQueue @Message
     case g ^. phaseL of
       MythosPhase -> pushEnd $ Begin InvestigationPhase
       InvestigationPhase -> pushEnd $ Begin EnemyPhase

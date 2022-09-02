@@ -48,8 +48,8 @@ instance HasStdGen GameApp where
 instance HasGameRef GameApp where
   gameRefL = lens appGame $ \m x -> m { appGame = x }
 
-instance HasQueue GameApp where
-  messageQueue = lens appQueue $ \m x -> m { appQueue = x }
+instance HasQueue Message GameAppT where
+  messageQueue = asks appQueue
 
 instance HasGameLogger GameApp where
   gameLoggerL = lens appLogger $ \m x -> m { appLogger = x }

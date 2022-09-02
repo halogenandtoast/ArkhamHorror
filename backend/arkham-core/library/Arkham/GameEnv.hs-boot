@@ -6,6 +6,7 @@ import Arkham.Ability
 import Arkham.Classes.HasQueue
 import Arkham.Distance
 import Arkham.Id
+import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Target
@@ -22,7 +23,7 @@ instance MonadIO GameT
 instance MonadRandom GameT
 instance MonadReader GameEnv GameT
 
-instance HasQueue GameEnv
+instance HasQueue Message GameT
 
 getAllModifiers :: (Monad m, HasGame m) => m (HashMap Target [Modifier])
 getActiveAbilities :: (Monad m, HasGame m) => m [Ability]

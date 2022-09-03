@@ -6,6 +6,7 @@ import Arkham.Action ( Action )
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Id
@@ -101,6 +102,9 @@ colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 investigatorEngagedWith :: EnemyId -> InvestigatorMatcher
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId
 
+investigatorAt :: LocationId -> InvestigatorMatcher
+investigatorAt = InvestigatorAt . LocationWithId
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | You
@@ -148,6 +152,7 @@ data InvestigatorMatcher
   | TopCardOfDeckIs CardMatcher
   | YetToTakeTurn
   | NotInvestigator InvestigatorMatcher
+  | InvestigatorWithSupply Supply
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -464,6 +469,7 @@ data LocationMatcher
   | LocationWithTreachery TreacheryMatcher
   | LocationWithoutTreachery TreacheryMatcher
   | LocationWithoutModifier ModifierType
+  | LocationWithModifier ModifierType
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
@@ -1035,6 +1041,7 @@ replaceYourLocation iid (Just lid) = go
     LocationWithTreachery{} -> matcher
     LocationWithoutTreachery{} -> matcher
     LocationWithoutModifier{} -> matcher
+    LocationWithModifier{} -> matcher
     LocationMatchAll ms -> LocationMatchAll $ map go ms
     LocationMatchAny ms -> LocationMatchAny $ map go ms
     FirstLocation ms -> FirstLocation $ map go ms

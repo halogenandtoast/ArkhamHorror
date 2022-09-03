@@ -176,6 +176,7 @@ data ModifierType
   | XPModifier Int
   | SkillTestAutomaticallySucceeds
   | IgnoreRevelation
+  | InVictoryDisplayForCountingVengeance
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

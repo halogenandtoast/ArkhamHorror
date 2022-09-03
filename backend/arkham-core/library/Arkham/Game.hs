@@ -638,6 +638,7 @@ getInvestigatorsMatching matcher = do
  where
   go = \case
     NoOne -> pure . const False
+    InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
     FewestCardsInHand -> \i -> do
       let cardCount = length . investigatorHand $ toAttrs i
       minCardCount <-
@@ -1053,6 +1054,8 @@ getLocationsMatching lmatcher = do
     LocationWithoutEnemies -> pure $ filter noEnemiesAtLocation ls
     LocationWithoutModifier modifier' ->
       filterM (\l -> notElem modifier' <$> getModifiers (toTarget l)) ls
+    LocationWithModifier modifier' ->
+      filterM (\l -> elem modifier' <$> getModifiers (toTarget l)) ls
     LocationWithEnemy enemyMatcher -> do
       enemies <- select enemyMatcher
       pure $ filter
@@ -1741,6 +1744,7 @@ instance Projection Location where
       LocationCard -> pure $ lookupCard locationCardCode (unLocationId lid)
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
+      LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
 
 instance Projection Asset where
   field f aid = do

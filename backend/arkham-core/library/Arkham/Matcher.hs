@@ -746,7 +746,7 @@ data PhaseStepMatcher = EnemiesAttackStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ExploreMatcher = SuccessfulExplore | FailedExplore
+data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

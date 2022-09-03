@@ -1,12 +1,11 @@
 module Arkham.Asset.Cards.RelicOfAgesADeviceOfSomeSort
   ( relicOfAgesADeviceOfSomeSort
   , RelicOfAgesADeviceOfSomeSort(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 
 newtype RelicOfAgesADeviceOfSomeSort = RelicOfAgesADeviceOfSomeSort AssetAttrs
@@ -18,4 +17,5 @@ relicOfAgesADeviceOfSomeSort =
   asset RelicOfAgesADeviceOfSomeSort Cards.relicOfAgesADeviceOfSomeSort
 
 instance RunMessage RelicOfAgesADeviceOfSomeSort where
-  runMessage msg (RelicOfAgesADeviceOfSomeSort attrs) = RelicOfAgesADeviceOfSomeSort <$> runMessage msg attrs
+  runMessage msg (RelicOfAgesADeviceOfSomeSort attrs) =
+    RelicOfAgesADeviceOfSomeSort <$> runMessage msg attrs

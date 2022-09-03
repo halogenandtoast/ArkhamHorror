@@ -87,7 +87,7 @@ explore iid source cardMatcher = do
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
           windowMsg <- checkWindows
-            [Window Timing.After $ Window.Explored iid Success]
+            [Window Timing.After $ Window.Explored iid (Success $ toLocationId x)]
           pure
             [ PlaceLocation x
             , MoveTo source iid (toLocationId x)

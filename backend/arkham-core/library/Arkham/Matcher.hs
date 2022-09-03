@@ -81,6 +81,9 @@ pattern InvestigatorCanSpendResources value <-
   InvestigatorCanSpendResources value =
     InvestigatorWithResources (AtLeast value)
 
+pattern InvestigatorCanDisengage :: InvestigatorMatcher
+pattern InvestigatorCanDisengage = InvestigatorMatches [InvestigatorWithoutModifier CannotDisengageEnemies, InvestigatorEngagedWith AnyEnemy]
+
 pattern InvestigatorCanMove :: InvestigatorMatcher
 pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
   InvestigatorCanMove = InvestigatorWithoutModifier CannotMove

@@ -103,6 +103,7 @@ data ModifierType
   | ActionDoesNotCauseAttacksOfOpportunity Action
   | CannotFight EnemyMatcher
   | CannotMove
+  | CannotDisengageEnemies
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan
   | CannotPerformSkillTest

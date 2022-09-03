@@ -1,14 +1,17 @@
 module Arkham.Treachery.Cards.LostInTime
   ( lostInTime
   , LostInTime(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
-import Arkham.Message
+import Arkham.Deck
+import Arkham.Matcher
+import Arkham.Message hiding ( AssetDamage )
+import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype LostInTime = LostInTime TreacheryAttrs
@@ -20,5 +23,25 @@ lostInTime = treachery LostInTime Cards.lostInTime
 
 instance RunMessage LostInTime where
   runMessage msg t@(LostInTime attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid source | isSource attrs source -> do
+      assets <- selectList $ assetControlledBy iid <> AssetNonStory
+      assetsWithDamageAndHorror <- for assets $ \asset -> do
+        damage <- field AssetDamage asset
+        horror <- field AssetHorror asset
+        pure (asset, damage, horror)
+      if notNull assetsWithDamageAndHorror
+        then do
+          push $ chooseOne
+            iid
+            [ targetLabel
+                aid
+                (ShuffleIntoDeck (InvestigatorDeck iid) (toTarget attrs)
+                : [ InvestigatorDamage iid (toSource attrs) dmg hrr
+                  | dmg > 0 || hrr > 0
+                  ]
+                )
+            | (aid, dmg, hrr) <- assetsWithDamageAndHorror
+            ]
+        else pushAll $ replicate 3 (ChooseAndDiscardCard iid)
+      pure t
     _ -> LostInTime <$> runMessage msg attrs

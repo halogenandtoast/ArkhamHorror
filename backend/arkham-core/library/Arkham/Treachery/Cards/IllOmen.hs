@@ -1,14 +1,15 @@
 module Arkham.Treachery.Cards.IllOmen
   ( illOmen
   , IllOmen(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Classes
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype IllOmen = IllOmen TreacheryAttrs
@@ -20,5 +21,23 @@ illOmen = treachery IllOmen Cards.illOmen
 
 instance RunMessage IllOmen where
   runMessage msg t@(IllOmen attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid source | isSource attrs source -> do
+      lids <- selectList $ LocationWithInvestigator Anyone
+      locationsWithInvestigators <- traverse
+        (traverseToSnd (selectList . investigatorAt))
+        lids
+      push $ chooseOne
+        iid
+        [ targetLabel
+            lid
+            (PlaceDoom (idToTarget lid) 1
+            : map
+                (\i ->
+                  InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1
+                )
+                investigators
+            )
+        | (lid, investigators) <- locationsWithInvestigators
+        ]
+      pure t
     _ -> IllOmen <$> runMessage msg attrs

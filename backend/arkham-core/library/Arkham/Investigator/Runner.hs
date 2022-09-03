@@ -40,6 +40,7 @@ import Arkham.Matcher
   , InvestigatorMatcher (..)
   , LocationMatcher (..)
   , assetIs
+  , pattern InvestigatorCanDisengage
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -1834,7 +1835,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ findWithDefault [] Zone.FromDiscard investigatorFoundCards
       pure $ a & foundCardsL %~ deleteMap Zone.FromDiscard & discardL <>~ cards
   DisengageEnemy iid eid | iid == investigatorId -> do
-    pure $ a & engagedEnemiesL %~ deleteSet eid
+    canDisengage <- iid <=~> InvestigatorCanDisengage
+    pure $ if canDisengage then a & engagedEnemiesL %~ deleteSet eid else a
   EndSearch iid _ (InvestigatorTarget iid') cardSources
     | iid == investigatorId -> do
       push (SearchEnded iid)

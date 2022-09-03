@@ -6,12 +6,12 @@ module Arkham.Asset.Cards.CatBurglar1
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
@@ -54,17 +54,22 @@ instance RunMessage CatBurglar1 where
         (SkillModifier SkillAgility 1)
       CatBurglar1 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      engagedEnemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
+      engagedEnemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId
+        iid
+      canDisengage <- iid <=~> InvestigatorCanDisengage
       locationId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
+      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+        locationId
       pushAll
-        $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
+        $ [ DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds ]
         <> [ chooseOne
                iid
-               [ targetLabel lid [MoveAction iid lid Free False] | lid <- accessibleLocationIds ]
+               [ targetLabel lid [MoveAction iid lid Free False]
+               | lid <- accessibleLocationIds
+               ]
            | notNull accessibleLocationIds
            ]
       pure $ CatBurglar1 $ attrs & exhaustedL .~ True

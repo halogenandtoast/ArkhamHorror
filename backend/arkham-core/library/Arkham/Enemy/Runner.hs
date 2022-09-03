@@ -28,6 +28,7 @@ import Arkham.Matcher
   , investigatorEngagedWith
   , locationWithInvestigator
   , preyWith
+  , pattern InvestigatorCanDisengage
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -820,13 +821,21 @@ instance RunMessage EnemyAttrs where
       _ -> pure a
     DisengageEnemy iid eid | eid == enemyId -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do
-        lid <- getJustLocation iid
-        pure $ a & placementL .~ AtLocation lid
+        canDisengage <- iid <=~> InvestigatorCanDisengage
+        if canDisengage
+          then do
+            lid <- getJustLocation iid
+            pure $ a & placementL .~ AtLocation lid
+          else pure a
       _ -> pure a
     DisengageEnemyFromAll eid | eid == enemyId -> case enemyPlacement of
       InThreatArea iid -> do
-        lid <- getJustLocation iid
-        pure $ a & placementL .~ AtLocation lid
+        canDisengage <- iid <=~> InvestigatorCanDisengage
+        if canDisengage
+          then do
+            lid <- getJustLocation iid
+            pure $ a & placementL .~ AtLocation lid
+          else pure a
       _ -> pure a
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0

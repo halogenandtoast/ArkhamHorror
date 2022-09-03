@@ -6,8 +6,8 @@ module Arkham.Asset.Cards.Stealth
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
@@ -33,26 +33,28 @@ instance HasAbilities Stealth where
 
 instance RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (ChooseEvadeEnemy
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ ChooseEvadeEnemy
         iid
         source
         (Just $ toTarget attrs)
         SkillAgility
         AnyEnemy
         False
-      )
+      pure a
     ChosenEvadeEnemy source eid | isSource attrs source ->
       a <$ push (skillTestModifier source (EnemyTarget eid) (EnemyEvade (-2)))
     AfterSkillTestEnds source target@(EnemyTarget eid) n
       | isSource attrs source && n >= 0 -> do
         let iid = getController attrs
-        a <$ pushAll
-          [ CreateWindowModifierEffect
-            EffectTurnWindow
-            (EffectModifiers $ toModifiers attrs [EnemyCannotEngage iid])
-            source
-            target
-          , DisengageEnemy iid eid
-          ]
+        canDisengage <- iid <=~> InvestigatorCanDisengage
+        pushAll
+          $ [ CreateWindowModifierEffect
+                EffectTurnWindow
+                (EffectModifiers $ toModifiers attrs [EnemyCannotEngage iid])
+                source
+                target
+            ]
+          <> [ DisengageEnemy iid eid | canDisengage ]
+        pure a
     _ -> Stealth <$> runMessage msg attrs

@@ -1409,8 +1409,8 @@ windowMatches iid source window' = \case
         else do
           let
             isWindowMatch = \case
-              Matcher.ResultOneOf xs -> traceShowId <$> anyM isWindowMatch xs
-              Matcher.FailureResult gameValueMatcher -> case traceShowId window' of
+              Matcher.ResultOneOf xs -> anyM isWindowMatch xs
+              Matcher.FailureResult gameValueMatcher -> case window' of
                 Window t (Window.FailInvestigationSkillTest who lid n)
                   | whenMatcher == t -> case skillMatcher of
                     Matcher.WhileInvestigating whereMatcher -> andM
@@ -1965,6 +1965,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
+    Matcher.LocationWithModifier _ -> locationId <=~> matcher
     Matcher.LocationWithEnemy enemyMatcher -> selectAny
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
     Matcher.LocationWithAsset assetMatcher -> selectAny

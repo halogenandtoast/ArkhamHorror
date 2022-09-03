@@ -11,37 +11,49 @@ import Arkham.GameEnv
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types
+import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
-import qualified Arkham.Timing as Timing
-import qualified Arkham.Treachery.Cards as Treacheries
-import Arkham.Window (Result(..), Window(..))
-import qualified Arkham.Window as Window
+import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window ( Result (..), Window (..) )
+import Arkham.Window qualified as Window
 
 getHasSupply :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 
 getSupplyCount :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Int
-getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) iid
+getSupplyCount iid s =
+  fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
 getAnyHasSupply :: (HasGame m, Monad m) => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
-getInvestigatorsWithSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
-getInvestigatorsWithSupply s = getInvestigatorIds >>= filterM (`getHasSupply` s)
+getInvestigatorsWithSupply
+  :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+getInvestigatorsWithSupply s =
+  getInvestigatorIds >>= filterM (`getHasSupply` s)
 
-getInvestigatorsWithoutSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
-getInvestigatorsWithoutSupply s = getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
+getInvestigatorsWithoutSupply
+  :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+getInvestigatorsWithoutSupply s =
+  getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
 
 getVengeanceInVictoryDisplay :: (HasGame m, Monad m) => m Int
-getVengeanceInVictoryDisplay =
-  sum
+getVengeanceInVictoryDisplay = do
+  inVictoryDisplay <-
+    sum
     . map (fromMaybe 0 . cdVengeancePoints . toCardDef)
     <$> scenarioField ScenarioVictoryDisplay
+  locationsWithModifier <- getSum <$> selectAgg
+    (Sum . fromMaybe 0)
+    LocationVengeance
+    (LocationWithModifier InVictoryDisplayForCountingVengeance)
+  pure $ inVictoryDisplay + locationsWithModifier
 
 getExplorationDeck :: (HasGame m, Monad m) => m [Card]
 getExplorationDeck = scenarioFieldMap
@@ -50,7 +62,8 @@ getExplorationDeck = scenarioFieldMap
 
 getSetAsidePoisonedCount :: (HasGame m, Monad m) => m Int
 getSetAsidePoisonedCount = do
-  n <- selectCount $ InDeckOf Anyone <> BasicCardMatch (cardIs Treacheries.poisoned)
+  n <- selectCount $ InDeckOf Anyone <> BasicCardMatch
+    (cardIs Treacheries.poisoned)
   pure $ 4 - n
 
 getIsPoisoned :: (HasGame m, Monad m) => InvestigatorId -> m Bool
@@ -87,7 +100,9 @@ explore iid source cardMatcher = do
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
           windowMsg <- checkWindows
-            [Window Timing.After $ Window.Explored iid (Success $ toLocationId x)]
+            [ Window Timing.After
+                $ Window.Explored iid (Success $ toLocationId x)
+            ]
           pure
             [ PlaceLocation x
             , MoveTo source iid (toLocationId x)

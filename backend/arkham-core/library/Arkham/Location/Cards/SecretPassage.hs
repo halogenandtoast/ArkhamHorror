@@ -54,6 +54,5 @@ instance RunMessage SecretPassage where
           [InvestigatorAssignDamage iid source DamageAny 1 1]
         , Label "Place 1 doom on secret passage" [PlaceDoom (toTarget attrs) 1]
         ]
-
       pure l
     _ -> SecretPassage <$> runMessage msg attrs

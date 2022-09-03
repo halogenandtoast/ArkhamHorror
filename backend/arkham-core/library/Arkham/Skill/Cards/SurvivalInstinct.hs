@@ -8,10 +8,11 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Game.Helpers
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
-import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
+import Arkham.Skill.Runner
 import Arkham.Target
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
@@ -27,28 +28,30 @@ instance RunMessage SurvivalInstinct where
       do
         engagedEnemyIds <- selectList EnemyEngagedWithYou
         unblockedConnectedLocationIds <- selectList AccessibleLocation
+        canMove <- iid <=~> InvestigatorCanMove
+        canDisengage <- iid <=~> InvestigatorCanDisengage
         let
-          moveOptions = chooseOne
-            iid
-            ([Label "Do not move to a connecting location" []]
-            <> [ targetLabel lid [MoveAction iid lid Free False]
-               | lid <- unblockedConnectedLocationIds
-               ]
-            )
-
-        s <$ case engagedEnemyIds of
-          [] -> if null unblockedConnectedLocationIds
-            then pure ()
-            else push moveOptions
-          es -> pushAll
-            ([ chooseOne
-                 iid
-                 [ Label
-                   "Disengage from each other enemy"
-                   [ DisengageEnemy iid eid | eid <- es ]
-                 , Label "Skip" []
+          moveOptions =
+            chooseOne iid
+              $ [Label "Do not move to a connecting location" []]
+              <> [ targetLabel lid [MoveAction iid lid Free False]
+                 | lid <- unblockedConnectedLocationIds
                  ]
-             ]
-            <> [ moveOptions | notNull unblockedConnectedLocationIds ]
-            )
+
+        case engagedEnemyIds of
+          es | notNull es && canDisengage ->
+            pushAll
+              $ [ chooseOne
+                    iid
+                    [ Label
+                      "Disengage from each other enemy"
+                      [ DisengageEnemy iid eid | eid <- es ]
+                    , Label "Skip" []
+                    ]
+                ]
+              <> [ moveOptions
+                 | notNull unblockedConnectedLocationIds && canMove
+                 ]
+          _ -> unless (null unblockedConnectedLocationIds) $ push moveOptions
+        pure s
     _ -> SurvivalInstinct <$> runMessage msg attrs

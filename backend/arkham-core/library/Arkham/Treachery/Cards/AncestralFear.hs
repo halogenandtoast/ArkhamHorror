@@ -23,6 +23,8 @@ instance RunMessage AncestralFear where
   runMessage msg t@(AncestralFear attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mLocation <- selectOne $ locationWithInvestigator iid
+      -- Due to adding to victory not triggering surge we have to manually call
+      -- it. Ideally we would solve surge another way
       push
         $ chooseOrRunOne iid
         $ [ Label
@@ -30,6 +32,9 @@ instance RunMessage AncestralFear where
               [PlaceDoom (idToTarget lid) 1]
           | lid <- maybeToList mLocation
           ]
-        <> [Label "Place Ancestral Fear in the victory display." [AddToVictory (toTarget attrs)]]
+        <> [ Label
+               "Place Ancestral Fear in the victory display."
+               [AddToVictory (toTarget attrs), Surge iid source]
+           ]
       pure t
     _ -> AncestralFear <$> runMessage msg attrs

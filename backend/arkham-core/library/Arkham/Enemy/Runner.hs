@@ -464,6 +464,10 @@ instance RunMessage EnemyAttrs where
                `elem` keywords
                && IgnoreRetaliate
                `notElem` modifiers'
+               && (not enemyExhausted
+                  || CanRetaliateWhileExhausted
+                  `elem` modifiers'
+                  )
              ]
           )
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
@@ -723,9 +727,11 @@ instance RunMessage EnemyAttrs where
       let
         victory = cdVictoryPoints $ toCardDef a
         vengeance = cdVengeancePoints $ toCardDef a
-        victoryMsgs = [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance)]
-        defeatMsgs =
-          if isJust (victory <|> vengeance) then [RemoveEnemy eid] else [Discard $ toTarget a]
+        victoryMsgs =
+          [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance) ]
+        defeatMsgs = if isJust (victory <|> vengeance)
+          then [RemoveEnemy eid]
+          else [Discard $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
@@ -832,6 +838,8 @@ instance RunMessage EnemyAttrs where
       windows' <- windows [Window.PlacedClues (toTarget a) n]
       pushAll windows'
       pure $ a & cluesL +~ n
+    PlaceResources target n | isTarget a target -> do
+      pure $ a & resourcesL +~ n
     RemoveClues target n | isTarget a target ->
       pure $ a & cluesL %~ max 0 . subtract n
     FlipClues target n | isTarget a target -> do

@@ -114,6 +114,9 @@ doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
 cluesL :: Lens' EnemyAttrs Int
 cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 
+resourcesL :: Lens' EnemyAttrs Int
+resourcesL = lens enemyResources $ \m x -> m { enemyResources = x }
+
 allEnemyCards :: HashMap CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
 
@@ -159,6 +162,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyExhausted = False
       , enemyDoom = 0
       , enemyClues = 0
+      , enemyResources = 0
       , enemySpawnAt = Nothing
       , enemySurgeIfUnabledToSpawn = False
       , enemyAsSelfLocation = Nothing

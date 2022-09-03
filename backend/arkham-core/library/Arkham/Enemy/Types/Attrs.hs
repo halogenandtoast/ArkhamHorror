@@ -28,6 +28,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   , enemyClues :: Int
+  , enemyResources :: Int
   , enemySpawnAt :: Maybe LocationMatcher
   , enemySurgeIfUnabledToSpawn :: Bool
   , enemyAsSelfLocation :: Maybe Text

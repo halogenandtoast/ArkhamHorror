@@ -1729,9 +1729,11 @@ windowMatches iid source window' = \case
   Matcher.Explored timingMatcher whoMatcher resultMatcher -> case window' of
     Window t (Window.Explored who result) | timingMatcher == t -> andM
       [ matchWho iid who whoMatcher
-      , pure $ case resultMatcher of
-        Matcher.SuccessfulExplore -> result == Window.Success
-        Matcher.FailedExplore -> result == Window.Failure
+      , case resultMatcher of
+        Matcher.SuccessfulExplore locationMatcher -> case result of
+          Window.Success lid ->  lid <=~> locationMatcher
+          Window.Failure -> pure False
+        Matcher.FailedExplore -> pure $ result == Window.Failure
       ]
     _ -> pure False
   Matcher.AttemptExplore timingMatcher whoMatcher -> case window' of

@@ -170,6 +170,7 @@ data Game = Game
   , gameInDiscardEntities :: HashMap InvestigatorId Entities
   , gameInSearchEntities :: Entities
   , gameEnemiesInVoid :: EntityMap Enemy
+  , gameOutOfPlayEntities :: Entities
   , -- Player Details
     -- used for determining if game should start
     gamePlayerCount :: Int
@@ -272,6 +273,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         }
       , gameModifiers = mempty
       , gameEncounterDiscardEntities = defaultEntities
+      , gameOutOfPlayEntities = defaultEntities
       , gameInHandEntities = mempty
       , gameInDiscardEntities = mempty
       , gameInSearchEntities = defaultEntities
@@ -2941,6 +2943,12 @@ runGameMessage msg g = case msg of
       else do
         pushAll [RemoveFromPlay (AssetSource assetId), AddToHand iid card]
     pure g
+  SetOutOfPlay target@(EnemyTarget enemyId) -> do
+    pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay target]
+    pure g
+  DoSetOutOfPlay (EnemyTarget enemyId) -> do
+    enemy <- getEnemy enemyId
+    pure $ g & entitiesL . enemiesL %~ deleteMap enemyId & outOfPlayEntitiesL . enemiesL . at enemyId ?~ enemy
   RemovedFromPlay (AssetSource assetId) -> do
     asset <- getAsset assetId
     let

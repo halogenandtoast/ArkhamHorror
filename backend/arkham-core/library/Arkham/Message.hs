@@ -475,6 +475,8 @@ data Message
   | RemoveLocation LocationId
   | RemovedLocation LocationId
   | RemoveTraits Target [Trait]
+  | SetOutOfPlay Target
+  | DoSetOutOfPlay Target
   | RemoveFromPlay Source
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep

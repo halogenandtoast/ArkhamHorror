@@ -305,6 +305,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
     pure $ a & (victoryDisplayL %~ (card :))
+  AddToVictory (TreacheryTarget tid) -> do
+    card <- field TreacheryCard tid
+    pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (ActTarget aid) -> do
     card <- field ActCard aid
     pure $ a & (victoryDisplayL %~ (card :))

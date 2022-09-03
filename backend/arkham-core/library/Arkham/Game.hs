@@ -3288,6 +3288,11 @@ runGameMessage msg g = case msg of
     windowMsgs <- windows [Window.AddedToVictory card]
     pushAll windowMsgs
     pure $ g & (entitiesL . eventsL %~ deleteMap eid) -- we might not want to remove here?
+  AddToVictory (TreacheryTarget tid) -> do
+    card <- field TreacheryCard tid
+    windowMsgs <- windows [Window.AddedToVictory card]
+    pushAll windowMsgs
+    pure $ g & (entitiesL . treacheriesL %~ deleteMap tid) -- we might not want to remove here?
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
     investigatorIds <- getInvestigatorIds

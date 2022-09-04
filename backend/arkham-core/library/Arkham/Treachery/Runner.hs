@@ -16,22 +16,21 @@ import Arkham.Target
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
     InvestigatorEliminated iid
-      | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
+      | InvestigatorTarget iid `elem` treacheryAttachedTarget a -> a
       <$ push (Discard $ toTarget a)
-    InvestigatorEliminated iid
-      | Just iid == treacheryOwner -> a
-      <$ push (Discard $ toTarget a)
+    InvestigatorEliminated iid | Just iid == treacheryOwner ->
+      a <$ push (Discard $ toTarget a)
     AttachTreachery tid target | tid == treacheryId ->
-      pure $ a & attachedTargetL ?~ target
+      pure $ a & placementL .~ TreacheryAttachedTo target
     PlaceResources target n | isTarget a target -> do
       pure $ a & resourcesL +~ n
-    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
+    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a ->
       a <$ push (Discard $ toTarget a)
     AddTreacheryToHand iid tid | tid == treacheryId ->
-      pure $ a & inHandOfL ?~ iid
-    Discarded target _ | target `elem` treacheryAttachedTarget ->
+      pure $ a & placementL .~ TreacheryInHandOf iid
+    Discarded target _ | target `elem` treacheryAttachedTarget a ->
       a <$ push (Discard $ toTarget a)
     After (Revelation _ source) | isSource a source -> a <$ when
-      (isNothing treacheryAttachedTarget && isNothing treacheryInHandOf)
+      (treacheryPlacement == TreacheryLimbo)
       (push $ Discard $ toTarget a)
     _ -> pure a

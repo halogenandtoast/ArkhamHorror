@@ -106,7 +106,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Types ( Field (..), Treachery, TreacheryAttrs (..) )
+import Arkham.Treachery.Types ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget, treacheryInHandOf)
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -2301,11 +2301,12 @@ instance Projection Treachery where
       attrs@TreacheryAttrs {..} = toAttrs t
       cdef = toCardDef attrs
     case fld of
+      TreacheryPlacement -> pure treacheryPlacement
       TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
       TreacheryClues -> pure treacheryClues
       TreacheryResources -> pure treacheryResources
       TreacheryDoom -> pure treacheryDoom
-      TreacheryAttachedTarget -> pure treacheryAttachedTarget
+      TreacheryAttachedTarget -> pure $ treacheryAttachedTarget attrs
       TreacheryTraits -> pure $ cdCardTraits cdef
       TreacheryKeywords -> do
         modifiers' <- foldMapM

@@ -34,29 +34,39 @@ data instance Field Treachery :: Type -> Type where
   TreacheryCardDef :: Field Treachery CardDef
   TreacheryCard :: Field Treachery Card
   TreacheryCanBeCommitted :: Field Treachery Bool
+  TreacheryPlacement :: Field Treachery TreacheryPlacement
+
+data TreacheryPlacement = TreacheryAttachedTo Target | TreacheryInHandOf InvestigatorId | TreacheryNextToAct | TreacheryLimbo
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON , FromJSON)
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
   , treacheryCardCode :: CardCode
-  , treacheryAttachedTarget :: Maybe Target
   , treacheryOwner :: Maybe InvestigatorId
-  , treacheryInHandOf :: Maybe InvestigatorId
   , treacheryDoom :: Int
+  , treacheryPlacement :: TreacheryPlacement
   , treacheryClues :: Int
   , treacheryResources :: Int
   , treacheryCanBeCommitted :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
+treacheryAttachedTarget :: TreacheryAttrs -> Maybe Target
+treacheryAttachedTarget attrs = case treacheryPlacement attrs of
+  TreacheryAttachedTo target -> Just target
+  _ -> Nothing
+
+treacheryInHandOf :: TreacheryAttrs -> Maybe InvestigatorId
+treacheryInHandOf attrs = case treacheryPlacement attrs of
+  TreacheryInHandOf iid -> Just iid
+  _ -> Nothing
+
+placementL :: Lens' TreacheryAttrs TreacheryPlacement
+placementL = lens treacheryPlacement $ \m x -> m { treacheryPlacement = x }
+
 cluesL :: Lens' TreacheryAttrs Int
 cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
-
-attachedTargetL :: Lens' TreacheryAttrs (Maybe Target)
-attachedTargetL =
-  lens treacheryAttachedTarget $ \m x -> m { treacheryAttachedTarget = x }
-
-inHandOfL :: Lens' TreacheryAttrs (Maybe InvestigatorId)
-inHandOfL = lens treacheryInHandOf $ \m x -> m { treacheryInHandOf = x }
 
 resourcesL :: Lens' TreacheryAttrs Int
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
@@ -108,8 +118,7 @@ instance IsCard TreacheryAttrs where
   toCardOwner = treacheryOwner
 
 treacheryOn :: Target -> TreacheryAttrs -> Bool
-treacheryOn t TreacheryAttrs { treacheryAttachedTarget } =
-  t `elem` treacheryAttachedTarget
+treacheryOn t = elem t . treacheryAttachedTarget
 
 treacheryOnInvestigator :: InvestigatorId -> TreacheryAttrs -> Bool
 treacheryOnInvestigator = treacheryOn . InvestigatorTarget
@@ -167,8 +176,7 @@ treacheryWith f cardDef g = CardBuilder
   , cbCardBuilder = \(iid, tid) -> f . g $ TreacheryAttrs
     { treacheryId = tid
     , treacheryCardCode = toCardCode cardDef
-    , treacheryAttachedTarget = Nothing
-    , treacheryInHandOf = Nothing
+    , treacheryPlacement = TreacheryLimbo
     , treacheryOwner = if isJust (cdCardSubType cardDef)
       then Just iid
       else Nothing

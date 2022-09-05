@@ -10,8 +10,8 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
-import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
@@ -139,11 +139,9 @@ instance RunMessage ReturnToTheDevourerBelow where
           then do
             vaultOfEarthlyDemise <- EncounterCard
               <$> genEncounterCard Treacheries.vaultOfEarthlyDemise
-            s
-              <$ push
-                   (AttachStoryTreacheryTo
-                     vaultOfEarthlyDemise
-                     (CardCodeTarget "00157")
-                   )
+            push $ AttachStoryTreacheryTo
+              vaultOfEarthlyDemise
+              (CardCodeTarget "00157")
+            pure s
           else pure s
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

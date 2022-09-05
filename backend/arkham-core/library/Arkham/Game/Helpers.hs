@@ -1957,6 +1957,9 @@ matches a matcher = member a <$> select matcher
 (<=~>) :: (Monad m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<=~>) = matches
 
+(<!=~>) :: (Monad m, HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<!=~>) el q = not <$> matches el q
+
 locationMatches
   :: (Monad m, HasGame m)
   => InvestigatorId

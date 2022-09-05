@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (PassSkillTest)
-import Arkham.Modifier
 import Arkham.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
@@ -38,10 +37,7 @@ instance HasAbilities RexMurphy where
     [ restrictedAbility
           x
           1
-          (Self
-          <> LocationExists (YourLocation <> LocationWithAnyClues)
-          <> Negate (SelfHasModifier CannotDiscoverClues)
-          )
+          (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
         $ ReactionAbility
             (SkillTestResult
               Timing.After

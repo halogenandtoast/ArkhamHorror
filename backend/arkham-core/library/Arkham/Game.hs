@@ -639,6 +639,14 @@ getInvestigatorsMatching matcher = do
  where
   go = \case
     NoOne -> pure . const False
+    InvestigatorCanDiscoverCluesAtOneOf matcher' -> \i -> do
+      let
+        getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
+        getInvalid acc _ = acc
+      modifiers' <- getModifiers (toTarget i)
+      invalidLocations <- select $ getAnyLocationMatcher $ foldl' getInvalid mempty modifiers'
+      locations <- select matcher'
+      pure $ any (`notElem` invalidLocations) locations
     InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
     FewestCardsInHand -> \i -> do
       let cardCount = length . investigatorHand $ toAttrs i

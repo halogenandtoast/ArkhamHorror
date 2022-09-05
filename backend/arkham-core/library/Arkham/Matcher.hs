@@ -82,7 +82,13 @@ pattern InvestigatorCanSpendResources value <-
     InvestigatorWithResources (AtLeast value)
 
 pattern InvestigatorCanDisengage :: InvestigatorMatcher
-pattern InvestigatorCanDisengage = InvestigatorMatches [InvestigatorWithoutModifier CannotDisengageEnemies, InvestigatorEngagedWith AnyEnemy]
+pattern InvestigatorCanDisengage =
+  InvestigatorMatches [InvestigatorWithoutModifier CannotDisengageEnemies, InvestigatorEngagedWith AnyEnemy]
+
+pattern InvestigatorCanDiscoverCluesAt
+  :: LocationMatcher -> InvestigatorMatcher
+pattern InvestigatorCanDiscoverCluesAt locationMatcher =
+  InvestigatorMatches [InvestigatorCanDiscoverCluesAtOneOf locationMatcher, InvestigatorWithoutModifier CannotDiscoverClues]
 
 pattern InvestigatorCanMove :: InvestigatorMatcher
 pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
@@ -156,6 +162,7 @@ data InvestigatorMatcher
   | YetToTakeTurn
   | NotInvestigator InvestigatorMatcher
   | InvestigatorWithSupply Supply
+  | InvestigatorCanDiscoverCluesAtOneOf LocationMatcher -- NOTE: Use matcher above
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

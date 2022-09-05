@@ -30,9 +30,8 @@ pattern CanGainResources :: Criterion
 pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources) where
   CanGainResources = Negate (SelfHasModifier CannotGainResources)
 
-pattern CanDiscoverClues :: Criterion
-pattern CanDiscoverClues <- Negate (SelfHasModifier CannotDiscoverClues) where
-  CanDiscoverClues = Negate (SelfHasModifier CannotDiscoverClues)
+pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
+pattern CanDiscoverCluesAt locationMatcher = InvestigatorExists (InvestigatorMatches [You, InvestigatorCanDiscoverCluesAt locationMatcher])
 
 pattern CanTakeControlOfClues :: Criterion
 pattern CanTakeControlOfClues <-

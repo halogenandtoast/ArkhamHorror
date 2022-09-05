@@ -40,7 +40,7 @@ instance HasAbilities RolandBanks where
         $ reaction
             a
             1
-            (OnLocation LocationWithAnyClues <> CanDiscoverClues)
+            (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
             Free
         $ EnemyDefeated Timing.After You AnyEnemy
     ]

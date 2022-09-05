@@ -238,7 +238,13 @@ evidence = (event "01022" "Evidence!" 1 Guardian)
   , cdCardTraits = setFromList [Insight]
   , cdFastWindow = Just (EnemyDefeated Timing.After You AnyEnemy)
   , cdCriteria = Just
-    (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+    (Criteria.Criteria
+      [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+      , Criteria.InvestigatorExists
+      $ You
+      <> InvestigatorCanDiscoverCluesAt YourLocation
+      ]
+    )
   , cdAlternateCardCodes = ["01522"]
   }
 
@@ -287,7 +293,13 @@ workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   , cdCardTraits = setFromList [Insight]
   , cdFastWindow = Just (DuringTurn You)
   , cdCriteria = Just
-    (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+    (Criteria.Criteria
+      [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+      , Criteria.InvestigatorExists
+      $ You
+      <> InvestigatorCanDiscoverCluesAt YourLocation
+      ]
+    )
   , cdAlternateCardCodes = ["01537"]
   }
 
@@ -427,6 +439,14 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 3
+  , cdCriteria = Just
+    (Criteria.Criteria
+      [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+      , Criteria.InvestigatorExists
+      $ You
+      <> InvestigatorCanDiscoverCluesAt YourLocation
+      ]
+    )
   , cdAlternateCardCodes = ["01579", "60517"]
   }
 
@@ -1437,7 +1457,13 @@ evidence1 = (event "60120" "Evidence!" 1 Guardian)
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just (EnemyDefeated Timing.After You AnyEnemy)
   , cdCriteria = Just
-    (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+    (Criteria.Criteria
+      [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+      , Criteria.InvestigatorExists
+      $ You
+      <> InvestigatorCanDiscoverCluesAt YourLocation
+      ]
+    )
   , cdLevel = 1
   }
 
@@ -1486,8 +1512,12 @@ lessonLearned2 = (event "60124" "Lesson Learned" 1 Guardian)
   , cdSkills = [SkillWillpower, SkillIntellect, SkillIntellect]
   , cdFastWindow = Just
     $ DealtDamage Timing.After (SourceIsEnemyAttack AnyEnemy) You
-  , cdCriteria =
-    Just $ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+  , cdCriteria = Just $ Criteria.Criteria
+    [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+    , Criteria.InvestigatorExists
+    $ You
+    <> InvestigatorCanDiscoverCluesAt YourLocation
+    ]
   , cdLevel = 2
   }
 
@@ -1577,9 +1607,13 @@ lookWhatIFound2 = (event "60524" "\"Look what I found!\"" 2 Survivor)
   , cdCardTraits = singleton Fortune
   , cdLevel = 2
   , cdCriteria = Just
-    (Criteria.LocationExists
-    $ LocationMatchAny [YourLocation, ConnectedLocation]
-    <> LocationWithAnyClues
+    (Criteria.Criteria
+      [ Criteria.LocationExists
+      $ LocationMatchAny [YourLocation, ConnectedLocation]
+      <> LocationWithAnyClues
+      , Criteria.InvestigatorExists $ You <> InvestigatorCanDiscoverCluesAt
+        (LocationMatchAny [YourLocation, ConnectedLocation])
+      ]
     )
   , cdFastWindow =
     Just
@@ -1605,7 +1639,10 @@ lucky3 :: CardDef
 lucky3 = (event "60528" "Lucky!" 0 Survivor)
   { cdCardTraits = singleton Fortune
   , cdFastWindow = Just
-    (WouldHaveSkillTestResult Timing.When (InvestigatorAt YourLocation) AnySkillTest
+    (WouldHaveSkillTestResult
+        Timing.When
+        (InvestigatorAt YourLocation)
+        AnySkillTest
     $ FailureResult AnyValue
     )
   , cdLevel = 3

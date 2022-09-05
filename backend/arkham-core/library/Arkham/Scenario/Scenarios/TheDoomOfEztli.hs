@@ -164,7 +164,14 @@ instance RunMessage TheDoomOfEztli where
       -- | Setup
       -- -- | Gather cards
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.harbingerOfValusia]
+        [ Enemies.harbingerOfValusia
+        , Locations.ancientHall
+        , Locations.grandChamber
+        , Locations.undergroundRuins
+        , Locations.burialPit
+        , Locations.secretPassage
+        , Locations.chamberOfTime
+        ]
         [ EncounterSet.TheDoomOfEztli
         , EncounterSet.AgentsOfYig
         , EncounterSet.YigsVenom

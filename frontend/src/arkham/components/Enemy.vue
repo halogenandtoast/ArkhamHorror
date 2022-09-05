@@ -98,6 +98,7 @@ const debugChoose = inject('debugChoose')
       <PoolItem type="health" :amount="enemy.damage" />
       <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />
       <PoolItem v-if="enemy.clues > 0" type="clue" :amount="enemy.clues" />
+      <PoolItem v-if="enemy.resources > 0" type="resource" :amount="enemy.resources" />
       <Token v-for="(sealedToken, index) in enemy.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
     <Treachery

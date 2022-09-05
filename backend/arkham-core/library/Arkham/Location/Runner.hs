@@ -255,7 +255,7 @@ instance RunMessage LocationAttrs where
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
-    RemoveAllDoom _ -> pure $ a & doomL .~ 0
+    RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
     PlacedLocation _ _ lid | lid == locationId -> do
       when locationRevealed $ do
         modifiers' <- getModifiers (toTarget a)

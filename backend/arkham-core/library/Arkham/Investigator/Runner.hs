@@ -303,6 +303,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  RemovedFromPlay (EnemySource eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId ->

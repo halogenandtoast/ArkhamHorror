@@ -536,6 +536,9 @@ instance Monoid SkillMatcher where
 treacheryIs :: HasCardCode a => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
+treacheryInHandOf :: InvestigatorId -> TreacheryMatcher
+treacheryInHandOf = TreacheryInHandOf . InvestigatorWithId
+
 treacheryInThreatAreaOf :: InvestigatorId -> TreacheryMatcher
 treacheryInThreatAreaOf = TreacheryInThreatAreaOf . InvestigatorWithId
 

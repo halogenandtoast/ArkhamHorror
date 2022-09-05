@@ -306,6 +306,14 @@ getCanAffordUse iid ability window = do
     PlayerLimit _ n -> pure . (< n) . maybe 0 usedTimes $ find
       ((== ability) . usedAbility)
       usedAbilities
+    PerCopyLimit cardDef _ n -> do
+      let
+        abilityCardDef = \case
+          PerCopyLimit cDef _ _ -> Just cDef
+          _ -> Nothing
+      pure . (< n) . getSum . foldMap (Sum . usedTimes) $ filter
+        ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+        usedAbilities
     PerInvestigatorLimit _ n -> do
       -- This is difficult and based on the window, so we need to match out the
       -- relevant investigator ids from the window. If this becomes more prevalent

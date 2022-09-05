@@ -91,7 +91,8 @@ import Arkham.Message qualified as Msg
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
-import Arkham.Placement
+import Arkham.Placement hiding (TreacheryPlacement(..))
+import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
@@ -106,7 +107,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Types ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget, treacheryInHandOf)
+import Arkham.Treachery.Types ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget)
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -911,9 +912,9 @@ getTreacheriesMatching matcher = do
       pure $ any (== treacheryTarget) targets
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
-      pure $ case treacheryInHandOf (toAttrs treachery) of
-        Just iid -> iid `member` iids
-        Nothing -> False
+      pure $ case treacheryPlacement (toAttrs treachery) of
+        Placement.TreacheryInHandOf iid -> iid `member` iids
+        _ -> False
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
       targets <- selectListMap (Just . InvestigatorTarget) investigatorMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
@@ -2854,8 +2855,7 @@ runGameMessage msg g = case msg of
   CommitCard iid cardId -> do
     investigator' <- getInvestigator iid
     treacheryCards <-
-      traverse (field TreacheryCard) $ setToList $ investigatorInHandTreacheries
-        (toAttrs investigator')
+      traverse (field TreacheryCard) =<< selectList (TreacheryInHandOf $ InvestigatorWithId iid)
     let
       card =
         fromJustNote "could not find card in hand"

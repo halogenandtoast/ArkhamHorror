@@ -94,7 +94,6 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorHand :: [Card]
   , investigatorTraits :: HashSet Trait
   , investigatorTreacheries :: HashSet TreacheryId
-  , investigatorInHandTreacheries :: HashSet TreacheryId
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
@@ -250,10 +249,6 @@ actionsTakenL =
 remainingActionsL :: Lens' InvestigatorAttrs Int
 remainingActionsL = lens investigatorRemainingActions
   $ \m x -> m { investigatorRemainingActions = x }
-
-inHandTreacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
-inHandTreacheriesL = lens investigatorInHandTreacheries
-  $ \m x -> m { investigatorInHandTreacheries = x }
 
 treacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
 treacheriesL =

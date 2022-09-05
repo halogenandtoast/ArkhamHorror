@@ -25,17 +25,16 @@ abbessAllegriaDiBiase =
 
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) =
-      [ restrictedAbility
-          attrs
-          1
-          (AnyCriterion
-            [ LocationExists
-              $ AccessibleFrom (YourLocation <> LocationOfThis)
-            , OnLocation $ AccessibleTo LocationOfThis
-            ]
-          )
-          (FastAbility $ ExhaustCost (toTarget attrs))
-      ]
+    [ restrictedAbility
+        attrs
+        1
+        (AnyCriterion
+          [ (OnSameLocation <> LocationExists AccessibleLocation)
+          , LocationExists $ LocationWithAsset $ AssetWithId $ toId attrs
+          ]
+        )
+        (FastAbility $ ExhaustCost (toTarget attrs))
+    ]
 
 instance RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
@@ -44,8 +43,8 @@ instance RunMessage AbbessAllegriaDiBiase where
       case mLocationId of
         Nothing -> error "impossible"
         Just locationId -> do
-          abbessLocationId <-
-            fromJustNote "locationIsRequired" <$> field AssetLocation (toId attrs)
+          abbessLocationId <- fromJustNote "locationIsRequired"
+            <$> field AssetLocation (toId attrs)
           a <$ if locationId == abbessLocationId
             then do
               connectedLocationIds <-

@@ -27,9 +27,11 @@ import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Deck
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.Id
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
@@ -68,6 +70,17 @@ instance RunMessage ScenarioAttrs where
 
 runScenarioAttrs :: Message -> ScenarioAttrs -> GameT ScenarioAttrs
 runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
+  ResetGame -> do
+    standalone <- getIsStandalone
+    when standalone $ do
+      investigatorIds <- getInvestigatorIds
+      for_ investigatorIds $ \iid -> do
+        deck <- fieldMap InvestigatorDeck unDeck iid
+        hand <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
+        discard <- field InvestigatorDiscard iid
+        let deck' = deck <> hand <> discard
+        push $ LoadDeck iid (Deck deck')
+    pure a
   Setup -> a <$ pushEnd (Begin InvestigationPhase)
   StartCampaign -> do
     standalone <- getIsStandalone

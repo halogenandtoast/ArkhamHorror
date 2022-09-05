@@ -16,15 +16,18 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types
 import Arkham.Matcher hiding ( RevealLocation )
-import Arkham.Message
+import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -37,7 +40,11 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
-newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs
+newtype Metadata = Metadata { resolution4Count :: Int }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype TheDoomOfEztli = TheDoomOfEztli (ScenarioAttrs `With` Metadata)
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
@@ -47,7 +54,7 @@ newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs
 -- the bottom line
 theDoomOfEztli :: Difficulty -> TheDoomOfEztli
 theDoomOfEztli difficulty = scenario
-  TheDoomOfEztli
+  (TheDoomOfEztli . (`with` Metadata 0))
   "04054"
   "The Doom of Eztli"
   difficulty
@@ -59,19 +66,21 @@ theDoomOfEztli difficulty = scenario
   ]
 
 instance HasTokenValue TheDoomOfEztli where
-  getTokenValue iid tokenFace (TheDoomOfEztli attrs) = case tokenFace of
-    Skull -> do
-      hasDoom <- selectAny $ LocationWithAnyDoom <> locationWithInvestigator iid
-      pure $ if hasDoom
-        then toTokenValue attrs Skull 3 4
-        else toTokenValue attrs Skull 1 2
-    face | face `elem` [Cultist, Tablet] -> do
-      n <- if isEasyStandard attrs
-        then selectCount LocationWithAnyDoom
-        else getSum <$> selectAgg Sum LocationDoom LocationWithAnyDoom
-      pure $ TokenValue Cultist (NegativeModifier n)
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
-    otherFace -> getTokenValue iid otherFace attrs
+  getTokenValue iid tokenFace (TheDoomOfEztli (attrs `With` _)) =
+    case tokenFace of
+      Skull -> do
+        hasDoom <-
+          selectAny $ LocationWithAnyDoom <> locationWithInvestigator iid
+        pure $ if hasDoom
+          then toTokenValue attrs Skull 3 4
+          else toTokenValue attrs Skull 1 2
+      face | face `elem` [Cultist, Tablet] -> do
+        n <- if isEasyStandard attrs
+          then selectCount LocationWithAnyDoom
+          else getSum <$> selectAgg Sum LocationDoom LocationWithAnyDoom
+        pure $ TokenValue Cultist (NegativeModifier n)
+      ElderThing -> pure $ TokenValue ElderThing NoModifier
+      otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =
@@ -98,14 +107,46 @@ standaloneCampaignLog = mkCampaignLog
     [TheInvestigatorsClearedAPathToTheEztliRuins]
   }
 
+investigatorDefeat :: (Monad m, HasGame m) => ScenarioAttrs -> m [Message]
+investigatorDefeat attrs = do
+  investigatorIds <- getInvestigatorIds
+  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  yigsFury <- getRecordCount YigsFury
+  if yigsFury >= 4
+    then do
+      if null defeatedInvestigatorIds
+        then pure []
+        else
+          pure
+          $ story investigatorIds defeat
+          : story
+              investigatorIds
+              "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
+          : map (InvestigatorKilled (toSource attrs)) defeatedInvestigatorIds
+          <> [ GameOver
+             | null
+               (setFromList @(HashSet InvestigatorId) investigatorIds
+               `difference` setFromList @(HashSet InvestigatorId)
+                              defeatedInvestigatorIds
+               )
+             ]
+    else do
+      pure
+        [ story
+          investigatorIds
+          "Suddenly, a distant voice hisses to the others, and the serpents tentatively retreat into the darkness. You run for your life, not taking any chances."
+        , RecordCount YigsFury (yigsFury + 3)
+        ]
+
 instance RunMessage TheDoomOfEztli where
-  runMessage msg s@(TheDoomOfEztli attrs) = case msg of
+  runMessage msg s@(TheDoomOfEztli (attrs `With` metadata)) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ push $ SetTokens standaloneTokens
       pure s
     StandaloneSetup ->
       pure
         . TheDoomOfEztli
+        . (`with` metadata)
         $ attrs
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
@@ -177,7 +218,7 @@ instance RunMessage TheDoomOfEztli where
         , MoveAllTo (toSource attrs) (toLocationId entryway)
         ]
 
-      TheDoomOfEztli <$> runMessage
+      TheDoomOfEztli . (`with` metadata) <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
@@ -211,12 +252,82 @@ instance RunMessage TheDoomOfEztli where
         _ -> pure ()
       pure s
     ScenarioResolution n -> do
+      vengeance <- getVengeanceInVictoryDisplay
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      yigsFury <- getRecordCount YigsFury
+      defeatMessages <- investigatorDefeat attrs
+      gainXp <- map (uncurry GainXP) <$> getXp
+      inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
+      setAsideHarbinger <- selectOne $ SetAsideMatcher $ enemyIs
+        Enemies.harbingerOfValusia
+      harbingerMessages <- case inPlayHarbinger of
+        Just harbinger -> do
+          damage <- field EnemyDamage harbinger
+          pure [RecordCount TheHarbingerIsStillAlive damage]
+        Nothing -> case setAsideHarbinger of
+          Nothing -> pure []
+          Just harbinger -> do
+            damage <- field SetAsideEnemyDamage harbinger
+            pure [RecordCount TheHarbingerIsStillAlive damage]
+
       case n of
-        Resolution 1 -> pure ()
-        Resolution 2 -> pure ()
-        Resolution 3 -> pure ()
-        Resolution 4 -> pure ()
-        Resolution 5 -> pure ()
+        NoResolution -> do
+          anyDefeated <- selectAny DefeatedInvestigator
+          let resolution = if anyDefeated && yigsFury >= 4 then 2 else 3
+          push $ ScenarioResolution (Resolution resolution)
+          pure s
+        Resolution 1 -> do
+          pushAll
+            $ defeatMessages
+            <> [ story investigatorIds resolution1
+               , Record TheInvestigatorsRecoveredTheRelicOfAges
+               ]
+            <> harbingerMessages
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+          pure s
+        Resolution 2 -> do
+          pushAll
+            $ defeatMessages
+            <> [ story investigatorIds resolution2
+               , Record AlejandroRecoveredTheRelicOfAges
+               ]
+            <> harbingerMessages
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+          pure s
+        Resolution 3 -> do
+          pushAll
+            $ defeatMessages
+            <> [ story investigatorIds resolution3
+               , chooseOne
+                 leadInvestigatorId
+                 [ Label
+                   "“We can’t stop now—we have to go back inside!” - Proceed to Resolution 4."
+                   [ScenarioResolution $ Resolution 4]
+                 , Label
+                   "“It’s too dangerous. This place must be destroyed.” - Proceed to Resolution 5."
+                   [ScenarioResolution $ Resolution 5]
+                 ]
+               ]
+          pure s
+        Resolution 4 -> do
+          pushAll
+            [ story investigatorIds resolution4
+            , ResetGame
+            , StartScenario (toId attrs)
+            ]
+          pure . TheDoomOfEztli $ attrs `with` Metadata
+            (resolution4Count metadata + 1)
+        Resolution 5 -> do
+          pushAll
+            $ [ story investigatorIds resolution5
+              , Record TheInvestigatorsRecoveredTheRelicOfAges
+              ]
+            <> harbingerMessages
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+          pure s
         _ -> error "Unknown Resolution"
-      pure s
-    _ -> TheDoomOfEztli <$> runMessage msg attrs
+    _ -> TheDoomOfEztli . (`with` metadata) <$> runMessage msg attrs

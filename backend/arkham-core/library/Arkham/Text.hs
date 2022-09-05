@@ -12,6 +12,9 @@ data FlavorText = FlavorText
   }
   deriving stock (Show, Eq, Generic)
 
+instance IsString FlavorText where
+  fromString s = FlavorText Nothing [fromString s]
+
 instance ToJSON FlavorText where
   toJSON = genericToJSON $ aesonOptions $ Just "flavor"
 

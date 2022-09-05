@@ -104,6 +104,9 @@ data CampaignLogKey
   | AlejandroChoseToRemainAtCamp
   | TheInvestigatorsClearedAPathToTheEztliRuins
   | YigsFury
+  | TheInvestigatorsRecoveredTheRelicOfAges
+  | AlejandroRecoveredTheRelicOfAges
+  | TheHarbingerIsStillAlive
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

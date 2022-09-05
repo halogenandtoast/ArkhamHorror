@@ -15,7 +15,7 @@ import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Asset
 import Arkham.Asset.Types
-  ( Asset, AssetAttrs (..), DiscardedEntity (..), Field (..) )
+  ( Asset, AssetAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -1470,6 +1470,13 @@ getEnemy eid =
     <$> getGame
   where missingEnemy = "Unknown enemy: " <> show eid
 
+getOutOfPlayEnemy :: (Monad m, HasGame m) => EnemyId -> m Enemy
+getOutOfPlayEnemy eid =
+  fromJustNote missingEnemy
+    . preview (outOfPlayEntitiesL . enemiesL . ix eid)
+    <$> getGame
+  where missingEnemy = "Unknown out of playenemy: " <> show eid
+
 getEnemyMatching :: (Monad m, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
@@ -1843,6 +1850,14 @@ instance Projection Act where
       ActAbilities -> pure $ getAbilities a
       ActCard -> pure $ lookupCard (unActId aid) (CardId nil)
 
+instance Projection (SetAsideEntity Enemy) where
+  field f eid = do
+    e <- getOutOfPlayEnemy eid
+    let EnemyAttrs {..} = toAttrs e
+    case f of
+      SetAsideEnemyDamage -> pure enemyDamage
+
+
 instance Projection Enemy where
   field f eid = do
     e <- getEnemy eid
@@ -1939,6 +1954,12 @@ instance Query LocationMatcher where
 
 instance Query EnemyMatcher where
   select = fmap (setFromList . map toId) . getEnemiesMatching
+
+instance Query (SetAsideMatcher EnemyMatcher) where
+  select (SetAsideMatcher matcher) = do
+    outOfPlayEnemies <- toList . view (outOfPlayEntitiesL . enemiesL) <$> getGame
+    matches' <- filterM (enemyMatcherFilter matcher) outOfPlayEnemies
+    pure . setFromList $ map toId matches'
 
 instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching

@@ -6,6 +6,7 @@ import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
+import Arkham.Classes.Entity
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasAbilities
@@ -54,6 +55,7 @@ instance Query RemainingActMatcher
 instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query TreacheryMatcher
+instance Query (SetAsideMatcher EnemyMatcher)
 
 instance Projection Act
 instance Projection Agenda
@@ -62,6 +64,7 @@ instance Projection (DiscardedEntity Asset)
 instance Projection Campaign
 instance Projection Effect
 instance Projection Enemy
+instance Projection (SetAsideEntity Enemy)
 instance Projection Event
 instance Projection Investigator
 instance Projection Location

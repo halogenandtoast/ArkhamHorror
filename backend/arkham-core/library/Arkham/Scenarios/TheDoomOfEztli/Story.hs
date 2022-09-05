@@ -35,8 +35,8 @@ intro2 = FlavorText
     \ escape route in the event things go sour..."
   ]
 
-investigatorDefeat :: FlavorText
-investigatorDefeat = FlavorText
+defeat :: FlavorText
+defeat = FlavorText
   (Just "Investigator Defeat")
   [ "The temple shakes with the ferocity of an earthquake, causing you to collapse\
     \ to the ground. Serpent creatures emerge from the shadows around you,\

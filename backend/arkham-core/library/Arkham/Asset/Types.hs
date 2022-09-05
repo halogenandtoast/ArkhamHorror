@@ -70,15 +70,6 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
 
-newtype DiscardedEntity a = DiscardedEntity a
-
-instance Entity a => Entity (DiscardedEntity a) where
-  type EntityId (DiscardedEntity a) = EntityId a
-  type EntityAttrs (DiscardedEntity a) = EntityAttrs a
-  toId (DiscardedEntity a) = toId a
-  toAttrs (DiscardedEntity a) = toAttrs a
-  overAttrs f (DiscardedEntity a) = DiscardedEntity $ overAttrs f a
-
 data instance Field (DiscardedEntity Asset) :: Type -> Type where
   DiscardedAssetTraits :: Field (DiscardedEntity Asset) (HashSet Trait)
 

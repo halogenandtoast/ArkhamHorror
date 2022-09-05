@@ -47,3 +47,21 @@ instance TargetEntity Token where
   toTarget = TokenTarget
   isTarget t (TokenTarget t') = t == t'
   isTarget _ _ = False
+
+newtype DiscardedEntity a = DiscardedEntity a
+
+instance Entity a => Entity (DiscardedEntity a) where
+  type EntityId (DiscardedEntity a) = EntityId a
+  type EntityAttrs (DiscardedEntity a) = EntityAttrs a
+  toId (DiscardedEntity a) = toId a
+  toAttrs (DiscardedEntity a) = toAttrs a
+  overAttrs f (DiscardedEntity a) = DiscardedEntity $ overAttrs f a
+
+newtype SetAsideEntity a = SetAsideEntity a
+
+instance Entity a => Entity (SetAsideEntity a) where
+  type EntityId (SetAsideEntity a) = EntityId a
+  type EntityAttrs (SetAsideEntity a) = EntityAttrs a
+  toId (SetAsideEntity a) = toId a
+  toAttrs (SetAsideEntity a) = toAttrs a
+  overAttrs f (SetAsideEntity a) = SetAsideEntity $ overAttrs f a

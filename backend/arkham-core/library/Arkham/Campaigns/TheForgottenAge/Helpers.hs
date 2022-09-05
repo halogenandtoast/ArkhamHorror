@@ -79,6 +79,7 @@ getSetAsidePoisoned =
 explore :: InvestigatorId -> Source -> CardMatcher -> GameT ()
 explore iid source cardMatcher = do
   explorationDeck <- getExplorationDeck
+  canMove <- iid <=~> InvestigatorCanMove
   let
     cardMatcher' = CardWithOneOf [CardWithType TreacheryType, cardMatcher]
     (notMatched, matchedOnTop) =
@@ -99,16 +100,23 @@ explore iid source cardMatcher = do
       msgs <- if cdCardType (toCardDef x) == LocationType
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
-          windowMsg <- checkWindows
+
+          afterPutIntoPlayWindow <- checkWindows
+            [ Window
+                Timing.After
+                (Window.PutLocationIntoPlay iid $ toLocationId x)
+            ]
+          afterExploredWindow <- checkWindows
             [ Window Timing.After
                 $ Window.Explored iid (Success $ toLocationId x)
             ]
           pure
-            [ PlaceLocation x
-            , MoveTo source iid (toLocationId x)
-            , UpdateHistory iid historyItem
-            , windowMsg
-            ]
+            $ [PlaceLocation x]
+            <> [ MoveTo source iid (toLocationId x) | canMove ]
+            <> [ UpdateHistory iid historyItem
+               , afterExploredWindow
+               , afterPutIntoPlayWindow
+               ]
         else do
           windowMsg <- checkWindows
             [Window Timing.After $ Window.Explored iid Failure]

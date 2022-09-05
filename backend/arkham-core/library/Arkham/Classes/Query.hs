@@ -30,6 +30,7 @@ type family QueryElement a where
   QueryElement CampaignMatcher = CampaignId
   QueryElement RemainingActMatcher = CardCode
   QueryElement CardMatcher = Card
+  QueryElement (SetAsideMatcher a) = QueryElement a
 
 selectCount :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Int
 selectCount = fmap HashSet.size . select

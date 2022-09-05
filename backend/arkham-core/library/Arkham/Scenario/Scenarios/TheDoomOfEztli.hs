@@ -26,6 +26,7 @@ import Arkham.Location.Types
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
@@ -42,7 +43,7 @@ newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs
 
 -- | The Doom of Eztli
 --
--- For the layout Magic and Science will caust the layout to switch to using
+-- For the layout Magic and Science will cause the layout to switch to using
 -- the bottom line
 theDoomOfEztli :: Difficulty -> TheDoomOfEztli
 theDoomOfEztli difficulty = scenario
@@ -208,5 +209,14 @@ instance RunMessage TheDoomOfEztli where
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> push $ PlaceDoom (LocationTarget lid) 1
         _ -> pure ()
+      pure s
+    ScenarioResolution n -> do
+      case n of
+        Resolution 1 -> pure ()
+        Resolution 2 -> pure ()
+        Resolution 3 -> pure ()
+        Resolution 4 -> pure ()
+        Resolution 5 -> pure ()
+        _ -> error "Unknown Resolution"
       pure s
     _ -> TheDoomOfEztli <$> runMessage msg attrs

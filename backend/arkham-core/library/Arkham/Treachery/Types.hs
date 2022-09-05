@@ -12,6 +12,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -35,10 +36,6 @@ data instance Field Treachery :: Type -> Type where
   TreacheryCard :: Field Treachery Card
   TreacheryCanBeCommitted :: Field Treachery Bool
   TreacheryPlacement :: Field Treachery TreacheryPlacement
-
-data TreacheryPlacement = TreacheryAttachedTo Target | TreacheryInHandOf InvestigatorId | TreacheryNextToAct | TreacheryLimbo
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON , FromJSON)
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

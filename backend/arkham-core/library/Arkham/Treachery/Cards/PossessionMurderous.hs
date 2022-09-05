@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher
+import Arkham.Matcher hiding (TreacheryInHandOf)
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -45,15 +45,15 @@ instance RunMessage PossessionMurderous where
         iid
       push $ AddTreacheryToHand iid (toId attrs)
       pure t
-    EndCheckWindow{} -> case treacheryInHandOf attrs of
-      Just iid -> do
+    EndCheckWindow{} -> case treacheryPlacement attrs of
+      TreacheryInHandOf iid -> do
         horror <- field InvestigatorHorror iid
         sanity <- field InvestigatorSanity iid
         when (horror > sanity * 2) $ push $ InvestigatorKilled
           (toSource attrs)
           iid
         pure t
-      Nothing -> pure t
+      _ -> pure t
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       push $ Discard (toTarget attrs)
       pure t

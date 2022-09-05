@@ -91,6 +91,9 @@ data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
 
+pattern AttachTreachery :: TreacheryId -> Target -> Message
+pattern AttachTreachery tid target = PlaceTreachery tid (TreacheryAttachedTo target)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability
@@ -178,7 +181,6 @@ data Message
     AttachAsset AssetId Target
   | AttachEvent EventId Target
   | AttachStoryTreacheryTo Card Target
-  | AttachTreachery TreacheryId Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealTokens
   | BeforeSkillTest InvestigatorId SkillType Int
@@ -233,6 +235,7 @@ data Message
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateAssetAt Card Placement
   | PlaceAsset AssetId Placement
+  | PlaceTreachery TreacheryId TreacheryPlacement
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId

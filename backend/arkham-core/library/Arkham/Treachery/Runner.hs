@@ -6,6 +6,7 @@ module Arkham.Treachery.Runner
 import Arkham.Prelude
 
 import Arkham.Treachery.Types as X
+import Arkham.Placement as X
 
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
@@ -20,8 +21,8 @@ instance RunMessage TreacheryAttrs where
       <$ push (Discard $ toTarget a)
     InvestigatorEliminated iid | Just iid == treacheryOwner ->
       a <$ push (Discard $ toTarget a)
-    AttachTreachery tid target | tid == treacheryId ->
-      pure $ a & placementL .~ TreacheryAttachedTo target
+    PlaceTreachery tid placement | tid == treacheryId ->
+      pure $ a & placementL .~ placement
     PlaceResources target n | isTarget a target -> do
       pure $ a & resourcesL +~ n
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a ->

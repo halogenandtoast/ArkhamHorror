@@ -228,7 +228,6 @@ investigator f cardDef Stats {..} =
         , investigatorHand = mempty
         , investigatorTraits = cdCardTraits cardDef
         , investigatorTreacheries = mempty
-        , investigatorInHandTreacheries = mempty
         , investigatorDefeated = False
         , investigatorResigned = False
         , investigatorSlots = mapFromList

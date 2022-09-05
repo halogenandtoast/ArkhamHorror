@@ -40,6 +40,7 @@ import Arkham.Matcher
   , InvestigatorMatcher (..)
   , LocationMatcher (..)
   , assetIs
+  , treacheryInHandOf
   , pattern InvestigatorCanDisengage
   )
 import Arkham.Message
@@ -385,14 +386,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       deck' <- shuffleM (card : unDeck investigatorDeck)
       push $ After msg
       pure $ a & (deckL .~ Deck deck')
-  AddTreacheryToHand iid tid | iid == investigatorId ->
-    pure $ a & inHandTreacheriesL %~ insertSet tid
   Discard (TreacheryTarget tid) ->
     pure
       $ a
       & treacheriesL
-      %~ deleteSet tid
-      & inHandTreacheriesL
       %~ deleteSet tid
   Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
@@ -1471,14 +1468,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
-    inHandTreacheries' <-
-      flip filterM (setToList investigatorInHandTreacheries) $ \tid -> do
+    inHandTreacheries' <- selectList (treacheryInHandOf investigatorId) >>=
+      filterM (\tid -> do
         treacheryCard <- field TreacheryCard tid
-        pure $ treacheryCard /= card
+        pure $ treacheryCard /= card)
     pure
       $ a
       & (handL %~ filter (/= card))
-      & (inHandTreacheriesL .~ setFromList inHandTreacheries')
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   PlaceUnderneath target cards | isTarget a target -> do
     let
@@ -1530,8 +1526,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then pure []
       else do
         committableTreacheries <- filterM
-          (field TreacheryCanBeCommitted)
-          (setToList investigatorInHandTreacheries)
+          (field TreacheryCanBeCommitted) =<< selectList (treacheryInHandOf investigatorId)
         treacheryCards <- traverse (field TreacheryCard) committableTreacheries
         flip filterM (investigatorHand <> treacheryCards) $ \case
           PlayerCard card -> do
@@ -1629,8 +1624,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           then pure []
           else do
             committableTreacheries <- filterM
-              (field TreacheryCanBeCommitted)
-              (setToList investigatorInHandTreacheries)
+              (field TreacheryCanBeCommitted) =<< selectList (treacheryInHandOf investigatorId)
             treacheryCards <- traverse
               (field TreacheryCard)
               committableTreacheries

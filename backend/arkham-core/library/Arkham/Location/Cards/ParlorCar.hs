@@ -14,6 +14,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( parlorCar )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 
@@ -30,8 +31,8 @@ parlorCar = locationWith
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor ParlorCar where
-  getModifiersFor target (ParlorCar l@LocationAttrs {..})
-    | isTarget l target = case lookup LeftOf locationDirections of
+  getModifiersFor target (ParlorCar l@LocationAttrs {..}) | isTarget l target =
+    case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- field LocationClues leftLocation
         pure
@@ -44,8 +45,14 @@ instance HasModifiersFor ParlorCar where
 instance HasAbilities ParlorCar where
   getAbilities (ParlorCar attrs) =
     withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
-            [ActionCost 1, ResourceCost 3]
+      $ [ restrictedAbility
+            attrs
+            1
+            (Here <> CluesOnThis (AtLeast $ Static 1) <> InvestigatorExists
+              (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+            )
+          $ ActionAbility Nothing
+          $ Costs [ActionCost 1, ResourceCost 3]
         | locationRevealed attrs
         ]
 

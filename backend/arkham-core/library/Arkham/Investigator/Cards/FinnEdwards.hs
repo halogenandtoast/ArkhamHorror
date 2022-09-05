@@ -12,6 +12,7 @@ import Arkham.Investigator.Runner
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 
 newtype FinnEdwards = FinnEdwards InvestigatorAttrs
@@ -45,17 +46,17 @@ instance RunMessage FinnEdwards where
     PassedSkillTest iid _ _ (TokenTarget token) _ n
       | iid == toId attrs && n >= 2 -> do
         when (tokenFace token == ElderSign) $ do
-          clueCount <- selectAgg
-            Sum
-            LocationClues
-            (locationWithInvestigator iid)
-          when (clueCount > 0) $ push $ chooseOne
-            iid
-            [ Label
-              "Discover 1 clue at your location"
-              [InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing]
-            , Label "Do not discover a clue" []
-            ]
+          mlid <- selectOne $ locationWithInvestigator iid
+          for_ mlid $ \lid -> do
+            canDiscover <- getCanDiscoverClues attrs lid
+            hasClues <- fieldP LocationClues (> 0) lid
+            when (hasClues && canDiscover) $ push $ chooseOne
+              iid
+              [ Label
+                "Discover 1 clue at your location"
+                [InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing]
+              , Label "Do not discover a clue" []
+              ]
         pure i
     Setup -> FinnEdwards <$> runMessage
       msg

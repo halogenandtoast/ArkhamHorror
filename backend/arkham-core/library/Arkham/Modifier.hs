@@ -110,6 +110,8 @@ data ModifierType
   | CannotPlaceClues
   | CannotPlay CardMatcher
   | CannotSpendClues
+  | MaxCluesDiscovered Int
+  | CannotDiscoverCluesAt LocationMatcher
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerFastAbilities

@@ -6,11 +6,12 @@ module Arkham.Asset.Cards.GravediggersShovel
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
 
@@ -25,8 +26,14 @@ instance HasAbilities GravediggersShovel where
   getAbilities (GravediggersShovel x) =
     [ restrictedAbility x 1 ControlsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
-    , restrictedAbility x 2 ControlsThis $ ActionAbility Nothing $ Costs
-      [ActionCost 1, DiscardCost (toTarget x)]
+    , restrictedAbility
+        x
+        2
+        (ControlsThis <> InvestigatorExists
+          (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+        )
+      $ ActionAbility Nothing
+      $ Costs [ActionCost 1, DiscardCost (toTarget x)]
     ]
 
 instance RunMessage GravediggersShovel where

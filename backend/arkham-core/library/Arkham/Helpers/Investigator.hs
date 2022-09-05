@@ -7,6 +7,7 @@ import Arkham.Action
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Classes.Entity
+import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
@@ -126,13 +127,14 @@ getAbilitiesForTurn attrs = do
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getCanDiscoverClues :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
-getCanDiscoverClues attrs = do
+getCanDiscoverClues :: (Monad m, HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
+getCanDiscoverClues attrs lid = do
   modifiers <- getModifiers (toTarget attrs)
-  pure $ not (any match modifiers)
+  not <$> anyM match modifiers
  where
-  match CannotDiscoverClues{} = True
-  match _ = False
+  match CannotDiscoverClues{} = pure True
+  match (CannotDiscoverCluesAt matcher) = elem lid <$> select matcher
+  match _ = pure False
 
 getCanSpendClues :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getCanSpendClues attrs = do

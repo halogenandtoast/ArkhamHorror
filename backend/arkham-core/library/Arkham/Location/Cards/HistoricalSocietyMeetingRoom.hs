@@ -36,7 +36,9 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
         [ restrictedAbility
             attrs
             1
-            (Here <> CluesOnThis (AtLeast $ Static 1) <> CanDiscoverClues)
+            (Here <> CluesOnThis (AtLeast $ Static 1) <> CanDiscoverCluesAt
+              (LocationWithId $ toId attrs)
+            )
           $ ActionAbility Nothing
           $ Costs [ActionCost 1, ExhaustAssetCost $ AssetWithTrait Ally]
         ]

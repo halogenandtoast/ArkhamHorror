@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (EnemyDefeated)
+import Arkham.Asset.Runner hiding ( EnemyDefeated )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
@@ -31,9 +31,15 @@ instance HasModifiersFor GreteWagner3 where
 
 instance HasAbilities GreteWagner3 where
   getAbilities (GreteWagner3 a) =
-    [ restrictedAbility a 1 (ControlsThis <> ClueOnLocation) $ ReactionAbility
-        (EnemyDefeated Timing.After You AnyEnemy)
-        (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
+    [ restrictedAbility
+          a
+          1
+          (ControlsThis <> ClueOnLocation <> InvestigatorExists
+            (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+          )
+        $ ReactionAbility
+            (EnemyDefeated Timing.After You AnyEnemy)
+            (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
     ]
 
 instance RunMessage GreteWagner3 where

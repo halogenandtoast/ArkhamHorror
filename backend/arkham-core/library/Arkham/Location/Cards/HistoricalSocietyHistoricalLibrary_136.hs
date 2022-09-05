@@ -37,7 +37,9 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
         [ restrictedAbility
             attrs
             1
-            (CluesOnThis (AtLeast $ Static 1) <> CanDiscoverClues)
+            (Here <> CluesOnThis (AtLeast $ Static 1) <> CanDiscoverCluesAt
+              (LocationWithId $ toId attrs)
+            )
             (ReactionAbility
               (SkillTestResult
                 Timing.After

@@ -5,11 +5,12 @@ module Arkham.Asset.Cards.MysteriousRaven
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import Arkham.Asset.Runner
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Target
 
 newtype MysteriousRaven = MysteriousRaven AssetAttrs
@@ -22,7 +23,12 @@ mysteriousRaven =
 
 instance HasAbilities MysteriousRaven where
   getAbilities (MysteriousRaven a) =
-    [ restrictedAbility a 1 (ControlsThis <> ClueOnLocation)
+    [ restrictedAbility
+          a
+          1
+          (ControlsThis <> ClueOnLocation <> InvestigatorExists
+            (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+          )
         $ FastAbility
         $ DiscardCost (toTarget a)
         <> DamageCost (toSource a) YouTarget 1

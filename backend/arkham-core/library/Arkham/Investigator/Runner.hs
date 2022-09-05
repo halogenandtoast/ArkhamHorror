@@ -1054,7 +1054,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (InvestigatorDiscoverClues iid investigatorLocation n maction)
       a
   InvestigatorDiscoverClues iid lid n _ | iid == investigatorId -> do
-    canDiscoverClues <- getCanDiscoverClues a
+    canDiscoverClues <- getCanDiscoverClues a lid
     if canDiscoverClues
       then do
         checkWindowMsg <- checkWindows
@@ -1062,7 +1062,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         a <$ pushAll [checkWindowMsg, Do msg]
       else pure a
   Do (InvestigatorDiscoverClues iid lid n maction) | iid == investigatorId -> do
-    canDiscoverClues <- getCanDiscoverClues a
+    canDiscoverClues <- getCanDiscoverClues a lid
     if canDiscoverClues
       then do
         a <$ push (DiscoverCluesAtLocation iid lid n maction)
@@ -1074,8 +1074,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [window, PlaceClues (InvestigatorTarget iid) n, After (GainClues iid n)]
   PlaceClues (InvestigatorTarget iid) n | iid == investigatorId -> do
     pure $ a & cluesL +~ n
-  DiscoverClues iid lid n maction | iid == investigatorId ->
-    a <$ push (Do $ DiscoverClues iid lid n maction)
+  DiscoverClues iid lid n maction | iid == investigatorId -> do
+    modifiers <- getModifiers (LocationTarget lid)
+    let
+      getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
+      getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
+      getMaybeMax (MaxCluesDiscovered x) (Just x') = Just $ min x x'
+      getMaybeMax _ x = x
+      mMax :: Maybe Int = foldr getMaybeMax Nothing modifiers
+      n' = maybe n (min n) mMax
+    a <$ push (Do $ DiscoverClues iid lid n' maction)
   Do (DiscoverClues iid _ n _) | iid == investigatorId -> do
     push (After (GainClues iid n))
     pure $ a & cluesL +~ n
@@ -1468,10 +1476,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
-    inHandTreacheries' <- selectList (treacheryInHandOf investigatorId) >>=
-      filterM (\tid -> do
-        treacheryCard <- field TreacheryCard tid
-        pure $ treacheryCard /= card)
     pure
       $ a
       & (handL %~ filter (/= card))

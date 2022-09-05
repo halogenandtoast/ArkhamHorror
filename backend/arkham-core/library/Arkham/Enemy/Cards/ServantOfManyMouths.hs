@@ -34,7 +34,7 @@ instance HasAbilities ServantOfManyMouths where
     [ restrictedAbility
         attrs
         1
-        (LocationExists LocationWithAnyClues <> CanDiscoverClues)
+        (LocationExists LocationWithAnyClues <> CanDiscoverCluesAt Anywhere)
         (ReactionAbility
           (EnemyDefeated Timing.After You $ EnemyWithId $ toId attrs)
           Free

@@ -176,15 +176,15 @@ instance RunMessage CarnevaleOfHorrors where
            | (label, location) <- zip locationLabels (toList locations)
            ]
         <> [ PlacedLocationDirection
-               (LocationId $ toCardId l1)
-               RightOf
                (LocationId $ toCardId l2)
+               RightOf
+               (LocationId $ toCardId l1)
            | (l1, l2) <- zip (toList locations) (drop 1 $ toList locations)
            ]
         <> [ PlacedLocationDirection
-               (LocationId . toCardId $ NE.last locations)
-               RightOf
                (LocationId . toCardId $ NE.head locations)
+               RightOf
+               (LocationId . toCardId $ NE.last locations)
            ]
         <> [ CreateAssetAt asset (AtLocation locationId)
            | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers

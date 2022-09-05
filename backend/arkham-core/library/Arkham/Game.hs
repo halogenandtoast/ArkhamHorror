@@ -143,7 +143,7 @@ data GameState = IsPending | IsActive | IsOver
 $(deriveJSON defaultOptions ''GameState)
 
 data GameParams = GameParams
-  { gameParamsMode :: (Either ScenarioId CampaignId)
+  { gameParamsMode :: Either ScenarioId CampaignId
   , gameParamsPlayerCount :: Int
   , gameParamsPlayersInOrder :: [(Investigator, [PlayerCard])]
   , gameParamsDifficulty :: Difficulty
@@ -1072,8 +1072,9 @@ getLocationsMatching lmatcher = do
         ls
     LocationWithAsset assetMatcher -> do
       assets <- select assetMatcher
-      pure
-        $ filter (notNull . intersection assets . locationAssets . toAttrs) ls
+      flip filterM ls $ \l -> do
+        lmAssets <- select $ AssetAtLocation $ toId l
+        pure . notNull $ intersection assets lmAssets
     LocationWithInvestigator whoMatcher -> do
       investigators <- select whoMatcher
       pure $ filter

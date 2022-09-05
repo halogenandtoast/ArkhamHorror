@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
@@ -68,6 +69,8 @@ instance RunMessage MagicAndScience where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
+      relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+      investigators <- selectList $ investigatorAt chamberOfTime
       entryway <- selectJust $ locationIs Locations.entryway
       otherLocations <- selectList $ NotLocation $ LocationMatchAny
         [LocationWithId chamberOfTime, LocationWithId entryway]
@@ -101,12 +104,17 @@ instance RunMessage MagicAndScience where
           , UnfocusCards
           ]
       pushAll
-        $ [ SetConnections chamberOfTime []
+        $ [ chooseOrRunOne
+            leadInvestigatorId
+            [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
+            | iid <- investigators
+            ]
+          , SetConnections chamberOfTime []
           , SetLocationLabel chamberOfTime "pos1"
           , SetConnections entryway []
           , SetLocationLabel entryway "pos7"
           ]
-        <> [SetConnections lid [] | lid <- otherLocations]
+        <> [ SetConnections lid [] | lid <- otherLocations ]
         <> concatMap handleCandidateGroup candidateGroups
         <> [ NextAdvanceActStep (toId attrs) 1
            , AdvanceActDeck (actDeckId attrs) (toSource attrs)

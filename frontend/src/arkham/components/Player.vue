@@ -67,6 +67,9 @@ const noCards = computed<ArkhamCard.Card[]>(() => [])
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const cardRowTitle = ref("")
 
+const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
+  filter((t) => t.placement.tag === "TreacheryInHandOf" && t.placement.contents === id.value).
+  map((t) => t.id))
 
 const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
@@ -160,7 +163,7 @@ const debugChoose = inject('debugChoose')
         />
 
         <Treachery
-          v-for="treacheryId in player.inHandTreacheries"
+          v-for="treacheryId in inHandTreacheries"
           :key="treacheryId"
           :treachery="game.treacheries[treacheryId]"
           :game="game"

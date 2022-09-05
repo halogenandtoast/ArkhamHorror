@@ -65,7 +65,6 @@ export interface Investigator {
   hand: Card[];
   deck: PlayerCardContents[];
   treacheries: string[];
-  inHandTreacheries: string[];
   defeated: boolean;
   resigned: boolean;
   additionalActions: AdditionalAction[];
@@ -100,7 +99,6 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   deck: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-  inHandTreacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction'),

@@ -1,7 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
-import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
+import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
+import { Target, targetDecoder } from '@/arkham/types/Target';
 
 export enum MessageType {
   LABEL = 'Label',
@@ -41,19 +42,6 @@ export interface SkillLabel {
   tag: MessageType.SKILL_LABEL
   skillType: SkillType
 }
-
-export interface Target {
-  tag: string
-  contents?: string
-}
-
-export const targetDecoder = JsonDecoder.object<Target>(
-  {
-    tag: JsonDecoder.string,
-    contents: JsonDecoder.optional(JsonDecoder.string),
-  },
-  'Target',
-);
 
 export interface TargetLabel {
   tag: MessageType.TARGET_LABEL

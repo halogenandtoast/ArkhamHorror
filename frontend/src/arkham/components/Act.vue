@@ -80,6 +80,10 @@ const abilities = computed(() => {
 const cardsUnder = computed(() => props.cardsUnder)
 const showCardsUnderAct = (e: Event) => emit('show', e, cardsUnder, 'Cards Under Act', false)
 
+const treacheries = computed(() => Object.values(props.game.treacheries).
+  filter((t) => t.placement.tag === "TreacheryNextToAct").
+  map((t) => t.id))
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 </script>
@@ -97,6 +101,14 @@ const debugChoose = inject('debugChoose')
       class="card card--sideways"
       :key="idx"
       :src="imageForCard(card)"
+    />
+    <Treachery
+      v-for="treacheryId in treacheries"
+      :key="treacheryId"
+      :treachery="game.treacheries[treacheryId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
     />
     <Treachery
       v-for="treacheryId in act.treacheries"

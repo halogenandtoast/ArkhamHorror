@@ -109,34 +109,39 @@ standaloneCampaignLog = mkCampaignLog
 
 investigatorDefeat :: (Monad m, HasGame m) => ScenarioAttrs -> m [Message]
 investigatorDefeat attrs = do
-  investigatorIds <- getInvestigatorIds
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
-  yigsFury <- getRecordCount YigsFury
-  if yigsFury >= 4
-    then do
-      if null defeatedInvestigatorIds
-        then pure []
-        else
-          pure
-          $ story investigatorIds defeat
-          : story
-              investigatorIds
-              "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
-          : map (InvestigatorKilled (toSource attrs)) defeatedInvestigatorIds
-          <> [ GameOver
-             | null
-               (setFromList @(HashSet InvestigatorId) investigatorIds
-               `difference` setFromList @(HashSet InvestigatorId)
-                              defeatedInvestigatorIds
-               )
-             ]
+  if null defeatedInvestigatorIds
+    then pure []
     else do
-      pure
-        [ story
-          investigatorIds
-          "Suddenly, a distant voice hisses to the others, and the serpents tentatively retreat into the darkness. You run for your life, not taking any chances."
-        , RecordCount YigsFury (yigsFury + 3)
-        ]
+      investigatorIds <- getInvestigatorIds
+      yigsFury <- getRecordCount YigsFury
+      if yigsFury >= 4
+        then do
+          if null defeatedInvestigatorIds
+            then pure []
+            else
+              pure
+              $ story investigatorIds defeat
+              : story
+                  investigatorIds
+                  "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
+              : map
+                  (InvestigatorKilled (toSource attrs))
+                  defeatedInvestigatorIds
+              <> [ GameOver
+                 | null
+                   (setFromList @(HashSet InvestigatorId) investigatorIds
+                   `difference` setFromList @(HashSet InvestigatorId)
+                                  defeatedInvestigatorIds
+                   )
+                 ]
+        else do
+          pure
+            [ story
+              investigatorIds
+              "Suddenly, a distant voice hisses to the others, and the serpents tentatively retreat into the darkness. You run for your life, not taking any chances."
+            , RecordCount YigsFury (yigsFury + 3)
+            ]
 
 instance RunMessage TheDoomOfEztli where
   runMessage msg s@(TheDoomOfEztli (attrs `With` metadata)) = case msg of
@@ -209,14 +214,19 @@ instance RunMessage TheDoomOfEztli where
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
       pushAll
-        [ story iids intro
-        , SetEncounterDeck encounterDeck'
-        , SetAgendaDeck
-        , SetActDeck
-        , PlaceLocation entryway
-        , RevealLocation Nothing (toLocationId entryway)
-        , MoveAllTo (toSource attrs) (toLocationId entryway)
-        ]
+        $ [ story iids intro
+          , SetEncounterDeck encounterDeck'
+          , SetAgendaDeck
+          , SetActDeck
+          , PlaceLocation entryway
+          , RevealLocation Nothing (toLocationId entryway)
+          ]
+        <> [ PlaceDoom
+               (LocationTarget $ toLocationId entryway)
+               (resolution4Count metadata)
+           | resolution4Count metadata > 0
+           ]
+        <> [MoveAllTo (toSource attrs) (toLocationId entryway)]
 
       TheDoomOfEztli . (`with` metadata) <$> runMessage
         msg
@@ -286,6 +296,7 @@ instance RunMessage TheDoomOfEztli where
             <> harbingerMessages
             <> [RecordCount YigsFury (yigsFury + vengeance)]
             <> gainXp
+            <> [EndOfGame Nothing]
           pure s
         Resolution 2 -> do
           pushAll
@@ -296,6 +307,7 @@ instance RunMessage TheDoomOfEztli where
             <> harbingerMessages
             <> [RecordCount YigsFury (yigsFury + vengeance)]
             <> gainXp
+            <> [EndOfGame Nothing]
           pure s
         Resolution 3 -> do
           pushAll
@@ -313,12 +325,19 @@ instance RunMessage TheDoomOfEztli where
                ]
           pure s
         Resolution 4 -> do
+          standalone <- getIsStandalone
           pushAll
-            [ story investigatorIds resolution4
-            , ResetGame
-            , StartScenario (toId attrs)
-            ]
-          pure . TheDoomOfEztli $ attrs `with` Metadata
+            $ [story investigatorIds resolution4, ResetGame]
+            <> [ StandaloneSetup | standalone ]
+            <> [ ChooseLeadInvestigator
+               , SetupInvestigators
+               , SetTokensForScenario -- (chaosBagOf campaign')
+               , InvestigatorsMulligan
+               , Setup
+               , EndSetup
+               ]
+          let resetAttrs = toAttrs $ theDoomOfEztli (scenarioDifficulty attrs)
+          pure . TheDoomOfEztli $ resetAttrs `with` Metadata
             (resolution4Count metadata + 1)
         Resolution 5 -> do
           pushAll
@@ -328,6 +347,7 @@ instance RunMessage TheDoomOfEztli where
             <> harbingerMessages
             <> [RecordCount YigsFury (yigsFury + vengeance)]
             <> gainXp
+            <> [EndOfGame Nothing]
           pure s
         _ -> error "Unknown Resolution"
     _ -> TheDoomOfEztli . (`with` metadata) <$> runMessage msg attrs

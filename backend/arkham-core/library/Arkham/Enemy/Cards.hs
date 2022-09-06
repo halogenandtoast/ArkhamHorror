@@ -104,6 +104,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , bogGator
   , broodOfYig
   , broodOfYogSothoth
+  , brotherhoodCultist
   , carnevaleSentinel
   , catacombsDocent
   , cloverClubPitBoss
@@ -870,6 +871,12 @@ eztliGuardian :: CardDef
 eztliGuardian = (enemy "04086" "Eztli Guardian" GuardiansOfTime 2)
   { cdCardTraits = setFromList [Humanoid, Eztli]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Aloof]
+  }
+
+brotherhoodCultist :: CardDef
+brotherhoodCultist = (enemy "04095" "Brotherhood Cultist" PnakoticBrotherhood 2)
+  { cdCardTraits = setFromList [Humanoid, Cultist]
+  , cdKeywords = singleton Keyword.Hunter
   }
 
 corpseHungryGhoul :: CardDef

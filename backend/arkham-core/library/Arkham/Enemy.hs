@@ -193,6 +193,8 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard serpentFromYoth
   -- Guardians of Time
   , SomeEnemyCard eztliGuardian
+  -- Pnakotic Brotherhood
+  , SomeEnemyCard brotherhoodCultist
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

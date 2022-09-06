@@ -17,8 +17,8 @@ import Arkham.Resolution
 import Arkham.Target
 
 newtype SearchForTheRuins = SearchForTheRuins ActAttrs
-  deriving anyclass (IsAct, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsAct
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 searchForTheRuins :: ActCard SearchForTheRuins
 searchForTheRuins = act

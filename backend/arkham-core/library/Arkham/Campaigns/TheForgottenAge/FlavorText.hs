@@ -92,3 +92,130 @@ thePoisonSpreads = FlavorText
     \ breathing, and I began every morning by retching up most of the previous\
     \ night’s dinner."
   ]
+
+expeditionsEnd1 :: FlavorText
+expeditionsEnd1 = FlavorText
+  (Just "Expedition's End 1")
+  [ "Friday, July 17th, 1925"
+  , "We have finally made it back to Arkham, our expedition a “success.” Alejandro\
+    \ is excited to report his findings to the university. How he maintains his\
+    \ starry-eyed idealism after the hell we went through in the jungle is beyond me.\
+    \ His attention is fixated on the strange relic that we discovered in the\
+    \ ruins. I wish we knew a little more about the artifact’s origins. It unsettles\
+    \ me greatly. It hums at all times and pulses with an otherworldly energy I can\
+    \ scarcely describe. As we traveled home with the artifact in tow, our nights\
+    \ were plagued by bizarre nightmares: dreams of other worlds and civilizations."
+  , "Alejandro wants to bring the relic to the Miskatonic Museum, to put on display\
+    \ along with the other Eztli artifacts we discovered. My feelings are mixed. At\
+    \ the museum, it will receive proper care, and historians will be able to study\
+    \ it and perhaps even discern its purpose. However, I fear that the relic may be\
+    \ too dangerous for the public. After all, we still have no idea what the damned\
+    \ thing even is. Alejandro would hate it, but perhaps it would be better to keep\
+    \ the relic somewhere safe, where Harlan and I can study it in private. I’ll have\
+    \ to decide tonight; after tomorrow, there won’t be time to change my mind..."
+  ]
+
+expeditionsEnd2 :: FlavorText
+expeditionsEnd2 = FlavorText
+  (Just "Expedition's End 2")
+  [ "Sunday, July 19th, 1925"
+  , "I’ve decided to give custody of the relic to Alejandro. This entire expedition\
+    \ was based on his research, after all—he should be the one to study it. If\
+    \ anyone can discover the relic’s secrets, it’s him."
+  , "The relic is to be the centerpiece of a new exhibit at the museum. Alejandro\
+    \ has already written extensively about our discoveries, but his work has only\
+    \ just begun. Many mysteries about our expedition remain. How have the Eztli\
+    \ people remained undiscovered for so long? Why did they appear to be guarding\
+    \ the jungle, and from what? Who really built the temple ruins we explored? I\
+    \ have no doubt Alejandro will uncover the answers to these questions, given\
+    \ enough time."
+  , "As for me, my role in this endeavor has ended. However, I have yet to relax. My\
+    \ thoughts are constantly in the jungle—serpentine figures in the shadows,\
+    \ obsidian arrows embedded in skeletal bodies, malformed voices shrieking in the\
+    \ cavernous depths. When I walk through the streets, I find myself drawn toward\
+    \ the museum without realizing it, as though possessed to see the relic once\
+    \ again. There is a nagging sensation in the back of my mind, as though we have\
+    \ forgotten something important. What must I do to rid myself of—"
+  , "(The journal entry ends abruptly.)"
+  ]
+
+expeditionsEnd3 :: FlavorText
+expeditionsEnd3 = FlavorText
+  (Just "Expedition's End 3")
+  [ "Sunday, July 19th, 1925"
+  , "I’ve decided to keep the relic hidden for now. Alejandro is not happy with my\
+    \ decision, but until we know what the orb is capable of, it’s important that it\
+    \ stay somewhere safe, where it won’t endanger others. Harlan agrees with me, and\
+    \ has offered to take custody of the relic and keep it in his private office.\
+    \ There, we can study the artifact in secret."
+  , "Alejandro is staying in Arkham for the time being, recording his notes about\
+    \ the expedition and helping the museum put together an exhibit displaying our\
+    \ other, less dangerous discoveries. As for me, I hope to find answers to other\
+    \ mysteries: How have the Eztli people remained undiscovered for so long? Why did\
+    \ they appear to be guarding the jungle, and from what? Who really built the\
+    \ temple ruins we explored?"
+  , "My thoughts are constantly in the jungle—serpentine figures in the shadows,\
+    \ obsidian arrows embedded in skeletal bodies, malformed voices shrieking in the\
+    \ cavernous depths. Each time I leave Harlan’s office, I find myself longing to\
+    \ head back and gaze upon the relic once more. There is a nagging sensation in\
+    \ the back of my mind, as though we have forgotten something important. What must\
+    \ I do to rid myself of—"
+  , "(The journal entry ends abruptly.)"
+  ]
+
+expeditionsEnd4 :: FlavorText
+expeditionsEnd4 = FlavorText
+  (Just "Expedition's End 4")
+  [ "You drop your pen as a loud knocking at the door startles you, and you jump to\
+    \ your feet. It is almost 2:30 in the morning. Who could possibly be at your door\
+    \ at this hour? Your thoughts wander again to the jungle, and you are faced with\
+    \ a vision of serpent-creatures attacking you in your own home. Shuddering, you\
+    \ find a weapon and approach the front door carefully, ready to strike if need\
+    \ be. You take a long breath and open the door."
+  , "On the other side is a familiar woman with brown skin, long brown hair, and\
+    \ piercing yellow eyes set in a hard glare. Though her attire has changed, you\
+    \ recognize her instantly as Ichtaca, the Eztli warrior you encountered in the\
+    \ rainforest. Wearing a long coat and a Bollman hat, she is visibly uncomfortable\
+    \ in her shoes. Her jaw is set in anger. You are about to raise your weapon in\
+    \ defense when she lets out a heavy sigh and walks slowly over the threshold of\
+    \ your home, shutting your front door behind her. “Whatever you did, you have to\
+    \ reverse it,” she intones darkly. “Or we will all cease to exist.”"
+  ]
+
+expeditionsEnd5 :: FlavorText
+expeditionsEnd5 = FlavorText
+  (Just "Expedition's End 5")
+  [ "Harlan Earnstone paces across your living room, dabbing his wrinkled forehead\
+    \ with his handkerchief. “It’s my fault. I should never have encouraged them to\
+    \ go on that dreadful expedition.” Though your paths have only crossed a few\
+    \ times before, Mr. Earnstone has become a valuable contact of yours within\
+    \ Miskatonic University. When the University’s latest expedition returned with\
+    \ only a few survivors and a handful of strange, archaic artifacts, he came to\
+    \ you for advice."
+  , "“I know, I know. I should at least take solace in the fact that the expedition\
+    \ was successful, despite its heavy losses. Alejandro was right all along. The\
+    \ Eztli people are real. And yet...I am concerned about some of these findings.”\
+    \ Harlan pulls a small leather-bound journal from his suitcase and hands it to\
+    \ you. “Before the expedition leader’s tragic death, the leader recorded many of\
+    \ the group’s discoveries in this journal. One of the surviving members of the\
+    \ expedition managed to grab it from the camp before fleeing the jungle. I think\
+    \ if you read these entries, you’ll understand what I mean. The things they\
+    \ experienced, the creatures they encountered...” Harlan shudders and adjusts his\
+    \ glasses with too-shaky hands. “I am concerned not only for Alejandro, but for\
+    \ all of us. Read this journal, and if you can, please keep an eye on my\
+    \ colleague.” You agree to help, but his worry does not fade. “I only hope that I\
+    \ am not damning you to a similar fate by asking for your aid.”"
+  , "You spend the remainder of that night studying the expedition journal, your\
+    \ mind swimming with thoughts of strange serpent-creatures and Aztec warriors.\
+    \ Long after Harlan has left, a loud knocking at the door startles you, and you\
+    \ jump to your feet. It is almost 2:30 in the morning. Who could possibly be at\
+    \ your door at this hour? You open the front door warily. On the other side is a\
+    \ woman with brown skin, long brown hair, and piercing yellow eyes set in a hard\
+    \ glare. She wears a long coat and a Bollman-style hat, visibly uncomfortable in\
+    \ her shoes. Her jaw is set in anger. A sudden flash of insight crosses your\
+    \ mind, and you realize at once who she must be. After all, you’ve read and\
+    \ re-read the journal’s description of Ichtaca, the Eztli warrior. She lets out a\
+    \ heavy sigh and walks slowly over the threshold of your home, shutting your\
+    \ front door behind her. “Whatever they did, you have to reverse it,” she intones\
+    \ darkly. “Or we will all cease to exist.”"
+  ]

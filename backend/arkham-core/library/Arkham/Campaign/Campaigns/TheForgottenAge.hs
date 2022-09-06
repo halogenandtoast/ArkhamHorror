@@ -5,16 +5,17 @@ module Arkham.Campaign.Campaigns.TheForgottenAge
 
 import Arkham.Prelude
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
@@ -22,6 +23,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 
 newtype TheForgottenAge = TheForgottenAge CampaignAttrs
   deriving anyclass IsCampaign
@@ -242,6 +244,67 @@ instance RunMessage TheForgottenAge where
             else []
           )
         <> [NextCampaignStep Nothing]
+      pure c
+    CampaignStep (Just (InterludeStep 2 mkey)) -> do
+      recoveredTheRelicOfAges <- getHasRecord
+        TheInvestigatorsRecoveredTheRelicOfAges
+      let expeditionsEndStep = if recoveredTheRelicOfAges then 1 else 5
+      push $ CampaignStep (Just (InterludeStepPart 2 mkey expeditionsEndStep))
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 mkey 1)) -> do
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      pushAll
+        [ story investigatorIds expeditionsEnd1
+        , chooseOne
+          leadInvestigatorId
+          [ Label
+            "It belongs in a museum. Alejandro and the museum staff will be able to study it and learn more about its purpose. - Proceed to Expedition’s End 2."
+            [CampaignStep (Just (InterludeStepPart 2 mkey 2))]
+          , Label
+            "It is too dangerous to be on display. We should keep it hidden and safe until we know more about it. - Skip to Expedition's End 3."
+            [CampaignStep (Just (InterludeStepPart 2 mkey 3))]
+          ]
+        ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 mkey 2)) -> do
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      let
+        inADeckAlready =
+          any ((== Assets.alejandroVela) . toCardDef)
+            . concat
+            . toList
+            $ campaignStoryCards attrs
+      pushAll
+        $ [ story investigatorIds expeditionsEnd2
+          , Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
+          , Record TheInvestigatorsHaveEarnedAlejandrosTrust
+          ]
+        <> [ addCampaignCardToDeckChoice
+               leadInvestigatorId
+               investigatorIds
+               Assets.alejandroVela
+           | not inADeckAlready
+           ]
+        <> [AddToken Tablet, CampaignStep (Just (InterludeStepPart 2 mkey 4))]
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 mkey 3)) -> do
+      investigatorIds <- getInvestigatorIds
+      pushAll
+        [ story investigatorIds expeditionsEnd3
+        , Record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+        , Record AlejandroIsContinuingHisResearchOnHisOwn
+        , CampaignStep (Just (InterludeStepPart 2 mkey 4))
+        ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 _ 4)) -> do
+      investigatorIds <- getInvestigatorIds
+      pushAll [story investigatorIds expeditionsEnd4, NextCampaignStep Nothing]
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 _ 5)) -> do
+      investigatorIds <- getInvestigatorIds
+      pushAll [story investigatorIds expeditionsEnd5, NextCampaignStep Nothing]
       pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs

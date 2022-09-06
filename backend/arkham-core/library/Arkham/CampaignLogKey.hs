@@ -107,6 +107,10 @@ data CampaignLogKey
   | TheInvestigatorsRecoveredTheRelicOfAges
   | AlejandroRecoveredTheRelicOfAges
   | TheHarbingerIsStillAlive
+  | TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
+  | TheInvestigatorsHaveEarnedAlejandrosTrust
+  | TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+  | AlejandroIsContinuingHisResearchOnHisOwn
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

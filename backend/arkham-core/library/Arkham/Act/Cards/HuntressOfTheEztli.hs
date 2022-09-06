@@ -6,13 +6,14 @@ module Arkham.Act.Cards.HuntressOfTheEztli
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -22,6 +23,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Source
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait ( Trait (Ruins) )
@@ -56,7 +58,8 @@ instance RunMessage HuntressOfTheEztli where
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      ichtacaDefeated <- any (`cardMatch` CardWithTitle "Ichtaca") <$> scenarioField ScenarioVictoryDisplay
+      ichtacaDefeated <- any (`cardMatch` CardWithTitle "Ichtaca")
+        <$> scenarioField ScenarioVictoryDisplay
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
       if ichtacaDefeated
         then do
@@ -70,9 +73,7 @@ instance RunMessage HuntressOfTheEztli where
             [ Remember YouFoughtWithIchtaca
             , chooseOne
               leadInvestigatorId
-              [ targetLabel
-                  iid
-                  [TakeControlOfSetAsideAsset iid alejandroVela]
+              [ targetLabel iid [TakeControlOfSetAsideAsset iid alejandroVela]
               | iid <- investigatorIds
               ]
             , AddToken Tablet
@@ -86,8 +87,10 @@ instance RunMessage HuntressOfTheEztli where
               (toSource attrs)
             ]
         else do
+          itchtaca <- selectJust $ enemyIs Enemies.ichtaca
           pushAll
-            [ Remember IchtachaIsLeadingTheWay
+            [ AddToVictory (EnemyTarget itchtaca)
+            , Remember IchtachaIsLeadingTheWay
             , AddToken Cultist
             , ShuffleCardsIntoDeck
               (Deck.ScenarioDeckByKey ExplorationDeck)

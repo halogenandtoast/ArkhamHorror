@@ -58,7 +58,7 @@ spec = describe "Close Call (2)" $ do
         )
       $ do
           runMessages
-          queueRef <- view messageQueue
+          queueRef <- messageQueue
           queueRef `refShouldBe` []
 
   it "does not work on weakness enemies" $ do
@@ -79,5 +79,5 @@ spec = describe "Close Call (2)" $ do
         )
       $ do
           runMessages
-          queueRef <- view messageQueue
+          queueRef <- messageQueue
           queueRef `refShouldBe` []

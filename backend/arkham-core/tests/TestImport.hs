@@ -132,8 +132,8 @@ instance HasGameRef TestApp where
 instance HasStdGen TestApp where
   genL = lens gen $ \m x -> m { gen = x }
 
-instance HasQueue TestApp where
-  messageQueue = lens messageQueueRef $ \m x -> m { messageQueueRef = x }
+instance HasQueue Message TestAppT where
+  messageQueue = asks messageQueueRef
 
 instance HasGameLogger TestApp where
   gameLoggerL = lens testGameLogger $ \m x -> m { testGameLogger = x }
@@ -420,6 +420,7 @@ newGame investigator = do
     , gameEncounterDiscardEntities = defaultEntities
     , gameInHandEntities = mempty
     , gameInDiscardEntities = mempty
+    , gameOutOfPlayEntities = mempty
     , gameInSearchEntities = defaultEntities
     , gameGameState = IsActive
     , gameFoundCards = mempty

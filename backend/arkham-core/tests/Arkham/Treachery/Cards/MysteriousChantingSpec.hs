@@ -4,6 +4,7 @@ module Arkham.Treachery.Cards.MysteriousChantingSpec
 
 import TestImport.Lifted
 
+import Arkham.Matcher (defaultRemoveDoomMatchers)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Enemy.Types (Field(..))
@@ -22,7 +23,7 @@ spec = describe "Mysterious Chanting" $ do
         , placedLocation location2
         , enemySpawn location1 cultist
         , moveTo investigator location1
-        , RemoveAllDoom (TestSource mempty)
+        , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
         , InvestigatorDrawEncounterCard (toId investigator)
         ]
         ((entitiesL . enemiesL %~ insertEntity cultist)

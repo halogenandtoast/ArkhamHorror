@@ -239,6 +239,7 @@ allTreacheries = mapFromList $ map
   , SomeTreacheryCard deepDark
   -- Pnakotic Brotherhood
   , SomeTreacheryCard shadowed
+  , SomeTreacheryCard wordsOfPower
   -- Poison
   , SomeTreacheryCard creepingPoison
   , SomeTreacheryCard poisoned

@@ -59,6 +59,11 @@ treacheryInHandOf attrs = case treacheryPlacement attrs of
   TreacheryInHandOf iid -> Just iid
   _ -> Nothing
 
+treacheryInThreatAreaOf :: TreacheryAttrs -> Maybe InvestigatorId
+treacheryInThreatAreaOf attrs = case treacheryPlacement attrs of
+  TreacheryAttachedTo (InvestigatorTarget iid) -> Just iid
+  _ -> Nothing
+
 placementL :: Lens' TreacheryAttrs TreacheryPlacement
 placementL = lens treacheryPlacement $ \m x -> m { treacheryPlacement = x }
 

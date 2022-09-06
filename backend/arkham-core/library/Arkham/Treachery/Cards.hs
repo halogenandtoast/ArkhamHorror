@@ -211,6 +211,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , rottingRemainsBloodOnTheAltar
   , ruinAndDestruction
   , shadowSpawned
+  , shadowed
   , slitheringBehindYou
   , snakeBite
   , somethingInTheDrinks
@@ -984,6 +985,12 @@ deepDark :: CardDef
 deepDark =
   (treachery "04094" "Deep Dark" ForgottenRuins 3)
     { cdCardTraits = singleton Hazard
+    }
+
+shadowed :: CardDef
+shadowed =
+  (treachery "04096" "Shadowed" PnakoticBrotherhood 2)
+    { cdCardTraits = singleton Scheme
     }
 
 creepingPoison :: CardDef

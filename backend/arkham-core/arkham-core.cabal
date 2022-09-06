@@ -603,6 +603,7 @@ library
       Arkham.Enemy.Cards.BogGator
       Arkham.Enemy.Cards.BroodOfYig
       Arkham.Enemy.Cards.BroodOfYogSothoth
+      Arkham.Enemy.Cards.BrotherhoodCultist
       Arkham.Enemy.Cards.CarnevaleSentinel
       Arkham.Enemy.Cards.CatacombsDocent
       Arkham.Enemy.Cards.CloverClubPitBoss
@@ -1457,6 +1458,7 @@ library
       Arkham.Treachery.Cards.RuinAndDestruction
       Arkham.Treachery.Cards.SearchingForIzzie
       Arkham.Treachery.Cards.SelfDestructive
+      Arkham.Treachery.Cards.Shadowed
       Arkham.Treachery.Cards.ShadowSpawned
       Arkham.Treachery.Cards.ShellShock
       Arkham.Treachery.Cards.SlitheringBehindYou

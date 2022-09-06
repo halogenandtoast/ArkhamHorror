@@ -10,6 +10,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype MadPatient = MadPatient EnemyAttrs
@@ -37,4 +38,8 @@ instance HasAbilities MadPatient where
     ]
 
 instance RunMessage MadPatient where
-  runMessage msg (MadPatient attrs) = MadPatient <$> runMessage msg attrs
+  runMessage msg e@(MadPatient attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ InvestigatorAssignDamage iid source DamageAny 0 1
+      pure e
+    _ -> MadPatient <$> runMessage msg attrs

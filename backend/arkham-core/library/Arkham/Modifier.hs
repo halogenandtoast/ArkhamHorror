@@ -83,6 +83,7 @@ data ModifierType
   | CanOnlyBeDefeatedByDamage
   | CancelAttacksByEnemies EnemyMatcher
   | CannotBeDamaged
+  | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CannotBeDiscarded
   | CannotBeEnteredByNonElite

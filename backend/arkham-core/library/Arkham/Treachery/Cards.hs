@@ -253,6 +253,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , whispersInYourHeadDismay
   , whispersInYourHeadDoubt
   , whispersInYourHeadDread
+  , wordsOfPower
   , worldsMerge
   , wormhole
   ]
@@ -991,6 +992,12 @@ shadowed :: CardDef
 shadowed =
   (treachery "04096" "Shadowed" PnakoticBrotherhood 2)
     { cdCardTraits = singleton Scheme
+    }
+
+wordsOfPower :: CardDef
+wordsOfPower =
+  (treachery "04097" "Words of Power" PnakoticBrotherhood 2)
+    { cdCardTraits = singleton Hex
     }
 
 creepingPoison :: CardDef

@@ -7,21 +7,53 @@ import Arkham.CampaignStep
 
 nextStep :: CampaignAttrs -> Maybe CampaignStep
 nextStep a = case campaignStep a of
-  Just PrologueStep -> Just (ScenarioStep "04043")
-  Just (ScenarioStep "04043") -> Just (InterludeStep 1 Nothing)
-  Just (InterludeStep 1 _) -> Just (UpgradeDeckStep $ ScenarioStep "04054")
-  Just (ScenarioStep "04054") -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
-  Just (InterludeStep 2 _) -> Just (ScenarioStep "04113")
+  Just PrologueStep -> Just TheUntamedWilds
+  Just TheUntamedWilds -> Just (InterludeStep 1 Nothing)
+  Just (InterludeStep 1 _) -> Just (UpgradeDeckStep TheDoomOfEztli)
+  Just TheDoomOfEztli -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
+  Just (InterludeStep 2 _) -> Just ThreadsOfFate
   -- resupply
-  Just (ScenarioStep "04113") -> Just (UpgradeDeckStep $ ScenarioStep "04161")
-  Just (ScenarioStep "04161") -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
-  Just (InterludeStep 3 _) -> Just (ScenarioStepPart "04205" 1)
-  Just (ScenarioStepPart "04205" 1) -> Just (ScenarioStepPart "04205" 2)
-  Just (ScenarioStepPart "04205" 2) -> Just (UpgradeDeckStep $ ScenarioStep "04237")
-  Just (ScenarioStep "04237") -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-  Just (InterludeStep 4 _) -> Just (ScenarioStep "04277")
-  Just (ScenarioStep "04277") -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
-  Just (InterludeStep 5 _) -> Just (ScenarioStep "04314")
-  Just (ScenarioStep "04314") -> Just EpilogueStep
+  Just ThreadsOfFate -> Just (UpgradeDeckStep TheBoundaryBeyond)
+  Just TheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
+  Just (InterludeStep 3 _) -> Just (HeartOfTheElders 1)
+  Just (HeartOfTheElders 1) -> Just (HeartOfTheElders 2)
+  Just (HeartOfTheElders 2) -> Just (UpgradeDeckStep TheCityOfArchives)
+  Just TheCityOfArchives -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
+  Just (InterludeStep 4 _) -> Just TheDepthsOfYoth
+  Just TheDepthsOfYoth -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
+  Just (InterludeStep 5 _) -> Just ShatteredAeons
+  Just ShatteredAeons -> Just EpilogueStep
   Just (UpgradeDeckStep nextStep') -> Just nextStep'
   _ -> Nothing
+
+pattern TheUntamedWilds :: CampaignStep
+pattern TheUntamedWilds <- ScenarioStep "04043" where
+  TheUntamedWilds = ScenarioStep "04043"
+
+pattern TheDoomOfEztli :: CampaignStep
+pattern TheDoomOfEztli <- ScenarioStep "04054" where
+  TheDoomOfEztli = ScenarioStep "04054"
+
+pattern ThreadsOfFate :: CampaignStep
+pattern ThreadsOfFate <- ScenarioStep "04113" where
+  ThreadsOfFate = ScenarioStep "04113"
+
+pattern TheBoundaryBeyond :: CampaignStep
+pattern TheBoundaryBeyond <- ScenarioStep "04161" where
+  TheBoundaryBeyond = ScenarioStep "04161"
+
+pattern HeartOfTheElders :: Int -> CampaignStep
+pattern HeartOfTheElders n <- ScenarioStepPart "04205" n where
+  HeartOfTheElders n = ScenarioStepPart "04205" n
+
+pattern TheCityOfArchives :: CampaignStep
+pattern TheCityOfArchives <- ScenarioStep "04237" where
+  TheCityOfArchives = ScenarioStep "04237"
+
+pattern TheDepthsOfYoth :: CampaignStep
+pattern TheDepthsOfYoth <- ScenarioStep "04277" where
+  TheDepthsOfYoth = ScenarioStep "04277"
+
+pattern ShatteredAeons :: CampaignStep
+pattern ShatteredAeons <- ScenarioStep "04314" where
+  ShatteredAeons = ScenarioStep "04314"

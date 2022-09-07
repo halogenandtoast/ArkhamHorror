@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.TheMaskedHunter
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Target
@@ -27,12 +27,11 @@ instance HasModifiersFor TheMaskedHunter where
   getModifiersFor target (TheMaskedHunter a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 2)
     pure $ toModifiers a [HealthModifier healthModifier]
-  getModifiersFor (InvestigatorTarget iid) (TheMaskedHunter a@EnemyAttrs {..})
-    = do
-      affected <- iid <=~> investigatorEngagedWith enemyId
-      pure $ toModifiers a $ if affected
-        then [CannotDiscoverClues, CannotSpendClues]
-        else []
+  getModifiersFor (InvestigatorTarget iid) (TheMaskedHunter a) = do
+    affected <- iid <=~> investigatorEngagedWith (toId a)
+    pure $ toModifiers a $ if affected
+      then [CannotDiscoverClues, CannotSpendClues]
+      else []
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheMaskedHunter where

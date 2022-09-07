@@ -879,6 +879,12 @@ brotherhoodCultist = (enemy "04095" "Brotherhood Cultist" PnakoticBrotherhood 2)
   , cdKeywords = singleton Keyword.Hunter
   }
 
+fangOfYig :: CardDef
+fangOfYig = (enemy "04098" "Fang of Yig" YigsVenom 2)
+  { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+  , cdKeywords = singleton Keyword.Retaliate
+  }
+
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1
                     )

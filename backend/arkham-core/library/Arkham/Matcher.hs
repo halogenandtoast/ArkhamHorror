@@ -391,9 +391,9 @@ pattern LocationWithoutHorror :: LocationMatcher
 pattern LocationWithoutHorror <- LocationWithHorror (EqualTo (Static 0)) where
   LocationWithoutHorror = LocationWithHorror (EqualTo (Static 0))
 
-pattern LocationWithoutClues :: LocationMatcher
-pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
-  LocationWithoutClues = LocationWithClues (EqualTo (Static 0))
+-- pattern LocationWithoutClues :: LocationMatcher
+-- pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
+--   LocationWithoutClues = LocationWithClues (EqualTo (Static 0))
 
 pattern LocationWithoutDoom :: LocationMatcher
 pattern LocationWithoutDoom <- LocationWithDoom (EqualTo (Static 0)) where
@@ -454,6 +454,7 @@ data LocationMatcher
   | LocationWithLabel Label
   | LocationWithSymbol LocationSymbol
   | LocationLeavingPlay
+  | LocationWithoutClues
   | LocationWithDoom ValueMatcher
   | YourLocation
   | SameLocation
@@ -1021,6 +1022,7 @@ replaceYourLocation _ Nothing = id
 replaceYourLocation iid (Just lid) = go
  where
   go matcher = case matcher of
+    LocationWithoutClues{} -> matcher
     LocationWithTitle{} -> matcher
     LocationWithFullTitle{} -> matcher
     LocationWithUnrevealedTitle{} -> matcher

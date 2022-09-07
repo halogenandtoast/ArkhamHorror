@@ -1267,6 +1267,8 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`member` matches') . toId) ls
     BlockedLocation ->
       flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
+    LocationWithoutClues ->
+      pure $ filter (locationWithoutClues . toAttrs) ls
     -- these can not be queried
     LocationLeavingPlay -> pure []
     SameLocation -> pure []
@@ -1853,6 +1855,7 @@ instance Projection Act where
     case f of
       ActSequence -> pure actSequence
       ActClues -> pure actClues
+      ActDeckId -> pure actDeckId
       ActAbilities -> pure $ getAbilities a
       ActCard -> pure $ lookupCard (unActId aid) (CardId nil)
 
@@ -2267,6 +2270,7 @@ instance Projection Agenda where
     case fld of
       AgendaSequence -> pure agendaSequence
       AgendaDoom -> pure agendaDoom
+      AgendaDeckId -> pure agendaDeckId
       AgendaAbilities -> pure $ getAbilities a
 
 instance Projection Campaign where
@@ -2872,19 +2876,21 @@ runGameMessage msg g = case msg of
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. entitiesL . agendasL
     g <$ pushAll [ AdvanceAgenda aid | aid <- aids ]
-  ReplaceAgenda aid1 aid2 ->
+  ReplaceAgenda aid1 aid2 -> do
+    agendaDeckId <- field AgendaDeckId aid1
     pure
       $ g
       & (entitiesL . agendasL %~ deleteMap aid1)
-      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 1))
-  ReplaceAct aid1 aid2 ->
+      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 agendaDeckId))
+  ReplaceAct aid1 aid2 -> do
+    actDeckId <- field ActDeckId aid1
     pure
       $ g
       & (entitiesL . actsL %~ deleteMap aid1)
-      & (entitiesL . actsL %~ insertMap aid2 (lookupAct aid2 1))
-  AddAct def -> do
+      & (entitiesL . actsL %~ insertMap aid2 (lookupAct aid2 actDeckId))
+  AddAct deckNum def -> do
     let aid = ActId $ toCardCode def
-    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid 1
+    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum
   AddAgenda agendaDeckNum def -> do
     let aid = AgendaId $ toCardCode def
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum

@@ -33,11 +33,10 @@ letTheStormRageTheVortexAbove = agenda
   (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheVortexAbove where
-  getModifiersFor (TreacheryTarget tid) (LetTheStormRageTheVortexAbove a) =
-    do
-      isAncientEvils <- member tid
-        <$> select (treacheryIs Treacheries.ancientEvils)
-      pure $ toModifiers a [ AddKeyword Keyword.Surge | isAncientEvils ]
+  getModifiersFor (TreacheryTarget tid) (LetTheStormRageTheVortexAbove a) = do
+    isAncientEvils <- member tid
+      <$> select (treacheryIs Treacheries.ancientEvils)
+    pure $ toModifiers a [ AddKeyword Keyword.Surge | isAncientEvils ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LetTheStormRageTheVortexAbove where
@@ -53,7 +52,7 @@ instance RunMessage LetTheStormRageTheVortexAbove where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       beast <- getSetAsideCard Enemies.beastOfAldebaran
-      abbeyTower <- selectJust $ LocationWithTitle "Abbey Tower"
+      abbeyTower <- maybeToList <$> selectOne (LocationWithTitle "Abbey Tower")
       spawnAshleighClarkeMessages <- do
         spawnAshleighClarke <-
           notElem (Recorded $ toCardCode Enemies.ashleighClarke)
@@ -65,7 +64,7 @@ instance RunMessage LetTheStormRageTheVortexAbove where
             pure [CreateEnemyAtLocationMatching card (LocationWithId port)]
           else pure []
       pushAll
-        $ [CreateEnemyAt beast abbeyTower Nothing]
+        $ [ CreateEnemyAt beast lid Nothing | lid <- abbeyTower ]
         <> spawnAshleighClarkeMessages
         <> [ RemoveAllCopiesOfCardFromGame leadInvestigatorId "03281"
            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)

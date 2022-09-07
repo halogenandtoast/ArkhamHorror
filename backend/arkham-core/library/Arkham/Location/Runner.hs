@@ -62,7 +62,12 @@ instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
     FlipClues target n | isTarget a target -> do
       let flipCount = min n locationClues
-      pure $ a & cluesL %~ max 0 . subtract n & doomL +~ flipCount
+      let clueCount = max 0 $ subtract n locationClues
+      pure
+        $ a
+        & (cluesL .~ clueCount)
+        & (doomL +~ flipCount)
+        & (withoutCluesL .~ (clueCount == 0))
     UpdateLocation newAttrs lid | lid == locationId -> do
       pure newAttrs
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
@@ -149,22 +154,21 @@ instance RunMessage LocationAttrs where
     AddDirectConnection fromLid toLid | fromLid == locationId -> do
       pure
         $ a
-        & revealedConnectedMatchersL
-        <>~ [LocationWithId toLid]
-        & connectedMatchersL
-        <>~ [LocationWithId toLid]
+        & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
+        & (connectedMatchersL <>~ [LocationWithId toLid])
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
       a <$ push (DiscoverClues iid lid discoveredClues maction)
     Do (DiscoverClues iid lid n _) | lid == locationId -> do
       let lastClue = locationClues - n <= 0
+      let clueCount = max 0 $ subtract n locationClues
       push =<< checkWindows
         (Window Timing.After (Window.DiscoverClues iid lid n)
         : [ Window Timing.After (Window.DiscoveringLastClue iid lid)
           | lastClue
           ]
         )
-      pure $ a & cluesL %~ max 0 . subtract n
+      pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
     InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
     EnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
@@ -234,15 +238,16 @@ instance RunMessage LocationAttrs where
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo target | not (isTarget a target) -> do
       when (locationClues > 0) (push $ PlaceClues target locationClues)
-      pure $ a & cluesL .~ 0
+      pure $ a & cluesL .~ 0 & withoutCluesL .~ True
     PlaceClues target n | isTarget a target -> do
       modifiers' <- getModifiers (toTarget a)
       windows' <- windows [Window.PlacedClues (toTarget a) n]
       if CannotPlaceClues `elem` modifiers'
         then pure a
         else do
+          let clueCount = locationClues + n
           pushAll windows'
-          pure $ a & cluesL +~ n
+          pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
     PlaceCluesUpToClueValue lid n | lid == locationId -> do
       clueValue <- getPlayerCountValue locationRevealClues
       let n' = min n (clueValue - locationClues)
@@ -252,9 +257,11 @@ instance RunMessage LocationAttrs where
       pure $ a & doomL %~ max 0 . subtract n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
-    RemoveClues (LocationTarget lid) n | lid == locationId ->
-      pure $ a & cluesL %~ max 0 . subtract n
-    RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
+    RemoveClues (LocationTarget lid) n | lid == locationId -> do
+      let clueCount = max 0 $ subtract n locationClues
+      pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
+    RemoveAllClues target | isTarget a target ->
+      pure $ a & cluesL .~ 0 & withoutCluesL .~ True
     RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
     PlacedLocation _ _ lid | lid == locationId -> do
       when locationRevealed $ do
@@ -280,7 +287,7 @@ instance RunMessage LocationAttrs where
       pushAll
         $ [whenWindowMsg, afterWindowMsg]
         <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
-      pure $ a & revealedL .~ True
+      pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount == 0)
     LookAtRevealed iid source target | isTarget a target -> do
       push $ chooseOne
         iid

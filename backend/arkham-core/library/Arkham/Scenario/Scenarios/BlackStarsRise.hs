@@ -38,7 +38,7 @@ newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackStarsRise :: Difficulty -> BlackStarsRise
-blackStarsRise difficulty = scenario
+blackStarsRise difficulty = scenarioWith
   BlackStarsRise
   "03274"
   "Black Stars Rise"
@@ -52,6 +52,7 @@ blackStarsRise difficulty = scenario
   , ".                abbeyTower     .           porteDeLAvancée ."
   , ".                abbeyTower     .           porteDeLAvancée ."
   ]
+  (decksLayoutL .~ ["act1 agenda1 agenda2 act2"])
 
 instance HasTokenValue BlackStarsRise where
   getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of

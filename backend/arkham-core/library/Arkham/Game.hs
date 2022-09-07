@@ -14,8 +14,7 @@ import Arkham.Agenda
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Asset
-import Arkham.Asset.Types
-  ( Asset, AssetAttrs (..), Field (..) )
+import Arkham.Asset.Types ( Asset, AssetAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -91,7 +90,7 @@ import Arkham.Message qualified as Msg
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
-import Arkham.Placement hiding (TreacheryPlacement(..))
+import Arkham.Placement hiding ( TreacheryPlacement (..) )
 import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
 import Arkham.Projection
@@ -107,7 +106,8 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Types ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget)
+import Arkham.Treachery.Types
+  ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -644,7 +644,10 @@ getInvestigatorsMatching matcher = do
         getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
         getInvalid acc _ = acc
       modifiers' <- getModifiers (toTarget i)
-      invalidLocations <- select $ getAnyLocationMatcher $ foldl' getInvalid mempty modifiers'
+      invalidLocations <- select $ getAnyLocationMatcher $ foldl'
+        getInvalid
+        mempty
+        modifiers'
       locations <- select matcher'
       pure $ any (`notElem` invalidLocations) locations
     InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
@@ -1325,6 +1328,8 @@ getAssetsMatching matcher = do
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
+    NonWeaknessAsset ->
+      pure $ filter (isNothing . cdCardSubType . toCardDef . toAttrs) as
     EnemyAsset eid ->
       filterM (fieldP AssetPlacement (== AttachedToEnemy eid) . toId) as
     AssetAt locationMatcher -> do
@@ -1958,7 +1963,8 @@ instance Query EnemyMatcher where
 
 instance Query (SetAsideMatcher EnemyMatcher) where
   select (SetAsideMatcher matcher) = do
-    outOfPlayEnemies <- toList . view (outOfPlayEntitiesL . enemiesL) <$> getGame
+    outOfPlayEnemies <-
+      toList . view (outOfPlayEntitiesL . enemiesL) <$> getGame
     matches' <- filterM (enemyMatcherFilter matcher) outOfPlayEnemies
     pure . setFromList $ map toId matches'
 
@@ -2884,8 +2890,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum
   CommitCard iid cardId -> do
     investigator' <- getInvestigator iid
-    treacheryCards <-
-      traverse (field TreacheryCard) =<< selectList (TreacheryInHandOf $ InvestigatorWithId iid)
+    treacheryCards <- traverse (field TreacheryCard)
+      =<< selectList (TreacheryInHandOf $ InvestigatorWithId iid)
     let
       card =
         fromJustNote "could not find card in hand"
@@ -2983,7 +2989,15 @@ runGameMessage msg g = case msg of
     pure g
   DoSetOutOfPlay (EnemyTarget enemyId) -> do
     enemy <- getEnemy enemyId
-    pure $ g & entitiesL . enemiesL %~ deleteMap enemyId & outOfPlayEntitiesL . enemiesL . at enemyId ?~ enemy
+    pure
+      $ g
+      & entitiesL
+      . enemiesL
+      %~ deleteMap enemyId
+      & outOfPlayEntitiesL
+      . enemiesL
+      . at enemyId
+      ?~ enemy
   RemovedFromPlay (AssetSource assetId) -> do
     asset <- getAsset assetId
     let

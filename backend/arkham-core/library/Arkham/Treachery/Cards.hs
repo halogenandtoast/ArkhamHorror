@@ -210,10 +210,12 @@ allEncounterTreacheryCards = mapFromList $ map
   , rottingRemains
   , rottingRemainsBloodOnTheAltar
   , ruinAndDestruction
+  , serpentsCall
   , shadowSpawned
   , shadowed
   , slitheringBehindYou
   , snakeBite
+  , snakescourge
   , somethingInTheDrinks
   , sordidAndSilent
   , spacesBetween
@@ -998,6 +1000,18 @@ wordsOfPower :: CardDef
 wordsOfPower =
   (treachery "04097" "Words of Power" PnakoticBrotherhood 2)
     { cdCardTraits = singleton Hex
+    }
+
+snakescourge :: CardDef
+snakescourge =
+  (treachery "04099" "Snakescourge" YigsVenom 2)
+    { cdCardTraits = singleton Curse
+    }
+
+serpentsCall :: CardDef
+serpentsCall =
+  (treachery "04100" "Serpent's Call" YigsVenom 1)
+    { cdCardTraits = singleton Power
     }
 
 creepingPoison :: CardDef

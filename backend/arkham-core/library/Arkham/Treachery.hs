@@ -240,6 +240,9 @@ allTreacheries = mapFromList $ map
   -- Pnakotic Brotherhood
   , SomeTreacheryCard shadowed
   , SomeTreacheryCard wordsOfPower
+  -- Yig's Venom
+  , SomeTreacheryCard snakescourge
+  , SomeTreacheryCard serpentsCall
   -- Poison
   , SomeTreacheryCard creepingPoison
   , SomeTreacheryCard poisoned

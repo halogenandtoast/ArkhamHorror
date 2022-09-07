@@ -236,6 +236,7 @@ data AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
   | ClosestAsset LocationId AssetMatcher
+  | NonWeaknessAsset
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

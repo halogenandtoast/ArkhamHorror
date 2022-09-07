@@ -70,6 +70,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioEncounterDeck :: Deck EncounterCard
   , scenarioDiscard :: [EncounterCard]
   , scenarioResignedCardCodes :: [CardCode]
+  , scenarioDecksLayout :: [GridTemplateRow]
   -- for standalone
   , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
   }
@@ -123,6 +124,7 @@ scenario f cardCode name difficulty layout = f $ ScenarioAttrs
   , scenarioEncounterDeck = mempty
   , scenarioDiscard = mempty
   , scenarioResignedCardCodes = mempty
+  , scenarioDecksLayout = ["agenda1 act1"]
   , scenarioStoryCards = mempty
   }
 
@@ -186,6 +188,10 @@ completedAgendaStackL = lens scenarioCompletedAgendaStack
 locationLayoutL :: Lens' ScenarioAttrs [GridTemplateRow]
 locationLayoutL =
   lens scenarioLocationLayout $ \m x -> m { scenarioLocationLayout = x }
+
+decksLayoutL :: Lens' ScenarioAttrs [GridTemplateRow]
+decksLayoutL =
+  lens scenarioDecksLayout $ \m x -> m { scenarioDecksLayout = x }
 
 decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
 decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }

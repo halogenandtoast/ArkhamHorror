@@ -1,16 +1,15 @@
 module Arkham.Treachery.Cards.WorldsMerge
   ( worldsMerge
   , WorldsMerge(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.Id
+import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -35,13 +34,14 @@ getStep (Just agenda) = do
 
 instance RunMessage WorldsMerge where
   runMessage msg t@(WorldsMerge attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [RevelationSkillTest iid source SkillWillpower 3, Discard $ toTarget attrs]
+    Revelation iid source | isSource attrs source -> do
+      push $ RevelationSkillTest iid source SkillWillpower 3
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         n <- getStep =<< selectOne (AgendaWithSide AS.C)
-        pushAll
-          $ InvestigatorAssignDamage iid source DamageAny 0 n
-          : replicate n (ChooseAndDiscardCard iid)
+        pushAll $ InvestigatorAssignDamage iid source DamageAny 0 n : replicate
+          n
+          (ChooseAndDiscardCard iid)
         pure t
     _ -> WorldsMerge <$> runMessage msg attrs

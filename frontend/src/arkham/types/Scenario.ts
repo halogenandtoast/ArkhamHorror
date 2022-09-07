@@ -32,6 +32,7 @@ export interface Scenario {
   id: string;
   difficulty: string;
   locationLayout: string[] | null;
+  decksLayout: string[];
   decks: [string, Card[]][];
   cardsUnderAgendaDeck: Card[];
   cardsUnderActDeck: Card[];
@@ -53,6 +54,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   id: JsonDecoder.string,
   difficulty: JsonDecoder.string,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
+  decksLayout: JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),

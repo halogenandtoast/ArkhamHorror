@@ -386,7 +386,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
   SetActDeck -> do
     case a ^. actStackL . at 1 of
-      Just (x : _) -> push (AddAct x)
+      Just (x : _) -> push (AddAct 1 x)
       _ -> pure ()
     pure a
   SetAgendaDeck -> do

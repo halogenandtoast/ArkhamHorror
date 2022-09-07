@@ -140,6 +140,15 @@ const locationStyles = computed(() => {
   return null;
 })
 
+const scenarioDeckStyles = computed(() => {
+  const { decksLayout } = props.scenario
+  return {
+    display: 'grid',
+    'grid-template-areas': decksLayout.map((row) => `"${row}"`).join(' '),
+    'grid-row-gap': '10px',
+  }
+})
+
 const activeCard = computed(() => {
   if (props.game.activeCard) {
     const { cardCode } = props.game.activeCard.contents;
@@ -255,29 +264,32 @@ const phase = computed(() => props.game.phase)
           @choose="choose"
         />
 
-        <Agenda
-          v-for="(agenda, key) in game.agendas"
-          :key="key"
-          :agenda="agenda"
-          :cardsUnder="cardsUnderAgenda"
-          :game="game"
-          :investigatorId="investigatorId"
-          @choose="choose"
-          @show="doShowCards"
-        />
+        <div class="scenario-decks" :style="scenarioDeckStyles">
+          <Agenda
+            v-for="(agenda, key) in game.agendas"
+            :key="key"
+            :agenda="agenda"
+            :cardsUnder="cardsUnderAgenda"
+            :game="game"
+            :investigatorId="investigatorId"
+            :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"
+            @choose="choose"
+            @show="doShowCards"
+          />
 
-
-        <Act
-          v-for="(act, key) in game.acts"
-          :key="key"
-          :act="act"
-          :cardsUnder="cardsUnderAct"
-          :cardsNextTo="cardsNextToAct"
-          :game="game"
-          :investigatorId="investigatorId"
-          @choose="choose"
-          @show="doShowCards"
-        />
+          <Act
+            v-for="(act, key) in game.acts"
+            :key="key"
+            :act="act"
+            :cardsUnder="cardsUnderAct"
+            :cardsNextTo="cardsNextToAct"
+            :game="game"
+            :investigatorId="investigatorId"
+            :style="{ 'grid-area': `act${act.deckId}`, 'justify-self': 'center' }"
+            @choose="choose"
+            @show="doShowCards"
+          />
+        </div>
         <img
           class="card"
           :src="scenarioGuide"

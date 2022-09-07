@@ -85,6 +85,10 @@ canBeFlippedL :: Lens' LocationAttrs Bool
 canBeFlippedL =
   lens locationCanBeFlipped $ \m x -> m { locationCanBeFlipped = x }
 
+withoutCluesL :: Lens' LocationAttrs Bool
+withoutCluesL =
+  lens locationWithoutClues $ \m x -> m { locationWithoutClues = x }
+
 costToEnterUnrevealedL :: Lens' LocationAttrs Cost
 costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
   $ \m x -> m { locationCostToEnterUnrevealed = x }
@@ -233,6 +237,7 @@ locationWith f def shroud' revealClues g = CardBuilder
     , locationCardsUnderneath = mempty
     , locationCostToEnterUnrevealed = ActionCost 1
     , locationCanBeFlipped = False
+    , locationWithoutClues = False
     }
   }
 

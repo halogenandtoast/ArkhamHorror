@@ -65,7 +65,7 @@ const amountSelections = ref<Record<string, number>>({})
 
 const setInitialAmounts = () => {
     const labels = question.value?.tag === QuestionType.CHOOSE_AMOUNTS
-      ? question.value.contents[2].map(([label]) => label)
+      ? question.value.amountChoices.map((choice) => choice.label)
       : Object.keys(props.game.investigators)
     amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
       previousValue[currentValue] = 0

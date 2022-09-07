@@ -160,6 +160,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , lure1
   , manoAMano1
   , manoAMano2
+  , marksmanship2
   , mindOverMatter
   , mindWipe1
   , mindWipe3
@@ -181,6 +182,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , quantumFlux
   , recharge2
   , reliable1
+  , sceneOfTheCrime
   , scroungeForSupplies
   , searchForTheTruth
   , secondWind
@@ -1285,6 +1287,25 @@ darkPact = (event "04038" "Dark Pact" 2 Neutral)
   { cdCardTraits = singleton Pact
   , cdCardSubType = Just BasicWeakness
   , cdCardInHandEffects = True
+  }
+
+sceneOfTheCrime :: CardDef
+sceneOfTheCrime = (event "04103" "Scene of the Crime" 2 Guardian)
+  { cdSkills = [SkillCombat, SkillIntellect]
+  , cdCardTraits = setFromList [Insight, Bold]
+  , cdCriteria = Just
+    $ Criteria.Criteria [Criteria.FirstAction, Criteria.ClueOnLocation]
+  }
+
+marksmanship2 :: CardDef
+marksmanship2 = (event "04104" "Marksmanship" 2 Guardian)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = singleton Tactic
+  , cdFastWindow =
+    Just
+    $ ActivateAbility Timing.When You
+    $ AbilityIsAction Action.Fight
+    <> AssetAbility (AssetOneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
   }
 
 secondWind :: CardDef

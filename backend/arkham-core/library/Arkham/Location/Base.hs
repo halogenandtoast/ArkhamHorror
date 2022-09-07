@@ -36,6 +36,10 @@ data LocationAttrs = LocationAttrs
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
   , locationCanBeFlipped :: Bool
+  -- We need to track if a location has no clues because timings will interact
+  -- with the location being revealed and claim there are no clues before they
+  -- are placed.
+  , locationWithoutClues :: Bool
   }
   deriving stock (Show, Eq, Generic)
 

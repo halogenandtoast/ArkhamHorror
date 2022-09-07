@@ -28,6 +28,7 @@ type AgendaCard a = CardBuilder (Int, AgendaId) a
 data instance Field Agenda :: Type -> Type where
   AgendaSequence :: Field Agenda AS.AgendaSequence
   AgendaDoom :: Field Agenda Int
+  AgendaDeckId :: Field Agenda Int
   AgendaAbilities :: Field Agenda [Ability]
 
 data AgendaAttrs = AgendaAttrs

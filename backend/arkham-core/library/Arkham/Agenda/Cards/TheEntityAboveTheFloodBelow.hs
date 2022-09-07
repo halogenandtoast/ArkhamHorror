@@ -52,7 +52,7 @@ instance RunMessage TheEntityAboveTheFloodBelow where
     AdvanceAgenda aid | aid == toId attrs && onSide D attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       beast <- getSetAsideCard Enemies.beastOfAldebaran
-      chapel <- selectJust $ LocationWithTitle "Chapel of St. Aubert"
+      chapel <- maybeToList <$> selectOne (LocationWithTitle "Chapel of St. Aubert")
       spawnAshleighClarkeMessages <- do
         spawnAshleighClarke <-
           notElem (Recorded $ toCardCode Enemies.ashleighClarke)
@@ -64,7 +64,7 @@ instance RunMessage TheEntityAboveTheFloodBelow where
             pure [CreateEnemyAtLocationMatching card (LocationWithId port)]
           else pure []
       pushAll
-        $ [CreateEnemyAt beast chapel Nothing]
+        $ [CreateEnemyAt beast lid Nothing | lid <- chapel]
         <> spawnAshleighClarkeMessages
         <> [ RemoveAllCopiesOfCardFromGame leadInvestigatorId "03282"
            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)

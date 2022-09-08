@@ -127,15 +127,7 @@ applyAbilityModifiers a@Ability { abilityType } modifiers =
   a { abilityType = applyAbilityTypeModifiers abilityType modifiers }
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
-overrideAbilityCriteria override ab = case abilityCriteria ab of
-  Nothing -> ab
-  Just x -> ab { abilityCriteria = Just $ go x }
- where
-  go x = case x of
-    Criteria xs -> Criteria $ map go xs
-    AnyCriterion xs -> AnyCriterion $ map go xs
-    c | c == originalCriteria override -> replacementCriteria override
-    other -> other
+overrideAbilityCriteria (CriteriaOverride override) ab = ab { abilityCriteria = Just override }
 
 isSilentForcedAbility :: Ability -> Bool
 isSilentForcedAbility Ability { abilityType } =

@@ -216,7 +216,8 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
                 overrides = mapMaybe isOverride modifiers
               case overrides of
                 [] -> notNull <$> select Matcher.CanFightEnemy
-                os -> notNull <$> select (Matcher.CanFightEnemyWithOverrides os)
+                [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
+                _ -> error "multiple overrides found"
           Action.Evade -> case abilitySource of
             EnemySource _ -> pure True
             _ -> notNull <$> select Matcher.CanEvadeEnemy
@@ -1134,6 +1135,7 @@ windowMatches
   -> Window
   -> Matcher.WindowMatcher
   -> m Bool
+windowMatches iid source (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
   Matcher.DrawingStartingHand timing whoMatcher -> case window' of

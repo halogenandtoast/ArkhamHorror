@@ -142,5 +142,7 @@ data WindowType
   | Explored InvestigatorId (Result LocationId)
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep
+  -- used to avoid checking a window
+  | DoNotCheckWindow
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

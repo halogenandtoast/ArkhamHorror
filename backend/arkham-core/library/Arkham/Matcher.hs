@@ -310,7 +310,7 @@ data EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy
-  | CanFightEnemyWithOverrides [CriteriaOverride]
+  | CanFightEnemyWithOverride CriteriaOverride
   | CanEvadeEnemy
   | CanEngageEnemy
   | ReadyEnemy

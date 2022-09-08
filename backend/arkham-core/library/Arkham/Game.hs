@@ -127,7 +127,7 @@ import Data.HashMap.Monoidal qualified as MonoidalHashMap
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra ( groupOn )
-import Data.Monoid ( Endo(..), First (..) )
+import Data.Monoid ( First (..) )
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
@@ -1615,8 +1615,7 @@ enemyMatcherFilter = \case
           ]
         )
         (getAbilities enemy)
-  CanFightEnemyWithOverrides overrides -> \enemy -> do
-    let overrideCrieria = appEndo $ foldMap (Endo . overrideAbilityCriteria) overrides
+  CanFightEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)
     let
@@ -1638,7 +1637,7 @@ enemyMatcherFilter = \case
             -- need to decrement the action cost
             getCanPerformAbility iid (InvestigatorSource iid) window
             . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-            . overrideCrieria
+            . overrideAbilityCriteria override
           ]
         )
         (getAbilities enemy)
@@ -1731,7 +1730,7 @@ getInDiscardEntity lensFunc entityId game = asum $ map
   (preview (lensFunc . ix entityId))
   (toList $ view inDiscardEntitiesL game)
 
-getEvent :: (Monad m, HasGame m) => EventId -> m Event
+getEvent :: (HasCallStack, Monad m, HasGame m) => EventId -> m Event
 getEvent eid = do
   g <- getGame
   pure
@@ -4025,7 +4024,7 @@ preloadModifiers :: Monad m => Game -> m Game
 preloadModifiers g = flip runReaderT g $ do
   let cards = allCards g
   allModifiers <- getMonoidalHashMap <$> foldMapM
-    (`toTargetModifiers` entities)
+    (`toTargetModifiers` (entities <> inHandEntities))
     (SkillTestTarget
     : map TokenTarget tokens
     <> map toTarget entities
@@ -4034,10 +4033,12 @@ preloadModifiers g = flip runReaderT g $ do
     <> map
          (InvestigatorHandTarget . toId)
          (toList $ entitiesInvestigators $ gameEntities g)
+    <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
     )
   pure $ g { gameModifiers = allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
+  inHandEntities = concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
     []
     (allChaosBagTokens . scenarioChaosBag . toAttrs)

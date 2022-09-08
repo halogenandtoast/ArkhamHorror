@@ -18,7 +18,8 @@ import Arkham.Keyword ( Keyword )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label
 import Arkham.LocationSymbol
-import Arkham.Modifier
+import {-# SOURCE #-} Arkham.Modifier
+import Arkham.Criteria.Override
 import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -309,6 +310,7 @@ data EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy
+  | CanFightEnemyWithOverrides [CriteriaOverride]
   | CanEvadeEnemy
   | CanEngageEnemy
   | ReadyEnemy

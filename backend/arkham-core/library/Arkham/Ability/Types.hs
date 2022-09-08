@@ -8,7 +8,8 @@ import Arkham.Action ( Action )
 import Arkham.Card.EncounterCard
 import Arkham.Classes.Entity.Source
 import Arkham.Cost
-import Arkham.Criteria ( Criterion (AnyCriterion, Criteria, InYourHand) )
+import Arkham.Criteria
+  ( CriteriaOverride(..), Criterion (AnyCriterion, Criteria, InYourHand) )
 import Arkham.Json
 import Arkham.Matcher
 import Arkham.Modifier
@@ -124,6 +125,17 @@ mkAbility entity idx type' = Ability
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
 applyAbilityModifiers a@Ability { abilityType } modifiers =
   a { abilityType = applyAbilityTypeModifiers abilityType modifiers }
+
+overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
+overrideAbilityCriteria override ab = case abilityCriteria ab of
+  Nothing -> ab
+  Just x -> ab { abilityCriteria = Just $ go x }
+ where
+  go x = case x of
+    Criteria xs -> Criteria $ map go xs
+    AnyCriterion xs -> AnyCriterion $ map go xs
+    c | c == originalCriteria override -> replacementCriteria override
+    other -> other
 
 isSilentForcedAbility :: Ability -> Bool
 isSilentForcedAbility Ability { abilityType } =

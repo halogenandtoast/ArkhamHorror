@@ -193,7 +193,7 @@ getCanPerformAbility !iid !source !window !ability = do
 
 meetsActionRestrictions
   :: (Monad m, HasGame m) => InvestigatorId -> Window -> Ability -> m Bool
-meetsActionRestrictions iid _ Ability {..} = go abilityType
+meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
     Objective aType -> go aType
@@ -208,7 +208,15 @@ meetsActionRestrictions iid _ Ability {..} = go abilityType
           Action.Fight -> case abilitySource of
             EnemySource _ -> pure True
             _ -> do
-              notNull <$> select Matcher.CanFightEnemy
+              modifiers <- getModifiers (AbilityTarget iid ab)
+              let
+                isOverride = \case
+                  ActionAbilityOverride action' override | action' == action -> Just override
+                  _ -> Nothing
+                overrides = mapMaybe isOverride modifiers
+              case overrides of
+                [] -> notNull <$> select Matcher.CanFightEnemy
+                os -> notNull <$> select (Matcher.CanFightEnemyWithOverrides os)
           Action.Evade -> case abilitySource of
             EnemySource _ -> pure True
             _ -> notNull <$> select Matcher.CanEvadeEnemy
@@ -2026,6 +2034,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithoutTrait _ -> locationId <=~> matcher
     Matcher.LocationInDirection _ _ -> locationId <=~> matcher
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
+    Matcher.LocationWithoutClues -> locationId <=~> matcher
 
     Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->

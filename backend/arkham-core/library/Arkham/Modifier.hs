@@ -12,6 +12,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ClassSymbol
+import Arkham.Criteria.Override
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Id
 import Arkham.Json
@@ -181,6 +182,7 @@ data ModifierType
   | SkillTestAutomaticallySucceeds
   | IgnoreRevelation
   | InVictoryDisplayForCountingVengeance
+  | ActionAbilityOverride Action CriteriaOverride
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

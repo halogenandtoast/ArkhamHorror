@@ -127,7 +127,7 @@ import Data.HashMap.Monoidal qualified as MonoidalHashMap
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra ( groupOn )
-import Data.Monoid ( First (..) )
+import Data.Monoid ( Endo(..), First (..) )
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
@@ -1612,6 +1612,33 @@ enemyMatcherFilter = \case
             -- need to decrement the action cost
             getCanPerformAbility iid (InvestigatorSource iid) window
             . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+          ]
+        )
+        (getAbilities enemy)
+  CanFightEnemyWithOverrides overrides -> \enemy -> do
+    let overrideCrieria = appEndo $ foldMap (Endo . overrideAbilityCriteria) overrides
+    iid <- view activeInvestigatorIdL <$> getGame
+    modifiers' <- getModifiers (InvestigatorTarget iid)
+    let
+      enemyFilters = mapMaybe
+        (\case
+          CannotFight m -> Just m
+          _ -> Nothing
+        )
+        modifiers'
+      window = Window Timing.When Window.NonFast
+    excluded <- member (toId enemy)
+      <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+    if excluded
+      then pure False
+      else anyM
+        (andM . sequence
+          [ pure . (`abilityIs` Action.Fight)
+          , -- Because ChooseFightEnemy happens after taking a fight action we
+            -- need to decrement the action cost
+            getCanPerformAbility iid (InvestigatorSource iid) window
+            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+            . overrideCrieria
           ]
         )
         (getAbilities enemy)

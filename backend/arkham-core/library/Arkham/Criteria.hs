@@ -1,11 +1,15 @@
-module Arkham.Criteria where
+module Arkham.Criteria
+  ( module Arkham.Criteria
+  , module Arkham.Criteria.Override
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Criteria.Override
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Modifier
+import {-# SOURCE #-} Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait
@@ -31,7 +35,8 @@ pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources) where
   CanGainResources = Negate (SelfHasModifier CannotGainResources)
 
 pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
-pattern CanDiscoverCluesAt locationMatcher = InvestigatorExists (InvestigatorMatches [You, InvestigatorCanDiscoverCluesAt locationMatcher])
+pattern CanDiscoverCluesAt locationMatcher =
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorCanDiscoverCluesAt locationMatcher])
 
 pattern CanTakeControlOfClues :: Criterion
 pattern CanTakeControlOfClues <-

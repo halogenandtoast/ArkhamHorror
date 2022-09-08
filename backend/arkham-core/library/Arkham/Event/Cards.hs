@@ -1306,6 +1306,7 @@ marksmanship2 = (event "04104" "Marksmanship" 2 Guardian)
     $ ActivateAbility Timing.When You
     $ AbilityIsAction Action.Fight
     <> AssetAbility (AssetOneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
+  , cdCardInHandEffects = True
   }
 
 secondWind :: CardDef

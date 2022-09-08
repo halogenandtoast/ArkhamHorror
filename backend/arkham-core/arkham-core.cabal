@@ -505,6 +505,7 @@ library
       Arkham.CommitRestriction
       Arkham.Cost
       Arkham.Criteria
+      Arkham.Criteria.Override
       Arkham.DamageEffect
       Arkham.Deck
       Arkham.Decks

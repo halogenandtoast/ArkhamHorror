@@ -423,7 +423,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
   ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction
     | iid == investigatorId -> do
-      enemyIds <- selectList (CanFightEnemy <> enemyMatcher)
+      modifiers <- getModifiers (InvestigatorTarget iid)
+      let
+        isOverride = \case
+          EnemyFightActionCriteria override -> Just override
+          _ -> Nothing
+        overrides = mapMaybe isOverride modifiers
+        canFightMatcher = case overrides of
+                            [] -> CanFightEnemy
+                            [o] -> CanFightEnemyWithOverride o
+                            _ -> error "multiple overrides found"
+      enemyIds <- selectList (traceShowId $ canFightMatcher <> enemyMatcher)
       push $ chooseOne
         iid
         [ FightLabel eid [FightEnemy iid eid source mTarget skillType isAction]

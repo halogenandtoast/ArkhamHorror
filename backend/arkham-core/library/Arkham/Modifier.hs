@@ -182,7 +182,7 @@ data ModifierType
   | SkillTestAutomaticallySucceeds
   | IgnoreRevelation
   | InVictoryDisplayForCountingVengeance
-  | ActionAbilityOverride Action CriteriaOverride
+  | EnemyFightActionCriteria CriteriaOverride
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

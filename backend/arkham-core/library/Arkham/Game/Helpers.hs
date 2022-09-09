@@ -211,7 +211,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
               modifiers <- getModifiers (AbilityTarget iid ab)
               let
                 isOverride = \case
-                  ActionAbilityOverride action' override | action' == action -> Just override
+                  EnemyFightActionCriteria override -> Just override
                   _ -> Nothing
                 overrides = mapMaybe isOverride modifiers
               case overrides of

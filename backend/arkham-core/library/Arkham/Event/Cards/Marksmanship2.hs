@@ -17,9 +17,8 @@ import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Matcher hiding (EventCard)
+import Arkham.Matcher hiding ( EventCard )
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -79,25 +78,19 @@ marksmanship2Effect :: EffectArgs -> Marksmanship2Effect
 marksmanship2Effect = Marksmanship2Effect . uncurry4 (baseAttrs "04079")
 
 instance HasModifiersFor Marksmanship2Effect where
-  getModifiersFor (AbilityTarget iid ability) (Marksmanship2Effect a)
-    | effectTarget a == InvestigatorTarget iid = case abilitySource ability of
-      EnemySource _ -> case abilityAction ability of
-        Just Action.Fight -> do
-          pure $ toModifiers
-            a
-            [ EnemyFightActionCriteria
-              $ CriteriaOverride
-              $ AnyCriterion [OnSameLocation, OnLocation Anywhere]
-              <> EnemyCriteria
-                   (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
-            ]
-        _ -> pure []
-      _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (Marksmanship2Effect a)
+    | effectTarget a == InvestigatorTarget iid = pure $ toModifiers
+      a
+      [ EnemyFightActionCriteria
+        $ CriteriaOverride
+        $ AnyCriterion [OnSameLocation, OnLocation Anywhere]
+        <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Marksmanship2Effect where
   runMessage msg e@(Marksmanship2Effect attrs@EffectAttrs {..}) = case msg of
-    FinishAction -> do
+    SkillTestEnds _ -> do
       push (DisableEffect effectId)
       pure e
     _ -> Marksmanship2Effect <$> runMessage msg attrs

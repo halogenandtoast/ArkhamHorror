@@ -49,7 +49,7 @@ instance HasModifiersFor Marksmanship2 where
                 (toCard a)
               pure $ toModifiers
                 a
-                [ ActionAbilityOverride Action.Fight
+                [ EnemyFightActionCriteria
                   $ CriteriaOverride
                   $ AnyCriterion [OnSameLocation, OnLocation Anywhere]
                   <> EnemyCriteria
@@ -85,7 +85,7 @@ instance HasModifiersFor Marksmanship2Effect where
         Just Action.Fight -> do
           pure $ toModifiers
             a
-            [ ActionAbilityOverride Action.Fight
+            [ EnemyFightActionCriteria
               $ CriteriaOverride
               $ AnyCriterion [OnSameLocation, OnLocation Anywhere]
               <> EnemyCriteria

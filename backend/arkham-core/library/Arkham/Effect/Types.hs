@@ -25,6 +25,9 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 data instance Field Effect :: Type -> Type where
   EffectAbilities :: Field Effect [Ability]
 
+cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a
+cardEffect f def = f . uncurry4 (baseAttrs (toCardCode def))
+
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
   , effectCardCode :: CardCode
@@ -62,6 +65,9 @@ baseAttrs cardCode eid meffectMetadata source target = EffectAttrs
   , effectWindow = Nothing
   , effectFinished = False
   }
+
+targetL :: Lens' EffectAttrs Target
+targetL = lens effectTarget $ \m x -> m { effectTarget = x }
 
 instance ToJSON EffectAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "effect"

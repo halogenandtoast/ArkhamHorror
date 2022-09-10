@@ -94,6 +94,9 @@ data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
 pattern AttachTreachery :: TreacheryId -> Target -> Message
 pattern AttachTreachery tid target = PlaceTreachery tid (TreacheryAttachedTo target)
 
+createCardEffect :: CardDef -> (Maybe (EffectMetadata Window Message)) -> Source -> Target -> Message
+createCardEffect def = CreateEffect (toCardCode def)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability

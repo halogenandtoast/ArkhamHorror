@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Marksmanship2
-  ( marksmanship2
-  , marksmanship2Effect
-  , Marksmanship2(..)
+module Arkham.Event.Cards.Marksmanship1
+  ( marksmanship1
+  , marksmanship1Effect
+  , Marksmanship1(..)
   ) where
 
 import Arkham.Prelude
@@ -33,7 +33,7 @@ import Arkham.Window
 -- make sure the card is playable outside of it's normal window. At the moment
 -- we use `DoNotCheckWindow` which is intended to be an always valid window.
 
--- Once we've confirmed that Marksmanship2s effect should happen, we need to
+-- Once we've confirmed that Marksmanship1s effect should happen, we need to
 -- check if any enemies are now fightable using the normal rules, but a
 -- different criteria, so we use an override system to do that. If there are
 -- other game rules that affect this criteria we will need to make sure the
@@ -41,15 +41,15 @@ import Arkham.Window
 
 -- For more info, see the comments before for the Effect
 
-newtype Marksmanship2 = Marksmanship2 EventAttrs
+newtype Marksmanship1 = Marksmanship1 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-marksmanship2 :: EventCard Marksmanship2
-marksmanship2 = event Marksmanship2 Cards.marksmanship2
+marksmanship1 :: EventCard Marksmanship1
+marksmanship1 = event Marksmanship1 Cards.marksmanship1
 
-instance HasModifiersFor Marksmanship2 where
-  getModifiersFor (AbilityTarget iid ability) (Marksmanship2 a)
+instance HasModifiersFor Marksmanship1 where
+  getModifiersFor (AbilityTarget iid ability) (Marksmanship1 a)
     | eventOwner a == iid = case abilityAction ability of
       Just Action.Fight -> do
         traits <- sourceTraits (abilitySource ability)
@@ -85,29 +85,29 @@ instance HasModifiersFor Marksmanship2 where
   getModifiersFor _ _ = pure []
 
 
-instance RunMessage Marksmanship2 where
-  runMessage msg e@(Marksmanship2 attrs) = case msg of
+instance RunMessage Marksmanship1 where
+  runMessage msg e@(Marksmanship1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
         [ createCardEffect
-          Cards.marksmanship2
+          Cards.marksmanship1
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)
         , Discard (toTarget attrs)
         ]
       pure e
-    _ -> Marksmanship2 <$> runMessage msg attrs
+    _ -> Marksmanship1 <$> runMessage msg attrs
 
 
-newtype Marksmanship2Effect = Marksmanship2Effect EffectAttrs
+newtype Marksmanship1Effect = Marksmanship1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-marksmanship2Effect :: EffectArgs -> Marksmanship2Effect
-marksmanship2Effect = cardEffect Marksmanship2Effect Cards.marksmanship2
+marksmanship1Effect :: EffectArgs -> Marksmanship1Effect
+marksmanship1Effect = cardEffect Marksmanship1Effect Cards.marksmanship1
 
--- Once marksmanship2 has been played this effect portion is a little easier,
+-- Once marksmanship1 has been played this effect portion is a little easier,
 -- we still have to replace the criteria, but since we don't have a specific
 -- enemy, we add this modifier to all enemies, and in order to have it only be
 -- valid during targetting, we disable it as soon as the fight enemy message is
@@ -116,8 +116,8 @@ marksmanship2Effect = cardEffect Marksmanship2Effect Cards.marksmanship2
 -- Additionally since there are effects that touch different things, we
 -- "swizzle" the target in order to disable/enable to appropriate effects
 
-instance HasModifiersFor Marksmanship2Effect where
-  getModifiersFor (EnemyTarget eid) (Marksmanship2Effect a) =
+instance HasModifiersFor Marksmanship1Effect where
+  getModifiersFor (EnemyTarget eid) (Marksmanship1Effect a) =
     case effectTarget a of
       InvestigatorTarget _ -> pure $ toModifiers
         a
@@ -130,14 +130,14 @@ instance HasModifiersFor Marksmanship2Effect where
       _ -> pure []
   getModifiersFor _ _ = pure []
 
-instance RunMessage Marksmanship2Effect where
-  runMessage msg e@(Marksmanship2Effect attrs@EffectAttrs {..}) = case msg of
+instance RunMessage Marksmanship1Effect where
+  runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of
     FightEnemy iid eid _ _ _ _ -> do
       push $ skillTestModifiers
         (toSource attrs)
         (InvestigatorTarget iid)
         [IgnoreRetaliate]
-      pure . Marksmanship2Effect $ attrs & targetL .~ EnemyTarget eid
+      pure . Marksmanship1Effect $ attrs & targetL .~ EnemyTarget eid
     PassedSkillTest iid (Just Action.Fight) _ SkillTestInitiatorTarget{} _ _ ->
       do
         mSkillTestTarget <- getSkillTestTarget
@@ -153,4 +153,4 @@ instance RunMessage Marksmanship2Effect where
     SkillTestEnds _ -> do
       push $ DisableEffect effectId
       pure e
-    _ -> Marksmanship2Effect <$> runMessage msg attrs
+    _ -> Marksmanship1Effect <$> runMessage msg attrs

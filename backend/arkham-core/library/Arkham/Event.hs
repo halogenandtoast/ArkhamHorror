@@ -150,7 +150,7 @@ allEvents = mapFromList $ map
   , SomeEventCard dumbLuck
   , SomeEventCard darkPact
   , SomeEventCard sceneOfTheCrime
-  , SomeEventCard marksmanship2
+  , SomeEventCard marksmanship1
   , SomeEventCard secondWind
   , SomeEventCard liveAndLearn
   , SomeEventCard wingingIt

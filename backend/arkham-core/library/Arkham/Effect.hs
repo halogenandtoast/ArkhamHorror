@@ -31,7 +31,7 @@ import Arkham.Event.Events
   ( oneTwoPunch5Effect
   , oneTwoPunchEffect
   , willToSurviveEffect
-  , marksmanship2Effect
+  , marksmanship1Effect
   )
 import Arkham.Investigator.Investigators
   ( fatherMateoElderSignEffect )
@@ -177,7 +177,7 @@ allEffects = mapFromList
   , ("04029", SomeEffect mistsOfRlyehEffect)
   , ("04035", SomeEffect yaotl1Effect)
   , ("04079", SomeEffect boaConstrictorEffect)
-  , ("04104", SomeEffect marksmanship2Effect)
+  , ("04104", SomeEffect marksmanship1Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

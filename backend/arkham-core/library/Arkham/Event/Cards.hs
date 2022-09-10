@@ -160,7 +160,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , lure1
   , manoAMano1
   , manoAMano2
-  , marksmanship2
+  , marksmanship1
   , mindOverMatter
   , mindWipe1
   , mindWipe3
@@ -1297,8 +1297,8 @@ sceneOfTheCrime = (event "04103" "Scene of the Crime" 2 Guardian)
     $ Criteria.Criteria [Criteria.FirstAction, Criteria.ClueOnLocation]
   }
 
-marksmanship2 :: CardDef
-marksmanship2 = (event "04104" "Marksmanship" 2 Guardian)
+marksmanship1 :: CardDef
+marksmanship1 = (event "04104" "Marksmanship" 2 Guardian)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = singleton Tactic
   , cdFastWindow =
@@ -1307,6 +1307,7 @@ marksmanship2 = (event "04104" "Marksmanship" 2 Guardian)
     $ AbilityIsAction Action.Fight
     <> AssetAbility (AssetOneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
   , cdCardInHandEffects = True
+  , cdLevel = Just 1
   }
 
 secondWind :: CardDef

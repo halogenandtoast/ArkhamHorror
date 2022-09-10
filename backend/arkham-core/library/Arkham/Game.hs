@@ -1593,7 +1593,12 @@ enemyMatcherFilter = \case
   CanFightEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)
+    enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
     let
+      isOverride = \case
+        EnemyFightActionCriteria override -> Just override
+        _ -> Nothing
+      overrides = mapMaybe isOverride enemyModifiers
       enemyFilters = mapMaybe
         (\case
           CannotFight m -> Just m
@@ -1601,6 +1606,10 @@ enemyMatcherFilter = \case
         )
         modifiers'
       window = Window Timing.When Window.NonFast
+      overrideFunc = case overrides of
+                          [] -> id
+                          [o] -> overrideAbilityCriteria o
+                          _ -> error "multiple overrides found"
     excluded <- member (toId enemy)
       <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
     if excluded
@@ -1612,12 +1621,13 @@ enemyMatcherFilter = \case
             -- need to decrement the action cost
             getCanPerformAbility iid (InvestigatorSource iid) window
             . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+            . overrideFunc
           ]
         )
         (getAbilities enemy)
   CanFightEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    modifiers' <- getModifiers (InvestigatorTarget iid)
+    modifiers' <- getModifiers (EnemyTarget $ toId enemy)
     let
       enemyFilters = mapMaybe
         (\case

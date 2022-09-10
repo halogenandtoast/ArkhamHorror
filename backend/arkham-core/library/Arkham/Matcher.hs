@@ -1106,4 +1106,3 @@ defaultRemoveDoomMatchers = RemoveDoomMatchers
   , removeDoomEvents = AnyEvent
   , removeDoomSkills = AnySkill
   }
-

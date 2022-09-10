@@ -40,21 +40,32 @@ instance HasModifiersFor Marksmanship2 where
           traits <- sourceTraits (abilitySource ability)
           if any (`elem` traits) [Firearm, Ranged]
             then do
-              isPlayable <- getIsPlayable
-                iid
-                (InvestigatorSource iid)
-                UnpaidCost
-                [Window Timing.When DoNotCheckWindow]
-                (toCard a)
-              pure $ toModifiers
-                a
-                [ EnemyFightActionCriteria
-                  $ CriteriaOverride
-                  $ AnyCriterion [OnSameLocation, OnLocation Anywhere]
-                  <> EnemyCriteria
-                       (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
-                | isPlayable
-                ]
+              mlid <- selectOne $ locationWithInvestigator iid
+              case mlid of
+                Nothing -> pure []
+                Just lid -> do
+                  isPlayable <- getIsPlayable
+                    iid
+                    (InvestigatorSource iid)
+                    UnpaidCost
+                    [Window Timing.When DoNotCheckWindow]
+                    (toCard a)
+                  pure $ toModifiers
+                    a
+                    [ EnemyFightActionCriteria
+                      $ CriteriaOverride
+                      $ EnemyCriteria
+                          (ThisEnemy
+                          $ EnemyWithoutModifier CannotBeAttacked
+                          <> EnemyAt
+                               (LocationMatchAny
+                                 [ LocationWithId lid
+                                 , ConnectedTo $ LocationWithId lid
+                                 ]
+                               )
+                          )
+                    | isPlayable
+                    ]
             else pure []
         _ -> pure []
   getModifiersFor _ _ = pure []
@@ -78,12 +89,13 @@ marksmanship2Effect :: EffectArgs -> Marksmanship2Effect
 marksmanship2Effect = Marksmanship2Effect . uncurry4 (baseAttrs "04079")
 
 instance HasModifiersFor Marksmanship2Effect where
-  getModifiersFor (InvestigatorTarget iid) (Marksmanship2Effect a)
-    | effectTarget a == InvestigatorTarget iid = pure $ toModifiers
+  getModifiersFor (EnemyTarget eid) (Marksmanship2Effect a) =
+    pure $ toModifiers
       a
       [ EnemyFightActionCriteria
         $ CriteriaOverride
-        $ AnyCriterion [OnSameLocation, OnLocation Anywhere]
+        $ AnyCriterion
+            [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
         <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
       ]
   getModifiersFor _ _ = pure []

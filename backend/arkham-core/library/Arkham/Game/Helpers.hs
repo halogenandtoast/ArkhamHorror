@@ -1135,7 +1135,7 @@ windowMatches
   -> Window
   -> Matcher.WindowMatcher
   -> m Bool
-windowMatches iid source (Window _ Window.DoNotCheckWindow) = pure . const True
+windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
   Matcher.DrawingStartingHand timing whoMatcher -> case window' of

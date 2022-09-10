@@ -34,40 +34,38 @@ marksmanship2 = event Marksmanship2 Cards.marksmanship2
 
 instance HasModifiersFor Marksmanship2 where
   getModifiersFor (AbilityTarget iid ability) (Marksmanship2 a)
-    | eventOwner a == iid = do
-      case abilityAction ability of
-        Just Action.Fight -> do
-          traits <- sourceTraits (abilitySource ability)
-          if any (`elem` traits) [Firearm, Ranged]
-            then do
-              mlid <- selectOne $ locationWithInvestigator iid
-              case mlid of
-                Nothing -> pure []
-                Just lid -> do
-                  isPlayable <- getIsPlayable
-                    iid
-                    (InvestigatorSource iid)
-                    UnpaidCost
-                    [Window Timing.When DoNotCheckWindow]
-                    (toCard a)
-                  pure $ toModifiers
-                    a
-                    [ EnemyFightActionCriteria
-                      $ CriteriaOverride
-                      $ EnemyCriteria
-                          (ThisEnemy
-                          $ EnemyWithoutModifier CannotBeAttacked
-                          <> EnemyAt
-                               (LocationMatchAny
-                                 [ LocationWithId lid
-                                 , ConnectedTo $ LocationWithId lid
-                                 ]
-                               )
-                          )
-                    | isPlayable
-                    ]
-            else pure []
-        _ -> pure []
+    | eventOwner a == iid = case abilityAction ability of
+      Just Action.Fight -> do
+        traits <- sourceTraits (abilitySource ability)
+        if any (`elem` traits) [Firearm, Ranged]
+          then do
+            mlid <- selectOne $ locationWithInvestigator iid
+            case mlid of
+              Nothing -> pure []
+              Just lid -> do
+                isPlayable <- getIsPlayable
+                  iid
+                  (InvestigatorSource iid)
+                  UnpaidCost
+                  [Window Timing.When DoNotCheckWindow]
+                  (toCard a)
+                pure $ toModifiers
+                  a
+                  [ EnemyFightActionCriteria
+                    $ CriteriaOverride
+                    $ EnemyCriteria
+                    $ ThisEnemy
+                    $ EnemyWithoutModifier CannotBeAttacked
+                    <> EnemyAt
+                         (LocationMatchAny
+                           [ LocationWithId lid
+                           , ConnectedTo $ LocationWithId lid
+                           ]
+                         )
+                  | isPlayable
+                  ]
+          else pure []
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 
@@ -102,7 +100,7 @@ instance HasModifiersFor Marksmanship2Effect where
 
 instance RunMessage Marksmanship2Effect where
   runMessage msg e@(Marksmanship2Effect attrs@EffectAttrs {..}) = case msg of
-    SkillTestEnds _ -> do
+    FightEnemy{} -> do
       push (DisableEffect effectId)
       pure e
     _ -> Marksmanship2Effect <$> runMessage msg attrs

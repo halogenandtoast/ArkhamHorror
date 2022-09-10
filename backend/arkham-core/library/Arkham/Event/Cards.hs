@@ -17,6 +17,7 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
+import Arkham.Token qualified as Token
 import Arkham.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
@@ -96,6 +97,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , contraband2
   , counterpunch
   , counterpunch2
+  , counterspell2
   , crypticResearch4
   , cunningDistraction
   , daringManeuver
@@ -1324,6 +1326,17 @@ persuasion = (event "04105" "Persuasion" 2 Seeker)
     <> EnemyWithTrait Humanoid
     <> EnemyAt YourLocation
   , cdActions = [Action.Parley]
+  }
+
+counterspell2 :: CardDef
+counterspell2 = (event "04110" "Counterspell" 2 Mystic)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = setFromList [Spell, Blessed]
+  , cdFastWindow =
+    Just $ RevealChaosToken Timing.When You $ TokenMatchesAny $ map
+      TokenFaceIs
+      [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

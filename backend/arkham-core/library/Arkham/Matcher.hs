@@ -292,6 +292,9 @@ pattern EnemyWithAnyDamage :: EnemyMatcher
 pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0)) where
   EnemyWithAnyDamage = EnemyWithDamage (GreaterThan (Static 0))
 
+enemyEngagedWith :: InvestigatorId -> EnemyMatcher
+enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
+
 data EnemyMatcher
   = EnemyWithTitle Text
   | EnemyWithFullTitle Text Text

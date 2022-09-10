@@ -99,6 +99,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
@@ -2100,6 +2101,7 @@ fence1 = (asset "04108" "Fence" 3 Rogue)
 arcaneResearch :: CardDef
 arcaneResearch = permanent $ (asset "04109" "Arcane Research" 0 Mystic)
   { cdCardTraits = singleton Talent
+  , cdPurchaseMentalTrauma = Just 1
   }
 
 trackShoes :: CardDef

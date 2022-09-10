@@ -62,6 +62,7 @@ event cardCode name cost classSymbol = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef

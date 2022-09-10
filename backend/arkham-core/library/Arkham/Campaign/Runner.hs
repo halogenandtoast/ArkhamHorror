@@ -1,10 +1,16 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Campaign.Runner (module X) where
+module Arkham.Campaign.Runner
+  ( module X
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Campaign.Types as X
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey
+import Arkham.CampaignStep
+import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Helpers
@@ -12,10 +18,6 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message
-import Arkham.CampaignStep
-import Arkham.CampaignLog
-import Arkham.CampaignLogKey
-import Arkham.Card.PlayerCard
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
@@ -43,17 +45,31 @@ instance RunMessage CampaignAttrs where
         & storyCardsL
         %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
         & decksL
-        %~ adjustMap (withDeck (filter ((/= cardCode) . cdCardCode . toCardDef))) iid
+        %~ adjustMap
+             (withDeck (filter ((/= cardCode) . cdCardCode . toCardDef)))
+             iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     RemoveAllTokens token -> pure $ a & chaosBagL %~ filter (/= token)
     InitDeck iid deck -> do
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
-      pushAll $ map (AddCampaignCardToDeck iid) randomWeaknesses
+      let
+        mentalTrauma =
+          getSum $ foldMap (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef) (unDeck deck')
+      pushAll
+        $ map (AddCampaignCardToDeck iid) randomWeaknesses
+        <> [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]
+
       pure $ a & decksL %~ insertMap iid deck'
     UpgradeDeck iid deck -> do
+      let
+        oldDeck = fromJustNote "No deck?" $ lookup iid campaignDecks
+        deckDiff = (unDeck deck) \\ (unDeck oldDeck)
+        mentalTrauma =
+          getSum $ foldMap (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef) deckDiff
       -- We remove the random weakness if the upgrade deck still has it listed
       -- since this will have been added at the beginning of the campaign
       (deck', _) <- addRandomBasicWeaknessIfNeeded deck
+      when (mentalTrauma > 0) $ push $ SufferTrauma iid 0 mentalTrauma
       pure $ a & decksL %~ insertMap iid deck'
     FinishedUpgradingDecks -> case a ^. stepL of
       Just (UpgradeDeckStep nextStep) -> do
@@ -112,12 +128,15 @@ instance RunMessage CampaignAttrs where
       DrivenInsaneInvestigators
       (singleton $ Recorded $ unInvestigatorId iid)
     CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
-      pure $ a & decksL %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
-    AddCardToDeckForCampaign iid pc -> do
-      pure $ a & decksL %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
-    RemoveCardFromDeckForCampaign iid pc ->
       pure
         $ a
         & decksL
-        %~ adjustMap (withDeck (filter (/= pc))) iid
+        %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
+    AddCardToDeckForCampaign iid pc -> do
+      pure
+        $ a
+        & decksL
+        %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
+    RemoveCardFromDeckForCampaign iid pc ->
+      pure $ a & decksL %~ adjustMap (withDeck (filter (/= pc))) iid
     _ -> pure a

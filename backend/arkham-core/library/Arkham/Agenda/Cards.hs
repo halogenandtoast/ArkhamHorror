@@ -52,6 +52,7 @@ agenda cardCode name stage encounterSet = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }
 
 allAgendaCards :: HashMap CardCode CardDef

@@ -85,5 +85,6 @@ randomWeakness = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }
 

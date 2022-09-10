@@ -80,6 +80,7 @@ data CardDef = CardDef
   , cdLocationRevealedSymbol :: Maybe LocationSymbol
   , cdLocationConnections :: [LocationSymbol]
   , cdLocationRevealedConnections :: [LocationSymbol]
+  , cdPurchaseMentalTrauma :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -179,4 +180,5 @@ testCardDef cardType cardCode = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }

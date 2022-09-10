@@ -52,6 +52,7 @@ story cardCode name encounterSet = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }
 
 allStoryCards :: HashMap CardCode CardDef

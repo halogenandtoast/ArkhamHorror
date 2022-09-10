@@ -57,6 +57,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdLocationRevealedSymbol = Nothing
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
+  , cdPurchaseMentalTrauma = Nothing
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

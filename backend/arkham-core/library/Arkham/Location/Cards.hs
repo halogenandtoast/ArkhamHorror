@@ -90,6 +90,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdLocationRevealedSymbol = Just locationSymbol
     , cdLocationConnections = connectedLocationSymbols
     , cdLocationRevealedConnections = connectedLocationSymbols
+    , cdPurchaseMentalTrauma = Nothing
     }
 
 allLocationCards :: HashMap CardCode CardDef

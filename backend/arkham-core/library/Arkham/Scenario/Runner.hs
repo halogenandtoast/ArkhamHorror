@@ -92,7 +92,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       do
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
         weaknesses <- traverse genPlayerCard randomWeaknesses
-        push $ LoadDeck iid (withDeck (<> weaknesses) deck')
+        let
+          mentalTrauma =
+            getSum $ foldMap (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef) (unDeck deck')
+        pushAll
+          $ LoadDeck iid (withDeck (<> weaknesses) deck')
+          : [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]
   PlaceLocationMatching cardMatcher -> do
     let
       matches = filter

@@ -117,6 +117,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , arcaneInitiate
   , arcaneInitiate3
   , arcaneInsight4
+  , arcaneResearch
   , arcaneStudies
   , arcaneStudies2
   , archaicGlyphs
@@ -174,6 +175,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , encyclopedia
   , encyclopedia2
   , esotericFormula
+  , fence1
   , fieldwork
   , fineClothes
   , finnsTrustyThirtyEight
@@ -233,6 +235,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , lockpicks
   , lockpicks1
   , loneWolf
+  , luckyCigaretteCase
   , luckyDice2
   , lupara3
   , machete
@@ -290,6 +293,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , scrying
   , scrying3
   , shotgun4
+  , shrewdAnalysis
   , shrivelling
   , shrivelling3
   , shrivelling5
@@ -2072,6 +2076,30 @@ relicOfAgesADeviceOfSomeSort = (storyAsset "04061" ("Relic of Ages" <:> "...A De
   { cdSkills = [SkillWild, SkillWild, SkillWild]
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
+  }
+
+shrewdAnalysis :: CardDef
+shrewdAnalysis = permanent $ (asset "04106" "Shrewd Analysis" 0 Seeker)
+  { cdCardTraits = singleton Talent
+  }
+
+luckyCigaretteCase :: CardDef
+luckyCigaretteCase = (asset "04107" "Lucky Cigarette Case" 2 Rogue)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Item, Charm]
+  , cdSlots = [AccessorySlot]
+  }
+
+fence1 :: CardDef
+fence1 = (asset "04108" "Fence" 3 Rogue)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = setFromList [Connection, Illicit]
+  , cdLevel = 1
+  }
+
+arcaneResearch :: CardDef
+arcaneResearch = permanent $ (asset "04109" "Arcane Research" 0 Mystic)
+  { cdCardTraits = singleton Talent
   }
 
 trackShoes :: CardDef

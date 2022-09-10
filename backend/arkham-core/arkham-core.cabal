@@ -197,6 +197,7 @@ library
       Arkham.Asset.Cards.ArcaneInitiate
       Arkham.Asset.Cards.ArcaneInitiate3
       Arkham.Asset.Cards.ArcaneInsight4
+      Arkham.Asset.Cards.ArcaneResearch
       Arkham.Asset.Cards.ArcaneStudies
       Arkham.Asset.Cards.ArcaneStudies2
       Arkham.Asset.Cards.ArchaicGlyphs
@@ -260,6 +261,7 @@ library
       Arkham.Asset.Cards.Encyclopedia
       Arkham.Asset.Cards.Encyclopedia2
       Arkham.Asset.Cards.EsotericFormula
+      Arkham.Asset.Cards.Fence1
       Arkham.Asset.Cards.Fieldwork
       Arkham.Asset.Cards.FineClothes
       Arkham.Asset.Cards.FinnsTrustyThirtyEight
@@ -327,6 +329,7 @@ library
       Arkham.Asset.Cards.Lockpicks
       Arkham.Asset.Cards.Lockpicks1
       Arkham.Asset.Cards.LoneWolf
+      Arkham.Asset.Cards.LuckyCigaretteCase
       Arkham.Asset.Cards.LuckyDice2
       Arkham.Asset.Cards.Lupara3
       Arkham.Asset.Cards.Machete
@@ -390,6 +393,7 @@ library
       Arkham.Asset.Cards.Scrying3
       Arkham.Asset.Cards.SebastienMoreau
       Arkham.Asset.Cards.Shotgun4
+      Arkham.Asset.Cards.ShrewdAnalysis
       Arkham.Asset.Cards.Shrivelling
       Arkham.Asset.Cards.Shrivelling3
       Arkham.Asset.Cards.Shrivelling5
@@ -827,6 +831,7 @@ library
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheLam
       Arkham.Event.Cards.Oops
+      Arkham.Event.Cards.Persuasion
       Arkham.Event.Cards.PreparedForTheWorst
       Arkham.Event.Cards.PreposterousSketches
       Arkham.Event.Cards.PreposterousSketches2

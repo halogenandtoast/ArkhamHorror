@@ -337,6 +337,14 @@ allAssets = mapFromList $ map
   --- story [tfa]
   , SomeAssetCard alejandroVela
   , SomeAssetCard relicOfAgesADeviceOfSomeSort
+  -- Thread of Fate
+  --- seeker [tof]
+  , SomeAssetCard shrewdAnalysis
+  --- rogue [tof]
+  , SomeAssetCard luckyCigaretteCase
+  , SomeAssetCard fence1
+  --- mystic [tof]
+  , SomeAssetCard arcaneResearch
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

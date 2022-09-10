@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -28,7 +28,7 @@ daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
 instance HasAbilities DaisysToteBagAdvanced where
   getAbilities (DaisysToteBagAdvanced a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restrictedAbility a 1 (ControlsThis <> DuringTurn You)
         $ ReactionAbility
             (Matcher.PlayCard
               Timing.When

@@ -23,6 +23,7 @@ import Arkham.Window ( Window )
 import Arkham.Asset.Assets
   ( mistsOfRlyehEffect
   , yaotl1Effect
+  , fence1Effect
   )
 import Arkham.Enemy.Enemies
   ( boaConstrictorEffect
@@ -178,6 +179,7 @@ allEffects = mapFromList
   , ("04035", SomeEffect yaotl1Effect)
   , ("04079", SomeEffect boaConstrictorEffect)
   , ("04104", SomeEffect marksmanship1Effect)
+  , ("04108", SomeEffect fence1Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

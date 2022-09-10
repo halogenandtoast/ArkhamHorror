@@ -176,6 +176,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , onTheHunt
   , onTheLam
   , oops
+  , persuasion
   , preparedForTheWorst
   , preposterousSketches
   , preposterousSketches2
@@ -1307,7 +1308,21 @@ marksmanship1 = (event "04104" "Marksmanship" 2 Guardian)
     $ AbilityIsAction Action.Fight
     <> AssetAbility (AssetOneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
   , cdCardInHandEffects = True
-  , cdLevel = Just 1
+  , cdLevel = 1
+  }
+
+persuasion :: CardDef
+persuasion = (event "04105" "Persuasion" 2 Seeker)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = setFromList [Insight, Trick]
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ NonWeaknessEnemy
+    <> EnemyWithTrait Humanoid
+    <> EnemyAt YourLocation
+  , cdActions = [Action.Parley]
   }
 
 secondWind :: CardDef

@@ -25,10 +25,8 @@ const image = computed(() => {
 .poolItem.poolItem-resource {
   img {
     width: 30px;
-    margin: 4px 0 0 2px;
   }
-  height: 40px;
-  width: 34px;
+  padding: 2px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
@@ -42,23 +40,20 @@ const image = computed(() => {
 }
 
 .poolItem {
-  position: relative;
   width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
   color: black;
   font-weight: 900;
   font-size: 1.7em;
+  & > * {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
 
   img {
     width: 100%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
   }
 
   span {

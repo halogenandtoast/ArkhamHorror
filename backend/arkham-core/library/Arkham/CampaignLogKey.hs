@@ -111,6 +111,7 @@ data CampaignLogKey
   | TheInvestigatorsHaveEarnedAlejandrosTrust
   | TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
   | AlejandroIsContinuingHisResearchOnHisOwn
+  | YouAreForgingYourOwnWay
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

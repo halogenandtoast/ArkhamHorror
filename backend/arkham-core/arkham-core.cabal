@@ -1256,6 +1256,7 @@ library
       Arkham.Scenario.Scenarios.ThePallidMask
       Arkham.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Scenario.Scenarios.TheUntamedWilds
+      Arkham.Scenario.Scenarios.ThreadsOfFate
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Scenario.Types
@@ -1289,6 +1290,7 @@ library
       Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.ThreadsOfFate.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Story
       Arkham.Scenarios.WhereDoomAwaits.Story

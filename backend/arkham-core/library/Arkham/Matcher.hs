@@ -2,6 +2,7 @@ module Arkham.Matcher where
 
 import Arkham.Prelude
 
+import Arkham.Act.Sequence ( ActSide )
 import Arkham.Action ( Action )
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence
@@ -11,6 +12,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.ClassSymbol
+import Arkham.Criteria.Override
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
@@ -19,7 +21,6 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Label
 import Arkham.LocationSymbol
 import {-# SOURCE #-} Arkham.Modifier
-import Arkham.Criteria.Override
 import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -987,8 +988,10 @@ instance Semigroup AgendaMatcher where
 data ActMatcher
   = ActWithId ActId
   | AnyAct
+  | ActWithSide ActSide
   | ActWithTreachery TreacheryMatcher
   | NotAct ActMatcher
+  | ActOneOf [ActMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

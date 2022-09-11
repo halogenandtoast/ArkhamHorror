@@ -13,7 +13,7 @@ actSide (Sequence _ side) = side
 
 data ActSide = A | B | C | D | E | F
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data ActSequence = Sequence Int ActSide
   deriving stock (Eq, Show, Generic)

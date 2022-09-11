@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act
+import Arkham.Act.Sequence qualified as AC
 import Arkham.Act.Types ( ActAttrs (..), Field (..) )
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
@@ -866,8 +867,10 @@ getActsMatching matcher = do
   filterM (matcherFilter matcher) allGameActs
  where
   matcherFilter = \case
+    ActOneOf xs -> \a -> anyM (`matcherFilter` a) xs
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
+    ActWithSide side -> pure . (== side) . AC.actSide . actSequence . toAttrs
     ActWithTreachery treacheryMatcher -> \act -> do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
@@ -893,9 +896,11 @@ getRemainingActsMatching matcher = do
   filterM (matcherFilter $ unRemainingActMatcher matcher) remainingActs
  where
   matcherFilter = \case
+    ActOneOf xs -> \a -> anyM (`matcherFilter` a) xs
     AnyAct -> pure . const True
     ActWithId _ -> pure . const False
     ActWithTreachery _ -> pure . const False
+    ActWithSide _ -> error "Can't check side, since not on def"
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
 getTreacheriesMatching

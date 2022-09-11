@@ -2107,7 +2107,7 @@ arcaneResearch = permanent $ (asset "04109" "Arcane Research" 0 Mystic)
   }
 
 ichtacaTheForgottenGuardian :: CardDef
-ichtacaTheForgottenGuardian = (storyAsset "04148" ("Ichtaca" <:> "The Forgotten Guardian") 4 ThreadsOfFate)
+ichtacaTheForgottenGuardian = (storyAsset "04147" ("Ichtaca" <:> "The Forgotten Guardian") 4 ThreadsOfFate)
   { cdSkills = [SkillCombat, SkillAgility, SkillWild]
   , cdCardTraits = setFromList [Ally, Eztli, Wayfarer]
   , cdUnique = True
@@ -2115,7 +2115,7 @@ ichtacaTheForgottenGuardian = (storyAsset "04148" ("Ichtaca" <:> "The Forgotten 
   }
 
 expeditionJournal :: CardDef
-expeditionJournal = (storyAsset "04149" "Expedition Journal" 2 ThreadsOfFate)
+expeditionJournal = (storyAsset "04148" "Expedition Journal" 2 ThreadsOfFate)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Item, Tome]
   , cdUnique = True

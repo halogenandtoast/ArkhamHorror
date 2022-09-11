@@ -298,6 +298,10 @@ allLocations = mapFromList $ map
   , SomeLocationCard circuitousTrail
   , SomeLocationCard templeOfTheFang
   , SomeLocationCard overgrownRuins
+  -- Threads of Fate
+  , SomeLocationCard velmasDiner
+  , SomeLocationCard curiositieShoppe
+  , SomeLocationCard townHall
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

@@ -62,6 +62,7 @@ allAgendaCards = mapFromList $ map
   , aTearInReality
   , allIsOne
   , beckoningForPower
+  , behindTheCurtain
   , bidingItsTime
   , breakingThrough
   , callingForthTheOldOnes
@@ -75,6 +76,7 @@ allAgendaCards = mapFromList $ map
   , expeditionIntoTheWild
   , fashionablyLate
   , feedTheBeast
+  , hiddenEntanglements
   , hisDomain
   , horrorsUnleashed
   , intruders
@@ -124,6 +126,7 @@ allAgendaCards = mapFromList $ map
   , theTideRises
   , theTruthIsHidden
   , theyreGettingOut
+  , threeFates
   , timeIsRunningShort
   , torturousDescent
   , undergroundMuscle
@@ -329,6 +332,15 @@ somethingStirs = agenda "04055" "Something Stirs..." 1 TheDoomOfEztli
 
 theTempleWarden :: CardDef
 theTempleWarden = agenda "04056" "The Temple Warden" 2 TheDoomOfEztli
+
+threeFates :: CardDef
+threeFates = agenda "04114" "Three Fates" 1 ThreadsOfFate
+
+behindTheCurtain :: CardDef
+behindTheCurtain = agenda "04115" "Behind the Curtain" 2 ThreadsOfFate
+
+hiddenEntanglements :: CardDef
+hiddenEntanglements = agenda "04115" "Hidden Entanglements" 3 ThreadsOfFate
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

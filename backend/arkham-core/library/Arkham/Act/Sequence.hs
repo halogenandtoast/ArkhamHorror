@@ -11,7 +11,7 @@ actStep (Sequence num _) = ActStep num
 actSide :: ActSequence -> ActSide
 actSide (Sequence _ side) = side
 
-data ActSide = A | B
+data ActSide = A | B | C | D | E | F
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

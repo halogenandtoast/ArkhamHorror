@@ -108,6 +108,7 @@ data Message
     DiscardedCost Target
   | -- Act Deck Messages
     SetActDeck
+  | SetActDeckRefs Int [CardDef]
   | AddAct Int CardDef
   | AdvanceAct ActId Source AdvancementMethod
   | NextAdvanceActStep ActId Int

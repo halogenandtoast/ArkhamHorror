@@ -389,10 +389,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push
       (chooseOne iid [CardLabel (cdCardCode story') [ResolveStory iid story']])
     pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
+  SetActDeckRefs n refs -> do
+    pure $ a & (actStackL . at n ?~ refs)
   SetActDeck -> do
-    case a ^. actStackL . at 1 of
-      Just (x : _) -> push (AddAct 1 x)
-      _ -> pure ()
+    let ks = sortOn Down $ a ^. actStackL . to IntMap.keys
+    for_ ks $ \k -> do
+      case a ^. actStackL . at k of
+        Just (x : _) -> push (AddAct k x)
+        _ -> pure ()
     pure a
   SetAgendaDeck -> do
     let ks = sortOn Down $ a ^. agendaStackL . to IntMap.keys

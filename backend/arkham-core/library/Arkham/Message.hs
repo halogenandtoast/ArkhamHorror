@@ -203,6 +203,8 @@ data Message
   | CancelFailedByModifierEffects
   | CheckAttackOfOpportunity InvestigatorId Bool
   | CheckDefeated Source
+  | AssignDamage Target
+  | CancelAssignedDamage Target Int Int
   | CheckHandSize InvestigatorId
   | CheckWindow [InvestigatorId] [Window]
   | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]

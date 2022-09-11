@@ -2298,8 +2298,9 @@ getPotentialSlots card iid = do
           slotTypesAndSlots
 
 defeatedByMatches
-  :: Applicative m => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
+  :: Monad m => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
 defeatedByMatches defeatedBy = \case
+  Matcher.ByAnyOf xs -> anyM (defeatedByMatches defeatedBy) xs
   Matcher.ByHorror ->
     pure
       $ (defeatedBy == DefeatedByHorror)

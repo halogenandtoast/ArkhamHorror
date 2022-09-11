@@ -92,6 +92,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , sayYourPrayers
   , sealOfTheElderSign5
   , strokeOfLuck2
+  , stunningBlow
   , survivalInstinct
   , survivalInstinct2
   , takeHeart
@@ -371,6 +372,11 @@ lastChance :: CardDef
 lastChance = (skill "04036" "Last Chance" [SkillWild, SkillWild, SkillWild, SkillWild, SkillWild] Survivor)
   { cdCardTraits = singleton Gambit
   , cdCommitRestrictions = [OnlyCardCommittedToTest]
+  }
+
+stunningBlow :: CardDef
+stunningBlow = (skill "04112" "Stunning Blow" [SkillCombat] Survivor)
+  { cdCardTraits = singleton Practiced
   }
 
 trueUnderstanding :: CardDef

@@ -40,8 +40,8 @@ import Arkham.Matcher
   , InvestigatorMatcher (..)
   , LocationMatcher (..)
   , assetIs
-  , treacheryInHandOf
   , pattern InvestigatorCanDisengage
+  , treacheryInHandOf
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -303,7 +303,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
-  RemovedFromPlay (EnemySource eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  RemovedFromPlay (EnemySource eid) ->
+    pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId ->
@@ -387,11 +388,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       deck' <- shuffleM (card : unDeck investigatorDeck)
       push $ After msg
       pure $ a & (deckL .~ Deck deck')
-  Discard (TreacheryTarget tid) ->
-    pure
-      $ a
-      & treacheriesL
-      %~ deleteSet tid
+  Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
@@ -430,9 +427,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
         canFightMatcher = case overrides of
-                            [] -> CanFightEnemy
-                            [o] -> CanFightEnemyWithOverride o
-                            _ -> error "multiple overrides found"
+          [] -> CanFightEnemy
+          [o] -> CanFightEnemyWithOverride o
+          _ -> error "multiple overrides found"
       enemyIds <- selectList (traceShowId $ canFightMatcher <> enemyMatcher)
       push $ chooseOne
         iid
@@ -1208,29 +1205,57 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((/= cardCode) . toCardCode))
       & (handL %~ filter ((/= cardCode) . toCardCode))
   Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId ->
-    pure $ a & healthDamageL +~ damage & sanityDamageL +~ horror
+    pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId ->
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
-    when facingDefeat $ do
-      modifiedHealth <- getModifiedHealth a
-      modifiedSanity <- getModifiedSanity a
-      let
-        defeatedByHorror = investigatorSanityDamage >= modifiedSanity
-        defeatedByDamage = investigatorHealthDamage >= modifiedHealth
-        defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-          (True, True) -> DefeatedByDamageAndHorror
-          (True, False) -> DefeatedByHorror
-          (False, True) -> DefeatedByDamage
-          (False, False) -> DefeatedByOther
-      windowMsg <- checkWindows
-        ((`Window` Window.InvestigatorWouldBeDefeated source defeatedBy (toId a)
-         )
-        <$> [Timing.When]
-        )
-      pushAll [windowMsg, InvestigatorWhenDefeated source investigatorId]
+    if facingDefeat
+      then do
+        modifiedHealth <- getModifiedHealth a
+        modifiedSanity <- getModifiedSanity a
+        let
+          defeatedByHorror =
+            investigatorSanityDamage
+              + investigatorAssignedSanityDamage
+              >= modifiedSanity
+          defeatedByDamage =
+            investigatorHealthDamage
+              + investigatorAssignedHealthDamage
+              >= modifiedHealth
+          defeatedBy = case (defeatedByHorror, defeatedByDamage) of
+            (True, True) -> DefeatedByDamageAndHorror
+            (True, False) -> DefeatedByHorror
+            (False, True) -> DefeatedByDamage
+            (False, False) -> DefeatedByOther
+        windowMsg <- checkWindows
+          ((`Window` Window.InvestigatorWouldBeDefeated
+             source
+             defeatedBy
+             (toId a)
+           )
+          <$> [Timing.When]
+          )
+        pushAll
+          [ windowMsg
+          , AssignDamage (InvestigatorTarget $ toId a)
+          , InvestigatorWhenDefeated source investigatorId
+          ]
+      else push $ AssignDamage (InvestigatorTarget $ toId a)
     pure a
+  AssignDamage target | isTarget a target ->
+    pure
+      $ a
+      & (healthDamageL +~ investigatorAssignedHealthDamage)
+      & (sanityDamageL +~ investigatorAssignedSanityDamage)
+      & (assignedHealthDamageL .~ 0)
+      & (assignedSanityDamageL .~ 0)
+  CancelAssignedDamage target damageReduction horrorReduction
+    | isTarget a target
+    -> pure
+      $ a
+      & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
+      & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamageL %~ max 0 . subtract amount
   HealHorrorWithAdditional (InvestigatorTarget iid) amount
@@ -1540,8 +1565,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committableCards <- if cannotCommitCards || onlyCardComittedToTestCommitted
       then pure []
       else do
-        committableTreacheries <- filterM
-          (field TreacheryCanBeCommitted) =<< selectList (treacheryInHandOf investigatorId)
+        committableTreacheries <- filterM (field TreacheryCanBeCommitted)
+          =<< selectList (treacheryInHandOf investigatorId)
         treacheryCards <- traverse (field TreacheryCard) committableTreacheries
         flip filterM (investigatorHand <> treacheryCards) $ \case
           PlayerCard card -> do
@@ -1638,8 +1663,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         if notNull committedCards || onlyCardComittedToTestCommitted
           then pure []
           else do
-            committableTreacheries <- filterM
-              (field TreacheryCanBeCommitted) =<< selectList (treacheryInHandOf investigatorId)
+            committableTreacheries <- filterM (field TreacheryCanBeCommitted)
+              =<< selectList (treacheryInHandOf investigatorId)
             treacheryCards <- traverse
               (field TreacheryCard)
               committableTreacheries
@@ -2267,8 +2292,10 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
   modifiedSanity <- getModifiedSanity a
   pure
     $ investigatorHealthDamage
+    + investigatorAssignedHealthDamage
     >= modifiedHealth
     || (investigatorSanityDamage
+       + investigatorAssignedSanityDamage
        >= modifiedSanity
        && not canOnlyBeDefeatedByDamage
        )

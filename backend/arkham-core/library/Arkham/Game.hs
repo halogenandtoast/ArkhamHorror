@@ -1960,6 +1960,8 @@ instance Projection Investigator where
       InvestigatorAgility -> pure investigatorAgility
       InvestigatorHorror -> pure investigatorSanityDamage
       InvestigatorDamage -> pure investigatorHealthDamage
+      InvestigatorAssignedHorror -> pure investigatorAssignedSanityDamage
+      InvestigatorAssignedDamage -> pure investigatorAssignedHealthDamage
       InvestigatorMentalTrauma -> pure investigatorMentalTrauma
       InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
       InvestigatorResources -> pure investigatorResources

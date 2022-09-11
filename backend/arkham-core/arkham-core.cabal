@@ -832,6 +832,7 @@ library
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheLam
       Arkham.Event.Cards.Oops
+      Arkham.Event.Cards.Perseverance
       Arkham.Event.Cards.Persuasion
       Arkham.Event.Cards.PreparedForTheWorst
       Arkham.Event.Cards.PreposterousSketches
@@ -1322,6 +1323,7 @@ library
       Arkham.Skill.Cards.SayYourPrayers
       Arkham.Skill.Cards.SealOfTheElderSign5
       Arkham.Skill.Cards.StrokeOfLuck2
+      Arkham.Skill.Cards.StunningBlow
       Arkham.Skill.Cards.SurvivalInstinct
       Arkham.Skill.Cards.SurvivalInstinct2
       Arkham.Skill.Cards.TakeHeart

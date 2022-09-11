@@ -179,6 +179,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , onTheHunt
   , onTheLam
   , oops
+  , perseverance
   , persuasion
   , preparedForTheWorst
   , preposterousSketches
@@ -1337,6 +1338,17 @@ counterspell2 = (event "04110" "Counterspell" 2 Mystic)
       TokenFaceIs
       [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
   , cdLevel = 2
+  }
+
+perseverance :: CardDef
+perseverance = (event "04111" "Perseverance" 2 Survivor)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ InvestigatorWouldBeDefeated
+    Timing.When
+    AnySource
+    (ByAnyOf [ByHorror, ByDamage])
+    You
   }
 
 secondWind :: CardDef

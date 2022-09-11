@@ -787,7 +787,12 @@ data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data DefeatedByMatcher = ByHorror | ByDamage | ByOther | ByAny
+data DefeatedByMatcher
+  = ByHorror
+  | ByDamage
+  | ByOther
+  | ByAny
+  | ByAnyOf [DefeatedByMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

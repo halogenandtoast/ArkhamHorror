@@ -176,6 +176,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , encyclopedia
   , encyclopedia2
   , esotericFormula
+  , expeditionJournal
   , fence1
   , fieldwork
   , fineClothes
@@ -209,6 +210,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , holyRosary
   , hyperawareness
   , hyperawareness2
+  , ichtacaTheForgottenGuardian
   , innocentReveler
   , inTheKnow1
   , jakeWilliams
@@ -2102,6 +2104,21 @@ arcaneResearch :: CardDef
 arcaneResearch = permanent $ (asset "04109" "Arcane Research" 0 Mystic)
   { cdCardTraits = singleton Talent
   , cdPurchaseMentalTrauma = Just 1
+  }
+
+ichtacaTheForgottenGuardian :: CardDef
+ichtacaTheForgottenGuardian = (storyAsset "04148" ("Ichtaca" <:> "The Forgotten Guardian") 4 ThreadsOfFate)
+  { cdSkills = [SkillCombat, SkillAgility, SkillWild]
+  , cdCardTraits = setFromList [Ally, Eztli, Wayfarer]
+  , cdUnique = True
+  , cdSlots = [AllySlot]
+  }
+
+expeditionJournal :: CardDef
+expeditionJournal = (storyAsset "04149" "Expedition Journal" 2 ThreadsOfFate)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdUnique = True
   }
 
 trackShoes :: CardDef

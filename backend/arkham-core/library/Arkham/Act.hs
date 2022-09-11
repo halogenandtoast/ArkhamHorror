@@ -123,6 +123,30 @@ allActs = mapFromList $ map
   , SomeActCard intoTheRuins
   , SomeActCard magicAndScience
   , SomeActCard escapeTheRuins
+  -- Threads of Fate
+  , SomeActCard theRelicIsMissing
+  , SomeActCard harlanIsInDanger
+  , SomeActCard atTheExhibitTheRelicsLocation
+  , SomeActCard atTheExhibitTheBrotherhoodsPlot
+  , SomeActCard harlansCurseSafekeeping
+  , SomeActCard harlansCurseHarlanEarnstone
+  , SomeActCard findTheRelic
+  , SomeActCard recoverTheRelic
+  , SomeActCard searchForAlejandro
+  , SomeActCard missingPersons
+  , SomeActCard atTheStationInShadowedTalons
+  , SomeActCard atTheStationTrainTracks
+  , SomeActCard friendsInHighPlacesHenrysInformation
+  , SomeActCard friendsInHighPlacesHenryDeveau
+  , SomeActCard alejandrosPrison
+  , SomeActCard alejandrosPlight
+  , SomeActCard trialOfTheHuntress
+  , SomeActCard theGuardiansInquiry
+  , SomeActCard theCaveOfDarknessEmbroiledInBattle
+  , SomeActCard strangeRelicsMariaDeSilva
+  , SomeActCard strangeRelicsMariasInformation
+  , SomeActCard strangeOccurences
+  , SomeActCard theBrotherhoodIsRevealed
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

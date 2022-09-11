@@ -19,11 +19,17 @@ library
       Arkham.Act.Acts
       Arkham.Act.Cards
       Arkham.Act.Cards.AfterHours
+      Arkham.Act.Cards.AlejandrosPlight
+      Arkham.Act.Cards.AlejandrosPrison
       Arkham.Act.Cards.AllIn
       Arkham.Act.Cards.ArkhamAsylum
       Arkham.Act.Cards.AscendingTheHillV1
       Arkham.Act.Cards.AscendingTheHillV2
       Arkham.Act.Cards.AscendingTheHillV3
+      Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot
+      Arkham.Act.Cards.AtTheExhibitTheRelicsLocation
+      Arkham.Act.Cards.AtTheStationInShadowedTalons
+      Arkham.Act.Cards.AtTheStationTrainTracks
       Arkham.Act.Cards.Awakening
       Arkham.Act.Cards.BeginnersLuck
       Arkham.Act.Cards.BreakingAndEntering
@@ -37,9 +43,15 @@ library
       Arkham.Act.Cards.FindingANewWay
       Arkham.Act.Cards.FindingAWayInside
       Arkham.Act.Cards.FindingLadyEsprit
+      Arkham.Act.Cards.FindTheRelic
       Arkham.Act.Cards.Fold
+      Arkham.Act.Cards.FriendsInHighPlacesHenryDeveau
+      Arkham.Act.Cards.FriendsInHighPlacesHenrysInformation
       Arkham.Act.Cards.GetTheEngineRunning
       Arkham.Act.Cards.GetToTheBoats
+      Arkham.Act.Cards.HarlanIsInDanger
+      Arkham.Act.Cards.HarlansCurseHarlanEarnstone
+      Arkham.Act.Cards.HarlansCurseSafekeeping
       Arkham.Act.Cards.HuntingTheRougarou
       Arkham.Act.Cards.HuntressOfTheEztli
       Arkham.Act.Cards.InLostCarcosa
@@ -49,6 +61,7 @@ library
       Arkham.Act.Cards.InvestigatingTheTrail
       Arkham.Act.Cards.LeadingTheWay
       Arkham.Act.Cards.MagicAndScience
+      Arkham.Act.Cards.MissingPersons
       Arkham.Act.Cards.MistakesOfThePast
       Arkham.Act.Cards.MysteriousGateway
       Arkham.Act.Cards.NightAtTheMuseum
@@ -59,10 +72,12 @@ library
       Arkham.Act.Cards.PlanningTheEscape
       Arkham.Act.Cards.PursuingShadows
       Arkham.Act.Cards.RaceForAnswers
+      Arkham.Act.Cards.RecoverTheRelic
       Arkham.Act.Cards.RicesWhereabouts
       Arkham.Act.Cards.Row
       Arkham.Act.Cards.Run
       Arkham.Act.Cards.SaracenicScript
+      Arkham.Act.Cards.SearchForAlejandro
       Arkham.Act.Cards.SearchForTheRuins
       Arkham.Act.Cards.SearchForTheStrangerV1
       Arkham.Act.Cards.SearchForTheStrangerV2
@@ -71,11 +86,18 @@ library
       Arkham.Act.Cards.SearchingForTheTome
       Arkham.Act.Cards.SkinGame
       Arkham.Act.Cards.StalkedByShadows
+      Arkham.Act.Cards.StrangeOccurences
+      Arkham.Act.Cards.StrangeRelicsMariaDeSilva
+      Arkham.Act.Cards.StrangeRelicsMariasInformation
       Arkham.Act.Cards.TheBarrier
+      Arkham.Act.Cards.TheBrotherhoodIsRevealed
       Arkham.Act.Cards.TheCarnevaleConspiracy
+      Arkham.Act.Cards.TheCaveOfDarknessEmbroiledInBattle
+      Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark
       Arkham.Act.Cards.TheChamberOfTheBeast
       Arkham.Act.Cards.TheGateOpens
       Arkham.Act.Cards.TheGuardedRuins
+      Arkham.Act.Cards.TheGuardiansInquiry
       Arkham.Act.Cards.TheKingInTatters
       Arkham.Act.Cards.TheOath
       Arkham.Act.Cards.TheParisianConspiracyV1
@@ -84,6 +106,7 @@ library
       Arkham.Act.Cards.ThePathToTheHill
       Arkham.Act.Cards.TheReallyBadOnesV1
       Arkham.Act.Cards.TheReallyBadOnesV2
+      Arkham.Act.Cards.TheRelicIsMissing
       Arkham.Act.Cards.TheStrangerACityAflame
       Arkham.Act.Cards.TheStrangerThePathIsMine
       Arkham.Act.Cards.TheStrangerTheShoresOfHali
@@ -91,6 +114,7 @@ library
       Arkham.Act.Cards.TheyMustBeDestroyed
       Arkham.Act.Cards.ThroughTheCatacombs
       Arkham.Act.Cards.Trapped
+      Arkham.Act.Cards.TrialOfTheHuntress
       Arkham.Act.Cards.UncoveringTheConspiracy
       Arkham.Act.Cards.WhatHaveYouDone
       Arkham.Act.Helpers
@@ -108,6 +132,7 @@ library
       Arkham.Agenda.Cards.AllIsOne
       Arkham.Agenda.Cards.ATearInReality
       Arkham.Agenda.Cards.BeckoningForPower
+      Arkham.Agenda.Cards.BehindTheCurtain
       Arkham.Agenda.Cards.BidingItsTime
       Arkham.Agenda.Cards.BreakingThrough
       Arkham.Agenda.Cards.CallingForthTheOldOnes
@@ -121,6 +146,7 @@ library
       Arkham.Agenda.Cards.ExpeditionIntoTheWild
       Arkham.Agenda.Cards.FashionablyLate
       Arkham.Agenda.Cards.FeedTheBeast
+      Arkham.Agenda.Cards.HiddenEntanglements
       Arkham.Agenda.Cards.HisDomain
       Arkham.Agenda.Cards.HorrorsUnleashed
       Arkham.Agenda.Cards.InEveryShadow
@@ -170,6 +196,7 @@ library
       Arkham.Agenda.Cards.TheTideRises
       Arkham.Agenda.Cards.TheTruthIsHidden
       Arkham.Agenda.Cards.TheyreGettingOut
+      Arkham.Agenda.Cards.ThreeFates
       Arkham.Agenda.Cards.TimeIsRunningShort
       Arkham.Agenda.Cards.TorturousDescent
       Arkham.Agenda.Cards.UndergroundMuscle
@@ -261,6 +288,7 @@ library
       Arkham.Asset.Cards.Encyclopedia
       Arkham.Asset.Cards.Encyclopedia2
       Arkham.Asset.Cards.EsotericFormula
+      Arkham.Asset.Cards.ExpeditionJournal
       Arkham.Asset.Cards.Fence1
       Arkham.Asset.Cards.Fieldwork
       Arkham.Asset.Cards.FineClothes
@@ -298,6 +326,7 @@ library
       Arkham.Asset.Cards.HolyRosary
       Arkham.Asset.Cards.Hyperawareness
       Arkham.Asset.Cards.Hyperawareness2
+      Arkham.Asset.Cards.IchtacaTheForgottenGuardian
       Arkham.Asset.Cards.InnocentReveler
       Arkham.Asset.Cards.InTheKnow1
       Arkham.Asset.Cards.IshimaruHaruko
@@ -1019,6 +1048,7 @@ library
       Arkham.Location.Cards.CongregationalChurch_209
       Arkham.Location.Cards.Courtyard
       Arkham.Location.Cards.CryptOfTheSepulchralLamp
+      Arkham.Location.Cards.CuriositieShoppe
       Arkham.Location.Cards.CursedShores
       Arkham.Location.Cards.DarkenedHall
       Arkham.Location.Cards.DarkSpires
@@ -1194,11 +1224,13 @@ library
       Arkham.Location.Cards.TheGuardian
       Arkham.Location.Cards.TheHiddenChamber
       Arkham.Location.Cards.TombOfShadows
+      Arkham.Location.Cards.TownHall
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
       Arkham.Location.Cards.TwistedUnderbrush
       Arkham.Location.Cards.UndergroundRuins
       Arkham.Location.Cards.UprootedWoods
+      Arkham.Location.Cards.VelmasDiner
       Arkham.Location.Cards.VenetianGarden
       Arkham.Location.Cards.VillageCommons
       Arkham.Location.Cards.VipArea

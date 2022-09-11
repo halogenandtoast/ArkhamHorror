@@ -170,6 +170,7 @@ allLocationCards = mapFromList $ map
   , congregationalChurch_209
   , courtyard
   , cryptOfTheSepulchralLamp
+  , curiositieShoppe
   , cursedShores
   , darkenedHall
   , darkSpires
@@ -345,11 +346,13 @@ allLocationCards = mapFromList $ map
   , theHiddenChamber
   , theatre
   , tombOfShadows
+  , townHall
   , trapRoom
   , trappersCabin
   , twistedUnderbrush
   , undergroundRuins
   , uprootedWoods
+  , velmasDiner
   , venetianGarden
   , villageCommons
   , vipArea
@@ -2663,6 +2666,22 @@ overgrownRuins = (location
   { cdDoubleSided = False
   , cdVictoryPoints = Just 2
   }
+
+velmasDiner :: CardDef
+velmasDiner =
+  location "04141" "Velma's Diner" [Arkham] NoSymbol [Moon] ThreadsOfFate
+
+curiositieShoppe :: CardDef
+curiositieShoppe =
+  (location "04142" "Curiositie Shoppe" [Arkham] NoSymbol [T] ThreadsOfFate)
+    { cdVictoryPoints = Just 1
+    }
+
+townHall :: CardDef
+townHall =
+  (location "04143" "Town Hall" [Arkham] NoSymbol [Triangle] ThreadsOfFate)
+    { cdVictoryPoints = Just 1
+    }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

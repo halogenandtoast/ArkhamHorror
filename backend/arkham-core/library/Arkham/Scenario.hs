@@ -81,6 +81,7 @@ allScenarios = mapFromList
   , ("03316", SomeScenario dimCarcosa)
   , ("04043", SomeScenario theUntamedWilds)
   , ("04054", SomeScenario theDoomOfEztli)
+  , ("04113", SomeScenario threadsOfFate)
   , ("50011", SomeScenario returnToTheGathering)
   , ("50025", SomeScenario returnToTheMidnightMasks)
   , ("50032", SomeScenario returnToTheDevourerBelow)

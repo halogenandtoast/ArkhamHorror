@@ -345,6 +345,9 @@ allAssets = mapFromList $ map
   , SomeAssetCard fence1
   --- mystic [tof]
   , SomeAssetCard arcaneResearch
+  --- story [tfa]
+  , SomeAssetCard ichtacaTheForgottenGuardian
+  , SomeAssetCard expeditionJournal
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

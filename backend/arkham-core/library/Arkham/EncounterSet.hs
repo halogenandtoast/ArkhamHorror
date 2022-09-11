@@ -67,6 +67,7 @@ data EncounterSet
   | PnakoticBrotherhood
   | YigsVenom
   | Poison
+  | ThreadsOfFate
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

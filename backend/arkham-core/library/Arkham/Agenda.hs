@@ -122,6 +122,9 @@ allAgendas = mapFromList $ map
   -- The Doom of Eztli
   , SomeAgendaCard somethingStirs
   , SomeAgendaCard theTempleWarden
+  -- Threads of Fate
+  , SomeAgendaCard threeFates
+  , SomeAgendaCard behindTheCurtain
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

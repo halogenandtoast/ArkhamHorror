@@ -22,6 +22,7 @@ const isAction = (action: string) => {
   }
 
   const {tag} = ability.value.type
+  console.log(ability)
   if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
     return false
   }
@@ -133,7 +134,7 @@ const abilityLabel = computed(() => {
     return ""
   }
 
-  if (ability.value.type.tag === "ActionAbility") {
+  if (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill") {
     const { action } = ability.value.type
     if (action) {
       return action

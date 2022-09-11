@@ -153,6 +153,7 @@ allEvents = mapFromList $ map
   , SomeEventCard marksmanship1
   , SomeEventCard persuasion
   , SomeEventCard counterspell2
+  , SomeEventCard perseverance
   , SomeEventCard secondWind
   , SomeEventCard liveAndLearn
   , SomeEventCard wingingIt

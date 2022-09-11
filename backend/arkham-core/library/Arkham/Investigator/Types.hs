@@ -45,7 +45,9 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorCombat :: Field Investigator Int
   InvestigatorAgility :: Field Investigator Int
   InvestigatorHorror :: Field Investigator Int
+  InvestigatorAssignedHorror :: Field Investigator Int
   InvestigatorDamage :: Field Investigator Int
+  InvestigatorAssignedDamage :: Field Investigator Int
   InvestigatorResources :: Field Investigator Int
   InvestigatorDoom :: Field Investigator Int
   InvestigatorClues :: Field Investigator Int
@@ -73,13 +75,15 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorCardCode :: CardCode
   , investigatorClass :: ClassSymbol
   , investigatorHealth :: Int
+  , investigatorAssignedHealthDamage :: Int
+  , investigatorHealthDamage :: Int
   , investigatorSanity :: Int
+  , investigatorAssignedSanityDamage :: Int
+  , investigatorSanityDamage :: Int
   , investigatorWillpower :: Int
   , investigatorIntellect :: Int
   , investigatorCombat :: Int
   , investigatorAgility :: Int
-  , investigatorHealthDamage :: Int
-  , investigatorSanityDamage :: Int
   , investigatorClues :: Int
   , investigatorDoom :: Int
   , investigatorResources :: Int
@@ -205,9 +209,17 @@ healthDamageL :: Lens' InvestigatorAttrs Int
 healthDamageL =
   lens investigatorHealthDamage $ \m x -> m { investigatorHealthDamage = x }
 
+assignedHealthDamageL :: Lens' InvestigatorAttrs Int
+assignedHealthDamageL =
+  lens investigatorAssignedHealthDamage $ \m x -> m { investigatorAssignedHealthDamage = x }
+
 sanityDamageL :: Lens' InvestigatorAttrs Int
 sanityDamageL =
   lens investigatorSanityDamage $ \m x -> m { investigatorSanityDamage = x }
+
+assignedSanityDamageL :: Lens' InvestigatorAttrs Int
+assignedSanityDamageL =
+  lens investigatorAssignedSanityDamage $ \m x -> m { investigatorAssignedSanityDamage = x }
 
 cluesL :: Lens' InvestigatorAttrs Int
 cluesL = lens investigatorClues $ \m x -> m { investigatorClues = x }

@@ -71,6 +71,7 @@ allSkills = mapFromList $ map (toFst someSkillCardCode)
   , SomeSkillCard notWithoutAFight
   , SomeSkillCard sealOfTheElderSign5
   , SomeSkillCard lastChance
+  , SomeSkillCard stunningBlow
   , SomeSkillCard trueUnderstanding
   , SomeSkillCard takeHeart
   , SomeSkillCard overpower2

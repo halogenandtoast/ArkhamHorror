@@ -54,6 +54,8 @@ export interface Investigator {
   agility: number;
   healthDamage: number;
   sanityDamage: number;
+  assignedHealthDamage: number;
+  assignedSanityDamage: number;
   clues: number;
   resources: number;
   location: string;
@@ -86,6 +88,8 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   agility: JsonDecoder.number,
   healthDamage: JsonDecoder.number,
   sanityDamage: JsonDecoder.number,
+  assignedHealthDamage: JsonDecoder.number,
+  assignedSanityDamage: JsonDecoder.number,
   clues: JsonDecoder.number,
   resources: JsonDecoder.number,
   location: JsonDecoder.string,

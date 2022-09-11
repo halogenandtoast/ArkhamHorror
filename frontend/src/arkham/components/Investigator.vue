@@ -138,7 +138,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
       </template>
       <PoolItem
         type="health"
-        :amount="player.healthDamage"
+        :amount="player.healthDamage + player.assignedHealthDamage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="$emit('choose', healthAction)"
       />
@@ -148,7 +148,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
       </template>
       <PoolItem
         type="sanity"
-        :amount="player.sanityDamage"
+        :amount="player.sanityDamage + player.assignedSanityDamage"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />

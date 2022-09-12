@@ -1507,6 +1507,12 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: (Monad m, HasGame m) => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  FarthestEnemyFromAll enemyMatcher -> \enemy -> do
+    locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
+    enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
+    pure $ case enemyLocation of
+      Just lid -> lid `member` locations
+      Nothing -> False
   FarthestEnemyFrom iid enemyMatcher -> \enemy -> do
     eids <- selectList enemyMatcher
     if toId enemy `elem` eids

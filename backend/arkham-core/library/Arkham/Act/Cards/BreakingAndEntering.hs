@@ -6,19 +6,20 @@ module Arkham.Act.Cards.BreakingAndEntering
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Zone
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -45,45 +46,45 @@ instance RunMessage BreakingAndEntering where
       haroldWalsted <- getSetAsideCard Assets.haroldWalsted
       case mHuntingHorror of
         Just eid -> do
-          lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-            <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-          a <$ pushAll
+          lid <- getRestrictedHall
+          pushAll
             [ chooseOne
               leadInvestigatorId
-              [ TargetLabel
-                  (InvestigatorTarget iid)
-                  [TakeControlOfSetAsideAsset iid haroldWalsted]
+              [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
               | iid <- investigatorIds
               ]
             , EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
-        Nothing -> a <$ pushAll
+        Nothing -> pushAll
           [ chooseOne
             leadInvestigatorId
-            [ TargetLabel
-                (InvestigatorTarget iid)
-                [TakeControlOfSetAsideAsset iid haroldWalsted]
+            [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
             | iid <- investigatorIds
             ]
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            (CardWithCardCode "02141")
+            [ FromEncounterDeck
+            , FromEncounterDiscard
+            , FromVoid
+            ]
+            (cardIs Enemies.huntingHorror)
           ]
+      pure a
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
-      lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll
+      lid <- getRestrictedHall
+      pushAll
         [ EnemySpawnFromVoid Nothing lid eid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     FoundEncounterCard _ target ec | isTarget attrs target -> do
-      lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll
+      lid <- getRestrictedHall
+      pushAll
         [ SpawnEnemyAt (EncounterCard ec) lid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     _ -> BreakingAndEntering <$> runMessage msg attrs

@@ -6,19 +6,19 @@ module Arkham.Act.Cards.NightAtTheMuseum
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Name
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Zone
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -42,31 +42,30 @@ instance RunMessage NightAtTheMuseum where
       mHuntingHorror <- getHuntingHorror
       case mHuntingHorror of
         Just eid -> do
-          lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-            <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-          a <$ pushAll
+          lid <- getRestrictedHall
+          pushAll
             [ EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
-        Nothing -> a <$ push
-          (FindEncounterCard
-            leadInvestigatorId
-            (toTarget attrs)
-            (CardWithCardCode "02141")
-          )
+        Nothing -> push $ FindEncounterCard
+          leadInvestigatorId
+          (toTarget attrs)
+          [FromEncounterDeck, FromEncounterDiscard, FromVoid]
+          (cardIs Enemies.huntingHorror)
+      pure a
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
-      lid <- getJustLocationIdByName
-        (mkFullName "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll
+      lid <- getRestrictedHall
+      pushAll
         [ EnemySpawnFromVoid Nothing lid eid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     FoundEncounterCard _ target ec | isTarget attrs target -> do
-      lid <- getJustLocationIdByName
-        (mkFullName "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll
+      lid <- getRestrictedHall
+      pushAll
         [ SpawnEnemyAt (EncounterCard ec) lid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     _ -> NightAtTheMuseum <$> runMessage msg attrs

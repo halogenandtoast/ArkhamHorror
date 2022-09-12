@@ -20,6 +20,7 @@ import Arkham.Message hiding ( RevealLocation )
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
+import Arkham.Zone
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
   deriving anyclass IsLocation
@@ -56,11 +57,15 @@ instance HasAbilities FacultyOfficesTheNightIsStillYoung where
 
 instance RunMessage FacultyOfficesTheNightIsStillYoung where
   runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
-      (FindEncounterCard iid (toTarget attrs)
-      $ CardWithType EnemyType
-      <> CardWithTrait Humanoid
-      )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push
+        $ FindEncounterCard
+            iid
+            (toTarget attrs)
+            [FromEncounterDeck, FromEncounterDiscard]
+        $ CardWithType EnemyType
+        <> CardWithTrait Humanoid
+      pure l
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ push (SpawnEnemyAt (EncounterCard card) (toId attrs))
     UseCardAbility _ source _ 2 _ | isSource attrs source ->

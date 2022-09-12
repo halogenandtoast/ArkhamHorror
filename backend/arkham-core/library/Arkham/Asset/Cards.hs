@@ -201,6 +201,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grotesqueStatue4
   , grounded1
   , guardDog
+  , harlanEarnstone
   , hardKnocks
   , hardKnocks2
   , heirloomOfHyperborea
@@ -2067,7 +2068,12 @@ backpack = (asset "04037" "Backpack" 2 Neutral)
   }
 
 alejandroVela :: CardDef
-alejandroVela = (storyAsset "04051" ("Alejandro Vela" <:> "Renowned Historian") 2 TheUntamedWilds)
+alejandroVela = (storyAsset
+                  "04051"
+                  ("Alejandro Vela" <:> "Renowned Historian")
+                  2
+                  TheUntamedWilds
+                )
   { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
@@ -2075,7 +2081,14 @@ alejandroVela = (storyAsset "04051" ("Alejandro Vela" <:> "Renowned Historian") 
   }
 
 relicOfAgesADeviceOfSomeSort :: CardDef
-relicOfAgesADeviceOfSomeSort = (storyAsset "04061" ("Relic of Ages" <:> "...A Device, of Some Sort") 2 TheDoomOfEztli)
+relicOfAgesADeviceOfSomeSort = (storyAsset
+                                 "04061"
+                                 ("Relic of Ages"
+                                 <:> "...A Device, of Some Sort"
+                                 )
+                                 2
+                                 TheDoomOfEztli
+                               )
   { cdSkills = [SkillWild, SkillWild, SkillWild]
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
@@ -2106,13 +2119,26 @@ arcaneResearch = permanent $ (asset "04109" "Arcane Research" 0 Mystic)
   , cdPurchaseMentalTrauma = Just 1
   }
 
-ichtacaTheForgottenGuardian :: CardDef
-ichtacaTheForgottenGuardian = (storyAsset "04147" ("Ichtaca" <:> "The Forgotten Guardian") 4 ThreadsOfFate)
-  { cdSkills = [SkillCombat, SkillAgility, SkillWild]
-  , cdCardTraits = setFromList [Ally, Eztli, Wayfarer]
+harlanEarnstone :: CardDef
+harlanEarnstone = (storyAsset
+                    "04118b"
+                    ("Harlan Earnstone" <:> "Historical Theorist")
+                    0
+                    ThreadsOfFate
+                  )
+  { cdCardTraits = setFromList [Bystander, Miskatonic]
+  , cdCost = Nothing
   , cdUnique = True
-  , cdSlots = [AllySlot]
   }
+
+ichtacaTheForgottenGuardian :: CardDef
+ichtacaTheForgottenGuardian =
+  (storyAsset "04147" ("Ichtaca" <:> "The Forgotten Guardian") 4 ThreadsOfFate)
+    { cdSkills = [SkillCombat, SkillAgility, SkillWild]
+    , cdCardTraits = setFromList [Ally, Eztli, Wayfarer]
+    , cdUnique = True
+    , cdSlots = [AllySlot]
+    }
 
 expeditionJournal :: CardDef
 expeditionJournal = (storyAsset "04148" "Expedition Journal" 2 ThreadsOfFate)

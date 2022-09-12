@@ -12,7 +12,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Arkham.Token (Token)
+import Arkham.Token ( Token )
 import Data.Text qualified as T
 
 data CostStatus = UnpaidCost | PaidCost
@@ -91,6 +91,7 @@ data Cost
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
+  | DiscardTopOfDeckCost Int
   | DiscardCost Target
   | DiscardCardCost Card
   | DiscardFromCost Int CostZone CardMatcher
@@ -112,6 +113,7 @@ data Cost
 displayCostType :: Cost -> Text
 displayCostType = \case
   ActionCost n -> pluralize n "Action"
+  DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
   AdditionalActionsCost -> "Additional Action"
   ClueCost n -> pluralize n "Clue"
   GroupClueCost gv _ -> case gv of

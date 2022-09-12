@@ -3,13 +3,16 @@ module Arkham.Helpers.Campaign where
 import Arkham.Prelude
 
 import Arkham.Campaign.Types
+import Arkham.CampaignStep
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Id
-import Arkham.CampaignStep
+
+completedScenario :: (Monad m, HasGame m) => ScenarioId -> m Bool
+completedScenario cCode = elem cCode <$> getCompletedScenarios
 
 getCompletedScenarios :: (Monad m, HasGame m) => m (HashSet ScenarioId)
 getCompletedScenarios = do

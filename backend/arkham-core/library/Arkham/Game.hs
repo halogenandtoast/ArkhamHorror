@@ -36,7 +36,7 @@ import Arkham.Effect
 import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Enemy
-import Arkham.Enemy.Types ( Enemy, EnemyAttrs (..), Field (..) )
+import Arkham.Enemy.Types ( Enemy, VoidEnemy, EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -565,7 +565,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "enemies"
       .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
     , "enemiesInVoid"
-      .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
+      .= toJSON (runReader (traverse withEnemyMetadata gameEnemiesInVoid) g)
     , "assets"
       .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
     , "acts" .= toJSON (runReader (traverse withModifiers (gameActs g)) g)
@@ -1490,6 +1490,13 @@ getOutOfPlayEnemy eid =
     <$> getGame
   where missingEnemy = "Unknown out of playenemy: " <> show eid
 
+getVoidEnemy :: (Monad m, HasGame m) => EnemyId -> m Enemy
+getVoidEnemy eid =
+  fromJustNote missingEnemy
+    . preview (enemiesInVoidL . ix eid)
+    <$> getGame
+  where missingEnemy = "Unknown out of playenemy: " <> show eid
+
 getEnemyMatching :: (Monad m, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
@@ -1907,6 +1914,12 @@ instance Projection (SetAsideEntity Enemy) where
     case f of
       SetAsideEnemyDamage -> pure enemyDamage
 
+instance Projection VoidEnemy where
+  field f eid = do
+    e <- getVoidEnemy eid
+    let EnemyAttrs {..} = toAttrs e
+    case f of
+      VoidEnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId enemyId)
 
 instance Projection Enemy where
   field f eid = do
@@ -2013,6 +2026,9 @@ instance Query (SetAsideMatcher EnemyMatcher) where
       toList . view (outOfPlayEntitiesL . enemiesL) <$> getGame
     matches' <- filterM (enemyMatcherFilter matcher) outOfPlayEnemies
     pure . setFromList $ map toId matches'
+
+instance Query VoidEnemyMatcher where
+  select AnyVoidEnemy = setFromList . map toId . toList . view enemiesInVoidL <$> getGame
 
 instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching

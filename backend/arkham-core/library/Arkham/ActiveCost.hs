@@ -12,6 +12,7 @@ import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( AssetCard, PlayCard )
@@ -284,6 +285,13 @@ instance RunMessage ActiveCost where
             --   , Label "Done with dynamic cost" []
             --   ]
             -- )
+        DiscardTopOfDeckCost n -> do
+          cards <- fieldMap
+            InvestigatorDeck
+            (map PlayerCard . take n . unDeck)
+            iid
+          push $ DiscardTopOfDeck iid n Nothing
+          withPayment $ DiscardCardPayment cards
         ExhaustCost target -> do
           push (Exhaust target)
           withPayment $ ExhaustPayment [target]

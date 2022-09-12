@@ -430,7 +430,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           [] -> CanFightEnemy
           [o] -> CanFightEnemyWithOverride o
           _ -> error "multiple overrides found"
-      enemyIds <- selectList (traceShowId $ canFightMatcher <> enemyMatcher)
+      enemyIds <- selectList $ canFightMatcher <> enemyMatcher
       push $ chooseOne
         iid
         [ FightLabel eid [FightEnemy iid eid source mTarget skillType isAction]

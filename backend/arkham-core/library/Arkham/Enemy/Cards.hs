@@ -7,7 +7,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
-import Arkham.EncounterSet hiding (Byakhee)
+import Arkham.EncounterSet hiding ( Byakhee )
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
@@ -135,6 +135,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , grapplingHorror
   , graveEater
   , harbingerOfValusia
+  , harlanEarnstoneCrazedByTheCurse
   , hasturLordOfCarcosa
   , hasturTheKingInYellow
   , hasturTheTatteredKing
@@ -762,7 +763,8 @@ stealthyByakhee = (enemy "03222" "Stealthy Byakhee" APhantomOfTruth 2)
 
 specterOfDeath :: CardDef
 specterOfDeath =
-  (enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1)
+  (enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1
+    )
     { cdCardTraits = setFromList [Monster, Geist, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdUnique = True
@@ -791,24 +793,27 @@ riftSeeker = (enemy "03301" "Rift Seeker" BlackStarsRise 2)
   }
 
 hasturTheKingInYellow :: CardDef
-hasturTheKingInYellow = (enemy "03332" ("Hastur" <:> "The King in Yellow") DimCarcosa 1)
-  { cdCardTraits = setFromList [AncientOne, Elite]
-  , cdUnique = True
-  }
+hasturTheKingInYellow =
+  (enemy "03332" ("Hastur" <:> "The King in Yellow") DimCarcosa 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdUnique = True
+    }
 
 hasturLordOfCarcosa :: CardDef
-hasturLordOfCarcosa = (enemy "03333" ("Hastur" <:> "Lord of Carcosa") DimCarcosa 1)
-  { cdCardTraits = setFromList [AncientOne, Elite]
-  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
-  , cdUnique = True
-  }
+hasturLordOfCarcosa =
+  (enemy "03333" ("Hastur" <:> "Lord of Carcosa") DimCarcosa 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdUnique = True
+    }
 
 hasturTheTatteredKing :: CardDef
-hasturTheTatteredKing = (enemy "03334" ("Hastur" <:> "The Tattered King") DimCarcosa 1)
-  { cdCardTraits = setFromList [AncientOne, Elite]
-  , cdKeywords = singleton Keyword.Hunter
-  , cdUnique = True
-  }
+hasturTheTatteredKing =
+  (enemy "03334" ("Hastur" <:> "The Tattered King") DimCarcosa 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdUnique = True
+    }
 
 creatureOutOfDemhe :: CardDef
 creatureOutOfDemhe = (enemy "03335" "Creature Out of Demhe" DimCarcosa 1)
@@ -830,14 +835,20 @@ serpentsOfYig = (weakness "04014" "Serpents of Yig")
   }
 
 ichtaca :: CardDef
-ichtaca = (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
-  { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
-  , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
-  , cdVictoryPoints = Just 1
-  }
+ichtaca =
+  (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
+    { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
+    }
 
 harbingerOfValusia :: CardDef
-harbingerOfValusia = (enemy "04062" ("Harbinger of Valusia" <:> "The Sleeper Awakens") TheDoomOfEztli 1)
+harbingerOfValusia = (enemy
+                       "04062"
+                       ("Harbinger of Valusia" <:> "The Sleeper Awakens")
+                       TheDoomOfEztli
+                       1
+                     )
   { cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
   , cdVengeancePoints = Just 5
@@ -875,7 +886,8 @@ eztliGuardian = (enemy "04086" "Eztli Guardian" GuardiansOfTime 2)
   }
 
 brotherhoodCultist :: CardDef
-brotherhoodCultist = (enemy "04095" "Brotherhood Cultist" PnakoticBrotherhood 2)
+brotherhoodCultist = (enemy "04095" "Brotherhood Cultist" PnakoticBrotherhood 2
+                     )
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdKeywords = singleton Keyword.Hunter
   }
@@ -885,6 +897,15 @@ fangOfYig = (enemy "04098" "Fang of Yig" YigsVenom 2)
   { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
   , cdKeywords = singleton Keyword.Retaliate
   }
+
+harlanEarnstoneCrazedByTheCurse :: CardDef
+harlanEarnstoneCrazedByTheCurse =
+  (enemy "04122b" ("Harlan Earnstone" <:> "Crazed by the Curse") ThreadsOfFate 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Cursed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1

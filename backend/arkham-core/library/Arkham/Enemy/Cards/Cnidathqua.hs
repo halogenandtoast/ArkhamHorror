@@ -16,6 +16,7 @@ import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Zone
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
     deriving anyclass IsEnemy
@@ -55,12 +56,12 @@ instance HasAbilities Cnidathqua where
 instance RunMessage Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      e <$ push
-        (FindEncounterCard
-          iid
-          (toTarget attrs)
-          (CardWithTitle "Writhing Appendage")
-        )
+      push $ FindEncounterCard
+        iid
+        (toTarget attrs)
+        [FromEncounterDeck, FromEncounterDiscard]
+        (CardWithTitle "Writhing Appendage")
+      pure e
     FoundEncounterCard iid target card | isTarget attrs target -> do
       lid <- getJustLocation iid
       e <$ push (SpawnEnemyAtEngagedWith (EncounterCard card) lid iid)

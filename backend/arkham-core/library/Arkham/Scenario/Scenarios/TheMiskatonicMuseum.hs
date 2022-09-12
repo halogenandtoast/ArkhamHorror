@@ -25,6 +25,7 @@ import Arkham.Scenarios.TheMiskatonicMuseum.Story
 import Arkham.Target
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Zone
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
   deriving stock Generic
@@ -197,8 +198,11 @@ instance RunMessage TheMiskatonicMuseum where
         Nothing -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
-        Cultist -> push
-          $ FindEncounterCard iid (toTarget attrs) (CardWithCardCode "02141")
+        Cultist -> push $ FindEncounterCard
+          iid
+          (toTarget attrs)
+          [FromEncounterDeck, FromEncounterDiscard, FromVoid]
+          (cardIs Enemies.huntingHorror)
         ElderThing -> push $ ChooseAndDiscardAsset iid AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do

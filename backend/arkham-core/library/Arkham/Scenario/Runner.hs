@@ -93,8 +93,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
         weaknesses <- traverse genPlayerCard randomWeaknesses
         let
-          mentalTrauma =
-            getSum $ foldMap (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef) (unDeck deck')
+          mentalTrauma = getSum $ foldMap
+            (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+            (unDeck deck')
         pushAll
           $ LoadDeck iid (withDeck (<> weaknesses) deck')
           : [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]
@@ -567,21 +568,32 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     shuffled <- shuffleM encounterDeck
     push (FoundEncounterCard iid target card)
     pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard)
-  FindEncounterCard iid target matcher -> do
+  FindEncounterCard iid target zones matcher -> do
     let
-      matchingDiscards = filter (`cardMatch` matcher) scenarioDiscard
-      matchingDeckCards =
-        filter (`cardMatch` matcher) (unDeck scenarioEncounterDeck)
-      matchingVoidEnemies = case matcher of
-        -- TODO: FIX
-        -- CardWithCardCode cardCode ->
-        --   filter ((== cardCode) . toCardCode) . toList $ g ^. enemiesInVoidL
-        _ -> []
+      matchingDiscards = if Zone.FromEncounterDiscard `elem` zones
+        then filter (`cardMatch` matcher) scenarioDiscard
+        else []
+      matchingDeckCards = if Zone.FromEncounterDeck `elem` zones
+        then filter (`cardMatch` matcher) (unDeck scenarioEncounterDeck)
+        else []
+      matchingVictoryDisplay =
+        if any (`elem` zones) [Zone.FromVictoryDisplay, Zone.FromOutOfPlayAreas]
+          then mapMaybe (preview _EncounterCard)
+            $ filter (`cardMatch` matcher) scenarioVictoryDisplay
+          else []
+    matchingVoidEnemies <- if Zone.FromVoid `elem` zones
+      then selectList Matcher.AnyVoidEnemy
+      else pure []
+
+    voidEnemiesWithCards <- traverse
+      (traverseToSnd (field VoidEnemyCard))
+      matchingVoidEnemies
 
     when
         (notNull matchingDiscards
         || notNull matchingDeckCards
-        || notNull matchingVoidEnemies
+        || notNull voidEnemiesWithCards
+        || notNull matchingVictoryDisplay
         )
       $ push
       $ chooseOne iid
@@ -595,8 +607,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
              [FoundEncounterCardFrom iid target FromEncounterDeck card]
          | card <- matchingDeckCards
          ]
-      <> [ targetLabel eid [FoundEnemyInVoid iid target eid]
-         | eid <- matchingVoidEnemies
+      <> [ TargetLabel
+             (CardIdTarget $ toCardId card)
+             [FoundEncounterCardFrom iid target FromVictoryDisplay card]
+         | card <- matchingVictoryDisplay
+         ]
+      <> [ TargetLabel
+             (CardIdTarget $ toCardId card)
+             [FoundEnemyInVoid iid target eid]
+         | (eid, card) <- voidEnemiesWithCards
          ]
 
     -- TODO: show where focused cards are from
@@ -605,7 +624,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ FocusCards
       $ map EncounterCard matchingDeckCards
       <> map EncounterCard matchingDiscards
-         -- <> map toCard matchingVoidEnemies
+      <> map snd voidEnemiesWithCards
     pure a
   FindAndDrawEncounterCard iid matcher -> do
     let

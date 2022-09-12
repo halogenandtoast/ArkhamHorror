@@ -317,6 +317,7 @@ library
       Arkham.Asset.Cards.GuardDog
       Arkham.Asset.Cards.HardKnocks
       Arkham.Asset.Cards.HardKnocks2
+      Arkham.Asset.Cards.HarlanEarnstone
       Arkham.Asset.Cards.HaroldWalsted
       Arkham.Asset.Cards.HeirloomOfHyperborea
       Arkham.Asset.Cards.HelplessPassenger
@@ -1087,6 +1088,7 @@ library
       Arkham.Location.Cards.ExhibitHallNatureExhibit
       Arkham.Location.Cards.ExhibitHallRestrictedHall
       Arkham.Location.Cards.ExpeditionCamp
+      Arkham.Location.Cards.EztliExhibit
       Arkham.Location.Cards.FacultyOfficesTheHourIsLate
       Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung
       Arkham.Location.Cards.FarAboveYourHouse
@@ -1322,6 +1324,7 @@ library
       Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ThreadsOfFate.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Story

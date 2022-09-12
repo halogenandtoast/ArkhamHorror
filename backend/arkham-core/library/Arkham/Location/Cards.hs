@@ -209,6 +209,7 @@ allLocationCards = mapFromList $ map
   , exhibitHallNatureExhibit
   , exhibitHallRestrictedHall
   , expeditionCamp
+  , eztliExhibit
   , facultyOfficesTheHourIsLate
   , facultyOfficesTheNightIsStillYoung
   , farAboveYourHouse
@@ -2666,6 +2667,13 @@ overgrownRuins = (location
   { cdDoubleSided = False
   , cdVictoryPoints = Just 2
   }
+
+eztliExhibit :: CardDef
+eztliExhibit =
+  (location "04117b" "Eztli Exhibit" [Miskatonic, Exhibit] Plus [Diamond] ThreadsOfFate)
+    { cdDoubleSided = False
+    , cdVictoryPoints = Just 1
+    }
 
 velmasDiner :: CardDef
 velmasDiner =

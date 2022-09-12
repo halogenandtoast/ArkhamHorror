@@ -2,14 +2,14 @@ module Arkham.Classes.Query where
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Classes.Entity
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Card
 import Arkham.Projection
-import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv
 import Data.HashSet qualified as HashSet
-import Arkham.Classes.Entity
 
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
@@ -17,6 +17,7 @@ type family QueryElement a where
   QueryElement PreyMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
   QueryElement EnemyMatcher = EnemyId
+  QueryElement VoidEnemyMatcher = EnemyId
   QueryElement TreacheryMatcher = TreacheryId
   QueryElement ExtendedCardMatcher = Card
   QueryElement DiscardedPlayerCardMatcher = PlayerCard
@@ -68,7 +69,13 @@ selectJust matcher = fromJustNote errorNote <$> selectOne matcher
   where errorNote = "Could not find any matches for: " <> show matcher
 
 selectAgg
-  :: (Monoid monoid, Query a, QueryElement a ~ EntityId attrs, Projection attrs, HasGame m, Monad m)
+  :: ( Monoid monoid
+     , Query a
+     , QueryElement a ~ EntityId attrs
+     , Projection attrs
+     , HasGame m
+     , Monad m
+     )
   => (typ -> monoid)
   -> Field attrs typ
   -> a

@@ -37,6 +37,11 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type EnemyCard a = CardBuilder EnemyId a
 
+newtype VoidEnemy = VoidEnemy Enemy
+
+data instance Field VoidEnemy :: Type -> Type where
+  VoidEnemyCard :: Field VoidEnemy Card
+
 data instance Field Enemy :: Type -> Type where
   EnemyEngagedInvestigators :: Field Enemy (HashSet InvestigatorId)
   EnemyDoom :: Field Enemy Int
@@ -252,6 +257,13 @@ instance Entity Enemy where
   toId = toId . toAttrs
   toAttrs (Enemy a) = toAttrs a
   overAttrs f (Enemy a) = Enemy $ overAttrs f a
+
+instance Entity VoidEnemy where
+  type EntityId VoidEnemy = EnemyId
+  type EntityAttrs VoidEnemy = EnemyAttrs
+  toId = toId . toAttrs
+  toAttrs (VoidEnemy (Enemy a)) = toAttrs a
+  overAttrs f (VoidEnemy (Enemy a)) = VoidEnemy . Enemy $ overAttrs f a
 
 instance TargetEntity Enemy where
   toTarget = toTarget . toAttrs

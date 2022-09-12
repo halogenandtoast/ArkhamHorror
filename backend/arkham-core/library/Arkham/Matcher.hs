@@ -345,6 +345,10 @@ instance Semigroup EnemyMatcher where
 instance Monoid EnemyMatcher where
   mempty = AnyEnemy
 
+data VoidEnemyMatcher = AnyVoidEnemy
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 newtype SetAsideMatcher matcher = SetAsideMatcher { unSetAsideMatcher :: matcher }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

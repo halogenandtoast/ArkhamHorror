@@ -6,15 +6,14 @@ module Arkham.Agenda.Cards.BehindTheCurtain
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Sequence qualified as Act
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue
-import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype BehindTheCurtain = BehindTheCurtain AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -34,10 +33,7 @@ instance RunMessage BehindTheCurtain where
       push (Resign iid)
       BehindTheCurtain <$> runMessage msg attrs
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      hasDeckA <- selectAny $ ActOneOf [ActWithSide Act.A, ActWithSide Act.B]
-      hasDeckC <- selectAny $ ActOneOf [ActWithSide Act.C, ActWithSide Act.D]
-      hasDeckE <- selectAny $ ActOneOf [ActWithSide Act.E, ActWithSide Act.F]
-      let deckCount = count id [hasDeckA, hasDeckC, hasDeckE]
+      deckCount <- getActDecksInPlayCount
 
       pushAll
         $ [ ShuffleEncounterDiscardBackIn

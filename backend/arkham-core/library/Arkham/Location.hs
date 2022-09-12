@@ -299,6 +299,7 @@ allLocations = mapFromList $ map
   , SomeLocationCard templeOfTheFang
   , SomeLocationCard overgrownRuins
   -- Threads of Fate
+  , SomeLocationCard eztliExhibit
   , SomeLocationCard velmasDiner
   , SomeLocationCard curiositieShoppe
   , SomeLocationCard townHall

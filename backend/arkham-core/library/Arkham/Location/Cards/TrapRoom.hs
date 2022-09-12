@@ -16,6 +16,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
+import Arkham.Zone
 
 newtype TrapRoom = TrapRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -40,7 +41,11 @@ instance RunMessage TrapRoom where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let
         getSomeRats =
-          FindEncounterCard iid (toTarget attrs) $ cardIs Cards.swarmOfRats
+          FindEncounterCard
+              iid
+              (toTarget attrs)
+              [FromEncounterDeck, FromEncounterDiscard]
+            $ cardIs Cards.swarmOfRats
       playerCount <- getPlayerCount
       l <$ pushAll (getSomeRats : [ getSomeRats | playerCount >= 3 ])
     FoundEncounterCard iid target card | isTarget attrs target ->

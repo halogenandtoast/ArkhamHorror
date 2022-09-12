@@ -15,6 +15,7 @@ import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
+import Arkham.Zone
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -43,11 +44,11 @@ instance HasAbilities CongregationalChurch_208 where
 instance RunMessage CongregationalChurch_208 where
   runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      l <$ push
-        (FindEncounterCard iid (toTarget attrs)
+      push
+        $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
         $ CardWithType EnemyType
         <> CardWithTrait Humanoid
-        )
+      pure l
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- selectJust $ LocationWithTitle "Village Commons"
       l <$ push (SpawnEnemyAt (EncounterCard card) villageCommonsId)

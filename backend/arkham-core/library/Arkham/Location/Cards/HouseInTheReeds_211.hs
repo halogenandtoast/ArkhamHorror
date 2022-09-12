@@ -15,6 +15,7 @@ import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
+import Arkham.Zone
 
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
   deriving anyclass IsLocation
@@ -43,7 +44,7 @@ instance RunMessage HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push
-        $ FindEncounterCard iid (toTarget attrs)
+        $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
         $ CardWithType EnemyType
         <> CardWithTrait Nightgaunt
       pure l

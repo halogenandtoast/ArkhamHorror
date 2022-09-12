@@ -56,6 +56,7 @@ instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query TreacheryMatcher
 instance Query (SetAsideMatcher EnemyMatcher)
+instance Query VoidEnemyMatcher
 
 instance Projection Act
 instance Projection Agenda
@@ -64,6 +65,7 @@ instance Projection (DiscardedEntity Asset)
 instance Projection Campaign
 instance Projection Effect
 instance Projection Enemy
+instance Projection VoidEnemy
 instance Projection (SetAsideEntity Enemy)
 instance Projection Event
 instance Projection Investigator

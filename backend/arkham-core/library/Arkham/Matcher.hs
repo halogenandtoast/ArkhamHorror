@@ -310,6 +310,7 @@ data EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | NearestEnemy EnemyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
+  | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy

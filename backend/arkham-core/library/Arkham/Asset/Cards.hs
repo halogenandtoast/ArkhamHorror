@@ -205,6 +205,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , hardKnocks
   , hardKnocks2
   , heirloomOfHyperborea
+  , henryDeveau
   , higherEducation
   , higherEducation3
   , hiredMuscle1
@@ -2127,6 +2128,18 @@ harlanEarnstone = (storyAsset
                     ThreadsOfFate
                   )
   { cdCardTraits = setFromList [Bystander, Miskatonic]
+  , cdCost = Nothing
+  , cdUnique = True
+  }
+
+henryDeveau :: CardDef
+henryDeveau = (storyAsset
+                    "04125b"
+                    ("Henry Deveau" <:> "Friend of Alejandro")
+                    0
+                    ThreadsOfFate
+                  )
+  { cdCardTraits = singleton Bystander
   , cdCost = Nothing
   , cdUnique = True
   }

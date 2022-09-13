@@ -7,7 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.Classes
+import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Placement
 
 newtype SearchForAlejandro = SearchForAlejandro ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -15,8 +22,19 @@ newtype SearchForAlejandro = SearchForAlejandro ActAttrs
 
 searchForAlejandro :: ActCard SearchForAlejandro
 searchForAlejandro =
-  act (1, C) SearchForAlejandro Cards.searchForAlejandro Nothing
+  act (1, C) SearchForAlejandro Cards.searchForAlejandro
+    $ Just
+    $ GroupClueCost (PerPlayer 1)
+    $ LocationWithTitle "Easttown"
 
 instance RunMessage SearchForAlejandro where
-  runMessage msg (SearchForAlejandro attrs) =
-    SearchForAlejandro <$> runMessage msg attrs
+  runMessage msg a@(SearchForAlejandro attrs) = case msg of
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      velmasDiner <- selectJust $ locationIs Locations.velmasDiner
+      henryDeveau <- genCard Assets.henryDeveau
+      pushAll
+        [ CreateAssetAt henryDeveau (AtLocation velmasDiner)
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
+      pure a
+    _ -> SearchForAlejandro <$> runMessage msg attrs

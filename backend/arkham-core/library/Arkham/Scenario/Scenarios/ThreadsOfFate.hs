@@ -42,8 +42,9 @@ threadsOfFate difficulty = scenarioWith
   "04113"
   "Threads of Fate"
   difficulty
-  [ "curiositieShoppe curiositieShoppe northside northside            downtown             downtown  easttown  easttown velmasDiner velmasDiner"
-  , ".                .                .         miskatonicUniversity miskatonicUniversity rivertown rivertown .        .           ."
+  [ ".                .                trainTracks  trainTracks          townHall             townHall  arkhamPoliceStation  arkhamPoliceStation .           ."
+  , "curiositieShoppe curiositieShoppe northside    northside            downtown             downtown  easttown             easttown            velmasDiner velmasDiner"
+  , ".                eztliExhibit     eztliExhibit miskatonicUniversity miskatonicUniversity rivertown rivertown            blackCave           blackCave   ."
   ]
   (decksLayoutL .~ [". act1", "agenda1 act2", ". act3"])
 
@@ -222,10 +223,14 @@ instance RunMessage ThreadsOfFate where
         [ Locations.townHall
         , Assets.ichtacaTheForgottenGuardian
         , Assets.expeditionJournal
+        , Assets.relicOfAgesADeviceOfSomeSort
+        , Assets.alejandroVela
         ]
 
       pushAll
-        [ SetEncounterDeck encounterDeck
+        [ RemoveCampaignCardFromAnyDeck Assets.relicOfAgesADeviceOfSomeSort
+        , RemoveCampaignCardFromAnyDeck Assets.alejandroVela
+        , SetEncounterDeck encounterDeck
         , chooseOne
           leadInvestigatorId
           [ Label

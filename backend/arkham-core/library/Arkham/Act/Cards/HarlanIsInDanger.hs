@@ -24,7 +24,7 @@ harlanIsInDanger =
   act (1, A) HarlanIsInDanger Cards.harlanIsInDanger
     $ Just
     $ GroupClueCost (PerPlayer 2)
-    $ LocationWithTitle "Miskatonic Museum"
+    $ LocationWithTitle "Miskatonic University"
 
 instance RunMessage HarlanIsInDanger where
   runMessage msg a@(HarlanIsInDanger attrs) = case msg of

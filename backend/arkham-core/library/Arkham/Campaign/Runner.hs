@@ -18,6 +18,7 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message
+import Data.HashMap.Strict qualified as HashMap
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
@@ -39,6 +40,13 @@ instance RunMessage CampaignAttrs where
         (<>)
         iid
         [card { pcOwner = Just iid }]
+    RemoveCampaignCardFromAnyDeck cardDef -> do
+      pure
+        $ a
+        & storyCardsL
+        %~ HashMap.map (filter ((/= cardDef) . toCardDef))
+        & decksL
+        %~ HashMap.map (withDeck (filter ((/= cardDef) . toCardDef)))
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a
@@ -53,8 +61,9 @@ instance RunMessage CampaignAttrs where
     InitDeck iid deck -> do
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
       let
-        mentalTrauma =
-          getSum $ foldMap (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef) (unDeck deck')
+        mentalTrauma = getSum $ foldMap
+          (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+          (unDeck deck')
       pushAll
         $ map (AddCampaignCardToDeck iid) randomWeaknesses
         <> [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]
@@ -64,8 +73,9 @@ instance RunMessage CampaignAttrs where
       let
         oldDeck = fromJustNote "No deck?" $ lookup iid campaignDecks
         deckDiff = (unDeck deck) \\ (unDeck oldDeck)
-        mentalTrauma =
-          getSum $ foldMap (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef) deckDiff
+        mentalTrauma = getSum $ foldMap
+          (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+          deckDiff
       -- We remove the random weakness if the upgrade deck still has it listed
       -- since this will have been added at the beginning of the campaign
       (deck', _) <- addRandomBasicWeaknessIfNeeded deck

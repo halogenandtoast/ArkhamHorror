@@ -43,6 +43,7 @@ instance HasAbilities FindTheRelic where
           )
         $ Objective
         $ ForcedAbility AnyWindow
+    | onSide A a
     ]
 
 instance RunMessage FindTheRelic where
@@ -57,10 +58,13 @@ instance RunMessage FindTheRelic where
       iids <- selectList $ NearestToLocation $ LocationWithAsset $ assetIs
         Assets.relicOfAgesADeviceOfSomeSort
       let
-        takeControlMessage = chooseOrRunOne leadInvestigatorId
+        takeControlMessage = chooseOrRunOne
+          leadInvestigatorId
           [ targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids ]
-      pushAll
-        $ takeControlMessage
-        : [ ScenarioResolution $ Resolution 1 | deckCount <= 1 ]
+        nextMessage =
+          if deckCount <= 1
+            then ScenarioResolution $ Resolution 1
+            else RemoveFromGame (ActTarget $ toId attrs)
+      pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> FindTheRelic <$> runMessage msg attrs

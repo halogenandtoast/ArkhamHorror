@@ -677,6 +677,26 @@ getInvestigatorsMatching matcher = do
     MostHorror -> \i -> do
       mostHorrorCount <- getMax0 <$> selectAgg Max InvestigatorHorror Anyone
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
+    NearestToLocation locationMatcher -> \i -> do
+      let
+        getLocationDistance start =
+          Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
+            (markDistances start (<=~> locationMatcher) mempty)
+            (LPState (pure start) (singleton start) mempty)
+
+      mappings <-
+        traverse (traverseToSnd (getLocationDistance <=< getJustLocation))
+          =<< getInvestigatorIds
+
+      let
+        mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+        minDistance :: Int =
+          fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
+        investigatorDistance :: Int = unDistance $ findWithDefault
+          (error "investigator not found")
+          (toId i)
+          mappingsMap
+      pure $ investigatorDistance == minDistance
     NearestToEnemy enemyMatcher -> \i -> do
       let
         hasMatchingEnemy lid =
@@ -1507,6 +1527,10 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: (Monad m, HasGame m) => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  EnemyWithAsset assetMatcher -> \enemy -> do
+    assets <- select assetMatcher
+    lmAssets <- select $ EnemyAsset $ toId enemy
+    pure . notNull $ intersection assets lmAssets
   FarthestEnemyFromAll enemyMatcher -> \enemy -> do
     locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)

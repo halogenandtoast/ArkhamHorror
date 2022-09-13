@@ -129,6 +129,7 @@ data InvestigatorMatcher
   | MostRemainingSanity
   | MostHorror
   | NearestToEnemy EnemyMatcher
+  | NearestToLocation LocationMatcher
   | HasMostMatchingAsset AssetMatcher
   | HasMatchingAsset AssetMatcher
   | HasMatchingEvent EventMatcher
@@ -308,6 +309,7 @@ data EnemyMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
+  | EnemyWithAsset AssetMatcher
   | NearestEnemy EnemyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher

@@ -3347,6 +3347,10 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . assetsL %~ deleteMap aid)
       & (removedFromPlayL %~ (card :))
+  RemoveFromGame (ActTarget aid) -> do
+    pure
+      $ g
+      & (entitiesL . actsL %~ deleteMap aid)
   RemoveFromGame (SkillTarget sid) -> do
     card <- field SkillCard sid
     pure

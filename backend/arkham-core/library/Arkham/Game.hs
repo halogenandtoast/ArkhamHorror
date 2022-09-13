@@ -1330,6 +1330,8 @@ getAssetsMatching matcher = do
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . assetDoom . toAttrs) as
+    AssetWithClues valueMatcher ->
+      filterM ((`gameValueMatches` valueMatcher) . assetClues . toAttrs) as
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . assetSlots . toAttrs) as

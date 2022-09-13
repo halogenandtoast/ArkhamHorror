@@ -225,6 +225,7 @@ data AssetMatcher
   | AssetWithUseType UseType
   | AssetWithUses UseType
   | AssetWithDoom ValueMatcher
+  | AssetWithClues ValueMatcher
   | AssetInSlot SlotType
   | AssetIs CardCode
   | AssetCardMatch CardMatcher

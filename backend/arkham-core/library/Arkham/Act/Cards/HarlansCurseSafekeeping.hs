@@ -36,13 +36,12 @@ instance HasAbilities HarlansCurseSafekeeping where
     [ restrictedAbility
           a
           1
-          (EnemyCriteria
-          $ EnemyExists
-          $ enemyIs Enemies.harlanEarnstoneCrazedByTheCurse
-          <> EnemyWithClues (AtLeast $ PerPlayer 1)
+          (AssetExists $ assetIs Assets.harlanEarnstone <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
           )
         $ Objective
         $ ForcedAbility AnyWindow
+    | onSide A a
     ]
 
 instance RunMessage HarlansCurseSafekeeping where

@@ -7,15 +7,26 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
+import Arkham.Message
 
 newtype MissingPersons = MissingPersons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 missingPersons :: ActCard MissingPersons
-missingPersons = act (1, C) MissingPersons Cards.missingPersons Nothing
+missingPersons =
+  act (1, C) MissingPersons Cards.missingPersons
+    $ Just
+    $ GroupClueCost (PerPlayer 1)
+    $ LocationWithTitle "Easttown"
 
 instance RunMessage MissingPersons where
-  runMessage msg (MissingPersons attrs) =
-    MissingPersons <$> runMessage msg attrs
+  runMessage msg a@(MissingPersons attrs) = case msg of
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      pure a
+    _ -> MissingPersons <$> runMessage msg attrs

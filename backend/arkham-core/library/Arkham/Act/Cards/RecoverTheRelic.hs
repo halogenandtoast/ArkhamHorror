@@ -56,8 +56,9 @@ instance RunMessage RecoverTheRelic where
         takeControlMessage = chooseOrRunOne
           leadInvestigatorId
           [ targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids ]
-      pushAll
-        $ takeControlMessage
-        : [ ScenarioResolution $ Resolution 1 | deckCount <= 1 ]
+        nextMessage = if deckCount <= 1
+          then ScenarioResolution $ Resolution 1
+          else RemoveFromGame (ActTarget $ toId attrs)
+      pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> RecoverTheRelic <$> runMessage msg attrs

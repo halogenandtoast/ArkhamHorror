@@ -303,6 +303,7 @@ allLocations = mapFromList $ map
   , SomeLocationCard velmasDiner
   , SomeLocationCard curiositieShoppe
   , SomeLocationCard townHall
+  , SomeLocationCard arkhamPoliceStation
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

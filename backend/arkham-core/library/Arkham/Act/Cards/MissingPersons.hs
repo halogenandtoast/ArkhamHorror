@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
@@ -28,5 +28,10 @@ missingPersons =
 instance RunMessage MissingPersons where
   runMessage msg a@(MissingPersons attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      arkhamPoliceStation <- genCard Locations.arkhamPoliceStation
+      pushAll
+        [ PlaceLocation arkhamPoliceStation
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
       pure a
     _ -> MissingPersons <$> runMessage msg attrs

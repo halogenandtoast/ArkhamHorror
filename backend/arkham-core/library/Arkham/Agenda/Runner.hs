@@ -55,6 +55,13 @@ instance RunMessage AgendaAttrs
         & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
+      modifiers' <- getModifiers (toTarget a)
+      let
+        modifyDoomThreshold acc = \case
+          DoomThresholdModifier n -> max 0 (acc + n)
+          _ -> acc
+        modifiedPerPlayerDoomThreshold =
+          foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
       -- handle multiple agendas, this might need to be specific to the
       -- scenario, but for now given there is only once scenario and the rules
       -- are likely to be the same in the future
@@ -62,7 +69,7 @@ instance RunMessage AgendaAttrs
         <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
       totalDoom <- subtract otherAgendaDoom <$> getDoomCount
       when
-        (totalDoom >= perPlayerDoomThreshold)
+        (totalDoom >= modifiedPerPlayerDoomThreshold)
         do
           whenMsg <- checkWindows
             [ Window
@@ -79,10 +86,17 @@ instance RunMessage AgendaAttrs
     Do AdvanceAgendaIfThresholdSatisfied -> do
       -- This status can change due to the above windows so we much check again
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
+      modifiers' <- getModifiers (toTarget a)
+      let
+        modifyDoomThreshold acc = \case
+          DoomThresholdModifier n -> max 0 (acc + n)
+          _ -> acc
+        modifiedPerPlayerDoomThreshold =
+          foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
       otherAgendaDoom <- getSum
         <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
       totalDoom <- subtract otherAgendaDoom <$> getDoomCount
-      when (totalDoom >= perPlayerDoomThreshold) $ do
+      when (totalDoom >= modifiedPerPlayerDoomThreshold) $ do
         leadInvestigatorId <- getLeadInvestigatorId
         pushAll
           [ CheckWindow

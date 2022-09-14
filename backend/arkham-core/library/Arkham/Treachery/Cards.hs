@@ -148,6 +148,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , chillFromBelow
   , clawsOfSteam
   , collapsingReality
+  , conspiracyOfBlood
   , corrosion
   , crashingFloods
   , creepingPoison
@@ -193,6 +194,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , massHysteria
   , mesmerize
   , mysteriousChanting
+  , nobodysHome
   , obscuringFog
   , offerOfPower
   , onTheProwl
@@ -233,6 +235,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , theKingsEdict
   , thePaleMaskBeckons
   , thePitBelow
+  , theSecretMustBeKept
   , theShadowBehindYou
   , theYellowSign
   , theZealotsSeal
@@ -1029,6 +1032,25 @@ poisoned =
     , cdPermanent = True
     , cdEncounterSet = Just EncounterSet.Poison
     , cdEncounterSetQuantity = Just 4
+    }
+
+theSecretMustBeKept :: CardDef
+theSecretMustBeKept =
+  (treachery "04144" "The Secret Must Be Kept" EncounterSet.ThreadsOfFate 3)
+    { cdCardTraits = singleton Scheme
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+nobodysHome :: CardDef
+nobodysHome =
+  (treachery "04145" "Nobody's Home" EncounterSet.ThreadsOfFate 2)
+    { cdCardTraits = singleton Mystery
+    }
+
+conspiracyOfBlood :: CardDef
+conspiracyOfBlood =
+  (treachery "04146" "Conspiracy of Blood" EncounterSet.ThreadsOfFate 2)
+    { cdCardTraits = singleton Hex
     }
 
 theHarbinger :: CardDef

@@ -152,6 +152,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , lupineThrall
   , madPatient
   , maniac
+  , mariaDeSilvaKnowsMoreThanSheLetsOn
   , marshGug
   , mobster
   , narogath
@@ -915,6 +916,16 @@ henryDeveauAlejandrosKidnapper =
     { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
     , cdUnique = True
     , cdVictoryPoints = Just 1
+    }
+
+mariaDeSilvaKnowsMoreThanSheLetsOn :: CardDef
+mariaDeSilvaKnowsMoreThanSheLetsOn =
+  (enemy "04137b" ("Maria DeSilva" <:> "Knows More Than She Lets On") ThreadsOfFate 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    , cdKeywords = singleton Keyword.Retaliate
     }
 
 corpseHungryGhoul :: CardDef

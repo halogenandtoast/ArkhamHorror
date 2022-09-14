@@ -200,6 +200,7 @@ allEnemies = mapFromList $ map
   -- Threads of Fate
   , SomeEnemyCard harlanEarnstoneCrazedByTheCurse
   , SomeEnemyCard henryDeveauAlejandrosKidnapper
+  , SomeEnemyCard mariaDeSilvaKnowsMoreThanSheLetsOn
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

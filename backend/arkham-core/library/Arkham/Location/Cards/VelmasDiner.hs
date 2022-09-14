@@ -1,27 +1,51 @@
 module Arkham.Location.Cards.VelmasDiner
   ( velmasDiner
   , VelmasDiner(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Ability
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
 
 newtype VelmasDiner = VelmasDiner LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 velmasDiner :: LocationCard VelmasDiner
 velmasDiner = location VelmasDiner Cards.velmasDiner 2 (Static 0)
 
+instance HasModifiersFor VelmasDiner where
+  getModifiersFor (LocationTarget lid) (VelmasDiner a) = do
+    isEasttown <- lid <=~> locationIs Cards.easttown
+    pure $ toModifiers
+      a
+      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
+      | isEasttown
+      ]
+  getModifiersFor _ _ = pure []
+
 instance HasAbilities VelmasDiner where
-  getAbilities (VelmasDiner attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (VelmasDiner attrs) = withBaseAbilities
+    attrs
+    [ limitedAbility (PlayerLimit PerGame 1)
+      $ restrictedAbility attrs 1 Here
+      $ ActionAbility Nothing
+      $ ActionCost 3
+    | locationRevealed attrs
+    ]
 
 instance RunMessage VelmasDiner where
-  runMessage msg (VelmasDiner attrs) =
-    VelmasDiner <$> runMessage msg attrs
+  runMessage msg l@(VelmasDiner attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      push $ GainClues iid 2
+      pure l
+    _ -> VelmasDiner <$> runMessage msg attrs

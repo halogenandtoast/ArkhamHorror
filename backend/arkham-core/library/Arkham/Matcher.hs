@@ -335,6 +335,7 @@ data EnemyMatcher
   | UniqueEnemy
   | NotEnemy EnemyMatcher
   | MovingEnemy
+  | IsIchtacasPrey
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -517,6 +518,8 @@ data LocationMatcher
   | BlockedLocation
   | ThisLocation
   -- ^ only useful for windows
+  | IsIchtacasDestination
+  -- ^ Scenario specific criteria
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -1043,6 +1046,7 @@ replaceYourLocation _ Nothing = id
 replaceYourLocation iid (Just lid) = go
  where
   go matcher = case matcher of
+    IsIchtacasDestination{} -> matcher
     LocationWithoutClues{} -> matcher
     LocationWithTitle{} -> matcher
     LocationWithFullTitle{} -> matcher

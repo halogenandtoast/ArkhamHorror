@@ -5,12 +5,18 @@ module Arkham.Location.Cards.TownHall
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Investigator.Types ( Field (InvestigatorHand) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype TownHall = TownHall LocationAttrs
   deriving anyclass IsLocation
@@ -30,8 +36,22 @@ instance HasModifiersFor TownHall where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TownHall where
-  getAbilities (TownHall attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (TownHall a) =
+    withBaseAbilities a
+      $ [ mkAbility a 1
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId a
+        ]
 
 instance RunMessage TownHall where
-  runMessage msg (TownHall attrs) = TownHall <$> runMessage msg attrs
+  runMessage msg l@(TownHall attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      hand <- field InvestigatorHand iid
+      let
+        weaknessCount = count cardIsWeakness hand
+        discardCount = min (length hand - 3) (length hand - weaknessCount)
+      pushAll $ replicate discardCount $ ChooseAndDiscardCard iid
+      pure l
+    _ -> TownHall <$> runMessage msg attrs

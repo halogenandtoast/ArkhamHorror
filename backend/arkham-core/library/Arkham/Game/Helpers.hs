@@ -494,6 +494,11 @@ getActionsWith iid window f = do
           pure $ map
             (\source -> action { abilitySource = ProxySource source base })
             sources
+        ProxySource (EnemyMatcherSource m) base -> do
+          sources <- selectListMap EnemySource m
+          pure $ map
+            (\source -> action { abilitySource = ProxySource source base })
+            sources
         _ -> pure [action]
 
   actions'' <- catMaybes <$> for
@@ -616,6 +621,7 @@ sourceToTarget = \case
   AgendaDeckSource -> AgendaDeckTarget
   AssetMatcherSource{} -> error "not converted"
   LocationMatcherSource{} -> error "not converted"
+  EnemyMatcherSource{} -> error "not converted"
   EnemyAttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
   CampaignSource -> CampaignTarget
@@ -1871,6 +1877,7 @@ sourceTraits = \case
   TokenSource _ -> pure mempty
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   LocationMatcherSource _ -> pure mempty
+  EnemyMatcherSource _ -> pure mempty
   CampaignSource -> pure mempty
 
 sourceMatches
@@ -1988,6 +1995,7 @@ locationMatches investigatorId source window locationId matcher' = do
       not <$> locationMatches investigatorId source window locationId m
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
     Matcher.LocationWithModifier _ -> locationId <=~> matcher
+    Matcher.IsIchtacasDestination -> locationId <=~> matcher
     Matcher.LocationWithEnemy enemyMatcher -> selectAny
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
     Matcher.LocationWithAsset assetMatcher -> selectAny

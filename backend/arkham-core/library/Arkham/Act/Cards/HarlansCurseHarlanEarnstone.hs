@@ -10,7 +10,6 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
@@ -22,7 +21,6 @@ import Arkham.Id
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Source
 
 newtype HarlansCurseHarlanEarnstone = HarlansCurseHarlanEarnstone ActAttrs

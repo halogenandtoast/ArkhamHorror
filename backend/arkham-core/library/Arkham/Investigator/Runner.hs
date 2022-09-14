@@ -1375,10 +1375,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
   BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
+    modifiers' <- getModifiers (toTarget a)
+    let
+      toAdditionalAction = \case
+        GiveAdditionalAction ac -> Just ac
+        _ -> Nothing
+      additionalActions = mapMaybe toAdditionalAction modifiers'
     pure
       $ a
       & (endedTurnL .~ False)
       & (remainingActionsL .~ actionsForTurn)
+      & (additionalActionsL %~ (additionalActions <>))
       & (actionsTakenL .~ mempty)
   DiscardTopOfDeck iid n mTarget | iid == investigatorId -> do
     let (cs, deck') = splitAt n (unDeck investigatorDeck)

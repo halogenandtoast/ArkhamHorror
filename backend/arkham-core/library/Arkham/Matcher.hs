@@ -20,7 +20,7 @@ import Arkham.Keyword ( Keyword )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label
 import Arkham.LocationSymbol
-import {-# SOURCE #-} Arkham.Modifier
+import Arkham.Modifier
 import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.SkillType

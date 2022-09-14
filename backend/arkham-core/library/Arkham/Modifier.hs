@@ -7,6 +7,7 @@ module Arkham.Modifier
 import Arkham.Prelude
 
 import Arkham.Action
+import Arkham.Action.Additional
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -47,6 +48,7 @@ data ModifierType
   | AddSkillIcons [SkillType]
   | RemoveSkillIcons [SkillType]
   | AdditionalActions Int
+  | GiveAdditionalAction AdditionalAction
   | AdditionalStartingUses Int
   | AdditionalCost Cost
   | ChangeRevealStrategy RevealStrategy

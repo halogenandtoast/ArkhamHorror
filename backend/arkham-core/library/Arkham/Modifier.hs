@@ -127,6 +127,7 @@ data ModifierType
   | DoNotRemoveDoom
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
+  | DoomThresholdModifier Int
   | DoomSubtracts
   | DoubleDifficulty
   | DoubleNegativeModifiersOnTokens

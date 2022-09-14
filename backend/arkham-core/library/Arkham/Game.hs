@@ -36,7 +36,7 @@ import Arkham.Effect
 import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Enemy
-import Arkham.Enemy.Types ( Enemy, VoidEnemy, EnemyAttrs (..), Field (..) )
+import Arkham.Enemy.Types ( Enemy, EnemyAttrs (..), Field (..), VoidEnemy )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -97,6 +97,7 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding ( scenario )
+import Arkham.ScenarioLogKey
 import Arkham.Skill
 import Arkham.Skill.Types ( Field (..), Skill, SkillAttrs (..) )
 import Arkham.SkillTest.Runner
@@ -1060,6 +1061,8 @@ getLocationsMatching :: (Monad m, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
+    IsIchtacasDestination ->
+      filterM (remembered . IchtacasDestination . toId) ls
     FirstLocation [] -> pure []
     FirstLocation xs ->
       fromMaybe []
@@ -1292,8 +1295,7 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`member` matches') . toId) ls
     BlockedLocation ->
       flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
-    LocationWithoutClues ->
-      pure $ filter (locationWithoutClues . toAttrs) ls
+    LocationWithoutClues -> pure $ filter (locationWithoutClues . toAttrs) ls
     -- these can not be queried
     LocationLeavingPlay -> pure []
     SameLocation -> pure []
@@ -1514,9 +1516,7 @@ getOutOfPlayEnemy eid =
 
 getVoidEnemy :: (Monad m, HasGame m) => EnemyId -> m Enemy
 getVoidEnemy eid =
-  fromJustNote missingEnemy
-    . preview (enemiesInVoidL . ix eid)
-    <$> getGame
+  fromJustNote missingEnemy . preview (enemiesInVoidL . ix eid) <$> getGame
   where missingEnemy = "Unknown out of playenemy: " <> show eid
 
 getEnemyMatching :: (Monad m, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
@@ -1534,7 +1534,8 @@ enemyMatcherFilter = \case
     lmAssets <- select $ EnemyAsset $ toId enemy
     pure . notNull $ intersection assets lmAssets
   FarthestEnemyFromAll enemyMatcher -> \enemy -> do
-    locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
+    locations <- select $ FarthestLocationFromAll $ LocationWithEnemy
+      enemyMatcher
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
     pure $ case enemyLocation of
       Just lid -> lid `member` locations
@@ -1627,6 +1628,7 @@ enemyMatcherFilter = \case
   UnengagedEnemy ->
     \enemy -> selectNone $ InvestigatorEngagedWith $ EnemyWithId $ toId enemy
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
+  IsIchtacasPrey -> remembered . IchtacasPrey . toId
   MovingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
   M.EnemyAt locationMatcher -> \enemy -> do
@@ -1651,9 +1653,9 @@ enemyMatcherFilter = \case
         modifiers'
       window = Window Timing.When Window.NonFast
       overrideFunc = case overrides of
-                          [] -> id
-                          [o] -> overrideAbilityCriteria o
-                          _ -> error "multiple overrides found"
+        [] -> id
+        [o] -> overrideAbilityCriteria o
+        _ -> error "multiple overrides found"
     excluded <- member (toId enemy)
       <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
     if excluded
@@ -1664,8 +1666,8 @@ enemyMatcherFilter = \case
           , -- Because ChooseFightEnemy happens after taking a fight action we
             -- need to decrement the action cost
             getCanPerformAbility iid (InvestigatorSource iid) window
-            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-            . overrideFunc
+          . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+          . overrideFunc
           ]
         )
         (getAbilities enemy)
@@ -1690,8 +1692,8 @@ enemyMatcherFilter = \case
           , -- Because ChooseFightEnemy happens after taking a fight action we
             -- need to decrement the action cost
             getCanPerformAbility iid (InvestigatorSource iid) window
-            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-            . overrideAbilityCriteria override
+          . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+          . overrideAbilityCriteria override
           ]
         )
         (getAbilities enemy)
@@ -2060,7 +2062,8 @@ instance Query (SetAsideMatcher EnemyMatcher) where
     pure . setFromList $ map toId matches'
 
 instance Query VoidEnemyMatcher where
-  select AnyVoidEnemy = setFromList . map toId . toList . view enemiesInVoidL <$> getGame
+  select AnyVoidEnemy =
+    setFromList . map toId . toList . view enemiesInVoidL <$> getGame
 
 instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching
@@ -2434,6 +2437,7 @@ instance Projection Treachery where
       cdef = toCardDef attrs
     case fld of
       TreacheryPlacement -> pure treacheryPlacement
+      TreacheryDrawnBy -> pure treacheryDrawnBy
       TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
       TreacheryClues -> pure treacheryClues
       TreacheryResources -> pure treacheryResources
@@ -2976,7 +2980,8 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (entitiesL . agendasL %~ deleteMap aid1)
-      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 agendaDeckId))
+      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 agendaDeckId)
+        )
   ReplaceAct aid1 aid2 -> do
     actDeckId <- field ActDeckId aid1
     pure
@@ -3354,9 +3359,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . assetsL %~ deleteMap aid)
       & (removedFromPlayL %~ (card :))
   RemoveFromGame (ActTarget aid) -> do
-    pure
-      $ g
-      & (entitiesL . actsL %~ deleteMap aid)
+    pure $ g & (entitiesL . actsL %~ deleteMap aid)
   RemoveFromGame (SkillTarget sid) -> do
     card <- field SkillCard sid
     pure
@@ -4111,7 +4114,8 @@ preloadModifiers g = flip runReaderT g $ do
   pure $ g { gameModifiers = allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
-  inHandEntities = concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
+  inHandEntities =
+    concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
     []
     (allChaosBagTokens . scenarioChaosBag . toAttrs)

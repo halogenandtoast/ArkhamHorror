@@ -37,6 +37,7 @@ data Source
   | GameSource
   | InvestigatorSource InvestigatorId
   | LocationMatcherSource LocationMatcher
+  | EnemyMatcherSource EnemyMatcher
   | LocationSource LocationId
   | PlayerCardSource PlayerCard
   | ProxySource { source :: Source, originalSource :: Source }

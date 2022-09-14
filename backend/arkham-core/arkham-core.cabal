@@ -689,6 +689,7 @@ library
       Arkham.Enemy.Cards.LupineThrall
       Arkham.Enemy.Cards.MadPatient
       Arkham.Enemy.Cards.Maniac
+      Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn
       Arkham.Enemy.Cards.MarshGug
       Arkham.Enemy.Cards.MobEnforcer
       Arkham.Enemy.Cards.Mobster
@@ -1431,6 +1432,7 @@ library
       Arkham.Treachery.Cards.Chronophobia
       Arkham.Treachery.Cards.ClawsOfSteam
       Arkham.Treachery.Cards.CollapsingReality
+      Arkham.Treachery.Cards.ConspiracyOfBlood
       Arkham.Treachery.Cards.Corrosion
       Arkham.Treachery.Cards.CoverUp
       Arkham.Treachery.Cards.CrashingFloods
@@ -1489,6 +1491,7 @@ library
       Arkham.Treachery.Cards.MassHysteria
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MysteriousChanting
+      Arkham.Treachery.Cards.NobodysHome
       Arkham.Treachery.Cards.ObscuringFog
       Arkham.Treachery.Cards.OfferOfPower
       Arkham.Treachery.Cards.OnTheProwl
@@ -1542,6 +1545,7 @@ library
       Arkham.Treachery.Cards.ThePaleMaskBeckons
       Arkham.Treachery.Cards.ThePitBelow
       Arkham.Treachery.Cards.ThePriceOfFailure
+      Arkham.Treachery.Cards.TheSecretMustBeKept
       Arkham.Treachery.Cards.TheShadowBehindYou
       Arkham.Treachery.Cards.TheYellowSign
       Arkham.Treachery.Cards.TheZealotsSeal

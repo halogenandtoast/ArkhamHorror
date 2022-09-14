@@ -42,6 +42,7 @@ data ScenarioLogKey
   | YouListenedToIchtacasTale
   | IchtacaLeftWithoutYou
   | IchtacasPrey EnemyId
+  | IchtacasDestination LocationId
   -- ^ Threads of Fate
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

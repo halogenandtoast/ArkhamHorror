@@ -246,6 +246,10 @@ allTreacheries = mapFromList $ map
   -- Poison
   , SomeTreacheryCard creepingPoison
   , SomeTreacheryCard poisoned
+  -- Threads of Fate
+  , SomeTreacheryCard theSecretMustBeKept
+  , SomeTreacheryCard nobodysHome
+  , SomeTreacheryCard conspiracyOfBlood
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

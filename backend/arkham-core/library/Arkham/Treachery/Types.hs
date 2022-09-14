@@ -36,6 +36,7 @@ data instance Field Treachery :: Type -> Type where
   TreacheryCard :: Field Treachery Card
   TreacheryCanBeCommitted :: Field Treachery Bool
   TreacheryPlacement :: Field Treachery TreacheryPlacement
+  TreacheryDrawnBy :: Field Treachery InvestigatorId
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
@@ -46,6 +47,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryClues :: Int
   , treacheryResources :: Int
   , treacheryCanBeCommitted :: Bool
+  , treacheryDrawnBy :: InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
 
@@ -182,6 +184,7 @@ treacheryWith f cardDef g = CardBuilder
     , treacheryOwner = if isJust (cdCardSubType cardDef)
       then Just iid
       else Nothing
+    , treacheryDrawnBy = iid
     , treacheryDoom = 0
     , treacheryClues = 0
     , treacheryResources = 0

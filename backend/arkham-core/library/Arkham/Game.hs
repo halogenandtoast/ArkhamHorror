@@ -2900,6 +2900,10 @@ runGameMessage msg g = case msg of
     push $ PlacedLocation (toName card) (toCardCode card) lid
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
+  When (RemoveEnemy eid) -> do
+    window <- checkWindows
+      [Window Timing.When (Window.LeavePlay $ EnemyTarget eid)]
+    g <$ push window
   RemoveTreachery tid -> do
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid

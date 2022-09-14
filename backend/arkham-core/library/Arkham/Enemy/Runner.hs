@@ -27,8 +27,8 @@ import Arkham.Matcher
   , PreyMatcher (..)
   , investigatorEngagedWith
   , locationWithInvestigator
-  , preyWith
   , pattern InvestigatorCanDisengage
+  , preyWith
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -724,21 +724,19 @@ instance RunMessage EnemyAttrs where
         [Window Timing.When (Window.EnemyDefeated iid eid)]
       afterMsg <- checkWindows
         [Window Timing.After (Window.EnemyDefeated iid eid)]
-      enemyAssets <- selectList $ EnemyAsset eid
       let
         victory = cdVictoryPoints $ toCardDef a
         vengeance = cdVengeancePoints $ toCardDef a
         victoryMsgs =
           [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance) ]
         defeatMsgs = if isJust (victory <|> vengeance)
-          then [RemoveEnemy eid]
+          then resolve $ RemoveEnemy eid
           else [Discard $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
       a <$ pushAll
-        (map (Discard . AssetTarget) enemyAssets
-        <> [whenMsg, When msg, After msg]
+        ([whenMsg, When msg, After msg]
         <> victoryMsgs
         <> [afterMsg]
         <> defeatMsgs
@@ -750,17 +748,25 @@ instance RunMessage EnemyAttrs where
         <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
         )
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
-      pushAll [RemoveEnemy $ toId a, PutCardOnTopOfDeck iid deck (toCard a)]
+      pushAll
+        $ resolve (RemoveEnemy $ toId a)
+        <> [PutCardOnTopOfDeck iid deck (toCard a)]
       pure a
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
-      pushAll [RemoveEnemy $ toId a, PutCardOnBottomOfDeck iid deck (toCard a)]
+      pushAll
+        $ resolve (RemoveEnemy $ toId a)
+        <> [PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     RemovedFromPlay source | isSource a source -> do
+      enemyAssets <- selectList $ EnemyAsset enemyId
       windowMsg <- checkWindows
         ((`Window` Window.LeavePlay (toTarget a))
         <$> [Timing.When, Timing.After]
         )
-      pushAll $ windowMsg : [ UnsealToken token | token <- enemySealedTokens ]
+      pushAll
+        $ windowMsg
+        : map (Discard . AssetTarget) enemyAssets
+        <> [ UnsealToken token | token <- enemySealedTokens ]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getJustLocation iid
@@ -839,7 +845,7 @@ instance RunMessage EnemyAttrs where
       _ -> pure a
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
-    RemoveAllDoom target | isTarget a target  -> pure $ a & doomL .~ 0
+    RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
     PlaceDoom target amount | isTarget a target -> pure $ a & doomL +~ amount
     RemoveDoom target amount | isTarget a target ->
       pure $ a & doomL %~ max 0 . subtract amount

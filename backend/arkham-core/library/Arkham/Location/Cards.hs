@@ -107,6 +107,7 @@ allLocationCards = mapFromList $ map
   , alchemyLabs
   , ancientHall
   , anotherDimension
+  , arkhamPoliceStation
   , arkhamWoodsCliffside
   , arkhamWoodsCorpseRiddenClearing
   , arkhamWoodsGreatWillow
@@ -2689,6 +2690,13 @@ townHall :: CardDef
 townHall =
   (location "04143" "Town Hall" [Arkham] NoSymbol [Triangle] ThreadsOfFate)
     { cdVictoryPoints = Just 1
+    }
+
+arkhamPoliceStation :: CardDef
+arkhamPoliceStation =
+  (location "04126b" "Arkham Police Station" [Arkham] NoSymbol [Moon] ThreadsOfFate)
+    { cdVictoryPoints = Just 1
+    , cdDoubleSided = False
     }
 
 studyAberrantGateway :: CardDef

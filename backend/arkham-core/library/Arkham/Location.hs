@@ -305,6 +305,7 @@ allLocations = mapFromList $ map
   , SomeLocationCard townHall
   , SomeLocationCard arkhamPoliceStation
   , SomeLocationCard trainTracks
+  , SomeLocationCard blackCave
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

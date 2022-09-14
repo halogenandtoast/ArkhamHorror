@@ -367,6 +367,7 @@ library
       Arkham.Asset.Cards.MadameLabranche
       Arkham.Asset.Cards.MagnifyingGlass
       Arkham.Asset.Cards.MagnifyingGlass1
+      Arkham.Asset.Cards.MariaDeSilva
       Arkham.Asset.Cards.MaskedCarnevaleGoer_17
       Arkham.Asset.Cards.MaskedCarnevaleGoer_18
       Arkham.Asset.Cards.MaskedCarnevaleGoer_19
@@ -675,6 +676,7 @@ library
       Arkham.Enemy.Cards.HasturLordOfCarcosa
       Arkham.Enemy.Cards.HasturTheKingInYellow
       Arkham.Enemy.Cards.HasturTheTatteredKing
+      Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper
       Arkham.Enemy.Cards.HermanCollins
       Arkham.Enemy.Cards.HuntingHorror
       Arkham.Enemy.Cards.HuntingNightgaunt
@@ -1017,6 +1019,7 @@ library
       Arkham.Location.Cards.Bedroom
       Arkham.Location.Cards.BishopsBrook_202
       Arkham.Location.Cards.BishopsBrook_203
+      Arkham.Location.Cards.BlackCave
       Arkham.Location.Cards.BlastedHeath_248
       Arkham.Location.Cards.BlastedHeath_249
       Arkham.Location.Cards.BleakPlainsBleakDesolation

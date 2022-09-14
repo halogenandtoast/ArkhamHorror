@@ -136,6 +136,7 @@ allLocationCards = mapFromList $ map
   , bedroom
   , bishopsBrook_202
   , bishopsBrook_203
+  , blackCave
   , blastedHeath_248
   , blastedHeath_249
   , bleakPlainsBleakDesolation
@@ -2704,6 +2705,13 @@ trainTracks :: CardDef
 trainTracks =
   (location "04128b" "Train Tracks" [Arkham] NoSymbol [T] ThreadsOfFate)
     { cdDoubleSided = False
+    }
+
+blackCave :: CardDef
+blackCave =
+  (location "04133b" "Black Cave" [Cave] Hourglass [Circle] ThreadsOfFate)
+    { cdDoubleSided = False
+    , cdVictoryPoints = Just 1
     }
 
 studyAberrantGateway :: CardDef

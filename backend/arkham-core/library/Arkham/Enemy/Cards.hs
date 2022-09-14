@@ -139,6 +139,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , hasturLordOfCarcosa
   , hasturTheKingInYellow
   , hasturTheTatteredKing
+  , henryDeveauAlejandrosKidnapper
   , hermanCollins
   , huntingHorror
   , huntingNightgaunt
@@ -903,6 +904,15 @@ harlanEarnstoneCrazedByTheCurse =
   (enemy "04122b" ("Harlan Earnstone" <:> "Crazed by the Curse") ThreadsOfFate 1
     )
     { cdCardTraits = setFromList [Humanoid, Cursed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+henryDeveauAlejandrosKidnapper :: CardDef
+henryDeveauAlejandrosKidnapper =
+  (enemy "04130b" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
     , cdUnique = True
     , cdVictoryPoints = Just 1
     }

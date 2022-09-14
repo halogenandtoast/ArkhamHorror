@@ -348,6 +348,7 @@ allAssets = mapFromList $ map
   --- story [tfa]
   , SomeAssetCard harlanEarnstone
   , SomeAssetCard henryDeveau
+  , SomeAssetCard mariaDeSilva
   , SomeAssetCard ichtacaTheForgottenGuardian
   , SomeAssetCard expeditionJournal
   -- The Circle Undone

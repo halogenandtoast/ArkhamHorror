@@ -247,6 +247,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , madameLabranche
   , magnifyingGlass
   , magnifyingGlass1
+  , mariaDeSilva
   , maskedCarnevaleGoer_17
   , maskedCarnevaleGoer_18
   , maskedCarnevaleGoer_19
@@ -2136,6 +2137,18 @@ henryDeveau :: CardDef
 henryDeveau = (storyAsset
                     "04125b"
                     ("Henry Deveau" <:> "Friend of Alejandro")
+                    0
+                    ThreadsOfFate
+                  )
+  { cdCardTraits = singleton Bystander
+  , cdCost = Nothing
+  , cdUnique = True
+  }
+
+mariaDeSilva :: CardDef
+mariaDeSilva = (storyAsset
+                    "04134b"
+                    ("Maria DeSilver" <:> "Wealthy Patron")
                     0
                     ThreadsOfFate
                   )

@@ -41,6 +41,7 @@ data ScenarioLogKey
   -- ^ The Untamed Wilds
   | YouListenedToIchtacasTale
   | IchtacaLeftWithoutYou
+  | IchtacasPrey EnemyId
   -- ^ Threads of Fate
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

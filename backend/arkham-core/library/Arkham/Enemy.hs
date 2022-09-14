@@ -199,6 +199,7 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard fangOfYig
   -- Threads of Fate
   , SomeEnemyCard harlanEarnstoneCrazedByTheCurse
+  , SomeEnemyCard henryDeveauAlejandrosKidnapper
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

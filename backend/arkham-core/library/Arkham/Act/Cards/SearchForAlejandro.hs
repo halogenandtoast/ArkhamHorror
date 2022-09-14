@@ -29,7 +29,7 @@ searchForAlejandro =
 
 instance RunMessage SearchForAlejandro where
   runMessage msg a@(SearchForAlejandro attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide D attrs -> do
       velmasDiner <- selectJust $ locationIs Locations.velmasDiner
       henryDeveau <- genCard Assets.henryDeveau
       pushAll

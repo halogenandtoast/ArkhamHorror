@@ -27,7 +27,7 @@ missingPersons =
 
 instance RunMessage MissingPersons where
   runMessage msg a@(MissingPersons attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide D attrs -> do
       arkhamPoliceStation <- genCard Locations.arkhamPoliceStation
       pushAll
         [ PlaceLocation arkhamPoliceStation

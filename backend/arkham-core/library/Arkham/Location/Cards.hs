@@ -349,6 +349,7 @@ allLocationCards = mapFromList $ map
   , theatre
   , tombOfShadows
   , townHall
+  , trainTracks
   , trapRoom
   , trappersCabin
   , twistedUnderbrush
@@ -2697,6 +2698,12 @@ arkhamPoliceStation =
   (location "04126b" "Arkham Police Station" [Arkham] NoSymbol [Moon] ThreadsOfFate)
     { cdVictoryPoints = Just 1
     , cdDoubleSided = False
+    }
+
+trainTracks :: CardDef
+trainTracks =
+  (location "04128b" "Train Tracks" [Arkham] NoSymbol [T] ThreadsOfFate)
+    { cdDoubleSided = False
     }
 
 studyAberrantGateway :: CardDef

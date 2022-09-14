@@ -5,13 +5,24 @@ module Arkham.Act.Cards.FriendsInHighPlacesHenrysInformation
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Criteria
+import Arkham.GameValue
+import Arkham.Helpers.Query
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Placement
 
 newtype FriendsInHighPlacesHenrysInformation = FriendsInHighPlacesHenrysInformation ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 friendsInHighPlacesHenrysInformation
   :: ActCard FriendsInHighPlacesHenrysInformation
@@ -21,6 +32,46 @@ friendsInHighPlacesHenrysInformation = act
   Cards.friendsInHighPlacesHenrysInformation
   Nothing
 
+instance HasAbilities FriendsInHighPlacesHenrysInformation where
+  getAbilities (FriendsInHighPlacesHenrysInformation a) =
+    [ restrictedAbility
+          a
+          1
+          (AssetExists $ assetIs Assets.henryDeveau <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
+          )
+        $ Objective
+        $ ForcedAbility AnyWindow
+    | onSide C a
+    ]
+
 instance RunMessage FriendsInHighPlacesHenrysInformation where
-  runMessage msg (FriendsInHighPlacesHenrysInformation attrs) =
-    FriendsInHighPlacesHenrysInformation <$> runMessage msg attrs
+  runMessage msg a@(FriendsInHighPlacesHenrysInformation attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      pure a
+    AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
+      alejandroVela <- getSetAsideCard Assets.alejandroVela
+      mTownHall <- selectOne $ locationIs Locations.curiositieShoppe
+      createAssetMessages <- case mTownHall of
+        Just townHall ->
+          pure [CreateAssetAt alejandroVela (AttachedToLocation townHall)]
+        Nothing -> do
+          townHall <- genCard Locations.townHall
+          pure
+            $ PlaceLocation townHall
+            : [ CreateAssetAt
+                  alejandroVela
+                  (AttachedToLocation $ toLocationId townHall)
+              ]
+
+      pushAll
+        $ createAssetMessages
+        <> [ AdvanceToAct
+               (actDeckId attrs)
+               Acts.alejandrosPrison
+               C
+               (toSource attrs)
+           ]
+      pure a
+    _ -> FriendsInHighPlacesHenrysInformation <$> runMessage msg attrs

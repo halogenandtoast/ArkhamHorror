@@ -40,6 +40,12 @@ instance RunMessage ActAttrs where
     AdvanceAct aid _ advanceMode | aid == actId && onSide A a -> do
       pushAll =<< advanceActSideA a advanceMode
       pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) B)
+    AdvanceAct aid _ advanceMode | aid == actId && onSide C a -> do
+      pushAll =<< advanceActSideA a advanceMode
+      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) D)
+    AdvanceAct aid _ advanceMode | aid == actId && onSide E a -> do
+      pushAll =<< advanceActSideA a advanceMode
+      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) F)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
     Discard (ActTarget aid) | aid == toId a -> do

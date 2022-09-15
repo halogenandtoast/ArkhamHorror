@@ -1864,6 +1864,7 @@ stHubertsKey =
     { cdCardTraits = setFromList [Item, Charm]
     , cdSkills = [SkillWillpower]
     , cdSlots = [AccessorySlot]
+    , cdUnique = True
     }
 
 arcaneInitiate3 :: CardDef
@@ -1914,6 +1915,7 @@ keyOfYs = (asset "03315" ("Key of Ys" <:> "Let the Storm Rage") 3 Neutral)
   , cdCardTraits = setFromList [Item, Relic]
   , cdLevel = 5
   , cdSlots = [AccessorySlot]
+  , cdUnique = True
   }
 
 thePallidMask :: CardDef
@@ -1953,6 +1955,7 @@ finnsTrustyThirtyEight = fast $ (asset
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdSlots = [HandSlot]
   , cdUses = Uses Ammo 3
+  , cdUnique = True
   }
 
 theCodexOfAges :: CardDef
@@ -1992,6 +1995,7 @@ drElliHorowitz =
     { cdSkills = [SkillWillpower]
     , cdCardTraits = setFromList [Ally, Assistant]
     , cdSlots = [AllySlot]
+    , cdUnique = True
     }
 
 ancientStone1 :: CardDef

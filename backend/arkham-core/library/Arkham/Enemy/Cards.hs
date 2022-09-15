@@ -854,6 +854,7 @@ harbingerOfValusia = (enemy
   { cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
   , cdVengeancePoints = Just 5
+  , cdUnique = True
   }
 
 pitViper :: CardDef

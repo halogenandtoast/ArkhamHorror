@@ -860,7 +860,7 @@ theFinalAct = (treachery "03339" "The Final Act" DimCarcosa 1)
 
 possessionTraitorous :: CardDef
 possessionTraitorous =
-  (treachery "03340" "Possession (Traitorous)" DimCarcosa 1)
+  (treachery "03340" ("Possession" <:> "Traitorous") DimCarcosa 1)
     { cdCardTraits = setFromList [Hex, Terror]
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True
@@ -868,14 +868,14 @@ possessionTraitorous =
     }
 
 possessionTorturous :: CardDef
-possessionTorturous = (treachery "03341" "Possession (Torturous)" DimCarcosa 1)
+possessionTorturous = (treachery "03341" ("Possession" <:> "Torturous") DimCarcosa 1)
   { cdCardTraits = setFromList [Hex, Terror]
   , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
   , cdCardInHandEffects = True
   }
 
 possessionMurderous :: CardDef
-possessionMurderous = (treachery "03342" "Possession (Murderous)" DimCarcosa 1)
+possessionMurderous = (treachery "03342" ("Possession" <:> "Murderous") DimCarcosa 1)
   { cdCardTraits = setFromList [Hex, Terror]
   , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
   , cdCardInHandEffects = True

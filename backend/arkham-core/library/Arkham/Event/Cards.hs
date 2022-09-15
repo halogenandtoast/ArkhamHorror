@@ -1462,7 +1462,7 @@ counterpunch :: CardDef
 counterpunch = (event "60112" "Counterpunch" 0 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Fight]
-  , cdSkills = [SkillWillpower, SkillCombat]
+  , cdSkills = [SkillCombat, SkillAgility]
   , cdFastWindow = Just
     $ EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy
   }
@@ -1555,7 +1555,7 @@ getOverHere2 :: CardDef
 getOverHere2 = (event "60123" "\"Get over here!\"" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Engage, Action.Fight]
-  , cdSkills = [SkillWillpower, SkillCombat]
+  , cdSkills = [SkillWillpower, SkillWillpower, SkillCombat]
   , cdFastWindow = Just FastPlayerWindow
   , cdCriteria =
     Just
@@ -1698,6 +1698,7 @@ dumbLuck2 = (event "60525" "Dumb Luck" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 4
+  , cdLevel = 2
   }
 
 lucky3 :: CardDef

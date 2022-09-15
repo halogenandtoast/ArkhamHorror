@@ -344,15 +344,15 @@ inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
 
 searchForTheStrangerV1 :: CardDef
 searchForTheStrangerV1 =
-  act "03321" "Search For The Stanger (v. I)" 2 DimCarcosa
+  act "03321" "Search For the Stranger (v.I)" 2 DimCarcosa
 
 searchForTheStrangerV2 :: CardDef
 searchForTheStrangerV2 =
-  act "03322" "Search For The Stanger (v. II)" 2 DimCarcosa
+  act "03322" "Search For the Stranger (v.II)" 2 DimCarcosa
 
 searchForTheStrangerV3 :: CardDef
 searchForTheStrangerV3 =
-  act "03323" "Search For The Stanger (v. III)" 2 DimCarcosa
+  act "03323" "Search For the Stranger (v.III)" 2 DimCarcosa
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa

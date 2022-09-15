@@ -1962,6 +1962,7 @@ theCodexOfAges =
     , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
     , cdSlots = [HandSlot]
     , cdKeywords = singleton (Keyword.Seal $ TokenFaceIs Token.ElderSign)
+    , cdUnique = True
     }
 
 untilTheEndOfTime :: CardDef

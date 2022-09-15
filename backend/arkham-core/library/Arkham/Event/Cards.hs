@@ -1159,6 +1159,7 @@ eideticMemory3 = (event "03306" "Eidetic Memory" 0 Seeker)
 noStoneUnturned5 :: CardDef
 noStoneUnturned5 = (event "03307" "No Stone Unturned" 2 Seeker)
   { cdCardTraits = singleton Insight
+  , cdSkills = [SkillWild, SkillIntellect]
   , cdFastWindow = Just FastPlayerWindow
   , cdCriteria =
     Just
@@ -1249,7 +1250,7 @@ eavesdrop = (event "04027" "Eavesdrop" 1 Rogue)
   }
 
 youHandleThisOne :: CardDef
-youHandleThisOne = (event "04028" "\"Your handle this one!\"" 0 Rogue)
+youHandleThisOne = (event "04028" "\"You handle this one!\"" 0 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
   , cdCriteria = Just (Criteria.InvestigatorExists NotYou)

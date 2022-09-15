@@ -1,40 +1,47 @@
 {-# LANGUAGE TupleSections #-}
 module Main where
 
-import ClassyPrelude
+import ClassyPrelude hiding ( throwIO )
 
 import Arkham.Asset
-import Arkham.Asset.Types (assetHealth, assetSanity, SomeAssetCard(..))
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types ( SomeAssetCard (..), assetHealth, assetSanity )
 import Arkham.Card
+import Arkham.Card.Cost
+import Arkham.ClassSymbol
+import Arkham.Classes.Entity
 import Arkham.EncounterCard
+import Arkham.EncounterSet
 import Arkham.Enemy
-import Arkham.Enemy.Types
-  (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage, SomeEnemyCard(..))
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types
+  ( SomeEnemyCard (..)
+  , enemyEvade
+  , enemyFight
+  , enemyHealth
+  , enemyHealthDamage
+  , enemySanityDamage
+  )
+import Arkham.Event
 import Arkham.Event.Cards qualified as Events
+import Arkham.GameValue
 import Arkham.Location
-import Arkham.Location.Types (locationRevealClues, locationShroud, SomeLocationCard(..))
+import Arkham.Location.Types
+  ( SomeLocationCard (..), locationRevealClues, locationShroud )
+import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.Skill
 import Arkham.Skill.Cards qualified as Skills
 import Arkham.SkillType
+import Arkham.Trait hiding ( Dunwich )
 import Arkham.Treachery
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Card.Cost
-import Arkham.ClassSymbol
-import Arkham.Classes.Entity
-import Arkham.EncounterSet
-import Arkham.Event
-import Arkham.GameValue
-import Arkham.Name
-import Arkham.Trait hiding (Dunwich)
 import Control.Exception
 import Control.Monad.Random.Lazy
 import Data.Aeson
 import Data.Text qualified as T
 import System.Directory
-import Text.Read (readEither)
+import Text.Read ( readEither )
 
 data CardJson = CardJson
   { code :: CardCode
@@ -68,9 +75,6 @@ data CardJson = CardJson
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
-
-data InternalCardCodeMismatch = InternalCardCodeMismatch CardCode CardCode
-  deriving stock Show
 
 newtype UnknownCard = UnknownCard CardCode
   deriving stock Show
@@ -140,7 +144,6 @@ data ShroudMismatch = ShroudMismatch CardCode Name Int Int
 data ClueMismatch = ClueMismatch CardCode Name Int Int
   deriving stock Show
 
-instance Exception InternalCardCodeMismatch
 instance Exception UnknownCard
 instance Exception MissingImplementation
 instance Exception NameMismatch
@@ -182,6 +185,7 @@ toClassSymbol = \case
 
 normalizeName :: CardCode -> Text -> Text
 normalizeName "02219" _ = "Powder of Ibn-Ghazi"
+normalizeName "03095" _ = "Maniac"
 normalizeName _ a = a
 
 normalizeSubname :: CardCode -> Maybe Text -> Maybe Text
@@ -226,6 +230,7 @@ getTraits CardJson {..} = case traits of
   handleEither x (Left err) =
     error $ show code <> ": " <> err <> " " <> show x <> " from " <> show traits
   normalizeTrait "Human" = "Humanoid"
+  normalizeTrait "Possessed" = "Lunatic"
   normalizeTrait x = x
   cleanText = T.dropWhileEnd (\c -> c == '.' || c == ' ')
 
@@ -236,6 +241,8 @@ toGameVal False n = Static n
 normalizeCardCode :: CardCode -> CardCode
 normalizeCardCode "03076a" = "03076"
 normalizeCardCode "03221" = "03221b"
+normalizeCardCode "03323" = "03323a"
+normalizeCardCode "04128" = "04128a"
 normalizeCardCode c = c
 
 runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
@@ -275,17 +282,16 @@ normalizeClassSymbol (Just Mythos) = Nothing
 normalizeClassSymbol c = c
 
 ignoreCardCode :: CardCode -> Bool
-ignoreCardCode "03076" = True
-ignoreCardCode "03221a" = True
-ignoreCardCode x = T.isPrefixOf "x" (unCardCode x)
+ignoreCardCode x =
+  T.isPrefixOf "x" (unCardCode x)
+    || x
+    `elem` ["03076", "03221a", "03330c", "03325c", "03326d", "03327g", "03328g", "03329d"]
 
 runValidations :: HashMap CardCode CardJson -> IO ()
 runValidations cards = do
   -- validate card defs
-  for_ (filterTest $ mapToList allCards) $ \(ccode, card) -> do
-    when
-      (ccode /= cdCardCode card)
-      (throw $ InternalCardCodeMismatch ccode (cdCardCode card))
+  for_ (filterTest $ mapToList allCards) $ \(ccode', card) -> do
+    let ccode = normalizeCardCode ccode'
     case lookup ccode cards of
       Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just cardJson@CardJson {..} -> do
@@ -293,36 +299,44 @@ runValidations cards = do
           then do
             for_ back_name $ \name' -> when
               (Name (normalizeName code name') Nothing /= cdName card)
-              (throw $ NameMismatch
-                code
-                (Name (normalizeName code name') Nothing)
-                (cdName card)
+              (unless (ignoreCardCode ccode)
+                (throw $ NameMismatch
+                  code
+                  (Name (normalizeName code name') Nothing)
+                  (cdName card)
+                )
               )
             for_ (cdRevealedName card) $ \revealedName -> when
               (Name (normalizeName code name) (normalizeSubname code subname)
               /= revealedName
               )
-              (throw $ NameMismatch
-                code
-                (Name (normalizeName code name) (normalizeSubname code subname))
-                revealedName
+              (unless (ignoreCardCode ccode)
+                (throw $ NameMismatch
+                  code
+                  (Name (normalizeName code name) (normalizeSubname code subname))
+                  revealedName
+                )
               )
           else do
             when
               (Name (normalizeName code name) (normalizeSubname code subname)
               /= cdName card
               )
-              (throw $ NameMismatch
-                code
-                (Name (normalizeName code name) (normalizeSubname code subname))
-                (cdName card)
+              (unless (ignoreCardCode ccode)
+                (throw $ NameMismatch
+                  code
+                  (Name (normalizeName code name) (normalizeSubname code subname))
+                  (cdName card)
+                )
               )
         when
           (isJust (cdEncounterSet card)
           && Just quantity
           /= cdEncounterSetQuantity card
+          && cdCardType card
+          `notElem` [ActType, AgendaType]
           )
-          (throw $ QuantityMismatch
+          (throwIO $ QuantityMismatch
             code
             (Name name subname)
             quantity
@@ -339,8 +353,8 @@ runValidations cards = do
           (normalizeCost code cost /= cdCost card)
           (throw $ CardCostMismatch code (cdName card) cost (cdCost card))
         when
-          (toClassSymbol faction_name
-          /= normalizeClassSymbol (headMay . setToList $ cdClassSymbols card)
+          (toClassSymbol faction_name /= normalizeClassSymbol
+            (headMay . setToList $ cdClassSymbols card)
           )
           (throw $ ClassMismatch
             code
@@ -364,11 +378,13 @@ runValidations cards = do
           && normalizeTraits code (getTraits cardJson)
           /= cdRevealedCardTraits card
           )
-          (throw $ TraitsMismatch
-            code
-            (cdName card)
-            (getTraits cardJson)
-            (cdCardTraits card)
+          (unless (ignoreCardCode ccode)
+            (throw $ TraitsMismatch
+              code
+              (cdName card)
+              (getTraits cardJson)
+              (cdCardTraits card)
+            )
           )
         when
           (victory /= cdVictoryPoints card)
@@ -380,39 +396,43 @@ runValidations cards = do
           )
 
   -- validate enemies
-  for_ (filterTestEntities $ mapToList allEnemies) $ \(ccode, SomeEnemyCard builder) -> do
-    attrs <- toAttrs . cbCardBuilder builder <$> getRandom
-    case lookup ccode cards of
-      Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
-      Just CardJson {..} -> do
-        let
-          cardStats =
-            ( max 0 $ fromMaybe 0 enemy_fight
-            , toGameVal
-              (fromMaybe False health_per_investigator)
-              (fromMaybe 0 health)
-            , max 0 $ fromMaybe 0 enemy_evade
-            )
-          enemyStats = (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
-          cardDamage =
-            (max 0 $ fromMaybe 0 enemy_damage, max 0 $ fromMaybe 0 enemy_horror)
-          enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
-        when
-          (cardStats /= enemyStats)
-          (throw $ EnemyStatsMismatch
-            code
-            (cdName $ toCardDef attrs)
-            cardStats
-            enemyStats
-          )
-        when
-          (cardDamage /= enemyDamage)
-          (throw $ EnemyDamageMismatch
-            code
-            (cdName $ toCardDef attrs)
-            cardDamage
-            enemyDamage
-          )
+  for_ (filterTestEntities $ mapToList allEnemies)
+    $ \(ccode, SomeEnemyCard builder) -> do
+        attrs <- toAttrs . cbCardBuilder builder <$> getRandom
+        case lookup ccode cards of
+          Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
+          Just CardJson {..} -> do
+            let
+              cardStats =
+                ( max 0 $ fromMaybe 0 enemy_fight
+                , toGameVal
+                  (fromMaybe False health_per_investigator)
+                  (fromMaybe 0 health)
+                , max 0 $ fromMaybe 0 enemy_evade
+                )
+              enemyStats =
+                (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
+              cardDamage =
+                ( max 0 $ fromMaybe 0 enemy_damage
+                , max 0 $ fromMaybe 0 enemy_horror
+                )
+              enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
+            when
+              (cardStats /= enemyStats)
+              (throw $ EnemyStatsMismatch
+                code
+                (cdName $ toCardDef attrs)
+                cardStats
+                enemyStats
+              )
+            when
+              (cardDamage /= enemyDamage)
+              (throw $ EnemyDamageMismatch
+                code
+                (cdName $ toCardDef attrs)
+                cardDamage
+                enemyDamage
+              )
 
   for_ (Enemies.allPlayerEnemyCards <> Enemies.allEncounterEnemyCards)
     $ \def -> do
@@ -422,45 +442,48 @@ runValidations cards = do
           (throw $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate locations
-  for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, SomeLocationCard builder) -> do
-    attrs <- toAttrs . cbCardBuilder builder <$> getRandom
-    case lookup ccode cards of
-      Nothing -> throw $ UnknownCard ccode
-      Just CardJson {..} -> do
-        when
-          (fromMaybe 0 shroud /= locationShroud attrs)
-          (throw $ ShroudMismatch
-            code
-            (cdName $ toCardDef attrs)
-            (fromMaybe 0 shroud)
-            (locationShroud attrs)
-          )
-        when
-          (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)
-          (throw $ ClueMismatch
-            code
-            (cdName $ toCardDef attrs)
-            (fromMaybe 0 clues)
-            (fromGameValue (locationRevealClues attrs) 1)
-          )
+  for_ (filterTestEntities $ mapToList allLocations)
+    $ \(ccode, SomeLocationCard builder) -> do
+        attrs <- toAttrs . cbCardBuilder builder <$> getRandom
+        case lookup ccode cards of
+          Nothing -> throw $ UnknownCard ccode
+          Just CardJson {..} -> do
+            when
+              (fromMaybe 0 shroud /= locationShroud attrs)
+              (throw $ ShroudMismatch
+                code
+                (cdName $ toCardDef attrs)
+                (fromMaybe 0 shroud)
+                (locationShroud attrs)
+              )
+            when
+              (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)
+              (throw $ ClueMismatch
+                code
+                (cdName $ toCardDef attrs)
+                (fromMaybe 0 clues)
+                (fromGameValue (locationRevealClues attrs) 1)
+              )
 
   -- validate assets
-  for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, SomeAssetCard builder) -> do
-    attrs <- toAttrs . cbCardBuilder builder <$> ((, Just "01001") <$> getRandom)
-    case lookup ccode cards of
-      Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
-      Just CardJson {..} -> do
-        let
-          cardStats = (health, sanity)
-          assetStats = (assetHealth attrs, assetSanity attrs)
-        when
-          (cardStats /= assetStats)
-          (throw $ AssetStatsMismatch
-            code
-            (cdName $ toCardDef attrs)
-            cardStats
-            assetStats
-          )
+  for_ (filterTestEntities $ mapToList allAssets)
+    $ \(ccode, SomeAssetCard builder) -> do
+        attrs <-
+          toAttrs . cbCardBuilder builder <$> ((, Just "01001") <$> getRandom)
+        case lookup ccode cards of
+          Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
+          Just CardJson {..} -> do
+            let
+              cardStats = (health, sanity)
+              assetStats = (assetHealth attrs, assetSanity attrs)
+            when
+              (cardStats /= assetStats)
+              (throw $ AssetStatsMismatch
+                code
+                (cdName $ toCardDef attrs)
+                cardStats
+                assetStats
+              )
 
   for_ (Assets.allPlayerAssetCards <> Assets.allEncounterAssetCards) $ \def ->
     do

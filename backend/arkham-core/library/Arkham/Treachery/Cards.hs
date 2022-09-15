@@ -769,7 +769,7 @@ straitjacket = (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
 
 giftOfMadnessPity :: CardDef
 giftOfMadnessPity =
-  (treachery "03186" "Gift of Madness (Pity)" TheUnspeakableOath 1)
+  (treachery "03186" ("Gift of Madness" <:> "Pity") TheUnspeakableOath 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True
@@ -777,7 +777,7 @@ giftOfMadnessPity =
 
 giftOfMadnessMisery :: CardDef
 giftOfMadnessMisery =
-  (treachery "03187" "Gift of Madness (Misery)" TheUnspeakableOath 1)
+  (treachery "03187" ("Gift of Madness" <:> "Misery") TheUnspeakableOath 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True

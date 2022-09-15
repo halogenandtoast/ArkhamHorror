@@ -340,7 +340,7 @@ behindTheCurtain :: CardDef
 behindTheCurtain = agenda "04115" "Behind the Curtain" 2 ThreadsOfFate
 
 hiddenEntanglements :: CardDef
-hiddenEntanglements = agenda "04115" "Hidden Entanglements" 3 ThreadsOfFate
+hiddenEntanglements = agenda "04116" "Hidden Entanglements" 3 ThreadsOfFate
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

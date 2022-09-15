@@ -396,6 +396,7 @@ overpower2 :: CardDef
 overpower2 = (skill "60126" "Overpower" [SkillCombat, SkillCombat, SkillCombat] Guardian)
   { cdCardTraits = setFromList [Practiced, Expert]
   , cdCommitRestrictions = [MaxOnePerTest]
+  , cdLevel = 2
   }
 
 neitherRainNorSnow :: CardDef

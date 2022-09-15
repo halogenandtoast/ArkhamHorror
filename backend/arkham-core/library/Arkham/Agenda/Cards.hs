@@ -328,7 +328,7 @@ intruders :: CardDef
 intruders = agenda "04045" "Intruders" 2 TheUntamedWilds
 
 somethingStirs :: CardDef
-somethingStirs = agenda "04055" "Something Stirs..." 1 TheDoomOfEztli
+somethingStirs = agenda "04055" "Something Stirs\8230" 1 TheDoomOfEztli
 
 theTempleWarden :: CardDef
 theTempleWarden = agenda "04056" "The Temple Warden" 2 TheDoomOfEztli

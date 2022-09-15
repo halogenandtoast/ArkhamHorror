@@ -2493,6 +2493,7 @@ ruinsOfEztli = (location
                  TheUntamedWilds
                )
   { cdDoubleSided = False
+  , cdVictoryPoints = Just 2
   }
 
 entryway :: CardDef

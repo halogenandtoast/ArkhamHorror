@@ -185,7 +185,9 @@ toClassSymbol = \case
 
 normalizeName :: CardCode -> Text -> Text
 normalizeName "02219" _ = "Powder of Ibn-Ghazi"
+-- TODO: update these names
 normalizeName "03095" _ = "Maniac"
+normalizeName "03184" _ = "Mad Patient"
 normalizeName _ a = a
 
 normalizeSubname :: CardCode -> Maybe Text -> Maybe Text
@@ -239,10 +241,13 @@ toGameVal True n = PerPlayer n
 toGameVal False n = Static n
 
 normalizeCardCode :: CardCode -> CardCode
+normalizeCardCode "01121" = "01121a"
 normalizeCardCode "03076a" = "03076"
 normalizeCardCode "03221" = "03221b"
 normalizeCardCode "03323" = "03323a"
 normalizeCardCode "04128" = "04128a"
+normalizeCardCode "04133" = "04133a"
+normalizeCardCode "04126" = "04126a"
 normalizeCardCode c = c
 
 runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
@@ -282,10 +287,21 @@ normalizeClassSymbol (Just Mythos) = Nothing
 normalizeClassSymbol c = c
 
 ignoreCardCode :: CardCode -> Bool
-ignoreCardCode x =
-  T.isPrefixOf "x" (unCardCode x)
-    || x
-    `elem` ["03076", "03221a", "03330c", "03325c", "03326d", "03327g", "03328g", "03329d"]
+ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
+ where
+  ignoredCardCodes =
+    [ "03076"
+    , "03221a"
+    , "03325c"
+    , "03326d"
+    , "03326e"
+    , "03327e"
+    , "03327g"
+    , "03328g"
+    , "03329d"
+    , "03330c"
+    , "03331c"
+    ]
 
 runValidations :: HashMap CardCode CardJson -> IO ()
 runValidations cards = do
@@ -299,7 +315,8 @@ runValidations cards = do
           then do
             for_ back_name $ \name' -> when
               (Name (normalizeName code name') Nothing /= cdName card)
-              (unless (ignoreCardCode ccode)
+              (unless
+                (ignoreCardCode ccode)
                 (throw $ NameMismatch
                   code
                   (Name (normalizeName code name') Nothing)
@@ -310,10 +327,14 @@ runValidations cards = do
               (Name (normalizeName code name) (normalizeSubname code subname)
               /= revealedName
               )
-              (unless (ignoreCardCode ccode)
+              (unless
+                (ignoreCardCode ccode)
                 (throw $ NameMismatch
                   code
-                  (Name (normalizeName code name) (normalizeSubname code subname))
+                  (Name
+                    (normalizeName code name)
+                    (normalizeSubname code subname)
+                  )
                   revealedName
                 )
               )
@@ -322,10 +343,14 @@ runValidations cards = do
               (Name (normalizeName code name) (normalizeSubname code subname)
               /= cdName card
               )
-              (unless (ignoreCardCode ccode)
+              (unless
+                (ignoreCardCode ccode)
                 (throw $ NameMismatch
                   code
-                  (Name (normalizeName code name) (normalizeSubname code subname))
+                  (Name
+                    (normalizeName code name)
+                    (normalizeSubname code subname)
+                  )
                   (cdName card)
                 )
               )
@@ -378,7 +403,8 @@ runValidations cards = do
           && normalizeTraits code (getTraits cardJson)
           /= cdRevealedCardTraits card
           )
-          (unless (ignoreCardCode ccode)
+          (unless
+            (ignoreCardCode ccode)
             (throw $ TraitsMismatch
               code
               (cdName card)

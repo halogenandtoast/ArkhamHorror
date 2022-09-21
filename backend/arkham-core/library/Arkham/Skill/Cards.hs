@@ -68,6 +68,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , defiance
   , desperateSearch
   , doubleOrNothing
+  , enraptured
   , eureka
   , fearless
   , fearless2
@@ -395,6 +396,11 @@ trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
 
 hatchetMan :: CardDef
 hatchetMan = (skill "04155" "Hatchet Man" [SkillAgility] Rogue)
+  { cdCardTraits = singleton Practiced
+  }
+
+enraptured :: CardDef
+enraptured = (skill "04157" "Enraptured" [SkillIntellect] Mystic)
   { cdCardTraits = singleton Practiced
   }
 

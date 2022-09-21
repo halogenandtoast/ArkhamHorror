@@ -285,6 +285,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , rabbitsFoot
   , rabbitsFoot3
   , randallCho
+  , recallTheFuture2
   , relentless
   , relicHunter3
   , relicOfAgesADeviceOfSomeSort
@@ -2198,6 +2199,13 @@ highRoller2 :: CardDef
 highRoller2 = (asset "04156" "High Roller" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = singleton Talent
+  , cdLevel = 2
+  }
+
+recallTheFuture2 :: CardDef
+recallTheFuture2 = (asset "04158" "Recall the Future" 2 Mystic)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = setFromList [Augury, Ritual]
   , cdLevel = 2
   }
 

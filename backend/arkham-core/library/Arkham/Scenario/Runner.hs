@@ -150,15 +150,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           & (completedAgendaStackL . at n ?~ remaining)
       _ -> error "Invalid agenda deck to reset"
   AdvanceActDeck n _ -> do
-    actStack' <- case lookup n scenarioActStack of
+    let
+      completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
+    (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : y : ys) -> do
         let
           fromActId = ActId (toCardCode x)
           toActId = ActId (toCardCode y)
         push (ReplaceAct fromActId toActId)
-        pure (y : ys)
+        pure (x, y : ys)
       _ -> error "Can not advance act deck"
-    pure $ a & actStackL . at n ?~ actStack'
+    pure
+      $ a
+      & actStackL
+      . at n
+      ?~ actStack'
+      & (completedActStackL . at n ?~ (oldAct : completedActStack))
   AdvanceToAct n act newActSide _ -> do
     actStack' <- case lookup n scenarioActStack of
       Just (x : ys) -> do

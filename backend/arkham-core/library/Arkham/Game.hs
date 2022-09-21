@@ -2047,6 +2047,7 @@ instance Projection Investigator where
               $ skillTestCommittedCards skillTest
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
+      InvestigatorXp -> pure investigatorXp
       InvestigatorSupplies -> pure investigatorSupplies
 
 instance Query AssetMatcher where

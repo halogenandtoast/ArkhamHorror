@@ -13,7 +13,8 @@ nextStep a = case campaignStep a of
   Just TheDoomOfEztli -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
   Just (InterludeStep 2 _) -> Just ThreadsOfFate
   -- resupply
-  Just ThreadsOfFate -> Just (UpgradeDeckStep TheBoundaryBeyond)
+  Just ThreadsOfFate -> Just ResupplyPoint
+  Just ResupplyPoint -> Just (UpgradeDeckStep TheBoundaryBeyond)
   Just TheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
   Just (InterludeStep 3 _) -> Just (HeartOfTheElders 1)
   Just (HeartOfTheElders 1) -> Just (HeartOfTheElders 2)

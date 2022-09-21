@@ -12,6 +12,8 @@ data CampaignStep
   | InterludeStepPart Int (Maybe InterludeKey) Int
   | UpgradeDeckStep CampaignStep
   | EpilogueStep
+  | InvestigatorCampaignStep InvestigatorId CampaignStep
+  | ResupplyPoint
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

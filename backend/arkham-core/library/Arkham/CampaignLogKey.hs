@@ -112,6 +112,12 @@ data CampaignLogKey
   | TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
   | AlejandroIsContinuingHisResearchOnHisOwn
   | YouAreForgingYourOwnWay
+  | TheInvestigatorsFoundTheMissingRelic
+  | TheRelicIsMissing
+  | TheInvestigatorsRescuedAlejandro
+  | AlejandroIsMissing
+  | TheInvestigatorsFordgedABondWithIchtaca
+  | IchtacaIsInTheDark
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

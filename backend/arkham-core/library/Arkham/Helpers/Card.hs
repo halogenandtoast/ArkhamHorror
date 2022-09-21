@@ -13,6 +13,11 @@ import Arkham.Campaign.Types ( Field (..) )
 import Arkham.Scenario.Types ( Field (..) )
 import Data.HashMap.Strict qualified as HashMap
 
+getIsAlreadyOwned :: (Monad m, HasGame m) => CardDef -> m Bool
+getIsAlreadyOwned cDef = do
+  campaignStoryCards <- getCampaignStoryCards
+  pure $ any ((== cDef) . toCardDef) $ concat (toList campaignStoryCards)
+
 getCampaignStoryCards :: (Monad m, HasGame m) => m (HashMap InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign

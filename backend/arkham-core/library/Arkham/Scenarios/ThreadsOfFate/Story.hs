@@ -90,3 +90,23 @@ intro6 = FlavorText
     \ and you let Ichtaca leave without questioning her. Are you just being\
     \ paranoid?..."
   ]
+
+resolution1 :: FlavorText
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "You arrive back at your house and take stock of the situation. Your\
+    \ investigation throughout the city has uncovered the existence of a secret cabal\
+    \ within Arkham. From what you can tell, they call themselves the Brotherhood,\
+    \ and they seem to know more about the Eztli relic and Alejandro’s previous\
+    \ expedition than even you do. Their methods are secret and furtive, and their\
+    \ motives elude you still. However, one piece of vital information has come to\
+    \ light."
+  , "“They seek a place known as the Nexus of N’kai,” Ichtaca claims. A map of\
+    \ Central America lies on the table before you, marked with the previous\
+    \ expedition’s trail. “I have heard of this place, but its exact location is not\
+    \ known to me.” Once again, your mysterious guide appears to know more than she\
+    \ lets on."
+  , "With no other leads to follow, you are left with no choice. Once more you must\
+    \ journey into uncharted territory in search of answers...but will anyone return\
+    \ this time?"
+  ]

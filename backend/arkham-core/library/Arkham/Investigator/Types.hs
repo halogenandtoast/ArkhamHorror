@@ -66,6 +66,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorResigned :: Field Investigator Bool
   InvestigatorPhysicalTrauma :: Field Investigator Int
   InvestigatorMentalTrauma :: Field Investigator Int
+  InvestigatorXp :: Field Investigator Int
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 

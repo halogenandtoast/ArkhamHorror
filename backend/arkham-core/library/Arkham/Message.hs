@@ -339,6 +339,7 @@ data Message
   | GainAdditionalAction InvestigatorId Source AdditionalAction
   | GainClues InvestigatorId Int
   | GainXP InvestigatorId Int
+  | SpendXP InvestigatorId Int
   | GameOver
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | HealAllDamage Target
@@ -567,6 +568,7 @@ data Message
     -- to handle the result
     Successful (Action, Target) InvestigatorId Source Target Int
   | SufferTrauma InvestigatorId Int Int
+  | HealTrauma InvestigatorId Int Int
   | Surge InvestigatorId Source
   | TakeAction InvestigatorId (Maybe Action) Cost
   | TakeControlOfAsset InvestigatorId AssetId

@@ -306,6 +306,25 @@ allLocations = mapFromList $ map
   , SomeLocationCard arkhamPoliceStation
   , SomeLocationCard trainTracks
   , SomeLocationCard blackCave
+  -- The Boundary Beyond
+  , SomeLocationCard templeRuins
+  , SomeLocationCard metropolitanCathedral
+  , SomeLocationCard chapultepecPark
+  , SomeLocationCard zocalo
+  , SomeLocationCard xochimilco
+  , SomeLocationCard coyoacan
+  , SomeLocationCard temploMayor_174
+  , SomeLocationCard temploMayor_175
+  , SomeLocationCard templesOfTenochtitlan_176
+  , SomeLocationCard templesOfTenochtitlan_177
+  , SomeLocationCard chapultepecHill_178
+  , SomeLocationCard chapultepecHill_179
+  , SomeLocationCard canalsOfTenochtitlan_180
+  , SomeLocationCard canalsOfTenochtitlan_181
+  , SomeLocationCard lakeXochimilco_182
+  , SomeLocationCard lakeXochimilco_183
+  , SomeLocationCard sacredWoods_184
+  , SomeLocationCard sacredWoods_185
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

@@ -326,8 +326,9 @@ instance RunMessage TheForgottenAge where
         (fieldP InvestigatorXp (>= 3))
         poisonedInvestigators
 
-      investigatorsWhoCanHealTrauma <-
-        flip concatMapM investigatorIds $ \iid -> do
+      investigatorsWhoCanHealTrauma <- catMaybes <$> for
+        investigatorIds
+        \iid -> do
           hasPhysicalTrauma <- fieldP InvestigatorPhysicalTrauma (> 0) iid
           hasMentalTrauma <- fieldP InvestigatorMentalTrauma (> 0) iid
           hasXp <- fieldP InvestigatorXp (>= 5) iid

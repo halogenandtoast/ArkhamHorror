@@ -16,6 +16,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Helpers
+import Arkham.Helpers.Card
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -341,5 +342,76 @@ instance RunMessage ThreadsOfFate where
         ElderThing -> do
           push $ RemoveClues (InvestigatorTarget iid) 1
         _ -> pure ()
+      pure s
+    ScenarioResolution _ -> do
+      let
+        act3bCompleted = (== 3) . length . fromMaybe [] $ lookup
+          1
+          (scenarioCompletedActStack attrs)
+        act3dCompleted = (== 3) . length . fromMaybe [] $ lookup
+          2
+          (scenarioCompletedActStack attrs)
+        act3fCompleted = (== 3) . length . fromMaybe [] $ lookup
+          3
+          (scenarioCompletedActStack attrs)
+        act1sCompleted = length $ keys (scenarioCompletedActStack attrs)
+
+      iids <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      gainXp <- map (uncurry GainXP) <$> getXpWithBonus act1sCompleted
+      relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
+      alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
+
+      pushAll
+        $ [story iids resolution1]
+        <> [ Record if act3bCompleted
+               then TheInvestigatorsFoundTheMissingRelic
+               else TheRelicIsMissing
+           ]
+        <> [ addCampaignCardToDeckChoice
+               leadInvestigatorId
+               iids
+               Assets.relicOfAgesADeviceOfSomeSort
+           | act3bCompleted && not relicOwned
+           ]
+        <> [ RemoveCampaignCardFromAnyDeck Assets.relicOfAgesADeviceOfSomeSort
+           | not act3bCompleted
+           ]
+        <> [ Record if act3dCompleted
+               then TheInvestigatorsRescuedAlejandro
+               else AlejandroIsMissing
+           ]
+        <> [ addCampaignCardToDeckChoice
+               leadInvestigatorId
+               iids
+               Assets.alejandroVela
+           | act3dCompleted && not alejandroOwned
+           ]
+        <> [ RemoveCampaignCardFromAnyDeck Assets.alejandroVela
+           | not act3dCompleted
+           ]
+        <> [ Record if act3fCompleted
+               then TheInvestigatorsFordgedABondWithIchtaca
+               else IchtacaIsInTheDark
+           ]
+        <> [ addCampaignCardToDeckChoice
+               leadInvestigatorId
+               iids
+               Assets.ichtacaTheForgottenGuardian
+           | act3fCompleted
+           ]
+        <> [ chooseOne
+               leadInvestigatorId
+               [ Label
+                 "Add Expedition Journal to your deck"
+                 [ AddCampaignCardToDeck
+                     leadInvestigatorId
+                     Assets.expeditionJournal
+                 ]
+               , Label "Do not add Expedition Journal to your deck" []
+               ]
+           ]
+        <> gainXp
+        <> [EndOfGame Nothing]
       pure s
     _ -> ThreadsOfFate <$> runMessage msg attrs

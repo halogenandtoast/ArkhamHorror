@@ -2002,7 +2002,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
   SufferTrauma iid physical mental | iid == investigatorId ->
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
+  HealTrauma iid physical mental | iid == investigatorId ->
+    pure $ a & physicalTraumaL %~ max 0 . subtract physical & mentalTraumaL %~ max 0 . subtract mental
   GainXP iid amount | iid == investigatorId -> pure $ a & xpL +~ amount
+  SpendXP iid amount | iid == investigatorId -> pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid n | iid == investigatorId -> do
     let cluesToPlace = min n investigatorClues
     push (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)

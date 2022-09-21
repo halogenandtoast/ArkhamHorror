@@ -15,6 +15,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
@@ -38,19 +39,16 @@ theForgottenAge difficulty = campaign
   (chaosBagContents difficulty)
 
 supplyPoints :: (Monad m, HasGame m) => m Int
-supplyPoints = do
-  n <- getPlayerCount
-  pure $ case n of
-    1 -> 10
-    2 -> 7
-    3 -> 5
-    4 -> 4
-    _ -> error "invalid player count"
+supplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
+
+resupplyPoints :: (Monad m, HasGame m) => m Int
+resupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 supplyCost :: Supply -> Int
 supplyCost = \case
   Provisions -> 1
   Medicine -> 2
+  Gasoline -> 1
   Rope -> 3
   Blanket -> 2
   Canteen -> 2
@@ -59,6 +57,8 @@ supplyCost = \case
   Map -> 3
   Binoculars -> 2
   Chalk -> 2
+  Pocketknife -> 2
+  Pickaxe -> 2
   Pendant -> 1
 
 supplyLabel :: Supply -> [Message] -> UI Message
@@ -69,6 +69,8 @@ supplyLabel s = case s of
   Medicine -> go
     "Medicine"
     "(2 supply points each): To stave off disease, infection, or venom."
+  Gasoline ->
+    go "Gasoline" "(2 supply points each): Enough for a long journey by car."
   Rope -> go
     "Rope"
     "(3 supply points): Several long coils of strong rope.  Vital for climbing and spelunking."
@@ -90,52 +92,63 @@ supplyLabel s = case s of
   Pendant -> go
     "Pendant"
     "(1 supply point): Useless, but fond memories bring comfort to travelers far from home."
+  Pocketknife -> go
+    "Pocketknife"
+    "(2 supply point): Too small to be used as a reliable weapon, but easily concealed."
+  Pickaxe ->
+    go "Pickaxe" "(2 supply point): For breaking apart rocky surfaces."
   where go label tooltip = TooltipLabel label (Tooltip tooltip)
 
 instance RunMessage TheForgottenAge where
   runMessage msg c@(TheForgottenAge attrs) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getInvestigatorIds
-      let steps = [1 .. length investigatorIds]
       pushAll
         $ [story investigatorIds prologue]
-        <> map (SetupStep CampaignTarget) steps
+        <> [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
+           | iid <- investigatorIds
+           ]
         <> [NextCampaignStep Nothing]
       pure c
-    SetupStep CampaignTarget n -> do
-      investigatorIds <- getInvestigatorIds
-      totalSupplyPoints <- supplyPoints
-      let
-        investigatorId =
-          fromJustNote "invalid setup step" (investigatorIds !!? (n - 1))
-      investigatorSupplies <- field InvestigatorSupplies investigatorId
-      let
-        remaining = totalSupplyPoints
-          - getSum (foldMap (Sum . supplyCost) investigatorSupplies)
-
-      when (remaining > 0) $ do
+    CampaignStep (Just (InvestigatorCampaignStep investigatorId PrologueStep))
+      -> do
+        totalSupplyPoints <- supplyPoints
+        investigatorSupplies <- field InvestigatorSupplies investigatorId
         let
-          availableSupply s =
-            s `notElem` investigatorSupplies || s `elem` [Provisions, Medicine]
-          affordableSupplies = filter ((<= remaining) . supplyCost) allSupplies
-          availableSupplies = filter availableSupply affordableSupplies
-        push
-          $ Ask investigatorId
-          $ QuestionLabel
-              ("Available Supplies ("
-              <> tshow remaining
-              <> " supply points remaining)"
-              )
-          $ ChooseOne
-          $ Label "Done" []
-          : map
-              (\s -> supplyLabel
-                s
-                [PickSupply investigatorId s, SetupStep CampaignTarget n]
-              )
-              availableSupplies
+          remaining = totalSupplyPoints
+            - getSum (foldMap (Sum . supplyCost) investigatorSupplies)
 
-      pure c
+        when (remaining > 0) $ do
+          let
+            availableSupply s =
+              s
+                `notElem` investigatorSupplies
+                || s
+                `elem` [Provisions, Medicine]
+            affordableSupplies =
+              filter ((<= remaining) . supplyCost) prologueSupplies
+            availableSupplies = filter availableSupply affordableSupplies
+          push
+            $ Ask investigatorId
+            $ QuestionLabel
+                ("Available Supplies ("
+                <> tshow remaining
+                <> " supply points remaining)"
+                )
+            $ ChooseOne
+            $ Label "Done" []
+            : map
+                (\s -> supplyLabel
+                  s
+                  [ PickSupply investigatorId s
+                  , CampaignStep
+                    (Just $ InvestigatorCampaignStep investigatorId PrologueStep
+                    )
+                  ]
+                )
+                availableSupplies
+
+        pure c
     CampaignStep (Just (InterludeStep 1 mkey)) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
@@ -306,6 +319,92 @@ instance RunMessage TheForgottenAge where
       investigatorIds <- getInvestigatorIds
       pushAll [story investigatorIds expeditionsEnd5, NextCampaignStep Nothing]
       pure c
+    CampaignStep (Just ResupplyPoint) -> do
+      investigatorIds <- getInvestigatorIds
+      poisonedInvestigators <- filterM getIsPoisoned investigatorIds
+      poisonedInvestigatorsWith3Xp <- filterM
+        (fieldP InvestigatorXp (>= 3))
+        poisonedInvestigators
+
+      investigatorsWhoCanHealTrauma <-
+        flip concatMapM investigatorIds $ \iid -> do
+          hasPhysicalTrauma <- fieldP InvestigatorPhysicalTrauma (> 0) iid
+          hasMentalTrauma <- fieldP InvestigatorMentalTrauma (> 0) iid
+          hasXp <- fieldP InvestigatorXp (>= 5) iid
+          if (hasPhysicalTrauma || hasMentalTrauma) && hasXp
+            then pure $ Just (iid, hasPhysicalTrauma, hasMentalTrauma)
+            else pure Nothing
+
+      pushAll
+        $ [story investigatorIds prologue]
+        <> [ chooseOne
+               iid
+               [ Label
+                 "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
+                 [SpendXP iid 3, RemoveCampaignCardFromDeck iid "04102"]
+               , Label "Do not remove poisoned weakness" []
+               ]
+           | iid <- poisonedInvestigatorsWith3Xp
+           ]
+        <> [ chooseOne iid
+             $ [ Label
+                   "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma"
+                   [SpendXP iid 5, HealTrauma iid 1 0]
+               | hasPhysical
+               ]
+             <> [ Label
+                    "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma"
+                    [SpendXP iid 5, HealTrauma iid 0 1]
+                | hasMental
+                ]
+             <> [Label "Do not remove trauma" []]
+           | (iid, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
+           ]
+        <> [ CampaignStep (Just (InvestigatorCampaignStep iid ResupplyPoint))
+           | iid <- investigatorIds
+           ]
+        <> [NextCampaignStep Nothing]
+      pure c
+    CampaignStep (Just (InvestigatorCampaignStep investigatorId ResupplyPoint))
+      -> do
+        totalSupplyPoints <- resupplyPoints
+        investigatorSupplies <- field InvestigatorSupplies investigatorId
+        let
+          remaining = totalSupplyPoints
+            - getSum (foldMap (Sum . supplyCost) investigatorSupplies)
+
+        when (remaining > 0) $ do
+          let
+            availableSupply s =
+              s
+                `notElem` investigatorSupplies
+                || s
+                `elem` [Provisions, Medicine, Gasoline]
+            affordableSupplies =
+              filter ((<= remaining) . supplyCost) resupplyPointSupplies
+            availableSupplies = filter availableSupply affordableSupplies
+          push
+            $ Ask investigatorId
+            $ QuestionLabel
+                ("Available Supplies ("
+                <> tshow remaining
+                <> " supply points remaining)"
+                )
+            $ ChooseOne
+            $ Label "Done" []
+            : map
+                (\s -> supplyLabel
+                  s
+                  [ PickSupply investigatorId s
+                  , CampaignStep
+                    (Just
+                    $ InvestigatorCampaignStep investigatorId ResupplyPoint
+                    )
+                  ]
+                )
+                availableSupplies
+
+        pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs
       push (CampaignStep step)

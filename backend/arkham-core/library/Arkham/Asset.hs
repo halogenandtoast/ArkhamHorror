@@ -360,6 +360,9 @@ allAssets = mapFromList $ map
   , SomeAssetCard highRoller2
   --- mystic [tbb]
   , SomeAssetCard recallTheFuture2
+  --- survivor [tbb]
+  , SomeAssetCard tryAndTryAgain1
+  , SomeAssetCard cornered2
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

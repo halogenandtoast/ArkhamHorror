@@ -262,6 +262,7 @@ library
       Arkham.Asset.Cards.ClaspOfBlackOnyx
       Arkham.Asset.Cards.CombatTraining1
       Arkham.Asset.Cards.ConstanceDumaine
+      Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
       Arkham.Asset.Cards.DaisysToteBag
       Arkham.Asset.Cards.DaisysToteBagAdvanced
@@ -469,6 +470,7 @@ library
       Arkham.Asset.Cards.TreasureHunter1
       Arkham.Asset.Cards.TrenchKnife
       Arkham.Asset.Cards.TrueGrit
+      Arkham.Asset.Cards.TryAndTryAgain1
       Arkham.Asset.Cards.TryAndTryAgain3
       Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.Venturer

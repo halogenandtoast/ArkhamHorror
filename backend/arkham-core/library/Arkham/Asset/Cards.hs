@@ -151,6 +151,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , chicagoTypewriter4
   , clarityOfMind
   , claspOfBlackOnyx
+  , cornered2
   , combatTraining1
   , daisysToteBag
   , daisysToteBagAdvanced
@@ -343,6 +344,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , treasureHunter1
   , trenchKnife
   , trueGrit
+  , tryAndTryAgain1
   , tryAndTryAgain3
   , untilTheEndOfTime
   , venturer
@@ -2206,6 +2208,21 @@ recallTheFuture2 :: CardDef
 recallTheFuture2 = (asset "04158" "Recall the Future" 2 Mystic)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Augury, Ritual]
+  , cdLevel = 2
+  }
+
+tryAndTryAgain1 :: CardDef
+tryAndTryAgain1 = (asset "04159" "Try and Try Again" 2 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Talent
+  , cdUses = Uses Try 3
+  , cdLevel = 1
+  }
+
+cornered2 :: CardDef
+cornered2 = (asset "04160" "Cornered" 2 Survivor)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = singleton Talent
   , cdLevel = 2
   }
 

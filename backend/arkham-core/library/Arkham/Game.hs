@@ -1356,6 +1356,13 @@ getAssetsMatching matcher = do
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode . toAttrs) as
+    AssetWithMatchingSkillTestIcon -> do
+      mskillTest <- getSkillTest
+      case mskillTest of
+        Nothing -> pure []
+        Just st -> do
+          valids <- select (AssetCardMatch $ CardWithSkill $ skillTestSkillType st)
+          pure $ filter ((`member` valids) . toId) as
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
@@ -2685,13 +2692,21 @@ runGameMessage msg g = case msg of
       & (inActionL .~ True)
       & (actionCanBeUndoneL .~ True)
       & (actionDiffL .~ [])
-  FinishAction ->
+  FinishAction -> do
+    iid <- getActiveInvestigatorId
+    let
+      historyItem = mempty { historyActionsCompleted = 1 }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure
       $ g
       & (inActionL .~ False)
       & (actionCanBeUndoneL .~ False)
       & (actionDiffL .~ [])
       & (inDiscardEntitiesL .~ mempty)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
   UndoAction -> do
     -- gameActionDiff contains a list of diffs, in order, to revert the game
@@ -4165,40 +4180,6 @@ preloadModifiers g = flip runReaderT g $ do
       <> locationCards
       <> scenarioCards
 
-data SomeEntity
-  = forall e
-  . (Show e, TargetEntity e, Entity e, HasModifiersFor e) =>
-    SomeEntity e
-
-instance TargetEntity SomeEntity where
-  toTarget (SomeEntity e) = toTarget e
-
-instance Show SomeEntity where
-  show (SomeEntity e) = show e
-
-instance HasModifiersFor SomeEntity where
-  getModifiersFor target (SomeEntity e) = getModifiersFor target e
-
-overEntities :: Monoid a => (SomeEntity -> a) -> Entities -> a
-overEntities f e = runIdentity $ overEntitiesM (Identity . f) e
-
-overEntitiesM :: (Monoid a, Monad m) => (SomeEntity -> m a) -> Entities -> m a
-overEntitiesM f e = foldMapM f someEntities
-  where someEntities = toSomeEntities e
-
-toSomeEntities :: Entities -> [SomeEntity]
-toSomeEntities Entities {..} =
-  map SomeEntity (toList entitiesLocations)
-    <> map SomeEntity (toList entitiesInvestigators)
-    <> map SomeEntity (toList entitiesEnemies)
-    <> map SomeEntity (toList entitiesAssets)
-    <> map SomeEntity (toList entitiesActs)
-    <> map SomeEntity (toList entitiesAgendas)
-    <> map SomeEntity (toList entitiesTreacheries)
-    <> map SomeEntity (toList entitiesEvents)
-    <> map SomeEntity (toList entitiesEffects)
-    <> map SomeEntity (toList entitiesSkills)
-
 instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
@@ -4221,11 +4202,9 @@ instance RunMessage Game where
       >>= (pure . set enemyMovingL Nothing)
 
 handleActionDiff :: Game -> Game -> GameT Game
-handleActionDiff old new = if gameInAction new
-  then do
-    let diff' = diff new old
-    pure $ new & actionDiffL %~ (diff' :)
-  else pure new
+handleActionDiff old new
+  | gameInAction new = pure $ new & actionDiffL %~ (diff new old :)
+  | otherwise = pure new
 
 delve :: Game -> Game
 delve g = g { gameDepthLock = gameDepthLock g + 1 }

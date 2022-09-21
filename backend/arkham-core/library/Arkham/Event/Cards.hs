@@ -212,6 +212,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , timeWarp2
   , trueSurvivor3
   , trusted
+  , truthFromFiction
   , uncageTheSoul
   , unearthTheAncients
   , wardOfProtection
@@ -1357,6 +1358,13 @@ secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Spirit, Bold]
   , cdCriteria = Just Criteria.FirstAction
+  }
+
+truthFromFiction :: CardDef
+truthFromFiction = (event "04152" "Truth from Fiction" 2 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdCriteria = Just $ Criteria.ClueOnLocation <> Criteria.AssetExists (AssetControlledBy You <> AssetWithUseType Uses.Secret)
   }
 
 liveAndLearn :: CardDef

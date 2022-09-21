@@ -206,6 +206,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , hardKnocks2
   , heirloomOfHyperborea
   , henryDeveau
+  , highRoller2
   , higherEducation
   , higherEducation3
   , hiredMuscle1
@@ -280,6 +281,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , professorWarrenRice
   , protectiveIncantation1
   , quickLearner4
+  , quickStudy2
   , rabbitsFoot
   , rabbitsFoot3
   , randallCho
@@ -343,6 +345,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , tryAndTryAgain3
   , untilTheEndOfTime
   , venturer
+  , wellPrepared2
   , wendysAmulet
   , whittonGreene
   , yaotl1
@@ -2176,6 +2179,26 @@ expeditionJournal = (storyAsset "04148" "Expedition Journal" 2 ThreadsOfFate)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Item, Tome]
   , cdUnique = True
+  }
+
+wellPrepared2 :: CardDef
+wellPrepared2 = (asset "04151" "Well Prepared" 2 Guardian)
+  { cdCardTraits = singleton Talent
+  , cdLevel = 2
+  }
+
+quickStudy2 :: CardDef
+quickStudy2 = (asset "04154" "Quick Study" 2 Seeker)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = singleton Talent
+  , cdLevel = 2
+  }
+
+highRoller2 :: CardDef
+highRoller2 = (asset "04156" "High Roller" 2 Rogue)
+  { cdSkills = [SkillIntellect, SkillCombat]
+  , cdCardTraits = singleton Talent
+  , cdLevel = 2
   }
 
 trackShoes :: CardDef

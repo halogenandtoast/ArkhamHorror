@@ -97,6 +97,9 @@ instance MonadRandom GameT where
 getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 
+getJustSkillTest :: (Monad m, HasGame m, HasCallStack) => m SkillTest
+getJustSkillTest = fromJustNote "must be called during a skill test" . gameSkillTest <$> getGame
+
 getHistory :: (Monad m, HasGame m) => HistoryType -> InvestigatorId -> m History
 getHistory TurnHistory iid =
   findWithDefault mempty iid . gameTurnHistory <$> getGame

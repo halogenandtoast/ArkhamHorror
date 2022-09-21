@@ -1,33 +1,19 @@
 name:    arkham-api
 version: "0.0.0"
+language: GHC2021
 
 default-extensions:
-  - BangPatterns
   - DataKinds
   - DeriveAnyClass
-  - DeriveFoldable
-  - DeriveFunctor
-  - DeriveGeneric
-  - DeriveLift
-  - DeriveTraversable
   - DerivingStrategies
   - DerivingVia
-  - FlexibleContexts
-  - FlexibleInstances
   - GADTs
-  - GeneralizedNewtypeDeriving
   - LambdaCase
-  - MultiParamTypeClasses
   - NoImplicitPrelude
   - NoMonomorphismRestriction
   - OverloadedStrings
-  - RankNTypes
   - RecordWildCards
-  - ScopedTypeVariables
-  - StandaloneDeriving
-  - TypeApplications
   - TypeFamilies
-  - ImportQualifiedPost
 
 dependencies:
   - base

@@ -72,6 +72,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , fearless
   , fearless2
   , guts
+  , hatchetMan
   , inquiringMind
   , inspiringPresence
   , lastChance
@@ -96,6 +97,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , survivalInstinct
   , survivalInstinct2
   , takeHeart
+  , takeTheInitiative
   , theHomeFront
   , torrentOfPower
   , trueUnderstanding
@@ -379,10 +381,21 @@ stunningBlow = (skill "04112" "Stunning Blow" [SkillCombat] Survivor)
   { cdCardTraits = singleton Practiced
   }
 
+takeTheInitiative :: CardDef
+takeTheInitiative = (skill "04150" "Take the Initiative" [SkillWild, SkillWild, SkillWild] Guardian)
+  { cdCardTraits = setFromList [Practiced, Bold]
+  , cdCommitRestrictions = [OnlyYourTest]
+  }
+
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [ScenarioAbility]
+  }
+
+hatchetMan :: CardDef
+hatchetMan = (skill "04155" "Hatchet Man" [SkillAgility] Rogue)
+  { cdCardTraits = singleton Practiced
   }
 
 takeHeart :: CardDef

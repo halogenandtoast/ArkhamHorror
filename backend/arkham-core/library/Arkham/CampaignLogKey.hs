@@ -116,7 +116,7 @@ data CampaignLogKey
   | TheRelicIsMissing
   | TheInvestigatorsRescuedAlejandro
   | AlejandroIsMissing
-  | TheInvestigatorsFordgedABondWithIchtaca
+  | TheInvestigatorsForgedABondWithIchtaca
   | IchtacaIsInTheDark
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou

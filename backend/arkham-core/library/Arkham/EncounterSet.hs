@@ -68,6 +68,7 @@ data EncounterSet
   | YigsVenom
   | Poison
   | ThreadsOfFate
+  | TheBoundaryBeyond
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

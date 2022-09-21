@@ -105,6 +105,7 @@ data Trait
   | Mask
   | Medic
   | Melee
+  | MexicoCity
   | Miskatonic
   | Monster
   | Mystery
@@ -124,6 +125,7 @@ data Trait
   | Police
   | Power
   | Practiced
+  | PresentDay
   | Private
   | Rail
   | Ranged
@@ -155,6 +157,7 @@ data Trait
   | Talent
   | Tarot
   | Task
+  | Tenochtitlan
   | Tentacle
   | Terror
   | ThirdFloor

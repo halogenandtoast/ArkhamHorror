@@ -154,11 +154,16 @@ allLocationCards = mapFromList $ map
   , burnedRuins_205
   , canalSaintMartin
   , canalSide
+  , canalsOfTenochtitlan_180
+  , canalsOfTenochtitlan_181
   , candlelitTunnels
   , cellar
   , chamberOfTime
   , chapelOfStAubertThePathIsOpen
   , chapelOfStAubertWatersForbidden
+  , chapultepecHill_178
+  , chapultepecHill_179
+  , chapultepecPark
   , choeurGothique_292
   , choeurGothique_293
   , circuitousTrail
@@ -171,6 +176,7 @@ allLocationCards = mapFromList $ map
   , congregationalChurch_208
   , congregationalChurch_209
   , courtyard
+  , coyoacan
   , cryptOfTheSepulchralLamp
   , curiositieShoppe
   , cursedShores
@@ -253,6 +259,8 @@ allLocationCards = mapFromList $ map
   , knightsHall
   , laBellaLuna
   , labyrinthOfBones
+  , lakeXochimilco_182
+  , lakeXochimilco_183
   , leMarais217
   , leMarais218
   , lightingBox
@@ -261,6 +269,7 @@ allLocationCards = mapFromList $ map
   , lostMemories
   , mainPath
   , messHall
+  , metropolitanCathedral
   , miskatonicQuad
   , miskatonicUniversity
   , miskatonicUniversityMiskatonicMuseum
@@ -316,6 +325,8 @@ allLocationCards = mapFromList $ map
   , ruinsOfCarcosaInhabitantOfCarcosa
   , ruinsOfCarcosaTheCoffin
   , ruinsOfEztli
+  , sacredWoods_184
+  , sacredWoods_185
   , sanMarcoBasilica
   , schoolhouse_212
   , schoolhouse_213
@@ -341,6 +352,11 @@ allLocationCards = mapFromList $ map
   , tearThroughSpace
   , tearThroughTime
   , templeOfTheFang
+  , templeRuins
+  , templesOfTenochtitlan_176
+  , templesOfTenochtitlan_177
+  , temploMayor_174
+  , temploMayor_175
   , tenAcreMeadow_246
   , tenAcreMeadow_247
   , theEdgeOfTheUniverse
@@ -363,8 +379,10 @@ allLocationCards = mapFromList $ map
   , wellOfSouls
   , whateleyRuins_250
   , whateleyRuins_251
+  , xochimilco
   , yard
   , yourHouse
+  , zocalo
   ]
 
 study :: CardDef
@@ -2714,6 +2732,168 @@ blackCave =
     { cdDoubleSided = False
     , cdVictoryPoints = Just 1
     }
+
+templeRuins :: CardDef
+templeRuins = location
+  "04168"
+  "Temple Ruins"
+  [MexicoCity, PresentDay]
+  Circle
+  [Diamond, Star]
+  TheBoundaryBeyond
+
+metropolitanCathedral :: CardDef
+metropolitanCathedral = location
+  "04169"
+  "Metropolitan Cathedral"
+  [MexicoCity, PresentDay]
+  Square
+  [Diamond]
+  TheBoundaryBeyond
+
+chapultepecPark :: CardDef
+chapultepecPark = location
+  "04170"
+  "Chapultepec Park"
+  [MexicoCity, PresentDay]
+  Triangle
+  [Star]
+  TheBoundaryBeyond
+
+zocalo :: CardDef
+zocalo = location
+  "04171"
+  "Zócalo"
+  [MexicoCity, PresentDay]
+  Diamond
+  [Heart, Square, Star, Circle]
+  TheBoundaryBeyond
+
+xochimilco :: CardDef
+xochimilco = location
+  "04172"
+  "Xochimilco"
+  [MexicoCity, PresentDay]
+  Heart
+  [Diamond, Star]
+  TheBoundaryBeyond
+
+coyoacan :: CardDef
+coyoacan = location
+  "04173"
+  "Coyoacán"
+  [MexicoCity, PresentDay]
+  Star
+  [Diamond, Triangle, Circle, Heart]
+  TheBoundaryBeyond
+
+temploMayor_174 :: CardDef
+temploMayor_174 = location
+  "04174"
+  "Templo Mayor"
+  [Ancient, Tenochtitlan]
+  Circle
+  [Square, Triangle]
+  TheBoundaryBeyond
+
+temploMayor_175 :: CardDef
+temploMayor_175 = location
+  "04175"
+  "Templo Mayor"
+  [Ancient, Tenochtitlan]
+  Circle
+  [Square, Triangle]
+  TheBoundaryBeyond
+
+templesOfTenochtitlan_176 :: CardDef
+templesOfTenochtitlan_176 = location
+  "04176"
+  "Temples of Tenochtitlán "
+  [Ancient, Tenochtitlan]
+  Square
+  [Diamond, Circle]
+  TheBoundaryBeyond
+
+templesOfTenochtitlan_177 :: CardDef
+templesOfTenochtitlan_177 = location
+  "04177"
+  "Temples of Tenochtitlán "
+  [Ancient, Tenochtitlan]
+  Square
+  [Diamond, Circle]
+  TheBoundaryBeyond
+
+chapultepecHill_178 :: CardDef
+chapultepecHill_178 = location
+  "04178"
+  "Chapultepec Hill "
+  [Ancient, Tenochtitlan]
+  Triangle
+  [Star, Circle]
+  TheBoundaryBeyond
+
+chapultepecHill_179 :: CardDef
+chapultepecHill_179 = location
+  "04179"
+  "Chapultepec Hill "
+  [Ancient, Tenochtitlan]
+  Triangle
+  [Star, Circle]
+  TheBoundaryBeyond
+
+canalsOfTenochtitlan_180 :: CardDef
+canalsOfTenochtitlan_180 = location
+  "04180"
+  "Canals of Tenochtitlán"
+  [Ancient, Tenochtitlan]
+  Diamond
+  [Heart, Square]
+  TheBoundaryBeyond
+
+canalsOfTenochtitlan_181 :: CardDef
+canalsOfTenochtitlan_181 = location
+  "04181"
+  "Canals of Tenochtitlán"
+  [Ancient, Tenochtitlan]
+  Diamond
+  [Heart, Square]
+  TheBoundaryBeyond
+
+lakeXochimilco_182 :: CardDef
+lakeXochimilco_182 = location
+  "04182"
+  "Lake Xochimilco"
+  [Ancient, Tenochtitlan]
+  Heart
+  [Diamond, Star]
+  TheBoundaryBeyond
+
+lakeXochimilco_183 :: CardDef
+lakeXochimilco_183 = location
+  "04183"
+  "Lake Xochimilco"
+  [Ancient, Tenochtitlan]
+  Heart
+  [Diamond, Star]
+  TheBoundaryBeyond
+
+sacredWoods_184 :: CardDef
+sacredWoods_184 = location
+  "04184"
+  "Sacred Woods"
+  [Ancient, Tenochtitlan]
+  Star
+  [Heart, Triangle]
+  TheBoundaryBeyond
+
+sacredWoods_185 :: CardDef
+sacredWoods_185 = location
+  "04185"
+  "Sacred Woods"
+  [Ancient, Tenochtitlan]
+  Star
+  [Heart, Triangle]
+  TheBoundaryBeyond
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

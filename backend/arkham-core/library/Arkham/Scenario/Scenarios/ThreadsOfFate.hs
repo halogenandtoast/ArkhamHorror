@@ -391,7 +391,7 @@ instance RunMessage ThreadsOfFate where
            | not act3dCompleted
            ]
         <> [ Record if act3fCompleted
-               then TheInvestigatorsFordgedABondWithIchtaca
+               then TheInvestigatorsForgedABondWithIchtaca
                else IchtacaIsInTheDark
            ]
         <> [ addCampaignCardToDeckChoice

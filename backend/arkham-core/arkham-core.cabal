@@ -1045,11 +1045,16 @@ library
       Arkham.Location.Cards.BurnedRuins_205
       Arkham.Location.Cards.CanalSaintMartin
       Arkham.Location.Cards.CanalSide
+      Arkham.Location.Cards.CanalsOfTenochtitlan_180
+      Arkham.Location.Cards.CanalsOfTenochtitlan_181
       Arkham.Location.Cards.CandlelitTunnels
       Arkham.Location.Cards.Cellar
       Arkham.Location.Cards.ChamberOfTime
       Arkham.Location.Cards.ChapelOfStAubertThePathIsOpen
       Arkham.Location.Cards.ChapelOfStAubertWatersForbidden
+      Arkham.Location.Cards.ChapultepecHill_178
+      Arkham.Location.Cards.ChapultepecHill_179
+      Arkham.Location.Cards.ChapultepecPark
       Arkham.Location.Cards.ChoeurGothique_292
       Arkham.Location.Cards.ChoeurGothique_293
       Arkham.Location.Cards.CircuitousTrail
@@ -1062,6 +1067,7 @@ library
       Arkham.Location.Cards.CongregationalChurch_208
       Arkham.Location.Cards.CongregationalChurch_209
       Arkham.Location.Cards.Courtyard
+      Arkham.Location.Cards.Coyoacan
       Arkham.Location.Cards.CryptOfTheSepulchralLamp
       Arkham.Location.Cards.CuriositieShoppe
       Arkham.Location.Cards.CursedShores
@@ -1144,6 +1150,8 @@ library
       Arkham.Location.Cards.KnightsHall
       Arkham.Location.Cards.LaBellaLuna
       Arkham.Location.Cards.LabyrinthOfBones
+      Arkham.Location.Cards.LakeXochimilco_182
+      Arkham.Location.Cards.LakeXochimilco_183
       Arkham.Location.Cards.LeMarais217
       Arkham.Location.Cards.LeMarais218
       Arkham.Location.Cards.LightingBox
@@ -1152,6 +1160,7 @@ library
       Arkham.Location.Cards.LostMemories
       Arkham.Location.Cards.MainPath
       Arkham.Location.Cards.MessHall
+      Arkham.Location.Cards.MetropolitanCathedral
       Arkham.Location.Cards.MiskatonicQuad
       Arkham.Location.Cards.MiskatonicUniversity
       Arkham.Location.Cards.MiskatonicUniversityMiskatonicMuseum
@@ -1207,6 +1216,8 @@ library
       Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa
       Arkham.Location.Cards.RuinsOfCarcosaTheCoffin
       Arkham.Location.Cards.RuinsOfEztli
+      Arkham.Location.Cards.SacredWoods_184
+      Arkham.Location.Cards.SacredWoods_185
       Arkham.Location.Cards.SanMarcoBasilica
       Arkham.Location.Cards.Schoolhouse_212
       Arkham.Location.Cards.Schoolhouse_213
@@ -1232,6 +1243,11 @@ library
       Arkham.Location.Cards.TearThroughSpace
       Arkham.Location.Cards.TearThroughTime
       Arkham.Location.Cards.TempleOfTheFang
+      Arkham.Location.Cards.TempleRuins
+      Arkham.Location.Cards.TemplesOfTenochtitlan_176
+      Arkham.Location.Cards.TemplesOfTenochtitlan_177
+      Arkham.Location.Cards.TemploMayor_174
+      Arkham.Location.Cards.TemploMayor_175
       Arkham.Location.Cards.TenAcreMeadow_246
       Arkham.Location.Cards.TenAcreMeadow_247
       Arkham.Location.Cards.Theatre
@@ -1254,8 +1270,10 @@ library
       Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
       Arkham.Location.Cards.WhateleyRuins_251
+      Arkham.Location.Cards.Xochimilco
       Arkham.Location.Cards.Yard
       Arkham.Location.Cards.YourHouse
+      Arkham.Location.Cards.Zocalo
       Arkham.Location.Helpers
       Arkham.Location.Label
       Arkham.Location.Locations
@@ -1294,6 +1312,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
+      Arkham.Scenario.Scenarios.TheBoundaryBeyond
       Arkham.Scenario.Scenarios.TheDevourerBelow
       Arkham.Scenario.Scenarios.TheDoomOfEztli
       Arkham.Scenario.Scenarios.TheEssexCountyExpress
@@ -1325,6 +1344,7 @@ library
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.ExtracurricularActivity.FlavorText
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
+      Arkham.Scenarios.TheBoundaryBeyond.Story
       Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers

@@ -290,6 +290,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , relentless
   , relicHunter3
   , relicOfAgesADeviceOfSomeSort
+  , relicOfAgesForestallingTheFuture
   , researchLibrarian
   , riteOfSeeking
   , riteOfSeeking4
@@ -2224,6 +2225,20 @@ cornered2 = (asset "04160" "Cornered" 2 Survivor)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = singleton Talent
   , cdLevel = 2
+  }
+
+relicOfAgesForestallingTheFuture :: CardDef
+relicOfAgesForestallingTheFuture = (storyAsset
+                                 "04191"
+                                 ("Relic of Ages"
+                                 <:> "Forestalling the Future"
+                                 )
+                                 2
+                                 TheBoundaryBeyond
+                               )
+  { cdSkills = [SkillWild, SkillWild, SkillWild]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdUnique = True
   }
 
 trackShoes :: CardDef

@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
 import Arkham.Effect ()
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy ()
@@ -152,3 +153,37 @@ instance HasAbilities Entities where
     <> concatMap getAbilities (toList entitiesEvents)
     <> concatMap getAbilities (toList entitiesEffects)
     <> concatMap getAbilities (toList entitiesSkills)
+
+data SomeEntity
+  = forall e
+  . (Show e, TargetEntity e, Entity e, HasModifiersFor e) =>
+    SomeEntity e
+
+instance TargetEntity SomeEntity where
+  toTarget (SomeEntity e) = toTarget e
+
+instance Show SomeEntity where
+  show (SomeEntity e) = show e
+
+instance HasModifiersFor SomeEntity where
+  getModifiersFor target (SomeEntity e) = getModifiersFor target e
+
+overEntities :: Monoid a => (SomeEntity -> a) -> Entities -> a
+overEntities f e = runIdentity $ overEntitiesM (Identity . f) e
+
+overEntitiesM :: (Monoid a, Monad m) => (SomeEntity -> m a) -> Entities -> m a
+overEntitiesM f = foldMapM f . toSomeEntities
+
+toSomeEntities :: Entities -> [SomeEntity]
+toSomeEntities Entities {..} =
+  map SomeEntity (toList entitiesLocations)
+    <> map SomeEntity (toList entitiesInvestigators)
+    <> map SomeEntity (toList entitiesEnemies)
+    <> map SomeEntity (toList entitiesAssets)
+    <> map SomeEntity (toList entitiesActs)
+    <> map SomeEntity (toList entitiesAgendas)
+    <> map SomeEntity (toList entitiesTreacheries)
+    <> map SomeEntity (toList entitiesEvents)
+    <> map SomeEntity (toList entitiesEffects)
+    <> map SomeEntity (toList entitiesSkills)
+

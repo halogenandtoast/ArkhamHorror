@@ -351,6 +351,13 @@ allAssets = mapFromList $ map
   , SomeAssetCard mariaDeSilva
   , SomeAssetCard ichtacaTheForgottenGuardian
   , SomeAssetCard expeditionJournal
+  -- The Boundary Beyond
+  --- guardian [tbb]
+  , SomeAssetCard wellPrepared2
+  --- seeker [tbb]
+  , SomeAssetCard quickStudy2
+  --- rogue [tbb]
+  , SomeAssetCard highRoller2
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -24,6 +24,7 @@ import Arkham.Asset.Assets
   ( mistsOfRlyehEffect
   , yaotl1Effect
   , fence1Effect
+  , highRoller2Effect
   )
 import Arkham.Enemy.Enemies
   ( boaConstrictorEffect
@@ -33,6 +34,9 @@ import Arkham.Event.Events
   , oneTwoPunchEffect
   , willToSurviveEffect
   , marksmanship1Effect
+  )
+import Arkham.Skill.Skills
+  ( hatchetManEffect
   )
 import Arkham.Investigator.Investigators
   ( fatherMateoElderSignEffect )
@@ -180,6 +184,8 @@ allEffects = mapFromList
   , ("04079", SomeEffect boaConstrictorEffect)
   , ("04104", SomeEffect marksmanship1Effect)
   , ("04108", SomeEffect fence1Effect)
+  , ("04155", SomeEffect hatchetManEffect)
+  , ("04156", SomeEffect highRoller2Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -324,6 +324,7 @@ library
       Arkham.Asset.Cards.HenryDeveau
       Arkham.Asset.Cards.HigherEducation
       Arkham.Asset.Cards.HigherEducation3
+      Arkham.Asset.Cards.HighRoller2
       Arkham.Asset.Cards.HiredMuscle1
       Arkham.Asset.Cards.HolyRosary
       Arkham.Asset.Cards.Hyperawareness
@@ -404,6 +405,7 @@ library
       Arkham.Asset.Cards.ProfessorWarrenRice
       Arkham.Asset.Cards.ProtectiveIncantation1
       Arkham.Asset.Cards.QuickLearner4
+      Arkham.Asset.Cards.QuickStudy2
       Arkham.Asset.Cards.RabbitsFoot
       Arkham.Asset.Cards.RabbitsFoot3
       Arkham.Asset.Cards.RandallCho
@@ -469,6 +471,7 @@ library
       Arkham.Asset.Cards.TryAndTryAgain3
       Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.Venturer
+      Arkham.Asset.Cards.WellPrepared2
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
       Arkham.Asset.Cards.Yaotl1
@@ -900,6 +903,7 @@ library
       Arkham.Event.Cards.TimeWarp2
       Arkham.Event.Cards.TrueSurvivor3
       Arkham.Event.Cards.Trusted
+      Arkham.Event.Cards.TruthFromFiction
       Arkham.Event.Cards.UncageTheSoul
       Arkham.Event.Cards.UnearthTheAncients
       Arkham.Event.Cards.WardOfProtection
@@ -1348,6 +1352,7 @@ library
       Arkham.Skill.Cards.Fearless
       Arkham.Skill.Cards.Fearless2
       Arkham.Skill.Cards.Guts
+      Arkham.Skill.Cards.HatchetMan
       Arkham.Skill.Cards.InquiringMind
       Arkham.Skill.Cards.InspiringPresence
       Arkham.Skill.Cards.LastChance
@@ -1372,6 +1377,7 @@ library
       Arkham.Skill.Cards.SurvivalInstinct
       Arkham.Skill.Cards.SurvivalInstinct2
       Arkham.Skill.Cards.TakeHeart
+      Arkham.Skill.Cards.TakeTheInitiative
       Arkham.Skill.Cards.TheHomeFront
       Arkham.Skill.Cards.TorrentOfPower
       Arkham.Skill.Cards.TrueUnderstanding
@@ -1585,35 +1591,20 @@ library
   hs-source-dirs:
       library
   default-extensions:
-      PatternSynonyms
       AllowAmbiguousTypes
-      BangPatterns
       BlockArguments
-      ConstraintKinds
       DeriveAnyClass
-      DeriveGeneric
       DerivingStrategies
       DerivingVia
-      FlexibleContexts
-      FlexibleInstances
-      GeneralizedNewtypeDeriving
+      FunctionalDependencies
       GADTs
       LambdaCase
-      MultiParamTypeClasses
-      NamedFieldPuns
       NoImplicitPrelude
       OverloadedStrings
-      RankNTypes
+      PatternSynonyms
       RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TupleSections
-      TypeApplications
       TypeFamilies
-      TypeOperators
       UndecidableInstances
-      ImportQualifiedPost
-      FunctionalDependencies
       ViewPatterns
   build-depends:
       MonadRandom
@@ -1637,7 +1628,7 @@ library
     , these-lens
     , unordered-containers >=0.2.12.0
     , uuid
-  default-language: Haskell2010
+  default-language: GHC2021
 
 test-suite spec
   type: exitcode-stdio-1.0
@@ -1719,35 +1710,20 @@ test-suite spec
   hs-source-dirs:
       tests
   default-extensions:
-      PatternSynonyms
       AllowAmbiguousTypes
-      BangPatterns
       BlockArguments
-      ConstraintKinds
       DeriveAnyClass
-      DeriveGeneric
       DerivingStrategies
       DerivingVia
-      FlexibleContexts
-      FlexibleInstances
-      GeneralizedNewtypeDeriving
+      FunctionalDependencies
       GADTs
       LambdaCase
-      MultiParamTypeClasses
-      NamedFieldPuns
       NoImplicitPrelude
       OverloadedStrings
-      RankNTypes
+      PatternSynonyms
       RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TupleSections
-      TypeApplications
       TypeFamilies
-      TypeOperators
       UndecidableInstances
-      ImportQualifiedPost
-      FunctionalDependencies
       ViewPatterns
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
@@ -1762,4 +1738,4 @@ test-suite spec
     , these
     , unordered-containers >=0.2.12.0
     , uuid
-  default-language: Haskell2010
+  default-language: GHC2021

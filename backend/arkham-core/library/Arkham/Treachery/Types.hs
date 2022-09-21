@@ -20,7 +20,20 @@ import Arkham.Trait
 import Arkham.Treachery.Cards
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ TreacheryId, EntityAttrs a ~ TreacheryAttrs) => IsTreachery a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ TreacheryId
+  , EntityAttrs a ~ TreacheryAttrs
+  )
+  => IsTreachery a
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 

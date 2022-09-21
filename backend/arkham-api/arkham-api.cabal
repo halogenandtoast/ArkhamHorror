@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -57,32 +57,17 @@ library
   hs-source-dirs:
       library
   default-extensions:
-      BangPatterns
       DataKinds
       DeriveAnyClass
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
       DerivingStrategies
       DerivingVia
-      FlexibleContexts
-      FlexibleInstances
       GADTs
-      GeneralizedNewtypeDeriving
       LambdaCase
-      MultiParamTypeClasses
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedStrings
-      RankNTypes
       RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TypeApplications
       TypeFamilies
-      ImportQualifiedPost
   build-depends:
       MonadRandom
     , aeson
@@ -135,12 +120,12 @@ library
     , yesod-persistent
     , yesod-test
     , yesod-websockets
+  default-language: GHC2021
   if (flag(dev)) || (flag(library-only))
     ghc-options: -Wall -fwarn-tabs -O0
     cpp-options: -DDEVELOPMENT
   else
     ghc-options: -Wall -fwarn-tabs -O2
-  default-language: Haskell2010
 
 executable arkham-api
   main-is: main.hs
@@ -150,38 +135,23 @@ executable arkham-api
   hs-source-dirs:
       app
   default-extensions:
-      BangPatterns
       DataKinds
       DeriveAnyClass
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
       DerivingStrategies
       DerivingVia
-      FlexibleContexts
-      FlexibleInstances
       GADTs
-      GeneralizedNewtypeDeriving
       LambdaCase
-      MultiParamTypeClasses
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedStrings
-      RankNTypes
       RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TypeApplications
       TypeFamilies
-      ImportQualifiedPost
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       arkham-api
     , base
     , foreign-store
     , warp
+  default-language: GHC2021
   if flag(library-only)
     buildable: False
-  default-language: Haskell2010

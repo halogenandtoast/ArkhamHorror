@@ -41,7 +41,7 @@ instance HasAbilities BoaConstrictor where
 instance RunMessage BoaConstrictor where
   runMessage msg e@(BoaConstrictor attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      push $ CreateEffect "04079" Nothing source (InvestigatorTarget iid)
+      push $ createCardEffect Cards.boaConstrictor Nothing source (InvestigatorTarget iid)
       pure e
     _ -> BoaConstrictor <$> runMessage msg attrs
 
@@ -50,7 +50,7 @@ newtype BoaConstrictorEffect = BoaConstrictorEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boaConstrictorEffect :: EffectArgs -> BoaConstrictorEffect
-boaConstrictorEffect = BoaConstrictorEffect . uncurry4 (baseAttrs "04079")
+boaConstrictorEffect = cardEffect BoaConstrictorEffect Cards.boaConstrictor
 
 instance HasModifiersFor BoaConstrictorEffect where
   getModifiersFor target (BoaConstrictorEffect a) | effectTarget a == target =

@@ -17,6 +17,7 @@ data History = History
   , historyMoved :: Bool
   , historyLocationsSuccessfullyInvestigated :: HashSet LocationId
   , historySuccessfulExplore :: Bool
+  , historyActionsCompleted :: Int
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
@@ -34,10 +35,12 @@ instance Semigroup History where
         <> historyLocationsSuccessfullyInvestigated g
     , historySuccessfulExplore = historySuccessfulExplore h
       || historySuccessfulExplore g
+    , historyActionsCompleted = historyActionsCompleted h
+      + historyActionsCompleted g
     }
 
 instance Monoid History where
-  mempty = History [] [] [] False mempty False
+  mempty = History [] [] [] False mempty False 0
 
 insertHistory
   :: InvestigatorId

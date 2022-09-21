@@ -1,38 +1,25 @@
 name: arkham-core
 
+language: GHC2021
+
 dependencies:
 - base >= 4.7 && < 5
 
 default-extensions:
-- PatternSynonyms
 - AllowAmbiguousTypes
-- BangPatterns
 - BlockArguments
-- ConstraintKinds
 - DeriveAnyClass
-- DeriveGeneric
 - DerivingStrategies
 - DerivingVia
-- FlexibleContexts
-- FlexibleInstances
-- GeneralizedNewtypeDeriving
+- FunctionalDependencies
 - GADTs
 - LambdaCase
-- MultiParamTypeClasses
-- NamedFieldPuns
 - NoImplicitPrelude
 - OverloadedStrings
-- RankNTypes
+- PatternSynonyms
 - RecordWildCards
-- ScopedTypeVariables
-- StandaloneDeriving
-- TupleSections
-- TypeApplications
 - TypeFamilies
-- TypeOperators
 - UndecidableInstances
-- ImportQualifiedPost
-- FunctionalDependencies
 - ViewPatterns
 
 library:

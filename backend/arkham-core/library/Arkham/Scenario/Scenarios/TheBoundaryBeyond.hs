@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -15,6 +16,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Helpers
@@ -22,6 +24,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
 import Arkham.Token
 import Arkham.Trait ( Trait (Ancient) )
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheBoundaryBeyond = TheBoundaryBeyond ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -89,6 +92,33 @@ instance RunMessage TheBoundaryBeyond where
           ]
         <> additionalSets
 
+      metropolitanCathedral <- genCard Locations.metropolitanCathedral
+      zocalo <- genCard Locations.zocalo
+      templeRuins <- genCard Locations.templeRuins
+      xochimilco <- genCard Locations.xochimilco
+      chapultepecPark <- genCard Locations.chapultepecPark
+      coyoacan <- genCard Locations.coyoacan
+
+      explorationDeck <- shuffleM =<< traverse
+        genCard
+        [ Locations.temploMayor_174
+        , Locations.temploMayor_175
+        , Locations.templesOfTenochtitlan_176
+        , Locations.templesOfTenochtitlan_177
+        , Locations.chapultepecHill_178
+        , Locations.chapultepecHill_179
+        , Locations.canalsOfTenochtitlan_180
+        , Locations.canalsOfTenochtitlan_181
+        , Locations.lakeXochimilco_182
+        , Locations.lakeXochimilco_183
+        , Locations.sacredWoods_184
+        , Locations.sacredWoods_185
+        , Treacheries.windowToAnotherTime
+        , Treacheries.timelineDestabilization
+        , Treacheries.aTearInTime
+        , Treacheries.lostInTime
+        ]
+
       pushAll
         $ [ story iids introPart1
           , story iids
@@ -101,6 +131,21 @@ instance RunMessage TheBoundaryBeyond where
         <> [ story iids outOfGas | isNothing withGasoline ]
         <> [ UseSupply iid Gasoline | iid <- maybeToList withGasoline ]
         <> [story iids introPart2]
-        <> [SetEncounterDeck encounterDeck]
+        <> [ SetEncounterDeck encounterDeck
+           , PlaceLocation metropolitanCathedral
+           , PlaceLocation zocalo
+           , PlaceLocation templeRuins
+           , PlaceLocation xochimilco
+           , PlaceLocation chapultepecPark
+           , PlaceLocation coyoacan
+           ]
+        <> [ chooseOne
+               iid
+               [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+               | l <- [zocalo, coyoacan]
+               , let lid = toLocationId l
+               ]
+           | iid <- iids
+           ]
       pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

@@ -201,6 +201,10 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard harlanEarnstoneCrazedByTheCurse
   , SomeEnemyCard henryDeveauAlejandrosKidnapper
   , SomeEnemyCard mariaDeSilvaKnowsMoreThanSheLetsOn
+  -- The Boundary Beyond
+  , SomeEnemyCard padmaAmrita
+  , SomeEnemyCard serpentOfTenochtitlan
+  , SomeEnemyCard handOfTheBrotherhood
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

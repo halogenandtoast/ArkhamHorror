@@ -414,6 +414,7 @@ library
       Arkham.Asset.Cards.Relentless
       Arkham.Asset.Cards.RelicHunter3
       Arkham.Asset.Cards.RelicOfAgesADeviceOfSomeSort
+      Arkham.Asset.Cards.RelicOfAgesForestallingTheFuture
       Arkham.Asset.Cards.ResearchLibrarian
       Arkham.Asset.Cards.RiteOfSeeking
       Arkham.Asset.Cards.RiteOfSeeking4
@@ -677,6 +678,7 @@ library
       Arkham.Enemy.Cards.GrapplingHorror
       Arkham.Enemy.Cards.GraveEater
       Arkham.Enemy.Cards.GraveyardGhouls
+      Arkham.Enemy.Cards.HandOfTheBrotherhood
       Arkham.Enemy.Cards.HarbingerOfValusia
       Arkham.Enemy.Cards.HarlanEarnstoneCrazedByTheCurse
       Arkham.Enemy.Cards.HasturLordOfCarcosa
@@ -701,6 +703,7 @@ library
       Arkham.Enemy.Cards.Mobster
       Arkham.Enemy.Cards.Narogath
       Arkham.Enemy.Cards.OBannionsThug
+      Arkham.Enemy.Cards.PadmaAmrita
       Arkham.Enemy.Cards.PeterWarren
       Arkham.Enemy.Cards.PitViper
       Arkham.Enemy.Cards.Poleman
@@ -718,6 +721,7 @@ library
       Arkham.Enemy.Cards.SebastienMoreau
       Arkham.Enemy.Cards.SeekerOfCarcosa
       Arkham.Enemy.Cards.SerpentFromYoth
+      Arkham.Enemy.Cards.SerpentOfTenochtitlan
       Arkham.Enemy.Cards.SerpentsOfYig
       Arkham.Enemy.Cards.ServantOfManyMouths
       Arkham.Enemy.Cards.ServantOfTheLurker
@@ -1579,6 +1583,7 @@ library
       Arkham.Treachery.Cards.TheShadowBehindYou
       Arkham.Treachery.Cards.TheYellowSign
       Arkham.Treachery.Cards.TheZealotsSeal
+      Arkham.Treachery.Cards.TimelineDestabilization
       Arkham.Treachery.Cards.TorturousChords
       Arkham.Treachery.Cards.ToughCrowd
       Arkham.Treachery.Cards.ToweringBeasts
@@ -1600,6 +1605,7 @@ library
       Arkham.Treachery.Cards.WhispersInYourHeadDismay
       Arkham.Treachery.Cards.WhispersInYourHeadDoubt
       Arkham.Treachery.Cards.WhispersInYourHeadDread
+      Arkham.Treachery.Cards.WindowToAnotherTime
       Arkham.Treachery.Cards.WordsOfPower
       Arkham.Treachery.Cards.WorldsMerge
       Arkham.Treachery.Cards.Wormhole

@@ -239,6 +239,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , theShadowBehindYou
   , theYellowSign
   , theZealotsSeal
+  , timelineDestabilization
   , torturousChords
   , toughCrowd
   , toweringBeasts
@@ -259,6 +260,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , whispersInYourHeadDismay
   , whispersInYourHeadDoubt
   , whispersInYourHeadDread
+  , windowToAnotherTime
   , wordsOfPower
   , worldsMerge
   , wormhole
@@ -1050,6 +1052,19 @@ nobodysHome =
 conspiracyOfBlood :: CardDef
 conspiracyOfBlood =
   (treachery "04146" "Conspiracy of Blood" EncounterSet.ThreadsOfFate 2)
+    { cdCardTraits = singleton Hex
+    }
+
+windowToAnotherTime :: CardDef
+windowToAnotherTime =
+  (treachery "04189" "Window to Another Time" EncounterSet.TheBoundaryBeyond 3)
+    { cdCardTraits = singleton Hex
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+timelineDestabilization :: CardDef
+timelineDestabilization =
+  (treachery "04190" "Timeline Destablization" EncounterSet.TheBoundaryBeyond 3)
     { cdCardTraits = singleton Hex
     }
 

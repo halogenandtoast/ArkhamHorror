@@ -363,6 +363,8 @@ allAssets = mapFromList $ map
   --- survivor [tbb]
   , SomeAssetCard tryAndTryAgain1
   , SomeAssetCard cornered2
+  --- story [tbb]
+  , SomeAssetCard relicOfAgesForestallingTheFuture
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

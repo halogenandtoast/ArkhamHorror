@@ -250,6 +250,9 @@ allTreacheries = mapFromList $ map
   , SomeTreacheryCard theSecretMustBeKept
   , SomeTreacheryCard nobodysHome
   , SomeTreacheryCard conspiracyOfBlood
+  -- The Boundary Beyond
+  , SomeTreacheryCard windowToAnotherTime
+  , SomeTreacheryCard timelineDestabilization
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

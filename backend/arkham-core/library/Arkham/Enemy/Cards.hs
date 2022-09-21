@@ -134,6 +134,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , goatSpawn
   , grapplingHorror
   , graveEater
+  , handOfTheBrotherhood
   , harbingerOfValusia
   , harlanEarnstoneCrazedByTheCurse
   , hasturLordOfCarcosa
@@ -157,6 +158,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , mobster
   , narogath
   , oBannionsThug
+  , padmaAmrita
   , peterWarren
   , pitViper
   , poleman
@@ -174,6 +176,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , sebastienMoreau
   , seekerOfCarcosa
   , serpentFromYoth
+  , serpentOfTenochtitlan
   , servantOfManyMouths
   , servantOfTheLurker
   , sethBishop
@@ -927,6 +930,33 @@ mariaDeSilvaKnowsMoreThanSheLetsOn =
     , cdUnique = True
     , cdVictoryPoints = Just 1
     , cdKeywords = singleton Keyword.Retaliate
+    }
+
+padmaAmrita :: CardDef
+padmaAmrita =
+  (enemy "04186" ("Padma Amrita" <:> "Cold-Blooded Charmer") TheBoundaryBeyond 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Serpent, Servitor, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 2
+    , cdVengeancePoints = Just 2
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate, Keyword.Hunter]
+    }
+
+serpentOfTenochtitlan :: CardDef
+serpentOfTenochtitlan =
+  (enemy "04187" "Serpent of Tenochtitlán" TheBoundaryBeyond 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+    , cdVictoryPoints = Just 1
+    , cdVengeancePoints = Just 1
+    }
+
+handOfTheBrotherhood :: CardDef
+handOfTheBrotherhood =
+  (enemy "04188" "Hand of the Brotherhood" TheBoundaryBeyond 2
+    )
+    { cdCardTraits = setFromList [Humanoid, Cultist]
     }
 
 corpseHungryGhoul :: CardDef

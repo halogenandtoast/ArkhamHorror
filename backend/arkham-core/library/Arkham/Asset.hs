@@ -358,6 +358,8 @@ allAssets = mapFromList $ map
   , SomeAssetCard quickStudy2
   --- rogue [tbb]
   , SomeAssetCard highRoller2
+  --- mystic [tbb]
+  , SomeAssetCard recallTheFuture2
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

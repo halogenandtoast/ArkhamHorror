@@ -409,6 +409,7 @@ library
       Arkham.Asset.Cards.RabbitsFoot
       Arkham.Asset.Cards.RabbitsFoot3
       Arkham.Asset.Cards.RandallCho
+      Arkham.Asset.Cards.RecallTheFuture2
       Arkham.Asset.Cards.Relentless
       Arkham.Asset.Cards.RelicHunter3
       Arkham.Asset.Cards.RelicOfAgesADeviceOfSomeSort
@@ -1348,6 +1349,7 @@ library
       Arkham.Skill.Cards.Defiance
       Arkham.Skill.Cards.DesperateSearch
       Arkham.Skill.Cards.DoubleOrNothing
+      Arkham.Skill.Cards.Enraptured
       Arkham.Skill.Cards.Eureka
       Arkham.Skill.Cards.Fearless
       Arkham.Skill.Cards.Fearless2

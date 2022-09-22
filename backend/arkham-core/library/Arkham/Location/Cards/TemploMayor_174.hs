@@ -14,8 +14,12 @@ newtype TemploMayor_174 = TemploMayor_174 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 temploMayor_174 :: LocationCard TemploMayor_174
-temploMayor_174 =
-  location TemploMayor_174 Cards.temploMayor_174 4 (PerPlayer 1)
+temploMayor_174 = locationWith
+  TemploMayor_174
+  Cards.temploMayor_174
+  4
+  (PerPlayer 1)
+  (labelL .~ "circle")
 
 instance HasAbilities TemploMayor_174 where
   getAbilities (TemploMayor_174 attrs) = getAbilities attrs

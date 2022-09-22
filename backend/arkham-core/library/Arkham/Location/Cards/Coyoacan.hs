@@ -14,7 +14,7 @@ newtype Coyoacan = Coyoacan LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coyoacan :: LocationCard Coyoacan
-coyoacan = location Coyoacan Cards.coyoacan 2 (Static 0)
+coyoacan = locationWith Coyoacan Cards.coyoacan 2 (Static 0) (labelL .~ "star")
 
 instance HasAbilities Coyoacan where
   getAbilities (Coyoacan attrs) = getAbilities attrs

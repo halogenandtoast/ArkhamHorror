@@ -14,7 +14,8 @@ newtype TempleRuins = TempleRuins LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 templeRuins :: LocationCard TempleRuins
-templeRuins = location TempleRuins Cards.templeRuins 4 (Static 0)
+templeRuins =
+  locationWith TempleRuins Cards.templeRuins 4 (Static 0) (labelL .~ "circle")
 
 instance HasAbilities TempleRuins where
   getAbilities (TempleRuins attrs) = getAbilities attrs

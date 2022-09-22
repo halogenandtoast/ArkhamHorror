@@ -125,6 +125,11 @@ allAgendas = mapFromList $ map
   -- Threads of Fate
   , SomeAgendaCard threeFates
   , SomeAgendaCard behindTheCurtain
+  , SomeAgendaCard hiddenEntanglements
+  -- The Boundary Beyond
+  , SomeAgendaCard theBoundaryBroken
+  , SomeAgendaCard theBarrierIsThin
+  , SomeAgendaCard timeCollapsing
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

@@ -14,8 +14,12 @@ newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canalsOfTenochtitlan_180 :: LocationCard CanalsOfTenochtitlan_180
-canalsOfTenochtitlan_180 =
-  location CanalsOfTenochtitlan_180 Cards.canalsOfTenochtitlan_180 5 (PerPlayer 1)
+canalsOfTenochtitlan_180 = locationWith
+  CanalsOfTenochtitlan_180
+  Cards.canalsOfTenochtitlan_180
+  5
+  (PerPlayer 1)
+  (labelL .~ "diamond")
 
 instance HasAbilities CanalsOfTenochtitlan_180 where
   getAbilities (CanalsOfTenochtitlan_180 attrs) = getAbilities attrs

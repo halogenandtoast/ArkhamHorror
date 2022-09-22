@@ -14,11 +14,12 @@ newtype TemplesOfTenochtitlan_177 = TemplesOfTenochtitlan_177 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 templesOfTenochtitlan_177 :: LocationCard TemplesOfTenochtitlan_177
-templesOfTenochtitlan_177 = location
+templesOfTenochtitlan_177 = locationWith
   TemplesOfTenochtitlan_177
   Cards.templesOfTenochtitlan_177
   2
   (PerPlayer 2)
+  (labelL .~ "square")
 
 instance HasAbilities TemplesOfTenochtitlan_177 where
   getAbilities (TemplesOfTenochtitlan_177 attrs) = getAbilities attrs

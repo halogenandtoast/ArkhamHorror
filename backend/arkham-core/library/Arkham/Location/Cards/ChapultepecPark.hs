@@ -14,7 +14,12 @@ newtype ChapultepecPark = ChapultepecPark LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chapultepecPark :: LocationCard ChapultepecPark
-chapultepecPark = location ChapultepecPark Cards.chapultepecPark 1 (Static 0)
+chapultepecPark = locationWith
+  ChapultepecPark
+  Cards.chapultepecPark
+  1
+  (Static 0)
+  (labelL .~ "triangle")
 
 instance HasAbilities ChapultepecPark where
   getAbilities (ChapultepecPark attrs) = getAbilities attrs

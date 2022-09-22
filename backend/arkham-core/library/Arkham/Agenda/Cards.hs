@@ -103,7 +103,9 @@ allAgendaCards = mapFromList $ map
   , strangeDisappearances
   , swallowedSky
   , theArkhamWoods
+  , theBarrierIsThin
   , theBeastUnleashed
+  , theBoundaryBroken
   , theCityFloods
   , theCloverClub
   , theCurseSpreads
@@ -127,6 +129,7 @@ allAgendaCards = mapFromList $ map
   , theTruthIsHidden
   , theyreGettingOut
   , threeFates
+  , timeCollapsing
   , timeIsRunningShort
   , torturousDescent
   , undergroundMuscle
@@ -341,6 +344,15 @@ behindTheCurtain = agenda "04115" "Behind the Curtain" 2 ThreadsOfFate
 
 hiddenEntanglements :: CardDef
 hiddenEntanglements = agenda "04116" "Hidden Entanglements" 3 ThreadsOfFate
+
+theBoundaryBroken :: CardDef
+theBoundaryBroken = agenda "04163" "The Boundary, Broken" 1 TheBoundaryBeyond
+
+theBarrierIsThin :: CardDef
+theBarrierIsThin = agenda "04164" "The Barrier is Thin" 2 TheBoundaryBeyond
+
+timeCollapsing :: CardDef
+timeCollapsing = agenda "04165" "Time Collapsing" 3 TheBoundaryBeyond
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

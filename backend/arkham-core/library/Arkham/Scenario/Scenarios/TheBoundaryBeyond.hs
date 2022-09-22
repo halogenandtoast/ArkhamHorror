@@ -5,6 +5,8 @@ module Arkham.Scenario.Scenarios.TheBoundaryBeyond
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -12,6 +14,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
@@ -53,8 +56,30 @@ instance HasTokenValue TheBoundaryBeyond where
     ElderThing -> pure $ toTokenValue attrs ElderThing 4 4
     otherFace -> getTokenValue iid otherFace attrs
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFive
+  , Skull
+  , Skull
+  , Cultist
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage TheBoundaryBeyond where
   runMessage msg s@(TheBoundaryBeyond attrs) = case msg of
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+      pure s
     Setup -> do
       iids <- getInvestigatorIds
       forgedABondWithIchtaca <- getHasRecord
@@ -62,6 +87,7 @@ instance RunMessage TheBoundaryBeyond where
       foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
       rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
       withGasoline <- headMay <$> getInvestigatorsWithSupply Gasoline
+      setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       tokens <- getTokensInBag
       let
@@ -85,7 +111,7 @@ instance RunMessage TheBoundaryBeyond where
                )
 
       encounterDeck <-
-        buildEncounterDeck
+        buildEncounterDeckExcluding [Enemies.padmaAmrita]
         $ [ EncounterSet.TheBoundaryBeyond
           , EncounterSet.TemporalFlux
           , EncounterSet.Poison
@@ -119,17 +145,33 @@ instance RunMessage TheBoundaryBeyond where
         , Treacheries.lostInTime
         ]
 
+      setAsideCards <-
+        traverse genCard
+        $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
+        <> replicate setAsidePoisonedCount Treacheries.poisoned
+
+      isStandalone <- getIsStandalone
+
       pushAll
-        $ [ story iids introPart1
-          , story iids
-            $ if forgedABondWithIchtaca then ichtacasQuest else silentJourney
-          , story iids
-            $ if foundTheMissingRelic then arcaneThrumming else growingConcern
-          , story iids
-            $ if rescuedAlejandro then alejandrosThoughts else anEmptySeat
-          ]
-        <> [ story iids outOfGas | isNothing withGasoline ]
-        <> [ UseSupply iid Gasoline | iid <- maybeToList withGasoline ]
+        $ [story iids introPart1]
+        <> [ story iids
+               $ if forgedABondWithIchtaca then ichtacasQuest else silentJourney
+           | not isStandalone
+           ]
+        <> [ story iids $ if foundTheMissingRelic
+               then arcaneThrumming
+               else growingConcern
+           | not isStandalone
+           ]
+        <> [ story iids
+               $ if rescuedAlejandro then alejandrosThoughts else anEmptySeat
+           | not isStandalone
+           ]
+        <> [ story iids outOfGas | not isStandalone && isNothing withGasoline ]
+        <> [ UseSupply iid Gasoline
+           | not isStandalone
+           , iid <- maybeToList withGasoline
+           ]
         <> [story iids introPart2]
         <> [ SetEncounterDeck encounterDeck
            , PlaceLocation metropolitanCathedral
@@ -147,5 +189,18 @@ instance RunMessage TheBoundaryBeyond where
                ]
            | iid <- iids
            ]
-      pure s
+      TheBoundaryBeyond <$> runMessage
+        msg
+        (attrs
+        & (decksL . at ExplorationDeck ?~ explorationDeck)
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.crossingTheThreshold, Acts.pastAndPresent]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
+          )
+        )
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

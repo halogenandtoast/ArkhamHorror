@@ -14,8 +14,12 @@ newtype MetropolitanCathedral = MetropolitanCathedral LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 metropolitanCathedral :: LocationCard MetropolitanCathedral
-metropolitanCathedral =
-  location MetropolitanCathedral Cards.metropolitanCathedral 3 (Static 0)
+metropolitanCathedral = locationWith
+  MetropolitanCathedral
+  Cards.metropolitanCathedral
+  3
+  (Static 0)
+  (labelL .~ "square")
 
 instance HasAbilities MetropolitanCathedral where
   getAbilities (MetropolitanCathedral attrs) = getAbilities attrs

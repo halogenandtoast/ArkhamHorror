@@ -14,7 +14,8 @@ newtype Xochimilco = Xochimilco LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 xochimilco :: LocationCard Xochimilco
-xochimilco = location Xochimilco Cards.xochimilco 4 (Static 0)
+xochimilco =
+  locationWith Xochimilco Cards.xochimilco 4 (Static 0) (labelL .~ "heart")
 
 instance HasAbilities Xochimilco where
   getAbilities (Xochimilco attrs) = getAbilities attrs

@@ -14,8 +14,12 @@ newtype LakeXochimilco_183 = LakeXochimilco_183 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lakeXochimilco_183 :: LocationCard LakeXochimilco_183
-lakeXochimilco_183 =
-  location LakeXochimilco_183 Cards.lakeXochimilco_183 4 (PerPlayer 2)
+lakeXochimilco_183 = locationWith
+  LakeXochimilco_183
+  Cards.lakeXochimilco_183
+  4
+  (PerPlayer 2)
+  (labelL .~ "heart")
 
 instance HasAbilities LakeXochimilco_183 where
   getAbilities (LakeXochimilco_183 attrs) = getAbilities attrs

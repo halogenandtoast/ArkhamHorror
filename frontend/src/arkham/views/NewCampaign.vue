@@ -27,6 +27,7 @@ const scenarios = computed(() => {
     { id: '03316', name: 'Dim Carcosa', },
     { id: '04054', name: 'The Doom of Eztli', beta: true },
     { id: '04113', name: 'Threads of Fate', beta: true },
+    { id: '04161', name: 'The Boundary Beyond', beta: true },
     { id: '81001', name: 'Curse of the Rougarou', },
     { id: '82001', name: 'Carnevale of Horrors', },
   ].filter((s) => {

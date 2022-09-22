@@ -2691,11 +2691,17 @@ overgrownRuins = (location
   }
 
 eztliExhibit :: CardDef
-eztliExhibit =
-  (location "04117b" "Eztli Exhibit" [Miskatonic, Exhibit] Plus [Diamond] ThreadsOfFate)
-    { cdDoubleSided = False
-    , cdVictoryPoints = Just 1
-    }
+eztliExhibit = (location
+                 "04117b"
+                 "Eztli Exhibit"
+                 [Miskatonic, Exhibit]
+                 Plus
+                 [Diamond]
+                 ThreadsOfFate
+               )
+  { cdDoubleSided = False
+  , cdVictoryPoints = Just 1
+  }
 
 velmasDiner :: CardDef
 velmasDiner =
@@ -2714,11 +2720,17 @@ townHall =
     }
 
 arkhamPoliceStation :: CardDef
-arkhamPoliceStation =
-  (location "04126b" "Arkham Police Station" [Arkham] NoSymbol [Moon] ThreadsOfFate)
-    { cdVictoryPoints = Just 1
-    , cdDoubleSided = False
-    }
+arkhamPoliceStation = (location
+                        "04126b"
+                        "Arkham Police Station"
+                        [Arkham]
+                        NoSymbol
+                        [Moon]
+                        ThreadsOfFate
+                      )
+  { cdVictoryPoints = Just 1
+  , cdDoubleSided = False
+  }
 
 trainTracks :: CardDef
 trainTracks =
@@ -2788,112 +2800,148 @@ coyoacan = location
   TheBoundaryBeyond
 
 temploMayor_174 :: CardDef
-temploMayor_174 = location
-  "04174"
-  "Templo Mayor"
-  [Ancient, Tenochtitlan]
-  Circle
-  [Square, Triangle]
-  TheBoundaryBeyond
+temploMayor_174 = (location
+                    "04174"
+                    "Templo Mayor"
+                    [Ancient, Tenochtitlan]
+                    Circle
+                    [Square, Triangle]
+                    TheBoundaryBeyond
+                  )
+  { cdDoubleSided = False
+  }
 
 temploMayor_175 :: CardDef
-temploMayor_175 = location
-  "04175"
-  "Templo Mayor"
-  [Ancient, Tenochtitlan]
-  Circle
-  [Square, Triangle]
-  TheBoundaryBeyond
+temploMayor_175 = (location
+                    "04175"
+                    "Templo Mayor"
+                    [Ancient, Tenochtitlan]
+                    Circle
+                    [Square, Triangle]
+                    TheBoundaryBeyond
+                  )
+  { cdDoubleSided = False
+  }
 
 templesOfTenochtitlan_176 :: CardDef
-templesOfTenochtitlan_176 = location
-  "04176"
-  "Temples of Tenochtitlán "
-  [Ancient, Tenochtitlan]
-  Square
-  [Diamond, Circle]
-  TheBoundaryBeyond
+templesOfTenochtitlan_176 = (location
+                              "04176"
+                              "Temples of Tenochtitlán "
+                              [Ancient, Tenochtitlan]
+                              Square
+                              [Diamond, Circle]
+                              TheBoundaryBeyond
+                            )
+  { cdDoubleSided = False
+  }
 
 templesOfTenochtitlan_177 :: CardDef
-templesOfTenochtitlan_177 = location
-  "04177"
-  "Temples of Tenochtitlán "
-  [Ancient, Tenochtitlan]
-  Square
-  [Diamond, Circle]
-  TheBoundaryBeyond
+templesOfTenochtitlan_177 = (location
+                              "04177"
+                              "Temples of Tenochtitlán "
+                              [Ancient, Tenochtitlan]
+                              Square
+                              [Diamond, Circle]
+                              TheBoundaryBeyond
+                            )
+  { cdDoubleSided = False
+  }
 
 chapultepecHill_178 :: CardDef
-chapultepecHill_178 = location
-  "04178"
-  "Chapultepec Hill "
-  [Ancient, Tenochtitlan]
-  Triangle
-  [Star, Circle]
-  TheBoundaryBeyond
+chapultepecHill_178 = (location
+                        "04178"
+                        "Chapultepec Hill "
+                        [Ancient, Tenochtitlan]
+                        Triangle
+                        [Star, Circle]
+                        TheBoundaryBeyond
+                      )
+  { cdDoubleSided = False
+  }
 
 chapultepecHill_179 :: CardDef
-chapultepecHill_179 = location
-  "04179"
-  "Chapultepec Hill "
-  [Ancient, Tenochtitlan]
-  Triangle
-  [Star, Circle]
-  TheBoundaryBeyond
+chapultepecHill_179 = (location
+                        "04179"
+                        "Chapultepec Hill "
+                        [Ancient, Tenochtitlan]
+                        Triangle
+                        [Star, Circle]
+                        TheBoundaryBeyond
+                      )
+  { cdDoubleSided = False
+  }
 
 canalsOfTenochtitlan_180 :: CardDef
-canalsOfTenochtitlan_180 = location
-  "04180"
-  "Canals of Tenochtitlán"
-  [Ancient, Tenochtitlan]
-  Diamond
-  [Heart, Square]
-  TheBoundaryBeyond
+canalsOfTenochtitlan_180 = (location
+                             "04180"
+                             "Canals of Tenochtitlán"
+                             [Ancient, Tenochtitlan]
+                             Diamond
+                             [Heart, Square]
+                             TheBoundaryBeyond
+                           )
+  { cdDoubleSided = False
+  }
 
 canalsOfTenochtitlan_181 :: CardDef
-canalsOfTenochtitlan_181 = location
-  "04181"
-  "Canals of Tenochtitlán"
-  [Ancient, Tenochtitlan]
-  Diamond
-  [Heart, Square]
-  TheBoundaryBeyond
+canalsOfTenochtitlan_181 = (location
+                             "04181"
+                             "Canals of Tenochtitlán"
+                             [Ancient, Tenochtitlan]
+                             Diamond
+                             [Heart, Square]
+                             TheBoundaryBeyond
+                           )
+  { cdDoubleSided = False
+  }
 
 lakeXochimilco_182 :: CardDef
-lakeXochimilco_182 = location
-  "04182"
-  "Lake Xochimilco"
-  [Ancient, Tenochtitlan]
-  Heart
-  [Diamond, Star]
-  TheBoundaryBeyond
+lakeXochimilco_182 = (location
+                       "04182"
+                       "Lake Xochimilco"
+                       [Ancient, Tenochtitlan]
+                       Heart
+                       [Diamond, Star]
+                       TheBoundaryBeyond
+                     )
+  { cdDoubleSided = False
+  }
 
 lakeXochimilco_183 :: CardDef
-lakeXochimilco_183 = location
-  "04183"
-  "Lake Xochimilco"
-  [Ancient, Tenochtitlan]
-  Heart
-  [Diamond, Star]
-  TheBoundaryBeyond
+lakeXochimilco_183 = (location
+                       "04183"
+                       "Lake Xochimilco"
+                       [Ancient, Tenochtitlan]
+                       Heart
+                       [Diamond, Star]
+                       TheBoundaryBeyond
+                     )
+  { cdDoubleSided = False
+  }
 
 sacredWoods_184 :: CardDef
-sacredWoods_184 = location
-  "04184"
-  "Sacred Woods"
-  [Ancient, Tenochtitlan]
-  Star
-  [Heart, Triangle]
-  TheBoundaryBeyond
+sacredWoods_184 = (location
+                    "04184"
+                    "Sacred Woods"
+                    [Ancient, Tenochtitlan]
+                    Star
+                    [Heart, Triangle]
+                    TheBoundaryBeyond
+                  )
+  { cdDoubleSided = False
+  }
 
 sacredWoods_185 :: CardDef
-sacredWoods_185 = location
-  "04185"
-  "Sacred Woods"
-  [Ancient, Tenochtitlan]
-  Star
-  [Heart, Triangle]
-  TheBoundaryBeyond
+sacredWoods_185 = (location
+                    "04185"
+                    "Sacred Woods"
+                    [Ancient, Tenochtitlan]
+                    Star
+                    [Heart, Triangle]
+                    TheBoundaryBeyond
+                  )
+  { cdDoubleSided = False
+  }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

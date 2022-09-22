@@ -25,9 +25,12 @@ import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
+import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait ( Trait (Ancient) )
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype TheBoundaryBeyond = TheBoundaryBeyond ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -94,21 +97,12 @@ instance RunMessage TheBoundaryBeyond where
         cultistCount = count ((== Cultist) . tokenFace) tokens
         tabletCount = count ((== Tablet) . tokenFace) tokens
         additionalSets =
-          (if cultistCount >= 2
-              then [EncounterSet.PnakoticBrotherhood, EncounterSet.DarkCult]
-              else []
-            )
-            <> (if tabletCount >= 2
-                 then [EncounterSet.YigsVenom, EncounterSet.GuardiansOfTime]
-                 else []
-               )
-            <> (if cultistCount < 2 && tabletCount < 3
-                 then
-                   [ EncounterSet.PnakoticBrotherhood
-                   , EncounterSet.GuardiansOfTime
-                   ]
-                 else []
-               )
+          guard (cultistCount >= 2)
+            *> [EncounterSet.PnakoticBrotherhood, EncounterSet.DarkCult]
+            <> guard (tabletCount >= 2)
+            *> [EncounterSet.YigsVenom, EncounterSet.GuardiansOfTime]
+            <> guard (cultistCount < 2 && tabletCount < 2)
+            *> [EncounterSet.PnakoticBrotherhood, EncounterSet.GuardiansOfTime]
 
       encounterDeck <-
         buildEncounterDeckExcluding [Enemies.padmaAmrita]
@@ -174,6 +168,8 @@ instance RunMessage TheBoundaryBeyond where
            ]
         <> [story iids introPart2]
         <> [ SetEncounterDeck encounterDeck
+           , SetAgendaDeck
+           , SetActDeck
            , PlaceLocation metropolitanCathedral
            , PlaceLocation zocalo
            , PlaceLocation templeRuins
@@ -203,4 +199,11 @@ instance RunMessage TheBoundaryBeyond where
           ?~ [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
           )
         )
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher
+      pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

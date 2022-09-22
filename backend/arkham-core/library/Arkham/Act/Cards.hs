@@ -75,6 +75,7 @@ allActCards = mapFromList $ map
   , breakingAndEntering
   , campusSafety
   , closeTheRift
+  , crossingTheThreshold
   , curtainCall
   , discoveringTheTruth
   , disruptingTheRitual
@@ -109,6 +110,7 @@ allActCards = mapFromList $ map
   , openThePathAbove
   , openThePathBelow
   , outOfThisWorld
+  , pastAndPresent
   , planningTheEscape
   , pursuingShadows
   , raceForAnswers
@@ -130,6 +132,7 @@ allActCards = mapFromList $ map
   , strangeRelicsMariaDeSilva
   , strangeRelicsMariasInformation
   , theBarrier
+  , theBrotherhoodIsRevealed
   , theCarnevaleConspiracy
   , theCaveOfDarknessEmbroiledInBattle
   , theCaveOfDarknessTunnelsInTheDark
@@ -146,6 +149,7 @@ allActCards = mapFromList $ map
   , theReallyBadOnesV1
   , theReallyBadOnesV2
   , theRelicIsMissing
+  , theReturnTrip
   , theStrangerACityAflame
   , theStrangerThePathIsMine
   , theStrangerTheShoresOfHali
@@ -452,6 +456,15 @@ strangeOccurences = act "04139" "Strange Occurrences" 3 ThreadsOfFate
 
 theBrotherhoodIsRevealed :: CardDef
 theBrotherhoodIsRevealed = act "04140" "The Brotherhood is Revealed" 3 ThreadsOfFate
+
+crossingTheThreshold :: CardDef
+crossingTheThreshold = act "04165" "Crossing the Threshold" 1 TheBoundaryBeyond
+
+pastAndPresent :: CardDef
+pastAndPresent = act "04166" "Past and Present" 2 TheBoundaryBeyond
+
+theReturnTrip :: CardDef
+theReturnTrip = act "04167" "The Return Trip" 3 TheBoundaryBeyond
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

@@ -14,7 +14,7 @@ newtype Zocalo = Zocalo LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zocalo :: LocationCard Zocalo
-zocalo = location Zocalo Cards.zocalo 3 (Static 0)
+zocalo = locationWith Zocalo Cards.zocalo 3 (Static 0) (labelL .~ "diamond")
 
 instance HasAbilities Zocalo where
   getAbilities (Zocalo attrs) = getAbilities attrs

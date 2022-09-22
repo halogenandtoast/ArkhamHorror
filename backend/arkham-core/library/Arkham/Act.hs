@@ -147,6 +147,10 @@ allActs = mapFromList $ map
   , SomeActCard strangeRelicsMariasInformation
   , SomeActCard strangeOccurences
   , SomeActCard theBrotherhoodIsRevealed
+  -- The Boundary Beyond
+  , SomeActCard crossingTheThreshold
+  , SomeActCard pastAndPresent
+  , SomeActCard theReturnTrip
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

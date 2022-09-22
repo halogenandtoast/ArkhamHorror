@@ -35,6 +35,7 @@ library
       Arkham.Act.Cards.BreakingAndEntering
       Arkham.Act.Cards.CampusSafety
       Arkham.Act.Cards.CloseTheRift
+      Arkham.Act.Cards.CrossingTheThreshold
       Arkham.Act.Cards.CurtainCall
       Arkham.Act.Cards.DiscoveringTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
@@ -69,6 +70,7 @@ library
       Arkham.Act.Cards.OpenThePathAbove
       Arkham.Act.Cards.OpenThePathBelow
       Arkham.Act.Cards.OutOfThisWorld
+      Arkham.Act.Cards.PastAndPresent
       Arkham.Act.Cards.PlanningTheEscape
       Arkham.Act.Cards.PursuingShadows
       Arkham.Act.Cards.RaceForAnswers
@@ -107,6 +109,7 @@ library
       Arkham.Act.Cards.TheReallyBadOnesV1
       Arkham.Act.Cards.TheReallyBadOnesV2
       Arkham.Act.Cards.TheRelicIsMissing
+      Arkham.Act.Cards.TheReturnTrip
       Arkham.Act.Cards.TheStrangerACityAflame
       Arkham.Act.Cards.TheStrangerThePathIsMine
       Arkham.Act.Cards.TheStrangerTheShoresOfHali
@@ -173,7 +176,9 @@ library
       Arkham.Agenda.Cards.StrangeDisappearances
       Arkham.Agenda.Cards.SwallowedSky
       Arkham.Agenda.Cards.TheArkhamWoods
+      Arkham.Agenda.Cards.TheBarrierIsThin
       Arkham.Agenda.Cards.TheBeastUnleashed
+      Arkham.Agenda.Cards.TheBoundaryBroken
       Arkham.Agenda.Cards.TheCityFloods
       Arkham.Agenda.Cards.TheCloverClub
       Arkham.Agenda.Cards.TheCurseSpreads
@@ -197,6 +202,7 @@ library
       Arkham.Agenda.Cards.TheTruthIsHidden
       Arkham.Agenda.Cards.TheyreGettingOut
       Arkham.Agenda.Cards.ThreeFates
+      Arkham.Agenda.Cards.TimeCollapsing
       Arkham.Agenda.Cards.TimeIsRunningShort
       Arkham.Agenda.Cards.TorturousDescent
       Arkham.Agenda.Cards.UndergroundMuscle

@@ -14,7 +14,12 @@ newtype ChapultepecHill_178 = ChapultepecHill_178 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chapultepecHill_178 :: LocationCard ChapultepecHill_178
-chapultepecHill_178 = location ChapultepecHill_178 Cards.chapultepecHill_178 2 (PerPlayer 2)
+chapultepecHill_178 = locationWith
+  ChapultepecHill_178
+  Cards.chapultepecHill_178
+  2
+  (PerPlayer 2)
+  (labelL .~ "triangle")
 
 instance HasAbilities ChapultepecHill_178 where
   getAbilities (ChapultepecHill_178 attrs) = getAbilities attrs

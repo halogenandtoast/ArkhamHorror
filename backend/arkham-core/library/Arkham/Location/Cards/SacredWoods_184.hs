@@ -14,8 +14,12 @@ newtype SacredWoods_184 = SacredWoods_184 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sacredWoods_184 :: LocationCard SacredWoods_184
-sacredWoods_184 =
-  location SacredWoods_184 Cards.sacredWoods_184 4 (PerPlayer 1)
+sacredWoods_184 = locationWith
+  SacredWoods_184
+  Cards.sacredWoods_184
+  4
+  (PerPlayer 1)
+  (labelL .~ "star")
 
 instance HasAbilities SacredWoods_184 where
   getAbilities (SacredWoods_184 attrs) = getAbilities attrs

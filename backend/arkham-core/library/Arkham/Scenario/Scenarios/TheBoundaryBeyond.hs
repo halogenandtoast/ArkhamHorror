@@ -97,12 +97,17 @@ instance RunMessage TheBoundaryBeyond where
         cultistCount = count ((== Cultist) . tokenFace) tokens
         tabletCount = count ((== Tablet) . tokenFace) tokens
         additionalSets =
-          guard (cultistCount >= 2)
+          (guard (cultistCount >= 2)
             *> [EncounterSet.PnakoticBrotherhood, EncounterSet.DarkCult]
-            <> guard (tabletCount >= 2)
-            *> [EncounterSet.YigsVenom, EncounterSet.GuardiansOfTime]
-            <> guard (cultistCount < 2 && tabletCount < 2)
-            *> [EncounterSet.PnakoticBrotherhood, EncounterSet.GuardiansOfTime]
+            )
+            <> (guard (tabletCount >= 2)
+               *> [EncounterSet.YigsVenom, EncounterSet.GuardiansOfTime]
+               )
+            <> (guard (cultistCount < 2 && tabletCount < 2)
+               *> [ EncounterSet.PnakoticBrotherhood
+                  , EncounterSet.GuardiansOfTime
+                  ]
+               )
 
       encounterDeck <-
         buildEncounterDeckExcluding [Enemies.padmaAmrita]

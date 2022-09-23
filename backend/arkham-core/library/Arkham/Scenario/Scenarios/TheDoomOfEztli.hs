@@ -254,7 +254,7 @@ instance RunMessage TheDoomOfEztli where
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do
-      explore iid source locationMatcher
+      explore iid source locationMatcher PlaceExplored
       pure s
     ResolveToken _ ElderThing iid -> do
       when (isHardExpert attrs) $ do

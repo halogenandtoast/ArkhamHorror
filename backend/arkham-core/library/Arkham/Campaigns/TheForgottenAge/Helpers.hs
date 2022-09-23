@@ -76,8 +76,11 @@ getSetAsidePoisoned =
     . find ((== Treacheries.poisoned) . toCardDef)
     <$> scenarioField ScenarioSetAsideCards
 
-explore :: InvestigatorId -> Source -> CardMatcher -> GameT ()
-explore iid source cardMatcher = do
+data ExploreRule = PlaceExplored | ReplaceExplored
+  deriving stock Eq
+
+explore :: InvestigatorId -> Source -> CardMatcher -> ExploreRule -> GameT ()
+explore iid source cardMatcher exploreRule = do
   explorationDeck <- getExplorationDeck
   canMove <- iid <=~> InvestigatorCanMove
   let
@@ -110,9 +113,22 @@ explore iid source cardMatcher = do
             [ Window Timing.After
                 $ Window.Explored iid (Success $ toLocationId x)
             ]
+
+          locationAction <- case exploreRule of
+            PlaceExplored -> pure $ PlaceLocation x
+            ReplaceExplored -> do
+              let
+                lSymbol = fromJustNote "no location symbol"
+                  $ cdLocationRevealedSymbol (toCardDef x)
+              mLocationToReplace <- selectOne $ LocationWithSymbol lSymbol
+              pure $ ReplaceLocation
+                (fromJustNote "no location found" mLocationToReplace)
+                x
           pure
-            $ [PlaceLocation x]
-            <> [ MoveTo source iid (toLocationId x) | canMove ]
+            $ locationAction
+            : [ MoveTo source iid (toLocationId x)
+              | canMove && exploreRule == PlaceExplored
+              ]
             <> [ UpdateHistory iid historyItem
                , afterExploredWindow
                , afterPutIntoPlayWindow

@@ -125,6 +125,7 @@ data Message
   | AdvanceAgendaDeck Int Source
   | AdvanceCurrentAgenda
   | ReplaceLocation LocationId Card
+  | ReplacedLocation LocationId LocationId
   | ReplaceAgenda AgendaId AgendaId
   | RevertAgenda AgendaId
   | ResetAgendaDeckToStage Int

@@ -209,6 +209,6 @@ instance RunMessage TheBoundaryBeyond where
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do
-      explore iid source locationMatcher
+      explore iid source locationMatcher ReplaceExplored
       pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

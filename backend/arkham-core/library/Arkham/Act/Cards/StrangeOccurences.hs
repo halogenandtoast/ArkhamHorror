@@ -9,6 +9,8 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Criteria
 import {-# SOURCE #-} Arkham.GameEnv
@@ -59,6 +61,7 @@ instance HasAbilities StrangeOccurences where
           )
         $ Objective
         $ ForcedAbility AnyWindow
+    | onSide E a
     ]
 
 instance RunMessage StrangeOccurences where
@@ -71,14 +74,16 @@ instance RunMessage StrangeOccurences where
       leadInvestigatorId <- getLeadInvestigatorId
       isTownHall <-
         selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
-      ichtaca <- selectJust $ assetIs Assets.ichtacaTheForgottenGuardian
+      ichtaca <- PlayerCard <$> genPlayerCard Assets.ichtacaTheForgottenGuardian
       iids <- selectList $ NearestToLocation $ locationIs $ if isTownHall
         then Locations.townHall
         else Locations.rivertown
       let
         takeControlMessage = chooseOrRunOne
           leadInvestigatorId
-          [ targetLabel iid [TakeControlOfAsset iid ichtaca] | iid <- iids ]
+          [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca]
+          | iid <- iids
+          ]
         nextMessage = if deckCount <= 1
           then ScenarioResolution $ Resolution 1
           else RemoveFromGame (ActTarget $ toId attrs)

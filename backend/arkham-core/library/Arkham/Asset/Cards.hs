@@ -2147,7 +2147,7 @@ harlanEarnstone = (storyAsset
 
 henryDeveau :: CardDef
 henryDeveau = (storyAsset
-                    "04125b"
+                    "04125d"
                     ("Henry Deveau" <:> "Friend of Alejandro")
                     0
                     ThreadsOfFate
@@ -2159,7 +2159,7 @@ henryDeveau = (storyAsset
 
 mariaDeSilva :: CardDef
 mariaDeSilva = (storyAsset
-                    "04134b"
+                    "04134f"
                     ("Maria DeSilver" <:> "Wealthy Patron")
                     0
                     ThreadsOfFate

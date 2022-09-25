@@ -1361,7 +1361,8 @@ getAssetsMatching matcher = do
       case mskillTest of
         Nothing -> pure []
         Just st -> do
-          valids <- select (AssetCardMatch $ CardWithSkill $ skillTestSkillType st)
+          valids <- select
+            (AssetCardMatch $ CardWithSkill $ skillTestSkillType st)
           pure $ filter ((`member` valids) . toId) as
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
@@ -3955,27 +3956,26 @@ runGameMessage msg g = case msg of
           Timing.When
           (Window.DrawCard iid (toCard treachery) Deck.EncounterDeck)
       ]
-    g <$ pushAll
-      (checkWindowMessage
-      : resolve (Revelation iid (TreacherySource treacheryId))
-      <> [AfterRevelation iid treacheryId]
-      )
-  DrewTreachery iid c@(PlayerCard card) -> do
+
+    modifiers' <- getModifiers (TreacheryTarget treacheryId)
+    let ignoreRevelation = IgnoreRevelation `elem` modifiers'
+
+    pushAll $ checkWindowMessage : if ignoreRevelation
+      then [Discard (TreacheryTarget treacheryId)]
+      else
+        resolve (Revelation iid (TreacherySource treacheryId))
+          <> [AfterRevelation iid treacheryId]
+    pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
+  DrewTreachery iid (PlayerCard card) -> do
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery
-    modifiers' <- getModifiers (CardTarget c)
-    let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     -- player treacheries will not trigger draw treachery windows
     pushAll
       $ [ RemoveCardFromHand iid (toCardId card)
         | cdRevelation (toCardDef card)
         ]
-      <> if ignoreRevelation
-           then []
-           else
-             resolve (Revelation iid (TreacherySource treacheryId))
-               <> [AfterRevelation iid treacheryId, UnsetActiveCard]
+      <> [ResolveTreachery iid treacheryId]
 
     let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }

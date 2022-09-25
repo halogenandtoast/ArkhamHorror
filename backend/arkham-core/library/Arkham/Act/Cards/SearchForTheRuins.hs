@@ -5,7 +5,7 @@ module Arkham.Act.Cards.SearchForTheRuins
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
@@ -15,6 +15,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SearchForTheRuins = SearchForTheRuins ActAttrs
   deriving anyclass IsAct
@@ -33,10 +34,8 @@ instance HasModifiersFor SearchForTheRuins where
     pure $ if isEztliGuardian
       then toModifiers a [CannotAttack, CannotBeAttacked]
       else []
-  getModifiersFor (CardTarget card) (SearchForTheRuins a) = do
-    let
-      isArrowsFromTheTrees =
-        cardMatch card (CardWithTitle "Arrows from the Trees")
+  getModifiersFor (TreacheryTarget tid) (SearchForTheRuins a) = do
+    isArrowsFromTheTrees <- tid <=~> treacheryIs Treacheries.arrowsFromTheTrees
     pure $ toModifiers a [ IgnoreRevelation | isArrowsFromTheTrees ]
   getModifiersFor _ _ = pure []
 

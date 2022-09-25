@@ -337,8 +337,7 @@ instance RunMessage TheForgottenAge where
             else pure Nothing
 
       pushAll
-        $ [story investigatorIds prologue]
-        <> [ chooseOne
+        $ [ chooseOne
                iid
                [ Label
                  "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"

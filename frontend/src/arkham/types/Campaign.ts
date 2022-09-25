@@ -1,9 +1,13 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep
+export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint
 
 export interface PrologueStep {
   tag: 'PrologueStep';
+}
+
+export interface ResupplyPoint {
+  tag: 'ResupplyPoint';
 }
 
 export interface EpilogueStep {
@@ -15,6 +19,13 @@ export const prologueStepDecoder = JsonDecoder.object<PrologueStep>(
     tag: JsonDecoder.isExactly('PrologueStep'),
   },
   'PrologueStep',
+);
+
+export const resupplyPointStepDecoder = JsonDecoder.object<ResupplyPoint>(
+  {
+    tag: JsonDecoder.isExactly('ResupplyPoint'),
+  },
+  'ResupplyPoint',
 );
 
 export const epilogueStepDecoder = JsonDecoder.object<EpilogueStep>(
@@ -60,6 +71,7 @@ export const upgradeStepDecoder = JsonDecoder.object<UpgradeDeckStep>(
 export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
   [
     prologueStepDecoder,
+    resupplyPointStepDecoder,
     scenarioStepDecoder,
     interludeStepDecoder,
     upgradeStepDecoder,

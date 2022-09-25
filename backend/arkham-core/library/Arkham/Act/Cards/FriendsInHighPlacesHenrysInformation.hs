@@ -52,7 +52,7 @@ instance RunMessage FriendsInHighPlacesHenrysInformation where
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
       alejandroVela <- getSetAsideCard Assets.alejandroVela
-      mTownHall <- selectOne $ locationIs Locations.curiositieShoppe
+      mTownHall <- selectOne $ locationIs Locations.townHall
       createAssetMessages <- case mTownHall of
         Just townHall ->
           pure [CreateAssetAt alejandroVela (AttachedToLocation townHall)]

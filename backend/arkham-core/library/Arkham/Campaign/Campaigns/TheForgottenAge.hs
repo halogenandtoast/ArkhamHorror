@@ -26,23 +26,28 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
-newtype TheForgottenAge = TheForgottenAge CampaignAttrs
+newtype Metadata = Metadata { supplyPoints :: HashMap InvestigatorId Int }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (Monoid, Semigroup)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Metadata)
   deriving anyclass IsCampaign
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge difficulty = campaign
-  TheForgottenAge
+  (TheForgottenAge . (`with` mempty))
   (CampaignId "04")
   "The Forgotten Age"
   difficulty
   (chaosBagContents difficulty)
 
-supplyPoints :: (Monad m, HasGame m) => m Int
-supplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
+initialSupplyPoints :: (Monad m, HasGame m) => m Int
+initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
 
-resupplyPoints :: (Monad m, HasGame m) => m Int
-resupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
+initialResupplyPoints :: (Monad m, HasGame m) => m Int
+initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 supplyCost :: Supply -> Int
 supplyCost = \case
@@ -100,23 +105,22 @@ supplyLabel s = case s of
   where go label tooltip = TooltipLabel label (Tooltip tooltip)
 
 instance RunMessage TheForgottenAge where
-  runMessage msg c@(TheForgottenAge attrs) = case msg of
+  runMessage msg c@(TheForgottenAge (attrs `With` metadata)) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getInvestigatorIds
+      totalSupplyPoints <- initialSupplyPoints
+      let supplyMap = mapFromList $ map (,totalSupplyPoints) investigatorIds
       pushAll
         $ [story investigatorIds prologue]
         <> [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
            | iid <- investigatorIds
            ]
         <> [NextCampaignStep Nothing]
-      pure c
+      pure . TheForgottenAge $ attrs `with` Metadata supplyMap
     CampaignStep (Just (InvestigatorCampaignStep investigatorId PrologueStep))
       -> do
-        totalSupplyPoints <- supplyPoints
+        let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
         investigatorSupplies <- field InvestigatorSupplies investigatorId
-        let
-          remaining = totalSupplyPoints
-            - getSum (foldMap (Sum . supplyCost) investigatorSupplies)
 
         when (remaining > 0) $ do
           let
@@ -321,6 +325,7 @@ instance RunMessage TheForgottenAge where
       pure c
     CampaignStep (Just ResupplyPoint) -> do
       investigatorIds <- getInvestigatorIds
+      totalResupplyPoints <- initialResupplyPoints
       poisonedInvestigators <- filterM getIsPoisoned investigatorIds
       poisonedInvestigatorsWith3Xp <- filterM
         (fieldP InvestigatorXp (>= 3))
@@ -336,16 +341,18 @@ instance RunMessage TheForgottenAge where
             then pure $ Just (iid, hasPhysicalTrauma, hasMentalTrauma)
             else pure Nothing
 
+      let resupplyMap = mapFromList $ map (,totalResupplyPoints) investigatorIds
+
       pushAll
         $ [ chooseOne
-               iid
-               [ Label
-                 "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
-                 [SpendXP iid 3, RemoveCampaignCardFromDeck iid "04102"]
-               , Label "Do not remove poisoned weakness" []
-               ]
-           | iid <- poisonedInvestigatorsWith3Xp
-           ]
+              iid
+              [ Label
+                "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
+                [SpendXP iid 3, RemoveCampaignCardFromDeck iid "04102"]
+              , Label "Do not remove poisoned weakness" []
+              ]
+          | iid <- poisonedInvestigatorsWith3Xp
+          ]
         <> [ chooseOne iid
              $ [ Label
                    "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma"
@@ -364,15 +371,11 @@ instance RunMessage TheForgottenAge where
            | iid <- investigatorIds
            ]
         <> [NextCampaignStep Nothing]
-      pure c
+      pure . TheForgottenAge $ attrs `with` Metadata resupplyMap
     CampaignStep (Just (InvestigatorCampaignStep investigatorId ResupplyPoint))
       -> do
-        totalSupplyPoints <- resupplyPoints
+        let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
         investigatorSupplies <- field InvestigatorSupplies investigatorId
-        let
-          remaining = totalSupplyPoints
-            - getSum (foldMap (Sum . supplyCost) investigatorSupplies)
-
         when (remaining > 0) $ do
           let
             availableSupply s =
@@ -410,12 +413,14 @@ instance RunMessage TheForgottenAge where
       push (CampaignStep step)
       pure
         . TheForgottenAge
+        . (`with` metadata)
         $ attrs
         & (stepL .~ step)
         & (completedStepsL %~ completeStep (campaignStep attrs))
     HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
       pure
         . TheForgottenAge
+        . (`with` metadata)
         $ attrs
         & (modifiersL %~ insertWith
             (<>)
@@ -423,5 +428,9 @@ instance RunMessage TheForgottenAge where
             [toModifier CampaignSource $ StartingResources (-3)]
           )
     EndOfScenario _ -> do
-      pure . TheForgottenAge $ attrs & modifiersL .~ mempty
-    _ -> TheForgottenAge <$> runMessage msg attrs
+      pure . TheForgottenAge . (`with` metadata) $ attrs & modifiersL .~ mempty
+    PickSupply investigatorId supply -> do
+      let cost = supplyCost supply
+          supplyMap = adjustMap (max 0 . subtract cost) investigatorId (supplyPoints metadata)
+      pure . TheForgottenAge $ attrs `with` Metadata supplyMap
+    _ -> TheForgottenAge . (`with` metadata) <$> runMessage msg attrs

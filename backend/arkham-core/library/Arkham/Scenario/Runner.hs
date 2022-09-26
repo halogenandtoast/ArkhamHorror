@@ -221,14 +221,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   EndOfScenario mNextCampaignStep -> do
     clearQueue
     standalone <- getIsStandalone
-    a <$ push
-      (if standalone
-        then GameOver
-        else maybe
-          (NextCampaignStep Nothing)
-          (CampaignStep . Just)
-          mNextCampaignStep
-      )
+    push $ if standalone
+      then GameOver
+      else maybe
+        (NextCampaignStep Nothing)
+        (CampaignStep . Just)
+        mNextCampaignStep
+    pure a
   ScenarioResolution _ ->
     error "The scenario should specify what to do for no resolution"
   LookAtTopOfDeck _ ScenarioDeckTarget _ ->

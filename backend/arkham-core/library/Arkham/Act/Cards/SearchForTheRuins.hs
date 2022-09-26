@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
@@ -31,9 +30,10 @@ searchForTheRuins = act
 instance HasModifiersFor SearchForTheRuins where
   getModifiersFor (EnemyTarget eid) (SearchForTheRuins a) = do
     isEztliGuardian <- eid <=~> EnemyWithTitle "Eztli Guardian"
-    pure $ if isEztliGuardian
-      then toModifiers a [CannotAttack, CannotBeAttacked]
-      else []
+    pure
+      $ toModifiers a
+      $ guard isEztliGuardian
+      *> [CannotAttack, CannotBeAttacked]
   getModifiersFor (TreacheryTarget tid) (SearchForTheRuins a) = do
     isArrowsFromTheTrees <- tid <=~> treacheryIs Treacheries.arrowsFromTheTrees
     pure $ toModifiers a [ IgnoreRevelation | isArrowsFromTheTrees ]

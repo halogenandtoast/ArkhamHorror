@@ -2718,6 +2718,9 @@ runGameMessage msg g = case msg of
     push window
     pushEnd $ EndOfScenario mNextCampaignStep
     pure g
+  EndOfScenario _ -> case gameMode g of
+    These c _ -> pure $ g & modeL .~ This c
+    _ -> pure g
   ResetGame ->
     pure
       $ g

@@ -575,7 +575,6 @@ instance RunMessage EnemyAttrs where
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
-    EnemySetDamage eid _ amount | eid == enemyId -> pure $ a & damageL .~ amount
     Msg.EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
       a <$ when
@@ -846,6 +845,7 @@ instance RunMessage EnemyAttrs where
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
+    PlaceDamage target amount | isTarget a target -> pure $ a & damageL +~ amount
     PlaceDoom target amount | isTarget a target -> pure $ a & doomL +~ amount
     RemoveDoom target amount | isTarget a target ->
       pure $ a & doomL %~ max 0 . subtract amount

@@ -36,6 +36,10 @@ newtype TheBoundaryBeyond = TheBoundaryBeyond ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+-- | The Boundary Beyond
+-- For the location layout we make use of the location symbols rather than the
+-- location names due to how replacement works.
+
 theBoundaryBeyond :: Difficulty -> TheBoundaryBeyond
 theBoundaryBeyond difficulty = scenario
   TheBoundaryBeyond

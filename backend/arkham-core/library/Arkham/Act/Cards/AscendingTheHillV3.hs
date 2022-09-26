@@ -54,5 +54,6 @@ instance RunMessage AscendingTheHillV3 where
         ]
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- getPlayerCountValue (PerPlayer 1)
-      a <$ push (EnemySetDamage eid (toSource attrs) damage)
+      push $ PlaceDamage (EnemyTarget eid) damage
+      pure a
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

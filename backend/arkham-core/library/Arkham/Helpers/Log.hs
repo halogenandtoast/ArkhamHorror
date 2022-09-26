@@ -20,7 +20,7 @@ getCampaignLog = withStandalone
 getHasRecord :: (Monad m, HasGame m) => CampaignLogKey -> m Bool
 getHasRecord k = do
   campaignLog <- getCampaignLog
-  pure $ k `member` (campaignLogRecorded campaignLog)
+  pure $ k `member` (campaignLogRecorded campaignLog) || k `member` (campaignLogRecordedCounts campaignLog)
 
 getRecordCount :: (Monad m, HasGame m) => CampaignLogKey -> m Int
 getRecordCount k = do

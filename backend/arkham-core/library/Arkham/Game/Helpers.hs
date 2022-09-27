@@ -1754,9 +1754,12 @@ windowMatches iid source window' = \case
   Matcher.Explored timingMatcher whoMatcher resultMatcher -> case window' of
     Window t (Window.Explored who result) | timingMatcher == t -> andM
       [ matchWho iid who whoMatcher
-      , case resultMatcher of
+      , case traceShowId resultMatcher of
         Matcher.SuccessfulExplore locationMatcher -> case result of
-          Window.Success lid ->  lid <=~> locationMatcher
+          Window.Success lid -> do
+            lids <- traceShowId <$> selectList locationMatcher
+            pure $ traceShowId lid `elem` lids
+            -- traceShowId <$> (lid <=~> locationMatcher)
           Window.Failure -> pure False
         Matcher.FailedExplore -> pure $ result == Window.Failure
       ]

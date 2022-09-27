@@ -5,7 +5,6 @@ module Arkham.Agenda.Cards.TheRitualBegins
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
@@ -36,26 +35,26 @@ instance RunMessage TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       iids <- getInvestigatorIds
-      a <$ pushAll
-        ([ BeginSkillTest
-             iid
-             (toSource attrs)
-             (InvestigatorTarget iid)
-             Nothing
-             SkillWillpower
-             6
-         | iid <- iids
-         ]
+      pushAll
+        $ [ BeginSkillTest
+              iid
+              (toSource attrs)
+              (InvestigatorTarget iid)
+              Nothing
+              SkillWillpower
+              6
+          | iid <- iids
+          ]
         <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
-        )
+      pure a
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> a <$ push
-        (SearchCollectionForRandom iid source
-        $ CardWithType PlayerTreacheryType
-        <> CardWithTrait Madness
-        )
-    RequestedPlayerCard iid source mcard | isSource attrs source ->
-      case mcard of
-        Nothing -> pure a
-        Just card -> a <$ push (AddToHand iid (PlayerCard card))
+      | isSource attrs source -> do
+        push
+          $ SearchCollectionForRandom iid source
+          $ CardWithType PlayerTreacheryType
+          <> CardWithTrait Madness
+        pure a
+    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+      for_ mcard $ push . AddToHand iid . PlayerCard
+      pure a
     _ -> TheRitualBegins <$> runMessage msg attrs

@@ -129,10 +129,8 @@ explore iid source cardMatcher exploreRule = do
             : [ MoveTo source iid (toLocationId x)
               | canMove && exploreRule == PlaceExplored
               ]
-            <> [ UpdateHistory iid historyItem
-               , afterExploredWindow
-               , afterPutIntoPlayWindow
-               ]
+            <> [UpdateHistory iid historyItem, afterExploredWindow]
+            <> [ afterPutIntoPlayWindow | exploreRule == PlaceExplored ]
         else do
           windowMsg <- checkWindows
             [Window Timing.After $ Window.Explored iid Failure]

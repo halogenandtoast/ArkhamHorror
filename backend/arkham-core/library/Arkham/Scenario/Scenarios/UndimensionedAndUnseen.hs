@@ -281,16 +281,10 @@ instance RunMessage UndimensionedAndUnseen where
                 (push $ EnemyAttack iid eid DamageAny RegularAttack)
             _ -> pure s
         _ -> pure s
-    RequestedPlayerCard iid source mcard | isSource attrs source ->
-      case mcard of
-        Nothing -> pure s
-        Just card ->
-          s
-            <$ push
-                 (ShuffleCardsIntoDeck
-                   (Deck.InvestigatorDeck iid)
-                   [PlayerCard card]
-                 )
+    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+      for_ mcard $ \card -> push
+        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+      pure s
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
     ScenarioResolution (Resolution 1) -> do

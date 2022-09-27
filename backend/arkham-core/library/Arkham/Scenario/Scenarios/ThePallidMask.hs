@@ -347,4 +347,7 @@ instance RunMessage ThePallidMask where
       gainXp <- map (uncurry GainXP) <$> getXp
       pushAll $ gainXp <> [EndOfGame Nothing]
       pure s
+    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+      for_ mcard $ push . AddCardToDeckForCampaign iid
+      pure s
     _ -> ThePallidMask <$> runMessage msg attrs

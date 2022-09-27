@@ -390,19 +390,18 @@ instance RunMessage CarnevaleOfHorrors where
       pure s
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest)
       -> do
-        s <$ push
-          (chooseOne
-            currentInvestigatorId
-            (Label
-                "Do not add a mask"
-                [ChooseOneRewardByEachPlayer rewards rest]
-            : [ CardLabel
-                  (toCardCode reward)
-                  [ AddCampaignCardToDeck currentInvestigatorId reward
-                  , ChooseOneRewardByEachPlayer (delete reward rewards) rest
-                  ]
-              | reward <- rewards
-              ]
-            )
-          )
+        push
+          $ chooseOne currentInvestigatorId
+          $ Label "Do not add a mask" [ChooseOneRewardByEachPlayer rewards rest]
+          : [ CardLabel
+                (toCardCode reward)
+                [ AddCampaignCardToDeck currentInvestigatorId reward
+                , ChooseOneRewardByEachPlayer (delete reward rewards) rest
+                ]
+            | reward <- rewards
+            ]
+        pure s
+    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+      for_ mcard $ push . AddCardToDeckForCampaign iid
+      pure s
     _ -> CarnevaleOfHorrors <$> runMessage msg attrs

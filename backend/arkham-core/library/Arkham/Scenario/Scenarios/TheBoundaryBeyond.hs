@@ -16,15 +16,20 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (LocationCard, LocationName) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Name
+import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait ( Trait (Ancient) )
@@ -113,13 +118,41 @@ instance RunMessage TheBoundaryBeyond where
                   ]
                )
 
-      encounterDeck <-
-        buildEncounterDeckExcluding [Enemies.padmaAmrita]
+      let
+        explorationDeckLocations =
+          [ Locations.temploMayor_174
+          , Locations.temploMayor_175
+          , Locations.templesOfTenochtitlan_176
+          , Locations.templesOfTenochtitlan_177
+          , Locations.chapultepecHill_178
+          , Locations.chapultepecHill_179
+          , Locations.canalsOfTenochtitlan_180
+          , Locations.canalsOfTenochtitlan_181
+          , Locations.lakeXochimilco_182
+          , Locations.lakeXochimilco_183
+          , Locations.sacredWoods_184
+          , Locations.sacredWoods_185
+          ]
+        explorationDeckTreacheries =
+          [ Treacheries.windowToAnotherTime
+          , Treacheries.timelineDestabilization
+          , Treacheries.aTearInTime
+          , Treacheries.lostInTime
+          ]
+
+      encounterDeck' <-
+        buildEncounterDeckExcluding
+          (Enemies.padmaAmrita : explorationDeckLocations)
         $ [ EncounterSet.TheBoundaryBeyond
           , EncounterSet.TemporalFlux
           , EncounterSet.Poison
           ]
         <> additionalSets
+
+      let
+        encounterDeck =
+          removeEachFromDeck encounterDeck' explorationDeckTreacheries
+
 
       metropolitanCathedral <- genCard Locations.metropolitanCathedral
       zocalo <- genCard Locations.zocalo
@@ -130,23 +163,7 @@ instance RunMessage TheBoundaryBeyond where
 
       explorationDeck <- shuffleM =<< traverse
         genCard
-        [ Locations.temploMayor_174
-        , Locations.temploMayor_175
-        , Locations.templesOfTenochtitlan_176
-        , Locations.templesOfTenochtitlan_177
-        , Locations.chapultepecHill_178
-        , Locations.chapultepecHill_179
-        , Locations.canalsOfTenochtitlan_180
-        , Locations.canalsOfTenochtitlan_181
-        , Locations.lakeXochimilco_182
-        , Locations.lakeXochimilco_183
-        , Locations.sacredWoods_184
-        , Locations.sacredWoods_185
-        , Treacheries.windowToAnotherTime
-        , Treacheries.timelineDestabilization
-        , Treacheries.aTearInTime
-        , Treacheries.lostInTime
-        ]
+        (explorationDeckLocations <> explorationDeckTreacheries)
 
       setAsideCards <-
         traverse genCard
@@ -214,5 +231,30 @@ instance RunMessage TheBoundaryBeyond where
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher ReplaceExplored
+      pure s
+    AddToVictory (LocationTarget lid) -> do
+      -- We want to replace the card ID to avoid UI confusion
+      -- TODO: We REALLY want card ids and instance ids to be different
+      card <- field LocationCard lid
+      newId <- getRandom
+      let
+        card' = case card of
+          EncounterCard ec -> EncounterCard $ ec { ecId = newId }
+          _ -> error "Unhandled"
+      pure . TheBoundaryBeyond $ attrs & (victoryDisplayL %~ (card' :))
+    RemoveLocation lid -> do
+      -- we handle remove location special because we need to replace it
+      title <- fieldMap LocationName nameTitle lid
+      let
+        replacement = case title of
+          "Templo Mayor" -> Locations.templeRuins
+          "Temples of Tenochtitlán" -> Locations.metropolitanCathedral
+          "Chapultepec Hill" -> Locations.chapultepecPark
+          "Canals of Tenochtitlán" -> Locations.zocalo
+          "Lake Xochimilco" -> Locations.xochimilco
+          "Sacred Woods" -> Locations.coyoacan
+          _ -> error $ "Unmatched location title: " <> show title
+      card <- genCard replacement
+      push $ ReplaceLocation lid card
       pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

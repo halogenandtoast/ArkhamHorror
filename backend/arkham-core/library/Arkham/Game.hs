@@ -29,7 +29,6 @@ import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Cost qualified as Cost
 import Arkham.Deck qualified as Deck
-import Arkham.DefeatedBy
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
@@ -879,6 +878,8 @@ getAgendasMatching matcher = do
     AgendaWithSequence s -> pure . (== s) . agendaSequence . toAttrs
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . agendaSequence . toAttrs
+    AgendaWithDeckId n ->
+      pure . (== n) . agendaDeckId . toAttrs
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
     AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
 
@@ -892,6 +893,7 @@ getActsMatching matcher = do
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
     ActWithSide side -> pure . (== side) . AC.actSide . actSequence . toAttrs
+    ActWithDeckId n -> pure . (== n) . actDeckId . toAttrs
     ActWithTreachery treacheryMatcher -> \act -> do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
@@ -922,6 +924,7 @@ getRemainingActsMatching matcher = do
     ActWithId _ -> pure . const False
     ActWithTreachery _ -> pure . const False
     ActWithSide _ -> error "Can't check side, since not on def"
+    ActWithDeckId _ -> error "Can't check side, since not on def"
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
 getTreacheriesMatching
@@ -1054,10 +1057,10 @@ getGameAbilities = do
     <> investigatorAbilities
 
 getLocationMatching
-  :: (Monad m, HasGame m) => LocationMatcher -> m (Maybe Location)
+  :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
-getLocationsMatching :: (Monad m, HasGame m) => LocationMatcher -> m [Location]
+getLocationsMatching :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
@@ -2937,18 +2940,6 @@ runGameMessage msg g = case msg of
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
     g <$ push window
-  RemoveLocation lid -> do
-    investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
-    windowMsgs <- for investigatorIds $ \iid ->
-      checkWindows
-        $ (`Window` Window.InvestigatorWouldBeDefeated
-            (LocationSource lid)
-            DefeatedByOther
-            iid
-          )
-        <$> [Timing.When]
-    pushAll $ windowMsgs <> [RemovedLocation lid]
-    pure g
   RemovedLocation lid -> do
     treacheryIds <- selectList $ TreacheryAt $ LocationWithId lid
     pushAll $ concatMap (resolve . Discard . TreacheryTarget) treacheryIds
@@ -3466,6 +3457,11 @@ runGameMessage msg g = case msg of
     windowMsgs <- windows [Window.AddedToVictory card]
     pushAll $ RemoveTreachery tid : windowMsgs
     pure $ g & (entitiesL . treacheriesL %~ deleteMap tid) -- we might not want to remove here?
+  AddToVictory (LocationTarget lid) -> do
+    card <- field LocationCard lid
+    windowMsgs <- windows [Window.AddedToVictory card]
+    pushAll $ RemoveLocation lid : windowMsgs
+    pure g
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
     investigatorIds <- getInvestigatorIds

@@ -984,6 +984,7 @@ data AgendaMatcher
   | AgendaWithTreachery TreacheryMatcher
   | AgendaWithSequence AgendaSequence
   | AgendaWithSide AgendaSide
+  | AgendaWithDeckId Int
   | NotAgenda AgendaMatcher
   | AgendaMatches [AgendaMatcher]
   deriving stock (Show, Eq, Generic)
@@ -1002,6 +1003,7 @@ data ActMatcher
   | AnyAct
   | ActWithSide ActSide
   | ActWithTreachery TreacheryMatcher
+  | ActWithDeckId Int
   | NotAct ActMatcher
   | ActOneOf [ActMatcher]
   deriving stock (Show, Eq, Generic)

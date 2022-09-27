@@ -84,7 +84,7 @@ cancelToken token = withQueue $ \queue ->
   )
 
 getPlayableCards
-  :: (Monad m, HasGame m)
+  :: (HasCallStack, Monad m, HasGame m)
   => InvestigatorAttrs
   -> CostStatus
   -> [Window]
@@ -656,7 +656,7 @@ hasEvadeActions _ window = notNull <$> select
   (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
 getIsPlayable
-  :: (Monad m, HasGame m)
+  :: (HasCallStack, Monad m, HasGame m)
   => InvestigatorId
   -> Source
   -> CostStatus
@@ -675,7 +675,7 @@ withDepthGuard maxDepth defaultValue body = do
     if depth > maxDepth then pure defaultValue else local delve body
 
 getIsPlayableWithResources
-  :: (Monad m, HasGame m)
+  :: (HasCallStack, Monad m, HasGame m)
   => InvestigatorId
   -> Source
   -> Int
@@ -794,7 +794,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesCriteria
-  :: (Monad m, HasGame m)
+  :: (HasCallStack, Monad m, HasGame m)
   => InvestigatorId
   -> Source
   -> [Window]

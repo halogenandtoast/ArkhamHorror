@@ -1745,7 +1745,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   CheckWindow iids windows | investigatorId `elem` iids -> do
     a <$ push (RunWindow investigatorId windows)
-  RunWindow iid windows | iid == investigatorId -> do
+  RunWindow iid windows | iid == investigatorId && not (investigatorDefeated || investigatorResigned) -> do
     actions <- nub . concat <$> traverse (getActions iid) windows
     playableCards <- getPlayableCards a UnpaidCost windows
     unless (null playableCards && null actions) $ if any isForcedAbility actions

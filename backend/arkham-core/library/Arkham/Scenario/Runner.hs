@@ -7,8 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Scenario.Types as X
 
-import Arkham.Act.Sequence
+import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types ( Field (..) )
+import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.Card
@@ -20,6 +21,7 @@ import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Deck qualified as Deck
+import Arkham.DefeatedBy
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
@@ -38,6 +40,7 @@ import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -166,6 +169,30 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       . at n
       ?~ actStack'
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
+  SetCurrentActDeck n stack@(current : _) -> do
+    actIds <- selectList $ Matcher.ActWithDeckId n
+    pushAll
+      $ [ Discard (ActTarget actId) | actId <- actIds ]
+      <> [AddAct n $ toCardDef current]
+    pure
+      $ a
+      & actStackL
+      . at n
+      ?~ map toCardDef stack
+      & setAsideCardsL
+      %~ filter (`notElem` stack)
+  SetCurrentAgendaDeck n stack@(current : _) -> do
+    agendaIds <- selectList $ Matcher.AgendaWithDeckId n
+    pushAll
+      $ [ Discard (AgendaTarget agendaId) | agendaId <- agendaIds ]
+      <> [AddAgenda n $ toCardDef current]
+    pure
+      $ a
+      & agendaStackL
+      . at n
+      ?~ map toCardDef stack
+      & setAsideCardsL
+      %~ filter (`notElem` stack)
   AdvanceToAct n act newActSide _ -> do
     actStack' <- case lookup n scenarioActStack of
       Just (x : ys) -> do
@@ -173,7 +200,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           fromActId = ActId (toCardCode x)
           toActId = ActId (toCardCode act)
         when
-          (newActSide == B)
+          (newActSide == Act.B)
           (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
         push (ReplaceAct fromActId toActId)
         pure $ filter
@@ -184,6 +211,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           ys
       _ -> error "Can not advance act deck"
     pure $ a & actStackL . at n ?~ actStack'
+  AdvanceToAgenda n agenda newAgendaSide _ -> do
+    agendaStack' <- case lookup n scenarioAgendaStack of
+      Just (x : ys) -> do
+        let
+          fromAgendaId = AgendaId (toCardCode x)
+          toAgendaId = AgendaId (toCardCode agenda)
+        when (newAgendaSide == Agenda.B) $ push $ AdvanceAgenda toAgendaId
+        push (ReplaceAgenda fromAgendaId toAgendaId)
+        pure $ filter
+          (\c ->
+            (cdStage c /= cdStage agenda)
+              || (cdCardCode c `cardCodeExactEq` cdCardCode agenda)
+          )
+          ys
+      _ -> error "Can not advance agenda deck"
+    pure $ a & agendaStackL . at n ?~ agendaStack'
 
   Discard (ActTarget _) -> pure $ a & actStackL .~ mempty
   -- See: Vengeance Awaits / The Devourer Below - right now the assumption
@@ -273,6 +316,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         $ "Invalid scenario deck key "
         <> show key
         <> ", could not find deck in scenario"
+  RemoveCardFromScenarioDeck key card ->
+    pure $ a & (decksL . ix key %~ filter (/= card))
   ChooseRandomLocation target exclusions -> do
     locationIds <-
       setToList . (`difference` exclusions) <$> select Matcher.Anywhere
@@ -338,6 +383,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
+    pure $ a & (victoryDisplayL %~ (card :))
+  AddToVictory (LocationTarget lid) -> do
+    card <- field LocationCard lid
     pure $ a & (victoryDisplayL %~ (card :))
   DefeatedAddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
@@ -708,6 +756,19 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
     deck' <- shuffleM $ cards <> fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
+  RemoveLocation lid -> do
+    investigatorIds <-
+      selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid
+    windowMsgs <- for investigatorIds $ \iid ->
+      checkWindows
+        $ (`Window` Window.InvestigatorWouldBeDefeated
+            (LocationSource lid)
+            DefeatedByOther
+            iid
+          )
+        <$> [Timing.When]
+    pushAll $ windowMsgs <> [RemovedLocation lid]
+    pure a
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
     locations <- selectListMap

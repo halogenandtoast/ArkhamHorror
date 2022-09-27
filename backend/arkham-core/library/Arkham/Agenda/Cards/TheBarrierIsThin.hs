@@ -5,6 +5,8 @@ module Arkham.Agenda.Cards.TheBarrierIsThin
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -17,6 +19,7 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenario.Deck
 import Arkham.Target
 import Arkham.Trait
 
@@ -34,15 +37,17 @@ instance RunMessage TheBarrierIsThin where
       tenochtitlanLocations <-
         selectList $ LocationWithTrait Tenochtitlan <> LocationWithoutClues
       iids <- getInvestigatorIds
-      actIds <- selectList AnyAct
+      timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
+      theReturnTrip <- getSetAsideCard Acts.theReturnTrip
 
       pushAll
         $ map (AddToVictory . LocationTarget) tenochtitlanLocations
         <> [NextAdvanceAgendaStep (toId attrs) 1]
         <> map InvestigatorDiscardAllClues iids
         <> [NextAdvanceAgendaStep (toId attrs) 2]
-        <> [ Discard (ActTarget actId) | actId <- actIds ]
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+        <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
+           , SetCurrentActDeck 1 [theReturnTrip]
+           ]
       pure a
     NextAdvanceAgendaStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
@@ -70,7 +75,9 @@ instance RunMessage TheBarrierIsThin where
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId replacement)
-              [ReplaceLocation lid replacement]
+              [ RemoveCardFromScenarioDeck ExplorationDeck replacement
+              , ReplaceLocation lid replacement
+              ]
           | replacement <- replacements
           ]
         , UnfocusCards

@@ -6,22 +6,23 @@ module Arkham.Message
 
 import Arkham.Prelude
 
-import Arkham.Text as X
 import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
+import Arkham.Text as X
 
 import Arkham.Ability
 import Arkham.Act.Sequence
-import Arkham.Action hiding (Explore)
+import Arkham.Action hiding ( Explore )
 import Arkham.Action.Additional
+import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
 import Arkham.Attack
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.Id
-import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
@@ -83,18 +84,22 @@ resolve msg = [When msg, msg, After msg]
 
 story :: [InvestigatorId] -> FlavorText -> Message
 story iids flavor = AskMap
-  (mapFromList
-    [ (iid, Read flavor [Label "Continue" []]) | iid <- iids ]
-  )
+  (mapFromList [ (iid, Read flavor [Label "Continue" []]) | iid <- iids ])
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
 
 pattern AttachTreachery :: TreacheryId -> Target -> Message
-pattern AttachTreachery tid target = PlaceTreachery tid (TreacheryAttachedTo target)
+pattern AttachTreachery tid target =
+  PlaceTreachery tid (TreacheryAttachedTo target)
 
-createCardEffect :: CardDef -> (Maybe (EffectMetadata Window Message)) -> Source -> Target -> Message
+createCardEffect
+  :: CardDef
+  -> (Maybe (EffectMetadata Window Message))
+  -> Source
+  -> Target
+  -> Message
 createCardEffect def = CreateEffect (toCardCode def)
 
 data Message
@@ -116,10 +121,13 @@ data Message
   | RevertAct ActId
   | AdvanceActDeck Int Source
   | AdvanceToAct Int CardDef ActSide Source
+  | SetCurrentActDeck Int [Card]
   | -- Agenda Deck Messages
     SetAgendaDeck
   | AddAgenda Int CardDef
+  | SetCurrentAgendaDeck Int [Card]
   | AdvanceAgenda AgendaId
+  | AdvanceToAgenda Int CardDef AgendaSide Source
   | NextAdvanceAgendaStep AgendaId Int
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgendaDeck Int Source
@@ -160,6 +168,7 @@ data Message
   | DrawRandomFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
   | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
   | SetScenarioDeck ScenarioDeckKey [Card]
+  | RemoveCardFromScenarioDeck ScenarioDeckKey Card
   | -- Victory
     AddToVictory Target
   | DefeatedAddToVictory Target
@@ -668,11 +677,12 @@ chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseAmounts
   :: InvestigatorId -> Text -> Int -> [(Text, (Int, Int))] -> Target -> Message
-chooseAmounts iid label total choiceMap target =
-  Ask iid (ChooseAmounts label total amountChoices target)
-  where
-    amountChoices = map toAmountChoice choiceMap
-    toAmountChoice (l, (m,  n)) = AmountChoice l m n
+chooseAmounts iid label total choiceMap target = Ask
+  iid
+  (ChooseAmounts label total amountChoices target)
+ where
+  amountChoices = map toAmountChoice choiceMap
+  toAmountChoice (l, (m, n)) = AmountChoice l m n
 
 chooseUpgradeDeck :: InvestigatorId -> Message
 chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck

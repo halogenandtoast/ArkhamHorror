@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed, ref, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card';
 
@@ -10,6 +10,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
+const reference = computed(() => ref(props.victoryDisplay))
 
 const baseUrl = inject('baseUrl')
 const topOfVictoryDisplay = computed(() => {
@@ -23,7 +24,7 @@ const topOfVictoryDisplay = computed(() => {
 
 const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Cards`)
 
-const showVictoryDisplay = (e: Event) => emit('show', e, props.victoryDisplay, 'Victory Display', true)
+const showVictoryDisplay = (e: Event) => emit('show', e, reference.value, 'Victory Display', true)
 </script>
 
 <template>

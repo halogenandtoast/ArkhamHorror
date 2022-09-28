@@ -100,6 +100,7 @@ data Cost
   | ExileCost Target
   | HandDiscardCost Int CardMatcher
   | SkillIconCost Int (HashSet SkillType)
+  | DiscardCombinedCost Int
   | HorrorCost Source Target Int
   | Free
   | ResourceCost Int
@@ -114,6 +115,7 @@ displayCostType :: Cost -> Text
 displayCostType = \case
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
+  DiscardCombinedCost n -> "Discard cards with a total combined cost of at least " <> tshow n
   AdditionalActionsCost -> "Additional Action"
   ClueCost n -> pluralize n "Clue"
   GroupClueCost gv _ -> case gv of

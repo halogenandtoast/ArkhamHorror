@@ -5,9 +5,17 @@ module Arkham.Location.Cards.ChapultepecPark
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.SkillType
+import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype ChapultepecPark = ChapultepecPark LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,9 +30,36 @@ chapultepecPark = locationWith
   (labelL .~ "triangle")
 
 instance HasAbilities ChapultepecPark where
-  getAbilities (ChapultepecPark attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (ChapultepecPark attrs) =
+    withBaseAbilities attrs $ if locationRevealed attrs
+      then
+        [ restrictedAbility attrs 1 Here $ ForcedAbility $ SkillTestResult
+            Timing.After
+            You
+            (SkillTestWithSkillType SkillWillpower)
+            (FailureResult AnyValue)
+        ]
+      else []
 
 instance RunMessage ChapultepecPark where
-  runMessage msg (ChapultepecPark attrs) =
-    ChapultepecPark <$> runMessage msg attrs
+  runMessage msg l@(ChapultepecPark attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+      pure l
+    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+      push $ BeginSkillTest
+        iid
+        (toSource attrs)
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        3
+      pure l
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push
+          $ Explore iid (toSource attrs)
+          $ CardWithPrintedLocationSymbol
+          $ locationSymbol attrs
+        pure l
+    _ -> ChapultepecPark <$> runMessage msg attrs

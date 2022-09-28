@@ -5,13 +5,16 @@ module Arkham.Location.Cards.CanalsOfTenochtitlan_180
 
 import Arkham.Prelude
 
+import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Target
 
 newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 canalsOfTenochtitlan_180 :: LocationCard CanalsOfTenochtitlan_180
 canalsOfTenochtitlan_180 = locationWith
@@ -21,9 +24,14 @@ canalsOfTenochtitlan_180 = locationWith
   (PerPlayer 1)
   (labelL .~ "diamond")
 
-instance HasAbilities CanalsOfTenochtitlan_180 where
-  getAbilities (CanalsOfTenochtitlan_180 attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+instance HasModifiersFor CanalsOfTenochtitlan_180 where
+  getModifiersFor (EnemyTarget eid) (CanalsOfTenochtitlan_180 a) = do
+    here <- eid <=~> enemyAt (toId a)
+    pure $ toModifiers a [ EnemyEvade 2 | here ]
+  getModifiersFor target (CanalsOfTenochtitlan_180 a) | isTarget a target = do
+    exhaustedEnemy <- selectAny $ ExhaustedEnemy <> enemyAt (toId a)
+    pure $ toModifiers a [ ShroudModifier (-3) | exhaustedEnemy ]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage CanalsOfTenochtitlan_180 where
   runMessage msg (CanalsOfTenochtitlan_180 attrs) =

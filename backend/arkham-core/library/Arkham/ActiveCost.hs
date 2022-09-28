@@ -353,6 +353,12 @@ instance RunMessage ActiveCost where
         RemoveCost target -> do
           push (RemoveFromGame target)
           withPayment $ RemovePayment [target]
+        EnemyDoomCost x matcher -> do
+          enemies <- selectListMap EnemyTarget matcher
+          push $ chooseOrRunOne
+            iid
+            [ TargetLabel target [PlaceDoom target x] | target <- enemies ]
+          withPayment $ DoomPayment x
         DoomCost _ (AgendaMatcherTarget matcher) x -> do
           agendas <- selectListMap AgendaTarget matcher
           pushAll [ PlaceDoom target x | target <- agendas ]
@@ -540,6 +546,13 @@ instance RunMessage ActiveCost where
             | card <- cards
             ]
           pure c
+        DiscardHandCost -> do
+          handCards <- fieldMap
+            InvestigatorHand
+            (mapMaybe (preview _PlayerCard))
+            iid
+          push $ DiscardHand iid
+          withPayment $ DiscardCardPayment $ map PlayerCard handCards
         DiscardFromCost x zone cardMatcher -> do
           let
             getCards = \case

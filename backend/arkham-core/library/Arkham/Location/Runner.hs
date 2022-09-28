@@ -256,6 +256,7 @@ instance RunMessage LocationAttrs where
     RemoveDoom target n | isTarget a target ->
       pure $ a & doomL %~ max 0 . subtract n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
+    RemoveResources target n | isTarget a target -> pure $ a & resourcesL %~ max 0 . subtract n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId -> do
       let clueCount = max 0 $ subtract n locationClues

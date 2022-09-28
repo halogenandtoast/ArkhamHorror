@@ -97,7 +97,9 @@ data Cost
   | DiscardCardCost Card
   | DiscardFromCost Int CostZone CardMatcher
   | DiscardDrawnCardCost
+  | DiscardHandCost
   | DoomCost Source Target Int
+  | EnemyDoomCost Int EnemyMatcher
   | ExileCost Target
   | HandDiscardCost Int CardMatcher
   | SkillIconCost Int (HashSet SkillType)
@@ -118,6 +120,7 @@ displayCostType = \case
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
   DiscardCombinedCost n -> "Discard cards with a total combined cost of at least " <> tshow n
+  DiscardHandCost -> "Discard your entire hand"
   ShuffleDiscardCost n _ -> "Shuffle " <> pluralize n "matching card" <> " into your deck"
   AdditionalActionsCost -> "Additional Action"
   ClueCost n -> pluralize n "Clue"
@@ -150,6 +153,7 @@ displayCostType = \case
   DiscardFromCost n _ _ -> "Discard " <> tshow n
   DiscardDrawnCardCost -> "Discard Drawn Card"
   DoomCost _ _ n -> pluralize n "Doom"
+  EnemyDoomCost n _ -> "Place " <> pluralize n "Doom" <> " on a matching enemy"
   ExileCost _ -> "Exile"
   HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"

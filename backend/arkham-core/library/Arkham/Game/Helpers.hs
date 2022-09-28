@@ -441,6 +441,7 @@ getCanAffordCost iid source mAction windows' = \case
   DirectDamageCost{} -> pure True -- TODO: Make better
   InvestigatorDamageCost{} -> pure True -- TODO: Make better
   DoomCost{} -> pure True -- TODO: Make better
+  EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher
   SkillIconCost n skillTypes -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     let

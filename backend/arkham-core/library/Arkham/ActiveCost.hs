@@ -11,6 +11,7 @@ import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
+import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
@@ -631,6 +632,25 @@ instance RunMessage ActiveCost where
               )
               cards
           c <$ push (chooseOne iid cardMsgs)
+        ShuffleDiscardCost 0 _ -> pure c
+        ShuffleDiscardCost n cardMatcher -> do
+          cards <- fieldMap
+            InvestigatorDiscard
+            (map PlayerCard . filter (`cardMatch` cardMatcher))
+            iid
+          let
+            cardMsgs = map
+              (\card -> TargetLabel
+                (CardIdTarget $ toCardId card)
+                [ RemoveFromDiscard iid (toCardId card)
+                , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+                , PaidAbilityCost iid Nothing $ CardPayment card
+                , PayCost acId iid skipAdditionalCosts
+                  $ ShuffleDiscardCost (n - 1) cardMatcher
+                ]
+              )
+              cards
+          c <$ pushAll [FocusCards cards, chooseOne iid cardMsgs, UnfocusCards]
         Free -> pure c
     PaidCost acId _ _ payment | acId == activeCostId c ->
       pure $ c & costPaymentsL <>~ payment

@@ -60,6 +60,7 @@ data Payment
   | CluePayment Int
   | DoomPayment Int
   | ResourcePayment Int
+  | CardPayment Card
   | DiscardPayment [Target]
   | DiscardCardPayment [Card]
   | ExhaustPayment [Target]
@@ -101,6 +102,7 @@ data Cost
   | HandDiscardCost Int CardMatcher
   | SkillIconCost Int (HashSet SkillType)
   | DiscardCombinedCost Int
+  | ShuffleDiscardCost Int CardMatcher
   | HorrorCost Source Target Int
   | Free
   | ResourceCost Int
@@ -116,6 +118,7 @@ displayCostType = \case
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
   DiscardCombinedCost n -> "Discard cards with a total combined cost of at least " <> tshow n
+  ShuffleDiscardCost n _ -> "Shuffle " <> pluralize n "matching card" <> " into your deck"
   AdditionalActionsCost -> "Additional Action"
   ClueCost n -> pluralize n "Clue"
   GroupClueCost gv _ -> case gv of

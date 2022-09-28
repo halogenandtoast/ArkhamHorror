@@ -450,6 +450,7 @@ data Message
   | PlaceLocation Card
   | PlaceLocationMatching CardMatcher
   | PlaceResources Target Int
+  | RemoveResources Target Int
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
   | PlaceNextTo Target [Card]

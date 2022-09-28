@@ -38,6 +38,7 @@ instance HasAbilities ChamberOfTime where
       $ PutLocationIntoPlay Timing.After Anyone
       $ LocationWithId
       $ toId attrs
+    | locationRevealed attrs
     ]
 
 instance RunMessage ChamberOfTime where

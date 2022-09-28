@@ -43,7 +43,8 @@ instance HasAbilities TemplesOfTenochtitlan_177 where
     $ restrictedAbility
         attrs
         2
-        (CluesOnThis (AtLeast $ Static 1)
+        (Here
+        <> CluesOnThis (AtLeast $ Static 1)
         <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
         <> EnemyCriteria (EnemyExists AnyEnemy)
         )
@@ -62,6 +63,6 @@ instance RunMessage TemplesOfTenochtitlan_177 where
         [ TargetLabel target [PlaceDoom target 1] | target <- targets ]
       pure l
     UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
-      pushAll $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
+      push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
       pure l
     _ -> TemplesOfTenochtitlan_177 <$> runMessage msg attrs

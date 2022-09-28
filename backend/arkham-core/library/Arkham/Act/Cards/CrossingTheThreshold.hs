@@ -11,6 +11,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -18,16 +19,20 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
-newtype CrossingTheThreshold = CrossingTheThreshold ActAttrs
+newtype Metadata = Metadata { advancingInvestigator :: Maybe InvestigatorId }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype CrossingTheThreshold = CrossingTheThreshold (ActAttrs `With` Metadata)
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crossingTheThreshold :: ActCard CrossingTheThreshold
 crossingTheThreshold =
-  act (1, A) CrossingTheThreshold Cards.crossingTheThreshold Nothing
+  act (1, A) (CrossingTheThreshold . (`with` Metadata Nothing)) Cards.crossingTheThreshold Nothing
 
 instance HasAbilities CrossingTheThreshold where
-  getAbilities (CrossingTheThreshold a) =
+  getAbilities (CrossingTheThreshold (a `With` _)) =
     [ mkAbility a 1
         $ Objective
         $ ForcedAbility
@@ -37,18 +42,24 @@ instance HasAbilities CrossingTheThreshold where
     ]
 
 instance RunMessage CrossingTheThreshold where
-  runMessage msg a@(CrossingTheThreshold attrs) = case msg of
+  runMessage msg a@(CrossingTheThreshold (attrs `With` metadata)) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
-      pushAll
-        [ BeginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          Nothing
-          SkillWillpower
-          4
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      pure . CrossingTheThreshold $ attrs `with` Metadata (Just iid)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      case advancingInvestigator metadata of
+        Nothing -> error "no advancing investigator"
+        Just iid -> do
+          pushAll
+            [ BeginSkillTest
+              iid
+              (toSource attrs)
+              (InvestigatorTarget iid)
+              Nothing
+              SkillWillpower
+              4
+            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+            ]
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
@@ -61,4 +72,4 @@ instance RunMessage CrossingTheThreshold where
       for_ mcard $ \card -> push
         $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure a
-    _ -> CrossingTheThreshold <$> runMessage msg attrs
+    _ -> CrossingTheThreshold . (`with` metadata) <$> runMessage msg attrs

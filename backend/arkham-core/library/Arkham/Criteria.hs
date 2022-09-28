@@ -87,6 +87,7 @@ data Criterion
   | InvestigatorIsAlone
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
+  | LocationCount Int LocationMatcher
   | AllUndefeatedInvestigatorsResigned
   | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher

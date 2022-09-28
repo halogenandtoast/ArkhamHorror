@@ -104,29 +104,30 @@ explore iid source cardMatcher exploreRule = do
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
 
-          afterPutIntoPlayWindow <- checkWindows
-            [ Window
-                Timing.After
-                (Window.PutLocationIntoPlay iid $ toLocationId x)
-            ]
-          afterExploredWindow <- checkWindows
-            [ Window Timing.After
-                $ Window.Explored iid (Success $ toLocationId x)
-            ]
-
-          locationAction <- case exploreRule of
-            PlaceExplored -> pure $ PlaceLocation x
+          (locationAction, lid) <- case exploreRule of
+            PlaceExplored -> pure (PlaceLocation x, toLocationId x)
             ReplaceExplored -> do
               let
                 lSymbol = fromJustNote "no location symbol"
                   $ cdLocationRevealedSymbol (toCardDef x)
               mLocationToReplace <- selectOne $ LocationWithSymbol lSymbol
-              pure $ ReplaceLocation
-                (fromJustNote "no location found" mLocationToReplace)
-                x
+              case mLocationToReplace of
+                Just lid -> pure (ReplaceLocation lid x, lid)
+                Nothing -> error "no location found"
+
+          afterPutIntoPlayWindow <- checkWindows
+            [ Window
+                Timing.After
+                (Window.PutLocationIntoPlay iid lid)
+            ]
+          afterExploredWindow <- checkWindows
+            [ Window Timing.After
+                $ Window.Explored iid (Success lid)
+            ]
+
           pure
             $ locationAction
-            : [ MoveTo source iid (toLocationId x)
+            : [ MoveTo source iid lid
               | canMove && exploreRule == PlaceExplored
               ]
             <> [UpdateHistory iid historyItem, afterExploredWindow]

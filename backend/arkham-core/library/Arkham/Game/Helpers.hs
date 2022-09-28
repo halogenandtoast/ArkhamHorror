@@ -448,6 +448,13 @@ getCanAffordCost iid source mAction windows' = \case
         (count (`member` insertSet SkillWild skillTypes) . cdSkills . toCardDef)
         handCards
     pure $ total >= n
+  DiscardCombinedCost n -> do
+    handCards <-
+      mapMaybe (preview _PlayerCard)
+      . filter (`cardMatch` Matcher.NonWeakness)
+      <$> field InvestigatorHand iid
+    let total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
+    pure $ total >= n
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
@@ -1034,6 +1041,7 @@ passesCriteria iid source windows' = \case
   Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
   Criteria.LocationExists matcher -> selectAny matcher
+  Criteria.LocationCount n matcher -> (== n) <$> selectCount matcher
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)
   Criteria.InVictoryDisplay cardMatcher valueMatcher -> do
@@ -1452,8 +1460,8 @@ windowMatches iid source window' = \case
                       , enemyMatches enemyId enemyMatcher
                       ]
                     _ -> pure False
-                Window t (Window.FailEvadeEnemy who enemyId n) | whenMatcher == t ->
-                  case skillMatcher of
+                Window t (Window.FailEvadeEnemy who enemyId n)
+                  | whenMatcher == t -> case skillMatcher of
                     Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
                       [ matchWho iid who whoMatcher
                       , gameValueMatches n gameValueMatcher
@@ -1754,12 +1762,9 @@ windowMatches iid source window' = \case
   Matcher.Explored timingMatcher whoMatcher resultMatcher -> case window' of
     Window t (Window.Explored who result) | timingMatcher == t -> andM
       [ matchWho iid who whoMatcher
-      , case traceShowId resultMatcher of
+      , case resultMatcher of
         Matcher.SuccessfulExplore locationMatcher -> case result of
-          Window.Success lid -> do
-            lids <- traceShowId <$> selectList locationMatcher
-            pure $ traceShowId lid `elem` lids
-            -- traceShowId <$> (lid <=~> locationMatcher)
+          Window.Success lid -> lid <=~> locationMatcher
           Window.Failure -> pure False
         Matcher.FailedExplore -> pure $ result == Window.Failure
       ]

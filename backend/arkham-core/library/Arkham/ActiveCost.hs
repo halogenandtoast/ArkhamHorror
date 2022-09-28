@@ -7,6 +7,7 @@ import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types ( Field (AssetCard) )
 import Arkham.Card
+import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
@@ -599,6 +600,33 @@ instance RunMessage ActiveCost where
                     iid
                     skipAdditionalCosts
                     (SkillIconCost (x - n) skillTypes)
+                  ]
+              )
+              cards
+          c <$ push (chooseOne iid cardMsgs)
+        DiscardCombinedCost x -> do
+          handCards <- fieldMap
+            InvestigatorHand
+            (mapMaybe (preview _PlayerCard) . filter (`cardMatch` NonWeakness))
+            iid
+          let
+            cards =
+              map (toFst (maybe 0 toPrintedCost . cdCost . toCardDef)) handCards
+            cardMsgs = map
+              (\(n, card) -> if n >= x
+                then TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ DiscardCard iid (toCardId card)
+                  , PaidAbilityCost iid Nothing
+                    $ DiscardCardPayment [PlayerCard card]
+                  ]
+                else TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ DiscardCard iid (toCardId card)
+                  , PaidAbilityCost iid Nothing
+                    $ DiscardCardPayment [PlayerCard card]
+                  , PayCost acId iid skipAdditionalCosts
+                    $ DiscardCombinedCost (x - n)
                   ]
               )
               cards

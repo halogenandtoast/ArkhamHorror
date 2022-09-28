@@ -1591,6 +1591,25 @@ enemyMatcherFilter = \case
             pure $ mdistance == Just minDistance
           _ -> pure False
       else pure False
+  NearestEnemyToLocation ilid enemyMatcher -> \enemy -> do
+    eids <- selectList enemyMatcher
+    if toId enemy `elem` eids
+      then do
+        enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
+        case enemyLocation of
+          Just elid -> do
+            mdistance <- getDistance ilid elid
+            distances :: [Distance] <- catMaybes <$> for
+              eids
+              \eid -> do
+                melid' <- field EnemyLocation eid
+                case melid' of
+                  Nothing -> pure Nothing
+                  Just elid' -> getDistance ilid elid'
+            let minDistance = getMin $ foldMap Min distances
+            pure $ mdistance == Just minDistance
+          _ -> pure False
+      else pure False
   NotEnemy m -> fmap not . enemyMatcherFilter m
   EnemyWithTitle title -> pure . (== title) . nameTitle . toName . toAttrs
   EnemyWithFullTitle title subtitle ->

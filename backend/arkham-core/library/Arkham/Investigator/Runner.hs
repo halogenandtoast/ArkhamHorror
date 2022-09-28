@@ -1398,6 +1398,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ DeckHasNoCards investigatorId mTarget | null deck' ]
       <> [ DiscardedTopOfDeck iid cs target | target <- maybeToList mTarget ]
     pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
+  DiscardUntilFirst iid source matcher | iid == investigatorId -> do
+    let
+      (discards, remainingDeck) =
+        break (`cardMatch` matcher) (unDeck investigatorDeck)
+    case remainingDeck of
+      [] -> do
+        pushAll [RequestedPlayerCard iid source Nothing, DeckHasNoCards iid Nothing]
+        pure $ a & deckL .~ mempty & discardL %~ (reverse discards <>)
+      (x : xs) -> do
+        push (RequestedPlayerCard iid source (Just x))
+        pure $ a & deckL .~ Deck remainingDeck & discardL %~ (reverse discards <>)
   DrawCards iid n True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows
       [Window Timing.When (Window.PerformAction iid Action.Draw)]

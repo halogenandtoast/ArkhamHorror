@@ -5,9 +5,17 @@ module Arkham.Location.Cards.TemploMayor_175
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Timing qualified as Timing
 
 newtype TemploMayor_175 = TemploMayor_175 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,9 +30,39 @@ temploMayor_175 = locationWith
   (labelL .~ "circle")
 
 instance HasAbilities TemploMayor_175 where
-  getAbilities (TemploMayor_175 attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (TemploMayor_175 attrs) =
+    withBaseAbilities attrs $ if locationRevealed attrs
+      then
+        [ mkAbility attrs 1
+        $ ForcedAbility
+        $ PutLocationIntoPlay Timing.After Anyone
+        $ LocationWithId
+        $ toId attrs
+        , limitedAbility (GroupLimit PerPhase 1)
+        $ restrictedAbility
+            attrs
+            2
+            (CluesOnThis (AtLeast $ Static 1)
+            <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
+            )
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> ShuffleDiscardCost 1 WeaknessCard
+        ]
+      else []
 
 instance RunMessage TemploMayor_175 where
-  runMessage msg (TemploMayor_175 attrs) =
-    TemploMayor_175 <$> runMessage msg attrs
+  runMessage msg l@(TemploMayor_175 attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      pushAll
+        [ ShuffleDiscardBackIn iid
+        , DiscardUntilFirst iid (toSource attrs) WeaknessCard
+        ]
+      pure l
+    RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
+      for_ mcard $ push . AddToHand iid . PlayerCard
+      pure l
+    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+      push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
+      pure l
+    _ -> TemploMayor_175 <$> runMessage msg attrs

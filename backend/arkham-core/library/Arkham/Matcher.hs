@@ -316,6 +316,7 @@ data EnemyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
+  | NearestEnemyToLocation LocationId EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy

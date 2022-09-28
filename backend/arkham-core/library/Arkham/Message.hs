@@ -264,6 +264,7 @@ data Message
   | DiscardCard InvestigatorId CardId
   | DiscardHand InvestigatorId
   | DiscardEncounterUntilFirst Source CardMatcher
+  | DiscardUntilFirst InvestigatorId Source CardMatcher
   | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int (Maybe Target) [EncounterCard]

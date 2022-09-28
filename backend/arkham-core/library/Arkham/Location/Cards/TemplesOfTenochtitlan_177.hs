@@ -5,9 +5,18 @@ module Arkham.Location.Cards.TemplesOfTenochtitlan_177
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype TemplesOfTenochtitlan_177 = TemplesOfTenochtitlan_177 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,10 +30,38 @@ templesOfTenochtitlan_177 = locationWith
   (PerPlayer 2)
   (labelL .~ "square")
 
+-- TODO: We need to place doom on an enemy as a cost
 instance HasAbilities TemplesOfTenochtitlan_177 where
-  getAbilities (TemplesOfTenochtitlan_177 attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (TemplesOfTenochtitlan_177 attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+    $ ForcedAbility
+    $ PutLocationIntoPlay Timing.After Anyone
+    $ LocationWithId
+    $ toId attrs
+    , limitedAbility (GroupLimit PerRound 1)
+    $ restrictedAbility
+        attrs
+        2
+        (CluesOnThis (AtLeast $ Static 1)
+        <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
+        <> EnemyCriteria (EnemyExists AnyEnemy)
+        )
+    $ ActionAbility Nothing
+    $ ActionCost 1
+    ]
 
 instance RunMessage TemplesOfTenochtitlan_177 where
-  runMessage msg (TemplesOfTenochtitlan_177 attrs) =
-    TemplesOfTenochtitlan_177 <$> runMessage msg attrs
+  runMessage msg l@(TemplesOfTenochtitlan_177 attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      targets <- selectListMap EnemyTarget
+        $ NearestEnemyToLocation (toId attrs) AnyEnemy
+      unless (null targets) $ push $ chooseOrRunOne
+        leadInvestigatorId
+        [ TargetLabel target [PlaceDoom target 1] | target <- targets ]
+      pure l
+    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+      pushAll $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
+      pure l
+    _ -> TemplesOfTenochtitlan_177 <$> runMessage msg attrs

@@ -453,8 +453,12 @@ getCanAffordCost iid source mAction windows' = \case
       mapMaybe (preview _PlayerCard)
       . filter (`cardMatch` Matcher.NonWeakness)
       <$> field InvestigatorHand iid
-    let total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
+    let
+      total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
     pure $ total >= n
+  ShuffleDiscardCost n cardMatcher -> do
+    discards <- fieldMap InvestigatorDiscard (filter (`cardMatch` cardMatcher)) iid
+    pure $ length discards >= n
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n

@@ -640,6 +640,7 @@ getInvestigatorsMatching matcher = do
  where
   go = \case
     NoOne -> pure . const False
+    DeckIsEmpty -> fieldP InvestigatorDeck (null . unDeck) . toId
     InvestigatorCanDiscoverCluesAtOneOf matcher' -> \i -> do
       let
         getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
@@ -878,8 +879,7 @@ getAgendasMatching matcher = do
     AgendaWithSequence s -> pure . (== s) . agendaSequence . toAttrs
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . agendaSequence . toAttrs
-    AgendaWithDeckId n ->
-      pure . (== n) . agendaDeckId . toAttrs
+    AgendaWithDeckId n -> pure . (== n) . agendaDeckId . toAttrs
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
     AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
 
@@ -990,6 +990,8 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityIsAction action ->
       pure $ filter ((== Just action) . abilityAction) abilities
     AbilityIsActionAbility -> pure $ filter abilityIsActionAbility abilities
+    AbilityIsReactionAbility ->
+      pure $ filter abilityIsReactionAbility abilities
     AbilityWindow windowMatcher ->
       pure $ filter ((== windowMatcher) . abilityWindow) abilities
     AbilityMatches [] -> pure []
@@ -999,6 +1001,10 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
             <$> (setFromList @(HashSet Ability) <$> getAbilitiesMatching x)
             <*> traverse (fmap setFromList . getAbilitiesMatching) xs
             )
+    AbilityOneOf xs ->
+      toList
+        . unions @(HashSet Ability)
+        <$> traverse (fmap setFromList . getAbilitiesMatching) xs
     AbilityOnScenarioCard -> filterM
       ((`sourceMatches` M.EncounterCardSource) . abilitySource)
       abilities
@@ -1060,7 +1066,8 @@ getLocationMatching
   :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
-getLocationsMatching :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m [Location]
+getLocationsMatching
+  :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of

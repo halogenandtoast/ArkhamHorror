@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Criteria
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -43,8 +43,8 @@ instance HasAbilities TemploMayor_174 where
         $ restrictedAbility
             attrs
             2
-            (CluesOnThis (AtLeast $ Static 1)
-            <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
+            (Here <> CluesOnThis (AtLeast $ Static 1) <> CanDiscoverCluesAt
+              (LocationWithId $ toId attrs)
             )
         $ ReactionAbility
             (OrWindowMatcher

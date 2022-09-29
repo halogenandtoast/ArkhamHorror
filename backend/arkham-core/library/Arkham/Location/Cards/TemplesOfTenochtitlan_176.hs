@@ -6,8 +6,6 @@ module Arkham.Location.Cards.TemplesOfTenochtitlan_176
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
@@ -34,22 +32,15 @@ templesOfTenochtitlan_176 = locationWith
 
 instance HasModifiersFor TemplesOfTenochtitlan_176 where
   getModifiersFor target (TemplesOfTenochtitlan_176 a) | isTarget a target = do
-    mSkillTest <- getSkillTest
-    case mSkillTest of
+    miid <- getSkillTestInvestigator
+    case miid of
       Nothing -> pure []
-      Just skillTest -> do
-        healthMatches <- fieldP
-          InvestigatorRemainingHealth
-          (<= 3)
-          (skillTestInvestigator skillTest)
-        let
-          isInvestigate =
-            skillTestAction skillTest == Just Action.Investigate && isTarget
-              a
-              (skillTestTarget skillTest)
+      Just iid -> do
+        healthMatches <- fieldP InvestigatorRemainingHealth (<= 3) iid
+        isBeingInvestigated <- getIsBeingInvestigated (toId a)
         pure $ toModifiers
           a
-          [ ShroudModifier (-2) | healthMatches && isInvestigate ]
+          [ ShroudModifier (-2) | healthMatches && isBeingInvestigated ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TemplesOfTenochtitlan_176 where

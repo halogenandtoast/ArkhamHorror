@@ -367,6 +367,7 @@ getCanAffordCost
 getCanAffordCost iid source mAction windows' = \case
   Free -> pure True
   UpTo{} -> pure True
+  DiscardHandCost{} -> pure True
   DiscardTopOfDeckCost{} -> pure True
   AdditionalActionsCost{} -> pure True
   Costs xs ->

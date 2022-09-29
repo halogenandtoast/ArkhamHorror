@@ -166,6 +166,7 @@ data InvestigatorMatcher
   | NotInvestigator InvestigatorMatcher
   | InvestigatorWithSupply Supply
   | InvestigatorCanDiscoverCluesAtOneOf LocationMatcher -- NOTE: Use matcher above
+  | DeckIsEmpty
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -944,7 +945,9 @@ data AbilityMatcher
   | AbilityWindow WindowMatcher
   | AbilityIsAction Action
   | AbilityIsActionAbility
+  | AbilityIsReactionAbility
   | AbilityMatches [AbilityMatcher]
+  | AbilityOneOf [AbilityMatcher]
   | AnyAbility
   | AbilityOnScenarioCard
   | AssetAbility AssetMatcher

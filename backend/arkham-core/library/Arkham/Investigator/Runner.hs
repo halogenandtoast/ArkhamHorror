@@ -1082,6 +1082,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [window, PlaceClues (InvestigatorTarget iid) n, After (GainClues iid n)]
   PlaceClues (InvestigatorTarget iid) n | iid == investigatorId -> do
     pure $ a & cluesL +~ n
+  FlipClues target n | isTarget a target -> do
+    let flipCount = min n investigatorClues
+    let clueCount = max 0 $ subtract n investigatorClues
+    pure
+      $ a
+      & (cluesL .~ clueCount)
+      & (doomL +~ flipCount)
   DiscoverClues iid lid n maction | iid == investigatorId -> do
     modifiers <- getModifiers (LocationTarget lid)
     let
@@ -1408,7 +1415,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $ a & deckL .~ mempty & discardL %~ (reverse discards <>)
       (x : xs) -> do
         push (RequestedPlayerCard iid source (Just x))
-        pure $ a & deckL .~ Deck remainingDeck & discardL %~ (reverse discards <>)
+        pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
   DrawCards iid n True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows
       [Window Timing.When (Window.PerformAction iid Action.Draw)]

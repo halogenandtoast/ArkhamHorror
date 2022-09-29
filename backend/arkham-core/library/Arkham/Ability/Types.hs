@@ -77,6 +77,11 @@ abilityIsActionAbility a = case abilityType a of
   ActionAbilityWithBefore{} -> True
   _ -> False
 
+abilityIsReactionAbility :: Ability -> Bool
+abilityIsReactionAbility a = case abilityType a of
+  ReactionAbility{} -> True
+  _ -> False
+
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
 

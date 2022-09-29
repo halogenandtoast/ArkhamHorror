@@ -6,8 +6,6 @@ module Arkham.Location.Cards.LakeXochimilco_183
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
@@ -34,22 +32,15 @@ lakeXochimilco_183 = locationWith
 
 instance HasModifiersFor LakeXochimilco_183 where
   getModifiersFor target (LakeXochimilco_183 a) | isTarget a target = do
-    mSkillTest <- getSkillTest
-    case mSkillTest of
+    miid <- getSkillTestInvestigator
+    case miid of
       Nothing -> pure []
-      Just skillTest -> do
-        sanityMatches <- fieldP
-          InvestigatorRemainingSanity
-          (<= 3)
-          (skillTestInvestigator skillTest)
-        let
-          isInvestigate =
-            skillTestAction skillTest == Just Action.Investigate && isTarget
-              a
-              (skillTestTarget skillTest)
+      Just iid -> do
+        sanityMatches <- fieldP InvestigatorRemainingSanity (<= 3) iid
+        isBeingInvestigated <- getIsBeingInvestigated (toId a)
         pure $ toModifiers
           a
-          [ ShroudModifier (-2) | sanityMatches && isInvestigate ]
+          [ ShroudModifier (-2) | sanityMatches && isBeingInvestigated ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LakeXochimilco_183 where

@@ -191,7 +191,7 @@ location
   :: (LocationAttrs -> a)
   -> CardDef
   -> Int
-  -> GameValue Int
+  -> GameValue
   -> CardBuilder LocationId a
 location f def shroud' revealClues = locationWith f def shroud' revealClues id
 
@@ -199,7 +199,7 @@ locationWith
   :: (LocationAttrs -> a)
   -> CardDef
   -> Int
-  -> GameValue Int
+  -> GameValue
   -> (LocationAttrs -> LocationAttrs)
   -> CardBuilder LocationId a
 locationWith f def shroud' revealClues g = CardBuilder

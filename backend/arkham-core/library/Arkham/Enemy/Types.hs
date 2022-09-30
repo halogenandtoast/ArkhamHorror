@@ -94,7 +94,7 @@ healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
 sanityDamageL :: Lens' EnemyAttrs Int
 sanityDamageL = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
 
-healthL :: Lens' EnemyAttrs (GameValue Int)
+healthL :: Lens' EnemyAttrs GameValue
 healthL = lens enemyHealth $ \m x -> m { enemyHealth = x }
 
 fightL :: Lens' EnemyAttrs Int
@@ -140,7 +140,7 @@ instance HasCardDef EnemyAttrs where
 enemy
   :: (EnemyAttrs -> a)
   -> CardDef
-  -> (Int, GameValue Int, Int)
+  -> (Int, GameValue, Int)
   -> (Int, Int)
   -> CardBuilder EnemyId a
 enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
@@ -148,7 +148,7 @@ enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
 enemyWith
   :: (EnemyAttrs -> a)
   -> CardDef
-  -> (Int, GameValue Int, Int)
+  -> (Int, GameValue, Int)
   -> (Int, Int)
   -> (EnemyAttrs -> EnemyAttrs)
   -> CardBuilder EnemyId a

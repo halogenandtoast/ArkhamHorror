@@ -33,7 +33,12 @@ instance HasModifiersFor HandOfTheBrotherhood where
     pure $ toModifiers
       a
       [ CannotTriggerAbilityMatching
-        $ AbilityOnLocation (locationWithEnemy (toId a))
+        $ AbilityOnLocation
+            (LocationMatchAny
+              [ locationWithEnemy (toId a)
+              , ConnectedTo $ locationWithEnemy (toId a)
+              ]
+            )
         <> AbilityOneOf [AbilityIsActionAbility, AbilityIsReactionAbility]
       | not (enemyExhausted a)
       ]

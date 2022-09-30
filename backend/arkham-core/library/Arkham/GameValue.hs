@@ -5,22 +5,15 @@ module Arkham.GameValue
 
 import Arkham.Prelude
 
-data GameValue a
-  = Static a
-  | PerPlayer a
-  | StaticWithPerPlayer a a
-  | ByPlayerCount a a a a
+data GameValue
+  = Static Int
+  | PerPlayer Int
+  | StaticWithPerPlayer Int Int
+  | ByPlayerCount Int Int Int Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-instance Functor GameValue where
-  fmap f (Static n) = Static (f n)
-  fmap f (PerPlayer n) = PerPlayer (f n)
-  fmap f (StaticWithPerPlayer n m) = StaticWithPerPlayer (f n) (f m)
-  fmap f (ByPlayerCount n1 n2 n3 n4) =
-    ByPlayerCount (f n1) (f n2) (f n3) (f n4)
-
-fromGameValue :: GameValue Int -> Int -> Int
+fromGameValue :: GameValue -> Int -> Int
 fromGameValue (Static n) _ = n
 fromGameValue (PerPlayer n) pc = n * pc
 fromGameValue (StaticWithPerPlayer n m) pc = n + (m * pc)

@@ -8,8 +8,8 @@ import Arkham.Agenda.Sequence
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Card
 import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.GameValue
 import Arkham.Id
@@ -33,7 +33,7 @@ data instance Field Agenda :: Type -> Type where
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
-  , agendaDoomThreshold :: GameValue Int
+  , agendaDoomThreshold :: GameValue
   , agendaId :: AgendaId
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
@@ -58,7 +58,7 @@ treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
 doomL :: Lens' AgendaAttrs Int
 doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
 
-doomThresholdL :: Lens' AgendaAttrs (GameValue Int)
+doomThresholdL :: Lens' AgendaAttrs GameValue
 doomThresholdL =
   lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
 
@@ -102,7 +102,7 @@ agenda
   :: (Int, AgendaSide)
   -> (AgendaAttrs -> a)
   -> CardDef
-  -> GameValue Int
+  -> GameValue
   -> CardBuilder (Int, AgendaId) a
 agenda agendaSeq f cardDef threshold =
   agendaWith agendaSeq f cardDef threshold id
@@ -111,7 +111,7 @@ agendaWith
   :: (Int, AgendaSide)
   -> (AgendaAttrs -> a)
   -> CardDef
-  -> GameValue Int
+  -> GameValue
   -> (AgendaAttrs -> AgendaAttrs)
   -> CardBuilder (Int, AgendaId) a
 agendaWith (n, side) f cardDef threshold g = CardBuilder
@@ -135,7 +135,7 @@ instance HasCardDef AgendaAttrs where
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
-data Agenda = forall a. IsAgenda a => Agenda a
+data Agenda = forall a . IsAgenda a => Agenda a
 
 instance Eq Agenda where
   (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of
@@ -169,9 +169,9 @@ instance SourceEntity Agenda where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-data SomeAgendaCard = forall a. IsAgenda a => SomeAgendaCard (AgendaCard a)
+data SomeAgendaCard = forall a . IsAgenda a => SomeAgendaCard (AgendaCard a)
 
-liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
+liftSomeAgendaCard :: (forall a . AgendaCard a -> b) -> SomeAgendaCard -> b
 liftSomeAgendaCard f (SomeAgendaCard a) = f a
 
 someAgendaCardCode :: SomeAgendaCard -> CardCode

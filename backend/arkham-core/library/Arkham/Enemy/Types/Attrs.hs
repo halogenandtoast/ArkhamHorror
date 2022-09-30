@@ -2,23 +2,23 @@ module Arkham.Enemy.Types.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.Id
 import Arkham.Card
-import Arkham.Token
+import Arkham.GameValue
+import Arkham.Id
 import Arkham.Json
 import Arkham.Matcher
-import Arkham.Modifier (Modifier)
-import Arkham.Source
+import Arkham.Modifier ( Modifier )
 import Arkham.Placement
-import Arkham.GameValue
+import Arkham.Source
 import Arkham.Strategy
+import Arkham.Token
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
   , enemyCardCode :: CardCode
   , enemyPlacement :: Placement
   , enemyFight :: Int
-  , enemyHealth :: GameValue Int
+  , enemyHealth :: GameValue
   , enemyEvade :: Int
   , enemyDamage :: Int
   , enemyHealthDamage :: Int
@@ -48,3 +48,6 @@ instance FromJSON EnemyAttrs where
 
 instance HasCardCode EnemyAttrs where
   toCardCode = enemyCardCode
+
+enemyReady :: EnemyAttrs -> Bool
+enemyReady = not . enemyExhausted

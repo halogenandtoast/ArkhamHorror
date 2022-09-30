@@ -192,7 +192,7 @@ data ModifierType
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
-  | EnemyAction Action [Trait]
+  | EnemyAction Action EnemyMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
 

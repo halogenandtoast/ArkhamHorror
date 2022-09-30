@@ -82,7 +82,7 @@ data Cost
   = ActionCost Int
   | AdditionalActionsCost
   | ClueCost Int
-  | GroupClueCost (GameValue Int) LocationMatcher
+  | GroupClueCost GameValue LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
   | ExhaustAssetCost AssetMatcher

@@ -6,7 +6,14 @@ module Arkham.Treachery.Cards.TimelineDestabilization
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Deck
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Scenario.Deck
+import Arkham.SkillType
+import Arkham.Target
+import Arkham.Trait ( Trait (Ancient) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -20,5 +27,16 @@ timelineDestabilization =
 
 instance RunMessage TimelineDestabilization where
   runMessage msg t@(TimelineDestabilization attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      n <- selectCount $ LocationWithTrait Ancient
+      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (1 + n)
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestTarget{} _ _ -> do
+      card <- field TreacheryCard (toId attrs)
+      pushAll
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
+        , RemoveTreachery (toId attrs)
+        , ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
+        ]
+      pure t
     _ -> TimelineDestabilization <$> runMessage msg attrs

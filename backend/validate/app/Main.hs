@@ -107,8 +107,8 @@ data XpMismatch = XpMismatch CardCode Name Int Int
 data EnemyStatsMismatch = EnemyStatsMismatch
   CardCode
   Name
-  (Int, GameValue Int, Int)
-  (Int, GameValue Int, Int)
+  (Int, GameValue, Int)
+  (Int, GameValue, Int)
   deriving stock Show
 
 data AssetStatsMismatch = AssetStatsMismatch
@@ -236,7 +236,7 @@ getTraits CardJson {..} = case traits of
   normalizeTrait x = x
   cleanText = T.dropWhileEnd (\c -> c == '.' || c == ' ')
 
-toGameVal :: Bool -> Int -> GameValue Int
+toGameVal :: Bool -> Int -> GameValue
 toGameVal True n = PerPlayer n
 toGameVal False n = Static n
 

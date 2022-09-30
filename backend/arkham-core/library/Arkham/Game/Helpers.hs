@@ -189,7 +189,28 @@ getCanPerformAbility !iid !source !window !ability = do
     , allM
       (getCanAffordCost iid (abilitySource ability) mAction [window])
       additionalCosts
+    , not <$> preventedByInvestigatorModifiers iid ability
     ]
+
+preventedByInvestigatorModifiers
+  :: (Monad m, HasGame m) => InvestigatorId -> Ability -> m Bool
+preventedByInvestigatorModifiers iid ability = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  anyM prevents modifiers
+ where
+  prevents = \case
+    CannotTakeAction x -> preventsAbility x
+    _ -> pure False
+  preventsAbility = \case
+    FirstOneOf as -> case abilityAction ability of
+      Just action | action `elem` as ->
+        fieldP InvestigatorActionsTaken (\taken -> all (`notElem` taken) as) iid
+      _ -> pure False
+    IsAction a -> pure $ abilityAction ability == Just a
+    EnemyAction a matcher -> case abilitySource ability of
+      EnemySource eid ->
+        if abilityAction ability == Just a then eid <=~> matcher else pure False
+      _ -> pure False
 
 meetsActionRestrictions
   :: (Monad m, HasGame m) => InvestigatorId -> Window -> Ability -> m Bool
@@ -550,7 +571,7 @@ getActionsWith iid window f = do
   let forcedActions = filter isForcedAbility actions'''
   pure $ if null forcedActions then actions''' else forcedActions
 
-getPlayerCountValue :: (Monad m, HasGame m) => GameValue Int -> m Int
+getPlayerCountValue :: (Monad m, HasGame m) => GameValue -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
 getSpendableClueCount :: (Monad m, HasGame m) => [InvestigatorId] -> m Int

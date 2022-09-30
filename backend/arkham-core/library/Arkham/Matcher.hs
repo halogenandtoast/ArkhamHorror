@@ -77,7 +77,7 @@ pattern InvestigatorWithAnyResources <-
     InvestigatorWithResources (GreaterThan (Static 0))
 
 -- placeholder in case a modifier prevents spending resources
-pattern InvestigatorCanSpendResources :: GameValue Int -> InvestigatorMatcher
+pattern InvestigatorCanSpendResources :: GameValue -> InvestigatorMatcher
 pattern InvestigatorCanSpendResources value <-
   InvestigatorWithResources (AtLeast value) where
   InvestigatorCanSpendResources value =
@@ -888,20 +888,20 @@ data SkillTestResultMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-pattern AtLeast :: GameValue Int -> ValueMatcher
+pattern AtLeast :: GameValue -> ValueMatcher
 pattern AtLeast n <- GreaterThanOrEqualTo n where
   AtLeast n = GreaterThanOrEqualTo n
 
-pattern AtMost :: GameValue Int -> ValueMatcher
+pattern AtMost :: GameValue -> ValueMatcher
 pattern AtMost n <- LessThanOrEqualTo n where
   AtMost n = LessThanOrEqualTo n
 
 data ValueMatcher
-  = LessThan (GameValue Int)
-  | GreaterThan (GameValue Int)
-  | LessThanOrEqualTo (GameValue Int)
-  | GreaterThanOrEqualTo (GameValue Int)
-  | EqualTo (GameValue Int)
+  = LessThan GameValue
+  | GreaterThan GameValue
+  | LessThanOrEqualTo GameValue
+  | GreaterThanOrEqualTo GameValue
+  | EqualTo GameValue
   | AnyValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -15,7 +15,7 @@ data LocationAttrs = LocationAttrs
   { locationId :: LocationId
   , locationCardCode :: CardCode
   , locationLabel :: Text
-  , locationRevealClues :: GameValue Int
+  , locationRevealClues :: GameValue
   , locationClues :: Int
   , locationDoom :: Int
   , locationHorror :: Int

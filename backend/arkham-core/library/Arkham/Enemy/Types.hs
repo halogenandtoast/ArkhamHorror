@@ -45,7 +45,7 @@ data instance Field VoidEnemy :: Type -> Type where
 data instance Field Enemy :: Type -> Type where
   EnemyEngagedInvestigators :: Field Enemy (HashSet InvestigatorId)
   EnemyDoom :: Field Enemy Int
-  EnemyEvade :: Field Enemy Int
+  EnemyEvade :: Field Enemy (Maybe Int)
   EnemyFight :: Field Enemy Int
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
@@ -100,7 +100,7 @@ healthL = lens enemyHealth $ \m x -> m { enemyHealth = x }
 fightL :: Lens' EnemyAttrs Int
 fightL = lens enemyFight $ \m x -> m { enemyFight = x }
 
-evadeL :: Lens' EnemyAttrs Int
+evadeL :: Lens' EnemyAttrs (Maybe Int)
 evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
 
 asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
@@ -161,7 +161,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyPlacement = Unplaced
       , enemyFight = fight
       , enemyHealth = health
-      , enemyEvade = evade
+      , enemyEvade = Just evade
       , enemyDamage = 0
       , enemyHealthDamage = healthDamage
       , enemySanityDamage = sanityDamage
@@ -197,7 +197,7 @@ instance HasAbilities EnemyAttrs where
     , restrictedAbility
         e
         101
-        (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You))
+        (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
       $ ActionAbility (Just Action.Evade) (ActionCost 1)
     , restrictedAbility
         e

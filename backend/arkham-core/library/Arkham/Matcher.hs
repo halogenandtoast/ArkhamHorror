@@ -334,6 +334,7 @@ data EnemyMatcher
   | EnemyWithMostRemainingHealth EnemyMatcher
   | EnemyWithoutModifier ModifierType
   | EnemyWithModifier ModifierType
+  | EnemyWithEvade
   | UnengagedEnemy
   | UniqueEnemy
   | NotEnemy EnemyMatcher

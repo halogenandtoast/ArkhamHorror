@@ -491,16 +491,18 @@ instance RunMessage EnemyAttrs where
       lid <- getJustLocation iid
       pure $ a & placementL .~ AtLocation lid & exhaustedL .~ True
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      enemyEvade' <- modifiedEnemyEvade a
-      a <$ push
-        (BeginSkillTest
-          iid
-          source
-          (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
-          (Just Action.Evade)
-          skillType
-          enemyEvade'
-        )
+      mEnemyEvade' <- modifiedEnemyEvade a
+      case mEnemyEvade' of
+        Just n -> push
+          $ BeginSkillTest
+            iid
+            source
+            (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
+            (Just Action.Evade)
+            skillType
+            n
+        Nothing -> error "No evade value"
+      pure a
     PassedSkillTest iid (Just Action.Evade) source (SkillTestInitiatorTarget target) _ n
       | isActionTarget a target
       -> do

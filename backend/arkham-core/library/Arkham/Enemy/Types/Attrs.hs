@@ -19,7 +19,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyPlacement :: Placement
   , enemyFight :: Int
   , enemyHealth :: GameValue
-  , enemyEvade :: Int
+  , enemyEvade :: Maybe Int
   , enemyDamage :: Int
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int

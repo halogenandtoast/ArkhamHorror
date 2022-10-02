@@ -6,9 +6,9 @@ module Arkham.Enemy.Cards.SwampLeech
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -25,7 +25,7 @@ swampLeech = enemyWith
   Cards.swampLeech
   (4, Static 1, 0)
   (1, 0)
-  (spawnAtL ?~ LocationWithTrait Bayou)
+  ((spawnAtL ?~ LocationWithTrait Bayou) . (evadeL .~ Nothing))
 
 instance HasAbilities SwampLeech where
   getAbilities (SwampLeech attrs) = do

@@ -30,7 +30,12 @@ instance RunMessage Waylay where
         $ NonEliteEnemy
         <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
         <> ExhaustedEnemy
-      enemiesWithEvade <- traverse (traverseToSnd (field EnemyEvade)) enemies
+      enemiesWithMaybeEvade <- traverse
+        (traverseToSnd (field EnemyEvade))
+        enemies
+      let
+        enemiesWithEvade = flip mapMaybe enemiesWithMaybeEvade
+          $ \(enemy, mEvade) -> (enemy, ) <$> mEvade
       pushAll
         [ chooseOne
           iid

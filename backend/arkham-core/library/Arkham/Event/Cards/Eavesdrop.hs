@@ -6,7 +6,7 @@ module Arkham.Event.Cards.Eavesdrop
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Types (Field(..))
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
@@ -25,8 +25,9 @@ eavesdrop = event Eavesdrop Cards.eavesdrop
 instance RunMessage Eavesdrop where
   runMessage msg e@(Eavesdrop attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <- selectListMap EnemyTarget $ UnengagedEnemy <> EnemyAt
-        (locationWithInvestigator iid)
+      targets <-
+        selectListMap EnemyTarget $ UnengagedEnemy <> EnemyWithEvade <> EnemyAt
+          (locationWithInvestigator iid)
       pushAll
         [ chooseOrRunOne
           iid
@@ -38,7 +39,7 @@ instance RunMessage Eavesdrop where
       pure e
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source ->
       do
-        n <- field EnemyEvade eid
+        n <- fromJustNote "Enemy must have evade" <$> field EnemyEvade eid
         push $ BeginSkillTest
           iid
           (toSource attrs)

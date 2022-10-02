@@ -59,10 +59,12 @@ modifiedEnemyFight EnemyAttrs {..} = do
   applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
 
-modifiedEnemyEvade :: (Monad m, HasGame m) => EnemyAttrs -> m Int
-modifiedEnemyEvade EnemyAttrs {..} = do
-  modifiers' <- getModifiers (EnemyTarget enemyId)
-  pure $ foldr applyModifier enemyEvade modifiers'
+modifiedEnemyEvade :: (Monad m, HasGame m) => EnemyAttrs -> m (Maybe Int)
+modifiedEnemyEvade EnemyAttrs {..} = case enemyEvade of
+  Just x -> do
+    modifiers' <- getModifiers (EnemyTarget enemyId)
+    pure . Just $ foldr applyModifier x modifiers'
+  Nothing -> pure Nothing
  where
   applyModifier (Modifier.EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n

@@ -552,6 +552,7 @@ library
       Arkham.Classes.RunMessage.Internal
       Arkham.ClassSymbol
       Arkham.CommitRestriction
+      Arkham.Constants
       Arkham.Cost
       Arkham.Criteria
       Arkham.Criteria.Override
@@ -1629,6 +1630,7 @@ library
   default-extensions:
       AllowAmbiguousTypes
       BlockArguments
+      DataKinds
       DeriveAnyClass
       DerivingStrategies
       DerivingVia
@@ -1636,6 +1638,7 @@ library
       GADTs
       LambdaCase
       NoImplicitPrelude
+      OverloadedLabels
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
@@ -1748,6 +1751,7 @@ test-suite spec
   default-extensions:
       AllowAmbiguousTypes
       BlockArguments
+      DataKinds
       DeriveAnyClass
       DerivingStrategies
       DerivingVia
@@ -1755,6 +1759,7 @@ test-suite spec
       GADTs
       LambdaCase
       NoImplicitPrelude
+      OverloadedLabels
       OverloadedStrings
       PatternSynonyms
       RecordWildCards

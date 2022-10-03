@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
+import Arkham.Constants
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -185,7 +186,7 @@ instance HasAbilities EnemyAttrs where
   getAbilities e =
     [ restrictedAbility
         e
-        100
+        AbilityAttack
         (OnSameLocation
         <> AnyCriterion
              [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
@@ -196,12 +197,12 @@ instance HasAbilities EnemyAttrs where
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility
         e
-        101
+        AbilityEvade
         (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
       $ ActionAbility (Just Action.Evade) (ActionCost 1)
     , restrictedAbility
         e
-        102
+        AbilityEngage
         (OnSameLocation
         <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
         )

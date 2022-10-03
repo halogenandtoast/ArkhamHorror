@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE OverloadedLabels #-}
 module Arkham.Enemy.Runner
   ( module Arkham.Enemy.Runner
   , module X
@@ -15,6 +16,7 @@ import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Constants
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Id
@@ -34,7 +36,7 @@ import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.SkillType
+import Arkham.SkillType ()
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -101,15 +103,14 @@ instance RunMessage EnemyAttrs where
       preyIdsWithLocation <- for preyIds
         $ traverseToSnd (selectJust . locationWithInvestigator)
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ case preyIdsWithLocation of
-        [] -> pure ()
-        iids -> push $ chooseOrRunOne
-          leadInvestigatorId
-          [ targetLabel
-              lid
-              [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
-          | (iid, lid) <- iids
-          ]
+      for_ (nonEmpty preyIdsWithLocation) $ \iids -> push $ chooseOrRunOne
+        leadInvestigatorId
+        [ targetLabel
+            lid
+            [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
+        | (iid, lid) <- toList iids
+        ]
+      pure a
     SetBearer (EnemyTarget eid) iid | eid == enemyId -> do
       pure $ a & bearerL ?~ iid
     EnemySpawn miid lid eid | eid == enemyId -> do
@@ -151,11 +152,11 @@ instance RunMessage EnemyAttrs where
                     ]
                   )
           else
-            when
-              (Keyword.Massive `notElem` keywords)
-              (push $ EnemyEntered eid lid)
+            when (Keyword.Massive `notElem` keywords) $ push $ EnemyEntered
+              eid
+              lid
 
-          a <$ when
+          when
             (Keyword.Massive `elem` keywords)
             do
               investigatorIds <- selectList $ InvestigatorAt $ LocationWithId
@@ -163,6 +164,7 @@ instance RunMessage EnemyAttrs where
               pushAll
                 $ EnemyEntered eid lid
                 : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
+          pure a
     EnemySpawnedAt lid eid | eid == enemyId -> do
       a <$ push (EnemyEntered eid lid)
     EnemyEntered eid lid | eid == enemyId -> do
@@ -493,14 +495,13 @@ instance RunMessage EnemyAttrs where
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- modifiedEnemyEvade a
       case mEnemyEvade' of
-        Just n -> push
-          $ BeginSkillTest
-            iid
-            source
-            (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
-            (Just Action.Evade)
-            skillType
-            n
+        Just n -> push $ BeginSkillTest
+          iid
+          source
+          (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
+          (Just Action.Evade)
+          skillType
+          n
         Nothing -> error "No evade value"
       pure a
     PassedSkillTest iid (Just Action.Evade) source (SkillTestInitiatorTarget target) _ n
@@ -736,18 +737,18 @@ instance RunMessage EnemyAttrs where
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
-      a <$ pushAll
-        ([whenMsg, When msg, After msg]
+      pushAll
+        $ [whenMsg, When msg, After msg]
         <> victoryMsgs
         <> [afterMsg]
         <> defeatMsgs
-        )
+      pure a
     Discard target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
-      a <$ pushAll
-        (windows'
+      pushAll
+        $ windows'
         <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
-        )
+      pure a
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll
         $ resolve (RemoveEnemy $ toId a)
@@ -760,10 +761,10 @@ instance RunMessage EnemyAttrs where
       pure a
     RemovedFromPlay source | isSource a source -> do
       enemyAssets <- selectList $ EnemyAsset enemyId
-      windowMsg <- checkWindows
-        ((`Window` Window.LeavePlay (toTarget a))
+      windowMsg <-
+        checkWindows
+        $ (`Window` Window.LeavePlay (toTarget a))
         <$> [Timing.When, Timing.After]
-        )
       pushAll
         $ windowMsg
         : map (Discard . AssetTarget) enemyAssets
@@ -772,7 +773,7 @@ instance RunMessage EnemyAttrs where
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getJustLocation iid
       enemyLocation <- field EnemyLocation eid
-      when (Just lid /= enemyLocation) (push $ EnemyEntered eid lid)
+      when (Just lid /= enemyLocation) $ push $ EnemyEntered eid lid
       pure $ a & placementL .~ InThreatArea iid
     EngageEnemy iid eid False | eid == enemyId ->
       -- TODO: Do we need to consider Massive here?
@@ -782,9 +783,9 @@ instance RunMessage EnemyAttrs where
       when shouldRespoond $ do
         keywords <- getModifiedKeywords a
         willMove <- canEnterLocation enemyId lid
-        if Keyword.Massive `notElem` keywords && willMove
-          then push $ EnemyEntered enemyId lid
-          else push $ DisengageEnemy iid enemyId
+        push $ if Keyword.Massive `notElem` keywords && willMove
+          then EnemyEntered enemyId lid
+          else DisengageEnemy iid enemyId
       pure a
     CheckAttackOfOpportunity iid isFast | not isFast && not enemyExhausted -> do
       willAttack <- member iid <$> select (investigatorEngagedWith enemyId)
@@ -802,16 +803,14 @@ instance RunMessage EnemyAttrs where
         getModifiedSpawnAt (SpawnLocation m : _) = Just m
         getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
         spawnAtMatcher = getModifiedSpawnAt modifiers'
-      a
-        <$ (case spawnAtMatcher of
-             Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
-             Just matcher -> do
-               spawnAt enemyId matcher
-           )
+      case spawnAtMatcher of
+        Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
+        Just matcher -> spawnAt enemyId matcher
+      pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       lids <- selectList locationMatcher
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ case lids of
+      case lids of
         [] ->
           pushAll
             $ Discard (EnemyTarget eid)
@@ -821,6 +820,7 @@ instance RunMessage EnemyAttrs where
               ]
         [lid] -> pushAll (resolve $ EnemySpawn miid lid eid)
         xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
+      pure a
     InvestigatorEliminated iid -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do
         lid <- getJustLocation iid
@@ -847,7 +847,8 @@ instance RunMessage EnemyAttrs where
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
-    PlaceDamage target amount | isTarget a target -> pure $ a & damageL +~ amount
+    PlaceDamage target amount | isTarget a target ->
+      pure $ a & damageL +~ amount
     PlaceDoom target amount | isTarget a target -> pure $ a & doomL +~ amount
     RemoveDoom target amount | isTarget a target ->
       pure $ a & doomL %~ max 0 . subtract amount
@@ -872,24 +873,13 @@ instance RunMessage EnemyAttrs where
         & (doomL .~ 0)
         & (cluesL .~ 0)
     Blanked msg' -> runMessage msg' a
-    UseCardAbility iid source _ 100 _ | isSource a source -> a <$ push
-      (FightEnemy
-        iid
-        (toId a)
-        (InvestigatorSource iid)
-        Nothing
-        SkillCombat
-        False
-      )
-    UseCardAbility iid source _ 101 _ | isSource a source -> a <$ push
-      (EvadeEnemy
-        iid
-        (toId a)
-        (InvestigatorSource iid)
-        Nothing
-        SkillAgility
-        False
-      )
-    UseCardAbility iid source _ 102 _ | isSource a source ->
-      a <$ push (EngageEnemy iid (toId a) False)
+    UseCardAbility iid (isSource a -> True) _ AbilityAttack _ -> do
+      push $ FightEnemy iid (toId a) (toSource iid) Nothing #combat False
+      pure a
+    UseCardAbility iid (isSource a -> True) _ AbilityEvade _ -> do
+      push $ EvadeEnemy iid (toId a) (toSource iid) Nothing #agility False
+      pure a
+    UseCardAbility iid (isSource a -> True) _ AbilityEngage _ -> do
+      push $ EngageEnemy iid (toId a) False
+      pure a
     _ -> pure a

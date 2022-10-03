@@ -44,7 +44,7 @@ instance HasAbilities Fence1 where
 
 instance RunMessage Fence1 where
   runMessage msg a@(Fence1 attrs) = case msg of
-    UseCardAbility _ source [Window Timing.When (Window.PlayCard _ card)] 1 _
+    UseCardAbility _ source 1 [Window Timing.When (Window.PlayCard _ card)] _
       | isSource attrs source -> a <$ push
         (createCardEffect
           Cards.fence1

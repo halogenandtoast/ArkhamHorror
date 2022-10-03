@@ -41,7 +41,7 @@ instance HasAbilities RiftSeeker where
 
 instance RunMessage RiftSeeker where
   runMessage msg e@(RiftSeeker attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectListMap AgendaTarget AnyAgenda
       push $ chooseOne
         iid
@@ -59,6 +59,6 @@ instance RunMessage RiftSeeker where
           [ PlaceDoom target 1 | target <- agendas ]
         ]
       pure e
-    UseCardAbility _iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility _iid source 2 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     _ -> RiftSeeker <$> runMessage msg attrs

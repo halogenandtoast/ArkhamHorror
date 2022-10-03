@@ -34,7 +34,7 @@ instance HasAbilities ResearchLibrarian where
 
 instance RunMessage ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (Search
           iid
           source

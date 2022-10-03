@@ -31,7 +31,7 @@ instance HasAbilities Encyclopedia2 where
 
 instance RunMessage Encyclopedia2 where
   runMessage msg a@(Encyclopedia2 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget $ colocatedWith iid
       push $ chooseOne
         iid

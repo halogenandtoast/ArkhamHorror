@@ -48,7 +48,7 @@ instance HasAbilities FinnsTrustyThirtyEight where
 
 instance RunMessage FinnsTrustyThirtyEight where
   runMessage msg a@(FinnsTrustyThirtyEight attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ pushAll
         [ skillTestModifier
           attrs

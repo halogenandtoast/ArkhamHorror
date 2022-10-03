@@ -35,7 +35,7 @@ instance HasAbilities PorteDeLAvancee where
 
 instance RunMessage PorteDeLAvancee where
   runMessage msg l@(PorteDeLAvancee attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectList AgendaWithAnyDoom
       agendasWithOtherAgendas <- traverse
         (traverseToSnd (selectJust . NotAgenda . AgendaWithId))

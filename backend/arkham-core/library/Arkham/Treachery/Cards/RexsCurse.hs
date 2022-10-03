@@ -46,7 +46,7 @@ instance RunMessage RexsCurse where
     case msg of
       Revelation iid source | isSource attrs source ->
         t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
-      UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      UseCardAbility iid source 1 _ _ | isSource attrs source -> do
         retainedMessages <- withQueue $ \queue ->
           let
             (remainingWillPass, queue') = flip span queue $ \case

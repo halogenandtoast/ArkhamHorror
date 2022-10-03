@@ -40,10 +40,11 @@ instance RunMessage FirstWatch where
           [ DrawEncounterCards (EventTarget eventId) playerCount
           , Discard (toTarget attrs)
           ]
-      UseCardAbilityChoice iid (EventSource eid) [] 1 _ (EncounterCardMetadata card)
+      UseCardAbilityChoice iid (EventSource eid) 1 (EncounterCardMetadata card) [] _
         | eid == eventId
         -> do
-          investigatorIds <- setFromList @(HashSet InvestigatorId) <$> getInvestigatorIds
+          investigatorIds <-
+            setFromList @(HashSet InvestigatorId) <$> getInvestigatorIds
           let
             assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
             remainingInvestigatorIds =
@@ -58,22 +59,22 @@ instance RunMessage FirstWatch where
                 [ UseCardAbilityChoice
                     iid'
                     (EventSource eid)
-                    []
                     2
-                    NoPayment
                     (EncounterCardMetadata card)
+                    []
+                    NoPayment
                 ]
             | iid' <- remainingInvestigatorIds
             ]
           pure e
-      UseCardAbilityChoice iid (EventSource eid) _ 2 _ (EncounterCardMetadata card)
+      UseCardAbilityChoice iid (EventSource eid) 2 (EncounterCardMetadata card) _ _
         | eid == eventId
         -> pure $ FirstWatch
           (attrs `with` FirstWatchMetadata
             { firstWatchPairings = (iid, card) : firstWatchPairings
             }
           )
-      UseCardAbilityChoice _ (EventSource eid) _ 3 _ (TargetMetadata _)
+      UseCardAbilityChoice _ (EventSource eid) 3 (TargetMetadata _) _ _
         | eid == eventId -> e <$ pushAll
           [ InvestigatorDrewEncounterCard iid' card
           | (iid', card) <- firstWatchPairings
@@ -87,20 +88,20 @@ instance RunMessage FirstWatch where
                 [ UseCardAbilityChoice
                     eventOwner
                     (EventSource eventId)
-                    []
                     1
-                    NoPayment
                     (EncounterCardMetadata card)
+                    []
+                    NoPayment
                 ]
             | card <- cards
             ]
           , UseCardAbilityChoice
             eventOwner
             (EventSource eventId)
-            []
             3
-            NoPayment
             (TargetMetadata $ toTarget attrs)
+            []
+            NoPayment
           ]
         pure e
       _ -> FirstWatch . (`with` metadata) <$> runMessage msg attrs

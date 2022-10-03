@@ -42,7 +42,7 @@ instance HasAbilities HouseInTheReeds_211 where
 
 instance RunMessage HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
         $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
         $ CardWithType EnemyType

@@ -37,7 +37,7 @@ instance HasAbilities BrokenSteps_290 where
 
 instance RunMessage BrokenSteps_290 where
   runMessage msg l@(BrokenSteps_290 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasAssets <- selectAny $ assetControlledBy iid <> DiscardableAsset
       mCultistCard <-
         find (`cardMatch` (CardWithTrait Cultist <> CardWithType EnemyType))

@@ -48,7 +48,7 @@ toInvestigator (_ : xs) = toInvestigator xs
 
 instance RunMessage GrimmsFairyTales where
   runMessage msg a@(GrimmsFairyTales attrs) = case msg of
-    UseCardAbility _ source windows' 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 windows' _ | isSource attrs source -> do
       let iid' = toInvestigator windows'
       push $ HealHorror (InvestigatorTarget iid') 1
       pure a

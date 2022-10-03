@@ -68,7 +68,7 @@ instance HasAbilities NarrowShaft where
 
 instance RunMessage NarrowShaft where
   runMessage msg l@(NarrowShaft attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       moveFrom <- popMessageMatching \case
         MoveFrom _ iid' lid' -> iid' == iid && toId l == lid'
         _ -> False
@@ -83,7 +83,7 @@ instance RunMessage NarrowShaft where
         , BeginSkillTest iid (toSource attrs) target Nothing SkillAgility 3
         ]
       pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
       pure l
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do

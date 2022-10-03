@@ -38,7 +38,7 @@ paidHorror _ = False
 
 instance RunMessage MeatCleaver where
   runMessage msg a@(MeatCleaver attrs) = case msg of
-    UseCardAbility iid source _ 1 payments | isSource attrs source -> do
+    UseCardAbility iid source 1 _ payments | isSource attrs source -> do
       remainingSanity <- field InvestigatorRemainingSanity iid
       a <$ pushAll
         [ skillTestModifiers

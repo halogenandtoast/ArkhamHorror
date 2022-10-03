@@ -41,7 +41,7 @@ instance HasAbilities InterstellarTraveler where
 
 instance RunMessage InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation (toId attrs)
       for_ enemyLocation $ \loc -> do
         clueCount <- field LocationClues loc

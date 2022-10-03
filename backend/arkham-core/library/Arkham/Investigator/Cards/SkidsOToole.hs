@@ -47,7 +47,7 @@ instance HasTokenValue SkidsOToole where
 
 instance RunMessage SkidsOToole where
   runMessage msg i@(SkidsOToole attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       i <$ push (GainActions (toId attrs) source 1)
     PassedSkillTest iid _ _ (TokenTarget token) _ _
       | iid == toId attrs && tokenFace token == ElderSign -> i

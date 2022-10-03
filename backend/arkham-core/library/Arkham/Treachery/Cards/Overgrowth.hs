@@ -47,7 +47,7 @@ instance RunMessage Overgrowth where
         (toId attrs)
         (LocationTarget lid)
       pure t
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         target = toTarget attrs
         beginSkillTest sType =

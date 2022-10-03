@@ -37,7 +37,7 @@ instance HasAbilities TrackShoes where
 
 instance RunMessage TrackShoes where
   runMessage msg a@(TrackShoes attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a
         <$ push
              (BeginSkillTest

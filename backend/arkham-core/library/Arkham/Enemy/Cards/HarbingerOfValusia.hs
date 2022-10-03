@@ -46,7 +46,7 @@ instance HasAbilities HarbingerOfValusia where
 
 instance RunMessage HarbingerOfValusia where
   runMessage msg e@(HarbingerOfValusia attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       n <- getPlayerCountValue (PerPlayer 2)
       if enemyResources attrs + 1 >= n
         then do

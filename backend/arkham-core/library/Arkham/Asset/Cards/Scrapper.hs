@@ -39,14 +39,14 @@ instance HasAbilities Scrapper where
 
 instance RunMessage Scrapper where
   runMessage msg a@(Scrapper attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (CreateWindowModifierEffect
         EffectPhaseWindow
         (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
         source
         (InvestigatorTarget iid)
       )
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ push
       (CreateWindowModifierEffect
         EffectPhaseWindow
         (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])

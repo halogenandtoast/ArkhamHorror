@@ -43,7 +43,7 @@ theOrganistHopelessIDefiedHim = enemy
 
 instance RunMessage TheOrganistHopelessIDefiedHim where
   runMessage msg e@(TheOrganistHopelessIDefiedHim attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       isEngaged <- selectAny
         $ InvestigatorEngagedWith (EnemyWithId $ toId attrs)
       unless isEngaged $ pushAll

@@ -40,7 +40,7 @@ instance HasModifiersFor Grounded1 where
 
 instance RunMessage Grounded1 where
   runMessage msg a@(Grounded1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push
         (skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1))
     _ -> Grounded1 <$> runMessage msg attrs

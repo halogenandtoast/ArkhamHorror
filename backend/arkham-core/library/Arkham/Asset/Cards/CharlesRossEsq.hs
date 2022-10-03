@@ -44,7 +44,7 @@ instance HasAbilities CharlesRossEsq where
 
 instance RunMessage CharlesRossEsq where
   runMessage msg a@(CharlesRossEsq attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       -- TODO: we may want to track the investigator instead of the asset
       a <$ push
         (CreateEffect (toCardCode attrs) Nothing source (toTarget attrs))

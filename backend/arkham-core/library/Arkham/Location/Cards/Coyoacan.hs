@@ -40,7 +40,7 @@ instance HasAbilities Coyoacan where
 
 instance RunMessage Coyoacan where
   runMessage msg l@(Coyoacan attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push
         $ Explore iid (toSource attrs)
         $ CardWithPrintedLocationSymbol

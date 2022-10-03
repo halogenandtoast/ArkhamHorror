@@ -29,7 +29,7 @@ instance HasAbilities BehindTheCurtain where
 
 instance RunMessage BehindTheCurtain where
   runMessage msg a@(BehindTheCurtain attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push (Resign iid)
       BehindTheCurtain <$> runMessage msg attrs
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do

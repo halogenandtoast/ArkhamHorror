@@ -56,7 +56,7 @@ instance RunMessage AshcanPete where
       mduke <- selectOne $ assetIs Assets.duke
       for_ mduke $ \duke -> push $ Ready (AssetTarget duke)
       pure i
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap
         AssetTarget
         (AssetControlledBy You <> AssetExhausted)

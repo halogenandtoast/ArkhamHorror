@@ -39,7 +39,7 @@ instance HasAbilities BidingItsTime where
 
 instance RunMessage BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- selectListMap EnemyTarget (EnemyWithTitle "Brood of Yog-Sothoth")
       a <$ when

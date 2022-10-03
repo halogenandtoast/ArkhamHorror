@@ -43,8 +43,8 @@ leoAnderson = investigator
 
 instance HasModifiersFor LeoAnderson where
   getModifiersFor (CardIdTarget cid) (LeoAnderson (attrs `With` metadata))
-    | Just cid == fmap toCardId (responseCard metadata)
-    = pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
+    | Just cid == fmap toCardId (responseCard metadata) = pure
+    $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LeoAnderson where
@@ -66,7 +66,7 @@ instance HasTokenValue LeoAnderson where
 
 instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source windows' 1 payment | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' payment | isSource attrs source -> do
       results <- selectList (InHandOf You <> BasicCardMatch IsAlly)
       cards <- filterM
         (getIsPlayableWithResources
@@ -81,11 +81,18 @@ instance RunMessage LeoAnderson where
         iid
         [ TargetLabel
             (CardIdTarget $ toCardId c)
-            [UseCardAbilityChoiceTarget iid source windows' 1 payment (CardTarget c)]
+            [ UseCardAbilityChoiceTarget
+                iid
+                source
+                1
+                (CardTarget c)
+                windows'
+                payment
+            ]
         | c <- cards
         ]
       pure i
-    UseCardAbilityChoiceTarget iid source _ 1 _ (CardTarget card)
+    UseCardAbilityChoiceTarget iid source 1 (CardTarget card) _ _
       | isSource attrs source -> do
         let windows' = [Window Timing.When (Window.DuringTurn iid)]
         pushAll [PayCardCost iid card windows', ResetMetadata (toTarget attrs)]

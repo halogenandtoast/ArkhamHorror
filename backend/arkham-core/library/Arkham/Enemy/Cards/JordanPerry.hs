@@ -33,6 +33,6 @@ instance HasAbilities JordanPerry where
 
 instance RunMessage JordanPerry where
   runMessage msg e@(JordanPerry attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (HealDamage (toTarget attrs) 1)
     _ -> JordanPerry <$> runMessage msg attrs

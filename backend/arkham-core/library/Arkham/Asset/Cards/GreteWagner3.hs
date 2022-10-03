@@ -44,7 +44,7 @@ instance HasAbilities GreteWagner3 where
 
 instance RunMessage GreteWagner3 where
   runMessage msg a@(GreteWagner3 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
       pure a
     _ -> GreteWagner3 <$> runMessage msg attrs

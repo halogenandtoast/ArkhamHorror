@@ -41,7 +41,7 @@ instance HasAbilities AncientHall where
 
 instance RunMessage AncientHall where
   runMessage msg l@(AncientHall attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <-
         selectList
         $ InvestigatorAt (LocationWithId $ toId attrs)

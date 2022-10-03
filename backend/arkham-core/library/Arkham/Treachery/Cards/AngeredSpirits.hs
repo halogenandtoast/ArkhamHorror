@@ -53,11 +53,11 @@ instance RunMessage AngeredSpirits where
       [ RemoveCardFromHand iid (toCardId attrs)
       , AttachTreachery (toId attrs) (InvestigatorTarget iid)
       ]
-    UseCardAbility _ source _ 1 (ExhaustPayment [target])
+    UseCardAbility _ source 1 _ (ExhaustPayment [target])
       | isSource attrs source
       -> t <$ pushAll
         [SpendUses target Charge 1, PlaceResources (toTarget attrs) 1]
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       withTreacheryInvestigator attrs
         $ \tormented -> t <$ push (SufferTrauma tormented 1 0)
     _ -> AngeredSpirits <$> runMessage msg attrs

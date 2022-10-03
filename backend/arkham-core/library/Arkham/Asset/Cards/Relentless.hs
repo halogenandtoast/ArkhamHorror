@@ -43,11 +43,11 @@ toExcessDamage (_ : xs) = toExcessDamage xs
 
 instance RunMessage Relentless where
   runMessage msg a@(Relentless attrs) = case msg of
-    UseCardAbility _ source windows' 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 windows' _ | isSource attrs source -> do
       let excessDamage = toExcessDamage windows'
       push $ PlaceDamage (toTarget attrs) excessDamage
       pure a
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ TakeResources iid (assetDamage attrs) False
       pure a
     _ -> Relentless <$> runMessage msg attrs

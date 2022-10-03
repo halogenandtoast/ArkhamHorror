@@ -40,6 +40,6 @@ instance HasAbilities StMarysHospital where
 
 instance RunMessage StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (HealDamage (InvestigatorTarget iid) 3)
     _ -> StMarysHospital <$> runMessage msg attrs

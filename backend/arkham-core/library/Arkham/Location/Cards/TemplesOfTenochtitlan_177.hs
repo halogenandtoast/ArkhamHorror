@@ -54,7 +54,7 @@ instance HasAbilities TemplesOfTenochtitlan_177 where
 
 instance RunMessage TemplesOfTenochtitlan_177 where
   runMessage msg l@(TemplesOfTenochtitlan_177 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       leadInvestigatorId <- getLeadInvestigatorId
       targets <- selectListMap EnemyTarget
         $ NearestEnemyToLocation (toId attrs) AnyEnemy
@@ -62,7 +62,7 @@ instance RunMessage TemplesOfTenochtitlan_177 where
         leadInvestigatorId
         [ TargetLabel target [PlaceDoom target 1] | target <- targets ]
       pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
       pure l
     _ -> TemplesOfTenochtitlan_177 <$> runMessage msg attrs

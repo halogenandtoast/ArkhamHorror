@@ -32,7 +32,7 @@ instance HasAbilities Encore where
 
 instance RunMessage Encore where
   runMessage msg a@(Encore attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       , ResetAgendaDeckToStage 1
       , PlaceDoomOnAgenda

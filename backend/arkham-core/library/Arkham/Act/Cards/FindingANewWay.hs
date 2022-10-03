@@ -35,9 +35,9 @@ instance HasAbilities FindingANewWay where
 
 instance RunMessage FindingANewWay where
   runMessage msg a@(FindingANewWay attrs@ActAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       a <$ push (ScenarioResolution $ Resolution 1)

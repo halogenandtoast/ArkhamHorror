@@ -35,7 +35,7 @@ instance HasAbilities HighRoller2 where
 
 instance RunMessage HighRoller2 where
   runMessage msg a@(HighRoller2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       skillType <- skillTestSkillType <$> getJustSkillTest
       pushAll
         [ skillTestModifier attrs (InvestigatorTarget iid)

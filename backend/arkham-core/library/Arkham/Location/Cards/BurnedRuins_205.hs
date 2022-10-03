@@ -38,7 +38,7 @@ instance HasAbilities BurnedRuins_205 where
 
 instance RunMessage BurnedRuins_205 where
   runMessage msg l@(BurnedRuins_205 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       when (locationClues attrs > 0) $ pushAll
         [RemoveClues (toTarget attrs) 1, PlaceDoom (toTarget attrs) 1]
       pure l

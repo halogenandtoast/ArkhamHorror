@@ -60,6 +60,6 @@ instance RunMessage NobodysHome where
           $ AttachTreachery (toId attrs) (LocationTarget lid)
           : [ Surge iid source | clueless ]
       pure t
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> NobodysHome <$> runMessage msg attrs

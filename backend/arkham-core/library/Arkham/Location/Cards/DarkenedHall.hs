@@ -37,7 +37,7 @@ instance HasAbilities DarkenedHall where
 
 instance RunMessage DarkenedHall where
   runMessage msg (DarkenedHall attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       artGallery <- getSetAsideCard Cards.artGallery
       vipArea <- getSetAsideCard Cards.vipArea
       backAlley <- getSetAsideCard Cards.backAlley

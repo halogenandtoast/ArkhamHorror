@@ -46,12 +46,12 @@ instance HasAbilities Row where
 
 instance RunMessage Row where
   runMessage msg a@(Row attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       _ <- popMessageMatching $ \case
         InvestigatorDoDrawEncounterCard iid' -> iid == iid'
         _ -> False
       a <$ push (DiscardTopOfEncounterDeck iid 5 (Just $ toTarget attrs))
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)

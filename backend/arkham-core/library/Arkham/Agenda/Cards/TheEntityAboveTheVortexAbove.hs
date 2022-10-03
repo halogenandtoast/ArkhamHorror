@@ -51,7 +51,7 @@ instance RunMessage TheEntityAboveTheVortexAbove where
       pushAll
         [Discard (AgendaTarget $ toId attrs), AddAct 2 Acts.openThePathAbove]
       pure a
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       pushAll
         $ [PlaceDoom (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]

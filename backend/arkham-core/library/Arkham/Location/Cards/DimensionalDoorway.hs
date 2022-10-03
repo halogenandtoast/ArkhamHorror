@@ -51,7 +51,7 @@ instance RunMessage DimensionalDoorway where
             ]
       pushAll revelationMsgs
       DimensionalDoorway <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       resourceCount <- field InvestigatorResources iid
       if resourceCount >= 2
         then l <$ push

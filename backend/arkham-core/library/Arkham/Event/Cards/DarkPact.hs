@@ -47,7 +47,7 @@ instance RunMessage DarkPact where
         , Discard (toTarget attrs)
         ]
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) _ 1 _)
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
       | iid' == iid -> case toCard attrs of
           EncounterCard _ -> error "should be player card"
           PlayerCard pc -> do

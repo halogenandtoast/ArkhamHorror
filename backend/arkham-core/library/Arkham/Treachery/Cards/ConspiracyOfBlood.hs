@@ -53,7 +53,7 @@ instance RunMessage ConspiracyOfBlood where
       currentAgenda <- selectJust AnyAgenda
       push $ AttachTreachery (toId attrs) (AgendaTarget currentAgenda)
       pure t
-    UseCardAbility iid (ProxySource (EnemySource eid) source) _ 1 _
+    UseCardAbility iid (ProxySource (EnemySource eid) source) 1 _ _
       | isSource attrs source -> do
         push $ BeginSkillTest
           iid

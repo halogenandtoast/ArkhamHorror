@@ -36,7 +36,7 @@ instance HasAbilities Lupara3 where
 
 instance RunMessage Lupara3 where
   runMessage msg a@(Lupara3 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let n = if justPlayed metadata then 2 else 1
       a <$ pushAll
         [ skillTestModifiers

@@ -53,11 +53,11 @@ instance HasAbilities SacredWoods_184 where
 
 instance RunMessage SacredWoods_184 where
   runMessage msg l@(SacredWoods_184 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- selectList $ investigatorAt (toId attrs)
       pushAll [ DiscardTopOfDeck iid 10 Nothing | iid <- iids ]
       pure l
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       n <- field LocationClues (toId attrs)
       push $ InvestigatorDiscoverClues iid (toId attrs) n Nothing
       pure l

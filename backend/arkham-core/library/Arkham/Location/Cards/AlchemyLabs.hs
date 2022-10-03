@@ -44,7 +44,7 @@ instance HasAbilities AlchemyLabs where
 
 instance RunMessage AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (Investigate
         iid
         (toId attrs)

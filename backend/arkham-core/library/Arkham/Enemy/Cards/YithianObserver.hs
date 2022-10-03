@@ -39,7 +39,7 @@ instance HasAbilities YithianObserver where
 
 instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       emptyHand<- fieldMap InvestigatorHand null iid
       if emptyHand
         then push $ skillTestModifiers

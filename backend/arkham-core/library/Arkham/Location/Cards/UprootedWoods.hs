@@ -39,6 +39,6 @@ instance HasAbilities UprootedWoods where
 
 instance RunMessage UprootedWoods where
   runMessage msg l@(UprootedWoods attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ push (DiscardTopOfDeck iid 5 Nothing)
     _ -> UprootedWoods <$> runMessage msg attrs

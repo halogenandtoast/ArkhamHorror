@@ -64,7 +64,7 @@ instance HasAbilities TemploMayor_174 where
 
 instance RunMessage TemploMayor_174 where
   runMessage msg l@(TemploMayor_174 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ ShuffleEncounterDiscardBackIn
         , DiscardEncounterUntilFirst
@@ -75,7 +75,7 @@ instance RunMessage TemploMayor_174 where
     RequestedEncounterCard (isSource attrs -> True) (Just ec) -> do
       push $ SpawnEnemyAt (EncounterCard ec) (toId attrs)
       pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) 1 Nothing
       pure l
     _ -> TemploMayor_174 <$> runMessage msg attrs

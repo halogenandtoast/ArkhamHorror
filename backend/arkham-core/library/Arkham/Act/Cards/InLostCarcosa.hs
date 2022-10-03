@@ -34,7 +34,7 @@ instance HasAbilities InLostCarcosa where
 
 instance RunMessage InLostCarcosa where
   runMessage msg a@(InLostCarcosa attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask

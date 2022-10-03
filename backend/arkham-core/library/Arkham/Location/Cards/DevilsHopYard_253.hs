@@ -46,7 +46,7 @@ instance HasAbilities DevilsHopYard_253 where
 
 instance RunMessage DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs
       abominations <- locationEnemiesWithTrait attrs Abomination
       when

@@ -51,13 +51,13 @@ instance HasAbilities AllIn where
 
 instance RunMessage AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       resignedWithDrFrancisMorgan <- scenarioFieldMap ScenarioResignedCardCodes (elem "02080")
       let resolution = if resignedWithDrFrancisMorgan then 2 else 1
       a <$ push (ScenarioResolution $ Resolution resolution)
-    UseCardAbility iid (ProxySource _ source) _ 1 _
+    UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && onSide A attrs -> do
         maid <- selectOne (assetIs Cards.drFrancisMorgan)
         case maid of

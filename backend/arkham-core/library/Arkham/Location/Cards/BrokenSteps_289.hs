@@ -39,7 +39,7 @@ instance HasAbilities BrokenSteps_289 where
 
 instance RunMessage BrokenSteps_289 where
   runMessage msg l@(BrokenSteps_289 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       actionsRemaining <- field InvestigatorRemainingActions iid
       mOmenCard <-
         find (`cardMatch` (CardWithTrait Omen <> CardWithType TreacheryType))

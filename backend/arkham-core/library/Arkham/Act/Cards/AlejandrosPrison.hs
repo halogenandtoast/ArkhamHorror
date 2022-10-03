@@ -48,7 +48,7 @@ instance HasAbilities AlejandrosPrison where
 
 instance RunMessage AlejandrosPrison where
   runMessage msg a@(AlejandrosPrison attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do

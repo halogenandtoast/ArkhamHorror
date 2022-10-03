@@ -34,6 +34,6 @@ instance HasAbilities Northside where
 
 instance RunMessage Northside where
   runMessage msg l@(Northside attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (GainClues iid 2)
     _ -> Northside <$> runMessage msg attrs

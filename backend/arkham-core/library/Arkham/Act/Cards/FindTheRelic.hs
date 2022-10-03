@@ -48,7 +48,7 @@ instance HasAbilities FindTheRelic where
 
 instance RunMessage FindTheRelic where
   runMessage msg a@(FindTheRelic attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do

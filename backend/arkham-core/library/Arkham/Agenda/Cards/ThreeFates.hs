@@ -28,7 +28,7 @@ instance HasAbilities ThreeFates where
 
 instance RunMessage ThreeFates where
   runMessage msg a@(ThreeFates attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push (Resign iid)
       ThreeFates <$> runMessage msg attrs
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do

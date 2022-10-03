@@ -30,7 +30,7 @@ instance HasAbilities DiscoveringTheTruth where
 
 instance RunMessage DiscoveringTheTruth where
   runMessage msg a@(DiscoveringTheTruth attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       clueCount <- field InvestigatorClues iid
       a
         <$ pushAll

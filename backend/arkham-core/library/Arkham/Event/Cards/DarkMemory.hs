@@ -30,7 +30,7 @@ instance HasAbilities DarkMemory where
 
 instance RunMessage DarkMemory where
   runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) _ 1 _) | iid' == iid -> e <$ pushAll
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> e <$ pushAll
       [ RevealInHand $ toCardId attrs
       , InvestigatorAssignDamage
         iid

@@ -55,7 +55,7 @@ instance HasAbilities TemplesOfTenochtitlan_176 where
 
 instance RunMessage TemplesOfTenochtitlan_176 where
   runMessage msg l@(TemplesOfTenochtitlan_176 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- selectList $ investigatorAt (toId attrs)
       pushAll
         [ InvestigatorDirectDamage iid (toSource attrs) 1 0 | iid <- iids ]

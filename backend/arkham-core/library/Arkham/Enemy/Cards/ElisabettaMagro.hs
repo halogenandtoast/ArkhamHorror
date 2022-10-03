@@ -33,6 +33,6 @@ instance HasAbilities ElisabettaMagro where
 
 instance RunMessage ElisabettaMagro where
   runMessage msg e@(ElisabettaMagro attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (PlaceDoom (toTarget attrs) 1)
     _ -> ElisabettaMagro <$> runMessage msg attrs

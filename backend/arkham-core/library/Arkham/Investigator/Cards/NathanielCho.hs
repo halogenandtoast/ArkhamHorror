@@ -60,7 +60,7 @@ instance HasTokenValue NathanielCho where
 
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.DealtDamage _ _ (EnemyTarget eid))] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.DealtDamage _ _ (EnemyTarget eid))] _
       | isSource attrs source
       -> a <$ push
         (CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid))

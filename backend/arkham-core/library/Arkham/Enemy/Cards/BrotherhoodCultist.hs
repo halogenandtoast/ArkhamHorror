@@ -43,7 +43,7 @@ instance HasAbilities BrotherhoodCultist where
 
 instance RunMessage BrotherhoodCultist where
   runMessage msg e@(BrotherhoodCultist attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ PlaceDoom (toTarget attrs) 1
       pure e
     _ -> BrotherhoodCultist <$> runMessage msg attrs

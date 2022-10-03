@@ -29,7 +29,7 @@ instance HasAbilities Blackjack where
 
 instance RunMessage Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)

@@ -41,7 +41,7 @@ instance HasAbilities LostMemories where
 
 instance RunMessage LostMemories where
   runMessage msg l@(LostMemories attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
       l <$ push
         (InvestigatorAssignDamage iid source DamageAny 0 actionRemainingCount)

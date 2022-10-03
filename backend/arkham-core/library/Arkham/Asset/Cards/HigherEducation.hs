@@ -42,13 +42,13 @@ instance HasAbilities HigherEducation where
 
 instance RunMessage HigherEducation where
   runMessage msg a@(HigherEducation attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillWillpower 1)
       )
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)

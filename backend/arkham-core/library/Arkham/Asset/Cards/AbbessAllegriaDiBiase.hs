@@ -38,7 +38,7 @@ instance HasAbilities AbbessAllegriaDiBiase where
 
 instance RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mLocationId <- field InvestigatorLocation iid
       case mLocationId of
         Nothing -> error "impossible"

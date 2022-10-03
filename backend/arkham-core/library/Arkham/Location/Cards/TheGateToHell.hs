@@ -59,7 +59,7 @@ instance HasAbilities TheGateToHell where
 
 instance RunMessage TheGateToHell where
   runMessage msg l@(TheGateToHell attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- countM (directionEmpty attrs) [Above, Below]
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l

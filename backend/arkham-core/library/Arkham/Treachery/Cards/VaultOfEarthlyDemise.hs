@@ -40,7 +40,7 @@ instance HasModifiersFor VaultOfEarthlyDemise where
 
 instance RunMessage VaultOfEarthlyDemise where
   runMessage msg t@(VaultOfEarthlyDemise attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       actsRemaining <- selectCount $ RemainingActMatcher AnyAct
       t <$ push (PlaceResources (toTarget attrs) actsRemaining)
     Discard (TreacheryTarget tid) | tid == toId attrs ->

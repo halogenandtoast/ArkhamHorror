@@ -53,6 +53,6 @@ instance HasAbilities Yard where
 
 instance RunMessage Yard where
   runMessage msg l@(Yard attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (Remember IncitedAFightAmongstThePatients)
     _ -> Yard <$> runMessage msg attrs

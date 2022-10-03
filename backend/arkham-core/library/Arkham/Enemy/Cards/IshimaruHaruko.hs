@@ -33,6 +33,6 @@ instance HasAbilities IshimaruHaruko where
 
 instance RunMessage IshimaruHaruko where
   runMessage msg e@(IshimaruHaruko attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (InvestigatorDrawEncounterCard iid)
     _ -> IshimaruHaruko <$> runMessage msg attrs

@@ -37,6 +37,6 @@ instance HasAbilities LeMarais217 where
 
 instance RunMessage LeMarais217 where
   runMessage msg l@(LeMarais217 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (DrawCards iid 1 False)
     _ -> LeMarais217 <$> runMessage msg attrs

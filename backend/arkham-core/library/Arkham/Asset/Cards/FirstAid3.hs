@@ -28,7 +28,7 @@ instance HasAbilities FirstAid3 where
 
 instance RunMessage FirstAid3 where
   runMessage msg a@(FirstAid3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- liftA2
         (<>)
         (selectListMap InvestigatorTarget (InvestigatorAt YourLocation))

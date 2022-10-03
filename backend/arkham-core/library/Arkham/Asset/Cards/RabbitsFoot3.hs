@@ -32,7 +32,7 @@ instance HasAbilities RabbitsFoot3 where
 
 instance RunMessage RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
-    UseCardAbility iid source [Window _ (Window.FailSkillTest _ x)] 1 _
+    UseCardAbility iid source 1 [Window _ (Window.FailSkillTest _ x)] _
       | isSource attrs source -> a <$ push
         (Search
           iid

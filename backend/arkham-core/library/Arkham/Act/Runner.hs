@@ -62,7 +62,7 @@ instance RunMessage ActAttrs where
       a <$ when
         (null investigatorIds)
         (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
-    UseCardAbility iid source _ 999 _ | isSource a source ->
+    UseCardAbility iid source 999 _ _ | isSource a source ->
       -- This is assumed to be advancement via spending clues
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     PlaceClues (ActTarget aid) n | aid == actId -> do

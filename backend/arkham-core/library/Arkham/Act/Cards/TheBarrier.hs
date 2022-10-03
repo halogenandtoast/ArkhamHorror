@@ -34,7 +34,7 @@ instance HasAbilities TheBarrier where
 
 instance RunMessage TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       hallwayId <- getJustLocationIdByName "Hallway"

@@ -29,7 +29,7 @@ instance HasAbilities FireExtinguisher1 where
 
 instance RunMessage FireExtinguisher1 where
   runMessage msg a@(FireExtinguisher1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         attrs
         (InvestigatorTarget iid)

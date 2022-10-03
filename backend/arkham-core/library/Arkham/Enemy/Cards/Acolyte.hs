@@ -37,6 +37,6 @@ instance HasAbilities Acolyte where
 
 instance RunMessage Acolyte where
   runMessage msg e@(Acolyte attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (PlaceDoom (toTarget attrs) 1)
     _ -> Acolyte <$> runMessage msg attrs

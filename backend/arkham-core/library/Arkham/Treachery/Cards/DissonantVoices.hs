@@ -41,6 +41,6 @@ instance RunMessage DissonantVoices where
   runMessage msg t@(DissonantVoices attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId t) (InvestigatorTarget iid))
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> DissonantVoices <$> runMessage msg attrs

@@ -56,7 +56,7 @@ instance RunMessage SpectralMist where
         | target <- targets
         ]
       SpectralMist <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
+    UseCardAbility iid (TreacherySource tid) 1 _ _ | tid == treacheryId ->
       t <$ push
         (BeginSkillTest
           iid

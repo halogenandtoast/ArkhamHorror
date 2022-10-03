@@ -46,7 +46,7 @@ instance HasAbilities YogSothoth where
 
 instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       e <$ push
         (chooseOne
           iid

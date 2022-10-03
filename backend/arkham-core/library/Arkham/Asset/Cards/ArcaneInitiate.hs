@@ -35,9 +35,9 @@ instance HasAbilities ArcaneInitiate where
 
 instance RunMessage ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (PlaceDoom (toTarget attrs) 1)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ chooseOne
         iid
         [ targetLabel

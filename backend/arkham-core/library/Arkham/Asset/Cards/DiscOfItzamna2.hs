@@ -37,7 +37,7 @@ instance RunMessage DiscOfItzamna2 where
           (SkillModifier SkillWillpower 1)
         )
       DiscOfItzamna2 <$> runMessage msg attrs
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       menemySpawnMessage <- fromQueue
         $ find ((== Just EnemySpawnMessage) . messageType)
       a <$ case menemySpawnMessage of

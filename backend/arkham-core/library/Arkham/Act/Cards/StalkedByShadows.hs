@@ -35,7 +35,7 @@ instance HasAbilities StalkedByShadows where
 
 instance RunMessage StalkedByShadows where
   runMessage msg a@(StalkedByShadows attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       theOrganist <- getTheOrganist
       currentAgenda <- AgendaTarget <$> selectJust AnyAgenda
       push $ chooseOne iid [Label "Place 1 doom on the current agenda" [PlaceDoom currentAgenda 1], Label "Automatically evade The Organist" [EnemyEvaded iid theOrganist]]

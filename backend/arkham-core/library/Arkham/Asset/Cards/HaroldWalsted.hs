@@ -56,6 +56,6 @@ instance HasModifiersFor HaroldWalsted where
 
 instance RunMessage HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]
     _ -> HaroldWalsted <$> runMessage msg attrs

@@ -51,7 +51,7 @@ instance RunMessage SpiresOfCarcosa where
         , PlaceDoom (LocationTarget lid) 2
         ]
       pure t
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> push $ Investigate
         iid
@@ -65,6 +65,6 @@ instance RunMessage SpiresOfCarcosa where
       case treacheryAttachedTarget attrs of
         Just location -> t <$ push (RemoveDoom location 1)
         Nothing -> error "must be attached to location to trigger ability"
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> SpiresOfCarcosa <$> runMessage msg attrs

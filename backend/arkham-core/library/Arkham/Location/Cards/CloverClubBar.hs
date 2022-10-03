@@ -35,6 +35,6 @@ instance HasAbilities CloverClubBar where
 
 instance RunMessage CloverClubBar where
   runMessage msg l@(CloverClubBar attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
       [GainClues iid 2, DrawCards iid 2 False, Remember $ HadADrink iid]
     _ -> CloverClubBar <$> runMessage msg attrs

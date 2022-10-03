@@ -35,7 +35,7 @@ instance HasAbilities ReturnToCellar where
 
 instance RunMessage ReturnToCellar where
   runMessage msg l@(ReturnToCellar attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       deepBelowYourHouse <- getSetAsideCard Cards.deepBelowYourHouse
       l <$ push (PlaceLocation deepBelowYourHouse)
     _ -> ReturnToCellar <$> runMessage msg attrs

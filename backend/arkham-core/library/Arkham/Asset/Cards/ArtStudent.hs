@@ -36,6 +36,6 @@ instance HasAbilities ArtStudent where
 
 instance RunMessage ArtStudent where
   runMessage msg a@(ArtStudent attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing)
     _ -> ArtStudent <$> runMessage msg attrs

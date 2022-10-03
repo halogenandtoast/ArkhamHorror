@@ -37,6 +37,6 @@ instance HasAbilities Bathroom where
 
 instance RunMessage Bathroom where
   runMessage msg l@(Bathroom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ pushAll [SetActions iid source 0, ChooseEndTurn iid]
     _ -> Bathroom <$> runMessage msg attrs

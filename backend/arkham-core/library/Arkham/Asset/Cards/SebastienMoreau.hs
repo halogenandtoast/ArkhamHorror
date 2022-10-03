@@ -36,7 +36,7 @@ instance HasAbilities SebastienMoreau where
 
 instance RunMessage SebastienMoreau where
   runMessage msg a@(SebastienMoreau attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
@@ -44,6 +44,6 @@ instance RunMessage SebastienMoreau where
         a <$ when
           (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
           (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       a <$ push (ReadStory iid Story.theFirstShow)
     _ -> SebastienMoreau <$> runMessage msg attrs

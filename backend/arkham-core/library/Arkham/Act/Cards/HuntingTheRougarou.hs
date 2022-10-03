@@ -57,11 +57,11 @@ instance HasAbilities HuntingTheRougarou where
 
 instance RunMessage HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.EnemyLeaves _ lid)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.EnemyLeaves _ lid)] _
       | isSource attrs source -> a <$ push (PlaceClues (LocationTarget lid) 1)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 2)
-    UseCardAbility _ source _ 3 _ | isSource attrs source ->
+    UseCardAbility _ source 3 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

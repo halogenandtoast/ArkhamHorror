@@ -38,6 +38,6 @@ instance HasAbilities YoungDeepOne where
 
 instance RunMessage YoungDeepOne where
   runMessage msg e@(YoungDeepOne attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       e <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> YoungDeepOne <$> runMessage msg attrs

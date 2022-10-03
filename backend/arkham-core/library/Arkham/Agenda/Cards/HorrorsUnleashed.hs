@@ -45,7 +45,7 @@ instance HasModifiersFor HorrorsUnleashed where
 
 instance RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- selectListMap EnemyTarget
         $ EnemyWithTitle "Brood of Yog-Sothoth"

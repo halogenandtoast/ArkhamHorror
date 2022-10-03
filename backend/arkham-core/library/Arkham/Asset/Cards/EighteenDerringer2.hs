@@ -36,7 +36,7 @@ instance HasAbilities EighteenDerringer2 where
 
 instance RunMessage EighteenDerringer2 where
   runMessage msg (EighteenDerringer2 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let amount = if givesBonus metadata then 3 else 2
       pushAll
         [ skillTestModifiers

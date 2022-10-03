@@ -36,7 +36,7 @@ instance HasAbilities RuinsOfEztli where
 
 instance RunMessage RuinsOfEztli where
   runMessage msg l@(RuinsOfEztli attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ InvestigatorDrawEncounterCard iid
       pure l
     _ -> RuinsOfEztli <$> runMessage msg attrs

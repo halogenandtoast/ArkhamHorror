@@ -34,6 +34,6 @@ instance HasModifiersFor TheNecronomiconOlausWormiusTranslation where
 
 instance RunMessage TheNecronomiconOlausWormiusTranslation where
   runMessage msg a@(TheNecronomiconOlausWormiusTranslation attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (TakeResources iid 2 False)
     _ -> TheNecronomiconOlausWormiusTranslation <$> runMessage msg attrs

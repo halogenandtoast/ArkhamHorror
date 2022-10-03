@@ -42,7 +42,7 @@ instance HasAbilities BoxingGloves3 where
 
 instance RunMessage BoxingGloves3 where
   runMessage msg a@(BoxingGloves3 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ Search
         iid
         source

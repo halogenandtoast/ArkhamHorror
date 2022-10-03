@@ -55,7 +55,7 @@ instance RunMessage EscapeTheRuins where
       let resolution = if resignedWithRelicOfAges then 1 else 3
       push $ ScenarioResolution $ Resolution resolution
       pure a
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     _ -> EscapeTheRuins <$> runMessage msg attrs

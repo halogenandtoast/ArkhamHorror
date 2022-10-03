@@ -41,7 +41,7 @@ instance HasModifiersFor Kitchen where
 
 instance RunMessage Kitchen where
   runMessage msg l@(Kitchen attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (BeginSkillTest
         iid
         source

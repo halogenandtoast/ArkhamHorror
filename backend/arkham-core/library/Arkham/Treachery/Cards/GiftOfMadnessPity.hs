@@ -38,7 +38,7 @@ instance RunMessage GiftOfMadnessPity where
   runMessage msg t@(GiftOfMadnessPity attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AddTreacheryToHand iid $ toId attrs)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> t <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ pushAll
       [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
       , Discard $ toTarget attrs
       ]

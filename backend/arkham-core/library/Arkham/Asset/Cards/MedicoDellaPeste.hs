@@ -45,7 +45,7 @@ instance HasAbilities MedicoDellaPeste where
 
 instance RunMessage MedicoDellaPeste where
   runMessage msg a@(MedicoDellaPeste attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasDamage <- fieldP InvestigatorDamage (> 0) iid
       hasHorror <- fieldP InvestigatorHorror (> 0) iid
       push
@@ -57,7 +57,7 @@ instance RunMessage MedicoDellaPeste where
            | hasHorror
            ]
       pure a
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       replaceMessageMatching
         (\case
           BeginSkillTestAfterFast{} -> True

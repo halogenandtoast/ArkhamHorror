@@ -42,7 +42,7 @@ instance HasAbilities WingedOne where
 
 instance RunMessage WingedOne where
   runMessage msg e@(WingedOne attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.FlipLocation _ lid)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
         push $ MoveToward (toTarget attrs) (LocationWithId lid)
         pure e

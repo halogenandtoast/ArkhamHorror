@@ -58,7 +58,7 @@ instance HasAbilities AbbeyChurch where
 
 instance RunMessage AbbeyChurch where
   runMessage msg l@(AbbeyChurch attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       let
         titles =
           [ "Chœur Gothique"

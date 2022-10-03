@@ -39,6 +39,6 @@ instance HasModifiersFor AnalyticalMind where
 
 instance RunMessage AnalyticalMind where
   runMessage msg a@(AnalyticalMind attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)
     _ -> AnalyticalMind <$> runMessage msg attrs

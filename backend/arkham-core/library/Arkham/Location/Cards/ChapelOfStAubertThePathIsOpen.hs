@@ -53,7 +53,7 @@ instance HasAbilities ChapelOfStAubertThePathIsOpen where
 
 instance RunMessage ChapelOfStAubertThePathIsOpen where
   runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ chooseAmounts
         iid
         "Take up to 3 horror"

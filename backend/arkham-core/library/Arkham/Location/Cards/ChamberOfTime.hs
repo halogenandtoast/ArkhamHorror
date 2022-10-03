@@ -43,7 +43,7 @@ instance HasAbilities ChamberOfTime where
 
 instance RunMessage ChamberOfTime where
   runMessage msg l@(ChamberOfTime attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       pushAll
         [ CreateAssetAt relicOfAges (AttachedToLocation $ toId attrs)

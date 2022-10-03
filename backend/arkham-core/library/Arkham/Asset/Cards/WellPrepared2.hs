@@ -43,7 +43,7 @@ instance HasAbilities WellPrepared2 where
 
 instance RunMessage WellPrepared2 where
   runMessage msg a@(WellPrepared2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
         Nothing -> error "can only have been triggered during a skill test"

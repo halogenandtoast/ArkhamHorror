@@ -36,7 +36,7 @@ instance HasAbilities RandallCho where
 
 instance RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       damage <- field InvestigatorDamage iid
       push $ chooseOrRunOne
         iid

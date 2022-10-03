@@ -32,6 +32,6 @@ instance HasAbilities BoxOffice where
 
 instance RunMessage BoxOffice where
   runMessage msg l@(BoxOffice attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ pushAll [TakeResources iid 5 False, Remember StoleFromTheBoxOffice]
     _ -> BoxOffice <$> runMessage msg attrs

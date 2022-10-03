@@ -37,7 +37,7 @@ instance HasAbilities Intruders where
 
 instance RunMessage Intruders where
   runMessage msg a@(Intruders attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
       push $ Explore iid source (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a

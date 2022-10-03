@@ -56,7 +56,7 @@ instance RunMessage BalefulReveler where
           msg
           (attrs & spawnAtL ?~ LocationWithId spawnLocation)
         Nothing -> error "could not find location for baleful reveler"
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces tokens

@@ -37,7 +37,7 @@ instance HasAbilities TheStrangerThePathIsMine where
 
 instance RunMessage TheStrangerThePathIsMine where
   runMessage msg e@(TheStrangerThePathIsMine attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source ->
+    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source ->
       e
         <$ push
              (BeginSkillTest

@@ -48,7 +48,7 @@ instance HasModifiersFor WhittonGreene where
 
 instance RunMessage WhittonGreene where
   runMessage msg a@(WhittonGreene attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (Search
         iid
         source

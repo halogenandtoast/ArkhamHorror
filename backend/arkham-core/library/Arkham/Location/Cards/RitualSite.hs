@@ -31,7 +31,7 @@ instance HasAbilities RitualSite where
 
 instance RunMessage RitualSite where
   runMessage msg l@(RitualSite attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       cluesToAdd <-
         max 0 . subtract (locationClues attrs) <$> getPlayerCountValue
           (PerPlayer 2)

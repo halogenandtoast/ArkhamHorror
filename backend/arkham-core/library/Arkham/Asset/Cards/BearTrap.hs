@@ -49,13 +49,13 @@ instance HasAbilities BearTrap where
 
 instance RunMessage BearTrap where
   runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
       a <$ push (AttachAsset assetId (LocationTarget locationId))
-    UseCardAbility _ source [Window _ (Window.EnemyEnters eid _)] 2 _
+    UseCardAbility _ source 2 [Window _ (Window.EnemyEnters eid _)] _
       | isSource attrs source -> do
         a <$ push (AttachAsset assetId (EnemyTarget eid))
     _ -> BearTrap <$> runMessage msg attrs

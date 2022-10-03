@@ -36,8 +36,8 @@ instance HasAbilities AdministrationBuilding where
 
 instance RunMessage AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Faculty Offices")
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
       l <$ push (DiscardTopOfDeck iid 1 Nothing)
     _ -> AdministrationBuilding <$> runMessage msg attrs

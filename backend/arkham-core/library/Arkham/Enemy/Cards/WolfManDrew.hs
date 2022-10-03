@@ -37,6 +37,6 @@ instance HasAbilities WolfManDrew where
 
 instance RunMessage WolfManDrew where
   runMessage msg e@(WolfManDrew attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (HealDamage (toTarget attrs) 1)
     _ -> WolfManDrew <$> runMessage msg attrs

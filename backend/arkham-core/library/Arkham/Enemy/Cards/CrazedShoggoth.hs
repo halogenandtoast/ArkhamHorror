@@ -38,6 +38,6 @@ instance HasAbilities CrazedShoggoth where
 
 instance RunMessage CrazedShoggoth where
   runMessage msg e@(CrazedShoggoth attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (InvestigatorKilled source iid)
     _ -> CrazedShoggoth <$> runMessage msg attrs

@@ -32,7 +32,7 @@ instance HasAbilities GoatSpawn where
 
 instance RunMessage GoatSpawn where
   runMessage msg e@(GoatSpawn attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorsAtSameLocation attrs
       e <$ pushAll
         [ InvestigatorAssignDamage iid source DamageAny 0 1

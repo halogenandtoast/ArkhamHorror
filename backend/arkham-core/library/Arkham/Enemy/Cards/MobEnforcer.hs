@@ -37,6 +37,6 @@ instance HasAbilities MobEnforcer where
 
 instance RunMessage MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
+    UseCardAbility _ (EnemySource eid) 1 _ _ | eid == enemyId ->
       e <$ push (Discard $ toTarget attrs)
     _ -> MobEnforcer <$> runMessage msg attrs

@@ -40,6 +40,6 @@ instance HasAbilities YithianStarseeker where
 
 instance RunMessage YithianStarseeker where
   runMessage msg e@(YithianStarseeker attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       e <$ push (PlaceDoom (toTarget attrs) 1)
     _ -> YithianStarseeker <$> runMessage msg attrs

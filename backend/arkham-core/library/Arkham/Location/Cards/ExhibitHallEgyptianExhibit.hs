@@ -41,6 +41,6 @@ instance HasAbilities ExhibitHallEgyptianExhibit where
 
 instance RunMessage ExhibitHallEgyptianExhibit where
   runMessage msg l@(ExhibitHallEgyptianExhibit attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (LoseActions iid (toSource attrs) 1)
     _ -> ExhibitHallEgyptianExhibit <$> runMessage msg attrs

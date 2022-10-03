@@ -35,7 +35,7 @@ getAbilitiesSpent _ = 0
 
 instance RunMessage ChicagoTypewriter4 where
   runMessage msg a@(ChicagoTypewriter4 attrs) = case msg of
-    UseCardAbility iid source _ 1 payment | isSource attrs source -> do
+    UseCardAbility iid source 1 _ payment | isSource attrs source -> do
       let actionsSpent = getAbilitiesSpent payment
       a <$ pushAll
         [ skillTestModifiers

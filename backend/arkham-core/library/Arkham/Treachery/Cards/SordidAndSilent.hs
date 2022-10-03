@@ -36,7 +36,7 @@ instance RunMessage SordidAndSilent where
       for_ mlid $ \lid ->
         push $ AttachTreachery (toId attrs) $ LocationTarget lid
       pure t
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       case treacheryAttachedTarget attrs of
         Just (LocationTarget lid) -> do
           iids <- selectList $ InvestigatorAt $ LocationWithId lid
@@ -46,6 +46,6 @@ instance RunMessage SordidAndSilent where
              ]
           pure t
         _ -> pure t
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> SordidAndSilent <$> runMessage msg attrs

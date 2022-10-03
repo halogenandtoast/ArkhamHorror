@@ -42,6 +42,6 @@ instance RunMessage TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 2)
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> TheyMustBeDestroyed <$> runMessage msg attrs

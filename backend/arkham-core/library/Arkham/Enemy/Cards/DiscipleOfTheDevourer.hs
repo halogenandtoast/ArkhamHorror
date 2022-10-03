@@ -42,7 +42,7 @@ instance HasAbilities DiscipleOfTheDevourer where
 
 instance RunMessage DiscipleOfTheDevourer where
   runMessage msg e@(DiscipleOfTheDevourer attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendaId <- selectJust AnyAgenda
       mLocationId <- field EnemyLocation (toId attrs)
       hasClues <- fieldP InvestigatorClues (> 0) iid

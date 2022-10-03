@@ -42,9 +42,9 @@ instance HasModifiersFor TheExperiment where
 
 instance RunMessage TheExperiment where
   runMessage msg e@(TheExperiment attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Ready $ toTarget attrs)
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       actId <- selectJust AnyAct
       e <$ push (AdvanceAct actId (toSource attrs) AdvancedWithOther)
     _ -> TheExperiment <$> runMessage msg attrs

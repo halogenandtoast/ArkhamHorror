@@ -35,7 +35,7 @@ instance RunMessage JennysTwin45s where
     PaidForCardCost _ card payment | toCardId card == toCardId attrs -> do
       let n = totalResourcePayment payment
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)

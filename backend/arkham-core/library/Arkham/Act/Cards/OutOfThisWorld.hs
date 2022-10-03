@@ -41,7 +41,7 @@ instance RunMessage OutOfThisWorld where
         [ PlaceLocation theEdgeOfTheUniverse
         , AdvanceActDeck actDeckId (toSource attrs)
         ]
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards

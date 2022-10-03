@@ -54,6 +54,6 @@ instance RunMessage HidingSpot where
           iid
           [ TargetLabel target [AttachEvent eid target] | target <- targets ]
         )
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     _ -> HidingSpot <$> runMessage msg attrs

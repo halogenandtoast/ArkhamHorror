@@ -42,10 +42,10 @@ instance HasAbilities KeyOfYs where
 
 instance RunMessage KeyOfYs where
   runMessage msg a@(KeyOfYs attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ MovedHorror source (InvestigatorTarget iid) 1
       pure . KeyOfYs $ attrs & horrorL +~ 1
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ DiscardTopOfDeck iid 10 Nothing
       pure a
     _ -> KeyOfYs <$> runMessage msg attrs

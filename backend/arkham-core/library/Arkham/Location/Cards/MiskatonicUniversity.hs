@@ -35,7 +35,7 @@ instance HasAbilities MiskatonicUniversity where
 
 instance RunMessage MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (Search
         iid
         source

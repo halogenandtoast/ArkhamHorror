@@ -48,7 +48,7 @@ instance HasAbilities BrotherXavier1 where
 
 instance RunMessage BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)
       a <$ pushAll
         [ chooseOrRunOne

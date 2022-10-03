@@ -13,6 +13,6 @@ import Arkham.Message
 
 instance RunMessage SkillAttrs where
   runMessage msg a = case msg of
-    UseCardAbility _ (isSource a -> True) _ (-1) payment ->
+    UseCardAbility _ (isSource a -> True) (-1) _ payment ->
       pure $ a { skillAdditionalPayment = Just payment }
     _ -> pure a

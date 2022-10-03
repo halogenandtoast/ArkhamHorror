@@ -48,14 +48,14 @@ instance HasAbilities UncoveringTheConspiracy where
 
 instance RunMessage UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (DrawFromScenarioDeck iid CultistDeck (toTarget attrs) 1)
     DrewFromScenarioDeck iid CultistDeck target cards | isTarget attrs target ->
       a <$ pushAll
         (map (InvestigatorDrewEncounterCard iid)
         $ mapMaybe (preview _EncounterCard) cards
         )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)

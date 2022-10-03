@@ -38,7 +38,7 @@ instance HasAbilities CloverClubPitBoss where
 
 instance RunMessage CloverClubPitBoss where
   runMessage msg e@(CloverClubPitBoss attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ pushAll
       ([ Ready (toTarget attrs) | enemyExhausted attrs ]
       <> [ EnemyEngageInvestigator (toId attrs) iid
          , EnemyAttackIfEngaged (toId attrs) (Just iid)

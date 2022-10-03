@@ -38,6 +38,6 @@ instance HasAbilities Painkillers where
 
 instance RunMessage Painkillers where
   runMessage msg a@(Painkillers attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (HealDamage (InvestigatorTarget iid) 1)
     _ -> Painkillers <$> runMessage msg attrs

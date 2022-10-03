@@ -40,7 +40,7 @@ instance HasAbilities RecallTheFuture2 where
 
 instance RunMessage RecallTheFuture2 where
   runMessage msg a@(RecallTheFuture2 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       tokens <-
         nub
         . map tokenFace

@@ -78,7 +78,7 @@ instance HasAbilities IchtacaTheForgottenGuardian where
 
 instance RunMessage IchtacaTheForgottenGuardian where
   runMessage msg a@(IchtacaTheForgottenGuardian attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       anyHorror <- iid <=~> InvestigatorWithAnyHorror
       pushAll
         $ [ HealHorror (InvestigatorTarget iid) 1 | anyHorror ]

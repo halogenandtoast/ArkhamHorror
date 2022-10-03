@@ -39,10 +39,10 @@ instance HasAbilities PathOfThorns where
 
 instance RunMessage PathOfThorns where
   runMessage msg l@(PathOfThorns attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
       pure l
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
       pure l
     _ -> PathOfThorns <$> runMessage msg attrs

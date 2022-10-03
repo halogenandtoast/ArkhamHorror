@@ -30,7 +30,7 @@ instance HasAbilities LeatherCoat1 where
 
 instance RunMessage LeatherCoat1 where
   runMessage msg a@(LeatherCoat1 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ Exile (toTarget attrs)
       pure a
     _ -> LeatherCoat1 <$> runMessage msg attrs

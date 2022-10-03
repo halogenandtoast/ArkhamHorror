@@ -32,6 +32,6 @@ instance RunMessage TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 2)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (Resign iid)
     _ -> TimeIsRunningShort <$> runMessage msg attrs

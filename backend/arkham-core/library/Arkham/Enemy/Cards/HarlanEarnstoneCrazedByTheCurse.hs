@@ -36,7 +36,7 @@ instance HasAbilities HarlanEarnstoneCrazedByTheCurse where
 
 instance RunMessage HarlanEarnstoneCrazedByTheCurse where
   runMessage msg e@(HarlanEarnstoneCrazedByTheCurse attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AddToVictory (toTarget attrs)
       pure e
     _ -> HarlanEarnstoneCrazedByTheCurse <$> runMessage msg attrs

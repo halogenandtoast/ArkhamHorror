@@ -53,9 +53,9 @@ instance HasAbilities HuntressOfTheEztli where
 
 instance RunMessage HuntressOfTheEztli where
   runMessage msg a@(HuntressOfTheEztli attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       ichtacaDefeated <- any (`cardMatch` CardWithTitle "Ichtaca")

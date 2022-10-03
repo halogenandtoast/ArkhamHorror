@@ -38,6 +38,6 @@ instance HasAbilities BillyCooper where
 
 instance RunMessage BillyCooper where
   runMessage msg e@(BillyCooper attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)
     _ -> BillyCooper <$> runMessage msg attrs

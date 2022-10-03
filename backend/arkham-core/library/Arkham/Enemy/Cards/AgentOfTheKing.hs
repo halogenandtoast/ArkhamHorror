@@ -42,9 +42,9 @@ instance HasAbilities AgentOfTheKing where
 
 instance RunMessage AgentOfTheKing where
   runMessage msg e@(AgentOfTheKing attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ pushAll [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> e <$ pushAll
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> e <$ pushAll
       [ RemoveClues (toTarget attrs) (enemyClues attrs)
       , GainClues iid (enemyClues attrs)
       ]

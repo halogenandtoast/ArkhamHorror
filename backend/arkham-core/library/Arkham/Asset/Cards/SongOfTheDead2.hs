@@ -30,7 +30,7 @@ instance HasAbilities SongOfTheDead2 where
 
 instance RunMessage SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         source
         (InvestigatorTarget iid)

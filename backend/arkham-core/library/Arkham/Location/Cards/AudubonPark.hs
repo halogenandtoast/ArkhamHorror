@@ -34,6 +34,6 @@ instance HasAbilities AudubonPark where
 
 instance RunMessage AudubonPark where
   runMessage msg l@(AudubonPark attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (RandomDiscard iid)
     _ -> AudubonPark <$> runMessage msg attrs

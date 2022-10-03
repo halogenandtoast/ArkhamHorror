@@ -59,6 +59,6 @@ instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing $ defaultWindows iid)
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (Discard $ toTarget attrs)
     _ -> TheKingInYellow <$> runMessage msg attrs

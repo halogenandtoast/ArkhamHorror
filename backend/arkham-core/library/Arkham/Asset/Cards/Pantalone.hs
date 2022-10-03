@@ -34,10 +34,10 @@ instance HasAbilities Pantalone where
 
 instance RunMessage Pantalone where
   runMessage msg a@(Pantalone attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ DrawCards iid 2 False
       pure a
-    UseCardAbility _ source _ 2 _
+    UseCardAbility _ source 2 _ _
       | isSource attrs source
       -> do
         replaceMessageMatching

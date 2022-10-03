@@ -49,7 +49,7 @@ instance HasAbilities VengeanceAwaits where
 
 instance RunMessage VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       actIds <- selectList AnyAct
       umordhoth <- getSetAsideCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
@@ -66,7 +66,7 @@ instance RunMessage VengeanceAwaits where
           pushAll
             $ [ Discard enemy | enemy <- enemies ]
             <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       actIds <- selectList AnyAct

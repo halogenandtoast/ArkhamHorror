@@ -60,8 +60,8 @@ instance RunMessage TheChamberOfTheBeast where
               [ScenarioResolution $ Resolution resolution]
           ]
         )
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 1)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> TheChamberOfTheBeast <$> runMessage msg attrs

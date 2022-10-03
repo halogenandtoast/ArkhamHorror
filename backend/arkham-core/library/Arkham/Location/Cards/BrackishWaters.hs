@@ -57,7 +57,7 @@ instance HasAbilities BrackishWaters where
 
 instance RunMessage BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

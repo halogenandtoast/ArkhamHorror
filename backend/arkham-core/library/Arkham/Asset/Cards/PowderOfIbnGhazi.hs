@@ -50,7 +50,7 @@ instance RunMessage PowderOfIbnGhazi where
         , EarlSawyerSurvivedTheDunwichLegacy
         ]
       PowderOfIbnGhazi <$> runMessage msg (attrs & cluesL .~ survivedCount)
-    UseCardAbility you source _ 1 _ | isSource attrs source -> do
+    UseCardAbility you source 1 _ _ | isSource attrs source -> do
       targets <-
         selectListMap EnemyTarget
         $ EnemyWithTitle "Brood of Yog-Sothoth"

@@ -41,7 +41,7 @@ instance HasAbilities DanielChesterfield where
 
 instance RunMessage DanielChesterfield where
   runMessage msg a@(DanielChesterfield attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       otherInvestigators <- selectList (InvestigatorAt YourLocation <> NotYou)
       a <$ push
         (chooseOne
@@ -52,8 +52,8 @@ instance RunMessage DanielChesterfield where
           | i <- otherInvestigators
           ]
         )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
-    UseCardAbility _ source _ 3 _ | isSource attrs source ->
+    UseCardAbility _ source 3 _ _ | isSource attrs source ->
       a <$ push (RemoveFromGame $ toTarget attrs)
     _ -> DanielChesterfield <$> runMessage msg attrs

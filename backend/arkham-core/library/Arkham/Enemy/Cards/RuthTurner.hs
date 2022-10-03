@@ -37,6 +37,6 @@ instance HasAbilities RuthTurner where
 
 instance RunMessage RuthTurner where
   runMessage msg e@(RuthTurner attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)
     _ -> RuthTurner <$> runMessage msg attrs

@@ -32,7 +32,7 @@ instance HasAbilities TwistedUnderbrush where
 
 instance RunMessage TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
       [ TakeResources iid 2 False
       , InvestigatorAssignDamage iid source DamageAny 0 1
       ]

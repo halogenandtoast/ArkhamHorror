@@ -36,7 +36,7 @@ instance RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mMsg <- findFromQueue $ \case
         InvestigatorDamage iid' _ n _ | iid' == iid -> n > 0
         InvestigatorDoAssignDamage iid' _ _ _ n _ [] [] | iid' == iid -> n > 0

@@ -46,7 +46,7 @@ instance HasAbilities HarlansCurseSafekeeping where
 
 instance RunMessage HarlansCurseSafekeeping where
   runMessage msg a@(HarlansCurseSafekeeping attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do

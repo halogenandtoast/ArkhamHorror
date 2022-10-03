@@ -43,7 +43,7 @@ instance HasAbilities ThePathIsBarred where
 
 instance RunMessage ThePathIsBarred where
   runMessage msg a@(ThePathIsBarred attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ advanceMode | aid == actId attrs && onSide B attrs -> do

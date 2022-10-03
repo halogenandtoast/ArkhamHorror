@@ -44,7 +44,7 @@ instance HasAbilities Aquinnah1 where
 
 instance RunMessage Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
         PerformEnemyAttack _ eid _ _ : queue' -> (queue', eid)
         _ -> error "unhandled"

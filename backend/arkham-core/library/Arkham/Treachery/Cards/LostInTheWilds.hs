@@ -49,7 +49,7 @@ instance RunMessage LostInTheWilds where
         , AttachTreachery (toId attrs) $ InvestigatorTarget iid
         ]
       pure t
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ Discard (toTarget attrs)
       pure t
     _ -> LostInTheWilds <$> runMessage msg attrs

@@ -48,7 +48,7 @@ instance HasAbilities BlockedPassage where
 
 instance RunMessage BlockedPassage where
   runMessage msg l@(BlockedPassage attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
         , CreateWindowModifierEffect

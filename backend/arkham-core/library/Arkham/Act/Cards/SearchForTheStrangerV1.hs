@@ -50,7 +50,7 @@ instance HasAbilities SearchForTheStrangerV1 where
 
 instance RunMessage SearchForTheStrangerV1 where
   runMessage msg a@(SearchForTheStrangerV1 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push (AdvanceAct (toId attrs) source AdvancedWithOther)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do

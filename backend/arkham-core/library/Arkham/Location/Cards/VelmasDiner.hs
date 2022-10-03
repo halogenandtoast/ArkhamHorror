@@ -45,7 +45,7 @@ instance HasAbilities VelmasDiner where
 
 instance RunMessage VelmasDiner where
   runMessage msg l@(VelmasDiner attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ GainClues iid 2
       pure l
     _ -> VelmasDiner <$> runMessage msg attrs

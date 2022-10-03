@@ -43,7 +43,7 @@ dealtHorror (_ : xs) = dealtDamage xs
 
 instance RunMessage FleshWard where
   runMessage msg a@(FleshWard attrs) = case msg of
-    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       push
         $ chooseOrRunOne iid
         $ [ Label "Cancel 1 damage" [CancelDamage iid 1]

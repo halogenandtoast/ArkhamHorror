@@ -53,6 +53,6 @@ instance RunMessage Snakescourge where
         $ AttachTreachery (toId t) (InvestigatorTarget iid)
         : [ Surge iid source | isPoisoned ]
       pure t
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> Snakescourge <$> runMessage msg attrs

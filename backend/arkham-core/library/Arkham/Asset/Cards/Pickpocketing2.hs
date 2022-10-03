@@ -33,7 +33,7 @@ instance HasAbilities Pickpocketing2 where
 
 instance RunMessage Pickpocketing2 where
   runMessage msg a@(Pickpocketing2 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mskillTest <- getSkillTest
       a <$ case skillTestResult <$> mskillTest of
         Just (SucceededBy _ n) | n >= 2 ->

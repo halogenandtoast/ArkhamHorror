@@ -37,7 +37,7 @@ instance HasAbilities BreakingThrough where
 
 instance RunMessage BreakingThrough where
   runMessage msg a@(BreakingThrough attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       yogSothothSpawnLocation <- fromMaybeM

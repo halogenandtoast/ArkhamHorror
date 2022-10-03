@@ -41,7 +41,7 @@ instance HasAbilities JoeyTheRatVigil where
 
 instance RunMessage JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of
-    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       handCards <- field InvestigatorHand iid
       let items = filter (member Item . toTraits) handCards
           windows'' = nub $ windows' <>

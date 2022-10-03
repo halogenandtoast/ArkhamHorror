@@ -54,9 +54,9 @@ instance RunMessage TheShadowBehindYou where
   runMessage msg t@(TheShadowBehindYou (attrs `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       pure $ TheShadowBehindYou (attrs `with` Metadata True)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       -- hidden cards can cause the then effect to fail
       hasResources <- fieldP InvestigatorResources (> 0) iid
       handCards <- field InvestigatorHand iid

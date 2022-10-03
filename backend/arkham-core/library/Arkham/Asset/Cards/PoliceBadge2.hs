@@ -35,7 +35,7 @@ instance HasAbilities PoliceBadge2 where
 
 instance RunMessage PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
-    InDiscard _ (UseCardAbility _ source _ 1 _) | isSource attrs source ->
+    InDiscard _ (UseCardAbility _ source 1 _ _) | isSource attrs source ->
       selectOne TurnInvestigator >>= \case
         Nothing -> error "must exist"
         Just iid -> a <$ push (GainActions iid source 2)

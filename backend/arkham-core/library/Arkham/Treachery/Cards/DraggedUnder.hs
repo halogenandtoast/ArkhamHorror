@@ -35,11 +35,11 @@ instance RunMessage DraggedUnder where
   runMessage msg t@(DraggedUnder attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 3)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> t <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 2 0
       , Discard $ toTarget attrs
       ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
       t
         <$ push
              (BeginSkillTest

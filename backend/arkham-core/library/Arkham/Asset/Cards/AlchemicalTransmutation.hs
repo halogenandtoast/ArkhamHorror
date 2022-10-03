@@ -30,7 +30,7 @@ instance HasAbilities AlchemicalTransmutation where
 
 instance RunMessage AlchemicalTransmutation where
   runMessage msg a@(AlchemicalTransmutation attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ CreateEffect "03032" Nothing source (InvestigatorTarget iid)
       , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 1
       ]

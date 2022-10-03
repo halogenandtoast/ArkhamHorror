@@ -45,7 +45,7 @@ instance HasAbilities RoyalEmissary where
 
 instance RunMessage RoyalEmissary where
   runMessage msg e@(RoyalEmissary attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- selectList (investigatorMatcher attrs)
       e <$ pushAll
         (map (\iid -> InvestigatorAssignDamage iid source DamageAny 0 1) iids)

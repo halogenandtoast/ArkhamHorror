@@ -38,6 +38,6 @@ instance HasAbilities PeterSylvestre where
 
 instance RunMessage PeterSylvestre where
   runMessage msg (PeterSylvestre attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       pure $ PeterSylvestre $ attrs & horrorL -~ 1
     _ -> PeterSylvestre <$> runMessage msg attrs

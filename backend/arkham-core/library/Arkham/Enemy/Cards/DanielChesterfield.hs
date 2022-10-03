@@ -43,6 +43,6 @@ instance HasAbilities DanielChesterfield where
 
 instance RunMessage DanielChesterfield where
   runMessage msg a@(DanielChesterfield attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AddToVictory $ toTarget attrs)
     _ -> DanielChesterfield <$> runMessage msg attrs

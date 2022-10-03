@@ -48,6 +48,6 @@ instance RunMessage TheTruthIsHidden where
       [ ShuffleEncounterDiscardBackIn
       , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
       ]
-    UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.PlacedClues target n)] _
       | isSource attrs source -> a <$ pushAll [FlipClues target n]
     _ -> TheTruthIsHidden <$> runMessage msg attrs

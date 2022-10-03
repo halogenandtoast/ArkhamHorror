@@ -46,6 +46,6 @@ instance RunMessage Lure1 where
         (fromJustNote "must be at a location")
         iid
       e <$ push (AttachEvent eid (LocationTarget lid))
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       e <$ push (Discard (toTarget attrs))
     _ -> Lure1 <$> runMessage msg attrs

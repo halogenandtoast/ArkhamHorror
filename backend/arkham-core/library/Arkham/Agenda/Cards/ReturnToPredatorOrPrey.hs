@@ -40,7 +40,7 @@ instance RunMessage ReturnToPredatorOrPrey where
           [ CreateEnemyEngagedWithPrey narogath
           , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           ]
-      UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
+      UseCardAbility iid (AgendaSource aid) 1 _ _ | aid == agendaId -> do
         push (Resign iid)
         ReturnToPredatorOrPrey <$> runMessage msg attrs
       _ -> ReturnToPredatorOrPrey <$> runMessage msg attrs

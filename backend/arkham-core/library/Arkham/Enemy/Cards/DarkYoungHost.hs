@@ -47,10 +47,10 @@ instance HasAbilities DarkYoungHost where
 
 instance RunMessage DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.PlacedClues target n)] _
       | isSource attrs source -> do
         e <$ pushAll [RemoveClues target n, PlaceClues (toTarget attrs) n]
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation (toId attrs)
       case enemyLocation of
         Nothing -> pure e

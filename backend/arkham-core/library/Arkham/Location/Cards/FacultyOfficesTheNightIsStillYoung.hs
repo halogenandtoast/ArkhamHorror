@@ -57,7 +57,7 @@ instance HasAbilities FacultyOfficesTheNightIsStillYoung where
 
 instance RunMessage FacultyOfficesTheNightIsStillYoung where
   runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
         $ FindEncounterCard
             iid
@@ -68,6 +68,6 @@ instance RunMessage FacultyOfficesTheNightIsStillYoung where
       pure l
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ push (SpawnEnemyAt (EncounterCard card) (toId attrs))
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       l <$ push (ScenarioResolution $ Resolution 1)
     _ -> FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs

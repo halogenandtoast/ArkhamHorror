@@ -42,6 +42,6 @@ instance HasAbilities RitualCandles where
 
 instance RunMessage RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1)]
     _ -> RitualCandles <$> runMessage msg attrs

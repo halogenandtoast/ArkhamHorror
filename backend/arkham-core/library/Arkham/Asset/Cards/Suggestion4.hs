@@ -37,7 +37,7 @@ instance HasAbilities Suggestion4 where
 
 instance RunMessage Suggestion4 where
   runMessage msg a@(Suggestion4 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         source
         (InvestigatorTarget iid)
@@ -49,6 +49,6 @@ instance RunMessage Suggestion4 where
       <$ push (SpendUses (toTarget attrs) Charge 1)
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ push (SpendUses (toTarget attrs) Charge 1)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (CancelNext AttackMessage)
     _ -> Suggestion4 <$> runMessage msg attrs

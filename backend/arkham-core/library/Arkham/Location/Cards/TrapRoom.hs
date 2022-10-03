@@ -38,7 +38,7 @@ instance HasAbilities TrapRoom where
 
 instance RunMessage TrapRoom where
   runMessage msg l@(TrapRoom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         getSomeRats =
           FindEncounterCard

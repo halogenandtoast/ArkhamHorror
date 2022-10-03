@@ -47,7 +47,7 @@ instance HasAbilities TownHall where
 
 instance RunMessage TownHall where
   runMessage msg l@(TownHall attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hand <- field InvestigatorHand iid
       let
         weaknessCount = count cardIsWeakness hand

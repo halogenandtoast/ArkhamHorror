@@ -38,8 +38,8 @@ instance RunMessage SelfDestructive where
   runMessage msg t@(SelfDestructive attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> SelfDestructive <$> runMessage msg attrs

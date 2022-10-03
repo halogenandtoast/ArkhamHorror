@@ -37,7 +37,7 @@ instance HasAbilities TreasureHunter1 where
 
 instance RunMessage TreasureHunter1 where
   runMessage msg a@(TreasureHunter1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (chooseOne
         iid
         [ Label "Pay 1 Resource to Treasure Hunter" [SpendResources iid 1]

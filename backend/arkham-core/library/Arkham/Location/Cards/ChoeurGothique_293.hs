@@ -41,6 +41,6 @@ instance HasAbilities ChoeurGothique_293 where
 
 instance RunMessage ChoeurGothique_293 where
   runMessage msg l@(ChoeurGothique_293 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (HealHorror (InvestigatorTarget iid) 2)
     _ -> ChoeurGothique_293 <$> runMessage msg attrs

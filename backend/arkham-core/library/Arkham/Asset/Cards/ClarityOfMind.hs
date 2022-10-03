@@ -34,7 +34,7 @@ instance HasAbilities ClarityOfMind where
 
 instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget (InvestigatorAt YourLocation)
       a <$ push
         (chooseOrRunOne

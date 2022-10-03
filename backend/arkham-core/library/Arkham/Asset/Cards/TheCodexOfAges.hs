@@ -39,7 +39,7 @@ instance HasAbilities TheCodexOfAges where
 
 instance RunMessage TheCodexOfAges where
   runMessage msg a@(TheCodexOfAges attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let mElderSignToken = find ((== ElderSign) . tokenFace) (assetSealedTokens attrs)
       case mElderSignToken of
         Nothing -> error "impossible"

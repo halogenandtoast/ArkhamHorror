@@ -47,7 +47,7 @@ instance HasAbilities BeginnersLuck where
 
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
-    UseCardAbility iid source [Window Timing.When (RevealToken _ token)] 1 _
+    UseCardAbility iid source 1 [Window Timing.When (RevealToken _ token)] _
       | isSource attrs source -> do
         tokensInBag <- getTokensInBag
         pushAll
@@ -70,7 +70,7 @@ instance RunMessage BeginnersLuck where
           , Remember Cheated
           ]
         pure a
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       darkenedHall <- getSetAsideCard Locations.darkenedHall

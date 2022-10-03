@@ -55,7 +55,7 @@ instance HasTokenValue RexMurphy where
 
 instance RunMessage RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> i <$ push
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> i <$ push
       (InvestigatorDiscoverClues
         (toId attrs)
         (investigatorLocation attrs)

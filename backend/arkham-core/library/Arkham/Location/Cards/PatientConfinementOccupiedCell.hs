@@ -39,7 +39,7 @@ instance HasAbilities PatientConfinementOccupiedCell where
 
 instance RunMessage PatientConfinementOccupiedCell where
   runMessage msg l@(PatientConfinementOccupiedCell attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillCombat 2)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

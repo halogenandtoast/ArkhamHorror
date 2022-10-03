@@ -43,7 +43,7 @@ instance HasAbilities SomethingStirs where
 -- ability does not do anything, just triggers the button
 instance RunMessage SomethingStirs where
   runMessage msg a@(SomethingStirs attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       maxDoom <- getMax0 <$> selectAgg Max LocationDoom Anywhere

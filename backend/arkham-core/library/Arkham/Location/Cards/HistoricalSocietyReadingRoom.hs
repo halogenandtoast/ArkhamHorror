@@ -54,7 +54,7 @@ instance HasAbilities HistoricalSocietyReadingRoom where
 
 instance RunMessage HistoricalSocietyReadingRoom where
   runMessage msg l@(HistoricalSocietyReadingRoom attrs) = case msg of
-    UseCardAbility iid source _ 1 _
+    UseCardAbility iid source 1 _ _
       | isSource attrs source && locationRevealed attrs -> l <$ push
         (Investigate
           iid
@@ -64,7 +64,7 @@ instance RunMessage HistoricalSocietyReadingRoom where
           SkillIntellect
           False
         )
-    UseCardAbility _ source _ 1 _
+    UseCardAbility _ source 1 _ _
       | isSource attrs source && not (locationRevealed attrs) -> l
       <$ push (RevealLocation Nothing $ toId attrs)
     Successful (Action.Investigate, _) iid (AbilitySource source 1) _ _

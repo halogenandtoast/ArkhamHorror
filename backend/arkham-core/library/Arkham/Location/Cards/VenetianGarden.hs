@@ -41,6 +41,6 @@ instance HasAbilities VenetianGarden where
 
 instance RunMessage VenetianGarden where
   runMessage msg l@(VenetianGarden attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (HealHorror (InvestigatorTarget iid) 2)
     _ -> VenetianGarden <$> runMessage msg attrs

@@ -49,6 +49,6 @@ instance HasModifiersFor AdamLynch where
 
 instance RunMessage AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]
     _ -> AdamLynch <$> runMessage msg attrs

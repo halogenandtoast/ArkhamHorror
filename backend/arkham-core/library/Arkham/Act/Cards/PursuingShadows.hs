@@ -47,10 +47,10 @@ instance HasAbilities PursuingShadows where
 
 instance RunMessage PursuingShadows where
   runMessage msg a@(PursuingShadows attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       theOrganist <- EnemyTarget <$> getTheOrganist
       a <$ push (PlaceClues theOrganist 1)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       intrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting

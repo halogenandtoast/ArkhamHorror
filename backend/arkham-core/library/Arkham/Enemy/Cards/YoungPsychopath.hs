@@ -36,7 +36,7 @@ instance HasAbilities YoungPsychopath where
 
 instance RunMessage YoungPsychopath where
   runMessage msg e@(YoungPsychopath attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ push
       (chooseOne
         iid
         [ Label

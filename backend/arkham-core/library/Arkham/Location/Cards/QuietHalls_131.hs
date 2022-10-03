@@ -47,7 +47,7 @@ instance HasAbilities QuietHalls_131 where
 
 instance RunMessage QuietHalls_131 where
   runMessage msg l@(QuietHalls_131 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       amount <- getPlayerCount
       l <$ push (PlaceClues (toTarget attrs) amount)
     _ -> QuietHalls_131 <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance HasAbilities CongregationalChurch_208 where
 
 instance RunMessage CongregationalChurch_208 where
   runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
         $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
         $ CardWithType EnemyType

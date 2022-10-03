@@ -38,7 +38,7 @@ instance HasAbilities RestrictedAccess where
 
 instance RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns eid _)] _
       | isSource attrs source -> do
         mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
         case mShadowSpawnedId of

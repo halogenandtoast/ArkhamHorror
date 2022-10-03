@@ -33,7 +33,7 @@ instance HasAbilities IntoTheDarkness where
 
 instance RunMessage IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct actId source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       playerCount <- getPlayerCount

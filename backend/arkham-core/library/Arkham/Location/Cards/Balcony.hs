@@ -35,6 +35,6 @@ instance HasAbilities Balcony where
 
 instance RunMessage Balcony where
   runMessage msg l@(Balcony attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> Balcony <$> runMessage msg attrs

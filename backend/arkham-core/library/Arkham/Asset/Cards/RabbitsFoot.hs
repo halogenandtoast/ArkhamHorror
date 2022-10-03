@@ -26,6 +26,6 @@ instance HasAbilities RabbitsFoot where
 
 instance RunMessage RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)
     _ -> RabbitsFoot <$> runMessage msg attrs

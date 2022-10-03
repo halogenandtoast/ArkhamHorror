@@ -32,6 +32,6 @@ instance HasAbilities GraveEater where
 
 instance RunMessage GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (RandomDiscard iid)
     _ -> GraveEater <$> runMessage msg attrs

@@ -53,7 +53,7 @@ instance HasAbilities TemploMayor_175 where
 
 instance RunMessage TemploMayor_175 where
   runMessage msg l@(TemploMayor_175 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ ShuffleDiscardBackIn iid
         , DiscardUntilFirst iid (toSource attrs) WeaknessCard
@@ -62,7 +62,7 @@ instance RunMessage TemploMayor_175 where
     RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
       for_ mcard $ push . AddToHand iid . PlayerCard
       pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
       pure l
     _ -> TemploMayor_175 <$> runMessage msg attrs

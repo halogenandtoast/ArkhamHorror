@@ -43,7 +43,7 @@ instance HasAbilities CrossingTheThreshold where
 
 instance RunMessage CrossingTheThreshold where
   runMessage msg a@(CrossingTheThreshold (attrs `With` metadata)) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure . CrossingTheThreshold $ attrs `with` Metadata (Just iid)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do

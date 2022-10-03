@@ -38,6 +38,6 @@ instance HasAbilities SouthsideHistoricalSociety where
 
 instance RunMessage SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (DrawCards iid 3 False)
     _ -> SouthsideHistoricalSociety <$> runMessage msg attrs

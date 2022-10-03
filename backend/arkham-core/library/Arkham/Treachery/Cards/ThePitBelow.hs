@@ -50,7 +50,7 @@ instance RunMessage ThePitBelow where
             then pushAll [Discard (toTarget attrs), Surge iid (toSource attrs)]
             else push (AttachTreachery (toId attrs) $ LocationTarget lid)
       pure t
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <-
         selectList $ InvestigatorAt $ LocationWithTreachery $ TreacheryWithId
           (toId attrs)

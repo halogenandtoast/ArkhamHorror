@@ -38,7 +38,7 @@ instance HasAbilities ArkhamWoodsUnhallowedGround where
 
 instance RunMessage ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (BeginSkillTest
         iid
         source

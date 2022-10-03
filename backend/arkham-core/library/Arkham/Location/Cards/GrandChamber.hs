@@ -42,7 +42,7 @@ instance HasAbilities GrandChamber where
 
 instance RunMessage GrandChamber where
   runMessage msg l@(GrandChamber attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ FlipClues (toTarget attrs) 1
       pure l
     _ -> GrandChamber <$> runMessage msg attrs

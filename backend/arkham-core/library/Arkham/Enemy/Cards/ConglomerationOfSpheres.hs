@@ -41,7 +41,7 @@ instance HasAbilities ConglomerationOfSpheres where
 
 instance RunMessage ConglomerationOfSpheres where
   runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.EnemyAttacked _ attackSource _)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.EnemyAttacked _ attackSource _)] _
       | isSource attrs source
       -> e <$ push (Discard $ sourceToTarget attackSource)
     _ -> ConglomerationOfSpheres <$> runMessage msg attrs

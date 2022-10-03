@@ -33,7 +33,7 @@ instance HasAbilities RiteOfSeeking where
 
 instance RunMessage RiteOfSeeking where
   runMessage msg a@(RiteOfSeeking attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")

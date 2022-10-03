@@ -43,11 +43,11 @@ instance HasAbilities CursedShores where
 
 instance RunMessage CursedShores where
   runMessage msg l@(CursedShores attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 1 0
       , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
       ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       skillCards <- fieldMap
         InvestigatorHand
         (map toCardId . filter (`cardMatch` CardWithType SkillType))

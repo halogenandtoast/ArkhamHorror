@@ -46,7 +46,7 @@ instance RunMessage HisDomain where
         (SetNoRemainingInvestigatorsHandler (toTarget attrs)
         : map (InvestigatorDefeated (toSource attrs)) investigatorIds
         )
-    UseCardAbility _ source [Window _ (Window.PlaceUnderneath _ card)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.PlaceUnderneath _ card)] _
       | isSource attrs source -> do
         removeAllMessagesMatching \case
           PlacedUnderneath ActDeckTarget card' -> card == card'

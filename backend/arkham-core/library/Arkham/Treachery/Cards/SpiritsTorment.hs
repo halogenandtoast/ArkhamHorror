@@ -44,7 +44,7 @@ instance RunMessage SpiritsTorment where
       for_ mlid
         $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
       pure t
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasActions <- member iid <$> select InvestigatorWithAnyActionsRemaining
       push $ if hasActions
         then chooseOne
@@ -56,6 +56,6 @@ instance RunMessage SpiritsTorment where
           ]
         else InvestigatorAssignDamage iid source DamageAny 0 1
       pure t
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> SpiritsTorment <$> runMessage msg attrs

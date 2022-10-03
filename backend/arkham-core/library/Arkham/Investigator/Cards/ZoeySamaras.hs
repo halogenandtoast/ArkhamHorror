@@ -48,7 +48,7 @@ instance HasTokenValue ZoeySamaras where
 
 instance RunMessage ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == toId attrs ->
+    UseCardAbility _ (InvestigatorSource iid) 1 _ _ | iid == toId attrs ->
       i <$ push (TakeResources (toId attrs) 1 False)
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> i <$ push
       (CreateWindowModifierEffect

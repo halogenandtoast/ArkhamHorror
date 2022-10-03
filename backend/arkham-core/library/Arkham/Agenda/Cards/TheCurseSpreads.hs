@@ -34,7 +34,7 @@ instance HasAbilities TheCurseSpreads where
 
 instance RunMessage TheCurseSpreads where
   runMessage msg a@(TheCurseSpreads attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       notEngaged <- isJust
         <$> selectOne (UnengagedEnemy <> enemyIs Cards.theRougarou)
       a <$ when notEngaged (push (PlaceDoom (toTarget attrs) 1))

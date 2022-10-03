@@ -43,7 +43,7 @@ instance HasAbilities BasementHall where
 
 instance RunMessage BasementHall where
   runMessage msg l@(BasementHall attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       patientConfinements <- shuffleM
         =<< getSetAsideCardsMatching (CardWithTitle "Patient Confinement")
 

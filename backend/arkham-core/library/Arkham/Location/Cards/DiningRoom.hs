@@ -41,7 +41,7 @@ instance HasAbilities DiningRoom where
 
 instance RunMessage DiningRoom where
   runMessage msg l@(DiningRoom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
       [ HealHorror (InvestigatorTarget iid) 1
       , RequestTokens source (Just iid) (Reveal 1) SetAside
       ]

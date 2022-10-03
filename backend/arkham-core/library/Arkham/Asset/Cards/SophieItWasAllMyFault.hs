@@ -43,7 +43,7 @@ instance HasModifiersFor SophieItWasAllMyFault where
 
 instance RunMessage SophieItWasAllMyFault where
   runMessage msg a@(SophieItWasAllMyFault attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (Flip iid (toSource attrs) (toTarget attrs))
     Flip _ _ target | isTarget attrs target -> do
       let

@@ -60,15 +60,15 @@ instance HasAbilities CurtainCall where
 
 instance RunMessage CurtainCall where
   runMessage msg a@(CurtainCall attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source ->
+    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source ->
       a <$ push (Resign iid)
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       targets <-
         selectListMap LocationTarget
         $ LocationWithoutHorror
         <> AccessibleTo LocationWithAnyHorror
       a <$ pushAll (map (`PlaceHorror` 1) targets)
-    UseCardAbility _ source _ 3 _ | isSource attrs source ->
+    UseCardAbility _ source 3 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

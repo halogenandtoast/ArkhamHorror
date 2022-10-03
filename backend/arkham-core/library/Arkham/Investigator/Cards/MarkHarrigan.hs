@@ -58,6 +58,6 @@ instance HasTokenValue MarkHarrigan where
 
 instance RunMessage MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       i <$ push (DrawCards iid 1 False)
     _ -> MarkHarrigan <$> runMessage msg attrs

@@ -47,6 +47,6 @@ instance HasAbilities HistoricalSocietyRecordOffice_129 where
 
 instance RunMessage HistoricalSocietyRecordOffice_129 where
   runMessage msg l@(HistoricalSocietyRecordOffice_129 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (RevealLocation Nothing $ toId attrs)
     _ -> HistoricalSocietyRecordOffice_129 <$> runMessage msg attrs

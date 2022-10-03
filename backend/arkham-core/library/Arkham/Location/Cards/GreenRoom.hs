@@ -38,7 +38,7 @@ instance HasAbilities GreenRoom where
 
 instance RunMessage GreenRoom where
   runMessage msg l@(GreenRoom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
       [ skillTestModifier
         source
         (InvestigatorTarget iid)

@@ -32,6 +32,6 @@ instance HasAbilities Mobster where
 
 instance RunMessage Mobster where
   runMessage msg e@(Mobster attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (SpendResources iid 1)
     _ -> Mobster <$> runMessage msg attrs

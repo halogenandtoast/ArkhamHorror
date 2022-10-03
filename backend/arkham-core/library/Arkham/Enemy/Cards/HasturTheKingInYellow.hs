@@ -46,11 +46,11 @@ instance HasAbilities HasturTheKingInYellow where
 
 instance RunMessage HasturTheKingInYellow where
   runMessage msg e@(HasturTheKingInYellow attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- getInvestigatorIds
       pushAll [InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids]
       pure e
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       x <- field EnemyFight (toId attrs)
       push $ BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower x
       pure e

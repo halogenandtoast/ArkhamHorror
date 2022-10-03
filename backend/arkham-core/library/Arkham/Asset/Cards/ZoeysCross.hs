@@ -32,7 +32,7 @@ instance HasAbilities ZoeysCross where
 
 instance RunMessage ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of
-    UseCardAbility iid source [Window _ (Window.EnemyEngaged _ eid)] 1 _
+    UseCardAbility iid source 1 [Window _ (Window.EnemyEngaged _ eid)] _
       | isSource attrs source -> a
       <$ push (EnemyDamage eid iid source NonAttackDamageEffect 1)
     _ -> ZoeysCross <$> runMessage msg attrs

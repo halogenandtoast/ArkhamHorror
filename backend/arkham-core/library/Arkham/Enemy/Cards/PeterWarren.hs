@@ -36,6 +36,6 @@ instance HasAbilities PeterWarren where
 
 instance RunMessage PeterWarren where
   runMessage msg e@(PeterWarren attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)
     _ -> PeterWarren <$> runMessage msg attrs

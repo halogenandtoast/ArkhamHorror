@@ -600,9 +600,9 @@ data Message
   | SealedToken Token Card
   | UnsealToken Token
   | UnsetActiveCard
-  | UseCardAbility InvestigatorId Source [Window] Int Payment
-  | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
-  | UseCardAbilityChoiceTarget InvestigatorId Source [Window] Int Payment Target
+  | UseCardAbility InvestigatorId Source Int [Window] Payment
+  | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
+  | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target
   | ResetMetadata Target
   | When Message

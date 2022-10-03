@@ -47,6 +47,6 @@ instance RunMessage PrismaticCascade where
       case availableLabel of
         Just label -> pure . PrismaticCascade $ attrs & labelL .~ label
         Nothing -> error "could not find label"
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       l <$ push (Discard $ toTarget attrs)
     _ -> PrismaticCascade <$> runMessage msg attrs

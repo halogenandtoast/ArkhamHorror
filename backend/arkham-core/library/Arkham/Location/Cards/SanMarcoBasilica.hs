@@ -50,7 +50,7 @@ instance HasAbilities SanMarcoBasilica where
 
 instance RunMessage SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       innocentRevelerIds <-
         selectList $ AssetControlledBy You <> assetIs Assets.innocentReveler
       l <$ push

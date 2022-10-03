@@ -54,7 +54,7 @@ instance HasTokenValue UrsulaDowns where
 
 instance RunMessage UrsulaDowns where
   runMessage msg i@(UrsulaDowns (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         windows' =
           [ Window Timing.When (Window.DuringTurn iid)

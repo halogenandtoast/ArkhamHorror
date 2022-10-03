@@ -35,7 +35,7 @@ instance HasModifiersFor AlyssaGraham where
 
 instance RunMessage AlyssaGraham where
   runMessage msg a@(AlyssaGraham attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget Anyone
       let
         search target = TargetLabel

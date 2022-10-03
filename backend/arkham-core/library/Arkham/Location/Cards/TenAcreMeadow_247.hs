@@ -46,7 +46,7 @@ instance HasAbilities TenAcreMeadow_247 where
 
 instance RunMessage TenAcreMeadow_247 where
   runMessage msg l@(TenAcreMeadow_247 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs
       abominations <- locationEnemiesWithTrait attrs Abomination
       when

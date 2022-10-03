@@ -42,7 +42,7 @@ instance HasAbilities InnocentReveler where
 
 instance RunMessage InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a
         <$ push
              (BeginSkillTest
@@ -53,7 +53,7 @@ instance RunMessage InnocentReveler where
                SkillIntellect
                2
              )
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       let
         card = PlayerCard $ lookupPlayerCard (toCardDef attrs) (toCardId attrs)

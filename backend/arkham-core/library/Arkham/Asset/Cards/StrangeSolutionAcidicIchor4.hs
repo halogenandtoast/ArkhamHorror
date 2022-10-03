@@ -45,6 +45,6 @@ instance HasModifiersFor StrangeSolutionAcidicIchor4 where
 
 instance RunMessage StrangeSolutionAcidicIchor4 where
   runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
     _ -> StrangeSolutionAcidicIchor4 <$> runMessage msg attrs

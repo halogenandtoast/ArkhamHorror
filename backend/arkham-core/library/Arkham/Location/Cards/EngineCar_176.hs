@@ -52,7 +52,7 @@ instance HasAbilities EngineCar_176 where
 
 instance RunMessage EngineCar_176 where
   runMessage msg l@(EngineCar_176 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ push
         (FindAndDrawEncounterCard iid (CardWithTitle "Grappling Horror"))
     _ -> EngineCar_176 <$> runMessage msg attrs

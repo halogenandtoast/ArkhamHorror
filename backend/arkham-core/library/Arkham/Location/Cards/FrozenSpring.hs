@@ -35,6 +35,6 @@ instance HasAbilities FrozenSpring where
 
 instance RunMessage FrozenSpring where
   runMessage msg l@(FrozenSpring attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
     _ -> FrozenSpring <$> runMessage msg attrs

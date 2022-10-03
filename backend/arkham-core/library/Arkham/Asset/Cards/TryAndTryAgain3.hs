@@ -39,7 +39,7 @@ instance HasAbilities TryAndTryAgain3 where
 
 instance RunMessage TryAndTryAgain3 where
   runMessage msg a@(TryAndTryAgain3 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       committedSkills <-
         filter ((== SkillType) . toCardType)
         <$> field InvestigatorCommittedCards iid

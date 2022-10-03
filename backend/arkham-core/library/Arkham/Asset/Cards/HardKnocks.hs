@@ -37,13 +37,13 @@ instance HasAbilities HardKnocks where
 
 instance RunMessage HardKnocks where
   runMessage msg a@(HardKnocks attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 1)
       )
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)

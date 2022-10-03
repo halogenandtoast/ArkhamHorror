@@ -31,7 +31,7 @@ instance HasAbilities SpringfieldM19034 where
 
 instance RunMessage SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)

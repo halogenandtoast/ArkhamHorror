@@ -37,7 +37,7 @@ instance HasAbilities CloverClubCardroom where
 
 instance RunMessage CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces tokens

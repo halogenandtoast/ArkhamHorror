@@ -73,7 +73,7 @@ instance HasAbilities TheRougarou where
 instance RunMessage TheRougarou where
   runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =
     case msg of
-      UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      UseCardAbility _ source 1 _ _ | isSource attrs source -> do
         damageThreshold <- getPlayerCountValue (PerPlayer 1)
         leadInvestigatorId <- getLeadInvestigatorId
         farthestLocationIds <- selectList $ FarthestLocationFromAll Anywhere

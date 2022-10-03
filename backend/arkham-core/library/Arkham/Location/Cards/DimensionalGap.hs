@@ -36,7 +36,7 @@ instance HasAbilities DimensionalGap where
 
 instance RunMessage DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       l <$ push (DiscardEncounterUntilFirst source $ CardWithType EnemyType)
     RequestedEncounterCard source (Just ec) | isSource attrs source ->
       l <$ push (SpawnEnemyAt (EncounterCard ec) (toId attrs))

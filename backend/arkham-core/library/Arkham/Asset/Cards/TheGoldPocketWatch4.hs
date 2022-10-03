@@ -32,9 +32,9 @@ instance HasAbilities TheGoldPocketWatch4 where
 
 instance RunMessage TheGoldPocketWatch4 where
   runMessage msg a@(TheGoldPocketWatch4 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ pushAll [RemoveFromGame (toTarget attrs), EndPhase]
-    UseCardAbility _ source [Window _ (Window.PhaseEnds phase)] 2 _
+    UseCardAbility _ source 2 [Window _ (Window.PhaseEnds phase)] _
       | isSource attrs source -> do
         clearQueue
         a <$ pushAll [RemoveFromGame (toTarget attrs), Begin phase]

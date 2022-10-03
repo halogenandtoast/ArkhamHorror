@@ -42,7 +42,7 @@ instance HasAbilities OvergrownRuins where
 
 instance RunMessage OvergrownRuins where
   runMessage msg l@(OvergrownRuins attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll [SetActions iid source 0, ChooseEndTurn iid]
       pure l
     _ -> OvergrownRuins <$> runMessage msg attrs

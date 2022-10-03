@@ -43,7 +43,7 @@ instance HasAbilities ServantOfManyMouths where
 
 instance RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationsWithClues <- selectList LocationWithAnyClues
       e <$ unless
         (null locationsWithClues)

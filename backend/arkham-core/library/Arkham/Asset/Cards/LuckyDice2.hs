@@ -33,7 +33,7 @@ instance HasAbilities LuckyDice2 where
 
 instance RunMessage LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
-    UseCardAbility iid source [Window _ (Window.RevealToken _ token)] 1 _
+    UseCardAbility iid source 1 [Window _ (Window.RevealToken _ token)] _
       | isSource attrs source -> a <$ pushAll
         [ CreateEffect "02230" Nothing source (TokenTarget token)
         , DrawAnotherToken iid

@@ -35,7 +35,7 @@ instance HasAbilities Zocalo where
 
 instance RunMessage Zocalo where
   runMessage msg l@(Zocalo attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push
         $ Explore iid (toSource attrs)
         $ CardWithPrintedLocationSymbol

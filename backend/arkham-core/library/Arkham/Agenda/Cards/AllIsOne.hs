@@ -34,7 +34,7 @@ instance HasAbilities AllIsOne where
 
 instance RunMessage AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       failedToSaveStudents <- getHasRecord

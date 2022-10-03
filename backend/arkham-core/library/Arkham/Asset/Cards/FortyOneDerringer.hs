@@ -31,7 +31,7 @@ instance HasAbilities FortyOneDerringer where
 
 instance RunMessage FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         attrs
         (InvestigatorTarget iid)

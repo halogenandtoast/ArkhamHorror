@@ -56,7 +56,7 @@ instance HasAbilities SerpentOfTenochtitlan where
 
 instance RunMessage SerpentOfTenochtitlan where
   runMessage msg e@(SerpentOfTenochtitlan attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       poisoned <- getSetAsidePoisoned
       push $ CreateWeaknessInThreatArea poisoned iid
       pure e

@@ -30,6 +30,6 @@ instance HasAbilities ArmorOfArdennes5 where
 
 instance RunMessage ArmorOfArdennes5 where
   runMessage msg (ArmorOfArdennes5 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       pure . ArmorOfArdennes5 $ attrs & damageL -~ 1
     _ -> ArmorOfArdennes5 <$> runMessage msg attrs

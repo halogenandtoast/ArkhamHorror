@@ -51,7 +51,7 @@ instance HasAbilities TheCarnevaleConspiracy where
 
 instance RunMessage TheCarnevaleConspiracy where
   runMessage msg a@(TheCarnevaleConspiracy attrs@ActAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       filteredMaskedCarnevaleGoers <-
@@ -65,7 +65,7 @@ instance RunMessage TheCarnevaleConspiracy where
               iid
               [ targetLabel x [LookAtRevealed iid (toSource attrs) (AssetTarget x)] | x <- xs ]
           ]
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

@@ -59,6 +59,6 @@ instance RunMessage WordsOfPower where
   runMessage msg t@(WordsOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> WordsOfPower <$> runMessage msg attrs

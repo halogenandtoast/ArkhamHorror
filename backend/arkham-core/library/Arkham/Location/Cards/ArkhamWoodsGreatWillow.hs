@@ -37,7 +37,7 @@ instance HasAbilities ArkhamWoodsGreatWillow where
 
 instance RunMessage ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       getSkillTestSource >>= \case
         Just (TreacherySource tid) -> do
           push $ CreateEffect

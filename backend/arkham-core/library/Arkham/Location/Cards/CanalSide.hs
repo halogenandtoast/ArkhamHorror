@@ -41,6 +41,6 @@ instance HasAbilities CanalSide where
 
 instance RunMessage CanalSide where
   runMessage msg l@(CanalSide attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (PlaceClues (toTarget attrs) 1)
     _ -> CanalSide <$> runMessage msg attrs

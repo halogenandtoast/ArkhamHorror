@@ -40,6 +40,6 @@ instance HasAbilities TheThingThatFollows where
 
 instance RunMessage TheThingThatFollows where
   runMessage msg e@(TheThingThatFollows attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ pushAll
       [CancelNext EnemyDefeatedMessage, ShuffleIntoDeck (Deck.InvestigatorDeck iid) $ toTarget attrs]
     _ -> TheThingThatFollows <$> runMessage msg attrs

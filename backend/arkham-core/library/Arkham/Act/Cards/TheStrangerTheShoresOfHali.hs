@@ -39,7 +39,7 @@ instance HasAbilities TheStrangerTheShoresOfHali where
 
 instance RunMessage TheStrangerTheShoresOfHali where
   runMessage msg a@(TheStrangerTheShoresOfHali attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding

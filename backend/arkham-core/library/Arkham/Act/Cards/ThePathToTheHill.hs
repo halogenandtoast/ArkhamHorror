@@ -32,7 +32,7 @@ instance HasAbilities ThePathToTheHill where
 
 instance RunMessage ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithClues)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       locationIds <- selectList Anywhere

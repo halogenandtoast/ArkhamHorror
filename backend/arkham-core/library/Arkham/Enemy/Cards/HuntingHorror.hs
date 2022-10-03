@@ -39,7 +39,7 @@ instance HasAbilities HuntingHorror where
 
 instance RunMessage HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (RequestTokens source Nothing (Reveal 1) SetAside)
     RequestedTokens source _ tokens | isSource attrs source -> do
       e <$ when
@@ -48,7 +48,7 @@ instance RunMessage HuntingHorror where
           [Skull, Cultist, Tablet, ElderThing, AutoFail]
         )
         (push (Ready $ toTarget attrs))
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       e <$ pushAll (resolve $ PlaceEnemyInVoid enemyId)
     When (PlaceEnemyInVoid eid) | eid == enemyId ->
       pure

@@ -34,7 +34,7 @@ instance HasAbilities MaskedCarnevaleGoer_21 where
 
 instance RunMessage MaskedCarnevaleGoer_21 where
   runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (Flip iid (InvestigatorSource iid) (toTarget attrs))
     Flip _ _ target | isTarget attrs target -> do
       case assetPlacement attrs of

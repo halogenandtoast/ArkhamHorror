@@ -41,7 +41,7 @@ instance HasAbilities BaseballBat where
 
 instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         attrs
         (InvestigatorTarget iid)

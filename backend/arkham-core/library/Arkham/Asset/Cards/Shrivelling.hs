@@ -32,7 +32,7 @@ instance HasAbilities Shrivelling where
 
 instance RunMessage Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers attrs (InvestigatorTarget iid) [DamageDealt 1]
       , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
       , ChooseFightEnemy iid source Nothing SkillWillpower mempty False

@@ -37,7 +37,7 @@ instance HasAbilities InEveryShadow where
 
 instance RunMessage InEveryShadow where
   runMessage msg a@(InEveryShadow attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns eid _)] _
       | isSource attrs source -> do
         mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
         shadowSpawned <- EncounterCard

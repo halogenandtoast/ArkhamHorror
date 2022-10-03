@@ -35,7 +35,7 @@ instance HasAbilities SecurityOffice_129 where
 
 instance RunMessage SecurityOffice_129 where
   runMessage msg l@(SecurityOffice_129 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       unrevealedExhibitHalls <-
         selectList $ UnrevealedLocation <> LocationWithTitle "ExhibitHall"
       push

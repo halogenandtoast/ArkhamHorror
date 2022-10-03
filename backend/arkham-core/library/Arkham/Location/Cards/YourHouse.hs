@@ -49,8 +49,8 @@ instance HasAbilities YourHouse where
 
 instance RunMessage YourHouse where
   runMessage msg l@(YourHouse attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.EnemySpawns _ _)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns _ _)] _
       | isSource attrs source -> pure l
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
       l <$ pushAll [DrawCards iid 1 False, TakeResources iid 1 False]
     _ -> YourHouse <$> runMessage msg attrs

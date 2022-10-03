@@ -50,7 +50,7 @@ instance HasAbilities EztliGuardian where
 
 instance RunMessage EztliGuardian where
   runMessage msg e@(EztliGuardian attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       adjacentInvestigators <-
         selectList $ InvestigatorAt $ ConnectedFrom $ LocationWithEnemy
           (EnemyWithId $ toId attrs)

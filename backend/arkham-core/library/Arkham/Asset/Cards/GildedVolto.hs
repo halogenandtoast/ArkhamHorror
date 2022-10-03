@@ -35,10 +35,10 @@ instance HasAbilities GildedVolto where
 
 instance RunMessage GildedVolto where
   runMessage msg a@(GildedVolto attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ CreateEffect "82026" Nothing source (InvestigatorTarget iid)
       pure a
-    UseCardAbility _ source _ 2 _
+    UseCardAbility _ source 2 _ _
       | isSource attrs source
       -> do
         replaceMessageMatching

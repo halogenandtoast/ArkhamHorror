@@ -43,7 +43,7 @@ instance HasAbilities RuinsOfCarcosaInhabitantOfCarcosa where
 
 instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
   runMessage msg l@(RuinsOfCarcosaInhabitantOfCarcosa attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
       pure l
     Flip iid _ target | isTarget attrs target -> do

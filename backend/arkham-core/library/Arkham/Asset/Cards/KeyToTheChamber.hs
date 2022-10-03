@@ -39,7 +39,7 @@ instance RunMessage KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (TakeControlOfAsset iid $ toId a)
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       mHiddenChamberId <- selectOne (LocationWithTitle "The Hidden Chamber")
       case mHiddenChamberId of
         Nothing -> throwIO $ InvalidState "The Hidden Chamber is missing"

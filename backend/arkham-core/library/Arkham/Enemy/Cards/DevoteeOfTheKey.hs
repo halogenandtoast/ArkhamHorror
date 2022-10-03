@@ -36,7 +36,7 @@ instance HasAbilities DevoteeOfTheKey where
 
 instance RunMessage DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation enemyId
       for_ enemyLocation $ \loc -> do
         leadInvestigatorId <- getLeadInvestigatorId

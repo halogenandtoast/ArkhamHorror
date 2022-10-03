@@ -58,7 +58,7 @@ instance RunMessage JazzMulligan where
         (fromJustNote "must be at a location")
         iid
       a <$ push (PlaceAsset assetId $ AtLocation lid)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ BeginSkillTest
         iid
         source

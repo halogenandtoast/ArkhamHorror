@@ -42,7 +42,7 @@ instance HasAbilities TheManInThePallidMask where
 
 instance RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       lid <- getJustLocation iid
       e <$ pushAll
         [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)

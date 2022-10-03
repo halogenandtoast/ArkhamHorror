@@ -38,7 +38,7 @@ instance HasAbilities StreetsOfVenice where
 
 instance RunMessage StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locations <- selectList $ AccessibleFrom $ LocationWithId $ toId attrs
       case locations of
         [] -> error "No connections?"

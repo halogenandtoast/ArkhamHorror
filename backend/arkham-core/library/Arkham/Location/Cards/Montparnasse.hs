@@ -36,7 +36,7 @@ instance HasAbilities Montparnasse where
 
 instance RunMessage Montparnasse where
   runMessage msg a@(Montparnasse attrs) = case msg of
-    UseCardAbility iid source _ 1 (DiscardCardPayment cards)
+    UseCardAbility iid source 1 _ (DiscardCardPayment cards)
       | isSource attrs source -> do
         let
           countWillpower = count (== SkillWillpower) . cdSkills . toCardDef

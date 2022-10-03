@@ -50,7 +50,7 @@ willpowerCount _ = 0
 
 instance RunMessage RivertownAbandonedWarehouse where
   runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
-    UseCardAbility iid source _ 1 payments | isSource attrs source -> do
+    UseCardAbility iid source 1 _ payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
       cultists <- selectList $ EnemyWithTrait Cultist
       unless (null cultists) $ push $ chooseOne

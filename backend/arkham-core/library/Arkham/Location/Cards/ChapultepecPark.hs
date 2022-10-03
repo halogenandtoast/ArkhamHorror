@@ -43,10 +43,10 @@ instance HasAbilities ChapultepecPark where
 
 instance RunMessage ChapultepecPark where
   runMessage msg l@(ChapultepecPark attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ BeginSkillTest
         iid
         (toSource attrs)

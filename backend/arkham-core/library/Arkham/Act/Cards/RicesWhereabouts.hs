@@ -48,11 +48,11 @@ instance HasAbilities RicesWhereabouts where
 
 instance RunMessage RicesWhereabouts where
   runMessage msg a@(RicesWhereabouts attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
       a <$ push (DiscardTopOfEncounterDeck iid discardCount Nothing)
-    UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
       let
         mCard = flip firstJust windows' $ \case
           Window _ (Window.Discarded _ card)
@@ -66,7 +66,7 @@ instance RunMessage RicesWhereabouts where
                  , InvestigatorDrewEncounterCard iid ec
                  ]
         _ -> throwIO $ InvalidState "did not find the correct card"
-    UseCardAbility _ source _ 3 _ | isSource attrs source -> do
+    UseCardAbility _ source 3 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       agendaId <- selectJust AnyAgenda

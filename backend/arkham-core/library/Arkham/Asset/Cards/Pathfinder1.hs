@@ -32,7 +32,7 @@ instance HasAbilities Pathfinder1 where
 
 instance RunMessage Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       startId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")

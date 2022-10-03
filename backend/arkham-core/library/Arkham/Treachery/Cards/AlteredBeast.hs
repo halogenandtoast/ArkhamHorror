@@ -44,6 +44,6 @@ instance RunMessage AlteredBeast where
           | x <- xs
           ]
       pure t
-    UseCardAbility iid source _ 1 _ ->
+    UseCardAbility iid source 1 _ _ ->
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> AlteredBeast <$> runMessage msg attrs

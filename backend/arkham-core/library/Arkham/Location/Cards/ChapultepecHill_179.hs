@@ -60,7 +60,7 @@ instance HasAbilities ChapultepecHill_179 where
 
 instance RunMessage ChapultepecHill_179 where
   runMessage msg l@(ChapultepecHill_179 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) 1 Nothing
       pure l
     _ -> ChapultepecHill_179 <$> runMessage msg attrs

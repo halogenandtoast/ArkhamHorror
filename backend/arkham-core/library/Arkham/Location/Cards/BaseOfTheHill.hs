@@ -47,7 +47,7 @@ instance HasAbilities BaseOfTheHill where
 
 instance RunMessage BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (Investigate
         iid
         (toId attrs)

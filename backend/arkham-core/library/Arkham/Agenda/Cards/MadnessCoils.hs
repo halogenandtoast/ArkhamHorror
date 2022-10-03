@@ -104,7 +104,7 @@ instance RunMessage MadnessCoils where
         pushAfter (== SkillTestApplyResultsAfter)
           $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         pure a
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAgenda (toId attrs)
       pure a
     _ -> MadnessCoils . (`with` metadata) <$> runMessage msg attrs

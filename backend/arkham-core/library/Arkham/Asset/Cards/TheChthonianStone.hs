@@ -30,7 +30,7 @@ instance HasAbilities TheChthonianStone where
 
 instance RunMessage TheChthonianStone where
   runMessage msg a@(TheChthonianStone attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ ReturnToHand iid (toTarget attrs)
       pure a
     _ -> TheChthonianStone <$> runMessage msg attrs

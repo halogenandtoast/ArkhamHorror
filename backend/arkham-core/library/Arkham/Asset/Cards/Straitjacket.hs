@@ -41,6 +41,6 @@ instance HasAbilities Straitjacket where
 
 instance RunMessage Straitjacket where
   runMessage msg a@(Straitjacket attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       a <$ push (Discarded (toTarget attrs) (toCard attrs))
     _ -> Straitjacket <$> runMessage msg attrs

@@ -35,6 +35,6 @@ instance HasAbilities ArkhamWoodsWoodenBridge where
 
 instance RunMessage ArkhamWoodsWoodenBridge where
   runMessage msg l@(ArkhamWoodsWoodenBridge attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (DrawAnotherToken iid)
     _ -> ArkhamWoodsWoodenBridge <$> runMessage msg attrs

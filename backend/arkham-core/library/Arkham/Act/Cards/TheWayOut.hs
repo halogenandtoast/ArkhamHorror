@@ -45,7 +45,7 @@ instance HasAbilities TheWayOut where
 
 instance RunMessage TheWayOut where
   runMessage msg a@(TheWayOut attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       leadInvestigatorId <- getLeadInvestigatorId
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
       locations <- selectList
@@ -82,7 +82,7 @@ instance RunMessage TheWayOut where
           locationsWithInvestigatorsAndEnemiesAndConnectedLocations
         ]
       pure a
-    UseCardAbility _ (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do

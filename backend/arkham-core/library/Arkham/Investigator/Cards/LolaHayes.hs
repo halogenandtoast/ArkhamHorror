@@ -58,9 +58,9 @@ switchRole attrs = push $ chooseOne
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       i <$ switchRole attrs
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       i <$ switchRole attrs
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       i <$ switchRole attrs

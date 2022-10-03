@@ -38,7 +38,7 @@ instance HasAbilities EztliExhibit where
 
 instance RunMessage EztliExhibit where
   runMessage msg l@(EztliExhibit attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ InvestigatorAssignDamage iid source DamageAny 0 1
       pure l
     _ -> EztliExhibit <$> runMessage msg attrs

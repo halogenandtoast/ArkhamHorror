@@ -47,7 +47,7 @@ instance RunMessage Entombed where
     Revelation iid source | isSource attrs source -> do
       push $ AttachTreachery (toId attrs) (idToTarget iid)
       pure t
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         difficulty = max 0 (4 - difficultyReduction metadata)
         testChoice sType = SkillLabel

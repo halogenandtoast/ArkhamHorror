@@ -32,7 +32,7 @@ instance HasAbilities HoleInTheWall where
 
 instance RunMessage HoleInTheWall where
   runMessage msg l@(HoleInTheWall attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> l <$ pushAll
       [ PlaceLocationMatching (CardWithTitle "Attic")
       , PlaceLocationMatching (CardWithTitle "Cellar")
       , PlaceLocationMatching (CardWithTitle "Parlor")

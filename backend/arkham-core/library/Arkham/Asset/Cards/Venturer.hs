@@ -38,7 +38,7 @@ instance HasAbilities Venturer where
 
 instance RunMessage Venturer where
   runMessage msg a@(Venturer attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       supplyAssets <-
         selectList
         $ AssetWithUseType Supply

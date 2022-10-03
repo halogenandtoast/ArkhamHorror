@@ -40,9 +40,9 @@ instance HasAbilities TheEndOfAllThings where
 
 instance RunMessage TheEndOfAllThings where
   runMessage msg a@(TheEndOfAllThings attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 3)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds

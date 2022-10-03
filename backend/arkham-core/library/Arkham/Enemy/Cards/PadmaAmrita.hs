@@ -44,7 +44,7 @@ instance HasAbilities PadmaAmrita where
 
 instance RunMessage PadmaAmrita where
   runMessage msg e@(PadmaAmrita attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasClues <- fieldP InvestigatorClues (> 0) iid
       push $ if hasClues
         then FlipClues (InvestigatorTarget iid) 1

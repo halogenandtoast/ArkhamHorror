@@ -41,7 +41,7 @@ instance HasAbilities PatientConfinementFamiliarCell where
 
 instance RunMessage PatientConfinementFamiliarCell where
   runMessage msg l@(PatientConfinementFamiliarCell attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
       push $ BeginSkillTest
         iid

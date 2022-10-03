@@ -32,7 +32,7 @@ instance HasAbilities GareDOrsay where
 
 instance RunMessage GareDOrsay where
   runMessage msg l@(GareDOrsay attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       rails <- filter (/= toId attrs) <$> selectList (LocationWithTrait Rail)
       push $ chooseOne
         iid

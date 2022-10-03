@@ -56,7 +56,7 @@ instance HasModifiersFor EsotericFormula where
 
 instance RunMessage EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (ChooseFightEnemy
         iid
         source

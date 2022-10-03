@@ -40,7 +40,7 @@ instance HasAbilities BoaConstrictor where
 
 instance RunMessage BoaConstrictor where
   runMessage msg e@(BoaConstrictor attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ createCardEffect Cards.boaConstrictor Nothing source (InvestigatorTarget iid)
       pure e
     _ -> BoaConstrictor <$> runMessage msg attrs

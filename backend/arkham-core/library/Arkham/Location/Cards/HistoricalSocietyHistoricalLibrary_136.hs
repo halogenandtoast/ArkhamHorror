@@ -61,9 +61,9 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
 
 instance RunMessage HistoricalSocietyHistoricalLibrary_136 where
   runMessage msg l@(HistoricalSocietyHistoricalLibrary_136 attrs) = case msg of
-    UseCardAbility iid source _ 1 _
+    UseCardAbility iid source 1 _ _
       | isSource attrs source && locationRevealed attrs -> l
       <$ push (InvestigatorDiscoverClues iid (toId attrs) 1 Nothing)
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (RevealLocation Nothing $ toId attrs)
     _ -> HistoricalSocietyHistoricalLibrary_136 <$> runMessage msg attrs

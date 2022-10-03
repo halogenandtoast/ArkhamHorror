@@ -33,7 +33,7 @@ instance HasAbilities DrawingThin where
 
 instance RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ CreateWindowModifierEffect
         EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [Difficulty 2])

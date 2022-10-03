@@ -52,10 +52,10 @@ instance HasAbilities CanalsOfTenochtitlan_181 where
 
 instance RunMessage CanalsOfTenochtitlan_181 where
   runMessage msg l@(CanalsOfTenochtitlan_181 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ PlaceResources (toTarget attrs) 4
       pure l
-    UseCardAbility _ (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ RemoveResources (toTarget attrs) 1
       pure l
     _ -> CanalsOfTenochtitlan_181 <$> runMessage msg attrs

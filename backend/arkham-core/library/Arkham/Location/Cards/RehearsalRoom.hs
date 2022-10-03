@@ -35,6 +35,6 @@ instance HasAbilities RehearsalRoom where
 
 instance RunMessage RehearsalRoom where
   runMessage msg l@(RehearsalRoom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> RehearsalRoom <$> runMessage msg attrs

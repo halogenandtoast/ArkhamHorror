@@ -35,7 +35,7 @@ instance HasAbilities BookOfShadows1 where
 
 instance RunMessage BookOfShadows1 where
   runMessage msg a@(BookOfShadows1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       spellAssetIds <- selectList
         (AssetControlledBy You <> AssetWithTrait Spell)
       unless (null spellAssetIds) $ push $ chooseOne

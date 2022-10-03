@@ -40,7 +40,7 @@ instance RunMessage AcridMiasma where
       for_ mLocation
         $ \x -> push $ AttachTreachery (toId attrs) (LocationTarget x)
       pure t
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (RevelationSkillTest iid (toSource attrs) SkillWillpower 2)
       -- not revelation but puts card into active
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

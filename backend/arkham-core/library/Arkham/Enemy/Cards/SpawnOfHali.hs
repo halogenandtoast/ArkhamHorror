@@ -37,6 +37,6 @@ instance HasAbilities SpawnOfHali where
 
 instance RunMessage SpawnOfHali where
   runMessage msg e@(SpawnOfHali attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> SpawnOfHali <$> runMessage msg attrs

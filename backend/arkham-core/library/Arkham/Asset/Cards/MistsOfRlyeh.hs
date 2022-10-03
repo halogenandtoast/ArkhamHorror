@@ -39,7 +39,7 @@ instance HasAbilities MistsOfRlyeh where
 
 instance RunMessage MistsOfRlyeh where
   runMessage msg a@(MistsOfRlyeh attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ pushAll
         [ CreateEffect "04029" Nothing source (InvestigatorTarget iid)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False

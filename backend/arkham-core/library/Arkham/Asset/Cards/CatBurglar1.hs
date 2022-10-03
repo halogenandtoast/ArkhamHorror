@@ -53,7 +53,7 @@ instance RunMessage CatBurglar1 where
         (InvestigatorTarget iid)
         (SkillModifier SkillAgility 1)
       CatBurglar1 <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       engagedEnemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId
         iid
       canDisengage <- iid <=~> InvestigatorCanDisengage

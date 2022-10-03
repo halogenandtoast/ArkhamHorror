@@ -46,8 +46,8 @@ instance HasAbilities Umordhoth where
 
 instance RunMessage Umordhoth where
   runMessage msg e@(Umordhoth attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Ready $ toTarget attrs)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       e <$ push (ScenarioResolution $ Resolution 3)
     _ -> Umordhoth <$> runMessage msg attrs

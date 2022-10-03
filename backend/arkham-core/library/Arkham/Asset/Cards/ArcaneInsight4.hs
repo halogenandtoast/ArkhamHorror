@@ -35,7 +35,7 @@ instance HasAbilities ArcaneInsight4 where
 
 instance RunMessage ArcaneInsight4 where
   runMessage msg a@(ArcaneInsight4 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid ->
         push $ CreateWindowModifierEffect

@@ -32,7 +32,7 @@ instance HasAbilities Shotgun4 where
 
 instance RunMessage Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         attrs
         (InvestigatorTarget iid)

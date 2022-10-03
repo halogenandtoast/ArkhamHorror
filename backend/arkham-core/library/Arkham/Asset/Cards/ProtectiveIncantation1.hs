@@ -34,7 +34,7 @@ instance HasAbilities ProtectiveIncantation1 where
 
 instance RunMessage ProtectiveIncantation1 where
   runMessage msg a@(ProtectiveIncantation1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
       push
         $ chooseOrRunOne iid

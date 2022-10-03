@@ -45,7 +45,7 @@ instance HasAbilities StickToThePlan where
 
 instance RunMessage StickToThePlan where
   runMessage msg a@(StickToThePlan attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ Search
         iid
         (toSource attrs)

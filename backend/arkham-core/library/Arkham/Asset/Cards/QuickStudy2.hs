@@ -32,7 +32,7 @@ instance HasAbilities QuickStudy2 where
 
 instance RunMessage QuickStudy2 where
   runMessage msg a@(QuickStudy2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       skillType <- skillTestSkillType <$> getJustSkillTest
       push $ skillTestModifier attrs (InvestigatorTarget iid) $ SkillModifier
         skillType

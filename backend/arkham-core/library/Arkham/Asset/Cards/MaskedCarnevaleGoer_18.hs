@@ -43,7 +43,7 @@ locationOf AssetAttrs { assetPlacement } = case assetPlacement of
 
 instance RunMessage MaskedCarnevaleGoer_18 where
   runMessage msg a@(MaskedCarnevaleGoer_18 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         lid = locationOf attrs
         enemyId = EnemyId $ toCardId attrs

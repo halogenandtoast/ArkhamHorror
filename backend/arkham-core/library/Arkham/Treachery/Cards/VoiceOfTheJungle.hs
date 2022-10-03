@@ -43,9 +43,9 @@ instance RunMessage VoiceOfTheJungle where
   runMessage msg t@(VoiceOfTheJungle attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ BeginSkillTest
         iid
         source

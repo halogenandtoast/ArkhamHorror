@@ -59,7 +59,7 @@ instance HasModifiersFor NoAsylum where
 
 instance RunMessage NoAsylum where
   runMessage msg a@(NoAsylum attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       tookKeysByForce <- remembered YouTookTheKeysByForce

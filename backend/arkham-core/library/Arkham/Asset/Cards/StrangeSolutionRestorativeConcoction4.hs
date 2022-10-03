@@ -37,7 +37,7 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
 
 instance RunMessage StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget $ colocatedWith iid
       push $ chooseOne
         iid

@@ -35,6 +35,6 @@ instance HasAbilities BlastedHeath_249 where
 
 instance RunMessage BlastedHeath_249 where
   runMessage msg l@(BlastedHeath_249 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> BlastedHeath_249 <$> runMessage msg attrs

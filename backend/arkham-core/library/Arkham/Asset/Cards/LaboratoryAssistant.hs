@@ -36,6 +36,6 @@ instance HasAbilities LaboratoryAssistant where
 
 instance RunMessage LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (DrawCards iid 2 False)
     _ -> LaboratoryAssistant <$> runMessage msg attrs

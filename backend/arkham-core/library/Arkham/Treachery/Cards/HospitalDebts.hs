@@ -58,6 +58,6 @@ instance RunMessage HospitalDebts where
   runMessage msg t@(HospitalDebts attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) (InvestigatorTarget iid))
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       t <$ pushAll [SpendResources iid 1, PlaceResources (toTarget attrs) 1]
     _ -> HospitalDebts <$> runMessage msg attrs

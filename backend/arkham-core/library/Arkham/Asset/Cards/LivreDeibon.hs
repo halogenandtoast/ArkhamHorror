@@ -49,7 +49,7 @@ instance HasAbilities LivreDeibon where
 
 instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       handCards <- field InvestigatorHand iid
       a <$ push
         (chooseOne iid
@@ -59,7 +59,7 @@ instance RunMessage LivreDeibon where
           | c <- mapMaybe (preview _PlayerCard) handCards
           ]
         )
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       deckCards <- fieldMap InvestigatorDeck unDeck iid
       case deckCards of
         [] -> error "Missing deck card"

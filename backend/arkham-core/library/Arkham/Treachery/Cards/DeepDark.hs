@@ -57,7 +57,7 @@ instance RunMessage DeepDark where
     Revelation _iid source | isSource attrs source -> do
       push $ PlaceTreachery (toId attrs) TreacheryNextToAct
       pure t
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ Discard (toTarget attrs)
       pure t
     DiscoverClues iid lid _ _ -> do

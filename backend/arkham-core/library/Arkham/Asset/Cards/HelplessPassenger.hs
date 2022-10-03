@@ -53,9 +53,9 @@ instance RunMessage HelplessPassenger where
       spawnAt <- fromMaybe lid
         <$> selectOne (LocationInDirection LeftOf (LocationWithId lid))
       a <$ push (AttachAsset assetId (LocationTarget spawnAt))
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (TakeControlOfAsset iid assetId)
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       investigatorIds <- selectList UneliminatedInvestigator
       a <$ pushAll
         [ InvestigatorAssignDamage iid' source DamageAny 0 1

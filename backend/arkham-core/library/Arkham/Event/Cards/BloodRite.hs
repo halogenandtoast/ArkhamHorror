@@ -42,7 +42,7 @@ instance RunMessage BloodRite where
       | isSource attrs source
       -> do
         if length discardedCards == 2
-          then push (UseCardAbility iid source windows 1 payment)
+          then push (UseCardAbility iid source 1 windows payment)
           else do
             cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
             push
@@ -63,11 +63,11 @@ instance RunMessage BloodRite where
                        <> tshow (length discardedCards)
                        <> " cards"
                        )
-                       [UseCardAbility iid source windows 1 payment]
+                       [UseCardAbility iid source 1 windows payment]
                    ]
                 )
         pure e
-    UseCardAbility iid source _ 1 (DiscardCardPayment xs)
+    UseCardAbility iid source 1 _ (DiscardCardPayment xs)
       | isSource attrs source -> do
         enemyIds <-
           selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId

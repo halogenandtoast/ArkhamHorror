@@ -37,7 +37,7 @@ instance HasModifiersFor HiredMuscle1 where
 
 instance RunMessage HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (chooseOne
         iid
         [ Label "Pay 1 Resource to Hired Muscle" [SpendResources iid 1]

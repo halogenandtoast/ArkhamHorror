@@ -45,7 +45,7 @@ instance HasAbilities TrainTracks where
 
 instance RunMessage TrainTracks where
   runMessage msg l@(TrainTracks attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ DrawCards iid 4 False
       pure l
     _ -> TrainTracks <$> runMessage msg attrs

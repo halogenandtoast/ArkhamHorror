@@ -37,9 +37,9 @@ instance HasAbilities CorpseTaker where
 
 instance RunMessage CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ pure (PlaceDoom (toTarget attrs) 1)
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation enemyId
       case enemyLocation of
         Nothing -> pure e

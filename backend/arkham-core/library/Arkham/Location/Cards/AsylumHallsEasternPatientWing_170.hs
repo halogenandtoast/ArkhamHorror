@@ -46,7 +46,7 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
 
 instance RunMessage AsylumHallsEasternPatientWing_170 where
   runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation <> EnemyWithTrait Lunatic)
       push $ chooseOne
         iid

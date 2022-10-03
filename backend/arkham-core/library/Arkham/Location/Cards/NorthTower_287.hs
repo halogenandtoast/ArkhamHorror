@@ -41,7 +41,7 @@ instance HasAbilities NorthTower_287 where
 
 instance RunMessage NorthTower_287 where
   runMessage msg l@(NorthTower_287 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- selectList $ InvestigatorAt $ LocationWithId $ toId attrs
       pushAll
         [ InvestigatorAssignDamage iid source DamageAny 1 0 | iid <- iids ]

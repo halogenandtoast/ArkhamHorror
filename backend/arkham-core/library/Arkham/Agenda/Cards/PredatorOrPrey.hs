@@ -32,7 +32,7 @@ instance HasAbilities PredatorOrPrey where
 
 instance RunMessage PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
+    UseCardAbility iid (AgendaSource aid) 1 _ _ | aid == agendaId -> do
       push (Resign iid)
       PredatorOrPrey <$> runMessage msg attrs
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do

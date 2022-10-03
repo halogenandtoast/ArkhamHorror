@@ -31,7 +31,7 @@ instance HasAbilities Graveyard where
 
 instance RunMessage Graveyard where
   runMessage msg l@(Graveyard attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (BeginSkillTest
         iid
         source

@@ -36,7 +36,7 @@ instance HasAbilities Run where
 
 instance RunMessage Run where
   runMessage msg a@(Run (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push (AdvanceAct (toId attrs) source AdvancedWithOther)
       -- We need to know the investigator who entered
       pure $ Run $ attrs `with` Metadata (Just iid)

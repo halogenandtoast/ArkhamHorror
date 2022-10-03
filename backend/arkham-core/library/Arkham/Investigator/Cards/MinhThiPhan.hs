@@ -55,14 +55,14 @@ instance HasTokenValue MinhThiPhan where
 -- TODO: Should we let card selection for ability
 instance RunMessage MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.CommittedCard _ card)] 1 _
-      | isSource attrs source -> i <$ push
-        (CreateEffect
+    UseCardAbility _ source 1 [Window _ (Window.CommittedCard _ card)] _
+      | isSource attrs source -> do
+        push $ CreateEffect
           (unInvestigatorId $ toId attrs)
           Nothing
           (toSource attrs)
           (CardIdTarget $ toCardId card)
-        )
+        pure i
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       skills <- selectList AnySkill
       when (notNull skills) $ push $ chooseOne

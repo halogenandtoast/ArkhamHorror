@@ -38,7 +38,7 @@ instance HasAbilities TrenchKnife where
 
 instance RunMessage TrenchKnife where
   runMessage msg a@(TrenchKnife attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemyCount <- selectCount EnemyEngagedWithYou
       a <$ pushAll
         [ skillTestModifier

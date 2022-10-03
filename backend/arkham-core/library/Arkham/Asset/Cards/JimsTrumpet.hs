@@ -44,7 +44,7 @@ instance HasAbilities JimsTrumpet where
 
 instance RunMessage JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       case assetPlacement of
         InPlayArea controllerId -> do
           locationId <- fieldMap

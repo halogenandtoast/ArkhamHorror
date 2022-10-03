@@ -51,7 +51,7 @@ instance RunMessage SearchingForIzzie where
           | target <- xs
           ]
       pure t
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       withTreacheryLocation attrs $ \locationId -> t <$ push
         (Investigate
           iid
@@ -63,7 +63,7 @@ instance RunMessage SearchingForIzzie where
         )
     Successful (Action.Investigate, _) _ _ target _ | isTarget attrs target ->
       t <$ push (Discard target)
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+    UseCardAbility _ source 2 _ _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ push (SufferTrauma investigator 0 1)
     _ -> SearchingForIzzie <$> runMessage msg attrs

@@ -29,23 +29,24 @@ instance HasModifiersFor DavidRenfield where
 
 instance HasAbilities DavidRenfield where
   getAbilities (DavidRenfield a) =
-    [restrictedAbility a 1 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a]
+    [ restrictedAbility a 1 ControlsThis $ FastAbility $ ExhaustCost $ toTarget
+        a
+    ]
 
 instance RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = case msg of
-    UseCardAbility iid source windows' 1 p | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' p | isSource attrs source -> do
       let
         resolveAbility =
-          UseCardAbilityChoice iid source windows' 1 p NoAbilityMetadata
-      a <$ push
-        (chooseOne
-          iid
-          [ Label
-            "Place doom on David Renfield"
-            [PlaceDoom (toTarget attrs) 1, resolveAbility]
-          , Label "Do not place doom on David Renfield" [resolveAbility]
-          ]
-        )
-    UseCardAbilityChoice iid source _ 1 _ _ | isSource attrs source ->
+          UseCardAbilityChoice iid source 1 NoAbilityMetadata windows' p
+      push $ chooseOne
+        iid
+        [ Label
+          "Place doom on David Renfield"
+          [PlaceDoom (toTarget attrs) 1, resolveAbility]
+        , Label "Do not place doom on David Renfield" [resolveAbility]
+        ]
+      pure a
+    UseCardAbilityChoice iid source 1 _ _ _ | isSource attrs source ->
       a <$ push (TakeResources iid (assetDoom attrs) False)
     _ -> DavidRenfield <$> runMessage msg attrs

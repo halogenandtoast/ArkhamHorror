@@ -39,7 +39,7 @@ instance HasAbilities ArkhamWoodsTwistingPaths where
 
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       moveFrom <- popMessageMatching \case
         MoveFrom _ iid' lid' -> iid' == iid && toId l == lid'
         _ -> False

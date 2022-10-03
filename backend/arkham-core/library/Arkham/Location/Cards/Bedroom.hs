@@ -34,6 +34,6 @@ instance HasAbilities Bedroom where
 
 instance RunMessage Bedroom where
   runMessage msg l@(Bedroom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (RandomDiscard iid)
     _ -> Bedroom <$> runMessage msg attrs

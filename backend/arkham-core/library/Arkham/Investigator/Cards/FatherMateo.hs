@@ -67,7 +67,7 @@ instance RunMessage FatherMateo where
           , PassSkillTest
           ]
         pure i
-    UseCardAbility _ source [Window _ (Window.RevealToken _ token)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.RevealToken _ token)] _
       | isSource attrs source -> do
         push $ CreateTokenEffect
           (EffectModifiers $ toModifiers attrs [TokenFaceModifier [ElderSign]])

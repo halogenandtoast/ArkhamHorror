@@ -36,7 +36,7 @@ instance HasAbilities AlmaHill where
 
 instance RunMessage AlmaHill where
   runMessage msg e@(AlmaHill attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ pushAll
       (replicate 3 (InvestigatorDrawEncounterCard iid)
       <> [AddToVictory (toTarget attrs)]
       )

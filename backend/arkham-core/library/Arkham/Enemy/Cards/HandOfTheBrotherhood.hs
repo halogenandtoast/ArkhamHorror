@@ -55,7 +55,7 @@ instance HasAbilities HandOfTheBrotherhood where
 
 instance RunMessage HandOfTheBrotherhood where
   runMessage msg e@(HandOfTheBrotherhood attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ PlaceDoom (toTarget attrs) 1
       pure e
     _ -> HandOfTheBrotherhood <$> runMessage msg attrs

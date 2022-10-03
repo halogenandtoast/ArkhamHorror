@@ -48,7 +48,7 @@ instance RunMessage BindMonster2 where
       ]
     SkillTestEnds _ ->
       e <$ when (null eventAttachedTarget) (push (Discard $ toTarget attrs))
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       case eventAttachedTarget of
         Just target ->
           e <$ push (BeginSkillTest iid source target Nothing SkillWillpower 3)

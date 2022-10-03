@@ -43,7 +43,7 @@ instance HasAbilities TheKingInTatters where
 
 instance RunMessage TheKingInTatters where
   runMessage msg a@(TheKingInTatters attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         iids <- getInvestigatorIds
@@ -53,7 +53,7 @@ instance RunMessage TheKingInTatters where
           $ map InvestigatorDiscardAllClues iids
           <> [Flip iid source (LocationTarget lid)]
       pure a
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing)
         $ push
         $ ScenarioResolution

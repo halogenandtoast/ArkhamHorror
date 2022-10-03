@@ -57,7 +57,7 @@ instance HasAbilities TombOfShadows where
 
 instance RunMessage TombOfShadows where
   runMessage msg l@(TombOfShadows attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       actIds <- selectList AnyAct
       pushAll (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
       pure l

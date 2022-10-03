@@ -50,6 +50,6 @@ instance RunMessage SecretsBetterLeftHidden where
   runMessage msg a@(SecretsBetterLeftHidden attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ pushAll [ScenarioResolution $ Resolution 4]
-    UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.PlacedClues target n)] _
       | isSource attrs source -> a <$ pushAll [FlipClues target n]
     _ -> SecretsBetterLeftHidden <$> runMessage msg attrs

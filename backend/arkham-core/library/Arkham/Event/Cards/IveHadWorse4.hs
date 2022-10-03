@@ -24,10 +24,10 @@ dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
 instance RunMessage IveHadWorse4 where
   runMessage msg e@(IveHadWorse4 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
-      e <$ push (UseCardAbility iid (toSource attrs) windows 0 NoPayment)
-    UseCardAbility _ source _ 5 _ | isSource attrs source ->
+      e <$ push (UseCardAbility iid (toSource attrs) 0 windows NoPayment)
+    UseCardAbility _ source 5 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
-    UseCardAbility iid source windows n pay | isSource attrs source -> do
+    UseCardAbility iid source n windows pay | isSource attrs source -> do
       (damage, horror) <- fromQueue $ \queue -> case dropUntilDamage queue of
         dmsg : _ ->
           case dmsg of
@@ -38,7 +38,7 @@ instance RunMessage IveHadWorse4 where
             _ -> error "mismatch"
         _ -> error "unhandled"
       let
-        reuse = UseCardAbility iid source windows (n + 1) pay
+        reuse = UseCardAbility iid source (n + 1) windows pay
         damageMsg = Label
           ("Cancel 1 damage out of " <> tshow damage)
           [CancelDamage iid 1, reuse]

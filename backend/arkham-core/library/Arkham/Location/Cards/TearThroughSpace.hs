@@ -35,7 +35,7 @@ instance HasAbilities TearThroughSpace where
 
 instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (chooseOne
         iid
         [ Label

@@ -38,7 +38,7 @@ instance HasAbilities CloseTheRift where
 
 instance RunMessage CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getJustLocationIdByName

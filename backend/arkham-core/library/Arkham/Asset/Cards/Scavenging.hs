@@ -47,7 +47,7 @@ instance HasAbilities Scavenging where
 
 instance RunMessage Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (Search
           iid
           source

@@ -38,7 +38,7 @@ instance HasAbilities BurialPit where
 
 instance RunMessage BurialPit where
   runMessage msg l@(BurialPit attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         choose = chooseOne
           iid

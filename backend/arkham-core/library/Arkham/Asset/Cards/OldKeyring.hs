@@ -32,7 +32,7 @@ instance HasAbilities OldKeyring where
 
 instance RunMessage OldKeyring where
   runMessage msg a@(OldKeyring attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ pushAll
         [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))

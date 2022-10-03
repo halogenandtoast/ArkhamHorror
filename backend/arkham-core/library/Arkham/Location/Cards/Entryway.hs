@@ -56,7 +56,7 @@ handleTreacheries iid treacheries = chooseOneAtATime
 
 instance RunMessage Entryway where
   runMessage msg l@(Entryway attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       explorationDeck <- getExplorationDeck
       let
         deckKey = Deck.ScenarioDeckByKey ExplorationDeck

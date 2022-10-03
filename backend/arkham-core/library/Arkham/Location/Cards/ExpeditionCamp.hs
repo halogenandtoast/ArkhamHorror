@@ -45,7 +45,7 @@ instance HasAbilities ExpeditionCamp where
 
 instance RunMessage ExpeditionCamp where
   runMessage msg l@(ExpeditionCamp attrs) = case msg of
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       explorationDeck <- getExplorationDeck
       let
         (viewing, rest) = splitAt 3 explorationDeck

@@ -49,7 +49,7 @@ getTheExperiment =
 
 instance RunMessage TheBeastUnleashed where
   runMessage msg a@(TheBeastUnleashed attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       experimentId <- getTheExperiment
       pushAll
         [ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
@@ -58,7 +58,7 @@ instance RunMessage TheBeastUnleashed where
           (LocationWithTitle "Dormitories")
         ]
       pure a
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds

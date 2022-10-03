@@ -65,7 +65,7 @@ instance HasAbilities CandlelitTunnels where
 
 instance RunMessage CandlelitTunnels where
   runMessage msg l@(CandlelitTunnels attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ BeginSkillTest
         iid
         (toSource attrs)
@@ -83,7 +83,7 @@ instance RunMessage CandlelitTunnels where
           | lid <- locations
           ]
         pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       n <- countM (directionEmpty attrs) [LeftOf, RightOf]
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l

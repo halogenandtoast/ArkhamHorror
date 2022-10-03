@@ -38,7 +38,7 @@ instance HasAbilities RopeBridge where
 
 instance RunMessage RopeBridge where
   runMessage msg l@(RopeBridge attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 2
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

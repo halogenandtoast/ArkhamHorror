@@ -44,7 +44,7 @@ instance HasModifiersFor Knuckleduster where
 
 instance RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ pushAll
         [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False

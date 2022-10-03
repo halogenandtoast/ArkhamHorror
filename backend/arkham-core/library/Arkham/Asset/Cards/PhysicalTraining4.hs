@@ -31,7 +31,7 @@ instance HasAbilities PhysicalTraining4 where
 instance RunMessage PhysicalTraining4 where
   runMessage msg a@(PhysicalTraining4 attrs) = case msg of
     BeginRound -> pure . PhysicalTraining4 $ attrs & usesL .~ Uses Resource 2
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ chooseOne
         iid
         [ Label

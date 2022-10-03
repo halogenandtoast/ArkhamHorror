@@ -43,7 +43,7 @@ instance HasAbilities Xochimilco where
 
 instance RunMessage Xochimilco where
   runMessage msg l@(Xochimilco attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push
         $ Explore iid (toSource attrs)
         $ CardWithPrintedLocationSymbol

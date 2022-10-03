@@ -52,7 +52,7 @@ instance HasAbilities DiningCar where
 
 instance RunMessage DiningCar where
   runMessage msg l@(DiningCar attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
         (FindAndDrawEncounterCard iid (CardWithTitle "Grappling Horror"))
     _ -> DiningCar <$> runMessage msg attrs

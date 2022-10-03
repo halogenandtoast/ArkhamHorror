@@ -37,7 +37,7 @@ instance HasAbilities GrandGuignol where
 
 instance RunMessage GrandGuignol where
   runMessage msg a@(GrandGuignol attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       nonWeaknessCards <- selectListMap
         toCardId
         (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))

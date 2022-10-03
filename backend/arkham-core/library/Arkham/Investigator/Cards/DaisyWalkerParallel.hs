@@ -72,7 +72,7 @@ instance HasAbilities DaisyWalkerParallel where
 instance RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
     case msg of
-      UseCardAbility iid (InvestigatorSource iid') windows' 1 _
+      UseCardAbility iid (InvestigatorSource iid') 1 windows' _
         | investigatorId == iid' -> do
           tomeAssets <- filterM
             (fieldMap AssetTraits (member Tome))
@@ -86,11 +86,13 @@ instance RunMessage DaisyWalkerParallel where
           unless (null pairs') $ push $ chooseOneAtATime iid $ map
             (\(tome, actions) -> TargetLabel
               (AssetTarget tome)
-              [ chooseOne iid $ map ((\f -> f windows' []) . AbilityLabel iid) actions ]
+              [ chooseOne iid
+                  $ map ((\f -> f windows' []) . AbilityLabel iid) actions
+              ]
             )
             pairs'
           pure i
-      UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
+      UseCardAbility iid (TokenEffectSource ElderSign) 2 _ _
         | iid == investigatorId -> i <$ push
           (Search
               iid
@@ -103,7 +105,9 @@ instance RunMessage DaisyWalkerParallel where
       ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do
         push $ chooseOne
           iid
-          [ targetLabel iid [UseCardAbility iid (TokenEffectSource ElderSign) [] 2 NoPayment]
+          [ targetLabel
+            iid
+            [UseCardAbility iid (TokenEffectSource ElderSign) 2 [] NoPayment]
           , Label "Do not use Daisy's ability" []
           ]
         pure i

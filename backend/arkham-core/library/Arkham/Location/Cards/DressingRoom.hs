@@ -38,6 +38,6 @@ instance HasAbilities DressingRoom where
 
 instance RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (HealHorror (InvestigatorTarget iid) 3)
     _ -> DressingRoom <$> runMessage msg attrs

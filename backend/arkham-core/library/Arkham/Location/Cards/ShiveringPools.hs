@@ -65,7 +65,7 @@ instance HasAbilities ShiveringPools where
 
 instance RunMessage ShiveringPools where
   runMessage msg l@(ShiveringPools attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
       push
         $ chooseOrRunOne iid
@@ -74,7 +74,7 @@ instance RunMessage ShiveringPools where
             [InvestigatorDirectDamage iid (toSource attrs) 1 0]
         : [ Label "Lose 5 resources" [LoseResources iid 5] | hasResources ]
       pure l
-    UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
       pure l
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do

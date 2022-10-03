@@ -40,7 +40,7 @@ getMovedToLocation (_ : xs) = getMovedToLocation xs
 
 instance RunMessage Safeguard where
   runMessage msg a@(Safeguard attrs) = case msg of
-    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       let lid = getMovedToLocation windows'
       current <- getJustLocation iid
       push $ Move source iid current lid

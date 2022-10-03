@@ -42,7 +42,7 @@ instance HasAbilities JeremiahPierce where
 
 instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId -> e <$ pushAll
+    UseCardAbility iid (EnemySource eid) 1 _ _ | eid == enemyId -> e <$ pushAll
       [ AddToVictory (EnemyTarget enemyId)
       , CreateEffect
         (toCardCode attrs)

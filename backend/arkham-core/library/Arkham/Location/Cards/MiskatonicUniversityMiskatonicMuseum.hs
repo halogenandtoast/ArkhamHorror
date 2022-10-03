@@ -38,6 +38,6 @@ instance HasAbilities MiskatonicUniversityMiskatonicMuseum where
 
 instance RunMessage MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
       [InvestigatorAssignDamage iid source DamageAny 0 2, GainClues iid 1]
     _ -> MiskatonicUniversityMiskatonicMuseum <$> runMessage msg attrs

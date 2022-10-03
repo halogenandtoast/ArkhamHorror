@@ -61,7 +61,7 @@ instance HasAbilities MuseumHalls where
 
 instance RunMessage MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) _ 1 _
+    UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && unrevealed attrs -> do
         museumEntrance <- fromJustNote "missing location"
           <$> selectOne (LocationWithTitle "Museum Entrance")
@@ -74,7 +74,7 @@ instance RunMessage MuseumHalls where
             SkillCombat
             5
           )
-    UseCardAbility iid source _ 1 _ | isSource attrs source && revealed attrs ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source && revealed attrs ->
       l <$ push (DrawFromScenarioDeck iid ExhibitDeck (toTarget attrs) 1)
     DrewFromScenarioDeck _ _ target cards | isTarget attrs target ->
       l <$ pushAll (map PlaceLocation cards)

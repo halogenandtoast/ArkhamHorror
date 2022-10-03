@@ -59,7 +59,7 @@ instance HasAbilities WhateleyRuins_250 where
 
 instance RunMessage WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
         (traverseToSnd (field InvestigatorClues))
         (setToList $ locationInvestigators attrs)

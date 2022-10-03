@@ -41,7 +41,7 @@ instance HasAbilities Lobby where
 
 instance RunMessage Lobby where
   runMessage msg l@(Lobby attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       lobbyDoorwayCount <- selectCount
         (LocationWithUnrevealedTitle "Lobby Doorway")
       lobbyDoorways <-
@@ -59,6 +59,6 @@ instance RunMessage Lobby where
           <> tshow (idx + 1)
           ]
       l <$ pushAll msgs
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
       l <$ push (DrawCards iid 3 False)
     _ -> Lobby <$> runMessage msg attrs

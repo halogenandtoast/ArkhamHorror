@@ -46,7 +46,7 @@ instance RunMessage EndlessBridge where
       case availableLabel of
         Just label -> pure . EndlessBridge $ attrs & labelL .~ label
         Nothing -> error "could not find label"
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
       (chooseOne
         iid
         [ Label "Place 1 doom on Endless Bridge" [PlaceDoom (toTarget attrs) 1]

@@ -56,7 +56,7 @@ instance HasAbilities AbbeyTowerThePathIsOpen where
 
 instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maxDiscardAmount <-
         selectCount
         $ InHandOf (InvestigatorWithId iid)

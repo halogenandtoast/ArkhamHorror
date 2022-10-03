@@ -45,7 +45,7 @@ toEnemy (_ : xs) = toEnemy xs
 
 instance RunMessage SurvivalKnife where
   runMessage msg a@(SurvivalKnife attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
         [ skillTestModifiers
           attrs
@@ -54,7 +54,7 @@ instance RunMessage SurvivalKnife where
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
       pure a
-    UseCardAbility iid source windows' 2 _
+    UseCardAbility iid source 2 windows' _
       | isSource attrs source
       -> do
         pushAll

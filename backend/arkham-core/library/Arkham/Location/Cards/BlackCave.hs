@@ -35,7 +35,7 @@ instance HasAbilities BlackCave where
 
 instance RunMessage BlackCave where
   runMessage msg l@(BlackCave attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       cardsInHand <- fieldMap InvestigatorHand length iid
       push
         $ chooseOrRunOne iid

@@ -27,7 +27,7 @@ instance HasAbilities MedicalTexts where
 
 instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let controllerId = getController attrs
       locationInvestigatorIds <- selectList $ colocatedWith controllerId
       push

@@ -68,7 +68,7 @@ instance HasAbilities StoneArchways where
 
 instance RunMessage StoneArchways where
   runMessage msg l@(StoneArchways attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do

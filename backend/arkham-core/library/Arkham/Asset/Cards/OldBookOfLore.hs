@@ -36,7 +36,7 @@ instance HasAbilities OldBookOfLore where
 
 instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorIds <- selectList $ colocatedWith iid
       push $ chooseOne
         iid

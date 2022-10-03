@@ -38,6 +38,6 @@ instance HasAbilities DowntownFirstBankOfArkham where
 
 instance RunMessage DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (TakeResources iid 3 False)
     _ -> DowntownFirstBankOfArkham <$> runMessage msg attrs

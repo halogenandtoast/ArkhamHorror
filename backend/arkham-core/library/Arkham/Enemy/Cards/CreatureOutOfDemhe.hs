@@ -40,7 +40,7 @@ instance HasAbilities CreatureOutOfDemhe where
 
 instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.FlipLocation _ lid)] 1 _
+    UseCardAbility _ source 1 [Window _ (Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
         iids <- selectList $ InvestigatorAt $ LocationWithId lid
         pushAll

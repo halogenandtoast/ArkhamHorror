@@ -33,7 +33,7 @@ instance HasAbilities Stealth where
 
 instance RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ ChooseEvadeEnemy
         iid
         source

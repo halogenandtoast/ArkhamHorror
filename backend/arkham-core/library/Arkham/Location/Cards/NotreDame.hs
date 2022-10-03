@@ -43,7 +43,7 @@ instance HasAbilities NotreDame where
 
 instance RunMessage NotreDame where
   runMessage msg l@(NotreDame attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ push
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 6)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

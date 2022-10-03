@@ -40,9 +40,9 @@ instance HasAbilities SpiritAthame1 where
 
 instance RunMessage SpiritAthame1 where
   runMessage msg a@(SpiritAthame1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier source (InvestigatorTarget iid) (AnySkillValue 2))
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         source
         (InvestigatorTarget iid)

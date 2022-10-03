@@ -47,6 +47,6 @@ instance RunMessage WrackedByNightmares where
           ([ Exhaust (AssetTarget aid) | aid <- assetIds ]
           <> [AttachTreachery treacheryId $ InvestigatorTarget iid]
           )
-      UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
+      UseCardAbility _ (TreacherySource tid) 1 _ _ | tid == treacheryId ->
         t <$ push (Discard (TreacheryTarget treacheryId))
       _ -> WrackedByNightmares <$> runMessage msg attrs

@@ -49,7 +49,7 @@ instance HasAbilities DevilsHopYard_252 where
 
 instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
         (traverseToSnd (field InvestigatorClues))
         (setToList $ locationInvestigators attrs)

@@ -45,7 +45,7 @@ instance HasAbilities StHubertsKey where
 
 instance RunMessage StHubertsKey where
   runMessage msg a@(StHubertsKey attrs) = case msg of
-    InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
+    InDiscard _ (UseCardAbility iid source 1 _ _) | isSource attrs source -> do
       mDefeatedMessage <- findFromQueue \case
         Msg.InvestigatorDefeated{} -> True
         _ -> False

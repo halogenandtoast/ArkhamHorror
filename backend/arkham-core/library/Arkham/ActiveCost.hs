@@ -687,8 +687,8 @@ instance RunMessage ActiveCost where
             <> [ UseCardAbility
                    iid
                    (abilitySource ability)
-                   (activeCostWindows c)
                    (abilityIndex ability)
+                   (activeCostWindows c)
                    (activeCostPayments c)
                ]
             <> afterMsgs

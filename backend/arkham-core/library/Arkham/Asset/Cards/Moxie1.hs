@@ -42,13 +42,13 @@ instance HasModifiersFor Moxie1 where
 
 instance RunMessage Moxie1 where
   runMessage msg a@(Moxie1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillWillpower 1)
       )
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)

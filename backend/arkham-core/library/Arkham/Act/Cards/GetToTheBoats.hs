@@ -50,7 +50,7 @@ instance RunMessage GetToTheBoats where
         [ InvestigatorDrewEncounterCard leadInvestigatorId gondola
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap
         AssetTarget
         (AssetWithTitle "Masked Carnevale-Goer")
@@ -60,6 +60,6 @@ instance RunMessage GetToTheBoats where
             [ TargetLabel target [Flip iid source target] | target <- targets ]
         ]
       pure a
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> GetToTheBoats <$> runMessage msg attrs

@@ -55,7 +55,7 @@ instance HasAbilities WilliamYorick where
 
 instance RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         windows' =
           [ Window Timing.When Window.NonFast

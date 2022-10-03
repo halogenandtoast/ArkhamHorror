@@ -38,7 +38,7 @@ instance HasAbilities AnotherDimension where
 
 instance RunMessage AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
-    UseCardAbility _ source [Window _ (LeavePlay (LocationTarget lid))] 1 _
+    UseCardAbility _ source 1 [Window _ (LeavePlay (LocationTarget lid))] _
       | isSource attrs source -> do
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
         enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)

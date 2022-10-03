@@ -50,7 +50,7 @@ instance RunMessage SmiteTheWicked where
             ]
           ]
         pure t
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ push (SufferTrauma investigator 0 1)
     _ -> SmiteTheWicked <$> runMessage msg attrs

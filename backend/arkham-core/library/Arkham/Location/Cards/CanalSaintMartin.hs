@@ -42,7 +42,7 @@ instance HasAbilities CanalSaintMartin where
 
 instance RunMessage CanalSaintMartin where
   runMessage msg a@(CanalSaintMartin attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <- selectListMap EnemyTarget
         $ EnemyAt (LocationWithId $ toId attrs)
       connectingLocations <- selectList $ AccessibleFrom $ LocationWithId $ toId

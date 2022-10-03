@@ -31,7 +31,7 @@ instance HasAbilities RitualGrounds where
 
 instance RunMessage RitualGrounds where
   runMessage msg l@(RitualGrounds attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ pushAll
         [ DrawCards iid 1 False
         , InvestigatorAssignDamage iid source DamageAny 0 1

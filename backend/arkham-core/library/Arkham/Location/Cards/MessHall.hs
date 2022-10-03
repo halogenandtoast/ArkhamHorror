@@ -35,6 +35,6 @@ instance HasAbilities MessHall where
 
 instance RunMessage MessHall where
   runMessage msg l@(MessHall attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (ChooseAndDiscardCard iid)
     _ -> MessHall <$> runMessage msg attrs

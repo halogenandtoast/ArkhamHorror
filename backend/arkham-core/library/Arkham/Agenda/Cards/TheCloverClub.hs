@@ -46,7 +46,7 @@ instance HasAbilities TheCloverClub where
 
 instance RunMessage TheCloverClub where
   runMessage msg a@(TheCloverClub attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

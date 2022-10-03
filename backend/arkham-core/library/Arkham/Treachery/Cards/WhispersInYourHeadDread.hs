@@ -36,6 +36,6 @@ instance RunMessage WhispersInYourHeadDread where
   runMessage msg t@(WhispersInYourHeadDread attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AddTreacheryToHand iid $ toId attrs)
-    InHand _ (UseCardAbility _ (isSource attrs -> True) _ 1 _) ->
+    InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) ->
       t <$ push (Discard $ toTarget attrs)
     _ -> WhispersInYourHeadDread <$> runMessage msg attrs

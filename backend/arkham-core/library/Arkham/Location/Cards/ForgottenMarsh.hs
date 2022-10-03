@@ -32,6 +32,6 @@ instance HasAbilities ForgottenMarsh where
 
 instance RunMessage ForgottenMarsh where
   runMessage msg l@(ForgottenMarsh attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (SpendResources iid 2)
     _ -> ForgottenMarsh <$> runMessage msg attrs

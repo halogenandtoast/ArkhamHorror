@@ -40,9 +40,9 @@ instance HasAbilities StudentUnion where
 
 instance RunMessage StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> l <$ pushAll
       [ HealDamage (InvestigatorTarget iid) 1
       , HealHorror (InvestigatorTarget iid) 1
       ]

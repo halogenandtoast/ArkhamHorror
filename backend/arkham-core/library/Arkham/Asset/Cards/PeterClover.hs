@@ -43,9 +43,9 @@ instance HasAbilities PeterClover where
 
 instance RunMessage PeterClover where
   runMessage msg a@(PeterClover attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AssetDamage (toId attrs) source 1 0)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt YourLocation
       push $ chooseOne
         iid

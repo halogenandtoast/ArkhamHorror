@@ -43,7 +43,7 @@ toEnemyId (_ : ws) = toEnemyId ws
 
 instance RunMessage GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       let eid = toEnemyId windows'
       a <$ push (EnemyDamage eid iid source NonAttackDamageEffect 1)
     _ -> GuardDog <$> runMessage msg attrs

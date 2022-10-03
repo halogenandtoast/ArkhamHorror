@@ -39,7 +39,7 @@ instance HasAbilities TheTerrifyingTruth where
 
 instance RunMessage TheTerrifyingTruth where
   runMessage msg a@(TheTerrifyingTruth attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       storyCards <- selectList
         (UnderScenarioReferenceMatch $ CardWithType StoryType)
       result <- case storyCards of

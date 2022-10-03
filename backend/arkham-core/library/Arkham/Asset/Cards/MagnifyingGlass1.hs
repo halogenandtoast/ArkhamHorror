@@ -37,6 +37,6 @@ instance HasAbilities MagnifyingGlass1 where
 
 instance RunMessage MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (ReturnToHand iid (toTarget attrs))
     _ -> MagnifyingGlass1 <$> runMessage msg attrs

@@ -51,7 +51,7 @@ instance HasAbilities Fold where
 
 instance RunMessage Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       resignedWithPeterClover <- scenarioFieldMap
@@ -59,7 +59,7 @@ instance RunMessage Fold where
         (elem "02079")
       let resolution = if resignedWithPeterClover then 3 else 1
       a <$ push (ScenarioResolution $ Resolution resolution)
-    UseCardAbility iid (ProxySource _ source) _ 1 _
+    UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do
         maid <- selectOne (assetIs Cards.peterClover)
         case maid of

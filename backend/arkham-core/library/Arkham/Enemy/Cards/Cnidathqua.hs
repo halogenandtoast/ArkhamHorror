@@ -55,7 +55,7 @@ instance HasAbilities Cnidathqua where
 
 instance RunMessage Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ FindEncounterCard
         iid
         (toTarget attrs)
@@ -65,6 +65,6 @@ instance RunMessage Cnidathqua where
     FoundEncounterCard iid target card | isTarget attrs target -> do
       lid <- getJustLocation iid
       e <$ push (SpawnEnemyAtEngagedWith (EncounterCard card) lid iid)
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       e <$ push (ScenarioResolution $ Resolution 2)
     _ -> Cnidathqua <$> runMessage msg attrs

@@ -46,10 +46,10 @@ instance HasAbilities DestroyedPath where
 
 instance RunMessage DestroyedPath where
   runMessage msg l@(DestroyedPath attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       amount <- getPlayerCountValue (PerPlayer 1)
       l <$ push (PlaceDoom (toTarget attrs) amount)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> l <$ push
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> l <$ push
       (Investigate
         iid
         (toId attrs)

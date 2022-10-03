@@ -46,7 +46,7 @@ instance HasAbilities UndergroundRuins where
 
 instance RunMessage UndergroundRuins where
   runMessage msg l@(UndergroundRuins attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ PlaceDoom (toTarget attrs) 1
       pure l
     _ -> UndergroundRuins <$> runMessage msg attrs

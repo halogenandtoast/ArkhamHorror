@@ -35,7 +35,7 @@ instance HasAbilities ExploringTheRainforest where
 
 instance RunMessage ExploringTheRainforest where
   runMessage msg a@(ExploringTheRainforest attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       ichtaca <-

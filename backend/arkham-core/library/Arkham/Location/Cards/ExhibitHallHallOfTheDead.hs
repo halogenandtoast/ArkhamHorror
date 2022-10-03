@@ -41,6 +41,6 @@ instance HasAbilities ExhibitHallHallOfTheDead where
 
 instance RunMessage ExhibitHallHallOfTheDead where
   runMessage msg l@(ExhibitHallHallOfTheDead attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> ExhibitHallHallOfTheDead <$> runMessage msg attrs

@@ -58,6 +58,6 @@ instance HasAbilities ParlorCar where
 
 instance RunMessage ParlorCar where
   runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (InvestigatorDiscoverClues iid locationId 1 Nothing)
     _ -> ParlorCar <$> runMessage msg attrs

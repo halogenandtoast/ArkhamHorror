@@ -43,7 +43,7 @@ instance RunMessage CallOfTheUnknown where
     Revelation iid source | isSource attrs source -> do
       push $ AttachTreachery (toId t) (InvestigatorTarget iid)
       pure t
-    UseCardAbility iid source windows' 1 payment | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' payment | isSource attrs source -> do
       targets <-
         selectListMap LocationTarget $ NotLocation $ locationWithInvestigator
           iid
@@ -51,11 +51,11 @@ instance RunMessage CallOfTheUnknown where
         iid
         [ TargetLabel
             target
-            [UseCardAbilityChoiceTarget iid source windows' 1 payment target]
+            [UseCardAbilityChoiceTarget iid source 1 target windows' payment]
         | target <- targets
         ]
       pure t
-    UseCardAbilityChoiceTarget _ source _ 1 _ (LocationTarget lid)
+    UseCardAbilityChoiceTarget _ source 1 (LocationTarget lid) _ _
       | isSource attrs source -> do
         pure $ CallOfTheUnknown $ attrs `with` Metadata (Just lid)
     When (EndTurn iid) | treacheryOnInvestigator iid attrs -> do

@@ -41,9 +41,9 @@ instance HasAbilities WrithingAppendage where
 
 instance RunMessage WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (RandomDiscard iid)
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       -- TODO: Damage here should not be dealt from an investigator to avoid
       -- triggering any abilities
       mCnidathquaId <- getCnidathqua

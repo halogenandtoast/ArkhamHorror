@@ -57,7 +57,7 @@ instance HasAbilities Newspaper2 where
 
 instance RunMessage Newspaper2 where
   runMessage msg (Newspaper2 (attrs `With` metadata)) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       pure . Newspaper2 $ attrs `with` Metadata True
     DiscoverCluesAtLocation{} -> do
       pure . Newspaper2 $ attrs `with` Metadata False

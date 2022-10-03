@@ -36,7 +36,7 @@ instance HasAbilities RelicOfAgesForestallingTheFuture where
 instance RunMessage RelicOfAgesForestallingTheFuture where
   runMessage msg a@(RelicOfAgesForestallingTheFuture (attrs `With` metadata)) =
     case msg of
-      UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
           beginSkillTest skillType = BeginSkillTest
             iid

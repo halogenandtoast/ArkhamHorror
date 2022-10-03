@@ -50,9 +50,9 @@ instance RunMessage Ambush1 where
         (fromJustNote "must be at a location")
         iid
       e <$ push (AttachEvent eid (LocationTarget lid))
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
-    UseCardAbility iid source [Window _ (Window.EnemySpawns enemyId _)] 2 _
+    UseCardAbility iid source 2 [Window _ (Window.EnemySpawns enemyId _)] _
       | isSource attrs source -> e <$ pushAll
         [ EnemyDamage enemyId iid source NonAttackDamageEffect 2
         , Discard $ toTarget attrs

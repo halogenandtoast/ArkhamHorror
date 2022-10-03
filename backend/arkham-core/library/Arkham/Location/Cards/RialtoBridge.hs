@@ -41,6 +41,6 @@ instance HasAbilities RialtoBridge where
 
 instance RunMessage RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push (LoseActions iid source 1)
     _ -> RialtoBridge <$> runMessage msg attrs

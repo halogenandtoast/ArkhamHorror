@@ -40,7 +40,7 @@ instance RunMessage Gondola where
         (MoveAllTo (toSource attrs) (toId attrs)
         : [ RemoveLocation lid | lid <- locationIds ]
         )
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ push
         (chooseOne
           iid

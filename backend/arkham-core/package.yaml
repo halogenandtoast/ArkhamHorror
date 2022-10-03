@@ -8,6 +8,7 @@ dependencies:
 default-extensions:
 - AllowAmbiguousTypes
 - BlockArguments
+- DataKinds
 - DeriveAnyClass
 - DerivingStrategies
 - DerivingVia
@@ -15,6 +16,7 @@ default-extensions:
 - GADTs
 - LambdaCase
 - NoImplicitPrelude
+- OverloadedLabels
 - OverloadedStrings
 - PatternSynonyms
 - RecordWildCards

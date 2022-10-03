@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -32,7 +33,7 @@ import Arkham.Scenarios.TheBoundaryBeyond.Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Trait ( Trait (Ancient) )
+import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -60,7 +61,7 @@ instance HasTokenValue TheBoundaryBeyond where
   getTokenValue iid tokenFace (TheBoundaryBeyond attrs) = case tokenFace of
     Skull -> do
       atAncientLocation <-
-        selectAny $ LocationWithTrait Ancient <> locationWithInvestigator iid
+        selectAny $ LocationWithTrait Trait.Ancient <> locationWithInvestigator iid
       let n = if atAncientLocation then 2 else 0
       pure $ toTokenValue attrs Skull (1 + n) (2 + n)
     Cultist -> pure $ TokenValue Cultist NoModifier
@@ -256,5 +257,34 @@ instance RunMessage TheBoundaryBeyond where
           _ -> error $ "Unmatched location title: " <> show title
       card <- genCard replacement
       push $ ReplaceLocation lid card
+      pure s
+    ResolveToken _ tokenFace iid | tokenFace `elem` [Cultist, Tablet] -> do
+      push $ DrawAnotherToken iid
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
+        Cultist -> do
+          targets <- selectListMap EnemyTarget $ EnemyWithTrait Trait.Cultist
+          when (notNull targets) $ if isEasyStandard attrs
+            then push $ chooseOne
+              iid
+              [ TargetLabel target [PlaceDoom target 1] | target <- targets ]
+            else pushAll $ map (`PlaceDoom` 1) targets
+        Tablet -> do
+          serpents <- selectList $ EnemyWithTrait Trait.Serpent <> EnemyAt
+            (locationWithInvestigator iid)
+          when (notNull serpents) $ if isEasyStandard attrs
+            then push $ chooseOne
+              iid
+              [ targetLabel
+                  serpent
+                  [EnemyAttack iid serpent DamageAny RegularAttack]
+              | serpent <- serpents
+              ]
+            else pushAll
+              [ EnemyAttack iid serpent DamageAny RegularAttack
+              | serpent <- serpents
+              ]
+        _ -> pure ()
       pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

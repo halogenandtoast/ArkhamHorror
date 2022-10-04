@@ -16,6 +16,8 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (EnemyDamage) )
+import Arkham.Helpers.Act
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
@@ -24,9 +26,10 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (LocationCard, LocationName) )
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
@@ -61,7 +64,9 @@ instance HasTokenValue TheBoundaryBeyond where
   getTokenValue iid tokenFace (TheBoundaryBeyond attrs) = case tokenFace of
     Skull -> do
       atAncientLocation <-
-        selectAny $ LocationWithTrait Trait.Ancient <> locationWithInvestigator iid
+        selectAny
+        $ LocationWithTrait Trait.Ancient
+        <> locationWithInvestigator iid
       let n = if atAncientLocation then 2 else 0
       pure $ toTokenValue attrs Skull (1 + n) (2 + n)
     Cultist -> pure $ TokenValue Cultist NoModifier
@@ -261,6 +266,14 @@ instance RunMessage TheBoundaryBeyond where
     ResolveToken _ tokenFace iid | tokenFace `elem` [Cultist, Tablet] -> do
       push $ DrawAnotherToken iid
       pure s
+    ResolveToken _ ElderThing iid | isHardExpert attrs -> do
+      targets <-
+        selectListMap LocationTarget $ NearestLocationToYou $ LocationWithTrait
+          Trait.Ancient
+      unless (null targets) $ push $ chooseOrRunOne
+        iid
+        [ TargetLabel target [PlaceClues target 1] | target <- targets ]
+      pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       case tokenFace token of
         Cultist -> do
@@ -285,6 +298,64 @@ instance RunMessage TheBoundaryBeyond where
               [ EnemyAttack iid serpent DamageAny RegularAttack
               | serpent <- serpents
               ]
+        ElderThing | isEasyStandard attrs -> do
+          targets <-
+            selectListMap LocationTarget
+            $ NearestLocationToYou
+            $ LocationWithTrait Trait.Ancient
+          unless (null targets) $ push $ chooseOrRunOne
+            iid
+            [ TargetLabel target [PlaceClues target 1] | target <- targets ]
         _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> do
+      iids <- getInvestigatorIds
+      vengeance <- getVengeanceInVictoryDisplay
+      yigsFury <- getRecordCount YigsFury
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs
+        Enemies.harbingerOfValusia
+      inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
+      damage <- case inPlayHarbinger of
+        Just eid -> field EnemyDamage eid
+        Nothing -> getRecordCount TheHarbingerIsStillAlive
+      let
+        storyPassage = case resolution of
+          NoResolution -> noResolution
+          Resolution 1 -> resolution1
+          Resolution 2 -> resolution2
+          _ -> error "invalid resolution"
+
+      step <- getCurrentActStep
+      locations <-
+        selectListMap LocationTarget
+        $ LocationWithTrait Trait.Tenochtitlan
+        <> LocationWithoutClues
+
+      pushAll
+        $ [story iids storyPassage]
+        <> (if step
+               == 2
+               && notNull locations
+               && resolution
+               `elem` [NoResolution, Resolution 2]
+             then map AddToVictory locations
+             else []
+           )
+        <> [ScenarioResolutionStep 1 resolution]
+        <> [RecordCount YigsFury (yigsFury + vengeance)]
+        <> [ CrossOutRecord TheHarbingerIsStillAlive | inVictory ]
+        <> [ RecordCount TheHarbingerIsStillAlive damage | not inVictory ]
+        <> [EndOfGame Nothing]
+      pure s
+    ScenarioResolutionStep 1 resolution -> do
+      n <- selectCount $ VictoryDisplayCardMatch $ CardWithTrait
+        Trait.Tenochtitlan
+      gainXp <- map (uncurry GainXP) <$> getXpWithBonus n
+      pushAll
+        $ RecordCount PathsAreKnownToYou n
+        : [ Record IchtacaHasConfidenceInYou
+          | n >= 3 && resolution == Resolution 1
+          ]
+        <> gainXp
       pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

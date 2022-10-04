@@ -129,3 +129,84 @@ introPart2 = FlavorText
     \ slumber. In the far recesses of your awareness, however, you can hear Ichtaca\
     \ reciting a cryptic incantation..."
   ]
+
+noResolution :: FlavorText
+noResolution = FlavorText
+  (Just "No Resolution")
+  [ "When you next open your eyes, you are back in the bed of your hotel room. You\
+    \ raise your hand to shield your eyes from the sunlight that pierces through the\
+    \ bedroom’s curtains. The glaring light is akin to a vice crushing your temples.\
+    \ Thin wisps of incense smoke fill the air."
+  , "Rising to your feet requires a colossal effort. A small voice in the back of\
+    \ your mind tells you it was all a figment of your imagination, a nightmare\
+    \ fueled by weariness. It is the voice of self-preservation warning you to avoid\
+    \ the path of lunacy you have set upon. You ignore it and rise to your feet, your\
+    \ legs trembling with terror and exhaustion. Quietly, you call out for Ichtaca,\
+    \ wondering if she remembers what happened last night—or if she was even there to\
+    \ begin with. You find her slumped on the floor, her back against the door of the\
+    \ hotel room. She is unconscious and unresponsive, her face ashen. After several\
+    \ worrisome minutes attempting to wake her, you finally succeed. She sputters\
+    \ into consciousness, coughing violently and convulsing as though possessed. “The\
+    \ cave. The maw in the sky, bathed in red. Did you see it?”"
+  , "Your head pulses with pain as you attempt to remember the events of last night,\
+    \ and you shake your head. “It must be the path that leads to the Nexus,” she\
+    \ continues, gripping her head tightly with one hand. You attempt to help her to\
+    \ her feet, but she pushes you away. “What was I thinking? The boundary is\
+    \ thinning. Any tension and it could have snapped.” Her gaze shifts toward you.\
+    \ “I should not have involved you in this. But, like it or not, you are involved.\
+    \ It is too late to go back. I know where to find the Nexus, and you must journey\
+    \ with me.”"
+  ]
+
+resolution1 :: FlavorText
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "You are assailed by a prismatic assortment of colors and lights as your mind\
+    \ hurtles back into place. When you next open your eyes, you are lying in the\
+    \ city’s central plaza, your head still spinning from the sensation of\
+    \ plummeting. A small voice in the back of your mind tells you it was all a\
+    \ figment of your imagination, a daydream. It is the voice of self-preservation\
+    \ warning you to avoid the path of lunacy you have set upon. You ignore it and\
+    \ rise to your feet, your legs trembling with terror and exhaustion."
+  , "“That woman...She must have realized who I am and followed through the breach I\
+    \ made. Perhaps she wished to know the location of the Nexus, as well,” Ichtaca\
+    \ says cryptically. Your head pulses with pain as you attempt to remember the\
+    \ events of the past few hours. “You saw it, did you not? The cave. The maw in\
+    \ the sky, bathed in red,” she continues, searching the sky in contemplation. “It\
+    \ must be the path that leads to the Nexus.”"
+  , "It is difficult for you to recall with precision what happened on the other\
+    \ side, but the image of the red cavern flickers across your memory. You confirm\
+    \ with Ichtaca that you saw the cavern as well, and ask her how she knows it\
+    \ leads to the Nexus. Her bloodshot gaze meets yours, and you think you spot the\
+    \ hint of a smirk tugging on her lips. “It is a difficult thing...Peering across\
+    \ the boundary, into the very threads of time. Perhaps you are more than you\
+    \ seem,” she responds, the irony of her statement lost on her. Though she departs\
+    \ without answering your question, you understand the answer that remains\
+    \ unspoken: In the haze of broken timelines and unexplainable phenomena, the path\
+    \ you saw was “one future.” A future you intend to fulfill."
+  ]
+
+resolution2 :: FlavorText
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "The boundary along the horizon shimmers as your path home closes before your\
+    \ eyes. The surreal haze and the weightlessness you have experienced throughout\
+    \ this vision fades, and you are left with the sudden understanding that this is\
+    \ not a dream. You are trapped in a time that is not your own, and Ichtaca is\
+    \ nowhere to be found."
+  , "You wander for what seems like hours. Days. Weeks. Your mind cannot take any\
+    \ more. The realization that you may be trapped here forever is terrifying.\
+    \ Desperation and despair take hold of your mind, a bout of madness and\
+    \ loneliness that you cannot escape.You no longer remember how long it has been\
+    \ since you arrived here. You have not slept or eaten."
+  , "Suddenly, after an eternity of waiting, the boundary cracks, and the sky is\
+    \ flooded with a blinding white light. When you next open your eyes, you are\
+    \ lying in the city’s central plaza, your head still spinning from the sensation\
+    \ of plummeting. Ichtaca helps you to your feet, your legs trembling with terror\
+    \ and exhaustion. You ask her how long you were out, and she shakes her head. “It\
+    \ doesn’t matter. You’re here now.” You ignore her evasive answer, but resentment\
+    \ boils to the surface. Did she leave you behind on purpose, or by accident? “You\
+    \ saw it, did you not?” she asks. “The cave. The maw in the sky, bathed in red.”\
+    \ You stare blankly, your memory suddenly hazy. “It matters not,” she continues.\
+    \ “I know now where to find the Nexus, and you must journey with me.”"
+  ]

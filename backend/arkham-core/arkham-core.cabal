@@ -942,6 +942,7 @@ library
       Arkham.GameValue
       Arkham.Helpers
       Arkham.Helpers.Ability
+      Arkham.Helpers.Act
       Arkham.Helpers.Agenda
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card

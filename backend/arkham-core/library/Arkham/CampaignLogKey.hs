@@ -118,6 +118,8 @@ data CampaignLogKey
   | AlejandroIsMissing
   | TheInvestigatorsForgedABondWithIchtaca
   | IchtacaIsInTheDark
+  | PathsAreKnownToYou
+  | IchtacaHasConfidenceInYou
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

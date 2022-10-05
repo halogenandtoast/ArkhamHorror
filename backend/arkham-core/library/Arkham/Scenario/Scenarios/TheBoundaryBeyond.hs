@@ -318,29 +318,27 @@ instance RunMessage TheBoundaryBeyond where
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid
         Nothing -> getRecordCount TheHarbingerIsStillAlive
-      let
-        storyPassage = case resolution of
-          NoResolution -> noResolution
-          Resolution 1 -> resolution1
-          Resolution 2 -> resolution2
-          _ -> error "invalid resolution"
-
       step <- getCurrentActStep
       locations <-
         selectListMap LocationTarget
         $ LocationWithTrait Trait.Tenochtitlan
         <> LocationWithoutClues
 
+      let
+        storyPassage = case resolution of
+          NoResolution -> noResolution
+          Resolution 1 -> resolution1
+          Resolution 2 -> resolution2
+          _ -> error "invalid resolution"
+        addLocationsToVictory = and
+          [ step == 2
+          , notNull locations
+          , resolution `elem` [NoResolution, Resolution 2]
+          ]
+
       pushAll
         $ [story iids storyPassage]
-        <> (if step
-               == 2
-               && notNull locations
-               && resolution
-               `elem` [NoResolution, Resolution 2]
-             then map AddToVictory locations
-             else []
-           )
+        <> (if addLocationsToVictory then map AddToVictory locations else [])
         <> [ScenarioResolutionStep 1 resolution]
         <> [RecordCount YigsFury (yigsFury + vengeance)]
         <> [ CrossOutRecord TheHarbingerIsStillAlive | inVictory ]

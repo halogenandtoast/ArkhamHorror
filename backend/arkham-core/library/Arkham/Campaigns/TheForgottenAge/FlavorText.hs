@@ -95,7 +95,7 @@ thePoisonSpreads = FlavorText
 
 expeditionsEnd1 :: FlavorText
 expeditionsEnd1 = FlavorText
-  (Just "Expedition's End 1")
+  (Just "Interlude II: Expedition's End 1")
   [ "Friday, July 17th, 1925"
   , "We have finally made it back to Arkham, our expedition a “success.” Alejandro\
     \ is excited to report his findings to the university. How he maintains his\
@@ -117,7 +117,7 @@ expeditionsEnd1 = FlavorText
 
 expeditionsEnd2 :: FlavorText
 expeditionsEnd2 = FlavorText
-  (Just "Expedition's End 2")
+  (Just "Interlude II: Expedition's End 2")
   [ "Sunday, July 19th, 1925"
   , "I’ve decided to give custody of the relic to Alejandro. This entire expedition\
     \ was based on his research, after all—he should be the one to study it. If\
@@ -218,4 +218,84 @@ expeditionsEnd5 = FlavorText
     \ heavy sigh and walks slowly over the threshold of your home, shutting your\
     \ front door behind her. “Whatever they did, you have to reverse it,” she intones\
     \ darkly. “Or we will all cease to exist.”"
+  ]
+
+theJungleBeckons :: FlavorText
+theJungleBeckons = FlavorText
+  (Just "Interlude III: The Jungle Beckons")
+  [ "Once more, you venture south, leaving the safety of civilization behind. There\
+    \ is no time to waste. The path to the Nexus lies on familiar ground, not far\
+    \ from the previous expedition’s trail. Using the leather-bound journal as your\
+    \ guide, you retrace the expedition’s journey. Soon, you are deep within the\
+    \ jungle, surrounded on all sides by hazards—some natural, others bizarre..."
+  ]
+
+outOfGas :: FlavorText
+outOfGas = FlavorText
+  (Just "Out of Gas")
+  [ "Unfortunately, a dozen or so miles north of the edge of the rainforest, your\
+    \ car ran out of gas. Since you are pressed for time, you decided to walk the\
+    \ rest of the way instead of returning to refuel. Traveling by foot set you back\
+    \ several hours, but soon enough you reached the jungle once more."
+  ]
+
+aPathDiscovered :: FlavorText
+aPathDiscovered = FlavorText
+  (Just "A Path Discovered")
+  [ "Thanks to your map, which has been marked from the previous expedition, you are\
+    \ able to clear a path through the rainforest without getting lost, and you reach\
+    \ your destination on your own terms."
+  ]
+
+lowOnRationsInterlude3 :: FlavorText
+lowOnRationsInterlude3 = FlavorText
+  (Just "Low on Rations")
+  [ "Traversing the jungle to find the path to the Nexus took longer than you\
+    \ anticipated, and in your haste you have not been able to hunt or forage for\
+    \ more food. Hunger clouds your mind and drills a painful hole in your stomach."
+  ]
+
+thePoisonSpreadsInterlude3 :: FlavorText
+thePoisonSpreadsInterlude3 = FlavorText
+  (Just "The Poison Spreads")
+  [ "The poison continues to work its way through your body, wreacking havoc on your\
+    \ internal organs. A terrible fever burns through you, growing stronger with each\
+    \ passing day. You can hardly keep down your food. Your body feels as though it\
+    \ has been drained of all of its strength."
+  ]
+
+patternsInTheStone :: FlavorText
+patternsInTheStone = FlavorText
+  (Just "Patterns in the Stone")
+  [ "You take out your canteen and splash water on the stone walls, washing off the\
+    \ dirt and making the stiff vines easier to manipulate. The pattern of glyphs is\
+    \ clearly visible now, and although its meaning is still a mystery, the\
+    \ repetition of six glyphs in particular hints at a specific instruction..."
+  ]
+
+secretsInTheStone :: FlavorText
+secretsInTheStone = FlavorText
+  (Just "Secrets in the Stone")
+  [ "Try as you might, you are unable to clear off the dirt and vines with only your\
+    \ bare hands. You have no choice but to leave this mystery behind."
+  ]
+
+faithRestored :: FlavorText
+faithRestored = FlavorText
+  (Just "Faith Restored")
+  [ "On the eve of your second night within the jungle, you and your companions sit\
+    \ in front of a dim campfire, keeping warm and trying to remain relaxed despite\
+    \ the task ahead of you. Ichtaca approaches the campfire and sits across from\
+    \ you. Her eyes are cast to the ground, and her shoulders sag with a burdensome\
+    \ weight. “I feel that I must apologize to you,” she admits, peering into the\
+    \ flickering fire. “You have proven yourselves to be both wise and formidable,\
+    \ and I have done nothing but command you and endanger you at every turn.” There\
+    \ is a long, peaceful pause between you. “Perhaps there is hope for humanity\
+    \ after all,” she says under her breath as she meets your gaze. Does she speak\
+    \ for you? Or for herself, as well?"
+  , "Ichtaca rises to her feet after some time. “I trust you to take the first\
+    \ watch. Be on the lookout for serpents. They are surely on the lookout for us.”\
+    \ Your camp is quiet for the remainder of the night, but for the soothing\
+    \ crackling of the campfire and the choir of chirping insects whose singing fills\
+    \ the night air."
   ]

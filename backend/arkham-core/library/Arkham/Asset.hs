@@ -368,6 +368,8 @@ allAssets = mapFromList $ map
   -- Heart of the Elders 
   --- guardian [hote]
   , SomeAssetCard intrepid
+  --- seeker [hote]
+  , SomeAssetCard otherwordlyCompass2
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -267,6 +267,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , occultLexicon
   , oldBookOfLore
   , oldKeyring
+  , otherwordlyCompass2
   , painkillers
   , pathfinder1
   , peterSylvestre
@@ -2239,6 +2240,14 @@ relicOfAgesForestallingTheFuture = (storyAsset
   { cdSkills = [SkillWild, SkillWild, SkillWild]
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
+  }
+
+otherwordlyCompass2 :: CardDef
+otherwordlyCompass2 = (asset "04194" "Otherwordly Compass" 2 Seeker)
+  { cdCardTraits = setFromList [Item, Relic]
+  , cdSkills = [SkillIntellect, SkillIntellect]
+  , cdSlots = [HandSlot]
+  , cdLevel = 2
   }
 
 trackShoes :: CardDef

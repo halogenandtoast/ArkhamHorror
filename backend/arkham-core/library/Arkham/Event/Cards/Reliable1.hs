@@ -37,7 +37,11 @@ instance HasModifiersFor Reliable1 where
             let isAttachedTargetAbility = (== AssetSource aid) . abilitySource
             pure $ toModifiers
               a
-              [ AnySkillValue 1 | any isAttachedTargetAbility abilities ]
+              [ AnySkillValue 1
+              | any
+                (and . sequence [isAttachedTargetAbility, isTriggeredAbility])
+                abilities
+              ]
           else pure []
       _ -> pure []
   getModifiersFor _ _ = pure []

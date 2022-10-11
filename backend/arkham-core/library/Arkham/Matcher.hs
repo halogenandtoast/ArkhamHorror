@@ -213,6 +213,7 @@ data AssetMatcher
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
   | AssetAttachedToAsset AssetMatcher
+  | AssetWithAttachedEvent EventMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
@@ -379,6 +380,7 @@ data EventMatcher
   | EventAt LocationMatcher
   | EventAttachedToAsset AssetMatcher
   | EventReady
+  | EventCardMatch CardMatcher
   | EventMatches [EventMatcher]
   | AnyEvent
   deriving stock (Show, Eq, Generic)

@@ -55,7 +55,7 @@ modifiedEnemyFight :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
   let initialFight = foldr applyModifier enemyFight modifiers'
-  foldr applyAfterModifier initialFight modifiers'
+  pure $ foldr applyAfterModifier initialFight modifiers'
  where
   applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n

@@ -2,36 +2,11 @@ module Arkham.Classes.Query where
 
 import Arkham.Prelude
 
-import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Id
-import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Query
 import Data.HashSet qualified as HashSet
-
-type family QueryElement a where
-  QueryElement AssetMatcher = AssetId
-  QueryElement InvestigatorMatcher = InvestigatorId
-  QueryElement PreyMatcher = InvestigatorId
-  QueryElement LocationMatcher = LocationId
-  QueryElement EnemyMatcher = EnemyId
-  QueryElement VoidEnemyMatcher = EnemyId
-  QueryElement TreacheryMatcher = TreacheryId
-  QueryElement ExtendedCardMatcher = Card
-  QueryElement DiscardedPlayerCardMatcher = PlayerCard
-  QueryElement AbilityMatcher = Ability
-  QueryElement SkillMatcher = SkillId
-  QueryElement EventMatcher = EventId
-  QueryElement EffectMatcher = EffectId
-  QueryElement ActMatcher = ActId
-  QueryElement AgendaMatcher = AgendaId
-  QueryElement ScenarioMatcher = ScenarioId
-  QueryElement CampaignMatcher = CampaignId
-  QueryElement RemainingActMatcher = CardCode
-  QueryElement CardMatcher = Card
-  QueryElement (SetAsideMatcher a) = QueryElement a
 
 selectCount :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Int
 selectCount = fmap HashSet.size . select

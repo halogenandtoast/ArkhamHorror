@@ -7,6 +7,7 @@ module Arkham.Location.Types
 
 import Arkham.Prelude
 
+import Data.Constraint
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
@@ -77,6 +78,72 @@ data instance Field Location :: Type -> Type where
   LocationAbilities :: Field Location [Ability]
   LocationPrintedSymbol :: Field Location LocationSymbol
   LocationVengeance :: Field Location (Maybe Int)
+
+deriving stock instance Show (Field Location typ)
+deriving stock instance Eq (Field Location typ)
+
+instance ToJSON (Field Location typ) where
+  toJSON = toJSON . show
+
+instance Hashable (Field Location typ) where
+  hashWithSalt s = hashWithSalt s . show
+
+instance FromJSON (SomeField Location) where
+  parseJSON = withText "Field Location" $ \case
+    "LocationClues" -> pure $ SomeField LocationClues
+    "LocationResources" -> pure $ SomeField LocationResources
+    "LocationHorror" -> pure $ SomeField LocationHorror
+    "LocationDoom" -> pure $ SomeField LocationDoom
+    "LocationShroud" -> pure $ SomeField LocationShroud
+    "LocationTraits" -> pure $ SomeField LocationTraits
+    "LocationKeywords" -> pure $ SomeField LocationKeywords
+    "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
+    "LocationName" -> pure $ SomeField LocationName
+    "LocationConnectedMatchers" -> pure $ SomeField LocationConnectedMatchers
+    "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
+    "LocationRevealed" -> pure $ SomeField LocationRevealed
+    "LocationConnectsTo" -> pure $ SomeField LocationConnectsTo
+    "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
+    "LocationConnectedLocations" -> pure $ SomeField LocationConnectedLocations
+    "LocationInvestigators" -> pure $ SomeField LocationInvestigators
+    "LocationEnemies" -> pure $ SomeField LocationEnemies
+    "LocationAssets" -> pure $ SomeField LocationAssets
+    "LocationEvents" -> pure $ SomeField LocationEvents
+    "LocationTreacheries" -> pure $ SomeField LocationTreacheries
+    "LocationCardDef" -> pure $ SomeField LocationCardDef
+    "LocationCard" -> pure $ SomeField LocationCard
+    "LocationAbilities" -> pure $ SomeField LocationAbilities
+    "LocationPrintedSymbol" -> pure $ SomeField LocationPrintedSymbol
+    "LocationVengeance" -> pure $ SomeField LocationVengeance
+    _ -> error "no such field"
+
+instance FieldDict Typeable Location where
+  getDict = \case
+    LocationClues -> Dict
+    LocationResources -> Dict
+    LocationHorror -> Dict
+    LocationDoom -> Dict
+    LocationShroud -> Dict
+    LocationTraits -> Dict
+    LocationKeywords -> Dict
+    LocationUnrevealedName -> Dict
+    LocationName -> Dict
+    LocationConnectedMatchers -> Dict
+    LocationRevealedConnectedMatchers -> Dict
+    LocationRevealed -> Dict
+    LocationConnectsTo -> Dict
+    LocationCardsUnderneath -> Dict
+    LocationConnectedLocations -> Dict
+    LocationInvestigators -> Dict
+    LocationEnemies -> Dict
+    LocationAssets -> Dict
+    LocationEvents -> Dict
+    LocationTreacheries -> Dict
+    LocationCardDef -> Dict
+    LocationCard -> Dict
+    LocationAbilities -> Dict
+    LocationPrintedSymbol -> Dict
+    LocationVengeance -> Dict
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }

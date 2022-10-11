@@ -834,6 +834,7 @@ library
       Arkham.Event.Cards.Evidence
       Arkham.Event.Cards.Evidence1
       Arkham.Event.Cards.ExposeWeakness1
+      Arkham.Event.Cards.ExposeWeakness3
       Arkham.Event.Cards.ExtraAmmunition1
       Arkham.Event.Cards.FightOrFlight
       Arkham.Event.Cards.FirstWatch

@@ -417,15 +417,14 @@ instance RunMessage EnemyAttrs where
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight a
-      a <$ push
-        (BeginSkillTest
-          iid
-          source
-          (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
-          (Just Action.Fight)
-          skillType
-          enemyFight'
-        )
+      push $ BeginSkillTest
+        iid
+        source
+        (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
+        (Just Action.Fight)
+        skillType
+        enemyFight'
+      pure a
     PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
       | isActionTarget a target
       -> do

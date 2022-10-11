@@ -157,6 +157,7 @@ allEvents = mapFromList $ map
   , SomeEventCard secondWind
   , SomeEventCard truthFromFiction
   , SomeEventCard customAmmunition3
+  , SomeEventCard exposeWeakness3
   , SomeEventCard liveAndLearn
   , SomeEventCard wingingIt
   , SomeEventCard bloodRite

@@ -54,10 +54,13 @@ spawnAt eid locationMatcher = do
 modifiedEnemyFight :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
-  pure $ foldr applyModifier enemyFight modifiers'
+  let initialFight = foldr applyModifier enemyFight modifiers'
+  foldr applyAfterModifier initialFight modifiers'
  where
   applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
+  applyAfterModifier (Modifier.AsIfEnemyFight m) _ = m
+  applyAfterModifier _ n = n
 
 modifiedEnemyEvade :: (Monad m, HasGame m) => EnemyAttrs -> m (Maybe Int)
 modifiedEnemyEvade EnemyAttrs {..} = case enemyEvade of

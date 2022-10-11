@@ -25,6 +25,8 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Control.Newtype ( ala )
+import Data.Monoid ( Endo (..) )
 
 newtype Metadata = Metadata { supplyPoints :: HashMap InvestigatorId Int }
   deriving stock (Show, Eq, Generic)
@@ -109,7 +111,7 @@ instance RunMessage TheForgottenAge where
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getInvestigatorIds
       totalSupplyPoints <- initialSupplyPoints
-      let supplyMap = mapFromList $ map (,totalSupplyPoints) investigatorIds
+      let supplyMap = mapFromList $ map (, totalSupplyPoints) investigatorIds
       pushAll
         $ [story investigatorIds prologue]
         <> [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
@@ -119,7 +121,8 @@ instance RunMessage TheForgottenAge where
       pure . TheForgottenAge $ attrs `with` Metadata supplyMap
     CampaignStep (Just (InvestigatorCampaignStep investigatorId PrologueStep))
       -> do
-        let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
+        let
+          remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
         investigatorSupplies <- field InvestigatorSupplies investigatorId
 
         when (remaining > 0) $ do
@@ -244,6 +247,7 @@ instance RunMessage TheForgottenAge where
              else []
            )
         <> [CampaignStep (Just (InterludeStepPart 1 mkey 2))]
+        <> [NextCampaignStep Nothing]
       pure c
     CampaignStep (Just (InterludeStepPart 1 _ 2)) -> do
       let
@@ -253,14 +257,11 @@ instance RunMessage TheForgottenAge where
                 if any (`cardMatch` CardWithTitle "Poisoned") cards
                   then Just iid
                   else Nothing
-      pushAll
-        $ (if notNull withPoisoned
-            then
-              story withPoisoned thePoisonSpreads
-                : [ SufferTrauma iid 1 0 | iid <- withPoisoned ]
-            else []
-          )
-        <> [NextCampaignStep Nothing]
+      pushAll $ if notNull withPoisoned
+        then
+          story withPoisoned thePoisonSpreads
+            : [ SufferTrauma iid 1 0 | iid <- withPoisoned ]
+        else []
       pure c
     CampaignStep (Just (InterludeStep 2 mkey)) -> do
       recoveredTheRelicOfAges <- getHasRecord
@@ -341,7 +342,8 @@ instance RunMessage TheForgottenAge where
             then pure $ Just (iid, hasPhysicalTrauma, hasMentalTrauma)
             else pure Nothing
 
-      let resupplyMap = mapFromList $ map (,totalResupplyPoints) investigatorIds
+      let
+        resupplyMap = mapFromList $ map (, totalResupplyPoints) investigatorIds
 
       pushAll
         $ [ chooseOne
@@ -374,7 +376,8 @@ instance RunMessage TheForgottenAge where
       pure . TheForgottenAge $ attrs `with` Metadata resupplyMap
     CampaignStep (Just (InvestigatorCampaignStep investigatorId ResupplyPoint))
       -> do
-        let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
+        let
+          remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
         investigatorSupplies <- field InvestigatorSupplies investigatorId
         when (remaining > 0) $ do
           let
@@ -408,6 +411,135 @@ instance RunMessage TheForgottenAge where
                 availableSupplies
 
         pure c
+    CampaignStep (Just (InterludeStep 3 mkey)) -> do
+      iids <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      withGasoline <- getInvestigatorsWithSupply Gasoline
+      withCanteen <- getInvestigatorsWithSupply Canteen
+      withMap <- getInvestigatorsWithSupply Map
+      isFaithRestored <- andM
+        [ getHasRecord TheInvestigatorsForgedABondWithIchtaca
+        , getHasRecord IchtacaHasConfidenceInYou
+        , pure $ count (== Cultist) (campaignChaosBag attrs) >= 2
+        ]
+      provisions <- concat <$> for
+        iids
+        \iid -> do
+          provisions <- fieldMap
+            InvestigatorSupplies
+            (filter (== Provisions))
+            iid
+          pure $ map (iid, ) provisions
+      withMedicine <- flip concatMapM iids $ \iid -> do
+        n <- getSupplyCount iid Medicine
+        pure $ replicate n iid
+      let
+        (gasMessages, gasUpdate) = case withGasoline of
+          [] ->
+            ( [story iids outOfGas]
+            , ala Endo foldMap
+              $ [ modifiersL %~ insertWith
+                    (<>)
+                    iid
+                    [toModifier CampaignSource CannotMulligan]
+                | iid <- iids
+                ]
+            )
+          x : _ -> ([UseSupply x Gasoline], id)
+        mapMessages = case withMap of
+          [] -> []
+          xs ->
+            [ story xs aPathDiscovered
+            , Record TheInvestigatorsMappedOutTheWayForward
+            ]
+        (canteenMessages, canteenUpdate) = case withCanteen of
+          [] -> ([story iids secretsInTheStone], id)
+          xs ->
+            ( [story iids patternsInTheStone]
+            , ala
+              Endo
+              foldMap
+              [ modifiersL %~ insertWith
+                  (<>)
+                  iid
+                  [toModifier CampaignSource $ StartingClues 1]
+              | iid <- xs
+              ]
+            )
+        lowOnRationsCount = length iids - length provisions
+        useProvisions = take (length iids) provisions
+        withPoisoned =
+          flip mapMaybe (mapToList $ campaignDecks attrs)
+            $ \(iid, Deck cards) ->
+                if any (`cardMatch` CardWithTitle "Poisoned") cards
+                  then Just iid
+                  else Nothing
+      pushAll
+        $ story iids theJungleBeckons
+        : gasMessages
+        <> mapMessages
+        <> map (uncurry UseSupply) useProvisions
+        <> [ Ask leadInvestigatorId
+             $ QuestionLabel
+                 "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+             $ ChooseN
+                 lowOnRationsCount
+                 [ targetLabel
+                     iid
+                     [ story [iid] lowOnRationsInterlude3
+                     , HandleTargetChoice
+                       iid
+                       CampaignSource
+                       (InvestigatorTarget iid)
+                     ]
+                 | iid <- iids
+                 ]
+           | lowOnRationsCount > 0
+           ]
+        <> (if notNull withMedicine && notNull withPoisoned
+             then
+               [ Ask leadInvestigatorId
+                 $ QuestionLabel
+                     "Choose an investigator to removed poisoned by using a medicine"
+                 $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
+                 $ Done "Do not use medicine"
+                 : [ targetLabel
+                       poisoned
+                       [ RemoveCampaignCardFromDeck poisoned "04102"
+                       , UseSupply doctor Medicine
+                       ]
+                   | (poisoned, doctor) <- zip withPoisoned withMedicine
+                   ]
+               ]
+             else []
+           )
+        <> [CampaignStep (Just (InterludeStepPart 3 mkey 2))]
+        <> canteenMessages
+        <> (if isFaithRestored
+             then [Record IchtacasFaithIsRestored, AddToken Cultist]
+             else []
+           )
+        <> [NextCampaignStep Nothing]
+      pure
+        . TheForgottenAge
+        . (`with` metadata)
+        $ attrs
+        & gasUpdate
+        & canteenUpdate
+    CampaignStep (Just (InterludeStepPart 3 _ 2)) -> do
+      let
+        withPoisoned =
+          flip mapMaybe (mapToList $ campaignDecks attrs)
+            $ \(iid, Deck cards) ->
+                if any (`cardMatch` CardWithTitle "Poisoned") cards
+                  then Just iid
+                  else Nothing
+      pushAll $ if notNull withPoisoned
+        then
+          story withPoisoned thePoisonSpreadsInterlude3
+            : [ SufferTrauma iid 1 0 | iid <- withPoisoned ]
+        else []
+      pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs
       push (CampaignStep step)
@@ -430,7 +562,11 @@ instance RunMessage TheForgottenAge where
     EndOfScenario _ -> do
       pure . TheForgottenAge . (`with` metadata) $ attrs & modifiersL .~ mempty
     PickSupply investigatorId supply -> do
-      let cost = supplyCost supply
-          supplyMap = adjustMap (max 0 . subtract cost) investigatorId (supplyPoints metadata)
+      let
+        cost = supplyCost supply
+        supplyMap = adjustMap
+          (max 0 . subtract cost)
+          investigatorId
+          (supplyPoints metadata)
       pure . TheForgottenAge $ attrs `with` Metadata supplyMap
     _ -> TheForgottenAge . (`with` metadata) <$> runMessage msg attrs

@@ -2954,6 +2954,7 @@ runGameMessage msg g = case msg of
     push $ PlacedLocation (toName card) (toCardCode card) lid
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
+  RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
   When (RemoveEnemy eid) -> do
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ EnemyTarget eid)]

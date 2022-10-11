@@ -120,6 +120,8 @@ data CampaignLogKey
   | IchtacaIsInTheDark
   | PathsAreKnownToYou
   | IchtacaHasConfidenceInYou
+  | TheInvestigatorsMappedOutTheWayForward
+  | IchtacasFaithIsRestored
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

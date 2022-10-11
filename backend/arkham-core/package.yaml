@@ -47,6 +47,7 @@ library:
     - semialign
     - pretty-simple
     - template-haskell
+    - newtype
 
 tests:
   spec:

@@ -140,6 +140,7 @@ data ModifierType
   | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int
   | EnemyFight Int
+  | AsIfEnemyFight Int
   | FewerSlots SlotType Int
   | ForcedTokenChange TokenFace [TokenFace]
   | HandSize Int

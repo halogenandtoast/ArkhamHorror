@@ -34,6 +34,7 @@ import Arkham.Event.Events
   , oneTwoPunchEffect
   , willToSurviveEffect
   , marksmanship1Effect
+  , exposeWeakness3Effect
   )
 import Arkham.Skill.Skills
   ( hatchetManEffect
@@ -186,6 +187,7 @@ allEffects = mapFromList
   , ("04108", SomeEffect fence1Effect)
   , ("04155", SomeEffect hatchetManEffect)
   , ("04156", SomeEffect highRoller2Effect)
+  , ("04195", SomeEffect exposeWeakness3Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

@@ -127,6 +127,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , evidence
   , evidence1
   , exposeWeakness1
+  , exposeWeakness3
   , extraAmmunition1
   , fightOrFlight
   , firstWatch
@@ -1374,6 +1375,16 @@ customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
   , cdCardTraits = setFromList [Upgrade, Supply, Blessed]
   , cdCriteria = Just $ Criteria.AssetExists (AssetControlledBy (InvestigatorAt YourLocation) <> AssetWithTrait Firearm <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3))
   , cdFastWindow = Just $ DuringTurn You
+  }
+
+exposeWeakness3 :: CardDef
+exposeWeakness3 = (event "04194" "Expose Weakness" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillCombat, SkillWild]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just FastPlayerWindow
+  , cdCriteria = Just
+    (Criteria.EnemyCriteria $ Criteria.EnemyExists $ EnemyAt YourLocation)
+  , cdLevel = 3
   }
 
 liveAndLearn :: CardDef

@@ -5,9 +5,10 @@ module Arkham.Skill.Cards.Intrepid
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Placement
@@ -25,7 +26,10 @@ instance RunMessage Intrepid where
   runMessage msg s@(Intrepid attrs) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (isTarget attrs -> True) _ _
       -> do
-        intrepidAsset <- genCard Assets.intrepid
+        intrepidAssetProxy <- genPlayerCard Assets.intrepid
+        let
+          intrepidAsset =
+            PlayerCard (intrepidAssetProxy { pcOriginalCardCode = toCardCode attrs })
         pushAll
           [ RemoveSkill $ toId attrs
           , CreateAssetAt intrepidAsset (InPlayArea iid)

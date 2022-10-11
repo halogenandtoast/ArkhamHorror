@@ -1358,6 +1358,14 @@ getAssetsMatching matcher = do
           AttachedToAsset placementId _ -> placementId `elem` placements
           _ -> False
       pure $ filter isValid as
+    AssetWithAttachedEvent eventMatcher -> do
+      events <- selectList eventMatcher
+      aids <- flip mapMaybeM events $ \eid -> do
+        attachedTarget <- field EventAttachedTarget eid
+        pure $ case attachedTarget of
+          Just (AssetTarget aid) -> Just aid
+          _ -> Nothing
+      pure $ filter ((`elem` aids) . toId) as
     AssetAtLocation lid -> pure $ flip filter as $ \a ->
       case assetPlacement (toAttrs a) of
         AtLocation lid' -> lid == lid'
@@ -1471,6 +1479,7 @@ getEventsMatching matcher = do
     EventWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
+    EventCardMatch cardMatcher -> filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as

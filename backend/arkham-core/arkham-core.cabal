@@ -806,6 +806,7 @@ library
       Arkham.Event.Cards.Counterspell2
       Arkham.Event.Cards.CrypticResearch4
       Arkham.Event.Cards.CunningDistraction
+      Arkham.Event.Cards.CustomAmmunition3
       Arkham.Event.Cards.DaringManeuver
       Arkham.Event.Cards.DarkMemory
       Arkham.Event.Cards.DarkPact

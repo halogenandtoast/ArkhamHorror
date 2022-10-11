@@ -9,7 +9,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes.Entity.Source
 import Arkham.Cost
 import Arkham.Criteria
-  ( CriteriaOverride(..), Criterion (AnyCriterion, Criteria, InYourHand) )
+  ( CriteriaOverride (..), Criterion (AnyCriterion, Criteria, InYourHand) )
 import Arkham.Json
 import Arkham.Matcher
 import Arkham.Modifier
@@ -132,7 +132,8 @@ applyAbilityModifiers a@Ability { abilityType } modifiers =
   a { abilityType = applyAbilityTypeModifiers abilityType modifiers }
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
-overrideAbilityCriteria (CriteriaOverride override) ab = ab { abilityCriteria = Just override }
+overrideAbilityCriteria (CriteriaOverride override) ab =
+  ab { abilityCriteria = Just override }
 
 isSilentForcedAbility :: Ability -> Bool
 isSilentForcedAbility Ability { abilityType } =
@@ -150,3 +151,7 @@ isFastAbility Ability { abilityType } = isFastAbilityType abilityType
 isActionAbility :: Ability -> Bool
 isActionAbility Ability { abilityType } =
   isJust $ abilityTypeAction abilityType
+
+isTriggeredAbility :: Ability -> Bool
+isTriggeredAbility =
+  or . sequence [isReactionAbility, isFastAbility, isActionAbility]

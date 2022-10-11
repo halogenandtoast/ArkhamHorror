@@ -100,6 +100,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , counterspell2
   , crypticResearch4
   , cunningDistraction
+  , customAmmunition3
   , daringManeuver
   , darkMemory
   , darkPact
@@ -1365,6 +1366,14 @@ truthFromFiction = (event "04152" "Truth from Fiction" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = singleton Insight
   , cdCriteria = Just $ Criteria.ClueOnLocation <> Criteria.AssetExists (AssetControlledBy You <> AssetWithUseType Uses.Secret)
+  }
+
+customAmmunition3 :: CardDef
+customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Upgrade, Supply, Blessed]
+  , cdCriteria = Just $ Criteria.AssetExists (AssetControlledBy (InvestigatorAt YourLocation) <> AssetWithTrait Firearm <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3))
+  , cdFastWindow = Just $ DuringTurn You
   }
 
 liveAndLearn :: CardDef

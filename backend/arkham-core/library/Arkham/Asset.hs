@@ -365,6 +365,9 @@ allAssets = mapFromList $ map
   , SomeAssetCard cornered2
   --- story [tbb]
   , SomeAssetCard relicOfAgesForestallingTheFuture
+  -- Heart of the Elders 
+  --- guardian [hote]
+  , SomeAssetCard intrepid
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

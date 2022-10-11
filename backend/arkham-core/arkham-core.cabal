@@ -339,6 +339,7 @@ library
       Arkham.Asset.Cards.IchtacaTheForgottenGuardian
       Arkham.Asset.Cards.InnocentReveler
       Arkham.Asset.Cards.InTheKnow1
+      Arkham.Asset.Cards.Intrepid
       Arkham.Asset.Cards.IshimaruHaruko
       Arkham.Asset.Cards.JakeWilliams
       Arkham.Asset.Cards.JazzMulligan
@@ -1391,6 +1392,7 @@ library
       Arkham.Skill.Cards.HatchetMan
       Arkham.Skill.Cards.InquiringMind
       Arkham.Skill.Cards.InspiringPresence
+      Arkham.Skill.Cards.Intrepid
       Arkham.Skill.Cards.LastChance
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.ManualDexterity
@@ -1658,6 +1660,7 @@ library
     , lens
     , monoidal-containers
     , mtl
+    , newtype
     , pretty-simple
     , random-shuffle
     , safe

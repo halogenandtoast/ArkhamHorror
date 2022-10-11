@@ -489,6 +489,7 @@ data Message
   | RemoveDiscardFromGame InvestigatorId
   | RemoveDoom Target Int
   | RemoveEnemy EnemyId
+  | RemoveSkill SkillId
   | RemoveTreachery TreacheryId
   | RemoveFromDiscard InvestigatorId CardId
   | RemoveFromEncounterDiscard EncounterCard

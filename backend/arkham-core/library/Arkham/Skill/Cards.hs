@@ -76,6 +76,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , hatchetMan
   , inquiringMind
   , inspiringPresence
+  , intrepid
   , lastChance
   , leadership
   , manualDexterity
@@ -402,6 +403,11 @@ hatchetMan = (skill "04155" "Hatchet Man" [SkillAgility] Rogue)
 enraptured :: CardDef
 enraptured = (skill "04157" "Enraptured" [SkillIntellect] Mystic)
   { cdCardTraits = singleton Practiced
+  }
+
+intrepid :: CardDef
+intrepid = (skill "04192" "Intrepid" [SkillWillpower] Guardian)
+  { cdCardTraits = singleton Innate
   }
 
 takeHeart :: CardDef

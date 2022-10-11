@@ -380,7 +380,7 @@ allEncounterAssetCards = mapFromList $ map
 
 allSpecialPlayerAssetCards :: HashMap CardCode CardDef
 allSpecialPlayerAssetCards =
-  mapFromList $ map (toCardCode &&& id) [courage, straitjacket]
+  mapFromList $ map (toCardCode &&& id) [courage, straitjacket, intrepid]
 
 rolands38Special :: CardDef
 rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
@@ -2672,3 +2672,7 @@ theNecronomiconAdvanced =
 courage :: CardDef
 courage =
   (asset "xcourage" "Courage" 0 Neutral) { cdCardTraits = singleton Courage }
+
+intrepid :: CardDef
+intrepid =
+  (asset "xintrepid" "Intrepid" 0 Guardian) { cdCardTraits = singleton Innate }

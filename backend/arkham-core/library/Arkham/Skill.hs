@@ -76,6 +76,7 @@ allSkills = mapFromList $ map (toFst someSkillCardCode)
   , SomeSkillCard trueUnderstanding
   , SomeSkillCard hatchetMan
   , SomeSkillCard enraptured
+  , SomeSkillCard intrepid
   , SomeSkillCard takeHeart
   , SomeSkillCard overpower2
   , SomeSkillCard neitherRainNorSnow

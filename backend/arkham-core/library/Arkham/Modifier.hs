@@ -175,6 +175,7 @@ data ModifierType
   | SpawnNonEliteAtConnectingInstead
   | SpawnLocation LocationMatcher
   | StartingResources Int
+  | StartingClues Int
   | TokenFaceModifier [TokenFace]
   | TokenValueModifier Int
   | TopCardOfDeckIsRevealed

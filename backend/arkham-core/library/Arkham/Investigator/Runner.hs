@@ -179,9 +179,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         5
         modifiers'
-    pure $ a & resourcesL .~ startingResources
-  InvestigatorMulligan iid | iid == investigatorId -> a <$ push
-    (if null investigatorHand
+      startingClues = foldl'
+        (\total -> \case
+          StartingClues n -> max 0 (total + n)
+          _ -> total
+        )
+        0
+        modifiers'
+    pure $ a & resourcesL .~ startingResources & cluesL .~ startingClues
+  InvestigatorMulligan iid | iid == investigatorId -> do
+    unableToMulligan <- hasModifier a CannotMulligan
+    push $ if null investigatorHand || unableToMulligan
       then FinishedWithMulligan investigatorId
       else
         chooseOne iid
@@ -191,7 +199,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
           ]
-    )
+    pure a
   BeginTrade iid (AssetTarget aid) iids | iid == investigatorId -> a <$ push
     (chooseOne
       iid

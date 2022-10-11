@@ -14,6 +14,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token ( Token )
 import Data.Text qualified as T
+import {-# SOURCE #-} Arkham.Cost.FieldCost
 
 data CostStatus = UnpaidCost | PaidCost
   deriving stock Eq
@@ -108,12 +109,14 @@ data Cost
   | HorrorCost Source Target Int
   | Free
   | ResourceCost Int
+  | FieldResourceCost FieldCost
   | UseCost AssetMatcher UseType Int
   | UpTo Int Cost
   | SealCost TokenMatcher
   | SealTokenCost Token -- internal to track sealed token
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
 
 displayCostType :: Cost -> Text
 displayCostType = \case
@@ -173,6 +176,7 @@ displayCostType = \case
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
   SealTokenCost _ -> "Seal token"
+  FieldResourceCost {} -> "X"
  where
   pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
 

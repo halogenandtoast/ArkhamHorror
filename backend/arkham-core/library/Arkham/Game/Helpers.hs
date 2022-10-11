@@ -31,6 +31,7 @@ import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.ClassSymbol
 import Arkham.Cost
+import Arkham.Cost.FieldCost
 import Arkham.Criteria ( Criterion )
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
@@ -51,6 +52,7 @@ import Arkham.Message hiding ( AssetDamage, InvestigatorDamage, PaidCost )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
+import Arkham.Query
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
 import Arkham.Skill.Types ( Field (..) )
@@ -489,6 +491,13 @@ getCanAffordCost iid source mAction windows' = \case
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagTokens
     anyM (\token -> matchToken iid token tokenMatcher) tokens
   SealTokenCost _ -> pure True
+  FieldResourceCost (FieldCost mtchr fld) -> do
+    mx <- selectOne mtchr
+    case mx of
+      Just x -> do
+        n <- field fld x
+        fieldP InvestigatorResources (>= n) iid
+      _ -> pure False
 
 getActions :: (Monad m, HasGame m) => InvestigatorId -> Window -> m [Ability]
 getActions iid window = getActionsWith iid window id

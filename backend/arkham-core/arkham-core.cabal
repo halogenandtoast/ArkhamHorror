@@ -368,6 +368,7 @@ library
       Arkham.Asset.Cards.LivreDeibon
       Arkham.Asset.Cards.Lockpicks
       Arkham.Asset.Cards.Lockpicks1
+      Arkham.Asset.Cards.LolaSantiago3
       Arkham.Asset.Cards.LoneWolf
       Arkham.Asset.Cards.LuckyCigaretteCase
       Arkham.Asset.Cards.LuckyDice2
@@ -556,6 +557,7 @@ library
       Arkham.CommitRestriction
       Arkham.Constants
       Arkham.Cost
+      Arkham.Cost.FieldCost
       Arkham.Criteria
       Arkham.Criteria.Override
       Arkham.DamageEffect
@@ -1307,6 +1309,7 @@ library
       Arkham.PlayerCard
       Arkham.Prelude
       Arkham.Projection
+      Arkham.Query
       Arkham.Question
       Arkham.RequestedTokenStrategy
       Arkham.Resolution
@@ -1658,6 +1661,7 @@ library
     , aeson-diff
     , base >=4.7 && <5
     , classy-prelude
+    , constraints
     , containers
     , extra
     , lens

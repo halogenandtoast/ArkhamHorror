@@ -48,6 +48,7 @@ library:
     - pretty-simple
     - template-haskell
     - newtype
+    - constraints
 
 tests:
   spec:

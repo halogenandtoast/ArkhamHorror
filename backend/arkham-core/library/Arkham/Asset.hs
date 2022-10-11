@@ -370,6 +370,8 @@ allAssets = mapFromList $ map
   , SomeAssetCard intrepid
   --- seeker [hote]
   , SomeAssetCard otherwordlyCompass2
+  --- rogue [hote]
+  , SomeAssetCard lolaSantiago3
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

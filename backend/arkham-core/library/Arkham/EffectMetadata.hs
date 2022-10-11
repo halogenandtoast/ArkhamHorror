@@ -4,7 +4,7 @@ module Arkham.EffectMetadata (
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.Card.CardCode
 import Arkham.Modifier
 import Arkham.Target

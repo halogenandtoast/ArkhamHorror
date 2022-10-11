@@ -4,7 +4,7 @@ module Arkham.Question where
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.Card.CardCode
 import Arkham.ChaosBagStepState
 import Arkham.Id

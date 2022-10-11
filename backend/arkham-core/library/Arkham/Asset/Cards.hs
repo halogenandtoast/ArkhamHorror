@@ -241,6 +241,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , livreDeibon
   , lockpicks
   , lockpicks1
+  , lolaSantiago3
   , loneWolf
   , luckyCigaretteCase
   , luckyDice2
@@ -2248,6 +2249,14 @@ otherwordlyCompass2 = (asset "04194" "Otherwordly Compass" 2 Seeker)
   , cdSkills = [SkillIntellect, SkillIntellect]
   , cdSlots = [HandSlot]
   , cdLevel = 2
+  }
+
+lolaSantiago3 :: CardDef
+lolaSantiago3 = (asset "04196" ("Lola Santiago" <:> "No-Nonsense Archaeologist") 3 Rogue)
+  { cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSkills = [SkillIntellect, SkillIntellect]
+  , cdSlots = [AllySlot]
+  , cdLevel = 3
   }
 
 trackShoes :: CardDef

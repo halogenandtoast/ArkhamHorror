@@ -5,6 +5,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import Token from '@/arkham/components/Token';
 import * as Arkham from '@/arkham/types/Event';
 
 export interface Props {
@@ -84,6 +85,7 @@ const abilities = computed(() => {
     <div v-if="hasPool" class="pool">
       <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
     </div>
+    <Token v-for="(sealedToken, index) in event.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
   </div>
 </template>
 
@@ -117,5 +119,9 @@ const abilities = computed(() => {
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
+}
+
+:deep(.token) {
+  width: 20px;
 }
 </style>

@@ -397,6 +397,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       push $ After msg
       pure $ a & (deckL .~ Deck deck')
   Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+  Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
   Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
@@ -1200,6 +1201,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               | aid' <- assetsThatCanProvideSlots
               ]
             )
+  InvestigatorPlayEvent iid eid _ _ _ | iid == investigatorId -> do
+    pure $ a & eventsL %~ insertSet eid
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
     slotTypes <- field AssetSlots aid

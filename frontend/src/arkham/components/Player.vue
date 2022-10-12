@@ -6,6 +6,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
+import Event from '@/arkham/components/Event.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Card from '@/arkham/components/Card.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
@@ -91,6 +92,15 @@ const debugChoose = inject('debugChoose')
 <template>
   <div class="player-cards">
     <section class="in-play">
+      <Event
+        v-for="event in player.events"
+        :event="game.events[event]"
+        :game="game"
+        :investigatorId="investigatorId"
+        :key="event"
+        @choose="$emit('choose', $event)"
+        @showCards="doShowCards"
+      />
       <Asset
         v-for="asset in player.assets"
         :asset="game.assets[asset]"

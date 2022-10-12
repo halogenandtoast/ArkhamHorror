@@ -183,6 +183,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , oops
   , perseverance
   , persuasion
+  , premonition
   , preparedForTheWorst
   , preposterousSketches
   , preposterousSketches2
@@ -1385,6 +1386,13 @@ exposeWeakness3 = (event "04194" "Expose Weakness" 0 Seeker)
   , cdCriteria = Just
     (Criteria.EnemyCriteria $ Criteria.EnemyExists $ EnemyAt YourLocation)
   , cdLevel = 3
+  }
+
+premonition :: CardDef
+premonition = (event "04199" "Premonition" 0 Mystic)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Augury
+  , cdFastWindow = Just FastPlayerWindow
   }
 
 liveAndLearn :: CardDef

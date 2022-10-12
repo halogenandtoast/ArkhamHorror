@@ -94,6 +94,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorEndedTurn :: Bool
   , investigatorEngagedEnemies :: HashSet EnemyId
   , investigatorAssets :: HashSet AssetId
+  , investigatorEvents :: HashSet EventId
   , investigatorDeck :: Deck PlayerCard
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
@@ -250,6 +251,9 @@ engagedEnemiesL =
 
 assetsL :: Lens' InvestigatorAttrs (HashSet AssetId)
 assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
+
+eventsL :: Lens' InvestigatorAttrs (HashSet EventId)
+eventsL = lens investigatorEvents $ \m x -> m { investigatorEvents = x }
 
 cardsUnderneathL :: Lens' InvestigatorAttrs [Card]
 cardsUnderneathL = lens investigatorCardsUnderneath

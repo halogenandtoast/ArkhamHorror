@@ -268,6 +268,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , occultLexicon
   , oldBookOfLore
   , oldKeyring
+  , oliveMcBride
   , otherwordlyCompass2
   , painkillers
   , pathfinder1
@@ -2258,6 +2259,13 @@ lolaSantiago3 = (asset "04196" ("Lola Santiago" <:> "No-Nonsense Archaeologist")
   , cdSkills = [SkillIntellect, SkillIntellect]
   , cdSlots = [AllySlot]
   , cdLevel = 3
+  }
+
+oliveMcBride :: CardDef
+oliveMcBride = (asset "04197" ("Olive McBride" <:> "Will Try Anything Once") 2 Mystic)
+  { cdCardTraits = setFromList [Ally, Witch]
+  , cdSkills = [SkillWillpower]
+  , cdSlots = [AllySlot]
   }
 
 trenchCoat :: CardDef

@@ -397,6 +397,7 @@ library
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldKeyring
+      Arkham.Asset.Cards.OliveMcBride
       Arkham.Asset.Cards.OtherwordlyCompass2
       Arkham.Asset.Cards.Painkillers
       Arkham.Asset.Cards.Pantalone
@@ -893,6 +894,7 @@ library
       Arkham.Event.Cards.Oops
       Arkham.Event.Cards.Perseverance
       Arkham.Event.Cards.Persuasion
+      Arkham.Event.Cards.Premonition
       Arkham.Event.Cards.PreparedForTheWorst
       Arkham.Event.Cards.PreposterousSketches
       Arkham.Event.Cards.PreposterousSketches2
@@ -1389,6 +1391,7 @@ library
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2
       Arkham.Skill.Cards.Defiance
+      Arkham.Skill.Cards.Defiance2
       Arkham.Skill.Cards.DesperateSearch
       Arkham.Skill.Cards.DoubleOrNothing
       Arkham.Skill.Cards.Enraptured

@@ -21,6 +21,6 @@ data ChaosBagStepState
 data ChaosBagStep
   = Draw
   | Choose { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]] }
-  | ChooseMatch { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]], tokenMatcher ::  TokenMatcher }
+  | ChooseMatch { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]], tokenMatcher :: TokenMatcher }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

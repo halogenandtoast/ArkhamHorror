@@ -1,4 +1,3 @@
-{-# LANGUAGE QuantifiedConstraints #-}
 module Arkham.Cost.FieldCost where
 
 -- This module is a hot mess because we need to bring A LOT into scope in order
@@ -22,34 +21,40 @@ import Arkham.Classes.Query
 import Data.Typeable
 
 data FieldCost where
-  FieldCost :: forall matcher rec.
-    ( Typeable rec
-    , Typeable matcher
-    , Typeable (Field rec Int)
-    , Show matcher
-    , Show (Field rec Int)
-    , ToJSON matcher
-    , ToJSON (Field rec Int)
+  FieldCost :: forall matcher rec fld.
+    ( fld ~ Field rec Int
     , QueryElement matcher ~ EntityId rec
-    , Hashable (Field rec Int)
+    , Typeable matcher
+    , Typeable rec
+    , Typeable fld
+    , Show matcher
+    , Show fld
+    , ToJSON matcher
+    , ToJSON fld
+    , Hashable fld
     , Hashable matcher
     , FromJSON (SomeField rec)
     , FieldDict Typeable rec
     , Projection rec
     , Query matcher
-    ) => matcher -> Field rec Int -> FieldCost
+    ) => matcher -> fld -> FieldCost
 
 deriving stock instance Show FieldCost
 
 instance Eq FieldCost where
-  (FieldCost (m1 :: m1) (f1 :: f1)) == (FieldCost (m2 :: m2) (f2 :: f2)) = case eqT @m1 @m2 of
+  FieldCost (m1 :: m1) (f1 :: f1) == FieldCost (m2 :: m2) (f2 :: f2) = case eqT @m1 @m2 of
     Just Refl -> case eqT @f1 @f2 of
       Just Refl -> m1 == m2 && f1 == f2
       Nothing -> False
     Nothing -> False
 
 instance ToJSON FieldCost where
-  toJSON (FieldCost matcher (fld :: Field rec typ)) = object ["matcher" .= matcher, "field" .= fld, "entity" .= show (typeRep $ Proxy @rec)]
+  toJSON (FieldCost matcher (fld :: Field rec typ)) =
+    object
+      [ "matcher" .= matcher
+      , "field" .= fld
+      , "entity" .= show (typeRep $ Proxy @rec)
+      ]
 
 instance FromJSON FieldCost where
   parseJSON = withObject "FieldCost" $ \v -> do

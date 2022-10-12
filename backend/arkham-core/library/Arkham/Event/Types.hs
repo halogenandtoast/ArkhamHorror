@@ -16,6 +16,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token ( Token )
 import Arkham.Trait
 import Data.Typeable
 
@@ -29,6 +30,7 @@ data instance Field Event :: Type -> Type where
   EventAbilities :: Field Event [Ability]
   EventOwner :: Field Event InvestigatorId
   EventCard :: Field Event Card
+  EventSealedTokens :: Field Event [Token]
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode
@@ -40,6 +42,7 @@ data EventAttrs = EventAttrs
   , eventExhausted :: Bool
   , eventBeingPaidFor :: Bool
   , eventPaymentMessages :: [Message]
+  , eventSealedTokens :: [Token]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -62,6 +65,9 @@ beingPaidForL =
 originalCardCodeL :: Lens' EventAttrs CardCode
 originalCardCodeL =
   lens eventOriginalCardCode $ \m x -> m {eventOriginalCardCode = x}
+
+sealedTokensL :: Lens' EventAttrs [Token]
+sealedTokensL = lens eventSealedTokens $ \m x -> m { eventSealedTokens = x }
 
 allEventCards :: HashMap CardCode CardDef
 allEventCards = allPlayerEventCards
@@ -103,6 +109,7 @@ event f cardDef =
             -- currently only relevant to time warp
             , eventBeingPaidFor = False
             , eventPaymentMessages = []
+            , eventSealedTokens = []
             }
     }
 

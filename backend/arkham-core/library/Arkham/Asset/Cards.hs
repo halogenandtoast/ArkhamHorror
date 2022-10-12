@@ -345,6 +345,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , toothOfEztli
   , trackShoes
   , treasureHunter1
+  , trenchCoat
   , trenchKnife
   , trueGrit
   , tryAndTryAgain1
@@ -2257,6 +2258,13 @@ lolaSantiago3 = (asset "04196" ("Lola Santiago" <:> "No-Nonsense Archaeologist")
   , cdSkills = [SkillIntellect, SkillIntellect]
   , cdSlots = [AllySlot]
   , cdLevel = 3
+  }
+
+trenchCoat :: CardDef
+trenchCoat = (asset "04203" "Trench Coat" 3 Neutral)
+  { cdCardTraits = setFromList [Item, Clothing]
+  , cdSkills = [SkillAgility]
+  , cdSlots = [BodySlot]
   }
 
 trackShoes :: CardDef

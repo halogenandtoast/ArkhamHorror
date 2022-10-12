@@ -11,6 +11,7 @@ import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
+import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
@@ -405,6 +406,11 @@ instance RunMessage ActiveCost where
             | iid' <- investigators
             ]
           withPayment $ InvestigatorDamagePayment x
+        FieldResourceCost (FieldCost mtchr fld) -> do
+          e <- selectJust mtchr
+          n <- field fld e
+          push $ PayCost acId iid skipAdditionalCosts (ResourceCost n)
+          pure c
         ResourceCost x -> do
           case activeCostTarget c of
             ForAbility{} -> push $ SpendResources iid x

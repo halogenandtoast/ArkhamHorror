@@ -66,6 +66,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   [ deduction
   , deduction2
   , defiance
+  , defiance2
   , desperateSearch
   , doubleOrNothing
   , enraptured
@@ -408,6 +409,12 @@ enraptured = (skill "04157" "Enraptured" [SkillIntellect] Mystic)
 intrepid :: CardDef
 intrepid = (skill "04192" "Intrepid" [SkillWillpower] Guardian)
   { cdCardTraits = singleton Innate
+  }
+
+defiance2 :: CardDef
+defiance2 = (skill "04198" "Defiance" [SkillWild] Mystic)
+  { cdCardTraits = setFromList [Innate, Developed]
+  , cdLevel = 2
   }
 
 takeHeart :: CardDef

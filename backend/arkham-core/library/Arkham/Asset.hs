@@ -365,13 +365,15 @@ allAssets = mapFromList $ map
   , SomeAssetCard cornered2
   --- story [tbb]
   , SomeAssetCard relicOfAgesForestallingTheFuture
-  -- Heart of the Elders 
+  -- Heart of the Elders
   --- guardian [hote]
   , SomeAssetCard intrepid
   --- seeker [hote]
   , SomeAssetCard otherwordlyCompass2
   --- rogue [hote]
   , SomeAssetCard lolaSantiago3
+  --- mystic [hote]
+  , SomeAssetCard oliveMcBride
   --- neutral [hote]
   , SomeAssetCard trenchCoat
   -- The Circle Undone

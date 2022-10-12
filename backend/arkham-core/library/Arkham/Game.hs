@@ -2437,6 +2437,7 @@ instance Projection Event where
       attrs@EventAttrs {..} = toAttrs e
       cdef = toCardDef attrs
     case fld of
+      EventSealedTokens -> pure eventSealedTokens
       EventAttachedTarget -> pure eventAttachedTarget
       EventTraits -> pure $ cdCardTraits cdef
       EventAbilities -> pure $ getAbilities e

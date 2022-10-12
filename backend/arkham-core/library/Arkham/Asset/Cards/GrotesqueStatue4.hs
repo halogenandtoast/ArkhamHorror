@@ -13,7 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
@@ -26,21 +26,19 @@ grotesqueStatue4 =
 
 instance HasAbilities GrotesqueStatue4 where
   getAbilities (GrotesqueStatue4 x) =
-    [ restrictedAbility
-        x
-        1
-        ControlsThis
-        (ReactionAbility (WouldRevealChaosToken Timing.When You)
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility (WouldRevealChaosToken Timing.When You)
         $ UseCost (AssetWithId $ toId x) Charge 1
-        )
     ]
 
 instance RunMessage GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
     UseCardAbility iid source 1 [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] _
       | isSource attrs source
-      -> a <$ push
-        (ReplaceCurrentDraw drawSource iid
-        $ Choose 1 [Undecided Draw, Undecided Draw] []
-        )
+      -> do
+        push $ ReplaceCurrentDraw drawSource iid $ Choose
+          1
+          [Undecided Draw, Undecided Draw]
+          []
+        pure a
     _ -> GrotesqueStatue4 <$> runMessage msg attrs

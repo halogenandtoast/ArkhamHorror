@@ -225,6 +225,7 @@ investigator f cardDef Stats {..} =
         , investigatorEndedTurn = False
         , investigatorEngagedEnemies = mempty
         , investigatorAssets = mempty
+        , investigatorEvents = mempty
         , investigatorDeck = mempty
         , investigatorDiscard = mempty
         , investigatorHand = mempty

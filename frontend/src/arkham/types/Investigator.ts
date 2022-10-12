@@ -63,6 +63,7 @@ export interface Investigator {
   endedTurn: boolean;
   engagedEnemies: string[];
   assets: string[];
+  events: string[];
   discard: PlayerCardContents[];
   hand: Card[];
   deck: PlayerCardContents[];
@@ -97,6 +98,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   endedTurn: JsonDecoder.boolean,
   engagedEnemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
+  events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),

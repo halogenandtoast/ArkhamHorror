@@ -5,10 +5,10 @@ module Arkham.Skill.Cards.Defiance
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.Target
 import Arkham.Token
@@ -23,10 +23,9 @@ defiance = skill Defiance Cards.defiance
 instance RunMessage Defiance where
   runMessage msg s@(Defiance attrs) = case msg of
     BeforeRevealTokens -> do
-      s <$ push
-        (chooseOne
-          (skillOwner attrs)
-          [ Label
+      push
+        $ chooseOne (skillOwner attrs)
+        $ [ Label
             "Choose {skull}"
             [ skillTestModifier
                 (toSource attrs)
@@ -55,5 +54,5 @@ instance RunMessage Defiance where
                 IgnoreTokenEffects
             ]
           ]
-        )
+      pure s
     _ -> Defiance <$> runMessage msg attrs

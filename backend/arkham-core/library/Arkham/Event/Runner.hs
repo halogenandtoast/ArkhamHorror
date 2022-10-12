@@ -9,9 +9,9 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 import Arkham.Target
-import {-# SOURCE #-} Arkham.GameEnv
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do
@@ -23,19 +23,25 @@ instance RunMessage EventAttrs where
       else result
 
 runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
-runEventMessage msg a@EventAttrs{..} = case msg of
-    SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-    InvestigatorEliminated iid
-      | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
-      <$ push (Discard (EventTarget eventId))
-    AttachEvent eid target | eid == eventId ->
-      pure $ a & attachedTargetL ?~ target
-    Discard target | eventAttachedTarget == Just target ->
-      a <$ push (Discard $ toTarget a)
-    Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
-    Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
-    PayCardCost _ card _ | toCardId a == toCardId card ->
-      pure $ a & beingPaidForL .~ True
-    PlayedCard _ card | toCardId a == toCardId card ->
-      pure $ a & beingPaidForL .~ False
-    _ -> pure a
+runEventMessage msg a@EventAttrs {..} = case msg of
+  SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
+  InvestigatorEliminated iid
+    | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
+    <$ push (Discard (EventTarget eventId))
+  AttachEvent eid target | eid == eventId ->
+    pure $ a & attachedTargetL ?~ target
+  Discard target | eventAttachedTarget == Just target -> do
+    pushAll
+      $ [ UnsealToken token | token <- eventSealedTokens ]
+      <> [Discard $ toTarget a]
+    pure a
+  Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
+  Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
+  PayCardCost _ card _ | toCardId a == toCardId card ->
+    pure $ a & beingPaidForL .~ True
+  PlayedCard _ card | toCardId a == toCardId card ->
+    pure $ a & beingPaidForL .~ False
+  SealedToken token card | toCardId card == toCardId a ->
+    pure $ a & sealedTokensL %~ (token :)
+  UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
+  _ -> pure a

@@ -32,11 +32,15 @@ instance HasModifiersFor LolaSantiago3 where
 
 instance HasAbilities LolaSantiago3 where
   getAbilities (LolaSantiago3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restrictedAbility a 1 (ControlsThis <> ClueOnLocation)
         $ FastAbility
         $ ExhaustCost (toTarget a)
         <> FieldResourceCost (FieldCost YourLocation LocationShroud)
     ]
 
 instance RunMessage LolaSantiago3 where
-  runMessage msg (LolaSantiago3 attrs) = LolaSantiago3 <$> runMessage msg attrs
+  runMessage msg a@(LolaSantiago3 attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
+      pure a
+    _ -> LolaSantiago3 <$> runMessage msg attrs

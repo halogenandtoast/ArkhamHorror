@@ -22,7 +22,22 @@ import Arkham.Classes.Query
 import Data.Typeable
 
 data FieldCost where
-  FieldCost :: forall matcher rec. (Typeable rec, Typeable matcher, Typeable (Field rec Int), Show matcher, Show (Field rec Int), ToJSON matcher, ToJSON (Field rec Int), QueryElement matcher ~ EntityId rec, Hashable (Field rec Int), Hashable matcher, FromJSON (SomeField rec), FieldDict Typeable rec, Projection rec, Query matcher) => matcher -> Field rec Int -> FieldCost
+  FieldCost :: forall matcher rec.
+    ( Typeable rec
+    , Typeable matcher
+    , Typeable (Field rec Int)
+    , Show matcher
+    , Show (Field rec Int)
+    , ToJSON matcher
+    , ToJSON (Field rec Int)
+    , QueryElement matcher ~ EntityId rec
+    , Hashable (Field rec Int)
+    , Hashable matcher
+    , FromJSON (SomeField rec)
+    , FieldDict Typeable rec
+    , Projection rec
+    , Query matcher
+    ) => matcher -> Field rec Int -> FieldCost
 
 deriving stock instance Show FieldCost
 

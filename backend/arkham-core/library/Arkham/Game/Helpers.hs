@@ -492,12 +492,8 @@ getCanAffordCost iid source mAction windows' = \case
     anyM (\token -> matchToken iid token tokenMatcher) tokens
   SealTokenCost _ -> pure True
   FieldResourceCost (FieldCost mtchr fld) -> do
-    mx <- selectOne mtchr
-    case mx of
-      Just x -> do
-        n <- field fld x
-        fieldP InvestigatorResources (>= n) iid
-      _ -> pure False
+    n <- getSum <$> selectAgg Sum fld mtchr
+    fieldP InvestigatorResources (>= n) iid
 
 getActions :: (Monad m, HasGame m) => InvestigatorId -> Window -> m [Ability]
 getActions iid window = getActionsWith iid window id

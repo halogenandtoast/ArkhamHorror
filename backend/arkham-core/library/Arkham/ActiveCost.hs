@@ -407,8 +407,7 @@ instance RunMessage ActiveCost where
             ]
           withPayment $ InvestigatorDamagePayment x
         FieldResourceCost (FieldCost mtchr fld) -> do
-          e <- selectJust mtchr
-          n <- field fld e
+          n <- getSum <$> selectAgg Sum fld mtchr
           push $ PayCost acId iid skipAdditionalCosts (ResourceCost n)
           pure c
         ResourceCost x -> do

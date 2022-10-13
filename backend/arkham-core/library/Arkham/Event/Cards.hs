@@ -75,6 +75,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , aTestOfWill1
   , aTestOfWill2
   , aceInTheHole3
+  , againstAllOdds2
   , ambush1
   , anatomicalDiagrams
   , astoundingRevelation
@@ -1401,6 +1402,14 @@ liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ SkillTestEnded Timing.After You SkillTestWasFailed
   , cdAlternateCardCodes = ["60516"]
+  }
+
+againstAllOdds2 :: CardDef
+againstAllOdds2 = (event "04202" "Against All Odds" 2 Survivor)
+  { cdCardTraits = singleton Spirit
+  , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
+  , cdFastWindow = Just $ InitiatedSkillTest Timing.When You AnySkillType GreaterThanBaseValue
+  , cdLevel = 2
   }
 
 wingingIt :: CardDef

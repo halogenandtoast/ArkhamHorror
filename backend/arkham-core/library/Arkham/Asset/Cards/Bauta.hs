@@ -28,7 +28,12 @@ instance HasAbilities Bauta where
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis $ ReactionAbility
-      (InitiatedSkillTest Timing.When You (NotSkillType SkillCombat) AnyValue)
+      (InitiatedSkillTest
+        Timing.When
+        You
+        (NotSkillType SkillCombat)
+        AnySkillTestValue
+      )
       (DiscardCost $ toTarget a)
     ]
 
@@ -37,36 +42,34 @@ instance RunMessage Bauta where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ TakeResources iid 2 False
       pure a
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source
-      -> do
-        replaceMessageMatching
-          (\case
-            BeginSkillTestAfterFast{} -> True
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast{} : _) : _))
-              -> True
-            _ -> False
-          )
-          (\case
-            BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
-              -> [ BeginSkillTest
-                     iid'
-                     source'
-                     target'
-                     maction'
-                     SkillCombat
-                     difficulty'
-                 ]
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
-              -> [ BeginSkillTest
-                     iid'
-                     source'
-                     target'
-                     maction'
-                     SkillCombat
-                     difficulty'
-                 ]
-            _ -> error "invalid match"
-          )
-        pure a
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      replaceMessageMatching
+        (\case
+          BeginSkillTestAfterFast{} -> True
+          Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast{} : _) : _))
+            -> True
+          _ -> False
+        )
+        (\case
+          BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
+            -> [ BeginSkillTest
+                   iid'
+                   source'
+                   target'
+                   maction'
+                   SkillCombat
+                   difficulty'
+               ]
+          Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
+            -> [ BeginSkillTest
+                   iid'
+                   source'
+                   target'
+                   maction'
+                   SkillCombat
+                   difficulty'
+               ]
+          _ -> error "invalid match"
+        )
+      pure a
     _ -> Bauta <$> runMessage msg attrs

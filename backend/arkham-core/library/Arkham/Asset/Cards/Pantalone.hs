@@ -28,7 +28,7 @@ instance HasAbilities Pantalone where
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis $ ReactionAbility
-      (InitiatedSkillTest Timing.When You (NotSkillType SkillIntellect) AnyValue)
+      (InitiatedSkillTest Timing.When You (NotSkillType SkillIntellect) AnySkillTestValue)
       (DiscardCost $ toTarget a)
     ]
 

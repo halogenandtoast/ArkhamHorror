@@ -160,6 +160,7 @@ allEvents = mapFromList $ map
   , SomeEventCard exposeWeakness3
   , SomeEventCard premonition
   , SomeEventCard liveAndLearn
+  , SomeEventCard againstAllOdds2
   , SomeEventCard wingingIt
   , SomeEventCard bloodRite
   , SomeEventCard astoundingRevelation

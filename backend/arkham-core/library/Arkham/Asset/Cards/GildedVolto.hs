@@ -29,7 +29,7 @@ instance HasAbilities GildedVolto where
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis $ ReactionAbility
-      (InitiatedSkillTest Timing.When You (NotSkillType SkillAgility) AnyValue)
+      (InitiatedSkillTest Timing.When You (NotSkillType SkillAgility) AnySkillTestValue)
       (DiscardCost $ toTarget a)
     ]
 

@@ -750,7 +750,7 @@ data WindowMatcher
   | Discarded Timing Who CardMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
-  | InitiatedSkillTest Timing Who SkillTypeMatcher ValueMatcher
+  | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
@@ -906,6 +906,13 @@ data ValueMatcher
   | GreaterThanOrEqualTo GameValue
   | EqualTo GameValue
   | AnyValue
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data SkillTestValueMatcher
+  = SkillTestGameValue ValueMatcher
+  | GreaterThanBaseValue
+  | AnySkillTestValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

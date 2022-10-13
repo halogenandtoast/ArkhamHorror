@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (InvestigatorDamage)
+import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
@@ -38,7 +38,11 @@ instance HasAbilities MedicoDellaPeste where
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis $ ReactionAbility
-      (InitiatedSkillTest Timing.When You (NotSkillType SkillWillpower) AnyValue
+      (InitiatedSkillTest
+        Timing.When
+        You
+        (NotSkillType SkillWillpower)
+        AnySkillTestValue
       )
       (DiscardCost $ toTarget a)
     ]

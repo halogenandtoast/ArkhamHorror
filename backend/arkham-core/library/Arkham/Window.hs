@@ -39,6 +39,11 @@ defaultWindows iid =
   , Window Timing.When FastPlayerWindow
   ]
 
+hasEliminatedWindow :: [Window] -> Bool
+hasEliminatedWindow = any $ \case
+  Window _ (InvestigatorEliminated {}) -> True
+  _ -> False
+
 data WindowType
   = ActAdvance ActId
   | ActivateAbility InvestigatorId Ability

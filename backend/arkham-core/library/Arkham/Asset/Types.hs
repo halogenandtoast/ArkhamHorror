@@ -21,6 +21,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token ( Token )
 import Arkham.Trait ( Trait )
+import Data.Constraint
 import Data.Typeable
 
 data Asset = forall a . IsAsset a => Asset a
@@ -97,6 +98,62 @@ data instance Field Asset :: Type -> Type where
   AssetCardDef :: Field Asset CardDef
   AssetCard :: Field Asset Card
   AssetAbilities :: Field Asset [Ability]
+
+deriving stock instance Show (Field Asset typ)
+
+instance ToJSON (Field Asset typ) where
+  toJSON = toJSON . show
+
+instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability]) => FieldDict c Asset where
+  getDict = \case
+    AssetName -> Dict
+    AssetCost -> Dict
+    AssetClues -> Dict
+    AssetHorror -> Dict
+    AssetDamage -> Dict
+    AssetRemainingHealth -> Dict
+    AssetRemainingSanity -> Dict
+    AssetDoom -> Dict
+    AssetExhausted -> Dict
+    AssetUses -> Dict
+    AssetStartingUses -> Dict
+    AssetController -> Dict
+    AssetLocation -> Dict
+    AssetCardCode -> Dict
+    AssetSlots -> Dict
+    AssetSealedTokens -> Dict
+    AssetPlacement -> Dict
+    AssetClasses -> Dict
+    AssetTraits -> Dict
+    AssetCardDef -> Dict
+    AssetCard -> Dict
+    AssetAbilities -> Dict
+
+instance FromJSON (SomeField Asset) where
+  parseJSON = withText "Field Asset" $ \case
+    "AssetName" -> pure $ SomeField AssetName
+    "AssetCost" -> pure $ SomeField AssetCost
+    "AssetClues" -> pure $ SomeField AssetClues
+    "AssetHorror" -> pure $ SomeField AssetHorror
+    "AssetDamage" -> pure $ SomeField AssetDamage
+    "AssetRemainingHealth" -> pure $ SomeField AssetRemainingHealth
+    "AssetRemainingSanity" -> pure $ SomeField AssetRemainingSanity
+    "AssetDoom" -> pure $ SomeField AssetDoom
+    "AssetExhausted" -> pure $ SomeField AssetExhausted
+    "AssetUses" -> pure $ SomeField AssetUses
+    "AssetStartingUses" -> pure $ SomeField AssetStartingUses
+    "AssetController" -> pure $ SomeField AssetController
+    "AssetLocation" -> pure $ SomeField AssetLocation
+    "AssetCardCode" -> pure $ SomeField AssetCardCode
+    "AssetSlots" -> pure $ SomeField AssetSlots
+    "AssetSealedTokens" -> pure $ SomeField AssetSealedTokens
+    "AssetPlacement" -> pure $ SomeField AssetPlacement
+    "AssetClasses" -> pure $ SomeField AssetClasses
+    "AssetTraits" -> pure $ SomeField AssetTraits
+    "AssetCardDef" -> pure $ SomeField AssetCardDef
+    "AssetCard" -> pure $ SomeField AssetCard
+    "AssetAbilities" -> pure $ SomeField AssetAbilities
+    _ -> error "no such field"
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

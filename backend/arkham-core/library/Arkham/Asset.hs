@@ -376,6 +376,7 @@ allAssets = mapFromList $ map
   , SomeAssetCard oliveMcBride
   --- neutral [hote]
   , SomeAssetCard trenchCoat
+  , SomeAssetCard ornateBow3
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

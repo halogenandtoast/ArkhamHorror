@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype Premonition = Premonition EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

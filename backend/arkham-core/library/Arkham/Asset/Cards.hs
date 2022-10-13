@@ -269,6 +269,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , oldBookOfLore
   , oldKeyring
   , oliveMcBride
+  , ornateBow3
   , otherwordlyCompass2
   , painkillers
   , pathfinder1
@@ -2273,6 +2274,14 @@ trenchCoat = (asset "04203" "Trench Coat" 3 Neutral)
   { cdCardTraits = setFromList [Item, Clothing]
   , cdSkills = [SkillAgility]
   , cdSlots = [BodySlot]
+  }
+
+ornateBow3 :: CardDef
+ornateBow3 = (asset "04204" "Ornate Bow" 4 Neutral)
+  { cdCardTraits = setFromList [Item, Relic, Weapon, Ranged]
+  , cdSkills = [SkillCombat, SkillAgility]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 1
   }
 
 trackShoes :: CardDef

@@ -17,7 +17,7 @@ spec = do
       investigator <- testJenny $ \attrs ->
         attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
-        (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 2))
+        ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
       blindingLight <- buildEvent Events.blindingLight investigator
       location <- testLocation id
       gameTest
@@ -43,7 +43,7 @@ spec = do
     it "deals 1 damage to the evaded enemy" $ do
       investigator <- testJenny (willpowerL .~ 5)
       enemy <- testEnemy
-        ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 2))
+        ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
       blindingLight <- buildEvent Events.blindingLight investigator
       location <- testLocation id
       gameTest
@@ -72,7 +72,7 @@ spec = do
       $ \token -> do
           investigator <- testJenny (willpowerL .~ 5)
           enemy <- testEnemy
-            ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 2))
+            ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
           blindingLight <- buildEvent Events.blindingLight investigator
           location <- testLocation id
           gameTest

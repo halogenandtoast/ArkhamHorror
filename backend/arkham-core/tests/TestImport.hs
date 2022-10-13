@@ -345,6 +345,7 @@ chooseOnlyOption _reason = do
       ChooseOne [msg] -> push (uiToRun msg) <* runMessages
       ChooseOneAtATime [msg] -> push (uiToRun msg) <* runMessages
       ChooseN _ [msg] -> push (uiToRun msg) <* runMessages
+      Read{} -> runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 

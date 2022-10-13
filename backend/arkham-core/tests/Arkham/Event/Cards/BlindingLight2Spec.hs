@@ -18,7 +18,7 @@ spec = do
       investigator <- testJenny $ \attrs ->
         attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
-        (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
+        ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 3))
       blindingLight2 <- buildEvent Events.blindingLight2 investigator
       let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
       location <- testLocation id
@@ -44,7 +44,7 @@ spec = do
     it "deals 2 damage to the evaded enemy" $ do
       investigator <- testJenny (willpowerL .~ 5)
       enemy <- testEnemy
-        (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
+        ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 3))
       blindingLight2 <- buildEvent Events.blindingLight2 investigator
       let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
       location <- testLocation id
@@ -73,7 +73,7 @@ spec = do
       $ \token -> do
           investigator <- testJenny (willpowerL .~ 5)
           enemy <- testEnemy
-            ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
+            ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent Events.blindingLight2 investigator
           let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
           location <- testLocation id

@@ -16,7 +16,7 @@ spec = describe "Bait and Switch" $ do
   it "will move the enemy to a connected location if you succeed" $ do
     investigator <- testJenny
       $ \attrs -> attrs { investigatorAgility = 3 }
-    enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
+    enemy <- testEnemy (EnemyAttrs.evadeL ?~ 3)
     baitAndSwitch <- buildEvent Events.baitAndSwitch investigator
     let Just baitAndSwitchCard = preview _PlayerCard (toCard $ toAttrs baitAndSwitch)
     (location1, location2) <- testConnectedLocations id id

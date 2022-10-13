@@ -80,13 +80,9 @@ data instance Field Location :: Type -> Type where
   LocationVengeance :: Field Location (Maybe Int)
 
 deriving stock instance Show (Field Location typ)
-deriving stock instance Eq (Field Location typ)
 
 instance ToJSON (Field Location typ) where
   toJSON = toJSON . show
-
-instance Hashable (Field Location typ) where
-  hashWithSalt s = hashWithSalt s . show
 
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case

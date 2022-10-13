@@ -398,6 +398,7 @@ library
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldKeyring
       Arkham.Asset.Cards.OliveMcBride
+      Arkham.Asset.Cards.OrnateBow3
       Arkham.Asset.Cards.OtherwordlyCompass2
       Arkham.Asset.Cards.Painkillers
       Arkham.Asset.Cards.Pantalone
@@ -946,6 +947,7 @@ library
       Arkham.EventId
       Arkham.Exception
       Arkham.Field
+      Arkham.Field.Matchers
       Arkham.Game
       Arkham.Game.Helpers
       Arkham.GameEnv

@@ -28,7 +28,7 @@ instance HasAbilities CalledByTheMists where
   getAbilities (CalledByTheMists a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
       $ ForcedAbility
-      $ InitiatedSkillTest Timing.After You AnySkillType (AtLeast $ Static 4)
+      $ InitiatedSkillTest Timing.After You AnySkillType (SkillTestGameValue $ AtLeast $ Static 4)
     , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost
       2
     ]

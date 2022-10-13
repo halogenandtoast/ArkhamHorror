@@ -43,6 +43,7 @@ import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Investigator (baseSkillValueFor)
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
@@ -1447,12 +1448,12 @@ windowMatches iid source window' = \case
               matchWho iid who whoMatcher
             _ -> pure False
       isWindowMatch skillTestResultMatcher
-  Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher valueMatcher
+  Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher skillValueMatcher
     -> case window' of
-      Window t (Window.InitiatedSkillTest who _ skillType difficulty)
+      Window t (Window.InitiatedSkillTest who maction skillType difficulty)
         | t == whenMatcher -> andM
           [ matchWho iid who whoMatcher
-          , gameValueMatches difficulty valueMatcher
+          , skillTestValueMatches iid difficulty maction skillType skillValueMatcher
           , pure $ skillTypeMatches skillType skillTypeMatcher
           ]
       _ -> pure False
@@ -1825,6 +1826,15 @@ gameValueMatches n = \case
   Matcher.LessThanOrEqualTo gv -> (n <=) <$> getPlayerCountValue gv
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
+
+skillTestValueMatches
+  :: (Monad m, HasGame m) => InvestigatorId -> Int -> Maybe Action -> SkillType -> Matcher.SkillTestValueMatcher -> m Bool
+skillTestValueMatches iid n maction skillType = \case
+  Matcher.AnySkillTestValue -> pure True
+  Matcher.SkillTestGameValue valueMatcher  -> gameValueMatches n valueMatcher
+  Matcher.GreaterThanBaseValue -> do
+    baseSkill <- baseSkillValueFor skillType maction [] iid
+    pure $ n > baseSkill
 
 targetTraits :: (Monad m, HasGame m) => Target -> m (HashSet Trait)
 targetTraits = \case

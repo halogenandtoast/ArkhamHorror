@@ -151,6 +151,13 @@ allActs = mapFromList $ map
   , SomeActCard crossingTheThreshold
   , SomeActCard pastAndPresent
   , SomeActCard theReturnTrip
+  -- Heart of the Elders
+  --- Pillars of Judgement
+  , SomeActCard searchForThePattern
+  , SomeActCard openingTheMaw
+  --- K'n-yan
+  , SomeActCard cavernOfTheForgottenAge
+  , SomeActCard descentIntoDark
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

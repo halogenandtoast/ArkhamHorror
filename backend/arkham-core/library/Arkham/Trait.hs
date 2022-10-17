@@ -74,6 +74,7 @@ data Trait
   | Favor
   | Firearm
   | Flaw
+  | Flora
   | Footwear
   | Forgotten
   | Fortune

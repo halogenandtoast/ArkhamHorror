@@ -79,12 +79,13 @@ instance RunMessage PlanningTheEscape where
           ]
         <> [ DiscardEncounterUntilFirst
                (toSource attrs)
+               Nothing
                (CardWithType EnemyType <> CardWithTrait Monster)
            | monsterCount >= 3
            ]
         <> [AdvanceActDeck (actDeckId attrs) $ toSource attrs]
       pure a
-    RequestedEncounterCard source mcard | isSource attrs source -> do
+    RequestedEncounterCard source _ mcard | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
       for_ mcard $ \card -> do
         investigators <- selectList (InvestigatorWithLowestSkill SkillWillpower)

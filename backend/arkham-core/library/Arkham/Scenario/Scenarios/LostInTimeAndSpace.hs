@@ -30,7 +30,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
-import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
@@ -179,6 +178,7 @@ instance RunMessage LostInTimeAndSpace where
           push
             (DiscardEncounterUntilFirst
               (toSource attrs)
+              Nothing
               (CardWithType LocationType)
             )
         (_, Tablet) -> do
@@ -191,7 +191,8 @@ instance RunMessage LostInTimeAndSpace where
       s <$ case tokenFace token of
         Cultist -> push
           (DiscardEncounterUntilFirst
-            (ProxySource (toSource attrs) (InvestigatorSource iid))
+            (toSource attrs)
+            (Just iid)
             (CardWithType LocationType)
           )
         Tablet -> do
@@ -200,13 +201,12 @@ instance RunMessage LostInTimeAndSpace where
             Nothing -> pure ()
             Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
         _ -> pure ()
-    RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard
-      | isSource attrs source -> s <$ case mcard of
-        Nothing -> pure ()
-        Just card -> pushAll
-          [ PlaceLocation (EncounterCard card)
-          , MoveTo (toSource attrs) iid (LocationId $ toCardId card)
-          ]
+    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
+      pushAll
+        [ PlaceLocation (EncounterCard card)
+        , MoveTo (toSource attrs) iid (LocationId $ toCardId card)
+        ]
+      pure s
     ScenarioResolution NoResolution -> do
       actId <- selectJust AnyAct
       step <- fieldMap ActSequence (AS.unActStep . AS.actStep) actId

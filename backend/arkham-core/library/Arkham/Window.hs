@@ -117,6 +117,7 @@ data WindowType
   | PhaseEnds Phase
   | PlaceUnderneath Target Card
   | PlacedClues Target Int
+  | PlacedResources Target Int
   | PlacedDamage InvestigatorId Int
   | PlacedHorror InvestigatorId Int
   | PlacedDoom Target Int

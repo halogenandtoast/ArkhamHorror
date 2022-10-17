@@ -136,6 +136,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , alteredBeast
   , ancestralFear
   , ancientEvils
+  , ants
   , arcaneBarrier
   , arousingSuspicions
   , arrowsFromTheTrees
@@ -194,6 +195,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , massHysteria
   , mesmerize
   , mysteriousChanting
+  , noTurningBack
   , nobodysHome
   , obscuringFog
   , offerOfPower
@@ -202,6 +204,8 @@ allEncounterTreacheryCards = mapFromList $ map
   , oozeAndFilth
   , overgrowth
   , passageIntoTheVeil
+  , pitfall
+  , poisonousSpores
   , possessionMurderous
   , possessionTorturous
   , possessionTraitorous
@@ -1066,6 +1070,31 @@ timelineDestabilization :: CardDef
 timelineDestabilization =
   (treachery "04190" "Timeline Destablization" EncounterSet.TheBoundaryBeyond 3)
     { cdCardTraits = singleton Hex
+    }
+
+pitfall :: CardDef
+pitfall =
+  (treachery "04215" "Pitfall" EncounterSet.HeartOfTheElders 3)
+    { cdCardTraits = singleton Trap
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+poisonousSpores :: CardDef
+poisonousSpores =
+  (treachery "04216" "Poisonous Spores" EncounterSet.HeartOfTheElders 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+ants :: CardDef
+ants =
+  (treachery "04221" "Ants!" EncounterSet.PillarsOfJudgement 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+noTurningBack :: CardDef
+noTurningBack =
+  (treachery "04228" "No Turning Back" EncounterSet.KnYan 3)
+    { cdCardTraits = singleton Hazard
     }
 
 theHarbinger :: CardDef

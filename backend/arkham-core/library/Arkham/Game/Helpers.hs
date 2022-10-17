@@ -1319,6 +1319,11 @@ windowMatches iid source window' = \case
           (&&)
           (locationMatches iid source window' locationId whereMatcher)
           (gameValueMatches n valueMatcher)
+      Window t (Window.PlacedResources (LocationTarget locationId) n)
+        | t == whenMatcher && counterMatcher == Matcher.ResourceCounter -> liftA2
+          (&&)
+          (locationMatches iid source window' locationId whereMatcher)
+          (gameValueMatches n valueMatcher)
       _ -> pure False
   Matcher.PlacedCounterOnEnemy whenMatcher enemyMatcher counterMatcher valueMatcher
     -> case window' of

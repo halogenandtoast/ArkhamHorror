@@ -74,9 +74,11 @@ allActCards = mapFromList $ map
   , beginnersLuck
   , breakingAndEntering
   , campusSafety
+  , cavernOfTheForgottenAge
   , closeTheRift
   , crossingTheThreshold
   , curtainCall
+  , descentIntoDark
   , discoveringTheTruth
   , disruptingTheRitual
   , escapeTheRuins
@@ -107,6 +109,7 @@ allActCards = mapFromList $ map
   , mysteriousGateway
   , nightAtTheMuseum
   , noAsylum
+  , openingTheMaw
   , openThePathAbove
   , openThePathBelow
   , outOfThisWorld
@@ -120,6 +123,7 @@ allActCards = mapFromList $ map
   , run
   , saracenicScript
   , searchForAlejandro
+  , searchForThePattern
   , searchForTheRuins
   , searchForTheStrangerV1
   , searchForTheStrangerV2
@@ -465,6 +469,18 @@ pastAndPresent = act "04166" "Past and Present" 2 TheBoundaryBeyond
 
 theReturnTrip :: CardDef
 theReturnTrip = act "04167" "The Return Trip" 3 TheBoundaryBeyond
+
+searchForThePattern :: CardDef
+searchForThePattern = act "04209" "Search for the Pattern" 1 PillarsOfJudgement
+
+openingTheMaw :: CardDef
+openingTheMaw = act "04210" "Opening the Maw" 2 PillarsOfJudgement
+
+cavernOfTheForgottenAge :: CardDef
+cavernOfTheForgottenAge = act "04213" "Cavern of the Forgotten Age" 1 KnYan
+
+descentIntoDark :: CardDef
+descentIntoDark = act "04214" "Descent into Dark" 2 KnYan
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

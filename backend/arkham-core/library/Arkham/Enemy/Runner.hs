@@ -209,7 +209,9 @@ instance RunMessage EnemyAttrs where
           )
           modifiers'
       case alternativeSources of
-        [] -> a <$ when enemyExhausted (pushAll $ resolve (Ready $ toTarget a))
+        [] -> a <$ when
+          (enemyExhausted && DoesNotReadyDuringUpkeep `notElem` modifiers')
+          (pushAll $ resolve (Ready $ toTarget a))
         [source] -> a <$ push (ReadyAlternative source (toTarget a))
         _ -> error "Can not handle multiple targets yet"
     MoveToward target locationMatcher | isTarget a target -> do

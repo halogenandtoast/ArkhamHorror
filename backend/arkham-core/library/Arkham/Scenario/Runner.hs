@@ -584,17 +584,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
         pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
-  DiscardEncounterUntilFirst source matcher -> do
+  DiscardEncounterUntilFirst source miid matcher -> do
     let
       (discards, remainingDeck) =
         break (`cardMatch` matcher) (unDeck scenarioEncounterDeck)
     case remainingDeck of
       [] -> do
-        push (RequestedEncounterCard source Nothing)
+        push (RequestedEncounterCard source miid Nothing)
         encounterDeck <- shuffleM (discards <> scenarioDiscard)
         pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ mempty
       (x : xs) -> do
-        push (RequestedEncounterCard source (Just x))
+        push (RequestedEncounterCard source miid (Just x))
         pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
   FoundAndDrewEncounterCard iid cardSource card -> do
     let

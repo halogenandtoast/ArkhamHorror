@@ -229,8 +229,8 @@ instance RunMessage ThreadsOfFate where
         ]
 
       pushAll
-        [ RemoveCampaignCardFromAnyDeck Assets.relicOfAgesADeviceOfSomeSort
-        , RemoveCampaignCardFromAnyDeck Assets.alejandroVela
+        [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+        , RemoveCampaignCard Assets.alejandroVela
         , SetEncounterDeck encounterDeck
         , chooseOne
           leadInvestigatorId
@@ -374,7 +374,7 @@ instance RunMessage ThreadsOfFate where
                Assets.relicOfAgesADeviceOfSomeSort
            | act3bCompleted && not relicOwned
            ]
-        <> [ RemoveCampaignCardFromAnyDeck Assets.relicOfAgesADeviceOfSomeSort
+        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
            | not act3bCompleted
            ]
         <> [ Record if act3dCompleted
@@ -387,9 +387,7 @@ instance RunMessage ThreadsOfFate where
                Assets.alejandroVela
            | act3dCompleted && not alejandroOwned
            ]
-        <> [ RemoveCampaignCardFromAnyDeck Assets.alejandroVela
-           | not act3dCompleted
-           ]
+        <> [ RemoveCampaignCard Assets.alejandroVela | not act3dCompleted ]
         <> [ Record if act3fCompleted
                then TheInvestigatorsForgedABondWithIchtaca
                else IchtacaIsInTheDark

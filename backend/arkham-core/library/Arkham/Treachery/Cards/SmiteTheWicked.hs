@@ -32,24 +32,26 @@ instance HasAbilities SmiteTheWicked where
 instance RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source ->
-      t <$ push (DiscardEncounterUntilFirst source (CardWithType EnemyType))
-    RequestedEncounterCard source mcard | isSource attrs source -> case mcard of
-      Nothing -> pure t
-      Just card -> do
-        let
-          ownerId = fromJustNote "has to be set" treacheryOwner
-          enemyId = EnemyId $ toCardId card
-        farthestLocations <- selectList $ FarthestLocationFromYou Anywhere
-        pushAll
-          [ CreateEnemy (EncounterCard card)
-          , AttachTreachery treacheryId (EnemyTarget enemyId)
-          , chooseOne
-            ownerId
-            [ targetLabel lid [EnemySpawn Nothing lid enemyId]
-            | lid <- farthestLocations
+      t <$ push
+        (DiscardEncounterUntilFirst source Nothing (CardWithType EnemyType))
+    RequestedEncounterCard source _ mcard | isSource attrs source ->
+      case mcard of
+        Nothing -> pure t
+        Just card -> do
+          let
+            ownerId = fromJustNote "has to be set" treacheryOwner
+            enemyId = EnemyId $ toCardId card
+          farthestLocations <- selectList $ FarthestLocationFromYou Anywhere
+          pushAll
+            [ CreateEnemy (EncounterCard card)
+            , AttachTreachery treacheryId (EnemyTarget enemyId)
+            , chooseOne
+              ownerId
+              [ targetLabel lid [EnemySpawn Nothing lid enemyId]
+              | lid <- farthestLocations
+              ]
             ]
-          ]
-        pure t
+          pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ push (SufferTrauma investigator 0 1)

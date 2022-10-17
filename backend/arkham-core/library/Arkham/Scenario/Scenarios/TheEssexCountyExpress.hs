@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -48,44 +49,6 @@ theEssexCountyExpress difficulty = scenario
   difficulty
   ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
 
-theEssexCountyExpressIntro :: FlavorText
-theEssexCountyExpressIntro = FlavorText
-  (Just "Scenario III: The Essex County Express")
-  [ "Recent events in the Museum have forced you to\
-    \ re-evaluate Armitage’s tale about Dunwich. It\
-    \ cannot be a coincidence—Wilbur Whateley, the\
-    \ Necronomicon, the creature from Dunwich, and\
-    \ the people and creatures who attacked here in\
-    \ Arkham—everything must be connected. You’re\
-    \ certain now where you must head: the lonely\
-    \ and dismal town of Dunwich Village."
-  , "You consider telling the Massachusetts State Police what you know, but\
-    \ the negative consequences outweigh the potential gain. Given the nature\
-    \ of your story, they would likely write your stories off as an absurd hoax.\
-    \ Worse, they could lock you up. After all, you were present in an illegal\
-    \ speakeasy, and you also trespassed in the museum. Instead, you decide\
-    \ to head to Dunwich yourself, in order to investigate further."
-  , "You pack everything you think you might need and manage to get\
-    \ some rest for the night. In the morning, you head to the train station in\
-    \ Northside and purchase a last-minute express ticket. Dunwich is several\
-    \ hours by train northwest along the Miskatonic River Valley. There is no\
-    \ train station in Dunwich, but you manage to phone one of Armitage’s\
-    \ acquaintances in the small village: a man by the name of Zebulon\
-    \ Whateley who was present during the events several months ago."
-  , "Armitage’s notes indicate that the Whateley family is spread across\
-    \ many branches, some decadent and unscrupulous, others “undecayed”\
-    \ or otherwise untouched by nefarious and diabolic rites. According to\
-    \ Armitage, Zebulon’s branch of the family lay somewhere between the\
-    \ decayed and undecayed Whateleys, who knew of the traditions of his\
-    \ ancestors, but was not corrupted by them. He agrees to pick you up at\
-    \ the closest station and drive you into town."
-  , "As the train departs from Arkham, you feel the events of the previous\
-    \ night catching up to you, and exhaustion sets in. But before you can\
-    \ safely reach your destination, the train car suddenly rumbles and\
-    \ shakes, startling you out of your reverie. The train loudly skids to a\
-    \ violent halt, and you hear a rattling noise behind you…"
-  ]
-
 instance HasTokenValue TheEssexCountyExpress where
   getTokenValue iid tokenFace (TheEssexCountyExpress attrs) = case tokenFace of
     Skull -> do
@@ -120,39 +83,26 @@ standaloneTokens =
 
 readInvestigatorDefeat :: (Monad m, HasGame m) => m [Message]
 readInvestigatorDefeat = do
-  campaignStoryCards <- getCampaignStoryCards
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
-  let
-    findOwner cardCode =
-      (\iid -> iid <$ guard (iid `elem` defeatedInvestigatorIds))
-        =<< findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
-    mNecronomiconOwner = findOwner "02140"
-    mDrHenryArmitageOwner = findOwner "02040"
-    mProfessorWarrenRiceOwner = findOwner "02061"
-    mDrFrancisMorganOwner = findOwner "02080"
+  mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
+  mDrHenryArmitageOwner <- getOwner Assets.drHenryArmitage
+  mProfessorWarrenRiceOwner <- getOwner Assets.professorWarrenRice
+  mDrFrancisMorganOwner <- getOwner Assets.drFrancisMorgan
   if null defeatedInvestigatorIds
     then pure []
     else
       pure
       $ [story defeatedInvestigatorIds investigatorDefeat]
       <> [ Record TheNecronomiconWasStolen | isJust mNecronomiconOwner ]
-      <> [ RemoveCampaignCardFromDeck owner "02140"
-         | owner <- maybeToList mNecronomiconOwner
-         ]
+      <> [RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation]
       <> [ Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner ]
-      <> [ RemoveCampaignCardFromDeck owner "02040"
-         | owner <- maybeToList mDrHenryArmitageOwner
-         ]
+      <> [RemoveCampaignCard Assets.drHenryArmitage]
       <> [ Record ProfessorWarrenRiceWasKidnapped
          | isJust mProfessorWarrenRiceOwner
          ]
-      <> [ RemoveCampaignCardFromDeck owner "02061"
-         | owner <- maybeToList mProfessorWarrenRiceOwner
-         ]
+      <> [RemoveCampaignCard Assets.professorWarrenRice]
       <> [ Record DrFrancisMorganWasKidnapped | isJust mDrFrancisMorganOwner ]
-      <> [ RemoveCampaignCardFromDeck owner "02080"
-         | owner <- maybeToList mDrFrancisMorganOwner
-         ]
+      <> [RemoveCampaignCard Assets.drFrancisMorgan]
       <> [ AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
          | iid <- defeatedInvestigatorIds
          ]
@@ -207,7 +157,7 @@ instance RunMessage TheEssexCountyExpress where
             Expert -> MinusFive
 
         pushAll
-          $ [ story investigatorIds theEssexCountyExpressIntro
+          $ [ story investigatorIds intro
             , AddToken token
             , SetEncounterDeck encounterDeck
             , SetAgendaDeck

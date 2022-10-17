@@ -503,6 +503,7 @@ data LocationMatcher
   | InvestigatableLocation
   | LocationNotInPlay
   | FarthestLocationFromLocation LocationId LocationMatcher
+  | NearestLocationToLocation LocationId LocationMatcher
     --                           ^ start
   | FarthestLocationFromYou LocationMatcher
   | FarthestLocationFromAll LocationMatcher
@@ -519,6 +520,7 @@ data LocationMatcher
   | FirstLocation [LocationMatcher]
   | NotLocation LocationMatcher
   | LocationCanBeFlipped
+  | SingleSidedLocation
   | ClosestPathLocation LocationId LocationId
   -- ^ start destination / end destination
   | BlockedLocation
@@ -942,7 +944,7 @@ data WindowMythosStepMatcher = WhenAllDrawEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter
+data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter | ResourceCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -1093,6 +1095,7 @@ replaceYourLocation iid (Just lid) = go
     LocationWithMostClues m -> LocationWithMostClues (go m)
     LocationWithEnemy{} -> matcher
     LocationWithAsset{} -> matcher
+    SingleSidedLocation{} -> matcher
     LocationWithInvestigator m ->
       LocationWithInvestigator (replaceYouMatcher iid m)
     RevealedLocation -> matcher
@@ -1101,6 +1104,8 @@ replaceYourLocation iid (Just lid) = go
     LocationNotInPlay -> matcher
     FarthestLocationFromLocation lid' m ->
       FarthestLocationFromLocation lid' (go m)
+    NearestLocationToLocation lid' m ->
+      NearestLocationToLocation lid' (go m)
     FarthestLocationFromYou m -> FarthestLocationFromLocation lid (go m)
     FarthestLocationFromAll m -> FarthestLocationFromAll (go m)
     NearestLocationToYou m -> NearestLocationToYou (go m) -- TODO: FIX to FromLocation

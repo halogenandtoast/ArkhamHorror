@@ -205,6 +205,11 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard padmaAmrita
   , SomeEnemyCard serpentOfTenochtitlan
   , SomeEnemyCard handOfTheBrotherhood
+  -- Heart of the Elders
+  --- Pillars of Judgement
+  , SomeEnemyCard theWingedSerpent
+  , SomeEnemyCard apexStrangleweed
+  , SomeEnemyCard basilisk
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

@@ -44,6 +44,7 @@ instance RunMessage AllIsOne where
         $ [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (toSource attrs)
+            Nothing
             (CardWithType LocationType)
           ]
         <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
@@ -52,7 +53,7 @@ instance RunMessage AllIsOne where
            ]
         <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
-    RequestedEncounterCard source (Just card) | isSource attrs source -> do
+    RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
       push $ InvestigatorDrewEncounterCard leadInvestigator card
       pure a

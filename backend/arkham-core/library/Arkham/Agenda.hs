@@ -130,6 +130,13 @@ allAgendas = mapFromList $ map
   , SomeAgendaCard theBoundaryBroken
   , SomeAgendaCard theBarrierIsThin
   , SomeAgendaCard timeCollapsing
+  -- Heart of the Elders
+  --- Pillars of Judgement
+  , SomeAgendaCard theJunglesHeart
+  , SomeAgendaCard settingSun
+  --- K'n-yan
+  , SomeAgendaCard theLonelyCaverns
+  , SomeAgendaCard eyesInTheDark
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

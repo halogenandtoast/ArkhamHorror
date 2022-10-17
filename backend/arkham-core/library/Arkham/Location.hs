@@ -325,6 +325,18 @@ allLocations = mapFromList $ map
   , SomeLocationCard lakeXochimilco_183
   , SomeLocationCard sacredWoods_184
   , SomeLocationCard sacredWoods_185
+  -- Heart of the Elders
+  , SomeLocationCard mouthOfKnYanTheCavernsMaw
+  , SomeLocationCard mouthOfKnYanTheDepthsBelow
+  --- Pillars of Judgement
+  , SomeLocationCard timeWrackedWoods
+  , SomeLocationCard stoneAltar
+  --- K'n-yan
+  , SomeLocationCard vastPassages
+  , SomeLocationCard hallOfIdolatry
+  , SomeLocationCard perilousGulch
+  , SomeLocationCard crystalPillars
+  , SomeLocationCard descentToYoth
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

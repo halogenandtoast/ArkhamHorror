@@ -16,9 +16,8 @@ nextStep a = case campaignStep a of
   Just ThreadsOfFate -> Just ResupplyPoint
   Just ResupplyPoint -> Just (UpgradeDeckStep TheBoundaryBeyond)
   Just TheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
-  Just (InterludeStep 3 _) -> Just (HeartOfTheElders 1)
-  Just (HeartOfTheElders 1) -> Just (HeartOfTheElders 2)
-  Just (HeartOfTheElders 2) -> Just (UpgradeDeckStep TheCityOfArchives)
+  Just (InterludeStep 3 _) -> Just HeartOfTheElders
+  Just HeartOfTheElders -> Just (UpgradeDeckStep TheCityOfArchives)
   Just TheCityOfArchives -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
   Just (InterludeStep 4 _) -> Just TheDepthsOfYoth
   Just TheDepthsOfYoth -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
@@ -43,9 +42,9 @@ pattern TheBoundaryBeyond :: CampaignStep
 pattern TheBoundaryBeyond <- ScenarioStep "04161" where
   TheBoundaryBeyond = ScenarioStep "04161"
 
-pattern HeartOfTheElders :: Int -> CampaignStep
-pattern HeartOfTheElders n <- ScenarioStepPart "04205" n where
-  HeartOfTheElders n = ScenarioStepPart "04205" n
+pattern HeartOfTheElders :: CampaignStep
+pattern HeartOfTheElders <- ScenarioStep "04205" where
+  HeartOfTheElders = ScenarioStep "04205"
 
 pattern TheCityOfArchives :: CampaignStep
 pattern TheCityOfArchives <- ScenarioStep "04237" where

@@ -95,10 +95,12 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , acolyteOfUmordhoth
   , agentOfTheKing
   , almaHill
+  , apexStrangleweed
   , ashleighClarke
   , asylumGorger
   , avianThrall
   , balefulReveler
+  , basilisk
   , beastOfAldebaran
   , billyCooper
   , boaConstrictor
@@ -193,6 +195,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , theOrganistDrapedInMystery
   , theOrganistHopelessIDefiedHim
   , theRougarou
+  , theWingedSerpent
   , thrall
   , tidalTerror
   , umordhoth
@@ -957,6 +960,32 @@ handOfTheBrotherhood =
   (enemy "04188" "Hand of the Brotherhood" TheBoundaryBeyond 2
     )
     { cdCardTraits = setFromList [Humanoid, Cultist]
+    }
+
+theWingedSerpent :: CardDef
+theWingedSerpent =
+  (enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1
+    )
+    { cdCardTraits = setFromList [Monster, Serpent, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
+    , cdUnique = True
+    }
+
+apexStrangleweed :: CardDef
+apexStrangleweed =
+  (enemy "04219" "Apex Strangleweed" PillarsOfJudgement 2
+    )
+    { cdCardTraits = setFromList [Creature, Flora]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    }
+
+basilisk :: CardDef
+basilisk =
+  (enemy "04220" "Basilisk" PillarsOfJudgement 2
+    )
+    { cdCardTraits = setFromList [Monster, Serpent]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdVengeancePoints = Just 2
     }
 
 corpseHungryGhoul :: CardDef

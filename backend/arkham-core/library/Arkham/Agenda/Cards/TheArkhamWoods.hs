@@ -27,16 +27,16 @@ theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 
 instance RunMessage TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs) = case msg of
-    AdvanceAgenda aid | aid == toId a && onSide B attrs ->
-      a <$ push
-        (Run
+    AdvanceAgenda aid | aid == toId a && onSide B attrs -> do
+      pushAll
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (AgendaSource aid)
+            Nothing
             (CardWithType EnemyType <> CardWithTrait Monster)
           ]
-        )
-    RequestedEncounterCard source mcard | isSource attrs source -> case mcard of
+      pure a
+    RequestedEncounterCard source _ mcard | isSource attrs source -> case mcard of
       Nothing ->
         a <$ push (AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs))
       Just card -> do

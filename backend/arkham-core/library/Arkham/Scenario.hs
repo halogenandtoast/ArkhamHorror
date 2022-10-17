@@ -83,6 +83,7 @@ allScenarios = mapFromList
   , ("04054", SomeScenario theDoomOfEztli)
   , ("04113", SomeScenario threadsOfFate)
   , ("04161", SomeScenario theBoundaryBeyond)
+  , ("04205", SomeScenario heartOfTheElders)
   , ("50011", SomeScenario returnToTheGathering)
   , ("50025", SomeScenario returnToTheMidnightMasks)
   , ("50032", SomeScenario returnToTheDevourerBelow)

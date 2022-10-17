@@ -69,10 +69,11 @@ instance RunMessage TemploMayor_174 where
         [ ShuffleEncounterDiscardBackIn
         , DiscardEncounterUntilFirst
           (toSource attrs)
+          Nothing
           (CardWithType EnemyType <> CardWithTrait Serpent)
         ]
       pure l
-    RequestedEncounterCard (isSource attrs -> True) (Just ec) -> do
+    RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
       push $ SpawnEnemyAt (EncounterCard ec) (toId attrs)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

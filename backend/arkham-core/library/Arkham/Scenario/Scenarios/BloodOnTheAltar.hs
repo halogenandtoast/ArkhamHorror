@@ -88,31 +88,12 @@ standaloneTokens =
   , ElderSign
   ]
 
-findOwner :: (Monad m, HasGame m) => CardCode -> m (Maybe InvestigatorId)
-findOwner cardCode = do
-  campaignStoryCards <- getCampaignStoryCards
-  pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
-
-getRemoveSacrificedMessages
-  :: (Monad m, HasGame m) => [CardCode] -> m [Message]
-getRemoveSacrificedMessages sacrifices = do
-  sacrificedOwnerPairs <- catMaybes <$> for
-    sacrifices
-    (\sacrifice -> do
-      mOwner <- findOwner sacrifice
-      pure $ (sacrifice, ) <$> mOwner
-    )
-  pure
-    [ RemoveCampaignCardFromDeck owner sacrificed
-    | (sacrificed, owner) <- sacrificedOwnerPairs
-    ]
-
 getRemoveNecronomicon :: (Monad m, HasGame m) => m [Message]
 getRemoveNecronomicon = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
-  mNecronomiconOwner <- findOwner "02140"
+  mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
   pure
-    [ RemoveCampaignCardFromDeck owner "02140"
+    [ RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation
     | owner <- maybeToList mNecronomiconOwner
     , owner `elem` defeatedInvestigatorIds
     ]
@@ -121,8 +102,8 @@ instance RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed)))
     = case msg of
       SetTokensForScenario -> do
-        standalone <- getIsStandalone
-        s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+        whenM getIsStandalone $ push $ SetTokens standaloneTokens
+        pure s
       Setup -> do
         investigatorIds <- getInvestigatorIds
         bishopsBrook <-
@@ -289,17 +270,14 @@ instance RunMessage BloodOnTheAltar where
             case lookup PotentialSacrifices scenarioDecks of
               Just xs -> xs
               _ -> error "missing deck"
-          sacrificedToYogSothoth =
-            map toCardCode potentialSacrifices <> map toCardCode sacrificed
-        removeSacrificedMessages <- getRemoveSacrificedMessages
-          sacrificedToYogSothoth
+          sacrificedToYogSothoth = potentialSacrifices <> sacrificed
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
           $ [ story iids noResolution
             , Record TheRitualWasCompleted
             , PlaceUnderneath (AgendaTarget agendaId) potentialSacrifices
             ]
-          <> removeSacrificedMessages
+          <> map (RemoveCampaignCard . toCardDef) sacrificedToYogSothoth
           <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
@@ -307,15 +285,12 @@ instance RunMessage BloodOnTheAltar where
       ScenarioResolution (Resolution 1) -> do
         iids <- getInvestigatorIds
         xp <- getXp
-        let sacrificedToYogSothoth = map toCardCode sacrificed
-        removeSacrificedMessages <- getRemoveSacrificedMessages
-          sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
           $ [ story iids resolution1
             , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
             ]
-          <> removeSacrificedMessages
+          <> map (RemoveCampaignCard . toCardDef) sacrificed
           <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
@@ -323,26 +298,20 @@ instance RunMessage BloodOnTheAltar where
       ScenarioResolution (Resolution 2) -> do
         iids <- getInvestigatorIds
         xp <- getXp
-        let sacrificedToYogSothoth = map toCardCode sacrificed
-        removeSacrificedMessages <- getRemoveSacrificedMessages
-          sacrificedToYogSothoth
         pushAll
           $ [story iids resolution2, Record TheInvestigatorsRestoredSilasBishop]
-          <> removeSacrificedMessages
+          <> map (RemoveCampaignCard . toCardDef) sacrificed
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 3) -> do
         iids <- getInvestigatorIds
         xp <- getXp
-        let sacrificedToYogSothoth = map toCardCode sacrificed
-        removeSacrificedMessages <- getRemoveSacrificedMessages
-          sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
           $ [story iids resolution3, Record TheInvestigatorsBanishedSilasBishop]
-          <> removeSacrificedMessages
-          <> [RecordSet SacrificedToYogSothoth sacrificedToYogSothoth]
+          <> map (RemoveCampaignCard . toCardDef) sacrificed
+          <> [RecordSet SacrificedToYogSothoth $ map toCardCode sacrificed]
           <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]

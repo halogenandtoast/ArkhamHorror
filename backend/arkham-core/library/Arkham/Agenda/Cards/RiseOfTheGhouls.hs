@@ -32,10 +32,11 @@ instance RunMessage RiseOfTheGhouls where
         [ ShuffleEncounterDiscardBackIn
         , DiscardEncounterUntilFirst
           (AgendaSource aid)
+          Nothing
           (CardWithType EnemyType <> CardWithTrait Ghoul)
         ]
       )
-    RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
+    RequestedEncounterCard (AgendaSource aid) _ mcard | aid == agendaId ->
       case mcard of
         Nothing -> a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
         Just card -> do

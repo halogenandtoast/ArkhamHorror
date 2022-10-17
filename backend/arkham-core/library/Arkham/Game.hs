@@ -1073,6 +1073,7 @@ getLocationsMatching lmatcher = do
   case lmatcher of
     IsIchtacasDestination ->
       filterM (remembered . IchtacasDestination . toId) ls
+    SingleSidedLocation -> filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []
     FirstLocation xs ->
       fromMaybe []
@@ -1163,6 +1164,10 @@ getLocationsMatching lmatcher = do
     FarthestLocationFromLocation start matcher -> do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
       matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+      pure $ filter ((`elem` matches') . toId) ls
+    NearestLocationToLocation start matcher -> do
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matches' <- getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
     LocationWithDistanceFrom distance matcher -> do
       iids <- getInvestigatorIds
@@ -3185,6 +3190,11 @@ runGameMessage msg g = case msg of
     card <- field EnemyCard enemyId
     push $ ShuffleCardsIntoDeck deck [card]
     pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
+  ShuffleIntoDeck deck (LocationTarget locationId) -> do
+    -- The Thing That Follows
+    card <- field LocationCard locationId
+    push $ ShuffleCardsIntoDeck deck [card]
+    pure $ g & entitiesL . locationsL %~ deleteMap locationId
   PlayCard iid card _mtarget windows' True -> do
     modifiers' <- getModifiers (CardIdTarget $ toCardId card)
     modifiers'' <- getModifiers (CardTarget card)

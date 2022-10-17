@@ -253,6 +253,13 @@ allTreacheries = mapFromList $ map
   -- The Boundary Beyond
   , SomeTreacheryCard windowToAnotherTime
   , SomeTreacheryCard timelineDestabilization
+  -- Heart of the Elders
+  , SomeTreacheryCard pitfall
+  , SomeTreacheryCard poisonousSpores
+  -- Pillars of Judgement
+  , SomeTreacheryCard ants
+  -- K'n-yan
+  , SomeTreacheryCard noTurningBack
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

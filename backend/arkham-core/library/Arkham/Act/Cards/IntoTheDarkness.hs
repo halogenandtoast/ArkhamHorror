@@ -42,9 +42,11 @@ instance RunMessage IntoTheDarkness where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
+            Nothing
             (CardWithType EnemyType)
           , DiscardEncounterUntilFirst
             (ActSource actId)
+            Nothing
             (CardWithType EnemyType)
           , AdvanceActDeck actDeckId (toSource attrs)
           ]
@@ -52,10 +54,11 @@ instance RunMessage IntoTheDarkness where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
+            Nothing
             (CardWithType EnemyType)
           , AdvanceActDeck actDeckId (toSource attrs)
           ]
-    RequestedEncounterCard (ActSource aid) mcard | aid == actId -> case mcard of
+    RequestedEncounterCard (ActSource aid) _ mcard | aid == actId -> case mcard of
       Nothing -> pure a
       Just card -> do
         ritualSiteId <- getJustLocationIdByName "Ritual Site"

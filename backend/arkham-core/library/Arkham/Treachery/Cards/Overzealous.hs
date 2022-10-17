@@ -5,11 +5,11 @@ module Arkham.Treachery.Cards.Overzealous
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Overzealous = Overzealous TreacheryAttrs

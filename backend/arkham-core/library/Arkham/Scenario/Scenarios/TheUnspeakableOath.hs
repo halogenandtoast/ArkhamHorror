@@ -19,7 +19,6 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
@@ -329,11 +328,8 @@ instance RunMessage TheUnspeakableOath where
           youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
           claspMessages <- if youTookTheOnyxClasp
             then do
-              onyxClasp <- getCampaignStoryCard Assets.claspOfBlackOnyx
               pure
-                [ RemoveCampaignCardFromDeck
-                  (fromJustNote "must have owner" $ pcOwner onyxClasp)
-                  (toCardCode onyxClasp)
+                [ RemoveCampaignCard Assets.claspOfBlackOnyx
                 , chooseOne
                   leadInvestigatorId
                   [ TargetLabel

@@ -54,9 +54,9 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
       deckCount <- getActDecksInPlayCount
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (toSource attrs) $ CardWithTrait Cultist
+          , DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
           ]
-        <> [ DiscardEncounterUntilFirst (toSource attrs) $ CardWithTrait Cultist
+        <> [ DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
            | deckCount <= 2
            ]
         <> [ AdvanceToAct
@@ -66,7 +66,7 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
                (toSource attrs)
            ]
       pure a
-    RequestedEncounterCard source (Just ec) | isSource attrs source -> do
+    RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
       blackCave <- selectJust $ locationIs Locations.blackCave
       pushAll
         [ SpawnEnemyAt (EncounterCard ec) blackCave

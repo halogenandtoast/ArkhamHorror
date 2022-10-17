@@ -78,10 +78,11 @@ instance RunMessage BeginnersLuck where
         [ PlaceLocation darkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
+          Nothing
           (CardWithType EnemyType <> CardWithTrait Criminal)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
-    RequestedEncounterCard source (Just ec) | isSource attrs source -> do
+    RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
       darkenedHallId <- fromJustNote "missing darkened hall"
         <$> selectOne (LocationWithTitle "Darkened Hall")
       a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)

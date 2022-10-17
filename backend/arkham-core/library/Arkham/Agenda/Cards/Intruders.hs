@@ -16,7 +16,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
-import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Matcher hiding ( InvestigatorDefeated )
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -39,7 +39,10 @@ instance RunMessage Intruders where
   runMessage msg a@(Intruders attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore iid source (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $ Explore
+        iid
+        source
+        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- getInvestigatorIds

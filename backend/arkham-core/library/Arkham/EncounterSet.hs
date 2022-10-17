@@ -69,6 +69,9 @@ data EncounterSet
   | Poison
   | ThreadsOfFate
   | TheBoundaryBeyond
+  | HeartOfTheElders
+  | PillarsOfJudgement
+  | KnYan
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

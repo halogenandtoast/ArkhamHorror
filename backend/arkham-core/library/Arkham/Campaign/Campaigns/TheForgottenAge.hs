@@ -25,6 +25,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Newtype ( ala )
 import Data.Monoid ( Endo (..) )
 
@@ -238,7 +239,9 @@ instance RunMessage TheForgottenAge where
                  $ Done "Do not use medicine"
                  : [ targetLabel
                        poisoned
-                       [ RemoveCampaignCardFromDeck poisoned "04102"
+                       [ RemoveCampaignCardFromDeck
+                         poisoned
+                         Treacheries.poisoned
                        , UseSupply doctor Medicine
                        ]
                    | (poisoned, doctor) <- zip withPoisoned withMedicine
@@ -350,7 +353,7 @@ instance RunMessage TheForgottenAge where
               iid
               [ Label
                 "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
-                [SpendXP iid 3, RemoveCampaignCardFromDeck iid "04102"]
+                [SpendXP iid 3, RemoveCampaignCardFromDeck iid Treacheries.poisoned]
               , Label "Do not remove poisoned weakness" []
               ]
           | iid <- poisonedInvestigatorsWith3Xp
@@ -505,7 +508,7 @@ instance RunMessage TheForgottenAge where
                  $ Done "Do not use medicine"
                  : [ targetLabel
                        poisoned
-                       [ RemoveCampaignCardFromDeck poisoned "04102"
+                       [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
                        , UseSupply doctor Medicine
                        ]
                    | (poisoned, doctor) <- zip withPoisoned withMedicine

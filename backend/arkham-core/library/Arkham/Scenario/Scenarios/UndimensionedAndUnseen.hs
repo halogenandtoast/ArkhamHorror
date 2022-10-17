@@ -298,7 +298,7 @@ instance RunMessage UndimensionedAndUnseen where
         $ [ story investigatorIds resolution1
           , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
           ]
-        <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
+        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
       pure s
@@ -307,7 +307,7 @@ instance RunMessage UndimensionedAndUnseen where
       xp <- getXp
       pushAll
         $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
-        <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
+        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
       pure s

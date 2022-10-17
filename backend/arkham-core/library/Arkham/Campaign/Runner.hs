@@ -40,22 +40,20 @@ instance RunMessage CampaignAttrs where
         (<>)
         iid
         [card { pcOwner = Just iid }]
-    RemoveCampaignCardFromAnyDeck cardDef -> do
+    RemoveCampaignCard cardDef -> do
       pure
         $ a
         & storyCardsL
         %~ HashMap.map (filter ((/= cardDef) . toCardDef))
         & decksL
         %~ HashMap.map (withDeck (filter ((/= cardDef) . toCardDef)))
-    RemoveCampaignCardFromDeck iid cardCode ->
+    RemoveCampaignCardFromDeck iid cardDef ->
       pure
         $ a
         & storyCardsL
-        %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
+        %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
         & decksL
-        %~ adjustMap
-             (withDeck (filter ((/= cardCode) . cdCardCode . toCardDef)))
-             iid
+        %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     RemoveAllTokens token -> pure $ a & chaosBagL %~ filter (/= token)
     InitDeck iid deck -> do

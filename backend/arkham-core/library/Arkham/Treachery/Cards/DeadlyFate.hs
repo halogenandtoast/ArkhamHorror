@@ -29,8 +29,8 @@ instance RunMessage DeadlyFate where
       ]
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t
-      <$ push (DiscardEncounterUntilFirst source $ CardWithType EnemyType)
-    RequestedEncounterCard source mcard | isSource attrs source -> do
+      <$ push (DiscardEncounterUntilFirst source Nothing $ CardWithType EnemyType)
+    RequestedEncounterCard source _ mcard | isSource attrs source -> do
       iid <- selectJust You
       case mcard of
         Nothing ->

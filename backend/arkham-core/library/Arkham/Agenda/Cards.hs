@@ -74,6 +74,7 @@ allAgendaCards = mapFromList $ map
   , empireOfTheUndead
   , encore
   , expeditionIntoTheWild
+  , eyesInTheDark
   , fashionablyLate
   , feedTheBeast
   , hiddenEntanglements
@@ -98,6 +99,7 @@ allAgendaCards = mapFromList $ map
   , riseOfTheGhouls
   , rollingBackwards
   , secretsBetterLeftHidden
+  , settingSun
   , shadowsDeepen
   , somethingStirs
   , strangeDisappearances
@@ -114,6 +116,8 @@ allAgendaCards = mapFromList $ map
   , theEntityAboveTheVortexAbove
   , theFestivitiesBegin
   , theFirstNight
+  , theJunglesHeart
+  , theLonelyCaverns
   , theMawWidens
   , theOldOnesHunger
   , theRitualBegins
@@ -353,6 +357,18 @@ theBarrierIsThin = agenda "04163" "The Barrier is Thin" 2 TheBoundaryBeyond
 
 timeCollapsing :: CardDef
 timeCollapsing = agenda "04164" "Time Collapsing" 3 TheBoundaryBeyond
+
+theJunglesHeart :: CardDef
+theJunglesHeart = agenda "04207" "The Jungle's Heart" 1 PillarsOfJudgement
+
+settingSun :: CardDef
+settingSun = agenda "04208" "Setting Sun" 2 PillarsOfJudgement
+
+theLonelyCaverns :: CardDef
+theLonelyCaverns = agenda "04211" "The Lonely Caverns" 1 KnYan
+
+eyesInTheDark :: CardDef
+eyesInTheDark = agenda "04212" "Eyes in the Dark" 2 KnYan
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -47,6 +47,7 @@ instance RunMessage PastPresentAndFuture where
         ([ ShuffleEncounterDiscardBackIn
          , DiscardEncounterUntilFirst
            (toSource attrs)
+           Nothing
            (CardWithType LocationType)
          ]
         <> [ BeginSkillTest
@@ -61,7 +62,7 @@ instance RunMessage PastPresentAndFuture where
            ]
         <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
-    RequestedEncounterCard source (Just card) | isSource attrs source -> do
+    RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
       a <$ push (InvestigatorDrewEncounterCard leadInvestigator card)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n

@@ -105,6 +105,7 @@ data ModifierType
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
   | ActionDoesNotCauseAttacksOfOpportunity Action
+  | DoesNotReadyDuringUpkeep
   | CannotFight EnemyMatcher
   | CannotMove
   | CannotDisengageEnemies

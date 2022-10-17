@@ -1175,6 +1175,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL %~ filter (/= card))
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+  PutCampaignCardIntoPlay iid cardDef -> do
+    let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
+    case mcard of
+      Nothing -> error "did not have campaign card"
+      Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing []
+    pure a
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
     slotTypes <- field AssetSlots aid
     assetCard <- field AssetCard aid

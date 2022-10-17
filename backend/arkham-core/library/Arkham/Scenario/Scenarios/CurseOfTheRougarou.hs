@@ -28,6 +28,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
+import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Maybe ( fromJust )
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
@@ -220,7 +221,7 @@ instance RunMessage CurseOfTheRougarou where
       pushAll
         $ [ story iids resolution2
           , Record TheRougarouIsDestroyed
-          , RemoveCampaignCardFromDeck leadInvestigatorId "81029"
+          , RemoveCampaignCard Treacheries.curseOfTheRougarou
           , chooseOne
             leadInvestigatorId
             [ Label

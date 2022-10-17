@@ -261,7 +261,7 @@ data Message
   | Discard Target
   | DiscardCard InvestigatorId CardId
   | DiscardHand InvestigatorId
-  | DiscardEncounterUntilFirst Source CardMatcher
+  | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
   | DiscardUntilFirst InvestigatorId Source CardMatcher
   | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
@@ -458,6 +458,7 @@ data Message
   | PlayedCard InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
+  | PutCampaignCardIntoPlay InvestigatorId CardDef
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
@@ -479,8 +480,8 @@ data Message
   | RemoveAllClues Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers
   | RemoveAllDoom Target
-  | RemoveCampaignCardFromDeck InvestigatorId CardCode
-  | RemoveCampaignCardFromAnyDeck CardDef
+  | RemoveCampaignCard CardDef
+  | RemoveCampaignCardFromDeck InvestigatorId CardDef
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId
   | RemoveClues Target Int
@@ -503,7 +504,7 @@ data Message
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | RequestSetAsideCard Source CardCode
   | RequestTokens Source (Maybe InvestigatorId) RevealStrategy RequestedTokenStrategy
-  | RequestedEncounterCard Source (Maybe EncounterCard)
+  | RequestedEncounterCard Source (Maybe InvestigatorId) (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | RequestedSetAsideCard Source Card

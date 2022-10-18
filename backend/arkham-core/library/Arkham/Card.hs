@@ -90,6 +90,7 @@ cardMatch a = \case
   CardWithLevel n -> cdLevel (toCardDef a) == n
   FastCard -> isJust $ cdFastWindow (toCardDef a)
   CardMatches ms -> all (cardMatch a) ms
+  CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
   CardWithOneOf ms -> any (cardMatch a) ms
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a

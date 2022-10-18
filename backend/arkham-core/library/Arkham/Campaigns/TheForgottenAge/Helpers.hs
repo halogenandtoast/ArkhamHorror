@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Deck
 import Arkham.Game.Helpers
 import Arkham.GameEnv
 import Arkham.History
@@ -15,6 +16,7 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
@@ -116,14 +118,9 @@ explore iid source cardMatcher exploreRule = do
                 Nothing -> error "no location found"
 
           afterPutIntoPlayWindow <- checkWindows
-            [ Window
-                Timing.After
-                (Window.PutLocationIntoPlay iid lid)
-            ]
+            [Window Timing.After (Window.PutLocationIntoPlay iid lid)]
           afterExploredWindow <- checkWindows
-            [ Window Timing.After
-                $ Window.Explored iid (Success lid)
-            ]
+            [Window Timing.After $ Window.Explored iid (Success lid)]
 
           pure
             $ locationAction
@@ -135,7 +132,8 @@ explore iid source cardMatcher exploreRule = do
         else do
           windowMsg <- checkWindows
             [Window Timing.After $ Window.Explored iid Failure]
-          pure [DrewTreachery iid x, windowMsg]
+          pure
+            [DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x, windowMsg]
       deck' <- if null notMatched then pure xs else shuffleM (xs <> notMatched)
       pushAll
         [ FocusCards (notMatched <> [x])

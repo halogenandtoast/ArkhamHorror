@@ -1470,7 +1470,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case mcard of
           Just card -> do
             when (toCardType card == PlayerTreacheryType)
-              $ push (DrewTreachery iid $ PlayerCard card)
+              $ push (DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) $ PlayerCard card)
             when (toCardType card == PlayerEnemyType)
               $ push (DrewPlayerEnemy iid $ PlayerCard card)
             when
@@ -1854,7 +1854,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       PlayerCard card' -> do
         when (cdRevelation (toCardDef card'))
           $ if toCardType card' == PlayerTreacheryType
-              then push (DrewTreachery iid card)
+              then push (DrewTreachery iid Nothing card)
               else push (Revelation iid $ PlayerCardSource card')
         when (toCardType card' == PlayerEnemyType)
           $ push (DrewPlayerEnemy iid card)

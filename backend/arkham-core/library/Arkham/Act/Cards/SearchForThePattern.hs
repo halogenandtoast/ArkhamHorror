@@ -31,7 +31,7 @@ instance RunMessage SearchForThePattern where
       theWingedSerpent <- genCard Enemies.theWingedSerpent
       pushAll
         [ CreateEnemy theWingedSerpent
-        , AdvanceAgendaDeck (actDeckId attrs) (toSource attrs)
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a
     _ -> SearchForThePattern <$> runMessage msg attrs

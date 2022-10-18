@@ -2051,6 +2051,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
     Matcher.LocationWithModifier _ -> locationId <=~> matcher
     Matcher.IsIchtacasDestination -> locationId <=~> matcher
+    Matcher.SingleSidedLocation -> locationId <=~> matcher
     Matcher.LocationWithEnemy enemyMatcher -> selectAny
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
     Matcher.LocationWithAsset assetMatcher -> selectAny
@@ -2094,6 +2095,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.UnrevealedLocation -> locationId <=~> matcher
     Matcher.FarthestLocationFromYou _ -> locationId <=~> matcher
     Matcher.FarthestLocationFromLocation _ _ -> locationId <=~> matcher
+    Matcher.NearestLocationToLocation _ _ -> locationId <=~> matcher
     Matcher.FarthestLocationFromAll _ -> locationId <=~> matcher
     Matcher.NearestLocationToYou _ -> locationId <=~> matcher
     Matcher.LocationWithTrait _ -> locationId <=~> matcher

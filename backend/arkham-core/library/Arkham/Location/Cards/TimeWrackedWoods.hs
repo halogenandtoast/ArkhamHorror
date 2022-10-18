@@ -5,9 +5,18 @@ module Arkham.Location.Cards.TimeWrackedWoods
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
+import Arkham.Trait
 
 newtype TimeWrackedWoods = TimeWrackedWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,9 +27,35 @@ timeWrackedWoods =
   location TimeWrackedWoods Cards.timeWrackedWoods 4 (PerPlayer 2)
 
 instance HasAbilities TimeWrackedWoods where
-  getAbilities (TimeWrackedWoods attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (TimeWrackedWoods attrs) = withBaseAbilities
+    attrs
+    [ limitedAbility (GroupLimit PerGame 1)
+      $ restrictedAbility
+          attrs
+          1
+          (Here <> InVictoryDisplay
+            (CardWithVengeance <> NotCard (CardWithTrait Elite))
+            (AtLeast $ Static 1)
+          )
+      $ ActionAbility Nothing
+      $ ActionCost 2
+    ]
 
 instance RunMessage TimeWrackedWoods where
-  runMessage msg (TimeWrackedWoods attrs) =
-    TimeWrackedWoods <$> runMessage msg attrs
+  runMessage msg l@(TimeWrackedWoods attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      targets <- mapMaybe (preview _EncounterCard) <$> selectList
+        (VictoryDisplayCardMatch $ CardWithVengeance <> NotCard
+          (CardWithTrait Elite)
+        )
+      pushAll
+        [ FocusCards $ map EncounterCard targets
+        , chooseOrRunOne
+          iid
+          [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
+          | c <- targets
+          ]
+        , UnfocusCards
+        ]
+      pure l
+    _ -> TimeWrackedWoods <$> runMessage msg attrs

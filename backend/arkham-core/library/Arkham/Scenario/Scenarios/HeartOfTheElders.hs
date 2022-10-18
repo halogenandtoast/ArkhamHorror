@@ -173,8 +173,21 @@ instance RunMessage HeartOfTheElders where
           pushAll $ introMessages <> [ScenarioResolution $ Resolution 1]
           pure s
         else do
+          let
+            explorationDeckLocations =
+              [ Locations.timeWrackedWoods
+              , Locations.pathOfThorns
+              , Locations.riverCanyon
+              , Locations.ropeBridge
+              , Locations.serpentsHaven
+              , Locations.circuitousTrail
+              ]
+            ruinsLocations =
+              Locations.overgrownRuins
+                :| [Locations.templeOfTheFang, Locations.stoneAltar]
           encounterDeck' <-
-            buildEncounterDeck
+            buildEncounterDeckExcluding
+                (explorationDeckLocations <> toList ruinsLocations)
               $ [ EncounterSet.PillarsOfJudgement
                 , EncounterSet.HeartOfTheElders
                 , EncounterSet.Rainforest
@@ -197,10 +210,7 @@ instance RunMessage HeartOfTheElders where
 
           theWingedSerpent <- genCard Enemies.theWingedSerpent
 
-          ruinsLocation <- genCard =<< sample
-            (Locations.overgrownRuins
-            :| [Locations.templeOfTheFang, Locations.stoneAltar]
-            )
+          ruinsLocation <- genCard =<< sample ruinsLocations
           mappedOutTheWayForward <- getHasRecord
             TheInvestigatorsMappedOutTheWayForward
 
@@ -209,17 +219,13 @@ instance RunMessage HeartOfTheElders where
             . (<> [ ruinsLocation | not mappedOutTheWayForward ])
             =<< traverse
                   genCard
-                  [ Locations.timeWrackedWoods
-                  , Locations.pathOfThorns
-                  , Locations.riverCanyon
-                  , Locations.ropeBridge
-                  , Locations.serpentsHaven
-                  , Locations.circuitousTrail
-                  , Treacheries.pitfall
-                  , Treacheries.ants
-                  , Treacheries.lostInTheWilds
-                  , Treacheries.lowOnSupplies
-                  ]
+                  (explorationDeckLocations
+                  <> [ Treacheries.pitfall
+                     , Treacheries.ants
+                     , Treacheries.lostInTheWilds
+                     , Treacheries.lowOnSupplies
+                     ]
+                  )
 
           setAsidePoisonedCount <- getSetAsidePoisonedCount
 

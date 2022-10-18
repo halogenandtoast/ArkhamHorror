@@ -30,6 +30,7 @@ import Arkham.Matcher
   , investigatorEngagedWith
   , locationWithInvestigator
   , pattern InvestigatorCanDisengage
+  , pattern MassiveEnemy
   , preyWith
   )
 import Arkham.Message
@@ -775,10 +776,11 @@ instance RunMessage EnemyAttrs where
       lid <- getJustLocation iid
       enemyLocation <- field EnemyLocation eid
       when (Just lid /= enemyLocation) $ push $ EnemyEntered eid lid
-      pure $ a & placementL .~ InThreatArea iid
-    EngageEnemy iid eid False | eid == enemyId ->
-      -- TODO: Do we need to consider Massive here?
-      pure $ a & placementL .~ InThreatArea iid
+      massive <- eid <=~> MassiveEnemy
+      pure $ a & (if massive then id else placementL .~ InThreatArea iid)
+    EngageEnemy iid eid False | eid == enemyId -> do
+      massive <- eid <=~> MassiveEnemy
+      pure $ a & (if massive then id else placementL .~ InThreatArea iid)
     WhenWillEnterLocation iid lid -> do
       shouldRespoond <- member iid <$> select (investigatorEngagedWith enemyId)
       when shouldRespoond $ do

@@ -282,6 +282,10 @@ pattern EliteEnemy :: EnemyMatcher
 pattern EliteEnemy <- EnemyWithTrait Elite where
   EliteEnemy = EnemyWithTrait Elite
 
+pattern MassiveEnemy :: EnemyMatcher
+pattern MassiveEnemy <- EnemyWithKeyword Keyword.Massive where
+  MassiveEnemy = EnemyWithKeyword Keyword.Massive
+
 pattern NonEliteEnemy :: EnemyMatcher
 pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
   NonEliteEnemy = EnemyWithoutTrait Elite

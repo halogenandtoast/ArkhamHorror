@@ -7,10 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
+import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 
@@ -28,9 +29,10 @@ searchForThePattern = act
 instance RunMessage SearchForThePattern where
   runMessage msg a@(SearchForThePattern attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      theWingedSerpent <- genCard Enemies.theWingedSerpent
+      theWingedSerpent <- genEncounterCard Enemies.theWingedSerpent
+      leadInvestigator <- getLeadInvestigatorId
       pushAll
-        [ CreateEnemy theWingedSerpent
+        [ InvestigatorDrewEncounterCard leadInvestigator theWingedSerpent
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

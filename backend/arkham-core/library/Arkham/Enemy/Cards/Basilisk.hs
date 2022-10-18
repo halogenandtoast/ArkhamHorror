@@ -1,22 +1,47 @@
 module Arkham.Enemy.Cards.Basilisk
   ( basilisk
   , Basilisk(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Timing qualified as Timing
 
 newtype Basilisk = Basilisk EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 basilisk :: EnemyCard Basilisk
-basilisk = enemy Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
+basilisk =
+  enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
+    $ spawnAtL
+    ?~ LocationWithDistanceFrom
+         1
+         (locationIs Locations.mouthOfKnYanTheCavernsMaw)
+
+instance HasAbilities Basilisk where
+  getAbilities (Basilisk a) = withBaseAbilities
+    a
+    [ limitedAbility (PerCopyLimit Cards.basilisk PerRound 1)
+      $ mkAbility a 1
+      $ ForcedAbility
+      $ PlacedCounterOnLocation
+          Timing.After
+          (LocationWithTitle "Mouth of K'n-yan")
+          ResourceCounter
+          AnyValue
+    ]
 
 instance RunMessage Basilisk where
-  runMessage msg (Basilisk attrs) =
-    Basilisk <$> runMessage msg attrs
+  runMessage msg e@(Basilisk attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ ShuffleBackIntoEncounterDeck (toTarget attrs)
+      pure e
+    _ -> Basilisk <$> runMessage msg attrs

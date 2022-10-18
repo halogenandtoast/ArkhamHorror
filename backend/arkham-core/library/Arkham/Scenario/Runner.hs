@@ -371,7 +371,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
       & (encounterDeckL .~ encounterDeck)
   AddToEncounterDiscard ec -> do
-    pure $ a & discardL %~ (ec :)
+    pure
+      $ a
+      & (discardL %~ (ec :))
+      & (encounterDeckL %~ withDeck (filter (/= ec)))
+      & (victoryDisplayL %~ filter (/= EncounterCard ec))
+      & (setAsideCardsL %~ filter (/= EncounterCard ec))
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
     pure $ a & (victoryDisplayL %~ (card :))

@@ -108,7 +108,7 @@ import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
 import Arkham.Treachery.Types
-  ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget )
+  ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget, drawnFromL )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -3947,7 +3947,7 @@ runGameMessage msg g = case msg of
           $ g'
           & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)
           & (activeCardL ?~ EncounterCard card)
-      TreacheryType -> g <$ push (DrewTreachery iid $ EncounterCard card)
+      TreacheryType -> g <$ push (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
       EncounterAssetType -> do
         let
           asset = createAsset card
@@ -3979,9 +3979,9 @@ runGameMessage msg g = case msg of
       LocationSource lid -> field LocationKeywords lid
       _ -> error "oh, missed a source for after revelation"
     g <$ pushAll [ Surge iid source | Keyword.Surge `member` keywords' ]
-  DrewTreachery iid (EncounterCard card) -> do
+  DrewTreachery iid mdeck (EncounterCard card) -> do
     let
-      treachery = createTreachery card iid
+      treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid
       treacheryId = toId treachery
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -4013,7 +4013,7 @@ runGameMessage msg g = case msg of
         resolve (Revelation iid (TreacherySource treacheryId))
           <> [AfterRevelation iid treacheryId]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
-  DrewTreachery iid (PlayerCard card) -> do
+  DrewTreachery iid _ (PlayerCard card) -> do
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery

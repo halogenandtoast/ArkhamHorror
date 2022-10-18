@@ -278,7 +278,7 @@ data Message
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrawToken InvestigatorId Token
   | DrewPlayerEnemy InvestigatorId Card
-  | DrewTreachery InvestigatorId Card
+  | DrewTreachery InvestigatorId (Maybe DeckSignifier) Card
   | ResolveTreachery InvestigatorId TreacheryId
   | DrivenInsane InvestigatorId
   | EmptyDeck InvestigatorId

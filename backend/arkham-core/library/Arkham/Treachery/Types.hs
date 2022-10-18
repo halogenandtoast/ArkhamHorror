@@ -8,6 +8,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Deck
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
@@ -61,6 +62,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryResources :: Int
   , treacheryCanBeCommitted :: Bool
   , treacheryDrawnBy :: InvestigatorId
+  , treacheryDrawnFrom :: Maybe DeckSignifier
   }
   deriving stock (Show, Eq, Generic)
 
@@ -78,6 +80,9 @@ treacheryInThreatAreaOf :: TreacheryAttrs -> Maybe InvestigatorId
 treacheryInThreatAreaOf attrs = case treacheryPlacement attrs of
   TreacheryAttachedTo (InvestigatorTarget iid) -> Just iid
   _ -> Nothing
+
+drawnFromL :: Lens' TreacheryAttrs (Maybe DeckSignifier)
+drawnFromL = lens treacheryDrawnFrom $ \m x -> m { treacheryDrawnFrom = x }
 
 placementL :: Lens' TreacheryAttrs TreacheryPlacement
 placementL = lens treacheryPlacement $ \m x -> m { treacheryPlacement = x }
@@ -202,6 +207,7 @@ treacheryWith f cardDef g = CardBuilder
     , treacheryClues = 0
     , treacheryResources = 0
     , treacheryCanBeCommitted = False
+    , treacheryDrawnFrom = Nothing
     }
   }
 

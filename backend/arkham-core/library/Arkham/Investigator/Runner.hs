@@ -347,13 +347,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
   ChooseAndDiscardCard iid | iid == investigatorId -> do
-    push
-      $ chooseOne iid
-      $ [ TargetLabel
-            (CardIdTarget $ toCardId card)
-            [DiscardCard iid (toCardId card)]
-        | card <- discardableCards a
-        ]
+    case discardableCards a of
+      [] -> pure ()
+      cs ->
+        push
+          $ chooseOne iid
+          $ [ TargetLabel
+                (CardIdTarget $ toCardId c)
+                [DiscardCard iid (toCardId c)]
+            | c <- cs
+            ]
     pure a
   Discard (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
@@ -1094,10 +1097,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   FlipClues target n | isTarget a target -> do
     let flipCount = min n investigatorClues
     let clueCount = max 0 $ subtract n investigatorClues
-    pure
-      $ a
-      & (cluesL .~ clueCount)
-      & (doomL +~ flipCount)
+    pure $ a & (cluesL .~ clueCount) & (doomL +~ flipCount)
   DiscoverClues iid lid n maction | iid == investigatorId -> do
     modifiers <- getModifiers (LocationTarget lid)
     let
@@ -1428,7 +1428,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         break (`cardMatch` matcher) (unDeck investigatorDeck)
     case remainingDeck of
       [] -> do
-        pushAll [RequestedPlayerCard iid source Nothing, DeckHasNoCards iid Nothing]
+        pushAll
+          [RequestedPlayerCard iid source Nothing, DeckHasNoCards iid Nothing]
         pure $ a & deckL .~ mempty & discardL %~ (reverse discards <>)
       (x : xs) -> do
         push (RequestedPlayerCard iid source (Just x))
@@ -1470,7 +1471,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case mcard of
           Just card -> do
             when (toCardType card == PlayerTreacheryType)
-              $ push (DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) $ PlayerCard card)
+              $ push
+                  (DrewTreachery iid (Just $ Deck.InvestigatorDeck iid)
+                  $ PlayerCard card
+                  )
             when (toCardType card == PlayerEnemyType)
               $ push (DrewPlayerEnemy iid $ PlayerCard card)
             when
@@ -1780,40 +1784,52 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   CheckWindow iids windows | investigatorId `elem` iids -> do
     a <$ push (RunWindow investigatorId windows)
-  RunWindow iid windows | iid == investigatorId && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
-    actions <- nub . concat <$> traverse (getActions iid) windows
-    playableCards <- getPlayableCards a UnpaidCost windows
-    unless (null playableCards && null actions) $ if any isForcedAbility actions
-      then do
-        let
-          (silent, normal) = partition isSilentForcedAbility actions
-          toForcedAbilities = map (($ windows) . UseAbility iid)
-          toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
-        -- Silent forced abilities should trigger automatically
-        pushAll
-          $ toForcedAbilities silent
-          <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
-          <> [RunWindow iid windows]
-      else do
-        actionsWithMatchingWindows <- for actions $ \ability@Ability {..} ->
-          (ability, )
-            <$> filterM
-                  (\w -> windowMatches iid abilitySource w abilityWindow)
-                  windows
-        push
-          $ chooseOne iid
-          $ [ TargetLabel
-                (CardIdTarget $ toCardId c)
-                [PayCardCost iid c windows, RunWindow iid windows]
-            | c <- playableCards
-            ]
-          <> map
-               (\(ability, windows') ->
-                 AbilityLabel iid ability windows' [RunWindow iid windows]
-               )
-               actionsWithMatchingWindows
-          <> [Label "Skip playing fast cards or using reactions" []]
-    pure a
+  RunWindow iid windows
+    | iid
+      == investigatorId
+      && (not (investigatorDefeated || investigatorResigned)
+         || Window.hasEliminatedWindow windows
+         )
+    -> do
+      actions <- nub . concat <$> traverse (getActions iid) windows
+      playableCards <- getPlayableCards a UnpaidCost windows
+      unless (null playableCards && null actions)
+        $ if any isForcedAbility actions
+            then do
+              let
+                (silent, normal) = partition isSilentForcedAbility actions
+                toForcedAbilities = map (($ windows) . UseAbility iid)
+                toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
+              -- Silent forced abilities should trigger automatically
+              pushAll
+                $ toForcedAbilities silent
+                <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
+                <> [RunWindow iid windows]
+            else do
+              actionsWithMatchingWindows <-
+                for actions $ \ability@Ability {..} ->
+                  (ability, )
+                    <$> filterM
+                          (\w -> windowMatches iid abilitySource w abilityWindow
+                          )
+                          windows
+              push
+                $ chooseOne iid
+                $ [ TargetLabel
+                      (CardIdTarget $ toCardId c)
+                      [PayCardCost iid c windows, RunWindow iid windows]
+                  | c <- playableCards
+                  ]
+                <> map
+                     (\(ability, windows') -> AbilityLabel
+                       iid
+                       ability
+                       windows'
+                       [RunWindow iid windows]
+                     )
+                     actionsWithMatchingWindows
+                <> [Label "Skip playing fast cards or using reactions" []]
+      pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
     mAdditionalAction <- findM
       (additionalActionCovers source mAction)
@@ -2038,9 +2054,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SufferTrauma iid physical mental | iid == investigatorId ->
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
   HealTrauma iid physical mental | iid == investigatorId ->
-    pure $ a & physicalTraumaL %~ max 0 . subtract physical & mentalTraumaL %~ max 0 . subtract mental
+    pure
+      $ a
+      & physicalTraumaL
+      %~ max 0
+      . subtract physical
+      & mentalTraumaL
+      %~ max 0
+      . subtract mental
   GainXP iid amount | iid == investigatorId -> pure $ a & xpL +~ amount
-  SpendXP iid amount | iid == investigatorId -> pure $ a & xpL %~ max 0 . subtract amount
+  SpendXP iid amount | iid == investigatorId ->
+    pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid n | iid == investigatorId -> do
     let cluesToPlace = min n investigatorClues
     push (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)

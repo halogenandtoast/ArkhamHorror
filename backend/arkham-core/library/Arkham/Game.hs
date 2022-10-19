@@ -2810,6 +2810,20 @@ runGameMessage msg g = case msg of
       $ g
       & (modeL %~ setScenario (lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
+  RestartScenario -> do
+    let
+      standalone = isNothing $ modeCampaign $ g ^. modeL
+    pushAll
+      $ ResetGame
+      : [ StandaloneSetup | standalone ]
+      <> [ ChooseLeadInvestigator
+         , SetupInvestigators
+         , SetTokensForScenario -- (chaosBagOf campaign')
+         , InvestigatorsMulligan
+         , Setup
+         , EndSetup
+         ]
+    pure $ g & (phaseL .~ InvestigationPhase)
   InvestigatorsMulligan ->
     g <$ pushAll [ InvestigatorMulligan iid | iid <- g ^. playerOrderL ]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid

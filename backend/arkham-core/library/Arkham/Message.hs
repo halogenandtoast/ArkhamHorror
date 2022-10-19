@@ -574,6 +574,7 @@ data Message
   | SpendUses Target UseType Int
   | StartCampaign
   | StartScenario ScenarioId
+  | RestartScenario
   | StartSkillTest InvestigatorId
   | -- There are two targets, one associated to the action and one
     -- to handle the result

@@ -66,7 +66,15 @@ instance RunMessage CavernOfTheForgottenAge where
           singleSided <- lid <=~> SingleSidedLocation
           mouthOfKnYan <- selectJust
             $ locationIs Locations.mouthOfKnYanTheDepthsBelow
-          moveTo <- selectList $ NearestLocationToLocation mouthOfKnYan Anywhere
+          isConnectedToMouthOfKnYan <- mouthOfKnYan
+            <=~> ConnectedTo (LocationWithId lid)
+          moveTo <- if isConnectedToMouthOfKnYan
+            then pure [mouthOfKnYan]
+            else selectList
+              (NearestLocationToLocation mouthOfKnYan
+              $ ConnectedTo
+              $ LocationWithId lid
+              )
           locations <- selectList Anywhere
           pushAll
             $ [ PlaceClues (LocationTarget l) 1 | l <- locations ]

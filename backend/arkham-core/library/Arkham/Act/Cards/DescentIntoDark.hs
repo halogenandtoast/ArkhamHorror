@@ -37,7 +37,7 @@ instance HasAbilities DescentIntoDark where
                (locationIs Locations.descentToYoth <> LocationWithoutDoom)
           )
         $ Objective
-        $ ActionAbility Nothing Free
+        $ FastAbility Free
     ]
 
 instance RunMessage DescentIntoDark where

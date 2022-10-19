@@ -6,6 +6,11 @@ data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
+recordedCardCodes :: [Recorded a] -> [a]
+recordedCardCodes [] = []
+recordedCardCodes (Recorded a : as) = a : recordedCardCodes as
+recordedCardCodes (_ : as) = recordedCardCodes as
+
 unrecorded :: Recorded a -> a
 unrecorded = \case
   Recorded a -> a
@@ -122,6 +127,7 @@ data CampaignLogKey
   | IchtacaHasConfidenceInYou
   | TheInvestigatorsMappedOutTheWayForward
   | IchtacasFaithIsRestored
+  | TheJungleWatches
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

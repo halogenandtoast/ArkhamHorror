@@ -24,8 +24,10 @@ instance RunMessage CaughtRedHanded where
   runMessage msg t@(CaughtRedHanded attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <- selectListMap EnemyTarget $ EnemyAt
-        (locationWithInvestigator iid
-        <> ConnectedFrom (locationWithInvestigator iid)
+        (LocationMatchAny
+          [ locationWithInvestigator iid
+          , ConnectedFrom (locationWithInvestigator iid)
+          ]
         )
       hunters <- selectListMap EnemyTarget $ HunterEnemy <> EnemyAt
         (ConnectedFrom $ locationWithInvestigator iid)

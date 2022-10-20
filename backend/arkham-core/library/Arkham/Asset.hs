@@ -377,6 +377,11 @@ allAssets = mapFromList $ map
   --- neutral [hote]
   , SomeAssetCard trenchCoat
   , SomeAssetCard ornateBow3
+  -- The City of Archives
+  --- guardian [tcoa]
+  , SomeAssetCard m1918Bar4
+  --- seeker [tcoa]
+  , SomeAssetCard ancientStoneKnowledgeOfTheElders4
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

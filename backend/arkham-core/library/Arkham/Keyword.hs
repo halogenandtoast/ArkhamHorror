@@ -17,6 +17,7 @@ data Keyword
   | Uses Int
   | Exceptional
   | Permanent
+  | Researched
   | Seal TokenMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

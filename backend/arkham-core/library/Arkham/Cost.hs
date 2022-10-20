@@ -111,6 +111,7 @@ data Cost
   | ResourceCost Int
   | FieldResourceCost FieldCost
   | UseCost AssetMatcher UseType Int
+  | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
   | SealCost TokenMatcher
   | SealTokenCost Token -- internal to track sealed token
@@ -173,6 +174,16 @@ displayCostType = \case
     Whistle -> pluralize n "Whistle"
     Resource -> pluralize n "Resource from the asset"
     Key -> pluralize n "Key"
+  UseCostUpTo _ uType n m -> case uType of
+    Ammo -> tshow n <> "-" <> tshow m <> " Ammo"
+    Supply -> tshow n <> "-" <> tshow m <> " Supplies"
+    Secret -> tshow n <> "-" <> tshow m <> " Secrets"
+    Charge -> tshow n <> "-" <> tshow m <> " Charges"
+    Try -> tshow n <> "-" <> tshow m <> " Tries"
+    Bounty -> tshow n <> "-" <> tshow m <> " Bounties"
+    Whistle -> tshow n <> "-" <> tshow m <> " Whistles"
+    Resource -> tshow n <> "-" <> tshow m <> " Resources"
+    Key -> tshow n <> "-" <> tshow m <> " Keys"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
   SealTokenCost _ -> "Seal token"

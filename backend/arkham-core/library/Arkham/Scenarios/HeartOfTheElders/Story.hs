@@ -56,3 +56,73 @@ intro4 = FlavorText
     \ pillars. It cannot simply be a coincidence. These pillars are surely the key to\
     \ finding your way to N’kai..."
   ]
+
+introB :: FlavorText
+introB = FlavorText
+  (Just "Scenario V–B: Heart of the Elders, Part 2")
+  ["You descend down miles of steep, cold stone. The tunnels are chokingly narrow\
+    \ at first, filled with rubble and detritus. Finally, you reach level ground, and\
+    \ the cavern’s true nature reveals itself before you. It is as though there were\
+    \ an entire world below the surface; the cavern’s ceiling is like a stone curtain\
+    \ of sky above you. Even more vast and terrifying are the endless depths below\
+    \ you, beyond the edges of stone chasms and archaic bridges. On all sides, this\
+    \ underground realm seems to extend beyond the boundary of your sight; you wonder\
+    \ just how far it reaches. Perhaps the entirety of the known surface of the Earth\
+    \ is but the top layer of another world..."
+  ]
+
+noResolutionA :: FlavorText
+noResolutionA = FlavorText
+  (Just "No Resolution")
+  [ "The hazards of the jungle are too dangerous for you to continue exploring. If\
+    \ you remain any longer, these odd pillars will mark your grave. You decide to\
+    \ flee for now, returning to a familiar clearing several miles away where you can\
+    \ recuperate. You know that you must eventually return to the pillars and figure\
+    \ out the pattern that will open the way forward...but for now, at least you are\
+    \ safe."
+  ]
+
+resolution1A :: FlavorText
+resolution1A = FlavorText
+  (Just "Resolution 1")
+  ["Swallowing your fear, you enter the cavern..."]
+
+noResolutionB :: FlavorText
+noResolutionB = FlavorText
+  (Just "No Resolution")
+  [ "You awaken, lying on rough stone in a place much colder and deeper than before.\
+    \ You stand and take stock of your surroundings, noting the red glow that seems\
+    \ to emanate from the cavern to your left. You follow it for several minutes,\
+    \ until finally it leads you into a well-lit entryway, filled with stone pillars.\
+    \ At the far end of the room lies an ornate and elaborately decorated doorway, a\
+    \ stone disc that has been rolled aside to unveil the hellish realm beyond."
+  ]
+
+resolution1B :: FlavorText
+resolution1B = FlavorText
+  (Just "Resolution 1")
+  [ "“Finally! Yoth, cavern of the serpents! The cursed ones, who fled the\
+    \ destruction of Valusia!” Alejandro examines the entryway with wonder in his\
+    \ eyes, arms raised in exultation. You know not of what he speaks, and you are\
+    \ beginning to grow worried. Just then, something scutters behind you, and a\
+    \ sound like the click-clacking of a claw catches you by surprise. Emerging from\
+    \ the darkness behind you are several alien creatures, the likes of which you\
+    \ have never seen: ten feet tall, with conical bodies that end in four strange\
+    \ appendages of varying lengths. “There you are,” Alejandro says calmly. One of\
+    \ the creatures responds by clicking its claws against one another in a\
+    \ deliberate pattern. “Take their minds,” Alejandro commands the creatures. “We\
+    \ have no further use for them.” It is your last human memory."
+  ]
+
+resolution2B :: FlavorText
+resolution2B = FlavorText
+  (Just "Resolution 2")
+  [ "Before you are able to cross into the next layer of the cavern, a sound like\
+    \ the click-clacking of a claw catches you by surprise. Emerging from the\
+    \ darkness behind you are several alien creatures, the likes of which you have\
+    \ never seen: ten feet tall, with conical bodies that end in four strange\
+    \ appendages of varying lengths. You are stunned to see a human figure standing\
+    \ at the head of the group: none other than Alejandro Vela. “Take their minds,”\
+    \ Alejandro commands the creatures. “We have no further use for them.” It is your\
+    \ last human memory."
+  ]

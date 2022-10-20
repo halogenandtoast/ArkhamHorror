@@ -81,7 +81,6 @@ getSetAsidePoisoned =
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock Eq
 
--- TODO: Update TakeAction, see Investigator/Runner:1045
 explore :: InvestigatorId -> Source -> CardMatcher -> ExploreRule -> GameT ()
 explore iid source cardMatcher exploreRule = do
   explorationDeck <- getExplorationDeck

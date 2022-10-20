@@ -23,7 +23,7 @@ import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Asset.Types ( Field (..) )
-import Arkham.Asset.Uses ( useCount )
+import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
@@ -408,9 +408,13 @@ getCanAffordCost iid source mAction windows' = \case
     _ -> error $ "Not handled" <> show target
   ExhaustAssetCost matcher ->
     notNull <$> select (matcher <> Matcher.AssetReady)
-  UseCost assetMatcher _uType n -> do
+  UseCost assetMatcher uType n -> do
     assets <- selectList assetMatcher
-    uses <- sum <$> traverse (fmap useCount . field AssetUses) assets
+    uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+    pure $ uses >= n
+  UseCostUpTo assetMatcher uType n _ -> do
+    assets <- selectList assetMatcher
+    uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
     pure $ uses >= n
   ActionCost n -> do
     modifiers <- getModifiers (InvestigatorTarget iid)

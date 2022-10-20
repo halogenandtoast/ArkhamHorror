@@ -5,7 +5,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Types ( Field (AssetCard) )
+import Arkham.Asset.Types ( Field (AssetCard, AssetUses) )
+import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
@@ -494,6 +495,18 @@ instance RunMessage ActiveCost where
             | aid <- assets
             ]
           withPayment $ UsesPayment n
+        UseCostUpTo assetMatcher uType n m -> do
+          assets <- selectList assetMatcher
+          uses <- sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
+          let maxUses = min uses m
+
+          push $ Ask iid $ ChoosePaymentAmounts
+            ("Pay " <> displayCostType cost)
+            Nothing
+            [ PaymentAmountChoice iid n maxUses
+                $ PayCost acId iid skipAdditionalCosts (UseCost assetMatcher uType 1)
+            ]
+          pure c
         ClueCost x -> do
           push (InvestigatorSpendClues iid x)
           withPayment $ CluePayment x

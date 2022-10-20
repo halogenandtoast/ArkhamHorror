@@ -440,6 +440,7 @@ data Message
   | PlaceClues Target Int
   | PlaceCluesUpToClueValue LocationId Int
   | FlipClues Target Int
+  | FlipDoom Target Int
   | PlaceDoom Target Int
   | PlaceDamage Target Int
   | PlaceHorror Target Int

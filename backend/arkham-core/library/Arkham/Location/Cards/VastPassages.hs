@@ -27,12 +27,11 @@ instance HasModifiersFor VastPassages where
       withBinoculars <- getHasSupply iid Binoculars
       pure $ toModifiers
         attrs
-        [ ActionCostOf (IsAction Action.Investigate) 1 | not withBinoculars ]
+        [ ActionCostOf (IsAction Action.Explore) 1 | not withBinoculars ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities VastPassages where
   getAbilities (VastPassages attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
 
 instance RunMessage VastPassages where
   runMessage msg (VastPassages attrs) = VastPassages <$> runMessage msg attrs

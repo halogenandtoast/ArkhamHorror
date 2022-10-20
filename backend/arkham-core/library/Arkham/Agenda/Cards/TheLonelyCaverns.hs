@@ -6,6 +6,7 @@ module Arkham.Agenda.Cards.TheLonelyCaverns
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
@@ -40,7 +41,7 @@ instance HasAbilities TheLonelyCaverns where
         a
         1
         (LocationExists $ YourLocation <> LocationWithoutClues)
-      $ ActionAbility Nothing
+      $ ActionAbility (Just Action.Explore)
       $ ActionCost 1
     , mkAbility a 2
       $ ForcedAbility

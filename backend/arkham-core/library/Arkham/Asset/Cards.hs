@@ -300,6 +300,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , riteOfSeeking4
   , ritualCandles
   , rolands38Special
+  , runicAxe
   , safeguard
   , scavenging
   , scrapper
@@ -2332,6 +2333,14 @@ livreDeibon =
     , cdSkills = [SkillWillpower, SkillWillpower, SkillWild]
     , cdUnique = True
     , cdSlots = [HandSlot]
+    }
+
+runicAxe :: CardDef
+runicAxe =
+  (asset "09022" "Runix Axe" 4 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSkills = [SkillCombat]
+    , cdSlots = [HandSlot, HandSlot]
     }
 
 physicalTraining2 :: CardDef

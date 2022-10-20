@@ -398,6 +398,9 @@ allAssets = mapFromList $ map
   -- Edge of the Earth
   --- signature [eote]
   , SomeAssetCard livreDeibon
+  -- The Scarlet Keys
+  --- guardian [tsk]
+  , SomeAssetCard runicAxe
   -- Return to Night of the Zealot
   --- guardian [rtnotz]
   , SomeAssetCard physicalTraining2

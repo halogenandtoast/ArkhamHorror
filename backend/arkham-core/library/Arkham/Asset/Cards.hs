@@ -112,6 +112,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , alyssaGraham
   , analyticalMind
   , ancientStone1
+  , ancientStoneKnowledgeOfTheElders4
   , aquinnah1
   , aquinnah3
   , arcaneEnlightenment
@@ -246,6 +247,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , luckyCigaretteCase
   , luckyDice2
   , lupara3
+  , m1918Bar4
   , machete
   , madameLabranche
   , magnifyingGlass
@@ -2283,6 +2285,25 @@ ornateBow3 = (asset "04204" "Ornate Bow" 4 Neutral)
   , cdSkills = [SkillCombat, SkillAgility]
   , cdSlots = [HandSlot, HandSlot]
   , cdUses = Uses Ammo 1
+  }
+
+m1918Bar4 :: CardDef
+m1918Bar4 = (asset "04229" "M1918 BAR" 5 Guardian)
+  { cdCardTraits = setFromList [Item, Weapon, Firearm]
+  , cdSkills = [SkillCombat, SkillCombat]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 8
+  , cdLevel = 4
+  }
+
+ancientStoneKnowledgeOfTheElders4 :: CardDef
+ancientStoneKnowledgeOfTheElders4 = (asset "04230" ("Ancient Stone" <:> "Knowledge of the Elders") 2 Seeker)
+  { cdCardTraits = setFromList [Item, Relic]
+  , cdSkills = [SkillIntellect, SkillIntellect]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Secret 0
+  , cdKeywords = setFromList [Keyword.Researched]
+  , cdLevel = 4
   }
 
 trackShoes :: CardDef

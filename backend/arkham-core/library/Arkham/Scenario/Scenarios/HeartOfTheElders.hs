@@ -15,6 +15,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
@@ -25,7 +26,8 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message hiding (EnemyDamage)
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -259,13 +261,6 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             ?~ [Acts.searchForThePattern, Acts.openingTheMaw]
             )
           )
-  Explore iid _ _ -> do
-    windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
-    pushAll [windowMsg, Do msg]
-    pure s
-  Do (Explore iid source locationMatcher) -> do
-    explore iid source locationMatcher PlaceExplored
-    pure s
   ScenarioResolution r -> case r of
     NoResolution -> do
       pathsKnown <- getRecordCount PathsAreKnownToYou
@@ -316,7 +311,9 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         ]
 
     theJungleWatches <- recordedCardCodes <$> getRecordSet TheJungleWatches
-    theJungleWatchesCards <- for theJungleWatches (\cCode -> lookupCard cCode <$> getRandom)
+    theJungleWatchesCards <- for
+      theJungleWatches
+      (\cCode -> lookupCard cCode <$> getRandom)
     let theJungleWatchesCardDefs = map toCardDef theJungleWatchesCards
 
     encounterDeck' <- buildEncounterDeckExcluding
@@ -331,8 +328,9 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       ]
 
     let
-      encounterDeck =
-        removeEachFromDeck encounterDeck' (explorationDeckTreacheries <> theJungleWatchesCardDefs)
+      encounterDeck = removeEachFromDeck
+        encounterDeck'
+        (explorationDeckTreacheries <> theJungleWatchesCardDefs)
 
     mouthOfKnYanTheDepthsBelow <- genCard Locations.mouthOfKnYanTheDepthsBelow
     setAsidePoisonedCount <- getSetAsidePoisonedCount
@@ -370,17 +368,47 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         ?~ [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
         )
       )
-  Explore iid _ _ -> do
-    windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
-    pushAll [windowMsg, Do msg]
-    pure s
-  Do (Explore iid source locationMatcher) -> do
-    explore iid source locationMatcher PlaceExplored
+  ScenarioResolution r -> do
+    iids <- getInvestigatorIds
+    vengeance <- getVengeanceInVictoryDisplay
+    yigsFury <- getRecordCount YigsFury
+    inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs
+      Enemies.harbingerOfValusia
+    inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
+    damage <- case inPlayHarbinger of
+      Just eid -> field EnemyDamage eid
+      Nothing -> getRecordCount TheHarbingerIsStillAlive
+    case r of
+      NoResolution -> do
+        rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
+        let n = if rescuedAlejandro then 1 else 2
+        pushAll [story iids noResolutionB, ScenarioResolution (Resolution n)]
+      Resolution n -> do
+        let
+          resolutionStory = case n of
+            1 -> resolution1B
+            2 -> resolution2B
+            _ -> error "invalid resolution"
+        gainXp <- map (uncurry GainXP) <$> getXp
+        pushAll
+          $ [story iids resolutionStory]
+          <> [RecordCount YigsFury (yigsFury + vengeance)]
+          <> [ CrossOutRecord TheHarbingerIsStillAlive | inVictory ]
+          <> [ RecordCount TheHarbingerIsStillAlive damage | not inVictory ]
+          <> gainXp
+          <> [EndOfGame Nothing]
     pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> runMessage msg attrs
 
 instance RunMessage HeartOfTheElders where
-  runMessage msg s@(HeartOfTheElders (_ `With` metadata)) =
-    case scenarioStep metadata of
+  runMessage msg s@(HeartOfTheElders (_ `With` metadata)) = case msg of
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored
+      pure s
+    _ -> case scenarioStep metadata of
       One -> runAMessage msg s
       Two -> runBMessage msg s

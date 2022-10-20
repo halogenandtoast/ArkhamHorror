@@ -26,6 +26,10 @@ useCount :: Uses -> Int
 useCount NoUses = 0
 useCount (Uses _ n) = n
 
+useTypeCount :: UseType -> Uses -> Int
+useTypeCount _ NoUses = 0
+useTypeCount u (Uses v n) = if u == v then n else 0
+
 instance ToJSON Uses where
   toJSON NoUses = Null
   toJSON (Uses t n) = object ["type" .= toJSON t, "amount" .= toJSON n]

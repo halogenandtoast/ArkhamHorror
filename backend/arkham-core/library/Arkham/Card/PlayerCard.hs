@@ -18,6 +18,7 @@ data PlayerCard = MkPlayerCard
   , pcOwner :: Maybe InvestigatorId
   , pcCardCode :: CardCode
   , pcOriginalCardCode :: CardCode
+  , pcCustomizations :: IntMap Int
   }
   deriving stock (Show, Generic)
   deriving anyclass Hashable
@@ -59,6 +60,7 @@ lookupPlayerCard cardDef cardId = MkPlayerCard
   , pcCardCode = toCardCode cardDef
   , pcOriginalCardCode = toCardCode cardDef
   , pcOwner = Nothing
+  , pcCustomizations = mempty
   }
 
 genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard

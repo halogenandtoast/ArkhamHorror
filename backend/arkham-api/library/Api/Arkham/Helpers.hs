@@ -1,4 +1,5 @@
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE ViewPatterns #-}
 module Api.Arkham.Helpers where
 
 import Import hiding ( appLogger )
@@ -12,10 +13,17 @@ import Arkham.Message
 import Arkham.PlayerCard
 import Control.Lens
 import Control.Monad.Random ( MonadRandom (..), StdGen, mkStdGen )
+import Data.Aeson.Key ( fromText )
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.ByteString.Lazy qualified as BSL
 import Data.HashMap.Strict qualified as HashMap
 import Data.Map.Strict qualified as Map
 import Json
+import Text.Parsec ( char, digit, many1, sepBy, parse, ParsecT )
+import Data.IntMap qualified as IntMap
+import Text.Read (read)
+
+type Parser = ParsecT Text () Identity
 
 toPublicGame :: Entity ArkhamGame -> PublicGame ArkhamGameId
 toPublicGame (Entity gId ArkhamGame {..}) =
@@ -80,8 +88,28 @@ newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
 
 loadDecklistCards :: ArkhamDBDecklist -> IO [PlayerCard]
 loadDecklistCards decklist =
-  flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
-    replicateM count' (genPlayerCard (lookupPlayerCardDef cardCode))
+  flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' -> replicateM
+    count'
+    (applyCustomizations decklist
+    <$> genPlayerCard (lookupPlayerCardDef cardCode)
+    )
+
+applyCustomizations :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
+applyCustomizations deckList pCard = case meta deckList of
+  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
+    Just (Object o) ->
+      case KeyMap.lookup (fromText $ "cus_" <> unCardCode (pcCardCode pCard)) o of
+        Just (fromJSON -> Success customizations) -> case parse parseCustomizations "" customizations of
+          Left _ -> pCard
+          Right cs -> pCard { pcCustomizations = cs }
+        _ -> pCard
+    _ -> pCard
+  _ -> pCard
+ where
+  parseCustomizations :: Parser (IntMap Int)
+  parseCustomizations = do
+    let parseInt = read <$> many1 digit
+    IntMap.fromList <$> sepBy ((,) <$> parseInt <*> (char '|' *> parseInt)) (char ',')
 
 loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
 loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist

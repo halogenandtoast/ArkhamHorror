@@ -68,6 +68,14 @@ instance RunMessage LocationAttrs where
         & (cluesL .~ clueCount)
         & (doomL +~ flipCount)
         & (withoutCluesL .~ (clueCount == 0))
+    FlipDoom target n | isTarget a target -> do
+      let flipCount = min n locationDoom
+      let doomCount = max 0 $ subtract n locationDoom
+      pure
+        $ a
+        & (cluesL +~ flipCount)
+        & (doomL .~ doomCount)
+        & (withoutCluesL .~ (flipCount >= 0))
     UpdateLocation newAttrs lid | lid == locationId -> do
       pure newAttrs
     Investigate iid lid source mTarget skillType False | lid == locationId -> do

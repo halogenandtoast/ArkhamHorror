@@ -25,7 +25,7 @@ lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation
 
 lookupLocation :: CardCode -> (LocationId -> Location)
 lookupLocation lid = case lookup lid allLocations of
-  Nothing -> error $ "Unknown locaiton: " <> show lid
+  Nothing -> error $ "Unknown location: " <> show lid
   Just (SomeLocationCard a) -> Location <$> cbCardBuilder a
 
 instance RunMessage Location where
@@ -334,6 +334,7 @@ allLocations = mapFromList $ map
   --- K'n-yan
   , SomeLocationCard vastPassages
   , SomeLocationCard hallOfIdolatry
+  , SomeLocationCard darkHollow
   , SomeLocationCard perilousGulch
   , SomeLocationCard crystalPillars
   , SomeLocationCard descentToYoth

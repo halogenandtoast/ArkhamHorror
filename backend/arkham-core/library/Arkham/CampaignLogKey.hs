@@ -2,8 +2,6 @@ module Arkham.CampaignLogKey where
 
 import Arkham.Prelude
 
-import Arkham.Id
-
 data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)

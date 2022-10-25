@@ -111,10 +111,15 @@ data Cost
   | ResourceCost Int
   | FieldResourceCost FieldCost
   | UseCost AssetMatcher UseType Int
+  | DynamicUseCost AssetMatcher UseType DynamicUseCostValue
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
   | SealCost TokenMatcher
   | SealTokenCost Token -- internal to track sealed token
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data DynamicUseCostValue = DrawnCardsValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -174,6 +179,16 @@ displayCostType = \case
     Whistle -> pluralize n "Whistle"
     Resource -> pluralize n "Resource from the asset"
     Key -> pluralize n "Key"
+  DynamicUseCost _ uType _ -> case uType of
+    Ammo -> "X Ammo"
+    Supply -> "X Supplies"
+    Secret -> "X Secrets"
+    Charge -> "X Charges"
+    Try -> "X Tries"
+    Bounty -> "X Bounties"
+    Whistle -> "X Whistles"
+    Resource -> "X Resources"
+    Key -> "X Keys"
   UseCostUpTo _ uType n m -> case uType of
     Ammo -> tshow n <> "-" <> tshow m <> " Ammo"
     Supply -> tshow n <> "-" <> tshow m <> " Supplies"

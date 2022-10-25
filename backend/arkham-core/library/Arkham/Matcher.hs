@@ -785,6 +785,7 @@ data WindowMatcher
   | DealtDamageOrHorror Timing SourceMatcher Who
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
+  | DrawsCards Timing Who ValueMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher

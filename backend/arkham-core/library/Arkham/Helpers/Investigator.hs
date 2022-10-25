@@ -259,6 +259,7 @@ investigator f cardDef Stats {..} =
         , investigatorSupplies = []
         , investigatorAssignedHealthDamage = 0
         , investigatorAssignedSanityDamage = 0
+        , investigatorDrawnCards = []
         }
       }
 

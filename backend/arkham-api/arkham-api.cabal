@@ -44,6 +44,7 @@ library
       Entity.Arkham.Player
       Entity.User
       Foundation
+      GHCI
       Handler.Health
       Import
       Import.NoFoundation

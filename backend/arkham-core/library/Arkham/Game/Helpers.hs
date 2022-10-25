@@ -412,6 +412,16 @@ getCanAffordCost iid source mAction windows' = \case
     assets <- selectList assetMatcher
     uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
     pure $ uses >= n
+  DynamicUseCost assetMatcher uType useCost -> case useCost of
+    DrawnCardsValue -> do
+      let
+        toDrawnCards = \case
+          Window _ (Window.DrawCards _ xs) -> length xs
+          _ -> 0
+        drawnCardsValue = sum $ map toDrawnCards windows'
+      assets <- selectList assetMatcher
+      uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+      pure $ uses >= drawnCardsValue
   UseCostUpTo assetMatcher uType n _ -> do
     assets <- selectList assetMatcher
     uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
@@ -1764,6 +1774,13 @@ windowMatches iid source window' = \case
     Window t (Window.LastClueRemovedFromAsset aid) | whenMatcher == t ->
       member aid <$> select assetMatcher
     _ -> pure False
+  Matcher.DrawsCards whenMatcher whoMatcher valueMatcher ->
+    case window' of
+      Window t (Window.DrawCards who cards) | whenMatcher == t -> andM
+        [ matchWho iid who whoMatcher
+        , gameValueMatches (length cards) valueMatcher
+        ]
+      _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher deckMatcher ->
     case window' of
       Window t (Window.DrawCard who card deck) | whenMatcher == t -> andM

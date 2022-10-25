@@ -14,6 +14,7 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.RunMessage.Internal
 import Arkham.ClassSymbol
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards
@@ -115,8 +116,13 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorHorrorHealed :: Int
   -- the forgotten age
   , investigatorSupplies :: [Supply]
+  , investigatorDrawnCards :: [PlayerCard] -- temporarily track drawn cards mid shuffle
   }
   deriving stock (Show, Eq, Generic)
+
+data DrawingCards = DrawingCards Deck.DeckSignifier Int [Card]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance HasTraits InvestigatorAttrs where
   toTraits = investigatorTraits
@@ -290,6 +296,9 @@ horrorHealedL =
 
 suppliesL :: Lens' InvestigatorAttrs [Supply]
 suppliesL = lens investigatorSupplies $ \m x -> m { investigatorSupplies = x }
+
+drawnCardsL :: Lens' InvestigatorAttrs [PlayerCard]
+drawnCardsL = lens investigatorDrawnCards $ \m x -> m { investigatorDrawnCards = x }
 
 startsWithL :: Lens' InvestigatorAttrs [CardDef]
 startsWithL =

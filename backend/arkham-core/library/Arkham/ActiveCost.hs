@@ -495,6 +495,23 @@ instance RunMessage ActiveCost where
             | aid <- assets
             ]
           withPayment $ UsesPayment n
+        DynamicUseCost assetMatcher uType costValue -> case costValue of
+          DrawnCardsValue -> do
+            let
+              getDrawnCards [] = error "can not find drawn card in windows"
+              getDrawnCards (x : xs) = case x of
+                Window _ (Window.DrawCards _ cards) -> length cards
+                _ -> getDrawnCards xs
+              n = getDrawnCards (activeCostWindows c)
+            assets <- selectList assetMatcher
+            push $ chooseOrRunOne
+              iid
+              [ TargetLabel
+                  (AssetTarget aid)
+                  [SpendUses (AssetTarget aid) uType n]
+              | aid <- assets
+              ]
+            withPayment $ UsesPayment n
         UseCostUpTo assetMatcher uType n m -> do
           assets <- selectList assetMatcher
           uses <- sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets

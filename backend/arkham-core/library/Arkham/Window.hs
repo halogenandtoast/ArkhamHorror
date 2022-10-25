@@ -69,6 +69,7 @@ data WindowType
   | DiscoverClues InvestigatorId LocationId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
+  | DrawCards InvestigatorId [Card]
   | DrawToken InvestigatorId Token
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId

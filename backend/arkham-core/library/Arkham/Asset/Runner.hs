@@ -107,7 +107,7 @@ instance RunMessage AssetAttrs where
     AddUses target useType' n | a `isTarget` target -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
-      _ -> error "Trying to add the wrong use type"
+      _ -> error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
     SpendUses target useType' n | isTarget a target -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
         let remainingUses = max 0 (m - n)

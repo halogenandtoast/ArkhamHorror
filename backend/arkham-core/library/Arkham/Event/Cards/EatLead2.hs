@@ -46,7 +46,7 @@ instance RunMessage EatLead2 where
               [ chooseAmounts
                 iid
                 "Additional ammo to spend"
-                uses
+                (MaxAmountTarget uses)
                 [("Ammo", (0, uses))]
                 (toTarget attrs)
               , Discard (toTarget attrs)

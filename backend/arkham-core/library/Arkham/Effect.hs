@@ -35,6 +35,7 @@ import Arkham.Event.Events
   , willToSurviveEffect
   , marksmanship1Effect
   , exposeWeakness3Effect
+  , slipAwayEffect
   )
 import Arkham.Skill.Skills
   ( hatchetManEffect
@@ -188,6 +189,7 @@ allEffects = mapFromList
   , ("04155", SomeEffect hatchetManEffect)
   , ("04156", SomeEffect highRoller2Effect)
   , ("04195", SomeEffect exposeWeakness3Effect)
+  , ("04232", SomeEffect slipAwayEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

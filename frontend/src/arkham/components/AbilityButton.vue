@@ -22,7 +22,6 @@ const isAction = (action: string) => {
   }
 
   const {tag} = ability.value.type
-  console.log(ability)
   if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
     return false
   }

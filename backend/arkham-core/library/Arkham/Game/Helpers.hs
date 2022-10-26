@@ -772,7 +772,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier _ val = val
-    modifiedCardCost <- getModifiedCardCost iid c
+    modifiedCardCost <- getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
       (passesCriteria iid source windows')
@@ -1177,6 +1177,26 @@ getModifiedCardCost iid c@(EncounterCard _) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then n + m else n
+  applyModifier n _ = pure n
+
+getPotentiallyModifiedCardCost :: (Monad m, HasGame m) => InvestigatorId -> Card -> Int -> m Int
+getPotentiallyModifiedCardCost iid c@(PlayerCard _) startingCost = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+  foldM applyModifier startingCost (modifiers <> cardModifiers)
+ where
+  applyModifier n (CanReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n _ = pure n
+getPotentiallyModifiedCardCost iid c@(EncounterCard _) _ = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  foldM
+    applyModifier
+    (error "we need so specify ecCost for this to work")
+    modifiers
+ where
+  applyModifier n (CanReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
 
 cardInFastWindows

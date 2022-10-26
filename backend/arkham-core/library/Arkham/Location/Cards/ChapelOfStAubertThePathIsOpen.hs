@@ -57,7 +57,7 @@ instance RunMessage ChapelOfStAubertThePathIsOpen where
       push $ chooseAmounts
         iid
         "Take up to 3 horror"
-        3
+        (MaxAmountTarget 3)
         [("Horror", (0, 3))]
         (toTarget attrs)
       pure l

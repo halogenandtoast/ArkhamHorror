@@ -38,7 +38,7 @@ instance RunMessage Perseverance where
         [ chooseAmounts
           iid
           "Cancel up to 4 damage and or horror"
-          4
+          (MaxAmountTarget 4)
           ([ ("Damage", (0, assignedDamage)) | assignedDamage > 0 ]
           <> [ ("Horror", (0, assignedHorror)) | assignedHorror > 0 ]
           )

@@ -182,6 +182,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , onTheHunt
   , onTheLam
   , oops
+  , payDay1
   , perseverance
   , persuasion
   , premonition
@@ -191,6 +192,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , quantumFlux
   , recharge2
   , reliable1
+  , sacrifice1
   , sceneOfTheCrime
   , scroungeForSupplies
   , searchForTheTruth
@@ -199,6 +201,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , shortcut
   , shortcut2
   , sleightOfHand
+  , slipAway
   , smuggledGoods
   , snareTrap2
   , sneakAttack
@@ -1410,6 +1413,26 @@ againstAllOdds2 = (event "04202" "Against All Odds" 2 Survivor)
   , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
   , cdFastWindow = Just $ InitiatedSkillTest Timing.When You AnySkillType GreaterThanBaseValue
   , cdLevel = 2
+  }
+
+slipAway :: CardDef
+slipAway = (event "04232" "Against All Odds" 2 Rogue)
+  { cdCardTraits = singleton Trick
+  , cdSkills = [SkillIntellect, SkillAgility]
+  , cdActions = [Action.Evade]
+  }
+
+payDay1 :: CardDef
+payDay1 = (event "04233" "Pay Day" 0 Rogue)
+  { cdCardTraits = setFromList [Illicit, Fated]
+  , cdLevel = 1
+  }
+
+sacrifice1 :: CardDef
+sacrifice1 = (event "04234" "Sacrifice" 0 Mystic)
+  { cdCardTraits = singleton Ritual
+  , cdCriteria = Just $ Criteria.AssetExists $ AssetWithClass Mystic <> AssetControlledBy You <> DiscardableAsset
+  , cdLevel = 1
   }
 
 wingingIt :: CardDef

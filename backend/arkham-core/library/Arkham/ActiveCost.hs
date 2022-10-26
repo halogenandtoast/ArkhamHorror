@@ -43,8 +43,12 @@ data ActiveCost = ActiveCost
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data IsPlayAction = IsPlayAction | NotPlayAction
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data ActiveCostTarget
-  = ForCard Card
+  = ForCard IsPlayAction Card
   | ForAbility Ability
   | ForCost Card -- used when the active cost will not determine an effect
   deriving stock (Show, Eq, Generic)
@@ -53,8 +57,8 @@ data ActiveCostTarget
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case activeCostTarget ac of
   ForAbility a -> [fromMaybe Action.Ability (abilityAction a)]
-  ForCard c -> if null (cdActions $ toCardDef c)
-    then [Action.Play]
+  ForCard isPlayAction c -> if null (cdActions $ toCardDef c)
+    then [Action.Play | isPlayAction == IsPlayAction ]
     else cdActions $ toCardDef c
   ForCost _ -> []
 
@@ -64,7 +68,7 @@ addActiveCostCost cost ac = ac & costsL <>~ cost
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> abilitySource a
-  ForCard c -> CardIdSource $ toCardId c
+  ForCard _ c -> CardIdSource $ toCardId c
   ForCost c -> CardIdSource $ toCardId c
 
 costsL :: Lens' ActiveCost Cost
@@ -197,7 +201,7 @@ instance RunMessage ActiveCost where
           pushAll
             [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
           pure c
-        ForCard card -> do
+        ForCard isPlayAction card -> do
           modifiers' <- getModifiers (InvestigatorTarget iid)
           let
             cardDef = toCardDef card
@@ -205,7 +209,7 @@ instance RunMessage ActiveCost where
               ActionDoesNotCauseAttacksOfOpportunity Action.Play
                 `elem` modifiers'
             actions = case cdActions cardDef of
-              [] -> [Action.Play]
+              [] -> [Action.Play | isPlayAction == IsPlayAction ]
               as -> as
           beforeWindowMsg <- checkWindows
             $ map (Window Timing.When . Window.PerformAction iid) actions
@@ -415,7 +419,7 @@ instance RunMessage ActiveCost where
           case activeCostTarget c of
             ForAbility{} -> push $ SpendResources iid x
             ForCost{} -> push $ SpendResources iid x
-            ForCard card -> do
+            ForCard _ card -> do
               iids <- filter (/= iid) <$> getInvestigatorIds
               iidsWithModifiers <- for iids $ \iid' -> do
                 modifiers <- getModifiers (InvestigatorTarget iid')
@@ -727,14 +731,14 @@ instance RunMessage ActiveCost where
                    (activeCostPayments c)
                ]
             <> afterMsgs
-        ForCard card -> do
+        ForCard isPlayAction card -> do
           let iid = activeCostInvestigator c
           pushAll
             $ [ PlayCard iid card Nothing (activeCostWindows c) False
               , PaidForCardCost iid card (activeCostPayments c)
               ]
             <> [ SealedToken token card | token <- activeCostSealedTokens c ]
-            <> [FinishAction]
+            <> [FinishAction | isPlayAction == IsPlayAction ]
         ForCost card -> pushAll
           [ SealedToken token card | token <- activeCostSealedTokens c ]
       pure c

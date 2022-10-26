@@ -35,6 +35,7 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType ()
@@ -173,33 +174,35 @@ instance RunMessage EnemyAttrs where
         ((`Window` Window.EnemyEnters eid lid) <$> [Timing.When, Timing.After])
       pure $ a & placementL .~ AtLocation lid
     Ready target | isTarget a target -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      enemyLocation <- field EnemyLocation enemyId
-      iids <-
-        fromMaybe []
-          <$> traverse
-                (selectList . InvestigatorAt . LocationWithId)
-                enemyLocation
-      keywords <- getModifiedKeywords a
-      if null iids
-        then pure ()
+      modifiers' <- getModifiers (toTarget a)
+      phase <- getPhase
+      if DoesNotReadyDuringUpkeep `elem` modifiers' && phase == UpkeepPhase
+        then pure a
         else do
-          unengaged <- selectNone $ investigatorEngagedWith enemyId
-          when
-              (Keyword.Aloof
-              `notElem` keywords
-              && (unengaged || Keyword.Massive `elem` keywords)
-              )
-            $ push
-                (chooseOne
+          leadInvestigatorId <- getLeadInvestigatorId
+          enemyLocation <- field EnemyLocation enemyId
+          iids <-
+            fromMaybe []
+              <$> traverse
+                    (selectList . InvestigatorAt . LocationWithId)
+                    enemyLocation
+          keywords <- getModifiedKeywords a
+          unless (null iids) $ do
+            unengaged <- selectNone $ investigatorEngagedWith enemyId
+            when
+                (Keyword.Aloof
+                `notElem` keywords
+                && (unengaged || Keyword.Massive `elem` keywords)
+                )
+              $ push
+              $ chooseOne
                   leadInvestigatorId
                   [ TargetLabel
                       (InvestigatorTarget iid)
                       [EnemyEngageInvestigator enemyId iid]
                   | iid <- iids
                   ]
-                )
-      pure $ a & exhaustedL .~ False
+          pure $ a & exhaustedL .~ False
     ReadyExhausted -> do
       modifiers' <- getModifiers (toTarget a)
       let

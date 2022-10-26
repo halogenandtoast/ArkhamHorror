@@ -2662,9 +2662,10 @@ createActiveCostForCard
   :: (MonadRandom m, HasGame m)
   => InvestigatorId
   -> Card
+  -> IsPlayAction
   -> [Window]
   -> m ActiveCost
-createActiveCostForCard iid card windows' = do
+createActiveCostForCard iid card isPlayAction windows' = do
   acId <- getRandom
   modifiers' <- getModifiers (CardIdTarget $ toCardId card)
   modifiers'' <- getModifiers (CardTarget card)
@@ -2692,7 +2693,7 @@ createActiveCostForCard iid card windows' = do
     { activeCostId = acId
     , activeCostCosts = cost
     , activeCostPayments = Cost.NoPayment
-    , activeCostTarget = ForCard card
+    , activeCostTarget = ForCard isPlayAction card
     , activeCostWindows = windows'
     , activeCostInvestigator = iid
     , activeCostSealedTokens = []
@@ -2846,7 +2847,7 @@ runGameMessage msg g = case msg of
       target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card windows' -> do
-    activeCost <- createActiveCostForCard iid card windows'
+    activeCost <- createActiveCostForCard iid card NotPlayAction windows'
     -- _ <- error "This is broken because it also plays the card, rethink cards that call this"
     push $ CreatedCost (activeCostId activeCost)
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
@@ -3214,7 +3215,7 @@ runGameMessage msg g = case msg of
     modifiers'' <- getModifiers (CardTarget card)
     investigator' <- getInvestigator iid
     let allModifiers = modifiers' <> modifiers''
-    activeCost <- createActiveCostForCard iid card windows'
+    activeCost <- createActiveCostForCard iid card IsPlayAction windows'
     let
       isFast = case card of
         PlayerCard pc ->

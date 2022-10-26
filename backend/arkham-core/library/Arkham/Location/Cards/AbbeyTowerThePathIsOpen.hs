@@ -64,7 +64,7 @@ instance RunMessage AbbeyTowerThePathIsOpen where
       push $ chooseAmounts
         iid
         "Discard up to 3 cards from your hand"
-        3
+        (MaxAmountTarget 3)
         [("Cards", (0, maxDiscardAmount))]
         (toTarget attrs)
       pure l

@@ -28,7 +28,7 @@ instance RunMessage DevilsLuck where
           [ chooseAmounts
             iid
             "Amount of Damage/Horror to cancel"
-            10
+            (MaxAmountTarget 10)
             ([ ("Damage", (0, damage)) | damage > 0 ]
             <> [ ("Horror", (0, horror)) | horror > 0 ]
             )

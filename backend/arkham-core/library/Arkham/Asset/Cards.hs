@@ -113,6 +113,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , analyticalMind
   , ancientStone1
   , ancientStoneKnowledgeOfTheElders4
+  , ancientStoneMindsInHarmony4
   , aquinnah1
   , aquinnah3
   , arcaneEnlightenment
@@ -154,6 +155,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , claspOfBlackOnyx
   , cornered2
   , combatTraining1
+  , crystallineElderSign3
   , daisysToteBag
   , daisysToteBagAdvanced
   , darioElAmin
@@ -271,6 +273,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , oldBookOfLore
   , oldKeyring
   , oliveMcBride
+  , onYourOwn3
   , ornateBow3
   , otherwordlyCompass2
   , painkillers
@@ -2304,6 +2307,33 @@ ancientStoneKnowledgeOfTheElders4 = (asset "04230" ("Ancient Stone" <:> "Knowled
   , cdUses = Uses Secret 0
   , cdKeywords = setFromList [Keyword.Researched]
   , cdLevel = 4
+  }
+
+ancientStoneMindsInHarmony4 :: CardDef
+ancientStoneMindsInHarmony4 = (asset "04231" ("Ancient Stone" <:> "Minds in Harmony") 2 Seeker)
+  { cdCardTraits = setFromList [Item, Relic]
+  , cdSkills = [SkillWillpower, SkillWillpower]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Secret 0
+  , cdKeywords = setFromList [Keyword.Researched]
+  , cdLevel = 4
+  }
+
+crystallineElderSign3 :: CardDef
+crystallineElderSign3 = (asset "04235" "Crystalline Elder Sign" 3 Mystic)
+  { cdCardTraits = setFromList [Item, Relic, Blessed]
+  , cdSkills = [SkillWild]
+  , cdSlots = [AccessorySlot]
+  , cdKeywords = singleton (Keyword.Seal $ TokenMatchesAny $ map TokenFaceIs [Token.PlusOne, Token.ElderSign])
+  , cdLevel = 3
+  }
+
+onYourOwn3 :: CardDef
+onYourOwn3 = (asset "04236" "On Your Own" 2 Survivor)
+  { cdCardTraits = singleton Talent
+  , cdSkills = [SkillWillpower]
+  , cdLimits = [LimitPerInvestigator 1]
+  , cdLevel = 3
   }
 
 trackShoes :: CardDef

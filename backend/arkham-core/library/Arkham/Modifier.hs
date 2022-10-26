@@ -164,6 +164,7 @@ data ModifierType
   | NonDirectHorrorMustBeAssignToThisFirst
   | PlaceOnBottomOfDeckInsteadOfDiscard
   | ReduceCostOf CardMatcher Int
+  | CanReduceCostOf CardMatcher Int
   | RemoveFromGameInsteadOfDiscard
   | RemoveKeyword Keyword
   | ReturnToHandAfterTest

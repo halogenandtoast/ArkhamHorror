@@ -61,6 +61,10 @@ data AmountChoice = AmountChoice
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+data AmountTarget = MaxAmountTarget Int | TotalAmountTarget Int
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 data Question msg
   = ChooseOne { choices :: [UI msg] }
   | ChooseN { amount :: Int, choices :: [UI msg] }
@@ -74,7 +78,7 @@ data Question msg
     -- is a target value. The tuple of ints are the min and max bound for
     -- the specific investigator
     ChoosePaymentAmounts { label :: Text, paymentAmountTargetValue :: (Maybe Int), paymentAmountChoices :: [PaymentAmountChoice msg] }
-  | ChooseAmounts { label :: Text, amountTargetValue ::  Int, amountChoices :: [AmountChoice], target :: Target }
+  | ChooseAmounts { label :: Text, amountTargetValue :: AmountTarget, amountChoices :: [AmountChoice], target :: Target }
   | ChooseUpgradeDeck
   | QuestionLabel { label :: Text, question :: (Question msg) }
   | Read { flavorText :: FlavorText, readChoices :: [UI msg] }

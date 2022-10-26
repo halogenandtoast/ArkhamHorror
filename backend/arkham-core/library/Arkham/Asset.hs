@@ -382,6 +382,11 @@ allAssets = mapFromList $ map
   , SomeAssetCard m1918Bar4
   --- seeker [tcoa]
   , SomeAssetCard ancientStoneKnowledgeOfTheElders4
+  , SomeAssetCard ancientStoneMindsInHarmony4
+  --- mystic [tcoa]
+  , SomeAssetCard crystallineElderSign3
+  --- survivor [tcoa]
+  , SomeAssetCard onYourOwn3
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

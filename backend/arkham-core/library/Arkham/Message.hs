@@ -679,7 +679,7 @@ chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseAmounts
-  :: InvestigatorId -> Text -> Int -> [(Text, (Int, Int))] -> Target -> Message
+  :: InvestigatorId -> Text -> AmountTarget -> [(Text, (Int, Int))] -> Target -> Message
 chooseAmounts iid label total choiceMap target = Ask
   iid
   (ChooseAmounts label total amountChoices target)

@@ -233,6 +233,7 @@ library
       Arkham.Asset.Cards.AnalyticalMind
       Arkham.Asset.Cards.AncientStone1
       Arkham.Asset.Cards.AncientStoneKnowledgeOfTheElders4
+      Arkham.Asset.Cards.AncientStoneMindsInHarmony4
       Arkham.Asset.Cards.Aquinnah1
       Arkham.Asset.Cards.Aquinnah3
       Arkham.Asset.Cards.ArcaneEnlightenment
@@ -279,6 +280,7 @@ library
       Arkham.Asset.Cards.ConstanceDumaine
       Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
+      Arkham.Asset.Cards.CrystallineElderSign3
       Arkham.Asset.Cards.DaisysToteBag
       Arkham.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Asset.Cards.DanielChesterfield
@@ -408,6 +410,7 @@ library
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldKeyring
       Arkham.Asset.Cards.OliveMcBride
+      Arkham.Asset.Cards.OnYourOwn3
       Arkham.Asset.Cards.OrnateBow3
       Arkham.Asset.Cards.OtherwordlyCompass2
       Arkham.Asset.Cards.Painkillers
@@ -908,6 +911,7 @@ library
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheLam
       Arkham.Event.Cards.Oops
+      Arkham.Event.Cards.PayDay1
       Arkham.Event.Cards.Perseverance
       Arkham.Event.Cards.Persuasion
       Arkham.Event.Cards.Premonition
@@ -917,6 +921,7 @@ library
       Arkham.Event.Cards.QuantumFlux
       Arkham.Event.Cards.Recharge2
       Arkham.Event.Cards.Reliable1
+      Arkham.Event.Cards.Sacrifice1
       Arkham.Event.Cards.SceneOfTheCrime
       Arkham.Event.Cards.ScroungeForSupplies
       Arkham.Event.Cards.SearchForTheTruth
@@ -925,6 +930,7 @@ library
       Arkham.Event.Cards.Shortcut
       Arkham.Event.Cards.Shortcut2
       Arkham.Event.Cards.SleightOfHand
+      Arkham.Event.Cards.SlipAway
       Arkham.Event.Cards.SmuggledGoods
       Arkham.Event.Cards.SnareTrap2
       Arkham.Event.Cards.SneakAttack

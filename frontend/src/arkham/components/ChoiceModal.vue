@@ -89,10 +89,25 @@ const unmetAmountRequirements = computed(() => {
 
     return false
   } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    const maxBound = question.value.amountTargetValue
-    if (maxBound) {
-      const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-      return total > maxBound
+    switch(question.value.amountTargetValue.tag) {
+      case 'MaxAmountTarget':
+        {
+          const maxBound = question.value.amountTargetValue.contents
+          if (maxBound) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return total > maxBound
+          }
+          break
+        }
+      case 'TotalAmountTarget':
+        {
+          const requiredTotal = question.value.amountTargetValue.contents
+          if (requiredTotal) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return total !== requiredTotal
+          }
+          break
+        }
     }
 
     return false

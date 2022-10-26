@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 data EffectWindow
   = EffectPhaseWindow
+  | EffectCostWindow
   | EffectSkillTestWindow
   | EffectRoundWindow
   | EffectSetupWindow

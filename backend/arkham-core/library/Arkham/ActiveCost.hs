@@ -1,6 +1,12 @@
-module Arkham.ActiveCost where
+{-# OPTIONS_GHC -Wno-orphans #-}
+module Arkham.ActiveCost
+  ( module Arkham.ActiveCost
+  , module X
+  ) where
 
 import Arkham.Prelude
+
+import Arkham.ActiveCost.Base as X
 
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
@@ -31,34 +37,11 @@ import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
-data ActiveCost = ActiveCost
-  { activeCostId :: ActiveCostId
-  , activeCostCosts :: Cost
-  , activeCostPayments :: Payment
-  , activeCostTarget :: ActiveCostTarget
-  , activeCostWindows :: [Window]
-  , activeCostInvestigator :: InvestigatorId
-  , activeCostSealedTokens :: [Token]
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data IsPlayAction = IsPlayAction | NotPlayAction
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data ActiveCostTarget
-  = ForCard IsPlayAction Card
-  | ForAbility Ability
-  | ForCost Card -- used when the active cost will not determine an effect
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case activeCostTarget ac of
   ForAbility a -> [fromMaybe Action.Ability (abilityAction a)]
   ForCard isPlayAction c -> if null (cdActions $ toCardDef c)
-    then [Action.Play | isPlayAction == IsPlayAction ]
+    then [ Action.Play | isPlayAction == IsPlayAction ]
     else cdActions $ toCardDef c
   ForCost _ -> []
 
@@ -209,7 +192,7 @@ instance RunMessage ActiveCost where
               ActionDoesNotCauseAttacksOfOpportunity Action.Play
                 `elem` modifiers'
             actions = case cdActions cardDef of
-              [] -> [Action.Play | isPlayAction == IsPlayAction ]
+              [] -> [ Action.Play | isPlayAction == IsPlayAction ]
               as -> as
           beforeWindowMsg <- checkWindows
             $ map (Window Timing.When . Window.PerformAction iid) actions
@@ -518,14 +501,19 @@ instance RunMessage ActiveCost where
             withPayment $ UsesPayment n
         UseCostUpTo assetMatcher uType n m -> do
           assets <- selectList assetMatcher
-          uses <- sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
+          uses <-
+            sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
           let maxUses = min uses m
 
           push $ Ask iid $ ChoosePaymentAmounts
             ("Pay " <> displayCostType cost)
             Nothing
             [ PaymentAmountChoice iid n maxUses
-                $ PayCost acId iid skipAdditionalCosts (UseCost assetMatcher uType 1)
+                $ PayCost
+                    acId
+                    iid
+                    skipAdditionalCosts
+                    (UseCost assetMatcher uType 1)
             ]
           pure c
         ClueCost x -> do
@@ -738,7 +726,7 @@ instance RunMessage ActiveCost where
               , PaidForCardCost iid card (activeCostPayments c)
               ]
             <> [ SealedToken token card | token <- activeCostSealedTokens c ]
-            <> [FinishAction | isPlayAction == IsPlayAction ]
+            <> [ FinishAction | isPlayAction == IsPlayAction ]
         ForCost card -> pushAll
           [ SealedToken token card | token <- activeCostSealedTokens c ]
       pure c

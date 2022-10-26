@@ -63,6 +63,18 @@ import Data.Monoid
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
+-- There are a few conditions that can occur that mean we must need to use an ability.
+-- No valid targets. For example Marksmanship
+-- Can't afford card. For example On Your Own
+getAllAbilitiesSkippable :: InvestigatorAttrs -> [Window] -> GameT Bool
+getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
+
+getWindowSkippable :: InvestigatorAttrs -> [Window] -> Window -> GameT Bool
+getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc))) | iid == toId attrs = do
+  cost <- getModifiedCardCost iid card
+  getCanAffordCost (toId attrs) (PlayerCardSource pc) (Just Action.Play) ws (ResourceCost cost)
+getWindowSkippable _ _ _ = pure True
+
 runInvestigatorMessage
   :: Message -> InvestigatorAttrs -> GameT InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
@@ -1474,39 +1486,63 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         -- horror. In this case, you cannot shuffle your discard pile into
         -- your deck, so you will neither draw 1 card, nor will you take 1
         -- horror."
-        unless (null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers') $
-          pushAll [EmptyDeck iid, DrawCards iid n False, Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
+        unless
+            (null investigatorDiscard
+            || CardsCannotLeaveYourDiscardPile
+            `elem` modifiers'
+            )
+          $ pushAll
+              [ EmptyDeck iid
+              , DrawCards iid n False
+              , Msg.InvestigatorDamage iid EmptyDeckSource 0 1
+              ]
         pure a
       else do
         let deck = unDeck investigatorDeck
         if length deck < n
-           then do
-             push $ DrawCards iid (n - length deck) False
-             pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
-           else do
-             let
-               (drawn, deck') = splitAt n deck
-               allDrawn = investigatorDrawnCards <> drawn
-               msgs = flip mapMaybe allDrawn $ \card -> case toCardType card of
-                 PlayerTreacheryType -> Just $ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) $ PlayerCard card
-                 PlayerEnemyType -> Just $ DrewPlayerEnemy iid $ PlayerCard card
-                 other | cdRevelation (toCardDef card) && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> Just $ Revelation iid $ PlayerCardSource card
-                 _ -> Nothing
+          then do
+            push $ DrawCards iid (n - length deck) False
+            pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
+          else do
+            let
+              (drawn, deck') = splitAt n deck
+              allDrawn = investigatorDrawnCards <> drawn
+              msgs = flip mapMaybe allDrawn $ \card -> case toCardType card of
+                PlayerTreacheryType ->
+                  Just
+                    $ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid)
+                    $ PlayerCard card
+                PlayerEnemyType -> Just $ DrewPlayerEnemy iid $ PlayerCard card
+                other
+                  | cdRevelation (toCardDef card)
+                    && other
+                    `notElem` [PlayerTreacheryType, PlayerEnemyType]
+                  -> Just $ Revelation iid $ PlayerCardSource card
+                _ -> Nothing
 
-             windowMsgs <- if null deck'
-               then pure <$> checkWindows
-                 ((`Window` Window.DeckHasNoCards iid)
-                 <$> [Timing.When, Timing.After]
-                 )
-               else pure []
-             drawCardsWindowMsg <- checkWindows [Window Timing.When $ Window.DrawCards iid $ map PlayerCard allDrawn]
-             pushAll
-               $ windowMsgs
-               <> [ DeckHasNoCards iid Nothing | null deck' ]
-               <> [ InvestigatorDrewPlayerCard iid card | card <- allDrawn ]
-               <> [drawCardsWindowMsg]
-               <> msgs
-             pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
+            windowMsgs <- if null deck'
+              then pure <$> checkWindows
+                ((`Window` Window.DeckHasNoCards iid)
+                <$> [Timing.When, Timing.After]
+                )
+              else pure []
+            drawCardsWindowMsg <- checkWindows
+              [ Window Timing.When $ Window.DrawCards iid $ map
+                  PlayerCard
+                  allDrawn
+              ]
+            pushAll
+              $ windowMsgs
+              <> [ DeckHasNoCards iid Nothing | null deck' ]
+              <> [ InvestigatorDrewPlayerCard iid card | card <- allDrawn ]
+              <> [drawCardsWindowMsg]
+              <> msgs
+            pure
+              $ a
+              & handL
+              %~ (<> map PlayerCard allDrawn)
+              & deckL
+              .~ Deck deck'
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <- checkWindows
       [ Window
@@ -1540,9 +1576,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotGainResources then a else a & resourcesL +~ n
   EmptyDeck iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
-    when
-      (CardsCannotLeaveYourDiscardPile `notElem` modifiers')
-      $ push $ ShuffleDiscardBackIn iid
+    when (CardsCannotLeaveYourDiscardPile `notElem` modifiers')
+      $ push
+      $ ShuffleDiscardBackIn iid
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
@@ -1820,6 +1856,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                           (\w -> windowMatches iid abilitySource w abilityWindow
                           )
                           windows
+              skippable <- getAllAbilitiesSkippable a windows
               push
                 $ chooseOne iid
                 $ [ TargetLabel
@@ -1835,7 +1872,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                        [RunWindow iid windows]
                      )
                      actionsWithMatchingWindows
-                <> [Label "Skip playing fast cards or using reactions" []]
+                <> [ Label "Skip playing fast cards or using reactions" []
+                   | skippable
+                   ]
       pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
     mAdditionalAction <- findM

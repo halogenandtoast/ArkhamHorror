@@ -131,6 +131,7 @@ library
       Arkham.Action
       Arkham.Action.Additional
       Arkham.ActiveCost
+      Arkham.ActiveCost.Base
       Arkham.Agenda
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas

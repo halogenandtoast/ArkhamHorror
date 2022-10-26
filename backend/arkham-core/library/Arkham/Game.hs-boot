@@ -3,13 +3,14 @@ module Arkham.Game where
 
 import Arkham.Ability
 import Arkham.Act.Types
+import Arkham.ActiveCost.Base
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
 import Arkham.Classes.Entity
-import Arkham.Classes.HasTokenValue
-import Arkham.Classes.HasDistance
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasDistance
+import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Query
 import Arkham.Effect.Types
 import Arkham.Enemy.Types
@@ -23,10 +24,10 @@ import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
 import Arkham.SkillTest.Base
+import Arkham.Target
 import Arkham.Treachery.Types
 import Control.Monad.Random
 
@@ -80,6 +81,7 @@ instance HasTokenValue ()
 gameActiveAbilities :: Game -> [Ability]
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest
+gameActiveCost :: Game -> HashMap ActiveCostId ActiveCost
 gameModifiers :: Game -> HashMap Target [Modifier]
 gameWindowDepth :: Game -> Int
 gameDepthLock :: Game -> Int

@@ -2,6 +2,7 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
+import Arkham.ActiveCost.Base
 import Arkham.Ability
 import Arkham.Classes.HasAbilities
 import Arkham.Phase
@@ -96,6 +97,9 @@ instance MonadRandom GameT where
 
 getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
+
+getActiveCosts :: (Monad m, HasGame m) => m [ActiveCost]
+getActiveCosts = toList . gameActiveCost <$> getGame
 
 getJustSkillTest :: (Monad m, HasGame m, HasCallStack) => m SkillTest
 getJustSkillTest = fromJustNote "must be called during a skill test" . gameSkillTest <$> getGame

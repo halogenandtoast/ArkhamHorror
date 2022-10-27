@@ -82,6 +82,7 @@ allActCards = mapFromList $ map
   , discoveringTheTruth
   , disruptingTheRitual
   , escapeTheRuins
+  , exploringPnakotus
   , exploringTheRainforest
   , findTheRelic
   , findingANewWay
@@ -118,6 +119,8 @@ allActCards = mapFromList $ map
   , pursuingShadows
   , raceForAnswers
   , recoverTheRelic
+  , repossession
+  , restrictedAccess
   , ricesWhereabouts
   , row
   , run
@@ -481,6 +484,15 @@ cavernOfTheForgottenAge = act "04213" "Cavern of the Forgotten Age" 1 KnYan
 
 descentIntoDark :: CardDef
 descentIntoDark = act "04214" "Descent into Dark" 2 KnYan
+
+exploringPnakotus :: CardDef
+exploringPnakotus = act "04241" "Exploring Pnakotus" 1 TheCityOfArchives
+
+restrictedAccess :: CardDef
+restrictedAccess = act "04242" "Restricted Access" 2 TheCityOfArchives
+
+repossession :: CardDef
+repossession = act "04243" "Repossession" 3 TheCityOfArchives
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

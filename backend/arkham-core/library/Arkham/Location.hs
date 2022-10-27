@@ -342,6 +342,14 @@ allLocations = mapFromList $ map
   , SomeLocationCard interviewRoomArrivalChamber
   , SomeLocationCard interviewRoomRestrainingChamber
   , SomeLocationCard interviewRoomIchorFilledChamber
+  , SomeLocationCard hallsOfPnakotusNorthernCorridors
+  , SomeLocationCard hallsOfPnakotusEasternCorridors
+  , SomeLocationCard hallsOfPnakotusWesternCorridors
+  , SomeLocationCard greatLibrary
+  , SomeLocationCard yithianOrrery
+  , SomeLocationCard laboratoryOfTheGreatRace
+  , SomeLocationCard deconstructionRoom
+  , SomeLocationCard towersOfPnakotus
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

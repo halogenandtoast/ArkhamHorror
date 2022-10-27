@@ -341,6 +341,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , switchblade2
   , theChthonianStone
   , theCodexOfAges
+  , theCustodian
   , theGoldPocketWatch4
   , theKingInYellow
   , theNecronomicon
@@ -2335,6 +2336,12 @@ onYourOwn3 = (asset "04236" "On Your Own" 2 Survivor)
   , cdLimits = [LimitPerInvestigator 1]
   , cdLevel = 3
   }
+
+theCustodian :: CardDef
+theCustodian =
+  (storyAsset "04256" ("The Custodian" <:> "Curious Yithian") 0 TheCityOfArchives)
+    { cdCardTraits = setFromList [Ally, Yithian]
+    }
 
 trackShoes :: CardDef
 trackShoes = (asset "05036" "Track Shoes" 3 Survivor)

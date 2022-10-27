@@ -210,6 +210,10 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard theWingedSerpent
   , SomeEnemyCard apexStrangleweed
   , SomeEnemyCard basilisk
+  -- The City of Archives
+  , SomeEnemyCard keeperOfTheGreatLibrary
+  , SomeEnemyCard scientistOfYith
+  , SomeEnemyCard scholarFromYith
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

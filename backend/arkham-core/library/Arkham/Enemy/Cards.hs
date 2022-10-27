@@ -152,6 +152,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , ishimaruHaruko
   , jeremiahPierce
   , jordanPerry
+  , keeperOfTheGreatLibrary
   , lupineThrall
   , madPatient
   , maniac
@@ -174,6 +175,8 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , ruthTurner
   , salvatoreNeri
   , savioCorvi
+  , scholarFromYith
+  , scientistOfYith
   , screechingByakhee
   , sebastienMoreau
   , seekerOfCarcosa
@@ -986,6 +989,29 @@ basilisk =
     { cdCardTraits = setFromList [Monster, Serpent]
     , cdKeywords = singleton Keyword.Hunter
     , cdVengeancePoints = Just 2
+    }
+
+keeperOfTheGreatLibrary :: CardDef
+keeperOfTheGreatLibrary =
+  (enemy "04257" "Keeper of the Great Library" TheCityOfArchives 2
+    )
+    { cdCardTraits = setFromList [Monster, Yithian]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Aloof]
+    }
+
+scientistOfYith :: CardDef
+scientistOfYith =
+  (enemy "04258" "Scientist of Yith" TheCityOfArchives 2
+    )
+    { cdCardTraits = setFromList [Monster, Yithian]
+    , cdKeywords = singleton Keyword.Aloof
+    }
+
+scholarFromYith :: CardDef
+scholarFromYith =
+  (enemy "04259" "Scholar from Yith" TheCityOfArchives 3
+    )
+    { cdCardTraits = setFromList [Monster, Yithian]
     }
 
 corpseHungryGhoul :: CardDef

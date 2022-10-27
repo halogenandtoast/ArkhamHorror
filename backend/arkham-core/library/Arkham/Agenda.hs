@@ -137,6 +137,10 @@ allAgendas = mapFromList $ map
   --- K'n-yan
   , SomeAgendaCard theLonelyCaverns
   , SomeAgendaCard eyesInTheDark
+  -- The City of Archives
+  , SomeAgendaCard cityOfTheGreatRace
+  , SomeAgendaCard lostMemories
+  , SomeAgendaCard humanityFading
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

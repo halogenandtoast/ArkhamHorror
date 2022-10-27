@@ -110,6 +110,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , indebted
   , internalInjury
   , lostSoul
+  , outOfBodyExperience
   , overzealous
   , paranoia
   , poisoned
@@ -145,6 +146,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , beyondTheVeil
   , blackStarsRise
   , brokenRails
+  , captiveMind
   , chaosInTheWater
   , chillFromBelow
   , clawsOfSteam
@@ -153,6 +155,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , corrosion
   , crashingFloods
   , creepingPoison
+  , cruelInterrogations
   , cryptChill
   , curseOfYig
   , cursedLuck
@@ -185,6 +188,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , ledAstray
   , lightOfAforgomon
   , lockedDoor
+  , lostHumanity
   , lostInTheWilds
   , lostInTime
   , lostInVenice
@@ -268,6 +272,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , wordsOfPower
   , worldsMerge
   , wormhole
+  , yithianPresence
   ]
 
 coverUp :: CardDef
@@ -1096,6 +1101,37 @@ noTurningBack =
   (treachery "04228" "No Turning Back" EncounterSet.KnYan 3)
     { cdCardTraits = singleton Hazard
     }
+
+yithianPresence :: CardDef
+yithianPresence =
+  (treachery "04260" "Yithian Presence" EncounterSet.TheCityOfArchives 3)
+    { cdCardTraits = setFromList [Power, Terror]
+    }
+
+cruelInterrogations :: CardDef
+cruelInterrogations =
+  (treachery "04261" "Cruel Interrogations" EncounterSet.TheCityOfArchives 3)
+    { cdCardTraits = setFromList [Injury, Terror]
+    }
+
+lostHumanity :: CardDef
+lostHumanity =
+  (treachery "04262" "Lost Humanity" EncounterSet.TheCityOfArchives 2)
+    { cdCardTraits = singleton Terror
+    }
+
+captiveMind :: CardDef
+captiveMind =
+  (treachery "04263" "Captive Mind" EncounterSet.TheCityOfArchives 2)
+    { cdCardTraits = singleton Hex
+    }
+
+outOfBodyExperience :: CardDef
+outOfBodyExperience = (weakness "04264" "Out of Body Experience")
+  { cdCardTraits = setFromList [Madness, Paradox]
+  , cdEncounterSet = Just TheCityOfArchives
+  , cdEncounterSetQuantity = Just 4
+  }
 
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")

@@ -158,6 +158,10 @@ allActs = mapFromList $ map
   --- K'n-yan
   , SomeActCard cavernOfTheForgottenAge
   , SomeActCard descentIntoDark
+  -- The City of Archives
+  , SomeActCard exploringPnakotus
+  , SomeActCard restrictedAccess
+  , SomeActCard repossession
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

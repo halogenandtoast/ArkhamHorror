@@ -44,13 +44,15 @@ instance FromJSON Investigator where
   parseJSON v = flip (withObject "Investigator") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
     withInvestigatorCardCode cCode
-      $ \(_ :: InvestigatorCard a) -> Investigator <$> parseJSON @a v
+      $ \(SomeInvestigator (_ :: Proxy a)) -> Investigator <$> parseJSON @a v
 
 withInvestigatorCardCode
-  :: CardCode -> (forall a . IsInvestigator a => InvestigatorCard a -> r) -> r
+  :: CardCode -> (SomeInvestigator -> r) -> r
 withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
-  Nothing -> error "invalid investigators"
-  Just (SomeInvestigatorCard a) -> f a
+  Nothing -> if cCode == "04244" then f (SomeInvestigator (Proxy @BodyOfAYithian)) else error "invalid investigators"
+  Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator (Proxy @a))
+
+data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)
 
 allInvestigators :: HashMap CardCode SomeInvestigatorCard
 allInvestigators = mapFromList $ map
@@ -91,6 +93,7 @@ becomeYithian (Investigator a) =
     , investigatorIntellect = 2
     , investigatorCombat = 2
     , investigatorAgility = 2
+    , investigatorCardCode = "04244"
     , investigatorIsYithian = True
     }
 

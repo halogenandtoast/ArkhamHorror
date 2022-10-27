@@ -117,6 +117,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   -- the forgotten age
   , investigatorSupplies :: [Supply]
   , investigatorDrawnCards :: [PlayerCard] -- temporarily track drawn cards mid shuffle
+  , investigatorIsYithian :: Bool
   }
   deriving stock (Show, Eq, Generic)
 

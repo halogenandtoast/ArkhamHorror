@@ -128,6 +128,8 @@ data CampaignLogKey
   | TheInvestigatorsMappedOutTheWayForward
   | IchtacasFaithIsRestored
   | TheJungleWatches
+  | TheInvestigatorsCooperatedWithTheYithians
+  | TheInvestigatorsResistedCaptivity
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

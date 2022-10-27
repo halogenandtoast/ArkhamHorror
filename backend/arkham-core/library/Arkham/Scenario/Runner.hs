@@ -807,4 +807,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         <> skills
       ]
     pure a
+  SetupInvestigators -> do
+    iids <- getInvestigatorIds
+    pushAll $ map SetupInvestigator iids
+    pure a
   _ -> pure a

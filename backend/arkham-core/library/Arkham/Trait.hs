@@ -122,6 +122,7 @@ data Trait
   | Passageway
   | Patron
   | Performer
+  | Pnakotus
   | Poison
   | Police
   | Power

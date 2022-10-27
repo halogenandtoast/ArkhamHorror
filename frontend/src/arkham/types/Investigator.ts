@@ -75,6 +75,7 @@ export interface Investigator {
   foundCards: Record<string, Card[]>;
   xp: number;
   supplies: string[];
+  isYithian: boolean;
 }
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
@@ -115,4 +116,5 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
+  isYithian: JsonDecoder.boolean,
 }, 'Investigator');

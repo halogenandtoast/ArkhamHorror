@@ -68,6 +68,7 @@ allAgendaCards = mapFromList $ map
   , callingForthTheOldOnes
   , chaosAtTheCarnevale
   , chaosInTheCloverClub
+  , cityOfTheGreatRace
   , deadOfNight
   , drawnIn
   , empireOfTheDead
@@ -80,11 +81,13 @@ allAgendaCards = mapFromList $ map
   , hiddenEntanglements
   , hisDomain
   , horrorsUnleashed
+  , humanityFading
   , intruders
   , inEveryShadow
   , letTheStormRageTheFloodBelow
   , letTheStormRageTheVortexAbove
   , lockedInside
+  , lostMemories
   , madnessCoils
   , madnessDies
   , madnessDrowns
@@ -369,6 +372,15 @@ theLonelyCaverns = agenda "04211" "The Lonely Caverns" 1 KnYan
 
 eyesInTheDark :: CardDef
 eyesInTheDark = agenda "04212" "Eyes in the Dark" 2 KnYan
+
+cityOfTheGreatRace :: CardDef
+cityOfTheGreatRace = agenda "04238" "City of the Great Race" 1 TheCityOfArchives
+
+lostMemories :: CardDef
+lostMemories = agenda "04239" "Lost Memories" 2 TheCityOfArchives
+
+humanityFading :: CardDef
+humanityFading = agenda "04240" "Humanity Fading" 3 TheCityOfArchives
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

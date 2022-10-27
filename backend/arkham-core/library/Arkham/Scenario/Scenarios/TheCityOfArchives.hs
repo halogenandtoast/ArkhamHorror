@@ -5,12 +5,16 @@ module Arkham.Scenario.Scenarios.TheCityOfArchives
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
@@ -37,7 +41,11 @@ theCityOfArchives difficulty = scenario
   "04237"
   "The City of Archives"
   difficulty
-  ["interviewRoom1", "interviewRoom2", "interviewRoom3"]
+  [ ".                yithianOrrery                   laboratoryOfTheGreatRace         deconstructionRoom              ."
+  , ".                .                               hallsOfPnakotusNorthernCorridors .                               interviewRoom1"
+  , "towersOfPnakotus hallsOfPnakotusWesternCorridors .                                hallsOfPnakotusEasternCorridors interviewRoom2"
+  , ".                greatLibrary                    .                                .                               interviewRoom3"
+  ]
 
 instance HasTokenValue TheCityOfArchives where
   getTokenValue iid tokenFace (TheCityOfArchives attrs) = case tokenFace of
@@ -47,8 +55,30 @@ instance HasTokenValue TheCityOfArchives where
     ElderThing -> pure $ TokenValue ElderThing NoModifier
     otherFace -> getTokenValue iid otherFace attrs
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFive
+  , Skull
+  , Skull
+  , Cultist
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage TheCityOfArchives where
   runMessage msg s@(TheCityOfArchives attrs) = case msg of
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+      pure s
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid)] -> do
       uniqueItemAssetCards <-
         selectList $ InDeckOf (InvestigatorWithId iid) <> BasicCardMatch
@@ -71,15 +101,6 @@ instance RunMessage TheCityOfArchives where
     Setup -> do
       iids <- getInvestigatorIds
       leadInvestigator <- getLeadInvestigatorId
-
-      encounterDeck' <-
-        buildEncounterDeckExcluding []
-          $ [ EncounterSet.TheCityOfArchives
-            , EncounterSet.AgentsOfYogSothoth
-            , EncounterSet.LockedDoors
-            , EncounterSet.ChillingCold
-            , EncounterSet.StrikingFear
-            ]
       pushAll
         $ map BecomeYithian iids
         <> [ story iids intro1
@@ -100,41 +121,81 @@ instance RunMessage TheCityOfArchives where
     SetupStep (isTarget attrs -> True) 1 -> do
       cooperatedWithTheYithians <- getHasRecord
         TheInvestigatorsCooperatedWithTheYithians
-      if cooperatedWithTheYithians
-        then do
-          interviewRoom <- genCard Locations.interviewRoomArrivalChamber
-          otherRooms <- traverse genCard =<< shuffleM
-            [ Locations.interviewRoomRestrainingChamber
-            , Locations.interviewRoomIchorFilledChamber
+      interviewRoom <- genCard $ if cooperatedWithTheYithians
+        then Locations.interviewRoomArrivalChamber
+        else Locations.interviewRoomRestrainingChamber
+      otherRooms <- traverse genCard =<< shuffleM
+        [ Locations.interviewRoomIchorFilledChamber
+        , if cooperatedWithTheYithians
+          then Locations.interviewRoomRestrainingChamber
+          else Locations.interviewRoomArrivalChamber
+        ]
+
+      encounterDeck' <-
+        buildEncounterDeckExcluding []
+          $ [ EncounterSet.TheCityOfArchives
+            , EncounterSet.AgentsOfYogSothoth
+            , EncounterSet.LockedDoors
+            , EncounterSet.ChillingCold
+            , EncounterSet.StrikingFear
             ]
-          pushAll
-            $ [ PlaceLocation interviewRoom
-              , SetLocationLabel (toLocationId interviewRoom) "interviewRoom1"
-              , MoveAllTo (toSource attrs) (toLocationId interviewRoom)
-              ]
-            <> map PlaceLocation otherRooms
-            <> [ SetLocationLabel
-                   (toLocationId l)
-                   ("interviewRoom" <> tshow @Int n)
-               | (l, n) <- zip otherRooms [1 ..]
-               ]
-          pure s
-        else do
-          interviewRoom <- genCard Locations.interviewRoomRestrainingChamber
-          otherRooms <- traverse genCard =<< shuffleM
-            [ Locations.interviewRoomArrivalChamber
-            , Locations.interviewRoomIchorFilledChamber
-            ]
-          pushAll
-            $ [ PlaceLocation interviewRoom
-              , SetLocationLabel (toLocationId interviewRoom) "interviewRoom1"
-              , MoveAllTo (toSource attrs) (toLocationId interviewRoom)
-              ]
-            <> map PlaceLocation otherRooms
-            <> [ SetLocationLabel
-                   (toLocationId l)
-                   ("interviewRoom" <> tshow @Int n)
-               | (l, n) <- zip otherRooms [1 ..]
-               ]
-          pure s
+
+      yithianObserver <- genCard Enemies.yithianObserver
+      remainingLocations <- traverse
+        genCard
+        [ Locations.hallsOfPnakotusNorthernCorridors
+        , Locations.hallsOfPnakotusEasternCorridors
+        , Locations.hallsOfPnakotusWesternCorridors
+        ]
+
+      setAsideCards <- traverse
+        genCard
+        [ Locations.greatLibrary
+        , Locations.yithianOrrery
+        , Locations.laboratoryOfTheGreatRace
+        , Locations.deconstructionRoom
+        , Locations.towersOfPnakotus
+        , Assets.theCustodian
+        ]
+
+      let
+        encounterDeck =
+          removeEachFromDeck encounterDeck' [Enemies.yithianObserver]
+        victoryDisplayUpdate = if cooperatedWithTheYithians
+          then id
+          else victoryDisplayL %~ (yithianObserver :)
+
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , PlaceLocation interviewRoom
+          , SetLocationLabel (toLocationId interviewRoom) "interviewRoom1"
+          , MoveAllTo (toSource attrs) (toLocationId interviewRoom)
+          ]
+        <> map PlaceLocation otherRooms
+        <> [ SetLocationLabel (toLocationId l) ("interviewRoom" <> tshow @Int n)
+           | (l, n) <- zip otherRooms [2 ..]
+           ]
+        <> [CreateEnemyAt yithianObserver (toLocationId interviewRoom) Nothing | cooperatedWithTheYithians]
+        <> map PlaceLocation remainingLocations
+      pure
+        . TheCityOfArchives
+        $ attrs
+        & victoryDisplayUpdate
+        & (setAsideCardsL %~ (<> setAsideCards))
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.cityOfTheGreatRace
+             , Agendas.lostMemories
+             , Agendas.humanityFading
+             ]
+          )
+        & (actStackL
+          . at 1
+          ?~ [ Acts.exploringPnakotus
+             , Acts.restrictedAccess
+             , Acts.repossession
+             ]
+          )
     _ -> TheCityOfArchives <$> runMessage msg attrs

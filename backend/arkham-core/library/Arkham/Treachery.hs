@@ -256,10 +256,16 @@ allTreacheries = mapFromList $ map
   -- Heart of the Elders
   , SomeTreacheryCard pitfall
   , SomeTreacheryCard poisonousSpores
-  -- Pillars of Judgement
+  --- Pillars of Judgement [hote]
   , SomeTreacheryCard ants
-  -- K'n-yan
+  --- K'n-yan [hote]
   , SomeTreacheryCard noTurningBack
+  -- The City of Archives
+  , SomeTreacheryCard yithianPresence
+  , SomeTreacheryCard cruelInterrogations
+  , SomeTreacheryCard lostHumanity
+  , SomeTreacheryCard captiveMind
+  , SomeTreacheryCard outOfBodyExperience
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

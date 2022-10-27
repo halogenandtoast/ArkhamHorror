@@ -387,6 +387,8 @@ allAssets = mapFromList $ map
   , SomeAssetCard crystallineElderSign3
   --- survivor [tcoa]
   , SomeAssetCard onYourOwn3
+  --- story [tcoa]
+  , SomeAssetCard theCustodian
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

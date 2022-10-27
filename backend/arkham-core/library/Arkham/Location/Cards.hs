@@ -184,6 +184,7 @@ allLocationCards = mapFromList $ map
   , darkHollow
   , darkenedHall
   , darkSpires
+  , deconstructionRoom
   , deepBelowYourHouse
   , depthsOfDemheTheHeightOfTheDepths
   , depthsOfDemheStepsOfThePalace
@@ -240,9 +241,13 @@ allLocationCards = mapFromList $ map
   , grandGuignol
   , grandRue
   , graveyard
+  , greatLibrary
   , greenRoom
   , guestHall
   , hallOfIdolatry
+  , hallsOfPnakotusEasternCorridors
+  , hallsOfPnakotusNorthernCorridors
+  , hallsOfPnakotusWesternCorridors
   , hallway
   , hiddenLibrary
   , historicalSocietyHistoricalLibrary_133
@@ -265,6 +270,7 @@ allLocationCards = mapFromList $ map
   , kitchen
   , knightsHall
   , laBellaLuna
+  , laboratoryOfTheGreatRace
   , labyrinthOfBones
   , lakeXochimilco_182
   , lakeXochimilco_183
@@ -377,6 +383,7 @@ allLocationCards = mapFromList $ map
   , theatre
   , timeWrackedWoods
   , tombOfShadows
+  , towersOfPnakotus
   , townHall
   , trainTracks
   , trapRoom
@@ -394,6 +401,7 @@ allLocationCards = mapFromList $ map
   , whateleyRuins_251
   , xochimilco
   , yard
+  , yithianOrrery
   , yourHouse
   , zocalo
   ]
@@ -2958,130 +2966,125 @@ sacredWoods_185 = (location
 
 mouthOfKnYanTheCavernsMaw :: CardDef
 mouthOfKnYanTheCavernsMaw = (location
-                    "04206"
-                    ("Mouth of K'n-yan" <:> "The Cavern's Maw")
-                    [Cave]
-                    Equals
-                    [Squiggle, T, Hourglass]
-                    HeartOfTheElders
-                  )
+                              "04206"
+                              ("Mouth of K'n-yan" <:> "The Cavern's Maw")
+                              [Cave]
+                              Equals
+                              [Squiggle, T, Hourglass]
+                              HeartOfTheElders
+                            )
   { cdDoubleSided = False
   }
 
 mouthOfKnYanTheDepthsBelow :: CardDef
 mouthOfKnYanTheDepthsBelow = (location
-                    "04206b"
-                    ("Mouth of K'n-yan" <:> "The Depths Below")
-                    [Cave]
-                    Equals
-                    [Circle, Triangle, Diamond]
-                    HeartOfTheElders
-                  )
+                               "04206b"
+                               ("Mouth of K'n-yan" <:> "The Depths Below")
+                               [Cave]
+                               Equals
+                               [Circle, Triangle, Diamond]
+                               HeartOfTheElders
+                             )
   { cdDoubleSided = False
   }
 
 timeWrackedWoods :: CardDef
 timeWrackedWoods = (location
-                    "04217"
-                    "Time-Wracked Woods"
-                    [Jungle]
-                    Circle
-                    [Square, Diamond, Moon]
-                    PillarsOfJudgement
-                  )
+                     "04217"
+                     "Time-Wracked Woods"
+                     [Jungle]
+                     Circle
+                     [Square, Diamond, Moon]
+                     PillarsOfJudgement
+                   )
   { cdDoubleSided = False
   }
 
 stoneAltar :: CardDef
 stoneAltar = (location
-                    "04218"
-                    "Stone Altar"
-                    [Ancient, Ruins]
-                    Hourglass
-                    [Triangle, Heart, Equals]
-                    PillarsOfJudgement
-                  )
+               "04218"
+               "Stone Altar"
+               [Ancient, Ruins]
+               Hourglass
+               [Triangle, Heart, Equals]
+               PillarsOfJudgement
+             )
   { cdDoubleSided = False
   , cdVictoryPoints = Just 1
   }
 
 vastPassages :: CardDef
 vastPassages = (location
-                    "04222"
-                    "Vast Passages"
-                    [Ancient, Cave]
-                    Circle
-                    [Equals, Triangle, Diamond, Square, Moon]
-                    KnYan
-                  )
+                 "04222"
+                 "Vast Passages"
+                 [Ancient, Cave]
+                 Circle
+                 [Equals, Triangle, Diamond, Square, Moon]
+                 KnYan
+               )
   { cdDoubleSided = False
   }
 
 hallOfIdolatry :: CardDef
 hallOfIdolatry = (location
-                    "04223"
-                    "Hall of Idolatry"
-                    [Ancient, Cave]
-                    Square
-                    [Heart, Triangle, Circle]
-                    KnYan
-                  )
+                   "04223"
+                   "Hall of Idolatry"
+                   [Ancient, Cave]
+                   Square
+                   [Heart, Triangle, Circle]
+                   KnYan
+                 )
   { cdDoubleSided = False
   , cdVictoryPoints = Just 1
   }
 
 darkHollow :: CardDef
 darkHollow = (location
-                    "04224"
-                    "Dark Hollow"
-                    [Ancient, Cave]
-                    Triangle
-                    [Equals, Circle, Square]
-                    KnYan
-                  )
+               "04224"
+               "Dark Hollow"
+               [Ancient, Cave]
+               Triangle
+               [Equals, Circle, Square]
+               KnYan
+             )
   { cdDoubleSided = False
   , cdVictoryPoints = Just 1
   }
 
 perilousGulch :: CardDef
 perilousGulch = (location
-                    "04225"
-                    "Perilous Gulch"
-                    [Ancient, Cave]
-                    Diamond
-                    [Equals, Circle, Moon]
-                    KnYan
-                  )
+                  "04225"
+                  "Perilous Gulch"
+                  [Ancient, Cave]
+                  Diamond
+                  [Equals, Circle, Moon]
+                  KnYan
+                )
   { cdDoubleSided = False
   , cdVictoryPoints = Just 1
   }
 
 crystalPillars :: CardDef
 crystalPillars = (location
-                    "04226"
-                    "Crystal Pillars"
-                    [Ancient, Cave]
-                    Moon
-                    [Heart, Diamond, Circle]
-                    KnYan
-                  )
+                   "04226"
+                   "Crystal Pillars"
+                   [Ancient, Cave]
+                   Moon
+                   [Heart, Diamond, Circle]
+                   KnYan
+                 )
   { cdDoubleSided = False
   , cdVictoryPoints = Just 1
   }
 
 descentToYoth :: CardDef
-descentToYoth = (location
-                    "04227"
-                    "Descent to Yoth"
-                    [Ancient, Cave]
-                    Heart
-                    [Square, Moon]
-                    KnYan
-                  )
-  { cdDoubleSided = False
-  , cdVictoryPoints = Just 2
-  , cdVengeancePoints = Just 2
-  }
+descentToYoth =
+  (location "04227" "Descent to Yoth" [Ancient, Cave] Heart [Square, Moon] KnYan
+    )
+    { cdDoubleSided = False
+    , cdVictoryPoints = Just 2
+    , cdVengeancePoints = Just 2
+    }
 
 interviewRoomArrivalChamber :: CardDef
 interviewRoomArrivalChamber = locationWithUnrevealed
@@ -3121,6 +3124,87 @@ interviewRoomIchorFilledChamber = locationWithUnrevealed
   Droplet
   [Diamond]
   TheCityOfArchives
+
+hallsOfPnakotusNorthernCorridors :: CardDef
+hallsOfPnakotusNorthernCorridors = location
+  "04248"
+  ("Halls of Pnakotus" <:> "Northern Corridors")
+  [Ancient, Pnakotus]
+  Squiggle
+  [Diamond, Square, Triangle]
+  TheCityOfArchives
+
+hallsOfPnakotusEasternCorridors :: CardDef
+hallsOfPnakotusEasternCorridors = location
+  "04249"
+  ("Halls of Pnakotus" <:> "Eastern Corridors")
+  [Ancient, Pnakotus]
+  Diamond
+  [Squiggle, Square, Droplet]
+  TheCityOfArchives
+
+hallsOfPnakotusWesternCorridors :: CardDef
+hallsOfPnakotusWesternCorridors = location
+  "04250"
+  ("Halls of Pnakotus" <:> "Western Corridors")
+  [Ancient, Pnakotus]
+  Square
+  [Squiggle, Diamond, Circle, Star]
+  TheCityOfArchives
+
+greatLibrary :: CardDef
+greatLibrary = location
+  "04251"
+  "Great Library"
+  [Ancient, Pnakotus]
+  Circle
+  [Square]
+  TheCityOfArchives
+
+yithianOrrery :: CardDef
+yithianOrrery = (location
+                  "04252"
+                  "Yithian Orrery"
+                  [Ancient, Pnakotus]
+                  Moon
+                  [Triangle]
+                  TheCityOfArchives
+                )
+  { cdVictoryPoints = Just 1
+  }
+
+laboratoryOfTheGreatRace :: CardDef
+laboratoryOfTheGreatRace = location
+  "04253"
+  "Laboratory of the Great Race"
+  [Ancient, Pnakotus]
+  Triangle
+  [Squiggle, Moon, Equals]
+  TheCityOfArchives
+
+deconstructionRoom :: CardDef
+deconstructionRoom = (location
+                       "04254"
+                       "Deconstruction Room"
+                       [Ancient, Pnakotus]
+                       Equals
+                       [Triangle]
+                       TheCityOfArchives
+                     )
+  { cdVictoryPoints = Just 1
+  }
+
+towersOfPnakotus :: CardDef
+towersOfPnakotus = (location
+                     "04255"
+                     "Towers of Pnakotus"
+                     [Ancient, Pnakotus]
+                     Star
+                     [Square]
+                     TheCityOfArchives
+                   )
+  { cdVictoryPoints = Just 2
+  }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

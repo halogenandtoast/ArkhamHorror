@@ -550,6 +550,7 @@ data Message
   | Setup
   | EndSetup
   | SetupInvestigators
+  | SetupInvestigator InvestigatorId
   | SetupStep Target Int
   | ShuffleAllFocusedIntoDeck InvestigatorId Target
   | PutAllFocusedIntoDiscard InvestigatorId Target
@@ -627,6 +628,7 @@ data Message
     PickSupply InvestigatorId Supply
   | UseSupply InvestigatorId Supply
   | Explore InvestigatorId Source CardMatcher
+  | BecomeYithian InvestigatorId
   | -- Fields
     UpdateLocation LocationAttrs LocationId
   deriving stock (Show, Eq, Generic)

@@ -85,6 +85,10 @@ const endTurnAction = computed(() => {
 
 const baseUrl = inject('baseUrl')
 const image = computed(() => {
+  if (props.player.isYithian) {
+    return `${baseUrl}/img/arkham/cards/04244.jpg`;
+  }
+
   return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
 })
 

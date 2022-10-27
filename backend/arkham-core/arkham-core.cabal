@@ -1001,6 +1001,7 @@ library
       Arkham.Investigator.Cards.AgnesBaker
       Arkham.Investigator.Cards.AkachiOnyele
       Arkham.Investigator.Cards.AshcanPete
+      Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
@@ -1195,6 +1196,9 @@ library
       Arkham.Location.Cards.HouseInTheReeds_211
       Arkham.Location.Cards.HumanitiesBuilding
       Arkham.Location.Cards.Infirmary
+      Arkham.Location.Cards.InterviewRoomArrivalChamber
+      Arkham.Location.Cards.InterviewRoomIchorFilledChamber
+      Arkham.Location.Cards.InterviewRoomRestrainingChamber
       Arkham.Location.Cards.Kitchen
       Arkham.Location.Cards.KnightsHall
       Arkham.Location.Cards.LaBellaLuna
@@ -1370,6 +1374,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
+      Arkham.Scenario.Scenarios.TheCityOfArchives
       Arkham.Scenario.Scenarios.TheDevourerBelow
       Arkham.Scenario.Scenarios.TheDoomOfEztli
       Arkham.Scenario.Scenarios.TheEssexCountyExpress
@@ -1403,6 +1408,7 @@ library
       Arkham.Scenarios.HeartOfTheElders.Story
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.TheBoundaryBeyond.Story
+      Arkham.Scenarios.TheCityOfArchives.Story
       Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers

@@ -259,6 +259,9 @@ allLocationCards = mapFromList $ map
   , houseInTheReeds_211
   , humanitiesBuilding
   , infirmary
+  , interviewRoomArrivalChamber
+  , interviewRoomIchorFilledChamber
+  , interviewRoomRestrainingChamber
   , kitchen
   , knightsHall
   , laBellaLuna
@@ -3079,6 +3082,45 @@ descentToYoth = (location
   , cdVictoryPoints = Just 2
   , cdVengeancePoints = Just 2
   }
+
+interviewRoomArrivalChamber :: CardDef
+interviewRoomArrivalChamber = locationWithUnrevealed
+  "04245"
+  "Interview Room"
+  [Ancient, Pnakotus]
+  Droplet
+  [Diamond]
+  ("Interview Room" <:> "Arrival Chamber")
+  [Ancient, Pnakotus]
+  Droplet
+  [Diamond]
+  TheCityOfArchives
+
+interviewRoomRestrainingChamber :: CardDef
+interviewRoomRestrainingChamber = locationWithUnrevealed
+  "04246"
+  "Interview Room"
+  [Ancient, Pnakotus]
+  Droplet
+  [Diamond]
+  ("Interview Room" <:> "Restraining Chamber")
+  [Ancient, Pnakotus]
+  Droplet
+  [Diamond]
+  TheCityOfArchives
+
+interviewRoomIchorFilledChamber :: CardDef
+interviewRoomIchorFilledChamber = locationWithUnrevealed
+  "04247"
+  "Interview Room"
+  [Ancient, Pnakotus]
+  Droplet
+  [Diamond]
+  ("Interview Room" <:> "Ichor-Filled Chamber")
+  [Ancient, Pnakotus]
+  Droplet
+  [Diamond]
+  TheCityOfArchives
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

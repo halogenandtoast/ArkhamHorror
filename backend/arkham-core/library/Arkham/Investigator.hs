@@ -12,6 +12,8 @@ import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
 import Arkham.Message
+import Data.Aeson (Result(..))
+import Data.Typeable
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator a) = do
@@ -36,21 +38,19 @@ lookupInvestigator iid = case lookup (unInvestigatorId iid) allInvestigators of
 lookupPromoInvestigator :: InvestigatorId -> Investigator
 lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
 lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
-lookupPromoInvestigator iid     = error $ "Unknown investigator: " <> show iid
+lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
 instance FromJSON Investigator where
   parseJSON v = flip (withObject "Investigator") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
-    withInvestigatorCardCode cCode $ \(_ :: InvestigatorCard a) -> Investigator <$> parseJSON @a v
+    withInvestigatorCardCode cCode
+      $ \(_ :: InvestigatorCard a) -> Investigator <$> parseJSON @a v
 
 withInvestigatorCardCode
-  :: CardCode
-  -> (forall a. IsInvestigator a => InvestigatorCard a -> r)
-  -> r
-withInvestigatorCardCode cCode f =
-  case lookup cCode allInvestigators of
-    Nothing -> error "invalid investigators"
-    Just (SomeInvestigatorCard a) -> f a
+  :: CardCode -> (forall a . IsInvestigator a => InvestigatorCard a -> r) -> r
+withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
+  Nothing -> error "invalid investigators"
+  Just (SomeInvestigatorCard a) -> f a
 
 allInvestigators :: HashMap CardCode SomeInvestigatorCard
 allInvestigators = mapFromList $ map
@@ -81,3 +81,22 @@ allInvestigators = mapFromList $ map
   , SomeInvestigatorCard stellaClark
   , SomeInvestigatorCard daisyWalkerParallel
   ]
+
+becomeYithian :: Investigator -> Investigator
+becomeYithian (Investigator a) =
+  Investigator $ BodyOfAYithian . (`with` YithianMetadata (toJSON a)) $ (toAttrs a)
+    { investigatorHealth = 7
+    , investigatorSanity = 7
+    , investigatorWillpower = 2
+    , investigatorIntellect = 2
+    , investigatorCombat = 2
+    , investigatorAgility = 2
+    , investigatorIsYithian = True
+    }
+
+returnToBody :: Investigator -> Investigator
+returnToBody (Investigator a) = case cast a of
+  Just (BodyOfAYithian (_ `With` meta)) -> case fromJSON (original meta) of
+    Success x -> x
+    _ -> error "Investigator mind is too corrupted to return to their body"
+  Nothing -> Investigator a

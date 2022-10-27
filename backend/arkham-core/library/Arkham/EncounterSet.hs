@@ -72,6 +72,7 @@ data EncounterSet
   | HeartOfTheElders
   | PillarsOfJudgement
   | KnYan
+  | TheCityOfArchives
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

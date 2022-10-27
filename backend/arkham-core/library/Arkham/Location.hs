@@ -338,6 +338,10 @@ allLocations = mapFromList $ map
   , SomeLocationCard perilousGulch
   , SomeLocationCard crystalPillars
   , SomeLocationCard descentToYoth
+  -- The City of Ancients
+  , SomeLocationCard interviewRoomArrivalChamber
+  , SomeLocationCard interviewRoomRestrainingChamber
+  , SomeLocationCard interviewRoomIchorFilledChamber
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

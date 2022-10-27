@@ -47,7 +47,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator ()
+import Arkham.Investigator (becomeYithian, returnToBody)
 import Arkham.Investigator.Types
   ( Field (..), Investigator, InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
@@ -1389,6 +1389,8 @@ getAssetsMatching matcher = do
           pure $ filter ((`member` valids) . toId) as
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
+    UniqueAsset ->
+      pure $ filter ((`cardMatch` CardIsUnique) . toCard . toAttrs) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
     NonWeaknessAsset ->
       pure $ filter (isNothing . cdCardSubType . toCardDef . toAttrs) as
@@ -2647,6 +2649,8 @@ runPreGameMessage msg g = case msg of
   ScenarioResolution _ -> do
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
+  ResetGame ->
+    pure $ g & entitiesL . investigatorsL %~ map returnToBody
   _ -> pure g
 
 getActiveInvestigator :: (Monad m, HasGame m) => m Investigator
@@ -4139,6 +4143,10 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+  BecomeYithian iid -> do
+    original <- getInvestigator iid
+    let yithian = becomeYithian original
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy

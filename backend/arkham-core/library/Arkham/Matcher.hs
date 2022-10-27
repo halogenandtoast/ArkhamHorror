@@ -244,6 +244,7 @@ data AssetMatcher
   | ClosestAsset LocationId AssetMatcher
   | NonWeaknessAsset
   | AssetWithMatchingSkillTestIcon
+  | UniqueAsset
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

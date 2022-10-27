@@ -97,7 +97,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , investigatorStartsWith = investigatorStartsWith
       , investigatorSupplies = investigatorSupplies
       }
-  SetupInvestigators -> do
+  SetupInvestigator iid | iid == investigatorId -> do
     let
       (startsWithMsgs, deck') = foldl'
         (\(msgs, currentDeck) cardDef ->

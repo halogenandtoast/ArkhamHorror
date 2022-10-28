@@ -18,7 +18,7 @@ import {-# SOURCE #-} Arkham.Cost
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
-import {-# SOURCE #-} Arkham.Matcher
+import {-# SOURCE #-} Arkham.Matcher.Types
 import Arkham.Phase
 import Arkham.SkillType
 import Arkham.SlotType

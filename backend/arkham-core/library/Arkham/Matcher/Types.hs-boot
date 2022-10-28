@@ -1,4 +1,4 @@
-module Arkham.Matcher where
+module Arkham.Matcher.Types where
 
 import Arkham.Prelude
 

@@ -2,7 +2,7 @@ module Arkham.Keyword where
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.Matcher
+import {-# SOURCE #-} Arkham.Matcher.Types
 
 data Keyword
   = Alert

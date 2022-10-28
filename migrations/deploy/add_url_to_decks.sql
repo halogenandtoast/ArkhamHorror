@@ -4,6 +4,6 @@
 BEGIN;
 
 ALTER TABLE arkham_decks
-ADD COLUMN url text not null;
+ADD COLUMN IF NOT EXISTS url text not null;
 
 COMMIT;

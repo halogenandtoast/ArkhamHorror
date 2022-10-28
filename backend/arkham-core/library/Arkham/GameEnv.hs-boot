@@ -6,6 +6,7 @@ import Arkham.Ability
 import Arkham.ActiveCost.Base
 import Arkham.Classes.HasQueue
 import Arkham.Distance
+import Arkham.History
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
@@ -36,6 +37,7 @@ getActiveCosts :: (Monad m, HasGame m) => m [ActiveCost]
 getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: (Monad m, HasGame m) => m [Ability]
 getActionCanBeUndone :: (Monad m, HasGame m) => m Bool
+getHistory :: (Monad m, HasGame m) => HistoryType -> InvestigatorId -> m History
 
 class HasGame (m :: Type -> Type)
 

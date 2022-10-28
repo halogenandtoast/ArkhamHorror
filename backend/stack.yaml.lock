@@ -3,10 +3,31 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: Cabal-syntax-3.8.1.0@sha256:4936765e9a7a8ecbf8fdbe9067f6d972bc0299220063abb2632a9950af64b966,7619
+    pantry-tree:
+      sha256: 0471cade235bb93e1fd32630f6d5fa69735a879d2712f47067c51bed0c46d536
+      size: 11052
+  original:
+    hackage: Cabal-syntax-3.8.1.0
+- completed:
+    hackage: primitive-0.7.4.0@sha256:89b88a3e08493b7727fa4089b0692bfbdf7e1e666ef54635f458644eb8358764,2857
+    pantry-tree:
+      sha256: 71a850c658b70e869da19f61615d87d9d6ecec597f0e3d4b498da56559114829
+      size: 1655
+  original:
+    hackage: primitive-0.7.4.0
+- completed:
+    hackage: memory-0.18.0@sha256:e12bde756b01c1a28c62e46f0f8433c4890898051a786794a7d88907ca14abca,4468
+    pantry-tree:
+      sha256: 55d15393452ad50b1f8dbe3ff2c4961a3cde9381f2c348f904449a3339c6951d
+      size: 2436
+  original:
+    hackage: memory-0.18.0
 snapshots:
 - completed:
-    size: 630638
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/8/15.yaml
-    sha256: faa92f1bd6eb0ec0535c43ff1d1719de0968a57e60a2e954d55c0e2ec37a25aa
-  original: nightly-2022-08-15
+    sha256: 9e19a387b59e0297c54e63c3d2d60f1b1d5497f7b5421eb79a5faeff4975f901
+    size: 646687
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/10/28.yaml
+  original: nightly-2022-10-28

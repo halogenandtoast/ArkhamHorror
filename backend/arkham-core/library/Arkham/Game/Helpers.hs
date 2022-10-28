@@ -55,7 +55,6 @@ import Arkham.Phase
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.ScenarioLogKey
 import Arkham.Skill.Types ( Field (..) )
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
@@ -609,7 +608,7 @@ targetToSource = \case
   InvestigatorDiscardTarget iid -> InvestigatorSource iid
   AssetTarget aid -> AssetSource aid
   EnemyTarget eid -> EnemySource eid
-  ScenarioTarget sid -> ScenarioSource sid
+  ScenarioTarget -> ScenarioSource
   EffectTarget eid -> EffectSource eid
   PhaseTarget _ -> error "no need"
   LocationTarget lid -> LocationSource lid
@@ -648,7 +647,7 @@ sourceToTarget = \case
   AssetSource aid -> AssetTarget aid
   EnemySource eid -> EnemyTarget eid
   CardIdSource cid -> CardIdTarget cid
-  ScenarioSource sid -> ScenarioTarget sid
+  ScenarioSource -> ScenarioTarget
   InvestigatorSource iid -> InvestigatorTarget iid
   CardCodeSource cid -> CardCodeTarget cid
   TokenSource t -> TokenTarget t
@@ -1108,11 +1107,16 @@ passesCriteria iid source windows' = \case
       \ability -> case abilityType ability of
         ActionAbility (Just Action.Resign) _ -> True
         _ -> False
-  Criteria.Remembered rememberedListMatcher logKeys -> do
-    filtered <-
-      filter (`elem` logKeys)
+  Criteria.Remembered logKey -> do
+    elem logKey <$> scenarioFieldMap ScenarioRemembered HashSet.toList
+  Criteria.RememberedAtLeast value logKeys -> do
+    n <-
+      length . filter (`elem` logKeys)
         <$> scenarioFieldMap ScenarioRemembered HashSet.toList
-    rememberedListMatches filtered rememberedListMatcher
+    gameValueMatches n (Matcher.AtLeast value)
+  Criteria.AtLeastNCriteriaMet n criteria -> do
+    m <- countM (passesCriteria iid source windows') criteria
+    pure $ m >= n
 
 -- | Build a matcher and check the list
 passesEnemyCriteria
@@ -1905,7 +1909,7 @@ targetTraits = \case
   ProxyTarget t _ -> targetTraits t
   ResourceTarget -> pure mempty
 
-  ScenarioTarget _ -> pure mempty
+  ScenarioTarget -> pure mempty
   SkillTarget sid -> field SkillTraits sid
   SkillTestTarget{} -> pure mempty
   TreacheryTarget tid -> field TreacheryTraits tid
@@ -1962,7 +1966,7 @@ sourceTraits = \case
   ProxySource s _ -> sourceTraits s
   ResourceSource -> pure mempty
 
-  ScenarioSource _ -> pure mempty
+  ScenarioSource -> pure mempty
   SkillSource sid -> field SkillTraits sid
   SkillTestSource{} -> pure mempty
   TreacherySource tid -> field TreacheryTraits tid
@@ -2288,16 +2292,6 @@ targetListMatches targets = \case
     anyM (`targetMatches` targetMatcher) targets
   Matcher.ExcludesTarget targetMatcher ->
     noneM (`targetMatches` targetMatcher) targets
-
-rememberedListMatches
-  :: (Monad m, HasGame m)
-  => [ScenarioLogKey]
-  -> Matcher.ScenarioLogKeyListMatcher
-  -> m Bool
-rememberedListMatches targets = \case
-  Matcher.HasRemembered k -> pure $ k `elem` targets
-  Matcher.RememberedLengthIs valueMatcher ->
-    gameValueMatches (length targets) valueMatcher
 
 deckMatch
   :: (Monad m, HasGame m)

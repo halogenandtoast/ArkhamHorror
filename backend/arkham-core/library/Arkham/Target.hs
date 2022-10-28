@@ -18,7 +18,7 @@ data ForSkillTest = ForSkillTest
 data Target
   = AssetTarget AssetId
   | EnemyTarget EnemyId
-  | ScenarioTarget ScenarioId
+  | ScenarioTarget
   | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
   | InvestigatorHandTarget InvestigatorId -- used for cards in hand

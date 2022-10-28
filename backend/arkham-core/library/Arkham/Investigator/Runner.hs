@@ -67,12 +67,20 @@ instance RunMessage InvestigatorAttrs where
 -- No valid targets. For example Marksmanship
 -- Can't afford card. For example On Your Own
 getAllAbilitiesSkippable :: InvestigatorAttrs -> [Window] -> GameT Bool
-getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
+getAllAbilitiesSkippable attrs windows =
+  allM (getWindowSkippable attrs windows) windows
 
 getWindowSkippable :: InvestigatorAttrs -> [Window] -> Window -> GameT Bool
-getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc))) | iid == toId attrs = do
-  cost <- getModifiedCardCost iid card
-  getCanAffordCost (toId attrs) (PlayerCardSource pc) (Just Action.Play) ws (ResourceCost cost)
+getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc)))
+  | iid == toId attrs
+  = do
+    cost <- getModifiedCardCost iid card
+    getCanAffordCost
+      (toId attrs)
+      (PlayerCardSource pc)
+      (Just Action.Play)
+      ws
+      (ResourceCost cost)
 getWindowSkippable _ _ _ = pure True
 
 runInvestigatorMessage
@@ -1936,17 +1944,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId
     | iid' == investigatorId -> do
       let
-        isDeck = case cardSource of
-          Zone.FromDeck -> True
-          Zone.FromTopOfDeck _ -> True
-          _ -> False
         card = fromJustNote "missing card" $ find
           ((== cardId) . toCardId)
           (findWithDefault [] cardSource investigatorFoundCards)
         foundCards = investigatorFoundCards & ix cardSource %~ filter (/= card)
-        putBack =
-          if isDeck then ShuffleAllFocusedIntoDeck else PutAllFocusedIntoDiscard
-      pushAll [AddToHand iid' card, putBack iid' (InvestigatorTarget iid')]
+      push $ AddToHand iid' card
       pure $ a & foundCardsL .~ foundCards
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId
     | iid' == investigatorId -> do
@@ -2005,7 +2007,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PutBack -> when
           (foundKey cardSource == Zone.FromDeck)
           (error "Can not take deck")
-      pure a
+      pure
+        $ a
+        & (usedAbilitiesL %~ filter
+            (\UsedAbility {..} ->
+              case abilityLimitType (abilityLimit usedAbility) of
+                Just (PerSearch _) -> False
+                _ -> True
+            )
+          )
+  EndSearch iid _ _ _ | iid == investigatorId -> do
+    pure
+      $ a
+      & (usedAbilitiesL %~ filter
+          (\UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just (PerSearch _) -> False
+              _ -> True
+          )
+        )
   SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
   Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy
     | iid' == investigatorId
@@ -2052,10 +2072,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               | (zone, cards) <- mapToList targetCards
               , card <- cards
               ]
-          push
-            (chooseN iid n
-            $ if null choices then [Label "No cards found" []] else choices
-            )
+          push $ if null choices
+            then chooseOne iid [Label "No cards found" []]
+            else chooseN iid (min n (length choices)) choices
+        DrawFoundUpTo who n -> do
+          let
+            choices =
+              [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ AddFocusedToHand
+                      iid
+                      (InvestigatorTarget who)
+                      zone
+                      (toCardId card)
+                  ]
+              | (zone, cards) <- mapToList targetCards
+              , card <- cards
+              ]
+          push $ if null choices
+            then chooseOne iid [Label "No cards found" []]
+            else chooseUpToN iid n "Do not draw more cards" choices
         PlayFound who n -> do
           let
             windows' =
@@ -2376,16 +2412,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           updatedUsedAbilities =
             updated : deleteFirst current investigatorUsedAbilities
         pure $ a & usedAbilitiesL .~ updatedUsedAbilities
-  EndSearch iid _ _ _ | iid == investigatorId -> do
-    pure
-      $ a
-      & (usedAbilitiesL %~ filter
-          (\UsedAbility {..} ->
-            case abilityLimitType (abilityLimit usedAbility) of
-              Just (PerSearch _) -> False
-              _ -> True
-          )
-        )
   SkillTestEnds _ -> do
     pure
       $ a

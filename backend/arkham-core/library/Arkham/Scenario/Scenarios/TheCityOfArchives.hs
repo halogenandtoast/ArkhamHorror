@@ -17,9 +17,11 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheCityOfArchives.Story
@@ -49,10 +51,16 @@ theCityOfArchives difficulty = scenario
 
 instance HasTokenValue TheCityOfArchives where
   getTokenValue iid tokenFace (TheCityOfArchives attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 3 5
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
+    Skull -> do
+      cardsInHand <- fieldMap InvestigatorHand length iid
+      pure $ if cardsInHand >= 5
+        then TokenValue Skull $ if isEasyStandard attrs
+          then NegativeModifier 3
+          else AutoFailModifier
+        else toTokenValue attrs Skull 1 2
+    Cultist -> pure $ TokenValue Cultist $ NegativeModifier 2
+    Tablet -> pure $ TokenValue Tablet $ NegativeModifier 3
+    ElderThing -> pure $ TokenValue ElderThing $ NegativeModifier 2
     otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
@@ -177,7 +185,9 @@ instance RunMessage TheCityOfArchives where
         <> [ SetLocationLabel (toLocationId l) ("interviewRoom" <> tshow @Int n)
            | (l, n) <- zip otherRooms [2 ..]
            ]
-        <> [CreateEnemyAt yithianObserver (toLocationId interviewRoom) Nothing | cooperatedWithTheYithians]
+        <> [ CreateEnemyAt yithianObserver (toLocationId interviewRoom) Nothing
+           | cooperatedWithTheYithians
+           ]
         <> map PlaceLocation remainingLocations
       pure
         . TheCityOfArchives
@@ -198,4 +208,17 @@ instance RunMessage TheCityOfArchives where
              , Acts.repossession
              ]
           )
+    ResolveToken _ tokenFace iid
+      | isHardExpert attrs && tokenFace `elem` [Cultist, ElderThing] -> do
+        push $ InvestigatorPlaceCluesOnLocation iid 1
+        pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ n -> do
+      case tokenFace token of
+        face | face `elem` [Cultist, ElderThing] ->
+          push $ InvestigatorPlaceCluesOnLocation iid 1
+        Tablet -> do
+          let discardCount = if isEasyStandard attrs then 1 else n
+          pushAll $ replicate discardCount $ RandomDiscard iid
+        _ -> pure ()
+      pure s
     _ -> TheCityOfArchives <$> runMessage msg attrs

@@ -145,6 +145,7 @@ data ModifierType
   | FewerSlots SlotType Int
   | ForcedTokenChange TokenFace [TokenFace]
   | HandSize Int
+  | IgnoreHandSizeReduction
   | HandSizeCardCount Int
   | HealthModifier Int
   | HorrorDealt Int

@@ -41,10 +41,10 @@ lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
 lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
 instance FromJSON Investigator where
-  parseJSON v = flip (withObject "Investigator") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
+  parseJSON = withObject "Investigator" $ \o -> do
+    cCode <- o .: "cardCode"
     withInvestigatorCardCode cCode
-      $ \(SomeInvestigator (_ :: Proxy a)) -> Investigator <$> parseJSON @a v
+      $ \(SomeInvestigator (_ :: Proxy a)) -> Investigator <$> parseJSON @a (Object o)
 
 withInvestigatorCardCode
   :: CardCode -> (SomeInvestigator -> r) -> r

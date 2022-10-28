@@ -537,10 +537,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
-        push
-          (chooseN iid n
-          $ if null choices then [Label "No cards found" []] else choices
-          )
+        push $ if null choices
+          then chooseOne iid [Label "No cards found" []]
+          else chooseN iid (min n (length choices)) choices
+      DrawFoundUpTo who n -> do
+        let
+          choices =
+            [ TargetLabel
+                (CardIdTarget $ toCardId card)
+                [InvestigatorDrewEncounterCard who card]
+            | card <- mapMaybe (preview _EncounterCard) targetCards
+            ]
+        push $ if null choices
+          then chooseOne iid [Label "No cards found" []]
+          else chooseUpToN iid n "Do not draw more cards" choices
       DeferSearchedToTarget searchTarget -> do
         push $ if null targetCards
           then chooseOne

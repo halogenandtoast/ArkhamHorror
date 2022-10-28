@@ -44,5 +44,11 @@ data ScenarioLogKey
   | IchtacasPrey EnemyId
   | IchtacasDestination LocationId
   -- ^ Threads of Fate
+  | FoundTheProcess
+  | DissectedAnOrgan
+  | InterviewedASubject
+  | RealizedWhatYearItIs
+  | ActivatedTheDevice
+  -- ^ The City of Archives
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

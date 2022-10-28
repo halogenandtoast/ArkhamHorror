@@ -25,11 +25,22 @@ const scenarios = computed(() => {
     { id: '03240', name: 'The Pallid Mask', },
     { id: '03274', name: 'Black Stars Rise', },
     { id: '03316', name: 'Dim Carcosa', },
-    { id: '04054', name: 'The Doom of Eztli', beta: true },
-    { id: '04113', name: 'Threads of Fate', beta: true },
-    { id: '04161', name: 'The Boundary Beyond', beta: true },
-    { id: '04205', name: 'Heart of the Elders', beta: true },
-    { id: '04237', name: 'The City of Archives', beta: true },
+    { id: '04043', name: 'The Untamed Wilds', campaign: "04", beta: true },
+    { id: '04054', name: 'The Doom of Eztli', campaign: "04", beta: true },
+    { id: '04113', name: 'Threads of Fate', campaign: "04", beta: true },
+    { id: '04161', name: 'The Boundary Beyond', campaign: "04", beta: true },
+    { id: '04205', name: 'Heart of the Elders', campaign: "04", beta: true },
+    { id: '04237', name: 'The City of Archives', campaign: "04", beta: true },
+  ].filter((s) => {
+    if (s.beta) {
+      return currentUser.value && currentUser.value.beta
+    }
+    return true
+  })
+})
+
+const sideStories = computed(() => {
+  return [
     { id: '81001', name: 'Curse of the Rougarou', },
     { id: '82001', name: 'Carnevale of Horrors', },
   ].filter((s) => {
@@ -39,7 +50,6 @@ const scenarios = computed(() => {
     return true
   })
 })
-
 
 const campaigns = computed(() => {
   return [
@@ -65,11 +75,20 @@ const playerCount = ref(1)
 const selectedDifficulty = ref<Difficulty>('Easy')
 const deckIds = ref<(string | null)[]>([null, null, null, null])
 const standalone = ref(false)
+const sideStory = ref(false)
 const selectedCampaign = ref('01')
 const selectedScenario = ref('81001')
 const campaignName = ref<string | null>(null)
 const multiplayerVariant = ref('WithFriends')
 const returnTo = ref(false)
+
+const campaignScenarios = computed(() => {
+  if (selectedCampaign.value) {
+    return scenarios.value.filter((s) => s.campaign == selectedCampaign.value)
+  }
+
+  return []
+})
 
 fetchDecks().then((result) => {
   decks.value = result;
@@ -85,24 +104,38 @@ const selectedCampaignReturnToId = computed(() => {
   return null;
 })
 
+const validStandalone = computed(() => {
+  if (standalone.value) {
+    return campaignScenarios.value.some((s) => s.id == selectedScenario.value)
+  }
+
+  return true
+})
+
 const disabled = computed(() => {
   if (multiplayerVariant.value == 'WithFriends') {
-    return !deckIds.value[0]
+    return !deckIds.value[0] || !validStandalone.value
   } else {
-    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n])
+    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n]) || !validStandalone.value
   }
 })
 
 const defaultCampaignName = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-  const scenario = scenarios.value.find((c) => c.id === selectedScenario.value);
+  const scenario = sideStory.value
+    ? sideStories.value.find((c) => c.id === selectedScenario.value)
+    : scenarios.value.find((c) => c.id === selectedScenario.value)
 
-  if (!standalone.value && campaign) {
+  if (!standalone.value && !sideStory.value && campaign) {
     const returnToPrefix = returnTo.value ? "Return to " : ""
     return `${returnToPrefix}${campaign.name}`;
   }
 
   if (standalone.value && scenario) {
+    return `${scenario.name}`;
+  }
+
+  if (sideStory.value && scenario) {
     return `${scenario.name}`;
   }
 
@@ -118,8 +151,10 @@ const currentCampaignName = computed(() => {
 })
 
 async function start() {
-  if (standalone.value) {
-    const mscenario = scenarios.value.find((scenario) => scenario.id === selectedScenario.value);
+  if (standalone.value || sideStory.value) {
+    const mscenario = sideStory.value
+      ? sideStories.value.find((scenario) => scenario.id === selectedScenario.value)
+      : scenarios.value.find((scenario) => scenario.id === selectedScenario.value)
     if (mscenario && currentCampaignName.value) {
       newGame(
         deckIds.value,
@@ -205,34 +240,43 @@ async function start() {
         </div>
 
         <div class="options">
-          <input type="radio" v-model="standalone" :value="false" id="campaign"> <label for="campaign">Campaign</label>
+          <input type="radio" v-model="sideStory" :value="false" id="campaign"> <label for="campaign">Campaign</label>
+          <input type="radio" v-model="sideStory" :value="true" id="sideStory"> <label for="sideStory">Side Story</label>
+        </div>
+
+        <div v-if="sideStory">
+          <div class="scenarios">
+            <div v-for="scenario in sideStories" :key="scenario.id">
+              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <!-- <select v-model="selectedCampaign"> -->
+            <div class="campaigns">
+              <div v-for="campaign in campaigns" :key="campaign.id">
+                <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="`/img/arkham/boxes/${campaign.id}.jpg`" @click="selectedCampaign = campaign.id">
+              </div>
+            </div>
+          <!-- </select> -->
+        </div>
+
+        <div v-if="!sideStory && selectedCampaign && selectedCampaignReturnToId" class="options">
+          <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
+          <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
+        </div>
+
+        <div v-if="!sideStory && selectedCampaign" class="options">
+          <input type="radio" v-model="standalone" :value="false" id="fullCampaign"> <label for="fullCampaign">Full Campaign</label>
           <input type="radio" v-model="standalone" :value="true" id="standalone"> <label for="standalone">Standalone</label>
         </div>
 
-        <div v-if="standalone">
-          <select v-model="selectedScenario">
-            <option
-              v-for="scenario in scenarios"
-              :key="scenario.id"
-              :value="scenario.id"
-              :selected="scenario.id == selectedScenario"
-              >{{scenario.name}}</option>
-          </select>
-        </div>
-        <div v-else>
-          <select v-model="selectedCampaign">
-            <option
-              v-for="campaign in campaigns"
-              :key="campaign.id"
-              :value="campaign.id"
-              :selected="campaign.id == selectedCampaign"
-              >{{campaign.name}}</option>
-          </select>
-        </div>
-
-        <div v-if="!standalone && selectedCampaign && selectedCampaignReturnToId" class="options">
-          <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
-          <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
+        <div v-if="standalone && selectedCampaign">
+          <div class="scenarios">
+            <div v-for="scenario in campaignScenarios" :key="scenario.id">
+              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+            </div>
+          </div>
         </div>
 
         <div>
@@ -377,6 +421,41 @@ header {
     &:nth-of-type(1) {
       margin-left: 0;
     }
+  }
+}
+
+.campaigns {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+
+  img {
+    width: 100%;
+  }
+}
+
+.campaign-box:not(.selected-campaign) {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+
+.scenarios {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+
+  img {
+    width: 100%;
+  }
+}
+
+.scenario-box:not(.selected-scenario) {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%) sepia(0);
+  transition: filter 1s linear;
+  &:hover {
+    filter: grayscale(100%) sepia(1);
+    transition: filter 1s linear;
   }
 }
 </style>

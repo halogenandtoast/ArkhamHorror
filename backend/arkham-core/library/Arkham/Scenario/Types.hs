@@ -120,7 +120,6 @@ scenario f cardCode name difficulty layout = f $ ScenarioAttrs
   , scenarioCardsUnderScenarioReference = mempty
   , scenarioInResolution = False
   , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
-    (ScenarioId cardCode)
   , scenarioVictoryDisplay = mempty
   , scenarioChaosBag = emptyChaosBag
   , scenarioEncounterDeck = mempty
@@ -141,15 +140,13 @@ instance Named ScenarioAttrs where
   toName = scenarioName
 
 instance TargetEntity ScenarioAttrs where
-  toTarget = ScenarioTarget . toId
-  isTarget ScenarioAttrs { scenarioId } (ScenarioTarget sid) =
-    scenarioId == sid
+  toTarget _ = ScenarioTarget
+  isTarget _ ScenarioTarget = True
   isTarget _ _ = False
 
 instance SourceEntity ScenarioAttrs where
-  toSource = ScenarioSource . toId
-  isSource ScenarioAttrs { scenarioId } (ScenarioSource sid) =
-    scenarioId == sid
+  toSource _ = ScenarioSource
+  isSource _ ScenarioSource = True
   isSource _ _ = False
 
 nameL :: Lens' ScenarioAttrs Name

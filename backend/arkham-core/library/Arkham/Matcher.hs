@@ -22,7 +22,6 @@ import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
-import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Target
@@ -205,6 +204,14 @@ pattern AllyAsset <- AssetWithTrait Ally where
 pattern AssetWithAnyDoom :: AssetMatcher
 pattern AssetWithAnyDoom <- AssetWithDoom (GreaterThan (Static 0)) where
   AssetWithAnyDoom = AssetWithDoom (GreaterThan (Static 0))
+
+pattern UncontrolledAsset :: AssetMatcher
+pattern UncontrolledAsset <- NotAsset ControlledAsset where
+  UncontrolledAsset = NotAsset ControlledAsset
+
+pattern ControlledAsset :: AssetMatcher
+pattern ControlledAsset <- AssetControlledBy Anyone where
+  ControlledAsset = AssetControlledBy Anyone
 
 data AssetMatcher
   = AssetWithTitle Text
@@ -985,10 +992,6 @@ instance Monoid AbilityMatcher where
   mempty = AnyAbility
 
 data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-data ScenarioLogKeyListMatcher = RememberedLengthIs ValueMatcher | HasRemembered ScenarioLogKey
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

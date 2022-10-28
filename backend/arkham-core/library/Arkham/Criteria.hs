@@ -109,10 +109,12 @@ data Criterion
   | SelfHasModifier ModifierType
   | ValueIs Int ValueMatcher
   | UnderneathCardCount ValueMatcher UnderZone CardMatcher
-  | Remembered ScenarioLogKeyListMatcher [ScenarioLogKey]
+  | Remembered ScenarioLogKey
+  | RememberedAtLeast GameValue [ScenarioLogKey]
   | ActionCanBeUndone
   | DuringPhase PhaseMatcher
   -- Special Criterion
+  | AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]
   | AnyCriterion [Criterion]
   | NoRestriction

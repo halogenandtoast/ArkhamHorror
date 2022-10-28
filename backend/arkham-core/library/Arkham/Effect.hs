@@ -20,6 +20,9 @@ import Arkham.Token
 import Arkham.Window ( Window )
 
 -- start importing directly
+import Arkham.Agenda.Agendas
+  ( lostMemoriesEffect
+  )
 import Arkham.Asset.Assets
   ( mistsOfRlyehEffect
   , yaotl1Effect
@@ -190,6 +193,7 @@ allEffects = mapFromList
   , ("04156", SomeEffect highRoller2Effect)
   , ("04195", SomeEffect exposeWeakness3Effect)
   , ("04232", SomeEffect slipAwayEffect)
+  , ("04239", SomeEffect lostMemoriesEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

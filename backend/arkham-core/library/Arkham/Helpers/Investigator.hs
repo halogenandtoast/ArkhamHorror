@@ -101,10 +101,12 @@ getIsScenarioAbility = do
 getHandSize :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getHandSize attrs = do
   modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
-  pure $ foldr applyModifier 8 modifiers
+  let ignoreReduction = IgnoreHandSizeReduction `elem` modifiers
+  pure $ foldr (applyModifier ignoreReduction) 8 modifiers
  where
-  applyModifier (HandSize m) n = max 0 (n + m)
-  applyModifier _ n = n
+  applyModifier ignoreReduction (HandSize m) n | m > 0 || not ignoreReduction =
+    max 0 (n + m)
+  applyModifier _ _ n = n
 
 getInHandCount :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
@@ -126,7 +128,8 @@ getAbilitiesForTurn attrs = do
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getCanDiscoverClues :: (Monad m, HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
+getCanDiscoverClues
+  :: (Monad m, HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
 getCanDiscoverClues attrs lid = do
   modifiers <- getModifiers (toTarget attrs)
   not <$> anyM match modifiers

@@ -44,8 +44,8 @@ instance HasAbilities PlanningTheEscape where
     [ restrictedAbility
           x
           1
-          (Remembered
-            (RememberedLengthIs $ AtLeast $ Static 4)
+          (RememberedAtLeast
+            (Static 4)
             [ KnowTheGuardsPatrols
             , SetAFireInTheKitchen
             , IncitedAFightAmongstThePatients

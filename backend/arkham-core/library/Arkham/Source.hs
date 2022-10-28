@@ -42,7 +42,7 @@ data Source
   | PlayerCardSource PlayerCard
   | ProxySource { source :: Source, originalSource :: Source }
   | ResourceSource
-  | ScenarioSource ScenarioId
+  | ScenarioSource
   | SkillSource SkillId
   | SkillTestSource InvestigatorId SkillType Source (Maybe Action)
   | StorySource CardCode

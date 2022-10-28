@@ -5,7 +5,7 @@ module Cards.Discover
 import Cards.Discover.Exe (getFilesRecursive, stripSuffix)
 import Data.FileEmbed
 import Language.Haskell.TH
-import Language.Haskell.TH.Syntax
+import Language.Haskell.TH.Syntax hiding (makeRelativeToProject)
 import Prelude
 
 findCardFiles :: FilePath -> Code Q [FilePath]

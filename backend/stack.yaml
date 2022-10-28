@@ -2,7 +2,10 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: nightly-2022-08-15
+system-ghc: true
+install-ghc: false
+resolver: nightly-2022-10-28
+compiler: ghc-9.4.2
 
 ghc-options:
   "$locals":
@@ -33,3 +36,9 @@ packages:
   - arkham-core
   - arkham-api
   - validate
+
+
+extra-deps:
+- Cabal-syntax-3.8.1.0
+- primitive-0.7.4.0
+- memory-0.18.0

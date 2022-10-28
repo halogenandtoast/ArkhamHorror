@@ -4,6 +4,7 @@ module Arkham.Prelude
   ) where
 
 import ClassyPrelude as X hiding ( foldlM, on, (\\) )
+import Data.Type.Equality as X (type (~))
 
 import Control.Lens as X
   ( Lens'

@@ -107,8 +107,8 @@ data XpMismatch = XpMismatch CardCode Name Int Int
 data EnemyStatsMismatch = EnemyStatsMismatch
   CardCode
   Name
-  (Int, GameValue, Int)
-  (Int, GameValue, Int)
+  (Int, GameValue, Maybe Int)
+  (Int, GameValue, Maybe Int)
   deriving stock Show
 
 data AssetStatsMismatch = AssetStatsMismatch
@@ -434,7 +434,7 @@ runValidations cards = do
                 , toGameVal
                   (fromMaybe False health_per_investigator)
                   (fromMaybe 0 health)
-                , max 0 $ fromMaybe 0 enemy_evade
+                , max 0 <$> enemy_evade
                 )
               enemyStats =
                 (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
@@ -443,6 +443,7 @@ runValidations cards = do
                 , max 0 $ fromMaybe 0 enemy_horror
                 )
               enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
+
             when
               (cardStats /= enemyStats)
               (throw $ EnemyStatsMismatch
@@ -451,6 +452,7 @@ runValidations cards = do
                 cardStats
                 enemyStats
               )
+
             when
               (cardDamage /= enemyDamage)
               (throw $ EnemyDamageMismatch

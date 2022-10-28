@@ -3,7 +3,7 @@ name: arkham-core
 language: GHC2021
 
 dependencies:
-- base >= 4.7 && < 5
+- base
 
 default-extensions:
 - AllowAmbiguousTypes
@@ -23,13 +23,14 @@ default-extensions:
 - TypeFamilies
 - UndecidableInstances
 - ViewPatterns
+- DeepSubsumption
 
 library:
   source-dirs: library
   dependencies:
-    - aeson >= 1.5.4.1
+    - aeson
     - lens
-    - unordered-containers >= 0.2.12.0
+    - unordered-containers
     - monoidal-containers
     - safe
     - these
@@ -62,7 +63,7 @@ tests:
       - lens
       - these
       - uuid
-      - unordered-containers >= 0.2.12.0
+      - unordered-containers
       - mtl
       - random
       - containers

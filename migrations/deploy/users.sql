@@ -2,7 +2,7 @@
 
 BEGIN;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id bigserial primary key,
   username character varying NOT NULL UNIQUE,
   email character varying NOT NULL UNIQUE,

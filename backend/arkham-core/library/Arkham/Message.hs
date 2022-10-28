@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Message
   ( module Arkham.Message
   , module X
@@ -55,6 +56,7 @@ import Arkham.Trait
 import Arkham.Window ( Window )
 import Arkham.Zone
 import Control.Exception
+import Data.Aeson.TH
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack{} = Just AttackMessage
@@ -631,8 +633,9 @@ data Message
   | BecomeYithian InvestigatorId
   | -- Fields
     UpdateLocation LocationAttrs LocationId
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq)
+
+$(deriveJSON defaultOptions ''Message)
 
 uiToRun :: UI Message -> Message
 uiToRun = \case

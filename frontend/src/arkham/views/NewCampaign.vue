@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, inject } from 'vue';
 import { useUserStore } from '@/stores/user';
 import type { User } from '@/types';
 import { useRouter } from 'vue-router';
@@ -9,22 +9,29 @@ import type { Difficulty } from '@/arkham/types/Difficulty';
 
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
+const baseUrl = inject('baseUrl')
 
 const scenarios = computed(() => {
   return [
-    { id: '02118', name: 'The Miskatonic Museum', },
-    { id: '02159', name: 'The Essex County Express', },
-    { id: '02195', name: 'Blood on the Altar', },
-    { id: '02236', name: 'Undimensioned and Unseen', },
-    { id: '02274', name: 'Where Doom Awaits', },
-    { id: '02311', name: 'Lost in Time and Space', },
-    { id: '03061', name: 'The Last King', },
-    { id: '03120', name: 'Echoes of the Past', },
-    { id: '03159', name: 'The Unspeakable Oath', },
-    { id: '03200', name: 'A Phantom of Truth', },
-    { id: '03240', name: 'The Pallid Mask', },
-    { id: '03274', name: 'Black Stars Rise', },
-    { id: '03316', name: 'Dim Carcosa', },
+
+    { id: '02041', name: 'Extracurricular Activity', campaign: "02", },
+    { id: '02062', name: 'The House Always Wins', campaign: "02", },
+    { id: '02118', name: 'The Miskatonic Museum', campaign: "02", },
+    { id: '02159', name: 'The Essex County Express', campaign: "02", },
+    { id: '02195', name: 'Blood on the Altar', campaign: "02", },
+    { id: '02236', name: 'Undimensioned and Unseen', campaign: "02", },
+    { id: '02274', name: 'Where Doom Awaits', campaign: "02", },
+    { id: '02311', name: 'Lost in Time and Space', campaign: "02", },
+
+    { id: '03043', name: 'Curtain Call', campaign: "03", },
+    { id: '03061', name: 'The Last King', campaign: "03", },
+    { id: '03120', name: 'Echoes of the Past', campaign: "03", },
+    { id: '03159', name: 'The Unspeakable Oath', campaign: "03", },
+    { id: '03200', name: 'A Phantom of Truth', campaign: "03", },
+    { id: '03240', name: 'The Pallid Mask', campaign: "03", },
+    { id: '03274', name: 'Black Stars Rise', campaign: "03", },
+    { id: '03316', name: 'Dim Carcosa', campaign: "03", },
+
     { id: '04043', name: 'The Untamed Wilds', campaign: "04", beta: true },
     { id: '04054', name: 'The Doom of Eztli', campaign: "04", beta: true },
     { id: '04113', name: 'Threads of Fate', campaign: "04", beta: true },
@@ -89,6 +96,14 @@ const campaignScenarios = computed(() => {
 
   return []
 })
+
+const selectCampaign = (campaignId) => {
+  selectedCampaign.value = campaignId
+  if(standalone.value && campaignScenarios.value.length == 0) {
+    standalone.value = false
+  }
+}
+
 
 fetchDecks().then((result) => {
   decks.value = result;
@@ -247,7 +262,7 @@ async function start() {
         <div v-if="sideStory">
           <div class="scenarios">
             <div v-for="scenario in sideStories" :key="scenario.id">
-              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
             </div>
           </div>
         </div>
@@ -255,7 +270,7 @@ async function start() {
           <!-- <select v-model="selectedCampaign"> -->
             <div class="campaigns">
               <div v-for="campaign in campaigns" :key="campaign.id">
-                <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="`/img/arkham/boxes/${campaign.id}.jpg`" @click="selectedCampaign = campaign.id">
+                <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="`${baseUrl}/img/arkham/boxes/${campaign.id}.jpg`" @click="selectCampaign(campaign.id)">
               </div>
             </div>
           <!-- </select> -->
@@ -266,15 +281,15 @@ async function start() {
           <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
         </div>
 
-        <div v-if="!sideStory && selectedCampaign" class="options">
+        <div v-if="!sideStory && selectedCampaign && campaignScenarios.length > 0" class="options">
           <input type="radio" v-model="standalone" :value="false" id="fullCampaign"> <label for="fullCampaign">Full Campaign</label>
           <input type="radio" v-model="standalone" :value="true" id="standalone"> <label for="standalone">Standalone</label>
         </div>
 
-        <div v-if="standalone && selectedCampaign">
+        <div v-if="!sideStory && standalone && selectedCampaign">
           <div class="scenarios">
             <div v-for="scenario in campaignScenarios" :key="scenario.id">
-              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
             </div>
           </div>
         </div>

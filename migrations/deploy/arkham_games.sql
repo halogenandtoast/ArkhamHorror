@@ -4,7 +4,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE arkham_games (
+CREATE TABLE IF NOT EXISTS arkham_games (
   id uuid DEFAULT uuid_generate_v4(),
   name text NOT NULL,
   current_data jsonb NOT NULL,

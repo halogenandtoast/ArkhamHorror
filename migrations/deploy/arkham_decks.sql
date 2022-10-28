@@ -4,7 +4,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE arkham_decks (
+CREATE TABLE IF NOT EXISTS arkham_decks (
   id uuid DEFAULT uuid_generate_v4(),
   user_id bigserial REFERENCES users (id) NOT NULL,
   name text NOT NULL,

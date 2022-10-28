@@ -21,18 +21,58 @@ COPY ./frontend /opt/arkham/src/frontend
 ENV VUE_APP_ASSET_HOST ${ASSET_HOST:-""}
 RUN npm run build
 
-FROM fpco/stack-build:latest as dependencies
+FROM ubuntu:18.04 as dependencies
 
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=en_US.UTF-8
 ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-RUN apt-get update && \
-  apt-get upgrade -y --assume-yes && \
-  apt-get install -y --assume-yes libpq-dev postgresql && \
+# install dependencies
+RUN \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        libpq-dev \
+        postgresql \
+        curl \
+        libnuma-dev \
+        zlib1g-dev \
+        libgmp-dev \
+        libgmp10 \
+        libtinfo-dev \
+        git \
+        wget \
+        lsb-release \
+        software-properties-common \
+        gnupg2 \
+        apt-transport-https \
+        gcc \
+        autoconf \
+        automake \
+        build-essential && \
+  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub && \
   rm -rf /var/lib/apt/lists/*
+
+# install gpg keys
+ARG GPG_KEY=7784930957807690A66EBDBE3786C5262ECB4A3F
+RUN gpg --batch --keyserver keys.openpgp.org --recv-keys $GPG_KEY
+
+# install ghcup
+RUN \
+    curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup && \
+    chmod +x /usr/bin/ghcup && \
+    ghcup config set gpg-setting GPGStrict
+
+ARG GHC=9.4.2
+ARG CABAL=latest
+ARG STACK=latest
+
+# install GHC and cabal
+RUN \
+    ghcup -v install ghc --isolate /usr/local --force ${GHC} && \
+    ghcup -v install cabal --isolate /usr/local/bin --force ${CABAL} && \
+    ghcup -v install stack --isolate /usr/local/bin --force ${STACK}
 
 RUN mkdir -p \
   /opt/arkham/bin \
@@ -49,22 +89,58 @@ COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.ya
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
 RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 
-FROM fpco/stack-build:latest as api
+FROM ubuntu:18.04 as api
 
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=en_US.UTF-8
-
-# API
-
-ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-RUN apt-get update && \
-  apt-get upgrade -y --assume-yes && \
-  apt-get install -y --assume-yes libpq-dev postgresql && \
+# install dependencies
+RUN \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        libpq-dev \
+        postgresql \
+        curl \
+        libnuma-dev \
+        zlib1g-dev \
+        libgmp-dev \
+        libgmp10 \
+        libtinfo-dev \
+        git \
+        wget \
+        lsb-release \
+        software-properties-common \
+        gnupg2 \
+        apt-transport-https \
+        gcc \
+        autoconf \
+        automake \
+        build-essential && \
+  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub && \
   rm -rf /var/lib/apt/lists/*
+
+# install gpg keys
+ARG GPG_KEY=7784930957807690A66EBDBE3786C5262ECB4A3F
+RUN gpg --batch --keyserver keys.openpgp.org --recv-keys $GPG_KEY
+
+# install ghcup
+RUN \
+    curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup && \
+    chmod +x /usr/bin/ghcup && \
+    ghcup config set gpg-setting GPGStrict
+
+ARG GHC=9.4.2
+ARG CABAL=latest
+ARG STACK=latest
+
+# install GHC and cabal
+RUN \
+    ghcup -v install ghc --isolate /usr/local --force ${GHC} && \
+    ghcup -v install cabal --isolate /usr/local/bin --force ${CABAL} && \
+    ghcup -v install stack --isolate /usr/local/bin --force ${STACK}
 
 RUN mkdir -p \
   /opt/arkham/src/backend \

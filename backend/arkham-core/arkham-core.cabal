@@ -1358,6 +1358,8 @@ library
       Arkham.Location.Types
       Arkham.LocationSymbol
       Arkham.Matcher
+      Arkham.Matcher.Patterns
+      Arkham.Matcher.Types
       Arkham.Message
       Arkham.Message.Type
       Arkham.Modifier
@@ -1727,12 +1729,13 @@ library
       TypeFamilies
       UndecidableInstances
       ViewPatterns
+      DeepSubsumption
   build-depends:
       MonadRandom
-    , aeson >=1.5.4.1
+    , aeson
     , aeson-casing
     , aeson-diff
-    , base >=4.7 && <5
+    , base
     , classy-prelude
     , constraints
     , containers
@@ -1749,7 +1752,7 @@ library
     , text
     , these
     , these-lens
-    , unordered-containers >=0.2.12.0
+    , unordered-containers
     , uuid
   default-language: GHC2021
 
@@ -1850,10 +1853,11 @@ test-suite spec
       TypeFamilies
       UndecidableInstances
       ViewPatterns
+      DeepSubsumption
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       arkham-core
-    , base >=4.7 && <5
+    , base
     , containers
     , hspec
     , hspec-expectations-lifted
@@ -1861,6 +1865,6 @@ test-suite spec
     , mtl
     , random
     , these
-    , unordered-containers >=0.2.12.0
+    , unordered-containers
     , uuid
   default-language: GHC2021

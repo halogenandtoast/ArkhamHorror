@@ -5,15 +5,22 @@ module Arkham.Location.Cards.HallsOfPnakotusEasternCorridors
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher hiding ( DuringTurn )
+import Arkham.Message
 
 newtype HallsOfPnakotusEasternCorridors = HallsOfPnakotusEasternCorridors LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hallsOfPnakotusEasternCorridors :: LocationCard HallsOfPnakotusEasternCorridors
+hallsOfPnakotusEasternCorridors
+  :: LocationCard HallsOfPnakotusEasternCorridors
 hallsOfPnakotusEasternCorridors = locationWith
   HallsOfPnakotusEasternCorridors
   Cards.hallsOfPnakotusEasternCorridors
@@ -22,9 +29,23 @@ hallsOfPnakotusEasternCorridors = locationWith
   (labelL .~ "hallsOfPnakotusEasternCorridors")
 
 instance HasAbilities HallsOfPnakotusEasternCorridors where
-  getAbilities (HallsOfPnakotusEasternCorridors attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (HallsOfPnakotusEasternCorridors attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 (Here <> DuringTurn You)
+      $ FastAbility
+      $ HandDiscardCost 1 AnyCard
+    ]
 
 instance RunMessage HallsOfPnakotusEasternCorridors where
-  runMessage msg (HallsOfPnakotusEasternCorridors attrs) =
-    HallsOfPnakotusEasternCorridors <$> runMessage msg attrs
+  runMessage msg l@(HallsOfPnakotusEasternCorridors attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      otherHalls <-
+        selectList $ LocationWithTitle "Halls of Pnakotus" <> NotLocation
+          (LocationWithId $ toId attrs)
+      push $ chooseOne
+        iid
+        [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+        | lid <- otherHalls
+        ]
+      pure l
+    _ -> HallsOfPnakotusEasternCorridors <$> runMessage msg attrs

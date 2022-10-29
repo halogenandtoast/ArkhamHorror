@@ -12,6 +12,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Matcher
+import Arkham.Message
 import Arkham.ScenarioLogKey
 
 newtype RestrictedAccess = RestrictedAccess ActAttrs
@@ -42,5 +43,14 @@ instance HasAbilities RestrictedAccess where
     ]
 
 instance RunMessage RestrictedAccess where
-  runMessage msg (RestrictedAccess attrs) =
-    RestrictedAccess <$> runMessage msg attrs
+  runMessage msg a@(RestrictedAccess attrs) = case msg of
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      pure a
+    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+      pushAll
+        [ AddToVictory (toTarget attrs)
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
+      pure a
+    _ -> RestrictedAccess <$> runMessage msg attrs

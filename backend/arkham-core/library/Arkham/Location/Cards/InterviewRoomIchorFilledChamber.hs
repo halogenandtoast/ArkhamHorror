@@ -5,9 +5,16 @@ module Arkham.Location.Cards.InterviewRoomIchorFilledChamber
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.SkillType
+import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype InterviewRoomIchorFilledChamber = InterviewRoomIchorFilledChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,9 +28,28 @@ interviewRoomIchorFilledChamber = location
   (PerPlayer 1)
 
 instance HasAbilities InterviewRoomIchorFilledChamber where
-  getAbilities (InterviewRoomIchorFilledChamber attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (InterviewRoomIchorFilledChamber a) =
+    withBaseAbilities a
+      $ [ mkAbility a 1
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId a
+        ]
 
 instance RunMessage InterviewRoomIchorFilledChamber where
-  runMessage msg (InterviewRoomIchorFilledChamber attrs) =
-    InterviewRoomIchorFilledChamber <$> runMessage msg attrs
+  runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ BeginSkillTest
+        iid
+        (toSource attrs)
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        3
+      pure l
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
+      -> do
+        push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
+        pure l
+    _ -> InterviewRoomIchorFilledChamber <$> runMessage msg attrs

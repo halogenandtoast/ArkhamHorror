@@ -12,10 +12,13 @@ import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype GreatLibrary = GreatLibrary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,9 +31,12 @@ instance HasAbilities GreatLibrary where
   getAbilities (GreatLibrary attrs) = withBaseAbilities
     attrs
     [ restrictedAbility attrs 1 Here
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> PerPlayerClueCost 1
+    $ ActionAbility Nothing
+    $ ActionCost 1
+    <> PerPlayerClueCost 1
+    , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4)
+    $ ForcedAbility
+    $ RoundEnds Timing.When
     ]
 
 instance RunMessage GreatLibrary where
@@ -43,6 +49,10 @@ instance RunMessage GreatLibrary where
         Nothing
         SkillIntellect
         3
+      pure l
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+      current <- field LocationClues (toId attrs)
+      push $ PlaceClues (toTarget attrs) (4 - current)
       pure l
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do

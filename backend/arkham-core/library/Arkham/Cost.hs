@@ -34,11 +34,6 @@ totalResourcePayment (ResourcePayment n) = n
 totalResourcePayment (Payments xs) = sum $ map totalResourcePayment xs
 totalResourcePayment _ = 0
 
-totalClueCost :: Cost -> Int
-totalClueCost (ClueCost n) = n
-totalClueCost (Costs xs) = sum $ map totalClueCost xs
-totalClueCost _ = 0
-
 decreaseActionCost :: Cost -> Int -> Cost
 decreaseActionCost (ActionCost x) y = ActionCost $ max 0 (x - y)
 decreaseActionCost (Costs (a : as)) y = case a of
@@ -83,6 +78,7 @@ data Cost
   = ActionCost Int
   | AdditionalActionsCost
   | ClueCost Int
+  | PerPlayerClueCost Int
   | GroupClueCost GameValue LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
@@ -133,6 +129,7 @@ displayCostType = \case
   ShuffleDiscardCost n _ -> "Shuffle " <> pluralize n "matching card" <> " into your deck"
   AdditionalActionsCost -> "Additional Action"
   ClueCost n -> pluralize n "Clue"
+  PerPlayerClueCost n -> pluralize n "Clue" <> " per player"
   GroupClueCost gv _ -> case gv of
     Static n -> pluralize n "Clue" <> " as a Group"
     PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"

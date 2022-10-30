@@ -18,7 +18,7 @@ const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
 const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
-const step = ref(0)
+const step = ref(1)
 const totalSteps = ref(0)
 
 watch(step, currentStep => {
@@ -45,6 +45,7 @@ watch(step, currentStep => {
         v-else-if="game.scenario && !game.gameOver"
         :game="game"
         :gameLog="gameLog"
+        :scenario="game.scenario"
         :investigatorId="investigatorId"
       />
       <div class="sidebar">

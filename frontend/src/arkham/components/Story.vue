@@ -20,7 +20,7 @@ const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
-  <template v-if="question.tag === QuestionType.READ">
+  <template v-if="question && question.tag === QuestionType.READ">
     <StoryEntry
       :question="question"
       @choose="choose"

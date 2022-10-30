@@ -21,6 +21,7 @@ import Arkham.Cost hiding ( PaidCost )
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
+import Arkham.GameValue
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
@@ -517,10 +518,14 @@ instance RunMessage ActiveCost where
             ]
           pure c
         ClueCost x -> do
-          push (InvestigatorSpendClues iid x)
+          push $ InvestigatorSpendClues iid x
           withPayment $ CluePayment x
+        PerPlayerClueCost x -> do
+          totalClues <- getPlayerCountValue (PerPlayer x)
+          push $ InvestigatorSpendClues iid totalClues
+          withPayment $ CluePayment totalClues
         PlaceClueOnLocationCost x -> do
-          push (InvestigatorPlaceCluesOnLocation iid x)
+          push $ InvestigatorPlaceCluesOnLocation iid x
           withPayment $ CluePayment x
         GroupClueCost x locationMatcher -> do
           totalClues <- getPlayerCountValue x

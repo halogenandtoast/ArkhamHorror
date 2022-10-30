@@ -445,6 +445,10 @@ getCanAffordCost iid source mAction windows' = \case
   ClueCost n -> do
     spendableClues <- getSpendableClueCount [iid]
     pure $ spendableClues >= n
+  PerPlayerClueCost n -> do
+    spendableClues <- getSpendableClueCount [iid]
+    totalClueCost <- getPlayerCountValue (PerPlayer n)
+    pure $ spendableClues >= totalClueCost
   PlaceClueOnLocationCost n -> do
     spendableClues <- getSpendableClueCount [iid]
     pure $ spendableClues >= n

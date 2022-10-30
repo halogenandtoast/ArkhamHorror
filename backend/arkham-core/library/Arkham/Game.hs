@@ -377,7 +377,7 @@ toExternalGame g mq = do
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
 replayChoices
-  :: (MonadIO m, HasGameRef env, HasStdGen env, MonadReader env m)
+  :: (MonadIO m, HasGameRef env, HasStdGen env, MonadReader env m, HasQueue Message m, HasGameLogger env)
   => [Diff.Patch]
   -> m ()
 replayChoices choices = do
@@ -390,14 +390,24 @@ replayChoices choices = do
     GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
       gameParams currentGame
 
-  (_, replayedGame) <- newGame
+  (msgRef, replayedGame) <- newGame
     scenarioOrCampaignId
     (gameInitialSeed currentGame)
     playerCount
     investigatorsList
     difficulty
 
-  case foldM patch replayedGame (reverse choices) of
+  msgs <- readIORef msgRef
+  writeIORef gameRef replayedGame
+
+  clearQueue
+  pushAll msgs
+
+  runMessages Nothing
+
+  replayedGame' <- readIORef gameRef
+
+  case foldM patch replayedGame' (reverse choices) of
     Error e -> error e
     Success g -> writeIORef gameRef g
 

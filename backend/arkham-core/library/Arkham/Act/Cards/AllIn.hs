@@ -6,14 +6,12 @@ module Arkham.Act.Cards.AllIn
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
-import Arkham.Asset.Types ( Field(..) )
-import Arkham.Scenario.Types ( Field(..) )
 import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
@@ -21,6 +19,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -51,28 +50,27 @@ instance HasAbilities AllIn where
 
 instance RunMessage AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ (isAbility attrs 1 -> True) _ _ ->
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      resignedWithDrFrancisMorgan <- scenarioFieldMap ScenarioResignedCardCodes (elem "02080")
+      resignedWithDrFrancisMorgan <- scenarioFieldMap
+        ScenarioResignedCardCodes
+        (elem "02080")
       let resolution = if resignedWithDrFrancisMorgan then 2 else 1
       a <$ push (ScenarioResolution $ Resolution resolution)
-    UseCardAbility iid (ProxySource _ source) 1 _ _
-      | isSource attrs source && onSide A attrs -> do
-        maid <- selectOne (assetIs Cards.drFrancisMorgan)
-        case maid of
-          Nothing -> error "this ability should not be able to be used"
-          Just aid -> a <$ push
-            (BeginSkillTest
-              iid
-              source
-              (AssetTarget aid)
-              (Just Parley)
-              SkillWillpower
-              3
-            )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source && onSide A attrs -> do
+    UseCardAbility iid ref@(isProxyAbility attrs 1 -> True) _ _
+      | onSide A attrs -> do
+        aid <- selectJust (assetIs Cards.drFrancisMorgan)
+        push $ BeginSkillTest
+          iid
+          (refToSource ref)
+          (AssetTarget aid)
+          (Just Parley)
+          SkillWillpower
+          3
+        pure a
+    PassedSkillTest iid _ (isProxiedAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
+      | onSide A attrs -> do
         maid <- selectOne (assetIs Cards.drFrancisMorgan)
         case maid of
           Nothing -> error "this ability should not be able to be used"

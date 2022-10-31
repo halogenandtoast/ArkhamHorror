@@ -44,7 +44,7 @@ instance RunMessage GreatLibrary where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ BeginSkillTest
         iid
-        (toSource attrs)
+        (toAbilitySource attrs 1)
         (InvestigatorTarget iid)
         Nothing
         SkillIntellect

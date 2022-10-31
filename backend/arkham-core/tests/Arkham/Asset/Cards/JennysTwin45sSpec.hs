@@ -63,8 +63,7 @@ spec = describe "Jenny's Twin .45s" $ do
             , moveTo investigator location
             , UseCardAbility
               (toId investigator)
-              (AssetSource . AssetId $ pcId jennysTwin45s)
-              1
+              (AbilityRef (AssetSource . AssetId $ pcId jennysTwin45s) 1)
               []
               (UsesPayment 1)
             ]

@@ -26,6 +26,7 @@ import Arkham.Card.Id
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
+import Arkham.Classes.Entity.Source
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
@@ -101,6 +102,20 @@ createCardEffect
   -> Target
   -> Message
 createCardEffect def = CreateEffect (toCardCode def)
+
+data AbilityRef = AbilityRef Source Int
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+isAbility :: SourceEntity a => a -> Int -> AbilityRef -> Bool
+isAbility a idx = isAbilitySource a idx . refToSource
+
+isProxyAbility :: SourceEntity a => a -> Int -> AbilityRef -> Bool
+isProxyAbility a idx (AbilityRef (ProxySource _ b) idx') = idx == idx' && isSource a b
+isProxyAbility _ _ _ = False
+
+refToSource :: AbilityRef -> Source
+refToSource (AbilityRef a idx) = AbilitySource a idx
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -605,7 +620,7 @@ data Message
   | SealedToken Token Card
   | UnsealToken Token
   | UnsetActiveCard
-  | UseCardAbility InvestigatorId Source Int [Window] Payment
+  | UseCardAbility InvestigatorId AbilityRef [Window] Payment
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
   | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target

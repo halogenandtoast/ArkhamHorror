@@ -718,8 +718,7 @@ instance RunMessage ActiveCost where
             $ [ whenActivateAbilityWindow | not (isForcedAbility ability) ]
             <> [ UseCardAbility
                    iid
-                   (abilitySource ability)
-                   (abilityIndex ability)
+                   (AbilityRef (abilitySource ability) (abilityIndex ability))
                    (activeCostWindows c)
                    (activeCostPayments c)
                ]

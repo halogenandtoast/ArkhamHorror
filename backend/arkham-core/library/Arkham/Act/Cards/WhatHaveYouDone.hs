@@ -33,7 +33,7 @@ instance HasAbilities WhatHaveYouDone where
 
 instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ ->
       a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

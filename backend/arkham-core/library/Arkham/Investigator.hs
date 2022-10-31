@@ -12,7 +12,6 @@ import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
 import Arkham.Message
-import Data.Aeson (Result(..))
 import Data.Typeable
 
 instance RunMessage Investigator where
@@ -49,7 +48,7 @@ instance FromJSON Investigator where
 withInvestigatorCardCode
   :: CardCode -> (SomeInvestigator -> r) -> r
 withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
-  Nothing -> if cCode == "04244" then f (SomeInvestigator (Proxy @BodyOfAYithian)) else error "invalid investigators"
+  Nothing -> error "invalid investigators"
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator (Proxy @a))
 
 data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)
@@ -58,48 +57,4 @@ allInvestigators :: HashMap CardCode SomeInvestigatorCard
 allInvestigators = mapFromList $ map
   (toFst someInvestigatorCardCode)
   [ SomeInvestigatorCard rolandBanks
-  , SomeInvestigatorCard daisyWalker
-  , SomeInvestigatorCard skidsOToole
-  , SomeInvestigatorCard agnesBaker
-  , SomeInvestigatorCard wendyAdams
-  , SomeInvestigatorCard zoeySamaras
-  , SomeInvestigatorCard rexMurphy
-  , SomeInvestigatorCard jennyBarnes
-  , SomeInvestigatorCard jimCulver
-  , SomeInvestigatorCard ashcanPete
-  , SomeInvestigatorCard markHarrigan
-  , SomeInvestigatorCard minhThiPhan
-  , SomeInvestigatorCard sefinaRousseau
-  , SomeInvestigatorCard akachiOnyele
-  , SomeInvestigatorCard williamYorick
-  , SomeInvestigatorCard lolaHayes
-  , SomeInvestigatorCard leoAnderson
-  , SomeInvestigatorCard ursulaDowns
-  , SomeInvestigatorCard finnEdwards
-  , SomeInvestigatorCard fatherMateo
-  , SomeInvestigatorCard calvinWright
-  , SomeInvestigatorCard normanWithers
-  , SomeInvestigatorCard nathanielCho
-  , SomeInvestigatorCard stellaClark
-  , SomeInvestigatorCard daisyWalkerParallel
   ]
-
-becomeYithian :: Investigator -> Investigator
-becomeYithian (Investigator a) =
-  Investigator $ BodyOfAYithian . (`with` YithianMetadata (toJSON a)) $ (toAttrs a)
-    { investigatorHealth = 7
-    , investigatorSanity = 7
-    , investigatorWillpower = 2
-    , investigatorIntellect = 2
-    , investigatorCombat = 2
-    , investigatorAgility = 2
-    , investigatorCardCode = "04244"
-    , investigatorIsYithian = True
-    }
-
-returnToBody :: Investigator -> Investigator
-returnToBody (Investigator a) = case cast a of
-  Just (BodyOfAYithian (_ `With` meta)) -> case fromJSON (original meta) of
-    Success x -> x
-    _ -> error "Investigator mind is too corrupted to return to their body"
-  Nothing -> Investigator a

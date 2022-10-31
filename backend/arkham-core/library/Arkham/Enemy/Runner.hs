@@ -879,13 +879,13 @@ instance RunMessage EnemyAttrs where
         & (doomL .~ 0)
         & (cluesL .~ 0)
     Blanked msg' -> runMessage msg' a
-    UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
+    UseCardAbility iid (isAbility a AbilityAttack -> True) _ _ -> do
       push $ FightEnemy iid (toId a) (toSource iid) Nothing #combat False
       pure a
-    UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
+    UseCardAbility iid (isAbility a AbilityEvade -> True) _ _ -> do
       push $ EvadeEnemy iid (toId a) (toSource iid) Nothing #agility False
       pure a
-    UseCardAbility iid (isSource a -> True) AbilityEngage _ _ -> do
+    UseCardAbility iid (isAbility a AbilityEngage -> True) _ _ -> do
       push $ EngageEnemy iid (toId a) False
       pure a
     _ -> pure a

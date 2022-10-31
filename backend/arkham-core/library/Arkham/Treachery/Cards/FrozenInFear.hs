@@ -43,8 +43,8 @@ instance RunMessage FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ ->
+      t <$ push (RevelationSkillTest iid (toSource attrs) SkillWillpower 3)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> FrozenInFear <$> runMessage msg attrs

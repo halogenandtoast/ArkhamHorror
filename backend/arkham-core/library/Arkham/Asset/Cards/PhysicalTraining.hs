@@ -37,13 +37,13 @@ instance HasAbilities PhysicalTraining where
 
 instance RunMessage PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillWillpower 1)
       )
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ push
+    UseCardAbility iid (isAbility attrs 2 -> True) _ _ -> a <$ push
       (skillTestModifier
         attrs
         (InvestigatorTarget iid)

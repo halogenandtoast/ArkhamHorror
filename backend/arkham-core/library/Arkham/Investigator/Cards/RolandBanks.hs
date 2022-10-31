@@ -53,7 +53,7 @@ instance HasTokenValue RolandBanks where
 
 instance RunMessage RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of
-    UseCardAbility _ (isSource a -> True) 1 _ _ -> do
+    UseCardAbility _ (isAbility a 1 -> True) _ _ -> do
       push $ InvestigatorDiscoverClues (toId a) (investigatorLocation a) 1 Nothing
       pure rb
     _ -> RolandBanks <$> runMessage msg a

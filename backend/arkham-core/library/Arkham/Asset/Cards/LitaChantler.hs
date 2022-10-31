@@ -39,25 +39,19 @@ instance HasModifiersFor LitaChantler where
 
 instance HasAbilities LitaChantler where
   getAbilities (LitaChantler a) =
-    [ restrictedAbility
-        a
-        1
-        ControlsThis
-        (ReactionAbility
-          (SkillTestResult
-            Timing.When
-            (InvestigatorAt YourLocation)
-            (WhileAttackingAnEnemy $ EnemyWithTrait Monster)
-            (SuccessResult AnyValue)
-          )
-          Free
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
+        (SkillTestResult
+          Timing.When
+          (InvestigatorAt YourLocation)
+          (WhileAttackingAnEnemy $ EnemyWithTrait Monster)
+          (SuccessResult AnyValue)
         )
+        Free
     ]
 
 instance RunMessage LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
-    UseCardAbility _ source 1 [Window Timing.When (Window.SuccessfulAttackEnemy _ enemyId _)] _
-      | isSource attrs source
+    UseCardAbility _ (isAbility attrs 1 -> True) [Window Timing.When (Window.SuccessfulAttackEnemy _ enemyId _)] _
       -> do
         a <$ push
           (skillTestModifier attrs (EnemyTarget enemyId) (DamageTaken 1))

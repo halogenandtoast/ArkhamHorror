@@ -31,11 +31,11 @@ instance HasAbilities FortyFiveAutomatic where
 
 instance RunMessage FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 1, SkillModifier SkillCombat 1]
-      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+      , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
       ]
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

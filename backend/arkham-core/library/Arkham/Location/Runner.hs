@@ -40,12 +40,6 @@ pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-
   After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
 
-pattern UseResign :: InvestigatorId -> Source -> Message
-pattern UseResign iid source <- UseCardAbility iid source 99 _ _
-
-pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
-pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source 100 _ _
-
 cluesToDiscover :: (Monad m, HasGame m) => InvestigatorId -> Int -> m Int
 cluesToDiscover investigatorId startValue = do
   msource <- getSkillTestSource
@@ -309,8 +303,8 @@ instance RunMessage LocationAttrs where
       pure $ a & revealedL .~ False
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
-    UseResign iid source | isSource a source -> a <$ push (Resign iid)
-    UseDrawCardUnderneath iid source | isSource a source ->
+    UseCardAbility iid (isAbility a 99 -> True) _ _ -> a <$ push (Resign iid)
+    UseCardAbility iid (isAbility a 100 -> True) _ _ -> 
       case locationCardsUnderneath of
         (EncounterCard card : rest) -> do
           push (InvestigatorDrewEncounterCard iid card)
@@ -321,14 +315,17 @@ instance RunMessage LocationAttrs where
             $ "Not expecting a player card or empty set, but got "
             <> tshow locationCardsUnderneath
     Blanked msg' -> runMessage msg' a
-    UseCardAbility iid source 101 _ _ | isSource a source -> do
+    UseCardAbility iid ref@(isAbility a 101 -> True) _ _ -> do
+      a <$ push
+        (Investigate iid (toId a) (InvestigatorSource iid) Nothing SkillIntellect False)
+    UseCardAbility iid ref@(isProxyAbility a 101 -> True) _ _ -> do
       let
-        triggerSource = case source of
-          ProxySource _ s -> s
+        triggerSource = case ref of
+          AbilityRef (ProxySource _ s) _ -> s
           _ -> InvestigatorSource iid
       a <$ push
         (Investigate iid (toId a) triggerSource Nothing SkillIntellect False)
-    UseCardAbility iid source 102 _ _ | isSource a source -> a <$ push
+    UseCardAbility iid (isAbility a 102 -> True) _ _ -> a <$ push
       (MoveAction
         iid
         locationId

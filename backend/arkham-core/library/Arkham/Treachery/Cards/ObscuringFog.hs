@@ -51,6 +51,6 @@ instance RunMessage ObscuringFog where
         $ AttachTreachery treacheryId
         $ LocationTarget currentLocationId
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
+    UseCardAbility _ (isAbility attrs 1 -> True) _ _ ->
       t <$ push (Discard $ toTarget attrs)
     _ -> ObscuringFog <$> runMessage msg attrs

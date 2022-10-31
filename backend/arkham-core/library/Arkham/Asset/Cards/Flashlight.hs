@@ -33,13 +33,13 @@ instance HasAbilities Flashlight where
 
 instance RunMessage Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ -> do
       lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
       a <$ pushAll
         [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))
-        , Investigate iid lid source Nothing SkillIntellect False
+        , Investigate iid lid (toSource attrs) Nothing SkillIntellect False
         ]
     _ -> Flashlight <$> runMessage msg attrs

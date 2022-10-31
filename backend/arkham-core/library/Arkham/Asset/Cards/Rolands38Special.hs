@@ -31,7 +31,7 @@ instance HasAbilities Rolands38Special where
 
 instance RunMessage Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ -> do
       anyClues <-
         selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       pushAll
@@ -39,7 +39,7 @@ instance RunMessage Rolands38Special where
           attrs
           (InvestigatorTarget iid)
           [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
-        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a
     _ -> Rolands38Special <$> runMessage msg attrs

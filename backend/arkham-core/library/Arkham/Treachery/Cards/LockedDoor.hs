@@ -52,11 +52,11 @@ instance RunMessage LockedDoor where
           [ targetLabel x [AttachTreachery treacheryId (LocationTarget x)]
           | x <- xs
           ]
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ -> do
       let
         target = toTarget attrs
         beginSkillTest sType =
-          SkillLabel sType [BeginSkillTest iid source target Nothing sType 4]
+          SkillLabel sType [BeginSkillTest iid (toSource attrs) target Nothing sType 4]
       t <$ push (chooseOne iid $ map beginSkillTest [SkillCombat, SkillAgility])
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard $ toTarget attrs)

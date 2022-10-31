@@ -47,14 +47,14 @@ instance HasAbilities Parlor where
 
 instance RunMessage Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _
-      | isSource attrs source && locationRevealed -> do
+    UseCardAbility iid (isProxyAbility attrs 1 -> True) _ _
+      | locationRevealed -> do
         selectOne (assetIs Cards.litaChantler) >>= \case
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ push
             (BeginSkillTest
               iid
-              source
+              (toSource attrs)
               (AssetTarget aid)
               (Just Action.Parley)
               SkillIntellect

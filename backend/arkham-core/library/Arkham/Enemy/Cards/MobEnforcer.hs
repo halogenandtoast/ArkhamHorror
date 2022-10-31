@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Source
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -36,7 +35,7 @@ instance HasAbilities MobEnforcer where
     ]
 
 instance RunMessage MobEnforcer where
-  runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ (EnemySource eid) 1 _ _ | eid == enemyId ->
+  runMessage msg e@(MobEnforcer attrs) = case msg of
+    UseCardAbility _ (isAbility attrs 1 -> True) _ _ ->
       e <$ push (Discard $ toTarget attrs)
     _ -> MobEnforcer <$> runMessage msg attrs

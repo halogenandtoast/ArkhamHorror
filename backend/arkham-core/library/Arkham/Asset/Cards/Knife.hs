@@ -34,18 +34,18 @@ instance HasAbilities Knife where
 
 instance RunMessage Knife where
   runMessage msg a@(Knife attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
+    UseCardAbility iid (isAbility attrs 1 -> True) _ _ -> a <$ pushAll
       [ skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 1)
-      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+      , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
       ]
-    InDiscard _ (UseCardAbility iid source 2 _ _) | isSource attrs source -> a <$ pushAll
+    InDiscard _ (UseCardAbility iid (isAbility attrs 2 -> True) _ _) -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)
         [SkillModifier SkillCombat 2, DamageDealt 1]
-      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+      , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
       ]
     _ -> Knife <$> runMessage msg attrs

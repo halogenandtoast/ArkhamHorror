@@ -44,7 +44,7 @@ instance RunMessage TheyreGettingOut where
         resolution =
           if actSequence `elem` [1, 2] then Resolution 3 else NoResolution
       a <$ push (ScenarioResolution resolution)
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isAbility attrs 1 -> True) _ _ -> do
       leadInvestigatorId <- getLeadInvestigatorId
       enemiesToMove <- selectList
         (UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy
@@ -73,7 +73,7 @@ instance RunMessage TheyreGettingOut where
         leadInvestigatorId
         messages
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isAbility attrs 2 -> True) _ _ -> do
       ghoulCount <- length <$> selectList
         (EnemyWithTrait Ghoul <> EnemyAt
           (LocationMatchAny $ map LocationWithTitle ["Parlor", "Hallway"])

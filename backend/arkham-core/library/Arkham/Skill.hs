@@ -38,48 +38,7 @@ allSkills :: HashMap CardCode SomeSkillCard
 allSkills = mapFromList $ map (toFst someSkillCardCode)
   [ SomeSkillCard viciousBlow
   , SomeSkillCard deduction
-  , SomeSkillCard opportunist
-  , SomeSkillCard fearless
-  , SomeSkillCard survivalInstinct
   , SomeSkillCard guts
-  , SomeSkillCard perception
   , SomeSkillCard overpower
-  , SomeSkillCard manualDexterity
   , SomeSkillCard unexpectedCourage
-  , SomeSkillCard doubleOrNothing
-  , SomeSkillCard deduction2
-  , SomeSkillCard defiance
-  , SomeSkillCard riseToTheOccasion
-  , SomeSkillCard inquiringMind
-  , SomeSkillCard quickThinking
-  , SomeSkillCard opportunist2
-  , SomeSkillCard survivalInstinct2
-  , SomeSkillCard leadership
-  , SomeSkillCard fearless2
-  , SomeSkillCard strokeOfLuck2
-  , SomeSkillCard viciousBlow2
-  , SomeSkillCard theHomeFront
-  , SomeSkillCard resourceful
-  , SomeSkillCard sayYourPrayers
-  , SomeSkillCard desperateSearch
-  , SomeSkillCard recklessAssault
-  , SomeSkillCard runForYourLife
-  , SomeSkillCard inspiringPresence
-  , SomeSkillCard eureka
-  , SomeSkillCard watchThis
-  , SomeSkillCard torrentOfPower
-  , SomeSkillCard notWithoutAFight
-  , SomeSkillCard sealOfTheElderSign5
-  , SomeSkillCard lastChance
-  , SomeSkillCard stunningBlow
-  , SomeSkillCard takeTheInitiative
-  , SomeSkillCard trueUnderstanding
-  , SomeSkillCard hatchetMan
-  , SomeSkillCard enraptured
-  , SomeSkillCard intrepid
-  , SomeSkillCard defiance2
-  , SomeSkillCard takeHeart
-  , SomeSkillCard overpower2
-  , SomeSkillCard neitherRainNorSnow
-  , SomeSkillCard unexpectedCourage2
   ]

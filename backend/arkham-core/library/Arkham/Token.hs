@@ -84,3 +84,19 @@ data TokenFace
   | ElderSign
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable, ToJSON, FromJSON)
+
+isNumberToken :: TokenFace -> Bool
+isNumberToken t =
+  t
+    `elem` [ PlusOne
+           , Zero
+           , MinusOne
+           , MinusTwo
+           , MinusThree
+           , MinusFour
+           , MinusFive
+           , MinusSix
+           , MinusSeven
+           , MinusEight
+           ]
+

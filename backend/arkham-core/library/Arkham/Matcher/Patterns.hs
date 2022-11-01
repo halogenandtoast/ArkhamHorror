@@ -54,6 +54,11 @@ pattern InvestigatorCanSpendResources value <-
   InvestigatorCanSpendResources value =
     InvestigatorWithResources (AtLeast value)
 
+-- placeholder in case a modifier prevents spending resources
+pattern InvestigatorCanSpendClues :: GameValue -> InvestigatorMatcher
+pattern InvestigatorCanSpendClues value <-
+  InvestigatorMatches [InvestigatorWithClues (AtLeast value), InvestigatorWithoutModifier CannotSpendClues]
+
 pattern InvestigatorCanDisengage :: InvestigatorMatcher
 pattern InvestigatorCanDisengage =
   InvestigatorMatches [InvestigatorWithoutModifier CannotDisengageEnemies, InvestigatorEngagedWith AnyEnemy]
@@ -150,6 +155,7 @@ pattern LocationWithoutHorror :: LocationMatcher
 pattern LocationWithoutHorror <- LocationWithHorror (EqualTo (Static 0)) where
   LocationWithoutHorror = LocationWithHorror (EqualTo (Static 0))
 
+-- We exclude this pattern because it has to be handled specially
 -- pattern LocationWithoutClues :: LocationMatcher
 -- pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
 --   LocationWithoutClues = LocationWithClues (EqualTo (Static 0))

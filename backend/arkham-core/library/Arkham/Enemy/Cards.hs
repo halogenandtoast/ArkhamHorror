@@ -921,7 +921,7 @@ harlanEarnstoneCrazedByTheCurse =
 
 henryDeveauAlejandrosKidnapper :: CardDef
 henryDeveauAlejandrosKidnapper =
-  (enemy "04130b" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
+  (enemy "04130d" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
     )
     { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
     , cdUnique = True

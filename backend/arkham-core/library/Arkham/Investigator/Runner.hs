@@ -1940,7 +1940,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == investigatorId -> do
       let cards' = mapMaybe (preview _PlayerCard) cards
       deck <- shuffleM (cards' <> unDeck investigatorDeck)
-      pure $ a & deckL .~ Deck deck
+      pure $ a & deckL .~ Deck deck & handL %~ filter (`notElem` cards)
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId
     | iid' == investigatorId -> do
       let

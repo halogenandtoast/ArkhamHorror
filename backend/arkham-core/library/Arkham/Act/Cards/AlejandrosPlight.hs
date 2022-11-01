@@ -46,7 +46,7 @@ instance RunMessage AlejandrosPlight where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela

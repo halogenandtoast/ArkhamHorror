@@ -64,3 +64,41 @@ intro3 = FlavorText
     \ appendages strike at what you believe to be the creature’s throat. It collapses\
     \ to the floor, writhing in pain."
   ]
+
+noResolution :: FlavorText
+noResolution = FlavorText
+  (Just "No Resolution")
+  [ "“Alejandro, what are you—?” You suddenly cry out. A nurse stands over you,\
+    \ peering into your eyes with a small light. You push the nurse away and rise to\
+    \ your feet, suddenly puzzled and disoriented. Despite the nurse’s protests, you\
+    \ wobble feebly out of the room. You are in a hospital, its white halls smelling\
+    \ faintly of disinfectant and other chemicals. Just moments prior, hadn’t you\
+    \ been exploring some kind of underground cavern?... You cannot recall."
+  , "“Excuse me? Come back, you must rest!” The nurse calls out to you, gripping\
+    \ your forearm and pulling you back to your cot. She examines you closely while\
+    \ you recover from the shock of being transported so far in so short a time. “Who\
+    \ is Alejandro?” she asks, and you struggle to recall. The name doesn’t ring a\
+    \ bell."
+  , "You ask the nurse how you came to be here, wondering why she isn’t surprised at\
+    \ your sudden appearance. “Why, you admitted yourself to St. Mary’s just last\
+    \ night. Do you not remember?” You have no memory of this, and you are starting\
+    \ to grow concerned. “You were acting a little strangely, if I may be so bold.\
+    \ And you spoke in a strange fashion, almost as if English weren’t your first\
+    \ language. But now I see that you probably just drank a little bit too much.”\
+    \ She notices your questioning expression and smiles. “Don’t worry. We get that\
+    \ kind of thing quite often these days, now that all the bars and pubs are on the\
+    \ up-and-up again.”"
+  , "You examine your face in the mirror. You are tired and older than you remember.\
+    \ Something important lies on the very edge of your memory, fuzzy and blurred. It\
+    \ takes about a minute before the significance of the nurse’s last statement\
+    \ catches up to you. Turning back toward the nurse, you ask what year it is,\
+    \ terrified of the answer."
+  , "“Why, 1934 of course. My, you must have had a heck of a night!” She chuckles."
+  ]
+
+resolution1 :: FlavorText
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "You awaken on the cold stone surface of the cavern floor, your mind dizzy\
+    \ from its journey through time and space."
+  ]

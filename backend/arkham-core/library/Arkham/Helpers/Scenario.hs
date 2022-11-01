@@ -18,11 +18,11 @@ import Control.Monad.Writer hiding ( filterM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.NonEmpty qualified as NE
 
-scenarioField :: (HasGame m, Monad m) => Field Scenario a -> m a
+scenarioField :: (HasCallStack, HasGame m, Monad m) => Field Scenario a -> m a
 scenarioField fld = scenarioFieldMap fld id
 
 scenarioFieldMap
-  :: (Monad m, HasGame m) => Field Scenario a -> (a -> b) -> m b
+  :: (HasCallStack, Monad m, HasGame m) => Field Scenario a -> (a -> b) -> m b
 scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
 
 getIsStandalone :: (Monad m, HasGame m) => m Bool

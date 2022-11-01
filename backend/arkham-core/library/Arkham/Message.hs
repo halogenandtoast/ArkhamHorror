@@ -102,6 +102,10 @@ createCardEffect
   -> Message
 createCardEffect def = CreateEffect (toCardCode def)
 
+data AbilityRef = AbilityRef Source Int
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability

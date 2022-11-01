@@ -20,3 +20,10 @@ instance SourceEntity a => SourceEntity (a `With` b) where
 
 instance SourceEntity InvestigatorId where
   toSource = InvestigatorSource
+
+toAbilitySource :: SourceEntity a => a -> Int -> Source
+toAbilitySource = AbilitySource . toSource
+
+isAbilitySource :: SourceEntity a => a -> Int -> Source -> Bool
+isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b
+isAbilitySource _ _ _ = False

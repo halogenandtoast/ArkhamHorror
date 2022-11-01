@@ -301,6 +301,7 @@ const phase = computed(() => props.game.phase)
           :investigatorId="investigatorId"
           @choose="choose"
         />
+
         <img
           v-if="activeCard"
           :src="activeCard"

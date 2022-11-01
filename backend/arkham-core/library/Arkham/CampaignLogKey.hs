@@ -130,6 +130,13 @@ data CampaignLogKey
   | TheJungleWatches
   | TheInvestigatorsCooperatedWithTheYithians
   | TheInvestigatorsResistedCaptivity
+  | TheInvestigatorsHadTheirMemoriesExpunged
+  | TheProcessWasPerfected
+  | TheProcessWasSuccessful
+  | TheProcessBackfired
+  | TheProcessBackfiredSpectacularly
+  | AlejandroRemembersEverything
+  | AlejandroIsSetAgainstYou
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

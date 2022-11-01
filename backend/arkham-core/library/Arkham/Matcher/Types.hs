@@ -38,6 +38,7 @@ data InvestigatorMatcher
   | NotYou
   | Anyone
   | FewestCardsInHand
+  | MostCardsInHand
   | LowestRemainingHealth
   | LowestRemainingSanity
   | MostRemainingSanity
@@ -699,7 +700,7 @@ data AbilityMatcher
   | AbilityMatches [AbilityMatcher]
   | AbilityOneOf [AbilityMatcher]
   | AnyAbility
-  | AbilityOnScenarioCard
+  | AbilityOnEncounterCard
   | AssetAbility AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -2761,7 +2761,7 @@ trainTracks =
 
 blackCave :: CardDef
 blackCave =
-  (location "04133b" "Black Cave" [Cave] Hourglass [Circle] ThreadsOfFate)
+  (location "04133f" "Black Cave" [Cave] Hourglass [Circle] ThreadsOfFate)
     { cdDoubleSided = False
     , cdVictoryPoints = Just 1
     }
@@ -2847,7 +2847,7 @@ temploMayor_175 = (location
 templesOfTenochtitlan_176 :: CardDef
 templesOfTenochtitlan_176 = (location
                               "04176"
-                              "Temples of Tenochtitlán "
+                              "Temples of Tenochtitlán"
                               [Ancient, Tenochtitlan]
                               Square
                               [Diamond, Circle]
@@ -2859,7 +2859,7 @@ templesOfTenochtitlan_176 = (location
 templesOfTenochtitlan_177 :: CardDef
 templesOfTenochtitlan_177 = (location
                               "04177"
-                              "Temples of Tenochtitlán "
+                              "Temples of Tenochtitlán"
                               [Ancient, Tenochtitlan]
                               Square
                               [Diamond, Circle]
@@ -2871,7 +2871,7 @@ templesOfTenochtitlan_177 = (location
 chapultepecHill_178 :: CardDef
 chapultepecHill_178 = (location
                         "04178"
-                        "Chapultepec Hill "
+                        "Chapultepec Hill"
                         [Ancient, Tenochtitlan]
                         Triangle
                         [Star, Circle]
@@ -2883,7 +2883,7 @@ chapultepecHill_178 = (location
 chapultepecHill_179 :: CardDef
 chapultepecHill_179 = (location
                         "04179"
-                        "Chapultepec Hill "
+                        "Chapultepec Hill"
                         [Ancient, Tenochtitlan]
                         Triangle
                         [Star, Circle]

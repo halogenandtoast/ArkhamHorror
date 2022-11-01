@@ -18,7 +18,7 @@ import Arkham.Target
 getXp :: (Monad m, HasGame m) => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXpWithBonus :: (Monad m, HasGame m) => Int -> m [(InvestigatorId, Int)]
+getXpWithBonus :: (HasCallStack, Monad m, HasGame m) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
   investigatorIds <- getInvestigatorIds
   for

@@ -23,11 +23,9 @@ instance RunMessage FalseLead where
   runMessage msg t@(FalseLead attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- field InvestigatorClues iid
-      if playerClueCount == 0
-        then push $ chooseOne
-          iid
-          [TargetLabel (toTarget attrs) [Surge iid (toSource attrs)]]
-        else push (RevelationSkillTest iid source SkillIntellect 4)
+      push $ if playerClueCount == 0
+        then chooseOne iid [Label "Surge" [Surge iid (toSource attrs)]]
+        else RevelationSkillTest iid source SkillIntellect 4
       pure t
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == toId attrs -> t <$ push (InvestigatorPlaceCluesOnLocation iid n)

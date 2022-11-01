@@ -54,11 +54,7 @@ instance HasAbilities StrangeOccurences where
     [ restrictedAbility
           a
           1
-          (Negate
-          $ LocationExists
-          $ LocationWithAnyClues
-          <> IsIchtacasDestination
-          )
+          (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
         $ Objective
         $ ForcedAbility AnyWindow
     | onSide E a

@@ -1092,6 +1092,10 @@ passesCriteria iid source windows' = \case
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
   Criteria.LocationExists matcher -> selectAny matcher
   Criteria.LocationCount n matcher -> (== n) <$> selectCount matcher
+  Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
+    targets <- select targetMatcher
+    actual <- select locationMatcher
+    pure $ all (`member` actual) targets
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)
   Criteria.InVictoryDisplay cardMatcher valueMatcher -> do

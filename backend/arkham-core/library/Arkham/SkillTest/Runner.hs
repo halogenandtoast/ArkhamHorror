@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.SkillTest.Runner
   ( module X
+  , skillIconCount
   ) where
 
 import Arkham.Prelude

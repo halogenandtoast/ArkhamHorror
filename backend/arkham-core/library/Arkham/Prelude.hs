@@ -136,6 +136,15 @@ sampleWithRest xs = do
   x <- sample xs
   pure (x, deleteFirst x $ toList xs)
 
+sampleN :: (Eq a, MonadRandom m) => Int -> NonEmpty a -> m [a]
+sampleN 0 _ = pure []
+sampleN _ (x :| []) = pure [x]
+sampleN n xs = do
+  (x, rest) <- sampleWithRest xs
+  case nonEmpty rest of
+    Nothing -> pure [x]
+    Just xs' -> (x :) <$> sampleN (n - 1) xs'
+
 infix 9 !!?
 (!!?) :: [a] -> Int -> Maybe a
 (!!?) xs i

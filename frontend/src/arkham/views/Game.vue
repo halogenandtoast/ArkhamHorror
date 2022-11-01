@@ -191,6 +191,9 @@ const { copy } = useClipboard({ source })
             {{entry[0]}}: {{entry[1].join(", ")}}
           </div>
         </div>
+        <div v-if="!game.scenario">
+          <GameLog :game="game" :gameLog="gameLog" />
+        </div>
       </div>
     </template>
   </div>

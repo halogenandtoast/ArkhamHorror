@@ -670,6 +670,13 @@ getInvestigatorsMatching matcher = do
         . traverse (fieldMap InvestigatorHand (Min . length))
         =<< getInvestigatorIds
       pure $ minCardCount == cardCount
+    MostCardsInHand -> \i -> do
+      let cardCount = length . investigatorHand $ toAttrs i
+      maxCardCount <-
+        fmap (getMax0 . fold)
+        . traverse (fieldMap InvestigatorHand (Max . length))
+        =<< getInvestigatorIds
+      pure $ maxCardCount == cardCount
     LowestRemainingHealth -> \i -> do
       h <- field InvestigatorRemainingHealth (toId i)
       lowestRemainingHealth <-
@@ -1015,7 +1022,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
       toList
         . unions @(HashSet Ability)
         <$> traverse (fmap setFromList . getAbilitiesMatching) xs
-    AbilityOnScenarioCard -> filterM
+    AbilityOnEncounterCard -> filterM
       ((`sourceMatches` M.EncounterCardSource) . abilitySource)
       abilities
 
@@ -2465,7 +2472,7 @@ instance Projection Event where
 
 instance Projection Scenario where
   field fld _ = do
-    s <- fromJustNote "should be impossible" <$> getScenario
+    s <- fromJustNote ("should be impossible, was looking for field: " <> show fld) <$> getScenario
     let ScenarioAttrs {..} = toAttrs s
     case fld of
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
@@ -3515,7 +3522,7 @@ runGameMessage msg g = case msg of
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
-    windowMsgs <- windows [Window.AddedToVictory card]
+    windowMsgs <- windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
     pushAll $ windowMsgs <> [RemoveEnemy eid]
     pure g
   DefeatedAddToVictory (EnemyTarget eid) -> do
@@ -4192,22 +4199,28 @@ preloadEntities g = do
     , gameInSearchEntities = searchEntities
     }
 
+-- | Preloads Modifiers
+-- We only preload modifiers while the scenario is active in order to prevent
+-- scenario specific modifiers from causing an exception. For instance when we
+-- need to call `getVengeanceInVictoryDisplay`
 preloadModifiers :: Monad m => Game -> m Game
-preloadModifiers g = flip runReaderT g $ do
-  let cards = allCards g
-  allModifiers <- getMonoidalHashMap <$> foldMapM
-    (`toTargetModifiers` (entities <> inHandEntities))
-    (SkillTestTarget
-    : map TokenTarget tokens
-    <> map toTarget entities
-    <> map CardTarget cards
-    <> map (CardIdTarget . toCardId) cards
-    <> map
-         (InvestigatorHandTarget . toId)
-         (toList $ entitiesInvestigators $ gameEntities g)
-    <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
-    )
-  pure $ g { gameModifiers = allModifiers }
+preloadModifiers g = case gameMode g of
+  This _ -> pure g
+  _ -> flip runReaderT g $ do
+    let cards = allCards g
+    allModifiers <- getMonoidalHashMap <$> foldMapM
+      (`toTargetModifiers` (entities <> inHandEntities))
+      (SkillTestTarget
+      : map TokenTarget tokens
+      <> map toTarget entities
+      <> map CardTarget cards
+      <> map (CardIdTarget . toCardId) cards
+      <> map
+           (InvestigatorHandTarget . toId)
+           (toList $ entitiesInvestigators $ gameEntities g)
+      <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
+      )
+    pure $ g { gameModifiers = allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =

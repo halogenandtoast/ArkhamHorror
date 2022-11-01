@@ -5,19 +5,52 @@ module Arkham.Treachery.Cards.YithianPresence
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Target
+import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype YithianPresence = YithianPresence TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianPresence :: TreacheryCard YithianPresence
 yithianPresence = treachery YithianPresence Cards.yithianPresence
 
+instance HasModifiersFor YithianPresence where
+  getModifiersFor (InvestigatorTarget iid) (YithianPresence a)
+    | treacheryOnInvestigator iid a = do
+      yithianPresent <- selectAny $ EnemyWithTrait Yithian <> EnemyAt
+        (locationWithInvestigator iid)
+      mlid <- selectOne $ locationWithInvestigator iid
+      pure $ if yithianPresent
+        then
+          toModifiers a
+          $ CannotTriggerAbilityMatching AbilityOnEncounterCard
+          : [ CannotInvestigateLocation lid | lid <- maybeToList mlid ]
+        else []
+  getModifiersFor _ _ = pure []
+
+instance HasAbilities YithianPresence where
+  getAbilities (YithianPresence a) =
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> HandDiscardCost 2 AnyCard
+    ]
+
 instance RunMessage YithianPresence where
   runMessage msg t@(YithianPresence attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid (isSource attrs -> True) ->
+      t <$ push (AttachTreachery (toId t) (InvestigatorTarget iid))
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toTarget attrs)
+      pure t
     _ -> YithianPresence <$> runMessage msg attrs

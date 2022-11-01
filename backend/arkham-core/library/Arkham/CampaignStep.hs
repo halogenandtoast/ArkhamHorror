@@ -17,6 +17,10 @@ data CampaignStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data InterludeKey = DanielSurvived | DanielWasPossessed | DanielDidNotSurvive
+data InterludeKey
+  = DanielSurvived
+  | DanielWasPossessed
+  | DanielDidNotSurvive
+  | TheCustodianWasUnderControl
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

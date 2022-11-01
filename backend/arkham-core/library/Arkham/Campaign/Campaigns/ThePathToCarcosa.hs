@@ -125,7 +125,7 @@ instance RunMessage ThePathToCarcosa where
         Just DanielWasPossessed -> do
           c <$ pushAll
             [story investigatorIds danielWasPossessed, respondToWarning]
-        -- Just _ -> error "Invalid key for The Unspeakable Oath"
+        Just _ -> error "Invalid key for The Unspeakable Oath"
     CampaignStep (Just EpilogueStep) -> do
       possessed <- getRecordSet Possessed
       let

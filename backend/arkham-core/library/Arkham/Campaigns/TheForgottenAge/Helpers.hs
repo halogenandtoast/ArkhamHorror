@@ -45,7 +45,7 @@ getInvestigatorsWithoutSupply
 getInvestigatorsWithoutSupply s =
   getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
 
-getVengeanceInVictoryDisplay :: (HasGame m, Monad m) => m Int
+getVengeanceInVictoryDisplay :: (HasCallStack, HasGame m, Monad m) => m Int
 getVengeanceInVictoryDisplay = do
   inVictoryDisplay <-
     sum
@@ -127,13 +127,17 @@ explore iid source cardMatcher exploreRule = do
             : [ MoveTo source iid lid
               | canMove && exploreRule == PlaceExplored
               ]
-            <> [UpdateHistory iid historyItem, afterExploredWindow]
-            <> [ afterPutIntoPlayWindow | exploreRule == PlaceExplored ]
+            <> [ UpdateHistory iid historyItem
+               , afterExploredWindow
+               , afterPutIntoPlayWindow
+               ]
         else do
           windowMsg <- checkWindows
             [Window Timing.After $ Window.Explored iid Failure]
           pure
-            [DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x, windowMsg]
+            [ DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x
+            , windowMsg
+            ]
       deck' <- if null notMatched then pure xs else shuffleM (xs <> notMatched)
       pushAll
         [ FocusCards (notMatched <> [x])

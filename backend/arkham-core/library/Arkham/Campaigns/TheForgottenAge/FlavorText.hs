@@ -299,3 +299,112 @@ faithRestored = FlavorText
     \ crackling of the campfire and the choir of chirping insects whose singing fills\
     \ the night air."
   ]
+
+aMindRecovered :: FlavorText
+aMindRecovered = FlavorText
+  (Just "A Mind Recovered")
+  [ "You turn your attention to your surroundings. Though the creatures that\
+    \ ambushed you are nowhere to be found, Alejandro lies on the ground nearby,\
+    \ stirring into consciousness. To your surprise, he appears just as confused\
+    \ as you are. At first, it seems as though he recalls nothing of the previous\
+    \ expedition or the Eztli relic, but then his eyes suddenly spark with\
+    \ recognition. He grips your shoulder tightly and gazes at you as though for\
+    \ the first time in years. “I do remember! We shared one mind for some time,\
+    \ the creature and I. It wished to find the Eztli relic, though for what\
+    \ purpose, I do not know.” He slumps backward against the stone wall,\
+    \ recovering from the sudden influx of memories. “You believed me at every\
+    \ turn, even when the creature had control. You saved me from that abysmal\
+    \ place and brought me back to humanity. For this, I cannot begin to repay\
+    \ you.” He shakes your hand vigorously, filled with a sudden and intense\
+    \ resolve. “We will right all of this, you and I. Then, we will tell the\
+    \ world what we have seen.”"
+  ]
+
+foreverLost :: FlavorText
+foreverLost = FlavorText
+  (Just "Forever Lost")
+  [ "You turn your attention to your surroundings. Both Alejandro and the\
+    \ creatures that ambushed you are nowhere to be found. You wonder how long\
+    \ Alejandro was in league with them, and why. Perhaps you will never know.\
+    \ However, you suspect this is not the last you will see of him."
+  ]
+
+interlude4Section3 :: FlavorText
+interlude4Section3 = FlavorText
+  Nothing
+  [ "The narrow steps on the other side of the stone doorway seem almost\
+    \ endless. Though a dim red glow emanates from deeper within the cavern, no\
+    \ matter how many steps you traverse, the glow does not brighten. It almost\
+    \ seems to grow more distant with each step, mocking your tenacity. After a\
+    \ short while, you come to a small ledge where a stone gate bars your passage\
+    \ deeper into the cavern. The gate bears a familiar carved pattern, faded\
+    \ from age and disrepair, and seeping with an oddly discolored purulence."
+  ]
+
+theWayIsOpen :: FlavorText
+theWayIsOpen = FlavorText
+  (Just "The Way Is Open")
+  [ "The situation sparks your memory, and you consult the expedition journal.\
+    \ The pattern is similar to one found in the Eztli ruins. Using your chalk\
+    \ and the drawings in your journal as a reference, you restore the glyph in\
+    \ its entirety, and the grooves glow brightly once more. The stone gate lifts\
+    \ on its own, and you are able to continue onward."
+  ]
+
+theWayIsShut :: FlavorText
+theWayIsShut = FlavorText
+  (Just "The Way Is Shut")
+  [ "You are unsure how to proceed. After debating the merits of each of your\
+    \ options, you decide that brute force may be the only solution. It takes all\
+    \ of your strength to lift the stone, and you open the way forward for each\
+    \ of you one at a time. It is no simple task, and your body aches\
+    \ tremendously from the effort."
+  ]
+
+lowOnRationsInterlude4 :: FlavorText
+lowOnRationsInterlude4 = FlavorText
+  (Just "Low on Rations")
+  [ "Hours later, you are almost too weary to go on. Every inch of your body\
+    \ aches with intense pain. There is nothing in this desolate cavern to eat\
+    \ but the occasional wild mushroom, and although temptation gnaws at your\
+    \ insides, you cannot tell which are toxic and which are healthy..."
+  ]
+
+thePoisonSpreadsInterlude4 :: FlavorText
+thePoisonSpreadsInterlude4 = FlavorText
+  (Just "The Poison Spreads")
+  [ "The poison has spread to nearly every part of your body. Your skin pales,\
+    \ and you are covered in cold feverish sweat. Simply rising to your feet\
+    \ requires a tremendous effort, and you get no rest at night despite your\
+    \ exhaustion. It won’t be long now before the poison claims your life."
+  ]
+
+interlude4Section6 :: FlavorText
+interlude4Section6 = FlavorText
+  Nothing
+  [ "After descending hundreds and hundreds of steps, you decide to stop and\
+    \ rest. Though your watch tells you that night has fallen, the lack of\
+    \ natural sky is starting to affect your internal clock. With no flat ledge\
+    \ in sight, each member of your party claims one of the many narrow steps to\
+    \ sleep on."
+  ]
+
+restfulSleepInterlude4 :: FlavorText
+restfulSleepInterlude4 = FlavorText
+  (Just "Restful Sleep")
+  [ "Though you long for a proper bed, at least your blanket protects you from\
+    \ the frigid chill that permeates the cavern. When “morning” arrives, your\
+    \ body longs for more sleep, but you know you must press onward and reach the\
+    \ Nexus as fast as you can..."
+  ]
+
+tossingAndTurningInterlude4 :: FlavorText
+tossingAndTurningInterlude4 = FlavorText
+  (Just "Tossing and Turning")
+  [ "Sleep does not come easily for you. Barely any layers protect you from the\
+    \ bitter cold of the underground cavern, and you lie shivering for hours\
+    \ before exhaustion finally claims you. You awaken every hour or so as the\
+    \ shifting of your body almost causes you to tumble off your stone perch.\
+    \   When “morning” comes, you are even more weary than you were the previous\
+    \ night."
+  ]

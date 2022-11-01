@@ -143,6 +143,7 @@ allActs = mapFromList $ map
   , SomeActCard trialOfTheHuntress
   , SomeActCard theGuardiansInquiry
   , SomeActCard theCaveOfDarknessEmbroiledInBattle
+  , SomeActCard theCaveOfDarknessTunnelsInTheDark
   , SomeActCard strangeRelicsMariaDeSilva
   , SomeActCard strangeRelicsMariasInformation
   , SomeActCard strangeOccurences

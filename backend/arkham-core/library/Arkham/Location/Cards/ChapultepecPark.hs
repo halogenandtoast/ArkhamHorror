@@ -6,6 +6,8 @@ module Arkham.Location.Cards.ChapultepecPark
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Action qualified as Action
+import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
@@ -34,10 +36,13 @@ instance HasAbilities ChapultepecPark where
     withBaseAbilities attrs $ if locationRevealed attrs
       then
         [ restrictedAbility attrs 1 Here $ ForcedAbility $ SkillTestResult
-            Timing.After
-            You
-            (SkillTestWithSkillType SkillWillpower)
-            (FailureResult AnyValue)
+          Timing.After
+          You
+          (SkillTestWithSkillType SkillWillpower)
+          (FailureResult AnyValue)
+        , restrictedAbility attrs 2 Here
+        $ ActionAbility (Just Action.Explore)
+        $ ActionCost 1
         ]
       else []
 

@@ -41,7 +41,7 @@ instance HasAbilities MetropolitanCathedral where
           attrs
           2
           (Here <> InvestigatorExists
-            (You <> HandWith (LengthIs $ AtLeast $ Static 5))
+            (You <> HandWith (LengthIs $ AtLeast $ Static 6))
           )
         $ ActionAbility (Just Action.Explore)
         $ ActionCost 1

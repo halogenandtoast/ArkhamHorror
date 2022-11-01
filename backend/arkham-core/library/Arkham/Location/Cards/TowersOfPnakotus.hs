@@ -5,9 +5,18 @@ module Arkham.Location.Cards.TowersOfPnakotus
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Projection
 
 newtype TowersOfPnakotus = TowersOfPnakotus LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,9 +27,34 @@ towersOfPnakotus =
   location TowersOfPnakotus Cards.towersOfPnakotus 2 (PerPlayer 2)
 
 instance HasAbilities TowersOfPnakotus where
-  getAbilities (TowersOfPnakotus attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (TowersOfPnakotus attrs) = withBaseAbilities
+    attrs
+    [ limitedAbility (PlayerLimit PerTurn 1)
+      $ restrictedAbility attrs 1 Here
+      $ ActionAbility Nothing
+      $ ActionCost 1
+    ]
 
 instance RunMessage TowersOfPnakotus where
-  runMessage msg (TowersOfPnakotus attrs) =
-    TowersOfPnakotus <$> runMessage msg attrs
+  runMessage msg l@(TowersOfPnakotus attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      discardableCount <- fieldMap
+        InvestigatorHand
+        (count (`cardMatch` NonWeakness))
+        iid
+      push $ chooseAmounts
+        iid
+        "Choose number of cards to discard"
+        (MaxAmountTarget discardableCount)
+        [("Cards", (0, discardableCount))]
+        (toTarget attrs)
+      pure l
+    ResolveAmounts iid choices (isTarget attrs -> True) -> do
+      let
+        choicesMap = mapFromList @(HashMap Text Int) choices
+        cardAmount = findWithDefault 0 "Cards" choicesMap
+      pushAll
+        $ replicate cardAmount (ChooseAndDiscardCard iid)
+        <> [ShuffleDiscardBackIn iid, DrawCards iid (cardAmount + 1) False]
+      pure l
+    _ -> TowersOfPnakotus <$> runMessage msg attrs

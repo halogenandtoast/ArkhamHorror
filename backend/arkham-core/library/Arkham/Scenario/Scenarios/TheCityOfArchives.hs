@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -22,8 +23,10 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -220,5 +223,51 @@ instance RunMessage TheCityOfArchives where
           let discardCount = if isEasyStandard attrs then 1 else n
           pushAll $ replicate discardCount $ RandomDiscard iid
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> do
+      iids <- getInvestigatorIds
+      case r of
+        NoResolution ->
+          pushAll
+            $ [ story iids noResolution
+              , Record TheInvestigatorsHadTheirMemoriesExpunged
+              ]
+            <> map DrivenInsane iids
+            <> [GameOver]
+        Resolution 1 -> do
+          rememberedTasks <- countM
+            remembered
+            [ FoundTheProcess
+            , DissectedAnOrgan
+            , InterviewedASubject
+            , RealizedWhatYearItIs
+            , ActivatedTheDevice
+            ]
+          resignedWithTheCustodian <- scenarioFieldMap
+            ScenarioResignedCardCodes
+            (elem "04256")
+
+          let
+            totalTasks =
+              rememberedTasks + if resignedWithTheCustodian then 1 else 0
+            (logEntry, bonusXp) = case totalTasks of
+              n | n == 6 -> (TheProcessWasPerfected, 4)
+              n | n == 5 -> (TheProcessWasSuccessful, 2)
+              n | n == 4 -> (TheProcessBackfired, 1)
+              n | n == 3 -> (TheProcessBackfiredSpectacularly, 0)
+              _ -> error "Invalid number of tasks"
+
+          gainXp <- map (uncurry GainXP) <$> getXpWithBonus bonusXp
+
+          let
+            interludeResult = if resignedWithTheCustodian
+              then Just TheCustodianWasUnderControl
+              else Nothing
+
+          pushAll
+            $ Record logEntry
+            : gainXp
+            <> [EndOfGame (Just $ InterludeStep 4 interludeResult)]
+        _ -> error "Invalid resolution"
       pure s
     _ -> TheCityOfArchives <$> runMessage msg attrs

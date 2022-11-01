@@ -5,9 +5,17 @@ module Arkham.Location.Cards.LaboratoryOfTheGreatRace
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
+import Arkham.ScenarioLogKey
+import Arkham.SkillType
+import Arkham.Target
 
 newtype LaboratoryOfTheGreatRace = LaboratoryOfTheGreatRace LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,9 +29,30 @@ laboratoryOfTheGreatRace = location
   (PerPlayer 1)
 
 instance HasAbilities LaboratoryOfTheGreatRace where
-  getAbilities (LaboratoryOfTheGreatRace attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (LaboratoryOfTheGreatRace attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
+      $ ActionAbility Nothing
+      $ ActionCost 1
+    ]
 
 instance RunMessage LaboratoryOfTheGreatRace where
-  runMessage msg (LaboratoryOfTheGreatRace attrs) =
-    LaboratoryOfTheGreatRace <$> runMessage msg attrs
+  runMessage msg l@(LaboratoryOfTheGreatRace attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ BeginSkillTest
+        iid
+        (toAbilitySource attrs 1)
+        (InvestigatorTarget iid)
+        Nothing
+        SkillAgility
+        3
+      pure l
+    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push $ Remember ActivatedTheDevice
+        pure l
+    FailedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push $ PlaceClues (toTarget attrs) 1
+        pure l
+    _ -> LaboratoryOfTheGreatRace <$> runMessage msg attrs

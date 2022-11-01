@@ -163,26 +163,6 @@ newtype HandCard = HandCard { unHandCard ::Card }
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)
 
-newtype VictoryDisplayCard = VictoryDisplayCard { unVictoryDisplayCard ::Card }
-  deriving stock (Show, Eq, Generic)
-  deriving newtype (ToJSON, FromJSON, Hashable)
-
-newtype UnderneathCard = UnderneathCard { unUnderneathCard ::Card }
-  deriving stock (Show, Generic)
-  deriving newtype (ToJSON, FromJSON)
-
-newtype DiscardableHandCard = DiscardableHandCard { unDiscardableHandCard ::Card }
-  deriving stock (Show, Generic)
-  deriving newtype (ToJSON, FromJSON)
-
-newtype PlayableHandCard = PlayableHandCard { unPlayableHandCard ::Card }
-  deriving stock (Show, Generic)
-  deriving newtype (ToJSON, FromJSON)
-
-newtype InPlayCard = InPlayCard { unInPlayCard ::Card }
-  deriving stock (Show, Generic)
-  deriving newtype (ToJSON, FromJSON)
-
 class HasCard env a where
   getCard :: (MonadReader env m, MonadIO m) => CardId -> a -> m Card
 

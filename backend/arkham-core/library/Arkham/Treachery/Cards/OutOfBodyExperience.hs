@@ -1,14 +1,19 @@
 module Arkham.Treachery.Cards.OutOfBodyExperience
   ( outOfBodyExperience
   , OutOfBodyExperience(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Modifiers
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype OutOfBodyExperience = OutOfBodyExperience TreacheryAttrs
@@ -20,5 +25,15 @@ outOfBodyExperience = treachery OutOfBodyExperience Cards.outOfBodyExperience
 
 instance RunMessage OutOfBodyExperience where
   runMessage msg t@(OutOfBodyExperience attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      result <- withoutModifier (InvestigatorTarget iid) CannotManipulateDeck
+      when result $ do
+        cards <- field InvestigatorHand iid
+        pushAll
+          [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
+          , DrawCards iid (length cards) False
+          , RemoveTreachery (toId attrs)
+          , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard attrs]
+          ]
+      pure t
     _ -> OutOfBodyExperience <$> runMessage msg attrs

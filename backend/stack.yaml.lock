@@ -27,7 +27,7 @@ packages:
     hackage: memory-0.18.0
 snapshots:
 - completed:
-    sha256: 9e19a387b59e0297c54e63c3d2d60f1b1d5497f7b5421eb79a5faeff4975f901
-    size: 646687
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/10/28.yaml
-  original: nightly-2022-10-28
+    sha256: 002a45f487922f7d12d046451e9c968d4428d9cb01844240bab3fae8c25c0a29
+    size: 646692
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/11/1.yaml
+  original: nightly-2022-11-01

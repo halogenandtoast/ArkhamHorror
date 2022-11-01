@@ -23,11 +23,11 @@ trialOfTheHuntress =
   act (1, E) TrialOfTheHuntress Cards.trialOfTheHuntress
     $ Just
     $ GroupClueCost (PerPlayer 2)
-    $ LocationWithTitle "Rivertown"
+    $ locationIs Locations.rivertown
 
 instance RunMessage TrialOfTheHuntress where
   runMessage msg a@(TrialOfTheHuntress attrs) = case msg of
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       blackCave <- genCard Locations.blackCave
       pushAll
         [ PlaceLocation blackCave

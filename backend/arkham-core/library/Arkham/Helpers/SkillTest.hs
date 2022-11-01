@@ -5,9 +5,9 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.SkillTest.Base
 import Arkham.Source
-import Arkham.Id
 import Arkham.Target
 
 getSkillTestInvestigator :: (Monad m, HasGame m) => m (Maybe InvestigatorId)
@@ -28,5 +28,4 @@ getIsBeingInvestigated :: (Monad m, HasGame m) => LocationId -> m Bool
 getIsBeingInvestigated lid = do
   mTarget <- getSkillTestTarget
   mAction <- getSkillTestAction
-  pure $ mAction == Just Investigate && mTarget == Just
-    (LocationTarget lid)
+  pure $ mAction == Just Investigate && mTarget == Just (LocationTarget lid)

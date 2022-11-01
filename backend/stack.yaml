@@ -4,7 +4,7 @@ concurrent-tests: false
 
 system-ghc: true
 install-ghc: false
-resolver: nightly-2022-10-28
+resolver: nightly-2022-11-01
 compiler: ghc-9.4.2
 
 ghc-options:

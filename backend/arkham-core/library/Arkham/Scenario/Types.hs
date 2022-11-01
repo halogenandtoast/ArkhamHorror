@@ -47,6 +47,8 @@ data instance Field Scenario :: Type -> Type where
   ScenarioName :: Field Scenario Name
   ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
 
+deriving stock instance Show (Field Scenario typ)
+
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
   , scenarioId :: ScenarioId

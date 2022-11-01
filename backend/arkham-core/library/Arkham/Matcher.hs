@@ -63,6 +63,10 @@ locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
 
+locationWithAsset :: AssetId -> LocationMatcher
+locationWithAsset = LocationWithAsset . AssetWithId
+{-# INLINE locationWithAsset #-}
+
 locationWithEnemy :: EnemyId -> LocationMatcher
 locationWithEnemy = LocationWithEnemy . EnemyWithId
 {-# INLINE locationWithEnemy #-}

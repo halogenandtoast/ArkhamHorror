@@ -91,6 +91,7 @@ data Criterion
   | AllUndefeatedInvestigatorsResigned
   | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher
+  | AllLocationsMatch LocationMatcher LocationMatcher
   | OnSameLocation
   | OwnCardWithDoom
   | ControlsThis -- really controls this

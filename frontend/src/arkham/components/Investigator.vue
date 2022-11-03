@@ -173,7 +173,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
       >End turn</button>
     </div>
 
-    <div v-if="player.supplies.length > 0">
+    <div v-if="player.supplies.length > 0" class="supplies">
       <ul>
         <li v-for="(supply, index) in player.supplies" :key="index">{{supply}}</li>
       </ul>
@@ -246,5 +246,13 @@ i.action {
   border-radius: 3px;
   width: $card-width * 0.6;
   margin-right: 2px;
+}
+
+.supplies {
+  & ul {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+  }
 }
 </style>

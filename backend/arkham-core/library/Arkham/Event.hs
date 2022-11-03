@@ -165,6 +165,7 @@ allEvents = mapFromList $ map
   , SomeEventCard payDay1
   , SomeEventCard sacrifice1
   , SomeEventCard wingingIt
+  , SomeEventCard trialByFire
   , SomeEventCard bloodRite
   , SomeEventCard astoundingRevelation
   , SomeEventCard firstWatch

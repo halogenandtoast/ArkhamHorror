@@ -15,6 +15,9 @@ data SkillType
   deriving stock (Show, Eq, Generic, Ord)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+allSkills :: [SkillType]
+allSkills = [SkillWillpower, SkillIntellect, SkillCombat, SkillAgility]
+
 instance IsLabel "willpower" SkillType where
   fromLabel = SkillWillpower
 

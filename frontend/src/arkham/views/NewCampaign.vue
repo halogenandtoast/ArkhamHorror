@@ -456,8 +456,7 @@ header {
 
 .scenarios {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  grid-template-columns: repeat(auto-fill, calc(1 / 8 * 100%));
 
   img {
     width: 100%;

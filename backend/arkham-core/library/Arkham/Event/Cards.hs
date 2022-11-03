@@ -217,6 +217,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , thePaintedWorld
   , thinkOnYourFeet
   , timeWarp2
+  , trialByFire
   , trueSurvivor3
   , trusted
   , truthFromFiction
@@ -1440,6 +1441,13 @@ wingingIt = (event "04272" "Winging It" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdActions = [Action.Investigate]
   , cdPlayableFromDiscard = True
+  }
+
+trialByFire :: CardDef
+trialByFire = (event "05281" "Trial By Fire" 3 Survivor)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ DuringTurn You
   }
 
 bloodRite :: CardDef

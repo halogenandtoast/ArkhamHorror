@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
+import type { Game } from '@/arkham/types/Game'
 import * as Arkham from '@/arkham/types/Investigator'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
+import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 
 export interface Props {
   choices: Message[]
   player: Arkham.Investigator
   investigatorId: string
+  game: Game
   portrait?: boolean
 }
 
@@ -99,6 +102,35 @@ const cardsUnderneath = computed(() => props.player.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+
+const modifiers = computed(() => props.player.modifiers)
+
+function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) {
+  let modified = base
+
+  modifiers.forEach((modifier) => {
+    if (modifier.type.tag === "BaseSkillOf" && modifier.type.skillType === skillType) {
+      modified = modifier.type.value
+    }
+  })
+
+  modifiers.forEach((modifier) => {
+    if (modifier.type.tag === "SkillModifier" && modifier.type.skillType === skillType) {
+      modified = modified + modifier.type.value
+    }
+
+    if (modifier.type.tag === "ActionSkillModifier" && modifier.type.skillType === skillType && props.game.skillTest && props.game.skillTest.action === modifier.type.action) {
+      modified = modified + modifier.type.value
+    }
+  })
+
+  return modified
+}
+
+const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value))
+const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value))
+const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value))
+const agility = computed(() => calculateSkill(props.player.agility, "SkillAgility", modifiers.value))
 </script>
 
 <template>
@@ -110,6 +142,12 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
   />
   <div v-else>
     <div class="player-card">
+      <div class="stats">
+        <div class="willpower willpower-icon">{{willpower}}</div>
+        <div class="intellect intellect-icon">{{intellect}}</div>
+        <div class="combat combat-icon">{{combat}}</div>
+        <div class="agility agility-icon">{{agility}}</div>
+      </div>
       <img
         :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
         class="card"
@@ -254,5 +292,36 @@ i.action {
     flex-direction: row;
     list-style: none;
   }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.willpower {
+  background-color: $guardian;
+  color: white;
+  text-align: center;
+  border-top-left-radius: 5px;
+}
+
+.intellect {
+  background-color: $mystic;
+  color: white;
+  text-align: center;
+}
+
+.combat {
+  background-color: $survivor;
+  color: white;
+  text-align: center;
+}
+
+.agility {
+  background-color: $rogue;
+  color: white;
+  text-align: center;
+  border-top-right-radius: 5px;
 }
 </style>

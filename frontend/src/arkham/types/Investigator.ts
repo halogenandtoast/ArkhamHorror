@@ -1,25 +1,12 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Name, nameDecoder } from '@/arkham/types/Name';
+import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import {
   Card,
   PlayerCardContents,
   playerCardContentsDecoder,
   cardDecoder,
 } from '@/arkham/types/Card';
-
-export interface ModifierType {
-  tag: string
-}
-
-export const modifierTypeDecoder = JsonDecoder.object<ModifierType>(
-  { tag: JsonDecoder.string}, 'ModifierType')
-
-export interface Modifier {
-  type: ModifierType
-}
-
-export const modifierDecoder = JsonDecoder.object<Modifier>(
-  { type: modifierTypeDecoder}, 'Modifier')
 
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
 

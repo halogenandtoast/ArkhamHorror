@@ -21,6 +21,7 @@ export interface SkillTest {
   // result: SkillTestResult;
   committedCards: Card[]
   source: Source;
+  action: string | null;
 }
 
 export interface SkillTestResults {
@@ -35,6 +36,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
   {
     investigator: JsonDecoder.string,
     skillType: skillTypeDecoder,
+    action: JsonDecoder.nullable(JsonDecoder.string),
     difficulty: JsonDecoder.number,
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,

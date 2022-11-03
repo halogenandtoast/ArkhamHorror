@@ -41,7 +41,7 @@ data ModifierType
   | TraitRestrictedModifier Trait ModifierType
   | ActionCostModifier Int
   | ActionCostSetToModifier Int
-  | ActionSkillModifier Action SkillType Int
+  | ActionSkillModifier { action :: Action, skillType :: SkillType, value ::  Int }
   | ActionsAreFree
   | AddKeyword Keyword
   | AddTrait Trait
@@ -61,7 +61,7 @@ data ModifierType
   | AsIfInHand Card
   | AsIfUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
-  | BaseSkillOf SkillType Int
+  | BaseSkillOf { skillType :: SkillType, value :: Int }
   | BecomesFast
   | Blank
   | Blocked
@@ -172,7 +172,7 @@ data ModifierType
   | SanityModifier Int
   | SetDifficulty Int
   | ShroudModifier Int
-  | SkillModifier SkillType Int
+  | SkillModifier { skillType :: SkillType, value ::  Int }
   | AddSkillValue SkillType
   | SkillCannotBeIncreased SkillType
   | SkipMythosPhaseStep MythosPhaseStep

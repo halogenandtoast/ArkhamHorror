@@ -138,6 +138,7 @@ const debugChoose = inject('debugChoose')
 
     <div class="player">
       <Investigator
+        :game="game"
         :player="player"
         :choices="choices"
         :investigatorId="investigatorId"

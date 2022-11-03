@@ -1727,9 +1727,11 @@ library
       PatternSynonyms
       RecordWildCards
       TypeFamilies
+      TypeOperators
       UndecidableInstances
       ViewPatterns
       DeepSubsumption
+      StrictData
   build-depends:
       MonadRandom
     , aeson
@@ -1851,9 +1853,11 @@ test-suite spec
       PatternSynonyms
       RecordWildCards
       TypeFamilies
+      TypeOperators
       UndecidableInstances
       ViewPatterns
       DeepSubsumption
+      StrictData
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       arkham-core

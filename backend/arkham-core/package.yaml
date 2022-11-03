@@ -21,9 +21,11 @@ default-extensions:
 - PatternSynonyms
 - RecordWildCards
 - TypeFamilies
+- TypeOperators
 - UndecidableInstances
 - ViewPatterns
 - DeepSubsumption
+- StrictData
 
 library:
   source-dirs: library

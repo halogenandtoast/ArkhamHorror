@@ -47,7 +47,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator (becomeYithian, returnToBody)
+import Arkham.Investigator ( becomeYithian, returnToBody )
 import Arkham.Investigator.Types
   ( Field (..), Investigator, InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
@@ -108,7 +108,12 @@ import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
 import Arkham.Treachery.Types
-  ( Field (..), Treachery, TreacheryAttrs (..), treacheryAttachedTarget, drawnFromL )
+  ( Field (..)
+  , Treachery
+  , TreacheryAttrs (..)
+  , drawnFromL
+  , treacheryAttachedTarget
+  )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -377,7 +382,13 @@ toExternalGame g mq = do
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
 replayChoices
-  :: (MonadIO m, HasGameRef env, HasStdGen env, MonadReader env m, HasQueue Message m, HasGameLogger env)
+  :: ( MonadIO m
+     , HasGameRef env
+     , HasStdGen env
+     , MonadReader env m
+     , HasQueue Message m
+     , HasGameLogger env
+     )
   => [Diff.Patch]
   -> m ()
 replayChoices choices = do
@@ -595,7 +606,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       (runReader
         (maybe
           (pure [])
-          (\st -> traverse withSkillTestModifiers (skillTestSetAsideTokens st))
+          (traverse withSkillTestModifiers . skillTestSetAsideTokens)
           gameSkillTest
         )
         g
@@ -760,7 +771,7 @@ getInvestigatorsMatching matcher = do
       (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
     MostClues -> \i -> do
       mostClueCount <- getMax0 <$> selectAgg Max InvestigatorClues Anyone
-      pure $ mostClueCount == (investigatorClues $ toAttrs i)
+      pure $ mostClueCount == investigatorClues (toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
@@ -841,7 +852,7 @@ getInvestigatorsMatching matcher = do
       enemyIds <- select enemyMatcher
       pure $ any (`member` enemyIds) (investigatorEngagedEnemies $ toAttrs i)
     TopCardOfDeckIs cardMatcher -> \i ->
-      pure $ case (unDeck . investigatorDeck $ toAttrs i) of
+      pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
     UnengagedInvestigator -> pure . null . investigatorEngagedEnemies . toAttrs
@@ -962,11 +973,11 @@ getTreacheriesMatching matcher = do
     TreacheryAt locationMatcher -> \treachery -> do
       targets <- selectListMap (Just . LocationTarget) locationMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
-      pure $ any (== treacheryTarget) targets
+      pure $ treacheryTarget `elem` targets
     TreacheryOnEnemy enemyMatcher -> \treachery -> do
       targets <- selectListMap (Just . EnemyTarget) enemyMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
-      pure $ any (== treacheryTarget) targets
+      pure $ treacheryTarget `elem` targets
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryPlacement (toAttrs treachery) of
@@ -975,7 +986,7 @@ getTreacheriesMatching matcher = do
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
       targets <- selectListMap (Just . InvestigatorTarget) investigatorMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
-      pure $ any (== treacheryTarget) targets
+      pure $ treacheryTarget `elem` targets
     TreacheryOwnedBy investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryOwner (toAttrs treachery) of
@@ -1090,7 +1101,8 @@ getLocationsMatching lmatcher = do
   case lmatcher of
     IsIchtacasDestination ->
       filterM (remembered . IchtacasDestination . toId) ls
-    SingleSidedLocation -> filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
+    SingleSidedLocation ->
+      filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []
     FirstLocation xs ->
       fromMaybe []
@@ -1184,7 +1196,10 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`elem` matches') . toId) ls
     NearestLocationToLocation start matcher -> do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
-      matches' <- getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
+      matches' <- getShortestPath
+        start
+        (pure . (`elem` matchingLocationIds))
+        mempty
       pure $ filter ((`elem` matches') . toId) ls
     LocationWithDistanceFrom distance matcher -> do
       iids <- getInvestigatorIds
@@ -1198,7 +1213,7 @@ getLocationsMatching lmatcher = do
         matches' = HashMap.findWithDefault
           []
           distance
-          (foldr (unionWith (<>)) mempty $ map distanceAggregates distances)
+          (foldr (unionWith (<>) . distanceAggregates) mempty distances)
       pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromAll matcher -> do
       iids <- getInvestigatorIds
@@ -1503,7 +1518,8 @@ getEventsMatching matcher = do
     EventWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
-    EventCardMatch cardMatcher -> filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
+    EventCardMatch cardMatcher ->
+      filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
@@ -1696,8 +1712,7 @@ enemyMatcherFilter = \case
   EnemyWithModifier modifier ->
     \enemy -> elem modifier <$> getModifiers (toTarget enemy)
   EnemyWithEvade -> fieldP EnemyEvade isJust . toId
-  UnengagedEnemy ->
-    \enemy -> selectNone $ InvestigatorEngagedWith $ EnemyWithId $ toId enemy
+  UnengagedEnemy -> selectNone . InvestigatorEngagedWith . EnemyWithId . toId
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
   IsIchtacasPrey -> remembered . IchtacasPrey . toId
   MovingEnemy ->
@@ -1827,7 +1842,7 @@ getAgenda aid =
     <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
-data MissingEntity = MissingEntity Text
+newtype MissingEntity = MissingEntity Text
   deriving stock Show
 
 instance Exception MissingEntity
@@ -1898,13 +1913,13 @@ instance Projection Location where
       LocationConnectedMatchers -> do
         let
           directionMatchers = map
-            (flip LocationInDirection (LocationWithId lid))
+            (`LocationInDirection` LocationWithId lid)
             (setToList locationConnectsTo)
         pure $ locationConnectedMatchers <> directionMatchers
       LocationRevealedConnectedMatchers -> do
         let
           directionMatchers = map
-            (flip LocationInDirection (LocationWithId lid))
+            (`LocationInDirection` LocationWithId lid)
             (setToList locationConnectsTo)
         pure $ locationRevealedConnectedMatchers <> directionMatchers
       LocationRevealed -> pure locationRevealed
@@ -2472,7 +2487,9 @@ instance Projection Event where
 
 instance Projection Scenario where
   field fld _ = do
-    s <- fromJustNote ("should be impossible, was looking for field: " <> show fld) <$> getScenario
+    s <-
+      fromJustNote ("should be impossible, was looking for field: " <> show fld)
+        <$> getScenario
     let ScenarioAttrs {..} = toAttrs s
     case fld of
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
@@ -2580,8 +2597,7 @@ runMessages
   -> m ()
 runMessages mLogger = do
   g <- readGame
-  debugLevel <- fromMaybe @Int 0 . join . fmap readMay <$> liftIO
-    (lookupEnv "DEBUG")
+  debugLevel <- fromMaybe @Int 0 . (readMay =<<) <$> liftIO (lookupEnv "DEBUG")
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
 
   unless (g ^. gameStateL /= IsActive) $ do
@@ -2666,8 +2682,7 @@ runPreGameMessage msg g = case msg of
   ScenarioResolution _ -> do
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
-  ResetGame ->
-    pure $ g & entitiesL . investigatorsL %~ map returnToBody
+  ResetGame -> pure $ g & entitiesL . investigatorsL %~ map returnToBody
   _ -> pure g
 
 getActiveInvestigator :: (Monad m, HasGame m) => m Investigator
@@ -2833,8 +2848,7 @@ runGameMessage msg g = case msg of
       & (modeL %~ setScenario (lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
   RestartScenario -> do
-    let
-      standalone = isNothing $ modeCampaign $ g ^. modeL
+    let standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll
       $ ResetGame
       : [ StandaloneSetup | standalone ]
@@ -3522,7 +3536,8 @@ runGameMessage msg g = case msg of
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
-    windowMsgs <- windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
+    windowMsgs <- windows
+      [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
     pushAll $ windowMsgs <> [RemoveEnemy eid]
     pure g
   DefeatedAddToVictory (EnemyTarget eid) -> do
@@ -3901,8 +3916,8 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  FoundEncounterCardFrom _ _ _ _ -> pure $ g & (focusedCardsL .~ mempty)
-  FoundAndDrewEncounterCard _ _ _ -> pure $ g & (focusedCardsL .~ mempty)
+  FoundEncounterCardFrom{} -> pure $ g & (focusedCardsL .~ mempty)
+  FoundAndDrewEncounterCard{} -> pure $ g & (focusedCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
     mcard <-
       case
@@ -3983,7 +3998,9 @@ runGameMessage msg g = case msg of
           $ g'
           & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)
           & (activeCardL ?~ EncounterCard card)
-      TreacheryType -> g <$ push (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
+      TreacheryType ->
+        g <$ push
+          (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
       EncounterAssetType -> do
         let
           asset = createAsset card
@@ -4293,7 +4310,7 @@ instance RunMessage Game where
       >>= traverseOf (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg
       >>= handleActionDiff g
-      >>= (pure . set enemyMovingL Nothing)
+      <&> set enemyMovingL Nothing
 
 handleActionDiff :: Game -> Game -> GameT Game
 handleActionDiff old new

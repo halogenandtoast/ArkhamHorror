@@ -191,7 +191,7 @@ instance RunMessage TheForgottenAge where
             iid
           pure $ map (iid, ) provisions
       investigatorsWithBinocularsPairs <- for investigatorIds $ \iid -> do
-        binoculars <- fieldMap InvestigatorSupplies (any (== Provisions)) iid
+        binoculars <- fieldMap InvestigatorSupplies (elem Provisions) iid
         pure (iid, binoculars)
       let
         lowOnRationsCount = length investigatorIds - length provisions
@@ -231,7 +231,7 @@ instance RunMessage TheForgottenAge where
              $ QuestionLabel
                  "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
              $ ChooseOne
-                 [CardLabel
+                 [ CardLabel
                      (unInvestigatorId iid)
                      (if hasBinoculars
                        then [story [iid] shapesInTheTrees, GainXP iid 2]
@@ -240,25 +240,20 @@ instance RunMessage TheForgottenAge where
                  | (iid, hasBinoculars) <- investigatorsWithBinocularsPairs
                  ]
            ]
-        <> (if notNull withMedicine && notNull withPoisoned
-             then
-               [ Ask leadInvestigatorId
-                 $ QuestionLabel
-                     "Choose an investigator to removed poisoned by using a medicine"
-                 $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
-                 $ Done "Do not use medicine"
-                 : [ CardLabel
-                       (unInvestigatorId poisoned)
-                       [ RemoveCampaignCardFromDeck
-                         poisoned
-                         Treacheries.poisoned
-                       , UseSupply doctor Medicine
-                       ]
-                   | (poisoned, doctor) <- zip withPoisoned withMedicine
+        <> [ Ask leadInvestigatorId
+             $ QuestionLabel
+                 "Choose an investigator to removed poisoned by using a medicine"
+             $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
+             $ Done "Do not use medicine"
+             : [ CardLabel
+                   (unInvestigatorId poisoned)
+                   [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
+                   , UseSupply doctor Medicine
                    ]
+               | (poisoned, doctor) <- zip withPoisoned withMedicine
                ]
-             else []
-           )
+           | notNull withMedicine && notNull withPoisoned
+           ]
         <> [CampaignStep (Just (InterludeStepPart 1 mkey 2))]
         <> [NextCampaignStep Nothing]
       pure c
@@ -513,25 +508,20 @@ instance RunMessage TheForgottenAge where
                  ]
            | lowOnRationsCount > 0
            ]
-        <> (if notNull withMedicine && notNull withPoisoned
-             then
-               [ Ask leadInvestigatorId
-                 $ QuestionLabel
-                     "Choose an investigator to removed poisoned by using a medicine"
-                 $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
-                 $ Done "Do not use medicine"
-                 : [ CardLabel
-                       (unInvestigatorId poisoned)
-                       [ RemoveCampaignCardFromDeck
-                         poisoned
-                         Treacheries.poisoned
-                       , UseSupply doctor Medicine
-                       ]
-                   | (poisoned, doctor) <- zip withPoisoned withMedicine
+        <> [ Ask leadInvestigatorId
+             $ QuestionLabel
+                 "Choose an investigator to removed poisoned by using a medicine"
+             $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
+             $ Done "Do not use medicine"
+             : [ CardLabel
+                   (unInvestigatorId poisoned)
+                   [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
+                   , UseSupply doctor Medicine
                    ]
+               | (poisoned, doctor) <- zip withPoisoned withMedicine
                ]
-             else []
-           )
+           | notNull withMedicine && notNull withPoisoned
+           ]
         <> [CampaignStep (Just (InterludeStepPart 3 mkey 2))]
         <> canteenMessages
         <> (if isFaithRestored
@@ -698,23 +688,20 @@ instance RunMessage TheForgottenAge where
                   then Just iid
                   else Nothing
       pushAll
-        $ (if notNull withMedicine && notNull withPoisoned
-            then
-              [ Ask leadInvestigatorId
-                $ QuestionLabel
-                    "Choose an investigator to removed poisoned by using a medicine"
-                $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
-                $ Done "Do not use medicine"
-                : [ CardLabel
-                      (unInvestigatorId poisoned)
-                      [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
-                      , UseSupply doctor Medicine
-                      ]
-                  | (poisoned, doctor) <- zip withPoisoned withMedicine
+        $ [ Ask leadInvestigatorId
+            $ QuestionLabel
+                "Choose an investigator to removed poisoned by using a medicine"
+            $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
+            $ Done "Do not use medicine"
+            : [ CardLabel
+                  (unInvestigatorId poisoned)
+                  [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
+                  , UseSupply doctor Medicine
                   ]
+              | (poisoned, doctor) <- zip withPoisoned withMedicine
               ]
-            else []
-          )
+          | notNull withMedicine && notNull withPoisoned
+          ]
         <> [CampaignStep (Just (InterludeStepPart 4 mkey 51))]
       pure c
     CampaignStep (Just (InterludeStepPart 4 _ 51)) -> do

@@ -53,6 +53,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdName = name
     , cdRevealedName = Just name
     , cdCost = Nothing
+    , cdAdditionalCost = Nothing
     , cdLevel = 0
     , cdCardType = LocationType
     , cdCardSubType = Nothing

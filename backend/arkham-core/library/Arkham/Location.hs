@@ -11,9 +11,9 @@ import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
-import Arkham.Location.Types as X ( Location )
 import Arkham.Location.Locations
 import Arkham.Location.Runner
+import Arkham.Location.Types as X ( Location )
 import Arkham.Message
 import Data.UUID ( nil )
 
@@ -23,7 +23,7 @@ createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
 lookupLocationStub :: CardCode -> Location
 lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation
 
-lookupLocation :: CardCode -> (LocationId -> Location)
+lookupLocation :: CardCode -> LocationId -> Location
 lookupLocation lid = case lookup lid allLocations of
   Nothing -> error $ "Unknown location: " <> show lid
   Just (SomeLocationCard a) -> Location <$> cbCardBuilder a
@@ -35,10 +35,10 @@ instance RunMessage Location where
     Location <$> runMessage msg' l
 
 instance FromJSON Location where
-  parseJSON v = flip (withObject "Location") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
+  parseJSON = withObject "Location" $ \o -> do
+    cCode <- o .: "cardCode"
     withLocationCardCode cCode
-      $ \(_ :: LocationCard a) -> Location <$> parseJSON @a v
+      $ \(_ :: LocationCard a) -> Location <$> parseJSON @a (Object o)
 
 withLocationCardCode
   :: CardCode -> (forall a . IsLocation a => LocationCard a -> r) -> r
@@ -47,8 +47,8 @@ withLocationCardCode cCode f = case lookup cCode allLocations of
   Just (SomeLocationCard a) -> f a
 
 allLocations :: HashMap CardCode SomeLocationCard
-allLocations = mapFromList $ map
-  (toFst someLocationCardCode)
+allLocations = mapFrom
+  someLocationCardCode
   [ -- Night of the Zealot
     -- The Gathering
     SomeLocationCard study

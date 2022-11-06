@@ -24,6 +24,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = if isJust isWeakness then PlayerEnemyType else EnemyType
   , cdCardSubType = isWeakness

@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Effect.Types
 import Arkham.Effect.Effects
+import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Id
@@ -20,31 +20,21 @@ import Arkham.Token
 import Arkham.Window ( Window )
 
 -- start importing directly
-import Arkham.Agenda.Agendas
-  ( lostMemoriesEffect
-  )
+import Arkham.Agenda.Agendas ( lostMemoriesEffect )
 import Arkham.Asset.Assets
-  ( mistsOfRlyehEffect
-  , yaotl1Effect
-  , fence1Effect
-  , highRoller2Effect
-  )
-import Arkham.Enemy.Enemies
-  ( boaConstrictorEffect
-  )
+  ( fence1Effect, highRoller2Effect, mistsOfRlyehEffect, yaotl1Effect )
+import Arkham.Enemy.Enemies ( boaConstrictorEffect )
 import Arkham.Event.Events
-  ( oneTwoPunch5Effect
-  , oneTwoPunchEffect
-  , willToSurviveEffect
+  ( exposeWeakness3Effect
   , marksmanship1Effect
-  , exposeWeakness3Effect
+  , onTheLamEffect
+  , oneTwoPunch5Effect
+  , oneTwoPunchEffect
   , slipAwayEffect
+  , willToSurviveEffect
   )
-import Arkham.Skill.Skills
-  ( hatchetManEffect
-  )
-import Arkham.Investigator.Investigators
-  ( fatherMateoElderSignEffect )
+import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect )
+import Arkham.Skill.Skills ( hatchetManEffect )
 
 createEffect
   :: MonadRandom m
@@ -97,9 +87,10 @@ lookupEffect
   -> Source
   -> Target
   -> Effect
-lookupEffect cardCode eid mmetadata source target = case lookup cardCode allEffects of
-  Nothing -> error $ "Unknown effect: " <> show cardCode
-  Just (SomeEffect f) -> Effect $ f (eid, mmetadata, source, target)
+lookupEffect cardCode eid mmetadata source target =
+  case lookup cardCode allEffects of
+    Nothing -> error $ "Unknown effect: " <> show cardCode
+    Just (SomeEffect f) -> Effect $ f (eid, mmetadata, source, target)
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
 buildTokenValueEffect eid n source = buildWindowModifierEffect
@@ -124,15 +115,16 @@ buildTokenEffect eid metadata source token =
   Effect $ tokenEffect' eid metadata source token
 
 instance FromJSON Effect where
-  parseJSON v = flip (withObject "Effect") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
+  parseJSON = withObject "Effect" $ \o -> do
+    cCode <- o .: "cardCode"
     case lookup cCode allEffects of
       Nothing -> error $ "Invalid effect: " <> show cCode
-      Just (SomeEffect (_ :: EffectArgs ->a)) -> Effect <$> parseJSON @a v
+      Just (SomeEffect (_ :: EffectArgs -> a)) ->
+        Effect <$> parseJSON @a (Object o)
 
 allEffects :: HashMap CardCode SomeEffect
 allEffects = mapFromList
-  [ ("01010", SomeEffect onTheLam)
+  [ ("01010", SomeEffect onTheLamEffect)
   , ("01036", SomeEffect mindOverMatter)
   , ("01060", SomeEffect shrivelling)
   , ("01066", SomeEffect blindingLight)

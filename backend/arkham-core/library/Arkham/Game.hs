@@ -2105,7 +2105,10 @@ instance Projection Investigator where
       InvestigatorResources -> pure investigatorResources
       InvestigatorDoom -> pure investigatorDoom
       InvestigatorClues -> pure investigatorClues
-      InvestigatorHand -> pure investigatorHand
+      InvestigatorHand -> do
+        -- Include in hand treacheries
+        ts <- selectListMapM (fmap toCard . getTreachery) (TreacheryInHandOf (InvestigatorWithId iid))
+        pure $ investigatorHand <> ts
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck
       InvestigatorDiscard -> pure investigatorDiscard
@@ -2724,7 +2727,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
 
-  let cost = mconcat $ [resourceCost] <> additionalCosts <> sealTokenCosts
+  let cost = mconcat $ [resourceCost] <> (maybe [] pure . cdAdditionalCost $ toCardDef card) <> additionalCosts <> sealTokenCosts
   pure ActiveCost
     { activeCostId = acId
     , activeCostCosts = cost

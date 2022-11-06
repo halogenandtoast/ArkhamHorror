@@ -39,6 +39,8 @@ function isAbility(v: Message) {
     return v.ability.source.source.contents === id.value
   } else if (tag === 'CardIdSource') {
     return v.ability.source.contents === id.value
+  } else if (tag === 'EventSource') {
+    return v.ability.source.contents === id.value
   }
 
   return false

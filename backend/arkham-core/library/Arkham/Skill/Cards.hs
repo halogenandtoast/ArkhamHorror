@@ -2,6 +2,7 @@ module Arkham.Skill.Cards where
 
 import Arkham.Prelude
 
+import Arkham.Action qualified as Action
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -20,6 +21,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = SkillType
   , cdCardSubType = Nothing
@@ -63,7 +65,8 @@ skill cardCode name skills classSymbol = CardDef
 allPlayerSkillCards :: HashMap CardCode CardDef
 allPlayerSkillCards = mapFromList $ concatMap
   toCardCodePairs
-  [ deduction
+  [ daring
+  , deduction
   , deduction2
   , defiance
   , defiance2
@@ -422,6 +425,12 @@ takeHeart = (skill "04201" "Take Heart" [] Survivor)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdAlternateCardCodes = ["60519"]
+  }
+
+daring :: CardDef
+daring = (skill "06111" "Daring" [SkillWild, SkillWild, SkillWild] Guardian)
+  { cdCardTraits = singleton Innate
+  , cdCommitRestrictions = [OnlyTestWithActions [Action.Fight, Action.Evade]]
   }
 
 overpower2 :: CardDef

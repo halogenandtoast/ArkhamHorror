@@ -18,9 +18,10 @@ lookupAsset cardCode = case lookup cardCode allAssets of
   Just (SomeAssetCard a) -> Asset <$> cbCardBuilder a
 
 instance FromJSON Asset where
-  parseJSON v = flip (withObject "Asset") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
-    withAssetCardCode cCode $ \(_ :: AssetCard a) -> Asset <$> parseJSON @a v
+  parseJSON = withObject "Asset" $ \o -> do
+    cCode <- o .: "cardCode"
+    withAssetCardCode cCode
+      $ \(_ :: AssetCard a) -> Asset <$> parseJSON @a (Object o)
 
 withAssetCardCode
   :: CardCode -> (forall a . IsAsset a => AssetCard a -> r) -> r
@@ -29,8 +30,8 @@ withAssetCardCode cCode f = case lookup cCode allAssets of
   Just (SomeAssetCard a) -> f a
 
 allAssets :: HashMap CardCode SomeAssetCard
-allAssets = mapFromList $ map
-  (toFst someAssetCardCode)
+allAssets = mapFrom
+  someAssetCardCode
   [ -- Night of the Zealot
   --- signature [notz]
     SomeAssetCard rolands38Special
@@ -289,7 +290,7 @@ allAssets = mapFromList $ map
   , SomeAssetCard scrying3
   -- Black Stars Rise
   --- guardian [bsr]
-  , SomeAssetCard stickToThePlan
+  , SomeAssetCard stickToThePlan3
   --- seeker [bsr]
   , SomeAssetCard arcaneInsight4
   --- rogue [bsr]
@@ -437,9 +438,13 @@ allAssets = mapFromList $ map
   , SomeAssetCard greteWagner3
   , SomeAssetCard physicalTraining4
   --- Harvel Walters
+  , SomeAssetCard vaultOfKnowledge
   , SomeAssetCard arcaneEnlightenment
   , SomeAssetCard celaenoFragments
+  , SomeAssetCard discOfItzamna
   , SomeAssetCard encyclopedia
+  , SomeAssetCard feedTheMind
+  , SomeAssetCard forbiddenTome
   , SomeAssetCard higherEducation
   , SomeAssetCard whittonGreene
   --- Winnifred Habbamock

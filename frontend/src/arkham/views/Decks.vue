@@ -170,9 +170,10 @@ async function createDeck() {
     </div>
     <h2>Existing Decks</h2>
     <div v-for="deck in decks" :key="deck.id" class="deck">
-      <span>{{deck.name}}</span>
+      <img class="portrait--decklist" :src="`${baseUrl}/img/arkham/cards/${deck.list.investigator_code.replace('c', '')}.jpg`" />
+      <span class="deck-title">{{deck.name}}</span>
       <div class="open-deck">
-        <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon icon="external-link" /></a>
+        <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
       </div>
       <div class="sync-deck">
         <a href="#" @click.prevent="sync(deck)"><font-awesome-icon icon="refresh" /></a>
@@ -304,6 +305,16 @@ h2 {
       color: #990000;
     }
   }
+}
+
+.portrait--decklist {
+  width: 100px;
+  margin-right: 10px;
+}
+
+.deck-title {
+  font-weight: 800;
+  font-size: 1.2em;
 }
 
 </style>

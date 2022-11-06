@@ -17,9 +17,9 @@ lookupAct actId = case lookup (unActId actId) allActs of
   Just (SomeActCard a) -> \i -> Act $ cbCardBuilder a (i, actId)
 
 instance FromJSON Act where
-  parseJSON v = flip (withObject "Act") v $ \o -> do
-    cCode :: CardCode <- o .: "id"
-    withActCardCode cCode $ \(_ :: ActCard a) -> Act <$> parseJSON @a v
+  parseJSON = withObject "Act" $ \o -> do
+    cCode <- o .: "id"
+    withActCardCode cCode $ \(_ :: ActCard a) -> Act <$> parseJSON @a (Object o)
 
 withActCardCode :: CardCode -> (forall a . IsAct a => ActCard a -> r) -> r
 withActCardCode cCode f = case lookup cCode allActs of
@@ -27,8 +27,8 @@ withActCardCode cCode f = case lookup cCode allActs of
   Just (SomeActCard a) -> f a
 
 allActs :: HashMap CardCode SomeActCard
-allActs = mapFromList $ map
-  (toFst someActCardCode)
+allActs = mapFrom
+  someActCardCode
   [ -- Night of the Zealot
   -- The Gathering
     SomeActCard trapped

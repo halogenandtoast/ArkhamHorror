@@ -48,6 +48,7 @@ randomWeakness = CardDef
   , cdName = "Random Basic Weakness"
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = PlayerTreacheryType
   , cdCardSubType = Just Weakness

@@ -28,28 +28,26 @@ instance RunMessage Enemy where
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Enemy <$> runMessage msg' x
 
-lookupEnemy :: HasCallStack => CardCode -> (EnemyId -> Enemy)
+lookupEnemy :: HasCallStack => CardCode -> EnemyId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
   Nothing -> error $ "Unknown enemy: " <> show cardCode
   Just (SomeEnemyCard a) -> Enemy <$> cbCardBuilder a
 
 instance FromJSON Enemy where
-  parseJSON v = flip (withObject "Enemy") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
-    withEnemyCardCode cCode $ \(_ :: EnemyCard a) -> Enemy <$> parseJSON @a v
+  parseJSON = withObject "Enemy" $ \o -> do
+    cCode <- o .: "cardCode"
+    withEnemyCardCode cCode
+      $ \(_ :: EnemyCard a) -> Enemy <$> parseJSON @a (Object o)
 
 withEnemyCardCode
-  :: CardCode
-  -> (forall a. IsEnemy a => EnemyCard a -> r)
-  -> r
-withEnemyCardCode cCode f =
-  case lookup cCode allEnemies of
-    Nothing -> error $ "Unknown enemy: " <> show cCode
-    Just (SomeEnemyCard a) -> f a
+  :: CardCode -> (forall a . IsEnemy a => EnemyCard a -> r) -> r
+withEnemyCardCode cCode f = case lookup cCode allEnemies of
+  Nothing -> error $ "Unknown enemy: " <> show cCode
+  Just (SomeEnemyCard a) -> f a
 
 allEnemies :: HashMap CardCode SomeEnemyCard
-allEnemies = mapFromList $ map
-  (toFst someEnemyCardCode)
+allEnemies = mapFrom
+  someEnemyCardCode
   [ -- Night of the Zealot
   -- weakness
     SomeEnemyCard mobEnforcer

@@ -15,6 +15,7 @@ story cardCode name encounterSet = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = StoryType
   , cdCardSubType = Nothing

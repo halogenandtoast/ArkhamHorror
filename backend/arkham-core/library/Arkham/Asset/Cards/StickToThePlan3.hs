@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.StickToThePlan
-  ( stickToThePlan
-  , StickToThePlan(..)
+module Arkham.Asset.Cards.StickToThePlan3
+  ( stickToThePlan3
+  , StickToThePlan3(..)
   ) where
 
 import Arkham.Prelude
@@ -19,32 +19,32 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait qualified as Trait
 
-newtype StickToThePlan = StickToThePlan AssetAttrs
+newtype StickToThePlan3 = StickToThePlan3 AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-stickToThePlan :: AssetCard StickToThePlan
-stickToThePlan = asset StickToThePlan Cards.stickToThePlan
+stickToThePlan3 :: AssetCard StickToThePlan3
+stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 
-instance HasModifiersFor StickToThePlan where
-  getModifiersFor (InvestigatorTarget iid) (StickToThePlan attrs)
+instance HasModifiersFor StickToThePlan3 where
+  getModifiersFor (InvestigatorTarget iid) (StickToThePlan3 attrs)
     | controlledBy attrs iid = pure
     $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
-  getModifiersFor (CardIdTarget cardId) (StickToThePlan attrs)
+  getModifiersFor (CardIdTarget cardId) (StickToThePlan3 attrs)
     | cardId `elem` map toCardId (assetCardsUnderneath attrs) = pure
     $ toModifiers
         attrs
         [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
   getModifiersFor _ _ = pure []
 
-instance HasAbilities StickToThePlan where
-  getAbilities (StickToThePlan attrs) =
+instance HasAbilities StickToThePlan3 where
+  getAbilities (StickToThePlan3 attrs) =
     [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility (DrawingStartingHand Timing.When You) Free
     ]
 
-instance RunMessage StickToThePlan where
-  runMessage msg a@(StickToThePlan attrs) = case msg of
+instance RunMessage StickToThePlan3 where
+  runMessage msg a@(StickToThePlan3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ Search
         iid
@@ -97,5 +97,5 @@ instance RunMessage StickToThePlan where
           , AddToHand iid card
           , msg
           ]
-        pure $ StickToThePlan $ attrs & cardsUnderneathL .~ remaining
-    _ -> StickToThePlan <$> runMessage msg attrs
+        pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
+    _ -> StickToThePlan3 <$> runMessage msg attrs

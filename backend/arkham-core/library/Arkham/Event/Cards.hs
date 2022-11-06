@@ -9,6 +9,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
+import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
 import Arkham.GameValue
 import Arkham.Matcher
@@ -26,6 +27,7 @@ event cardCode name cost classSymbol = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Just (StaticCost cost)
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = EventType
   , cdCardSubType = Nothing
@@ -88,6 +90,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , blindingLight
   , blindingLight2
   , bloodRite
+  , burningTheMidnightOil
   , buryThemDeep
   , callingInFavors
   , cheapShot
@@ -100,6 +103,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , counterpunch2
   , counterspell2
   , crypticResearch4
+  , crypticWritings
   , cunningDistraction
   , customAmmunition3
   , daringManeuver
@@ -129,6 +133,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , evidence1
   , exposeWeakness1
   , exposeWeakness3
+  , extensiveResearch
   , extraAmmunition1
   , fightOrFlight
   , firstWatch
@@ -177,6 +182,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , narrowEscape
   , noStoneUnturned
   , noStoneUnturned5
+  , occultInvocation
   , oneTwoPunch
   , oneTwoPunch5
   , onTheHunt
@@ -1372,14 +1378,20 @@ truthFromFiction :: CardDef
 truthFromFiction = (event "04152" "Truth from Fiction" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = singleton Insight
-  , cdCriteria = Just $ Criteria.ClueOnLocation <> Criteria.AssetExists (AssetControlledBy You <> AssetWithUseType Uses.Secret)
+  , cdCriteria = Just $ Criteria.ClueOnLocation <> Criteria.AssetExists
+    (AssetControlledBy You <> AssetWithUseType Uses.Secret)
   }
 
 customAmmunition3 :: CardDef
 customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Upgrade, Supply, Blessed]
-  , cdCriteria = Just $ Criteria.AssetExists (AssetControlledBy (InvestigatorAt YourLocation) <> AssetWithTrait Firearm <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3))
+  , cdCriteria = Just $ Criteria.AssetExists
+    (AssetControlledBy (InvestigatorAt YourLocation)
+    <> AssetWithTrait Firearm
+    <> NotAsset
+         (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
+    )
   , cdFastWindow = Just $ DuringTurn You
   }
 
@@ -1412,7 +1424,8 @@ againstAllOdds2 :: CardDef
 againstAllOdds2 = (event "04202" "Against All Odds" 2 Survivor)
   { cdCardTraits = singleton Spirit
   , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
-  , cdFastWindow = Just $ InitiatedSkillTest Timing.When You AnySkillType GreaterThanBaseValue
+  , cdFastWindow = Just
+    $ InitiatedSkillTest Timing.When You AnySkillType GreaterThanBaseValue
   , cdLevel = 2
   }
 
@@ -1432,7 +1445,12 @@ payDay1 = (event "04233" "Pay Day" 0 Rogue)
 sacrifice1 :: CardDef
 sacrifice1 = (event "04234" "Sacrifice" 0 Mystic)
   { cdCardTraits = singleton Ritual
-  , cdCriteria = Just $ Criteria.AssetExists $ AssetWithClass Mystic <> AssetControlledBy You <> DiscardableAsset
+  , cdCriteria =
+    Just
+    $ Criteria.AssetExists
+    $ AssetWithClass Mystic
+    <> AssetControlledBy You
+    <> DiscardableAsset
   , cdLevel = 1
   }
 
@@ -1693,6 +1711,41 @@ oneTwoPunch5 = (event "60132" "One-Two Punch" 2 Guardian)
   , cdActions = [Action.Fight]
   , cdSkills = [SkillCombat, SkillCombat, SkillCombat, SkillCombat]
   , cdLevel = 5
+  }
+
+burningTheMidnightOil :: CardDef
+burningTheMidnightOil = (event "60214" "Burning the Midnight Oil" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Insight
+  , cdActions = [Action.Investigate]
+  }
+
+crypticWritings :: CardDef
+crypticWritings = (event "60215" "Cryptic Writings" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdCardInHandEffects = True
+  }
+
+extensiveResearch :: CardDef
+extensiveResearch = (event "60216" "Extensive Research" 12 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdCardInHandEffects = True
+  , cdCriteria = Just $ Criteria.Criteria
+    [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+    , Criteria.InvestigatorExists
+    $ You
+    <> InvestigatorCanDiscoverCluesAt YourLocation
+    ]
+  }
+
+occultInvocation :: CardDef
+occultInvocation = (event "60217" "Occult Invocation" 2 Seeker)
+  { cdSkills = [SkillCombat, SkillIntellect]
+  , cdCardTraits = singleton Spell
+  , cdAdditionalCost = Just $ UpTo 2 $ HandDiscardCost 1 AnyCard
+  , cdActions = [Action.Fight]
   }
 
 iveGotAPlan2 :: CardDef

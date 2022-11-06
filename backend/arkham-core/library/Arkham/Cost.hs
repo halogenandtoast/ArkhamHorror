@@ -5,7 +5,7 @@ module Arkham.Cost
 import Arkham.Prelude
 
 import Arkham.Asset.Uses
-import Arkham.Card
+import {-# SOURCE #-} Arkham.Card
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.SkillType

@@ -15,28 +15,26 @@ createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
 instance RunMessage Event where
   runMessage msg (Event a) = Event <$> runMessage msg a
 
-lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
+lookupEvent :: CardCode -> InvestigatorId -> EventId -> Event
 lookupEvent cardCode = case lookup cardCode allEvents of
   Nothing -> error $ "Unknown event: " <> show cardCode
   Just (SomeEventCard a) -> \i e -> Event $ cbCardBuilder a (i, e)
 
 instance FromJSON Event where
-  parseJSON v = flip (withObject "Event") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
-    withEventCardCode cCode $ \(_ :: EventCard a) -> Event <$> parseJSON @a v
+  parseJSON = withObject "Event" $ \o -> do
+    cCode <- o .: "cardCode"
+    withEventCardCode cCode
+      $ \(_ :: EventCard a) -> Event <$> parseJSON @a (Object o)
 
 withEventCardCode
-  :: CardCode
-  -> (forall a. IsEvent a => EventCard a -> r)
-  -> r
-withEventCardCode cCode f =
-  case lookup cCode allEvents of
-    Nothing -> error $ "Unknown event: " <> show cCode
-    Just (SomeEventCard a) -> f a
+  :: CardCode -> (forall a . IsEvent a => EventCard a -> r) -> r
+withEventCardCode cCode f = case lookup cCode allEvents of
+  Nothing -> error $ "Unknown event: " <> show cCode
+  Just (SomeEventCard a) -> f a
 
 allEvents :: HashMap CardCode SomeEventCard
-allEvents = mapFromList $ map
-  (toFst someEventCardCode)
+allEvents = mapFrom
+  someEventCardCode
   [ SomeEventCard onTheLam
   , SomeEventCard darkMemory
   , SomeEventCard evidence
@@ -192,6 +190,10 @@ allEvents = mapFromList $ map
   , SomeEventCard dynamiteBlast3
   , SomeEventCard taunt3
   , SomeEventCard oneTwoPunch5
+  , SomeEventCard burningTheMidnightOil
+  , SomeEventCard crypticWritings
+  , SomeEventCard extensiveResearch
+  , SomeEventCard occultInvocation
   , SomeEventCard iveGotAPlan2
   , SomeEventCard willToSurvive
   , SomeEventCard aTestOfWill

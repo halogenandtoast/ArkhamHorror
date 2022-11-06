@@ -1675,6 +1675,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure $ toCardCode card `notElem` committedCardCodes
                 OnlyYourTest -> pure True
                 OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
                 ScenarioAbility -> pure isScenarioAbility
                 SelfCanCommitWhen matcher ->
                   notNull <$> select (You <> matcher)
@@ -1780,6 +1781,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       OnlyCardCommittedToTest -> pure $ null committedCardNames
                       OnlyYourTest -> pure False
                       OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                      OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
                       ScenarioAbility -> pure isScenarioAbility
                       SelfCanCommitWhen matcher ->
                         notNull <$> select (You <> matcher)

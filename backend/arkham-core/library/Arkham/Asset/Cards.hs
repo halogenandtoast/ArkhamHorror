@@ -62,6 +62,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Just (StaticCost cost)
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = AssetType
   , cdCardSubType = Nothing
@@ -165,6 +166,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , dejaVu5
   , digDeep
   , digDeep2
+  , discOfItzamna
   , discOfItzamna2
   , drElliHorowitz
   , drFrancisMorgan
@@ -181,6 +183,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , encyclopedia2
   , esotericFormula
   , expeditionJournal
+  , feedTheMind
   , fence1
   , fieldwork
   , fineClothes
@@ -192,6 +195,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , flashlight
   , fleshWard
   , forbiddenKnowledge
+  , forbiddenTome
   , fortyFiveAutomatic
   , fortyFiveAutomatic2
   , fortyOneDerringer
@@ -323,7 +327,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , sophieItWasAllMyFault
   , spiritAthame1
   , stealth
-  , stickToThePlan
+  , stickToThePlan3
   , streetwise3
   , scientificTheory1
   , songOfTheDead2
@@ -360,6 +364,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , tryAndTryAgain1
   , tryAndTryAgain3
   , untilTheEndOfTime
+  , vaultOfKnowledge
   , venturer
   , wellPrepared2
   , wendysAmulet
@@ -1852,8 +1857,8 @@ scrying3 = (asset "03236" "Scrying" 1 Mystic)
   , cdAlternateCardCodes = ["01690"]
   }
 
-stickToThePlan :: CardDef
-stickToThePlan = permanent $ (asset "03264" "Stick to the Plan" 0 Guardian)
+stickToThePlan3 :: CardDef
+stickToThePlan3 = permanent $ (asset "03264" "Stick to the Plan" 0 Guardian)
   { cdCardTraits = singleton Talent
   , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
   , cdLevel = 3
@@ -2511,6 +2516,12 @@ physicalTraining4 = (asset "60131" "Physical Training" 2 Guardian)
   , cdLevel = 4
   }
 
+vaultOfKnowledge :: CardDef
+vaultOfKnowledge = (asset "60202" "Vault of Knowledge" 3 Seeker)
+  { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
+  , cdCardTraits = singleton Talent
+  }
+
 arcaneEnlightenment :: CardDef
 arcaneEnlightenment = (asset "60205" "Arcane Enlightenment" 2 Seeker)
   { cdSkills = [SkillWillpower, SkillWillpower]
@@ -2527,10 +2538,35 @@ celaenoFragments =
     , cdSlots = [HandSlot]
     }
 
+discOfItzamna :: CardDef
+discOfItzamna =
+  (asset "60207" ("Disc of Itzamna" <:> "Protective Amulet") 3 Seeker)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdUnique = True
+    , cdSlots = [AccessorySlot]
+    }
+
 encyclopedia :: CardDef
 encyclopedia = (asset "60208" "Encyclopedia" 2 Seeker)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Tome]
+  , cdUses = Uses Secret 5
+  , cdSlots = [HandSlot]
+  }
+
+feedTheMind :: CardDef
+feedTheMind = (asset "60209" "Feed the Mind" 3 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = singleton Spell
+  , cdUses = Uses Secret 3
+  , cdSlots = [ArcaneSlot]
+  }
+
+forbiddenTome :: CardDef
+forbiddenTome = (asset "60210" "Forbidden Tome" 1 Seeker)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = setFromList [Item, Relic, Tome]
   , cdUses = Uses Secret 5
   , cdSlots = [HandSlot]
   }

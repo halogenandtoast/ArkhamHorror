@@ -17,11 +17,12 @@ import Arkham.Target
 import Arkham.Token
 
 instance FromJSON Scenario where
-  parseJSON v = flip (withObject "Scenario") v $ \o -> do
-    cCode :: CardCode <- o .: "id"
+  parseJSON = withObject "Scenario" $ \o -> do
+    cCode <- o .: "id"
     case lookup cCode allScenarios of
       Nothing -> error $ "Unknown scenario: " <> show cCode
-      Just (SomeScenario (_ :: Difficulty -> a)) -> Scenario <$> parseJSON @a v
+      Just (SomeScenario (_ :: Difficulty -> a)) ->
+        Scenario <$> parseJSON @a (Object o)
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of

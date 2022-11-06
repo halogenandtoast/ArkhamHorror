@@ -16,6 +16,7 @@ investigator cardCode name classSymbol traits = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = InvestigatorType
   , cdCardSubType = Nothing
@@ -82,6 +83,7 @@ allInvestigatorCards = mapFromList $ map
   , calvinWright
   , normanWithers
   , nathanielCho
+  , harveyWalters
   , stellaClark
   , daisyWalkerParallel
   ]
@@ -201,6 +203,13 @@ nathanielCho = investigator
   ("Nathanial Cho" <:> "The Boxer")
   Guardian
   [Criminal, Warden]
+
+harveyWalters :: CardDef
+harveyWalters = investigator
+  "60201"
+  ("Harvey Walters" <:> "The Professor")
+  Seeker
+  [Miskatonic]
 
 stellaClark :: CardDef
 stellaClark = investigator

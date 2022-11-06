@@ -151,6 +151,7 @@ data CampaignLogKey
   | YouHaveIdentifiedTheStone
   | DoomApproaches
   | TheHourIsNigh
+  | YouHaveTranslatedTheTome
   -- ^ Player Cards
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

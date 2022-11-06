@@ -5,7 +5,8 @@ module Arkham.Target (
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Ability.Types
-import Arkham.Card
+import {-# SOURCE #-} Arkham.Card
+import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.Id
 import Arkham.Matcher

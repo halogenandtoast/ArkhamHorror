@@ -10,6 +10,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
+import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria
 import Arkham.EncounterSet
 import Arkham.Json
@@ -43,6 +44,7 @@ data CardDef = CardDef
   , cdName :: Name
   , cdRevealedName :: Maybe Name
   , cdCost :: Maybe CardCost
+  , cdAdditionalCost :: Maybe Cost
   , cdLevel :: Int
   , cdCardType :: CardType
   , cdCardSubType :: Maybe CardSubType
@@ -143,6 +145,7 @@ testCardDef cardType cardCode = CardDef
   , cdName = "Test"
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = cardType
   , cdCardSubType = Nothing

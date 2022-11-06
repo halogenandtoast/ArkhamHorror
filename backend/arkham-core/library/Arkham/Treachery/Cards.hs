@@ -25,6 +25,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = if isJust isWeakness
     then PlayerTreacheryType
@@ -110,6 +111,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , indebted
   , internalInjury
   , lostSoul
+  , obsessive
   , outOfBodyExperience
   , overzealous
   , paranoia
@@ -124,6 +126,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , theBellTolls
   , theHarbinger
   , thePriceOfFailure
+  , thriceDamnedCuriosity
   , voiceOfTheMessenger
   , wrackedByNightmares
   ]
@@ -1173,6 +1176,16 @@ maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
 selfDestructive :: CardDef
 selfDestructive =
   (weakness "60104" "Self-Destructive") { cdCardTraits = singleton Flaw }
+
+thriceDamnedCuriosity :: CardDef
+thriceDamnedCuriosity = (weakness "60203" "Thrice-Damned Curiosity")
+  { cdCardTraits = singleton Flaw
+  }
+
+obsessive :: CardDef
+obsessive = (weakness "60204" "Obsessive")
+  { cdCardTraits = singleton Flaw
+  }
 
 calledByTheMists :: CardDef
 calledByTheMists = (weakness "60503" "Called by the Mists")

@@ -563,7 +563,13 @@ instance RunMessage ActiveCost where
             InvestigatorHand
             (mapMaybe (preview _PlayerCard))
             iid
-          let cards = filter (`cardMatch` cardMatcher) handCards
+          let
+            notCostCard =
+              case activeCostTarget c of
+                ForAbility {} -> const True
+                ForCard _ card' -> (/= card')
+                ForCost card' -> (/= card')
+            cards = filter (and . sequence [(`cardMatch` cardMatcher), notCostCard . PlayerCard]) handCards
           push $ chooseN
             iid
             x

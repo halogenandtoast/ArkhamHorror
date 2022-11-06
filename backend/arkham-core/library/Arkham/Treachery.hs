@@ -3,11 +3,11 @@ module Arkham.Treachery where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Runner
-import Arkham.Treachery.Treacheries
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
+import Arkham.Treachery.Runner
+import Arkham.Treachery.Treacheries
 
 createTreachery :: IsCard a => a -> InvestigatorId -> Treachery
 createTreachery a iid =
@@ -16,28 +16,26 @@ createTreachery a iid =
 instance RunMessage Treachery where
   runMessage msg (Treachery a) = Treachery <$> runMessage msg a
 
-lookupTreachery :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
+lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> Treachery
 lookupTreachery cardCode = case lookup cardCode allTreacheries of
   Nothing -> error $ "Unknown treachery: " <> show cardCode
   Just (SomeTreacheryCard a) -> \i t -> Treachery $ cbCardBuilder a (i, t)
 
 instance FromJSON Treachery where
-  parseJSON v = flip (withObject "Treachery") v $ \o -> do
-    cCode :: CardCode <- o .: "cardCode"
-    withTreacheryCardCode cCode $ \(_ :: TreacheryCard a) -> Treachery <$> parseJSON @a v
+  parseJSON = withObject "Treachery" $ \o -> do
+    cCode <- o .: "cardCode"
+    withTreacheryCardCode cCode
+      $ \(_ :: TreacheryCard a) -> Treachery <$> parseJSON @a (Object o)
 
 withTreacheryCardCode
-  :: CardCode
-  -> (forall a. IsTreachery a => TreacheryCard a -> r)
-  -> r
-withTreacheryCardCode cCode f =
-  case lookup cCode allTreacheries of
-    Nothing -> error $ "Unknown treachery: " <> show cCode
-    Just (SomeTreacheryCard a) -> f a
+  :: CardCode -> (forall a . IsTreachery a => TreacheryCard a -> r) -> r
+withTreacheryCardCode cCode f = case lookup cCode allTreacheries of
+  Nothing -> error $ "Unknown treachery: " <> show cCode
+  Just (SomeTreacheryCard a) -> f a
 
 allTreacheries :: HashMap CardCode SomeTreacheryCard
-allTreacheries = mapFromList $ map
-  (toFst someTreacheryCardCode)
+allTreacheries = mapFrom
+  someTreacheryCardCode
   [ -- Night of the Zealot
   -- signature
     SomeTreacheryCard coverUp
@@ -283,6 +281,9 @@ allTreacheries = mapFromList $ map
   , SomeTreacheryCard chillFromBelow
   -- Nathaniel Cho
   , SomeTreacheryCard selfDestructive
+  -- Harvey Walters
+  , SomeTreacheryCard thriceDamnedCuriosity
+  , SomeTreacheryCard obsessive
   -- Stella Clark
   , SomeTreacheryCard calledByTheMists
   , SomeTreacheryCard atychiphobia

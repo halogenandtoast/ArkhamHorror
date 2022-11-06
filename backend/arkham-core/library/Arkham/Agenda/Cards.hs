@@ -15,6 +15,7 @@ agenda cardCode name stage encounterSet = CardDef
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
+  , cdAdditionalCost = Nothing
   , cdLevel = 0
   , cdCardType = AgendaType
   , cdCardSubType = Nothing

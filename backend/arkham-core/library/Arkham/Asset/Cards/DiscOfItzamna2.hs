@@ -8,7 +8,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -29,14 +28,6 @@ instance HasAbilities DiscOfItzamna2 where
 
 instance RunMessage DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      push
-        (skillTestModifier
-          attrs
-          (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower 1)
-        )
-      DiscOfItzamna2 <$> runMessage msg attrs
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       menemySpawnMessage <- fromQueue
         $ find ((== Just EnemySpawnMessage) . messageType)

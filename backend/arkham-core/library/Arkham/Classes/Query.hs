@@ -34,7 +34,14 @@ selectListMap
   => (QueryElement a -> b)
   -> a
   -> m [b]
-selectListMap f = fmap (map f . setToList) . select
+selectListMap f = selectListMapM (pure . f)
+
+selectListMapM
+  :: (HasCallStack, Query a, HasGame m, Monad m)
+  => (QueryElement a -> m b)
+  -> a
+  -> m [b]
+selectListMapM f = (traverse f . setToList =<<) . select
 
 selectJust
   :: (HasCallStack, Show a, Query a, HasGame m, Monad m)

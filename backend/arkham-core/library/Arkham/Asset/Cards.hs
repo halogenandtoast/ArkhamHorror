@@ -242,6 +242,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , leatherCoat1
   , leoDeLuca
   , leoDeLuca1
+  , libraryDocent1
   , lightningGun5
   , liquidCourage
   , litaChantler
@@ -2584,6 +2585,15 @@ whittonGreene =
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdSlots = [AllySlot]
+    }
+
+libraryDocent1 :: CardDef
+libraryDocent1 =
+  (asset "60220" "Library Docent" 1 Seeker)
+    { cdSkills = [SkillIntellect, SkillAgility]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdSlots = [AllySlot]
+    , cdLevel = 1
     }
 
 lockpicks :: CardDef

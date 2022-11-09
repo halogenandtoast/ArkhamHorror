@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.Card
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
@@ -70,6 +71,7 @@ data Payment
   | SkillIconPayment [SkillType]
   | Payments [Payment]
   | SealTokenPayment Token
+  | ReturnToHandPayment Card
   | NoPayment
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -99,6 +101,8 @@ data Cost
   | EnemyDoomCost Int EnemyMatcher
   | ExileCost Target
   | HandDiscardCost Int CardMatcher
+  | ReturnMatchingAssetToHandCost AssetMatcher
+  | ReturnAssetToHandCost AssetId
   | SkillIconCost Int (HashSet SkillType)
   | DiscardCombinedCost Int
   | ShuffleDiscardCost Int CardMatcher
@@ -162,6 +166,8 @@ displayCostType = \case
   EnemyDoomCost n _ -> "Place " <> pluralize n "Doom" <> " on a matching enemy"
   ExileCost _ -> "Exile"
   HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
+  ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
+  ReturnAssetToHandCost {} -> "Return asset to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
   HorrorCost _ _ n -> tshow n <> " Horror"
   Free -> "Free"

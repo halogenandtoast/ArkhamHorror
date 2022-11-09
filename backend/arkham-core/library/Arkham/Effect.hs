@@ -22,7 +22,7 @@ import Arkham.Window ( Window )
 -- start importing directly
 import Arkham.Agenda.Agendas ( lostMemoriesEffect )
 import Arkham.Asset.Assets
-  ( fence1Effect, highRoller2Effect, mistsOfRlyehEffect, yaotl1Effect )
+  ( fence1Effect, highRoller2Effect, mistsOfRlyehEffect, yaotl1Effect, libraryDocent1Effect )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect )
 import Arkham.Event.Events
   ( exposeWeakness3Effect
@@ -194,6 +194,7 @@ allEffects = mapFromList
   , ("60103", SomeEffect tommyMalloy)
   , ("60117", SomeEffect oneTwoPunchEffect)
   , ("60132", SomeEffect oneTwoPunch5Effect)
+  , ("60220", SomeEffect libraryDocent1Effect)
   , ("60305", SomeEffect lockpicks)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)

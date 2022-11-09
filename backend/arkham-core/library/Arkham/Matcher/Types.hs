@@ -138,6 +138,7 @@ data AssetMatcher
   | NonWeaknessAsset
   | AssetWithMatchingSkillTestIcon
   | UniqueAsset
+  | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher CardMatcher AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -396,6 +397,7 @@ data ExtendedCardMatcher
   | SetAsideCardMatch CardMatcher
   | UnderScenarioReferenceMatch CardMatcher
   | VictoryDisplayCardMatch CardMatcher
+  | HandCardWithDifferentTitleFromAtLeastOneAsset InvestigatorMatcher AssetMatcher CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
   deriving stock (Show, Eq, Generic)
@@ -786,7 +788,10 @@ data EffectMatcher = AnyEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data SkillTypeMatcher = AnySkillType | NotSkillType SkillType | IsSkillType SkillType
+data SkillTypeMatcher
+  = AnySkillType
+  | NotSkillType SkillType
+  | IsSkillType SkillType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

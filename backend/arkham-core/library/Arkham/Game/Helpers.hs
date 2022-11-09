@@ -505,6 +505,8 @@ getCanAffordCost iid source mAction windows' = \case
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
+  ReturnMatchingAssetToHandCost assetMatcher -> selectAny assetMatcher
+  ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
   SealCost tokenMatcher -> do
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagTokens
     anyM (\token -> matchToken iid token tokenMatcher) tokens

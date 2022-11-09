@@ -138,7 +138,6 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     mAlejandroInvestigator <- getOwner Assets.alejandroVela
     mExpeditionJournalInvestigator <- getOwner Assets.expeditionJournal
 
-
     let
       introMessages =
         [ story iids intro1

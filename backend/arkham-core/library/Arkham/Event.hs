@@ -194,6 +194,7 @@ allEvents = mapFrom
   , SomeEventCard crypticWritings
   , SomeEventCard extensiveResearch
   , SomeEventCard occultInvocation
+  , SomeEventCard glimpseTheUnthinkable1
   , SomeEventCard iveGotAPlan2
   , SomeEventCard willToSurvive
   , SomeEventCard aTestOfWill

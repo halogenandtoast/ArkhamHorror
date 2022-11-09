@@ -142,6 +142,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , galvanize1
   , getOverHere
   , getOverHere2
+  , glimpseTheUnthinkable1
   , glory
   , gritYourTeeth
   , guidance
@@ -1747,6 +1748,16 @@ occultInvocation = (event "60217" "Occult Invocation" 2 Seeker)
   , cdAdditionalCost = Just $ UpTo 2 $ HandDiscardCost 1 AnyCard
   , cdActions = [Action.Fight]
   }
+
+glimpseTheUnthinkable1 :: CardDef
+glimpseTheUnthinkable1 = (event "60221" "Glimpse the Unthinkable" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdLevel = 1
+  , cdCriteria = Just
+    $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
+  }
+
 
 iveGotAPlan2 :: CardDef
 iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)

@@ -36,7 +36,7 @@ instance HasAbilities LibraryDocent1 where
     [ restrictedAbility
           a
           1
-          (ControlsThis <> ExtendedCardExists
+          (ControlsThis <> PlayableCardExistsWithCostReduction 2
             (HandCardWithDifferentTitleFromAtLeastOneAsset
               You
               (AssetWithTrait Tome)

@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 
 newtype ForbiddenTome = ForbiddenTome AssetAttrs

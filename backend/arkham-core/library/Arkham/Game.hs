@@ -1468,6 +1468,13 @@ getAssetsMatching matcher = do
         isHealthDamageable a =
           fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
       filterM isHealthDamageable assets
+    AssetWithDifferentTitleFromAtLeastOneCardInHand who cardMatcher assetMatcher -> do
+      iids <- selectList who
+      handCards <- concatMapM (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher))) iids
+      assets <- filterMatcher as assetMatcher
+      case handCards of
+        [x] -> filterM (fmap (/= (cdName $ toCardDef x)) . fieldMap AssetCard (cdName . toCardDef) . toId) assets
+        _ -> pure assets
     AssetCanBeAssignedHorrorBy iid -> do
       modifiers' <- getModifiers (InvestigatorTarget iid)
       let
@@ -2195,6 +2202,16 @@ instance Query ExtendedCardMatcher where
       )
    where
     matches' c = \case
+      HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher -> do
+        iids <- selectList who
+        handCards <- concatMapM (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher))) iids
+        assets <- selectList assetMatcher
+        cards <- case assets of
+          [x] -> do
+            assetName <- fieldMap AssetCard (cdName . toCardDef) x
+            pure $ filter ((/= assetName) . cdName . toCardDef) handCards
+          _ -> pure handCards
+        pure $ c `elem` cards
       SetAsideCardMatch matcher' -> do
         cards <- scenarioField ScenarioSetAsideCards
         pure $ c `elem` filter (`cardMatch` matcher') cards

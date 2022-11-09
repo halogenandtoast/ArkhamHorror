@@ -11,7 +11,7 @@ import Arkham.ActiveCost.Base as X
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Types ( Field (AssetCard, AssetUses) )
+import Arkham.Asset.Types ( Field (AssetCard, AssetUses, AssetController) )
 import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Card
 import Arkham.Card.Cost
@@ -584,6 +584,26 @@ instance RunMessage ActiveCost where
             | card <- cards
             ]
           pure c
+        ReturnMatchingAssetToHandCost assetMatcher -> do
+          assets <- selectList assetMatcher
+          push $ chooseOne
+            iid
+            [ targetLabel
+                asset
+                [ PayCost
+                    acId
+                    iid
+                    skipAdditionalCosts
+                    (ReturnAssetToHandCost asset)
+                ]
+            | asset <- assets
+            ]
+          pure c
+        ReturnAssetToHandCost assetId -> do
+          card <- field AssetCard assetId
+          controller <- fieldMap AssetController (fromJustNote "Missing controller") assetId
+          push $ ReturnToHand controller $ AssetTarget assetId
+          withPayment $ ReturnToHandPayment card
         DiscardHandCost -> do
           handCards <- fieldMap
             InvestigatorHand

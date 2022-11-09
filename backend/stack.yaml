@@ -5,7 +5,7 @@ concurrent-tests: false
 system-ghc: true
 install-ghc: false
 resolver: nightly-2022-11-01
-compiler: ghc-9.4.2
+compiler: ghc-9.4.3
 
 ghc-options:
   "$locals":
@@ -36,7 +36,6 @@ packages:
   - arkham-core
   - arkham-api
   - validate
-
 
 extra-deps:
 - Cabal-syntax-3.8.1.0

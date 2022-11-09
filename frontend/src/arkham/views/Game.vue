@@ -204,6 +204,7 @@ const { copy } = useClipboard({ source })
 
 #game {
   width: 100vw;
+  height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
   flex: 1;

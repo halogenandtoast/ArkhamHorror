@@ -1092,11 +1092,16 @@ passesCriteria iid source windows' = \case
     total `gameValueMatches` valueMatcher
   Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
-  Criteria.LocationExists matcher -> selectAny matcher
-  Criteria.LocationCount n matcher -> (== n) <$> selectCount matcher
+  Criteria.LocationExists matcher -> do
+    mlid <- field InvestigatorLocation iid
+    selectAny (Matcher.replaceYourLocation iid mlid matcher)
+  Criteria.LocationCount n matcher -> do
+    mlid <- field InvestigatorLocation iid
+    (== n) <$> selectCount (Matcher.replaceYourLocation iid mlid matcher)
   Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
-    targets <- select targetMatcher
-    actual <- select locationMatcher
+    mlid <- field InvestigatorLocation iid
+    targets <- select (Matcher.replaceYourLocation iid mlid targetMatcher)
+    actual <- select (Matcher.replaceYourLocation iid mlid locationMatcher)
     pure $ all (`member` actual) targets
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)

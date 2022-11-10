@@ -313,6 +313,7 @@ library
       Arkham.Asset.Cards.ElderSignAmulet3
       Arkham.Asset.Cards.Encyclopedia
       Arkham.Asset.Cards.Encyclopedia2
+      Arkham.Asset.Cards.EsotericAtlas2
       Arkham.Asset.Cards.EsotericFormula
       Arkham.Asset.Cards.ExpeditionJournal
       Arkham.Asset.Cards.FeedTheMind
@@ -517,6 +518,7 @@ library
       Arkham.Asset.Cards.WellPrepared2
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
+      Arkham.Asset.Cards.WhittonGreene2
       Arkham.Asset.Cards.Yaotl1
       Arkham.Asset.Cards.ZebulonWhateley
       Arkham.Asset.Cards.ZoeysCross

@@ -181,6 +181,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , elderSignAmulet3
   , encyclopedia
   , encyclopedia2
+  , esotericAtlas2
   , esotericFormula
   , expeditionJournal
   , feedTheMind
@@ -370,6 +371,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , wellPrepared2
   , wendysAmulet
   , whittonGreene
+  , whittonGreene2
   , yaotl1
   , zebulonWhateley
   , zoeysCross
@@ -2594,6 +2596,26 @@ libraryDocent1 =
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdSlots = [AllySlot]
     , cdLevel = 1
+    }
+
+esotericAtlas2 :: CardDef
+esotericAtlas2 =
+  (asset "60222" "Esoteric Atlas" 3 Seeker)
+    { cdSkills = [SkillWillpower, SkillAgility]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [HandSlot]
+    , cdLevel = 2
+    , cdUses = Uses Secret 4
+    }
+
+whittonGreene2 :: CardDef
+whittonGreene2 =
+  (asset "60223" ("Whitton Greene" <:> "Hunter of Rare Books") 4 Seeker)
+    { cdSkills = [SkillWillpower, SkillIntellect]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    , cdSlots = [AllySlot]
+    , cdLevel = 2
     }
 
 lockpicks :: CardDef

@@ -448,6 +448,8 @@ allAssets = mapFrom
   , SomeAssetCard higherEducation
   , SomeAssetCard whittonGreene
   , SomeAssetCard libraryDocent1
+  , SomeAssetCard esotericAtlas2
+  , SomeAssetCard whittonGreene2
   --- Winnifred Habbamock
   , SomeAssetCard lockpicks
   --- Stella Clark

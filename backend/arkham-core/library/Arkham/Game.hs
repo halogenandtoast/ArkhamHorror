@@ -1203,7 +1203,7 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`elem` matches') . toId) ls
     LocationWithDistanceFrom distance matcher -> do
       iids <- getInvestigatorIds
-      candidates <- map toId <$> getLocationsMatching matcher
+      candidates <- traceShowId . map toId <$> getLocationsMatching matcher
       distances <- for iids $ \iid -> do
         start <- getJustLocation iid
         distanceSingletons <$> evalStateT

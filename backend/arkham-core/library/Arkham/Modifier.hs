@@ -119,6 +119,7 @@ data ModifierType
   | CannotDiscoverCluesAt LocationMatcher
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
+  | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
   | CannotTriggerFastAbilities
   | CardsCannotLeaveYourDiscardPile
   | ChangeTokenModifier TokenModifier
@@ -186,6 +187,7 @@ data ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedTokenAs TokenFace
   | UseSkillInPlaceOf SkillType SkillType
+  | AddSkillToOtherSkill SkillType SkillType
   | XPModifier Int
   | SkillTestAutomaticallySucceeds
   | IgnoreRevelation

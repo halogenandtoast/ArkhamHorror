@@ -75,6 +75,10 @@ locationWithInvestigator :: InvestigatorId -> LocationMatcher
 locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
 
+locationWithDiscoverableCluesBy :: InvestigatorId -> LocationMatcher
+locationWithDiscoverableCluesBy = LocationWithDiscoverableCluesBy . InvestigatorWithId
+{-# INLINE locationWithDiscoverableCluesBy #-}
+
 locationWithTreachery :: TreacheryId -> LocationMatcher
 locationWithTreachery = LocationWithTreachery . TreacheryWithId
 {-# INLINE locationWithTreachery #-}
@@ -169,6 +173,7 @@ replaceYourLocation iid (Just lid) = go
     ClosestPathLocation{} -> matcher
     BlockedLocation -> matcher
     ThisLocation -> matcher
+    LocationWithDiscoverableCluesBy{} -> matcher
 
 defaultRemoveDoomMatchers :: RemoveDoomMatchers
 defaultRemoveDoomMatchers = RemoveDoomMatchers

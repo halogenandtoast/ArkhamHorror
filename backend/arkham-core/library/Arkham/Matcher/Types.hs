@@ -294,6 +294,7 @@ data LocationMatcher
   | LocationWithoutTreachery TreacheryMatcher
   | LocationWithoutModifier ModifierType
   | LocationWithModifier ModifierType
+  | LocationWithDiscoverableCluesBy InvestigatorMatcher
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]

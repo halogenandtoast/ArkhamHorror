@@ -450,6 +450,10 @@ allAssets = mapFrom
   , SomeAssetCard libraryDocent1
   , SomeAssetCard esotericAtlas2
   , SomeAssetCard whittonGreene2
+  , SomeAssetCard forbiddenTomeDarkKnowledge3
+  , SomeAssetCard forbiddenTomeSecretsRevealed3
+  , SomeAssetCard farsight4
+  , SomeAssetCard miskatonicArchaeologyFunding4
   --- Winnifred Habbamock
   , SomeAssetCard lockpicks
   --- Stella Clark

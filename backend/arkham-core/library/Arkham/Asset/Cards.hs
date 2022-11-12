@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Uses hiding ( Key )
 import Arkham.Asset.Uses qualified as Uses
+import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -184,6 +185,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , esotericAtlas2
   , esotericFormula
   , expeditionJournal
+  , farsight4
   , feedTheMind
   , fence1
   , fieldwork
@@ -197,6 +199,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fleshWard
   , forbiddenKnowledge
   , forbiddenTome
+  , forbiddenTomeDarkKnowledge3
+  , forbiddenTomeSecretsRevealed3
   , fortyFiveAutomatic
   , fortyFiveAutomatic2
   , fortyOneDerringer
@@ -268,6 +272,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , maskedCarnevaleGoer_21
   , meatCleaver
   , medicalTexts
+  , miskatonicArchaeologyFunding4
   , mistsOfRlyeh
   , mitchBrown
   , monstrousTransformation
@@ -2166,28 +2171,25 @@ harlanEarnstone = (storyAsset
   }
 
 henryDeveau :: CardDef
-henryDeveau = (storyAsset
-                    "04125d"
-                    ("Henry Deveau" <:> "Friend of Alejandro")
-                    0
-                    ThreadsOfFate
-                  )
-  { cdCardTraits = singleton Bystander
-  , cdCost = Nothing
-  , cdUnique = True
-  }
+henryDeveau =
+  (storyAsset
+      "04125d"
+      ("Henry Deveau" <:> "Friend of Alejandro")
+      0
+      ThreadsOfFate
+    )
+    { cdCardTraits = singleton Bystander
+    , cdCost = Nothing
+    , cdUnique = True
+    }
 
 mariaDeSilva :: CardDef
-mariaDeSilva = (storyAsset
-                    "04134f"
-                    ("Maria DeSilver" <:> "Wealthy Patron")
-                    0
-                    ThreadsOfFate
-                  )
-  { cdCardTraits = singleton Bystander
-  , cdCost = Nothing
-  , cdUnique = True
-  }
+mariaDeSilva =
+  (storyAsset "04134f" ("Maria DeSilver" <:> "Wealthy Patron") 0 ThreadsOfFate)
+    { cdCardTraits = singleton Bystander
+    , cdCost = Nothing
+    , cdUnique = True
+    }
 
 ichtacaTheForgottenGuardian :: CardDef
 ichtacaTheForgottenGuardian =
@@ -2249,13 +2251,13 @@ cornered2 = (asset "04160" "Cornered" 2 Survivor)
 
 relicOfAgesForestallingTheFuture :: CardDef
 relicOfAgesForestallingTheFuture = (storyAsset
-                                 "04191"
-                                 ("Relic of Ages"
-                                 <:> "Forestalling the Future"
-                                 )
-                                 2
-                                 TheBoundaryBeyond
-                               )
+                                     "04191"
+                                     ("Relic of Ages"
+                                     <:> "Forestalling the Future"
+                                     )
+                                     2
+                                     TheBoundaryBeyond
+                                   )
   { cdSkills = [SkillWild, SkillWild, SkillWild]
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
@@ -2270,19 +2272,21 @@ otherwordlyCompass2 = (asset "04194" "Otherwordly Compass" 2 Seeker)
   }
 
 lolaSantiago3 :: CardDef
-lolaSantiago3 = (asset "04196" ("Lola Santiago" <:> "No-Nonsense Archaeologist") 3 Rogue)
-  { cdCardTraits = setFromList [Ally, Wayfarer]
-  , cdSkills = [SkillIntellect, SkillIntellect]
-  , cdSlots = [AllySlot]
-  , cdLevel = 3
-  }
+lolaSantiago3 =
+  (asset "04196" ("Lola Santiago" <:> "No-Nonsense Archaeologist") 3 Rogue)
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdSkills = [SkillIntellect, SkillIntellect]
+    , cdSlots = [AllySlot]
+    , cdLevel = 3
+    }
 
 oliveMcBride :: CardDef
-oliveMcBride = (asset "04197" ("Olive McBride" <:> "Will Try Anything Once") 2 Mystic)
-  { cdCardTraits = setFromList [Ally, Witch]
-  , cdSkills = [SkillWillpower]
-  , cdSlots = [AllySlot]
-  }
+oliveMcBride =
+  (asset "04197" ("Olive McBride" <:> "Will Try Anything Once") 2 Mystic)
+    { cdCardTraits = setFromList [Ally, Witch]
+    , cdSkills = [SkillWillpower]
+    , cdSlots = [AllySlot]
+    }
 
 trenchCoat :: CardDef
 trenchCoat = (asset "04203" "Trench Coat" 3 Neutral)
@@ -2309,31 +2313,37 @@ m1918Bar4 = (asset "04229" "M1918 BAR" 5 Guardian)
   }
 
 ancientStoneKnowledgeOfTheElders4 :: CardDef
-ancientStoneKnowledgeOfTheElders4 = (asset "04230" ("Ancient Stone" <:> "Knowledge of the Elders") 2 Seeker)
-  { cdCardTraits = setFromList [Item, Relic]
-  , cdSkills = [SkillIntellect, SkillIntellect]
-  , cdSlots = [HandSlot]
-  , cdUses = Uses Secret 0
-  , cdKeywords = setFromList [Keyword.Researched]
-  , cdLevel = 4
-  }
+ancientStoneKnowledgeOfTheElders4 =
+  (asset "04230" ("Ancient Stone" <:> "Knowledge of the Elders") 2 Seeker)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [SkillIntellect, SkillIntellect]
+    , cdSlots = [HandSlot]
+    , cdUses = Uses Secret 0
+    , cdKeywords = setFromList [Keyword.Researched YouHaveIdentifiedTheStone]
+    , cdLevel = 4
+    }
 
 ancientStoneMindsInHarmony4 :: CardDef
-ancientStoneMindsInHarmony4 = (asset "04231" ("Ancient Stone" <:> "Minds in Harmony") 2 Seeker)
-  { cdCardTraits = setFromList [Item, Relic]
-  , cdSkills = [SkillWillpower, SkillWillpower]
-  , cdSlots = [HandSlot]
-  , cdUses = Uses Secret 0
-  , cdKeywords = setFromList [Keyword.Researched]
-  , cdLevel = 4
-  }
+ancientStoneMindsInHarmony4 =
+  (asset "04231" ("Ancient Stone" <:> "Minds in Harmony") 2 Seeker)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [SkillWillpower, SkillWillpower]
+    , cdSlots = [HandSlot]
+    , cdUses = Uses Secret 0
+    , cdKeywords = setFromList [Keyword.Researched YouHaveIdentifiedTheStone]
+    , cdLevel = 4
+    }
 
 crystallineElderSign3 :: CardDef
 crystallineElderSign3 = (asset "04235" "Crystalline Elder Sign" 3 Mystic)
   { cdCardTraits = setFromList [Item, Relic, Blessed]
   , cdSkills = [SkillWild]
   , cdSlots = [AccessorySlot]
-  , cdKeywords = singleton (Keyword.Seal $ TokenMatchesAny $ map TokenFaceIs [Token.PlusOne, Token.ElderSign])
+  , cdKeywords = singleton
+    (Keyword.Seal $ TokenMatchesAny $ map
+      TokenFaceIs
+      [Token.PlusOne, Token.ElderSign]
+    )
   , cdLevel = 3
   }
 
@@ -2347,7 +2357,12 @@ onYourOwn3 = (asset "04236" "On Your Own" 2 Survivor)
 
 theCustodian :: CardDef
 theCustodian =
-  (storyAsset "04256" ("The Custodian" <:> "Curious Yithian") 0 TheCityOfArchives)
+  (storyAsset
+      "04256"
+      ("The Custodian" <:> "Curious Yithian")
+      0
+      TheCityOfArchives
+    )
     { cdCardTraits = setFromList [Ally, Yithian]
     }
 
@@ -2402,12 +2417,11 @@ livreDeibon =
     }
 
 runicAxe :: CardDef
-runicAxe =
-  (asset "09022" "Runix Axe" 4 Guardian)
-    { cdCardTraits = setFromList [Item, Weapon, Melee]
-    , cdSkills = [SkillCombat]
-    , cdSlots = [HandSlot, HandSlot]
-    }
+runicAxe = (asset "09022" "Runix Axe" 4 Guardian)
+  { cdCardTraits = setFromList [Item, Weapon, Melee]
+  , cdSkills = [SkillCombat]
+  , cdSlots = [HandSlot, HandSlot]
+  }
 
 physicalTraining2 :: CardDef
 physicalTraining2 = (asset "50001" "Physical Training" 0 Guardian)
@@ -2590,23 +2604,21 @@ whittonGreene =
     }
 
 libraryDocent1 :: CardDef
-libraryDocent1 =
-  (asset "60220" "Library Docent" 1 Seeker)
-    { cdSkills = [SkillIntellect, SkillAgility]
-    , cdCardTraits = setFromList [Ally, Miskatonic]
-    , cdSlots = [AllySlot]
-    , cdLevel = 1
-    }
+libraryDocent1 = (asset "60220" "Library Docent" 1 Seeker)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = setFromList [Ally, Miskatonic]
+  , cdSlots = [AllySlot]
+  , cdLevel = 1
+  }
 
 esotericAtlas2 :: CardDef
-esotericAtlas2 =
-  (asset "60222" "Esoteric Atlas" 3 Seeker)
-    { cdSkills = [SkillWillpower, SkillAgility]
-    , cdCardTraits = setFromList [Item, Tome]
-    , cdSlots = [HandSlot]
-    , cdLevel = 2
-    , cdUses = Uses Secret 4
-    }
+esotericAtlas2 = (asset "60222" "Esoteric Atlas" 3 Seeker)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdLevel = 2
+  , cdUses = Uses Secret 4
+  }
 
 whittonGreene2 :: CardDef
 whittonGreene2 =
@@ -2616,6 +2628,42 @@ whittonGreene2 =
     , cdUnique = True
     , cdSlots = [AllySlot]
     , cdLevel = 2
+    }
+
+forbiddenTomeDarkKnowledge3 :: CardDef
+forbiddenTomeDarkKnowledge3 =
+  (asset "60229" ("Forbidden Tome" <:> "Dark Knowledge") 1 Seeker)
+    { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
+    , cdCardTraits = setFromList [Item, Relic, Tome]
+    , cdSlots = [HandSlot]
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheTome
+    , cdLevel = 3
+    }
+
+forbiddenTomeSecretsRevealed3 :: CardDef
+forbiddenTomeSecretsRevealed3 =
+  (asset "60230" ("Forbidden Tome" <:> "Secrets Revealed") 1 Seeker)
+    { cdSkills = [SkillIntellect, SkillAgility, SkillWild]
+    , cdCardTraits = setFromList [Item, Relic, Tome]
+    , cdSlots = [HandSlot]
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheTome
+    , cdLevel = 3
+    }
+
+farsight4 :: CardDef
+farsight4 =
+  (asset "60231" "Farsight" 2 Seeker)
+    { cdSkills = [SkillWillpower, SkillWild]
+    , cdCardTraits = singleton Ritual
+    , cdSlots = [ArcaneSlot]
+    , cdLevel = 4
+    }
+
+miskatonicArchaeologyFunding4 :: CardDef
+miskatonicArchaeologyFunding4 =
+  permanent $ (asset "60232" "Miskatonic Archaeology Funding" 0 Seeker)
+    { cdCardTraits = singleton Grant
+    , cdLevel = 4
     }
 
 lockpicks :: CardDef

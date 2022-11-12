@@ -83,6 +83,54 @@ getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc))
       (ResourceCost cost)
 getWindowSkippable _ _ _ = pure True
 
+getHealthDamageableAssets
+  :: InvestigatorId
+  -> AssetMatcher
+  -> Int
+  -> [Target]
+  -> [Target]
+  -> GameT (HashSet AssetId)
+getHealthDamageableAssets _ _ 0 _ _ = pure mempty
+getHealthDamageableAssets iid matcher _ damageTargets horrorTargets = do
+  allAssets <- selectList (matcher <> AssetCanBeAssignedDamageBy iid)
+  excludes <- do
+    modifiers <- getModifiers (InvestigatorTarget iid)
+    excludeMatchers <- flip mapMaybeM modifiers $ \case
+      NoMoreThanOneDamageOrHorrorAmongst excludeMatcher -> do
+        excludes <- selectListMap AssetTarget excludeMatcher
+        pure $ if any (`elem` excludes) (damageTargets <> horrorTargets)
+          then Just excludeMatcher
+          else Nothing
+      _ -> pure Nothing
+    case excludeMatchers of
+      [] -> pure mempty
+      xs -> select (AssetOneOf xs)
+  pure $ setFromList $ filter (`notMember` excludes) allAssets
+
+getSanityDamageableAssets
+  :: InvestigatorId
+  -> AssetMatcher
+  -> Int
+  -> [Target]
+  -> [Target]
+  -> GameT (HashSet AssetId)
+getSanityDamageableAssets _ _ 0 _ _ = pure mempty
+getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
+  allAssets <- selectList (matcher <> AssetCanBeAssignedHorrorBy iid)
+  excludes <- do
+    modifiers <- getModifiers (InvestigatorTarget iid)
+    excludeMatchers <- flip mapMaybeM modifiers $ \case
+      NoMoreThanOneDamageOrHorrorAmongst excludeMatcher -> do
+        excludes <- selectListMap AssetTarget excludeMatcher
+        pure $ if any (`elem` excludes) (damageTargets <> horrorTargets)
+          then Just excludeMatcher
+          else Nothing
+      _ -> pure Nothing
+    case excludeMatchers of
+      [] -> pure mempty
+      xs -> select (AssetOneOf xs)
+  pure $ setFromList $ filter (`notMember` excludes) allAssets
+
 runInvestigatorMessage
   :: Message -> InvestigatorAttrs -> GameT InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
@@ -535,15 +583,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
     damage <- damageValueFor 1 a
-    a
-      <$ push
-           (InvestigatorAssignDamage
-             xid
-             (InvestigatorSource iid)
-             DamageAny
-             damage
-             0
-           )
+    push $ InvestigatorAssignDamage
+      xid
+      (InvestigatorSource iid)
+      DamageAny
+      damage
+      0
+    pure a
   InvestigatorDamageEnemy iid eid source | iid == investigatorId -> do
     damage <- damageValueFor 1 a
     a <$ push (EnemyDamage eid iid source AttackDamageEffect damage)
@@ -818,12 +864,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ push
         $ InvestigatorDirectDamage iid source 1 0
       pure a
-  InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets _
+  InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets
     | iid == investigatorId
     -> do
-      healthDamageableAssets <- if health > 0
-        then selectList (matcher <> AssetCanBeAssignedDamageBy iid)
-        else pure mempty
+      healthDamageableAssets <-
+        toList
+          <$> getHealthDamageableAssets
+                iid
+                matcher
+                health
+                damageTargets
+                horrorTargets
       let
         getDamageTargets xs = if length xs >= length healthDamageableAssets + 1
           then getDamageTargets (drop (length healthDamageableAssets + 1) xs)
@@ -859,17 +910,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> map damageAsset healthDamageableAssets'
       push $ chooseOne iid healthDamageMessages
       pure a
-  InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity _ horrorTargets
+  InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
-      sanityDamageableAssets <- if sanity > 0
-        then selectList (matcher <> AssetCanBeAssignedHorrorBy iid)
-        else pure mempty
-      -- TODO: handle this
-      -- mustBeDamagedFirstBeforeInvestigator <- selectList
-      --   (AssetCanBeAssignedHorrorBy iid
-      --   <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
-      --   )
+      sanityDamageableAssets <-
+        toList
+          <$> getSanityDamageableAssets
+                iid
+                matcher
+                sanity
+                damageTargets
+                horrorTargets
+      mustBeDamagedFirstBeforeInvestigator <- selectList
+        (AssetCanBeAssignedHorrorBy iid
+        <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+        )
       let
         getDamageTargets xs = if length xs >= length sanityDamageableAssets + 1
           then getDamageTargets (drop (length sanityDamageableAssets + 1) xs)
@@ -900,7 +955,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           ]
         sanityDamageMessages =
           [ damageInvestigator
-          | InvestigatorTarget investigatorId `notElem` horrorTargets'
+          | InvestigatorTarget investigatorId
+            `notElem` horrorTargets'
+            && null mustBeDamagedFirstBeforeInvestigator
           ]
           <> map damageAsset sanityDamageableAssets'
       push $ chooseOne iid sanityDamageMessages
@@ -912,12 +969,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorDoAssignDamage iid source SingleTarget matcher health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
-      healthDamageableAssets <- if health > 0
-        then select (matcher <> AssetCanBeAssignedDamageBy iid)
-        else pure mempty
-      sanityDamageableAssets <- if sanity > 0
-        then select (matcher <> AssetCanBeAssignedHorrorBy iid)
-        else pure mempty
+      healthDamageableAssets <- getHealthDamageableAssets
+        iid
+        matcher
+        health
+        damageTargets
+        horrorTargets
+      sanityDamageableAssets <- getSanityDamageableAssets
+        iid
+        matcher
+        sanity
+        damageTargets
+        horrorTargets
       let
         damageableAssets =
           toList $ healthDamageableAssets `union` sanityDamageableAssets
@@ -954,8 +1017,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -> do
       healthDamageMessages <- if health > 0
         then do
-          healthDamageableAssets <- selectList
-            (matcher <> AssetCanBeAssignedDamageBy iid)
+          healthDamageableAssets <-
+            toList
+              <$> getHealthDamageableAssets
+                    iid
+                    matcher
+                    health
+                    damageTargets
+                    horrorTargets
           let
             assignRestOfHealthDamage = InvestigatorDoAssignDamage
               investigatorId
@@ -1000,8 +1069,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
-          sanityDamageableAssets <- selectList
-            (matcher <> AssetCanBeAssignedHorrorBy iid)
+          sanityDamageableAssets <-
+            toList
+              <$> getSanityDamageableAssets
+                    iid
+                    matcher
+                    sanity
+                    damageTargets
+                    horrorTargets
           let
             assignRestOfSanityDamage = InvestigatorDoAssignDamage
               investigatorId
@@ -1675,7 +1750,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure $ toCardCode card `notElem` committedCardCodes
                 OnlyYourTest -> pure True
                 OnlyIfYourLocationHasClues -> pure $ clueCount > 0
-                OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
+                OnlyTestWithActions as ->
+                  pure $ maybe False (`elem` as) (skillTestAction skillTest)
                 ScenarioAbility -> pure isScenarioAbility
                 SelfCanCommitWhen matcher ->
                   notNull <$> select (You <> matcher)
@@ -1781,7 +1857,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       OnlyCardCommittedToTest -> pure $ null committedCardNames
                       OnlyYourTest -> pure False
                       OnlyIfYourLocationHasClues -> pure $ clueCount > 0
-                      OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
+                      OnlyTestWithActions as -> pure
+                        $ maybe False (`elem` as) (skillTestAction skillTest)
                       ScenarioAbility -> pure isScenarioAbility
                       SelfCanCommitWhen matcher ->
                         notNull <$> select (You <> matcher)

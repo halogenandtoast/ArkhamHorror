@@ -316,6 +316,7 @@ library
       Arkham.Asset.Cards.EsotericAtlas2
       Arkham.Asset.Cards.EsotericFormula
       Arkham.Asset.Cards.ExpeditionJournal
+      Arkham.Asset.Cards.Farsight4
       Arkham.Asset.Cards.FeedTheMind
       Arkham.Asset.Cards.Fence1
       Arkham.Asset.Cards.Fieldwork
@@ -330,6 +331,8 @@ library
       Arkham.Asset.Cards.FleshWard
       Arkham.Asset.Cards.ForbiddenKnowledge
       Arkham.Asset.Cards.ForbiddenTome
+      Arkham.Asset.Cards.ForbiddenTomeDarkKnowledge3
+      Arkham.Asset.Cards.ForbiddenTomeSecretsRevealed3
       Arkham.Asset.Cards.FortyFiveAutomatic
       Arkham.Asset.Cards.FortyFiveAutomatic2
       Arkham.Asset.Cards.FortyOneDerringer
@@ -410,6 +413,7 @@ library
       Arkham.Asset.Cards.MeatCleaver
       Arkham.Asset.Cards.MedicalTexts
       Arkham.Asset.Cards.MedicoDellaPeste
+      Arkham.Asset.Cards.MiskatonicArchaeologyFunding4
       Arkham.Asset.Cards.MistsOfRlyeh
       Arkham.Asset.Cards.MitchBrown
       Arkham.Asset.Cards.MonstrousTransformation
@@ -631,7 +635,6 @@ library
       Arkham.Effect.Effects.LuckyDice2
       Arkham.Effect.Effects.MeatCleaver
       Arkham.Effect.Effects.Mesmerize
-      Arkham.Effect.Effects.MindOverMatter
       Arkham.Effect.Effects.MindWipe1
       Arkham.Effect.Effects.MindWipe3
       Arkham.Effect.Effects.MinhThiPhan
@@ -848,6 +851,7 @@ library
       Arkham.Event.Cards.Counterspell2
       Arkham.Event.Cards.CrypticResearch4
       Arkham.Event.Cards.CrypticWritings
+      Arkham.Event.Cards.CrypticWritings2
       Arkham.Event.Cards.CunningDistraction
       Arkham.Event.Cards.CustomAmmunition3
       Arkham.Event.Cards.DaringManeuver
@@ -918,6 +922,7 @@ library
       Arkham.Event.Cards.ManoAMano2
       Arkham.Event.Cards.Marksmanship1
       Arkham.Event.Cards.MindOverMatter
+      Arkham.Event.Cards.MindOverMatter2
       Arkham.Event.Cards.MindWipe1
       Arkham.Event.Cards.MindWipe3
       Arkham.Event.Cards.MomentOfRespite3
@@ -949,6 +954,7 @@ library
       Arkham.Event.Cards.SearchForTheTruth
       Arkham.Event.Cards.SecondWind
       Arkham.Event.Cards.SeekingAnswers
+      Arkham.Event.Cards.SeekingAnswers2
       Arkham.Event.Cards.Shortcut
       Arkham.Event.Cards.Shortcut2
       Arkham.Event.Cards.SleightOfHand
@@ -1047,6 +1053,7 @@ library
       Arkham.Investigator.Cards.WendyAdams
       Arkham.Investigator.Cards.WilliamYorick
       Arkham.Investigator.Cards.ZoeySamaras
+      Arkham.Investigator.DamageAssignment
       Arkham.Investigator.Investigators
       Arkham.Investigator.Runner
       Arkham.Investigator.Types
@@ -1489,6 +1496,7 @@ library
       Arkham.Skill.Cards.Overpower
       Arkham.Skill.Cards.Overpower2
       Arkham.Skill.Cards.Perception
+      Arkham.Skill.Cards.Perception2
       Arkham.Skill.Cards.QuickThinking
       Arkham.Skill.Cards.RecklessAssault
       Arkham.Skill.Cards.Resourceful

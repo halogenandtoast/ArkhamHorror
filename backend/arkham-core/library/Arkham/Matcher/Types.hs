@@ -23,6 +23,7 @@ import Arkham.Modifier
 import Arkham.Phase
 import Arkham.SkillType
 import Arkham.SlotType
+import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Token
@@ -193,6 +194,7 @@ data EnemyMatcher
   | NotEnemy EnemyMatcher
   | MovingEnemy
   | IsIchtacasPrey
+  | EnemyCanBeDamagedBySource Source
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

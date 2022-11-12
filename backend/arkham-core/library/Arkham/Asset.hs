@@ -454,6 +454,7 @@ allAssets = mapFrom
   , SomeAssetCard forbiddenTomeSecretsRevealed3
   , SomeAssetCard farsight4
   , SomeAssetCard miskatonicArchaeologyFunding4
+  , SomeAssetCard theNecronomiconPetrusDeDaciaTranslation5
   --- Winnifred Habbamock
   , SomeAssetCard lockpicks
   --- Stella Clark

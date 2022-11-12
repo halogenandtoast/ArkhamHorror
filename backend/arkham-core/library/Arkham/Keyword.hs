@@ -3,6 +3,7 @@ module Arkham.Keyword where
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Matcher.Types
+import Arkham.CampaignLogKey
 
 data Keyword
   = Alert
@@ -17,7 +18,7 @@ data Keyword
   | Uses Int
   | Exceptional
   | Permanent
-  | Researched
+  | Researched CampaignLogKey
   | Seal TokenMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

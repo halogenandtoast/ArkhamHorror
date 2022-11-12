@@ -1101,6 +1101,8 @@ getLocationsMatching lmatcher = do
   case lmatcher of
     IsIchtacasDestination ->
       filterM (remembered . IchtacasDestination . toId) ls
+    LocationWithDiscoverableCluesBy whoMatcher -> do
+      filterM (selectAny . (<> whoMatcher) . InvestigatorCanDiscoverCluesAt . LocationWithId . toId) ls
     SingleSidedLocation ->
       filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []
@@ -1203,7 +1205,7 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`elem` matches') . toId) ls
     LocationWithDistanceFrom distance matcher -> do
       iids <- getInvestigatorIds
-      candidates <- traceShowId . map toId <$> getLocationsMatching matcher
+      candidates <- map toId <$> getLocationsMatching matcher
       distances <- for iids $ \iid -> do
         start <- getJustLocation iid
         distanceSingletons <$> evalStateT

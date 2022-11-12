@@ -10,6 +10,14 @@ instance Hashable AbilityMatcher
 instance Show AbilityMatcher
 instance Eq AbilityMatcher
 
+data AssetMatcher
+
+instance ToJSON AssetMatcher
+instance FromJSON AssetMatcher
+instance Hashable AssetMatcher
+instance Show AssetMatcher
+instance Eq AssetMatcher
+
 data LocationMatcher
 
 instance ToJSON LocationMatcher

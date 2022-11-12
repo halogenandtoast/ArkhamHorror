@@ -1,6 +1,6 @@
-module Arkham.Event.Cards.SeekingAnswers
-  ( seekingAnswers
-  , SeekingAnswers(..)
+module Arkham.Event.Cards.SeekingAnswers2
+  ( seekingAnswers2
+  , SeekingAnswers2(..)
   ) where
 
 import Arkham.Prelude
@@ -14,15 +14,15 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 
-newtype SeekingAnswers = SeekingAnswers EventAttrs
+newtype SeekingAnswers2 = SeekingAnswers2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-seekingAnswers :: EventCard SeekingAnswers
-seekingAnswers = event SeekingAnswers Cards.seekingAnswers
+seekingAnswers2 :: EventCard SeekingAnswers2
+seekingAnswers2 = event SeekingAnswers2 Cards.seekingAnswers2
 
-instance RunMessage SeekingAnswers where
-  runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
+instance RunMessage SeekingAnswers2 where
+  runMessage msg e@(SeekingAnswers2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getJustLocation iid
       pushAll
@@ -37,9 +37,18 @@ instance RunMessage SeekingAnswers where
         ]
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
-      lids <- selectList $ ConnectedLocation <> LocationWithAnyClues
+      pushAll
+        [ ResolveEvent iid (toId attrs) Nothing []
+        , ResolveEvent iid (toId attrs) Nothing []
+        ]
+      pure e
+    ResolveEvent iid eid _ _ | eid == toId attrs -> do
+      lids <-
+        selectList
+        $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
+        <> locationWithDiscoverableCluesBy iid
       when (notNull lids) $ do
-        push $ chooseOne
+        push $ chooseOrRunOne
           iid
           [ targetLabel
               lid'
@@ -47,4 +56,4 @@ instance RunMessage SeekingAnswers where
           | lid' <- lids
           ]
       pure e
-    _ -> SeekingAnswers <$> runMessage msg attrs
+    _ -> SeekingAnswers2 <$> runMessage msg attrs

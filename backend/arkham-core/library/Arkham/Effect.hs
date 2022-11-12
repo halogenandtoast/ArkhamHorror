@@ -22,11 +22,13 @@ import Arkham.Window ( Window )
 -- start importing directly
 import Arkham.Agenda.Agendas ( lostMemoriesEffect )
 import Arkham.Asset.Assets
-  ( fence1Effect, highRoller2Effect, mistsOfRlyehEffect, yaotl1Effect, libraryDocent1Effect )
+  ( fence1Effect, highRoller2Effect, miskatonicArchaeologyFunding4Effect, mistsOfRlyehEffect, yaotl1Effect, libraryDocent1Effect )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect )
 import Arkham.Event.Events
   ( exposeWeakness3Effect
   , marksmanship1Effect
+  , mindOverMatterEffect
+  , mindOverMatter2Effect
   , onTheLamEffect
   , oneTwoPunch5Effect
   , oneTwoPunchEffect
@@ -125,7 +127,7 @@ instance FromJSON Effect where
 allEffects :: HashMap CardCode SomeEffect
 allEffects = mapFromList
   [ ("01010", SomeEffect onTheLamEffect)
-  , ("01036", SomeEffect mindOverMatter)
+  , ("01036", SomeEffect mindOverMatterEffect)
   , ("01060", SomeEffect shrivelling)
   , ("01066", SomeEffect blindingLight)
   , ("01068", SomeEffect mindWipe1)
@@ -195,6 +197,8 @@ allEffects = mapFromList
   , ("60117", SomeEffect oneTwoPunchEffect)
   , ("60132", SomeEffect oneTwoPunch5Effect)
   , ("60220", SomeEffect libraryDocent1Effect)
+  , ("60226", SomeEffect mindOverMatter2Effect)
+  , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
   , ("60305", SomeEffect lockpicks)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)

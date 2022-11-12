@@ -91,6 +91,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , overpower
   , overpower2
   , perception
+  , perception2
   , quickThinking
   , recklessAssault
   , resourceful
@@ -439,6 +440,13 @@ overpower2 = (skill "60126" "Overpower" [SkillCombat, SkillCombat, SkillCombat] 
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdLevel = 2
   }
+
+perception2 :: CardDef
+perception2 =
+  (skill "60228" "Perception" [SkillIntellect, SkillIntellect, SkillIntellect] Seeker)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
 
 neitherRainNorSnow :: CardDef
 neitherRainNorSnow = (skill

@@ -35,30 +35,37 @@ getSkillValue st iid = case st of
   SkillWild -> error "no wild skill"
 
 skillValueFor
-  :: (Monad m, HasGame m)
+  :: forall m. (Monad m, HasGame m)
   => SkillType
   -> Maybe Action
   -> [ModifierType]
   -> InvestigatorId
   -> m Int
-skillValueFor skill maction tempModifiers iid = do
-  base <- baseSkillValueFor skill maction tempModifiers iid
-  foldrM applyModifier base tempModifiers
+skillValueFor skill maction tempModifiers iid = go 2 skill
  where
-  canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
-  applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 =
-    pure $ max 0 (n + m)
-  applyModifier (AddSkillValue sv) n | canBeIncreased = do
-    m <- getSkillValue sv iid
-    pure $ max 0 (n + m)
-  applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
-    pure $ if skillType == skill then max 0 (n + m) else n
-  applyModifier (ActionSkillModifier action skillType m) n
-    | canBeIncreased || m < 0
-    = pure $ if skillType == skill && Just action == maction
-      then max 0 (n + m)
-      else n
-  applyModifier _ n = pure n
+  go :: Int -> SkillType -> m Int
+  go 0 _ = error "possible skillValueFor infinite loop"
+  go depth s = do
+    base <- baseSkillValueFor s maction tempModifiers iid
+    foldrM applyModifier base tempModifiers
+   where
+    canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
+    applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 =
+      pure $ max 0 (n + m)
+    applyModifier (AddSkillValue sv) n | canBeIncreased = do
+      m <- getSkillValue sv iid
+      pure $ max 0 (n + m)
+    applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType == skill = do
+      m <- go (depth - 1) svAdd
+      pure $ max 0 (n + m)
+    applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
+      pure $ if skillType == skill then max 0 (n + m) else n
+    applyModifier (ActionSkillModifier action skillType m) n
+      | canBeIncreased || m < 0
+      = pure $ if skillType == skill && Just action == maction
+        then max 0 (n + m)
+        else n
+    applyModifier _ n = pure n
 
 baseSkillValueFor
   :: (Monad m, HasGame m)
@@ -367,3 +374,6 @@ getAvailableSkillsFor skillType iid = do
 isEliminated :: (Monad m, HasGame m) => InvestigatorId -> m Bool
 isEliminated iid =
   orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
+
+getHandCount :: (Monad m, HasGame m) => InvestigatorId -> m Int
+getHandCount = fieldMap InvestigatorHand length

@@ -80,6 +80,7 @@ allSkills = mapFrom
   , SomeSkillCard takeHeart
   , SomeSkillCard daring
   , SomeSkillCard overpower2
+  , SomeSkillCard perception2
   , SomeSkillCard neitherRainNorSnow
   , SomeSkillCard unexpectedCourage2
   ]

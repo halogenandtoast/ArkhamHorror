@@ -26,8 +26,7 @@ newtype JoeyTheRatVigil = JoeyTheRatVigil AssetAttrs
 joeyTheRatVigil :: AssetCard JoeyTheRatVigil
 joeyTheRatVigil = ally JoeyTheRatVigil Cards.joeyTheRatVigil (3, 2)
 
--- This card is a pain and the solution here is a hack
--- we end up with a separate function for resource modification
+-- TODO: This does not account for the 1 resource spent in the cost
 instance HasAbilities JoeyTheRatVigil where
   getAbilities (JoeyTheRatVigil x) =
     [ restrictedAbility

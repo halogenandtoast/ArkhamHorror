@@ -104,6 +104,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , counterspell2
   , crypticResearch4
   , crypticWritings
+  , crypticWritings2
   , cunningDistraction
   , customAmmunition3
   , daringManeuver
@@ -174,6 +175,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , manoAMano2
   , marksmanship1
   , mindOverMatter
+  , mindOverMatter2
   , mindWipe1
   , mindWipe3
   , momentOfRespite3
@@ -205,6 +207,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , searchForTheTruth
   , secondWind
   , seekingAnswers
+  , seekingAnswers2
   , shortcut
   , shortcut2
   , sleightOfHand
@@ -560,6 +563,7 @@ shortcut = (event "02022" "Shortcut" 0 Seeker)
 seekingAnswers :: CardDef
 seekingAnswers = (event "02023" "Seeking Answers" 1 Seeker)
   { cdSkills = [SkillIntellect, SkillAgility]
+  , cdActions = [Action.Investigate]
   , cdCardTraits = singleton Insight
   }
 
@@ -1758,6 +1762,13 @@ glimpseTheUnthinkable1 = (event "60221" "Glimpse the Unthinkable" 0 Seeker)
     $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
   }
 
+crypticWritings2 :: CardDef
+crypticWritings2 = (event "60224" "Cryptic Writings" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillWild]
+  , cdCardTraits = singleton Insight
+  , cdCardInHandEffects = True
+  , cdLevel = 2
+  }
 
 iveGotAPlan2 :: CardDef
 iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
@@ -1765,6 +1776,22 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 2
   , cdActions = [Action.Fight]
+  }
+
+mindOverMatter2 :: CardDef
+mindOverMatter2 = (event "60226" "Mind over Matter" 1 Seeker)
+  { cdSkills = [SkillCombat, SkillAgility, SkillWild]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just (DuringTurn You)
+  , cdLevel = 2
+  }
+
+seekingAnswers2 :: CardDef
+seekingAnswers2 = (event "60227" "Seeking Answers" 1 Seeker)
+  { cdSkills = [SkillIntellect, SkillAgility, SkillAgility]
+  , cdActions = [Action.Investigate]
+  , cdCardTraits = singleton Insight
+  , cdLevel = 2
   }
 
 willToSurvive :: CardDef

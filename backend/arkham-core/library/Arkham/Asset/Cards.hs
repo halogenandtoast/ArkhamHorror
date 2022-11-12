@@ -358,6 +358,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
+  , theNecronomiconPetrusDeDaciaTranslation5
   , thePallidMask
   , theRedGlovedMan5
   , theTatteredCloak
@@ -2664,6 +2665,14 @@ miskatonicArchaeologyFunding4 =
   permanent $ (asset "60232" "Miskatonic Archaeology Funding" 0 Seeker)
     { cdCardTraits = singleton Grant
     , cdLevel = 4
+    }
+
+theNecronomiconPetrusDeDaciaTranslation5 :: CardDef
+theNecronomiconPetrusDeDaciaTranslation5 =
+  (asset "60233" ("The Necronomicon" <:> "Petrus de Dacia Translation") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdUses = Uses Secret 6
+    , cdLevel = 5
     }
 
 lockpicks :: CardDef

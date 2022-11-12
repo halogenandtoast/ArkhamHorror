@@ -1605,6 +1605,13 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: (Monad m, HasGame m) => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  EnemyCanBeDamagedBySource source -> \enemy -> do
+    modifiers <- getModifiers (toTarget enemy)
+    flip allM modifiers $ \case
+      CannotBeDamagedByPlayerSourcesExcept sourceMatcher -> sourceMatches source sourceMatcher
+      CannotBeDamagedByPlayerSources sourceMatcher -> not <$> sourceMatches source sourceMatcher
+      CannotBeDamaged -> pure False
+      _ -> pure True
   EnemyWithAsset assetMatcher -> \enemy -> do
     assets <- select assetMatcher
     lmAssets <- select $ EnemyAsset $ toId enemy

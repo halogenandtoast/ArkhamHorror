@@ -7,6 +7,7 @@ import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.SkillTest.Base
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 
@@ -22,6 +23,11 @@ getSkillTestSource = fmap toSource <$> getSkillTest
 getSkillTestAction :: (Monad m, HasGame m) => m (Maybe Action)
 getSkillTestAction = getSkillTestSource <&> \case
   Just (SkillTestSource _ _ _ maction) -> maction
+  _ -> Nothing
+
+getSkillTestSkillType :: (Monad m, HasGame m) => m (Maybe SkillType)
+getSkillTestSkillType = getSkillTestSource <&> \case
+  Just (SkillTestSource _ skillType _ _) -> Just skillType
   _ -> Nothing
 
 getIsBeingInvestigated :: (Monad m, HasGame m) => LocationId -> m Bool

@@ -385,13 +385,13 @@ instance RunMessage ActiveCost where
               push $ InvestigatorDirectDamage iid' source x 0
               withPayment $ DirectDamagePayment x
             _ -> error "exactly one investigator expected for direct damage"
-        InvestigatorDamageCost _ investigatorMatcher damageStrategy x -> do
+        InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
           investigators <- selectList investigatorMatcher
-          push $ chooseOne
+          push $ chooseOrRunOne
             iid
             [ targetLabel
                 iid'
-                [InvestigatorAssignDamage iid' source damageStrategy x 0]
+                [InvestigatorAssignDamage iid' source' damageStrategy x 0]
             | iid' <- investigators
             ]
           withPayment $ InvestigatorDamagePayment x

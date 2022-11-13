@@ -6,8 +6,9 @@ module Arkham.Enemy.Cards.WizardOfTheOrder
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -29,8 +30,10 @@ wizardOfTheOrder = enemyWith
 instance HasAbilities WizardOfTheOrder where
   getAbilities (WizardOfTheOrder a) = withBaseAbilities
     a
-    [ mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
-        MythosPhase
+    [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis)
+      $ ForcedAbility
+      $ PhaseEnds Timing.When
+      $ PhaseIs MythosPhase
     ]
 
 instance RunMessage WizardOfTheOrder where

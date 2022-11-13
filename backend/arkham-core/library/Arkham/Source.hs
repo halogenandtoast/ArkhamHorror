@@ -52,5 +52,6 @@ data Source
   | TreacherySource TreacheryId
   | YouSource
   | CampaignSource
+  | ThisCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

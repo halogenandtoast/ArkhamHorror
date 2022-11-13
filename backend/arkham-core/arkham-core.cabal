@@ -318,6 +318,7 @@ library
       Arkham.Asset.Cards.ExpeditionJournal
       Arkham.Asset.Cards.Farsight4
       Arkham.Asset.Cards.FeedTheMind
+      Arkham.Asset.Cards.FeedTheMind3
       Arkham.Asset.Cards.Fence1
       Arkham.Asset.Cards.Fieldwork
       Arkham.Asset.Cards.FineClothes
@@ -347,6 +348,8 @@ library
       Arkham.Asset.Cards.GrotesqueStatue4
       Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
+      Arkham.Asset.Cards.Handcuffs
+      Arkham.Asset.Cards.Handcuffs2
       Arkham.Asset.Cards.HardKnocks
       Arkham.Asset.Cards.HardKnocks2
       Arkham.Asset.Cards.HarlanEarnstone
@@ -837,6 +840,8 @@ library
       Arkham.Event.Cards.BindMonster2
       Arkham.Event.Cards.BlindingLight
       Arkham.Event.Cards.BlindingLight2
+      Arkham.Event.Cards.BloodEclipse1
+      Arkham.Event.Cards.BloodEclipse3
       Arkham.Event.Cards.BloodRite
       Arkham.Event.Cards.BurningTheMidnightOil
       Arkham.Event.Cards.BuryThemDeep

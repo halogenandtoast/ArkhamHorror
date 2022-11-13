@@ -162,6 +162,7 @@ allEvents = mapFrom
   , SomeEventCard slipAway
   , SomeEventCard payDay1
   , SomeEventCard sacrifice1
+  , SomeEventCard bloodEclipse3
   , SomeEventCard wingingIt
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite
@@ -174,6 +175,7 @@ allEvents = mapFrom
   , SomeEventCard mindWipe3
   , SomeEventCard preposterousSketches2
   , SomeEventCard contraband2
+  , SomeEventCard bloodEclipse1
   , SomeEventCard cleanThemOut
   , SomeEventCard counterpunch
   , SomeEventCard getOverHere

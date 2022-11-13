@@ -187,6 +187,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , expeditionJournal
   , farsight4
   , feedTheMind
+  , feedTheMind3
   , fence1
   , fieldwork
   , fineClothes
@@ -214,6 +215,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grotesqueStatue4
   , grounded1
   , guardDog
+  , handcuffs
+  , handcuffs2
   , harlanEarnstone
   , hardKnocks
   , hardKnocks2
@@ -2367,6 +2370,20 @@ theCustodian =
     { cdCardTraits = setFromList [Ally, Yithian]
     }
 
+handcuffs :: CardDef
+handcuffs = (asset "04265" "Handcuffs" 2 Guardian)
+  { cdCardTraits = setFromList [Item, Police]
+  , cdSkills = [SkillAgility]
+  }
+
+feedTheMind3 :: CardDef
+feedTheMind3 = (asset "04267" "Feed the Mind" 2 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = singleton Spell
+  , cdUses = Uses Secret 3
+  , cdSlots = [ArcaneSlot]
+  }
+
 trackShoes :: CardDef
 trackShoes = (asset "05036" "Track Shoes" 3 Survivor)
   { cdCardTraits = setFromList [Item, Clothing, Footwear]
@@ -2422,6 +2439,13 @@ runicAxe = (asset "09022" "Runix Axe" 4 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Melee]
   , cdSkills = [SkillCombat]
   , cdSlots = [HandSlot, HandSlot]
+  }
+
+handcuffs2 :: CardDef
+handcuffs2 = fast $ (asset "09035" "Handcuffs" 1 Guardian)
+  { cdCardTraits = setFromList [Item, Police]
+  , cdSkills = [SkillCombat, SkillAgility]
+  , cdLevel = 2
   }
 
 physicalTraining2 :: CardDef

@@ -483,7 +483,7 @@ data WindowMatcher
   | MythosStep WindowMythosStepMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
-  | AssetDealtDamage Timing AssetMatcher
+  | AssetDealtDamage Timing SourceMatcher AssetMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher
   | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyDealtExcessDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
@@ -594,6 +594,7 @@ data SourceMatcher
   | SourceOwnedBy InvestigatorMatcher
   | SourceIsType CardType
   | AnySource
+  | SourceIsCancelable SourceMatcher
   | SourceMatches [SourceMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

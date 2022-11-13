@@ -53,6 +53,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorDoom :: Field Investigator Int
   InvestigatorClues :: Field Investigator Int
   InvestigatorHand :: Field Investigator [Card]
+  InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]
   InvestigatorDeck :: Field Investigator (Deck PlayerCard)
   InvestigatorDiscard :: Field Investigator [PlayerCard]

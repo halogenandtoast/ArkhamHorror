@@ -390,6 +390,11 @@ allAssets = mapFrom
   , SomeAssetCard onYourOwn3
   --- story [tcoa]
   , SomeAssetCard theCustodian
+  -- The Depths of Yoth
+  --- guardian [tdoy]
+  , SomeAssetCard handcuffs
+  --- seeker [tdoy]
+  , SomeAssetCard feedTheMind3
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes
@@ -414,6 +419,7 @@ allAssets = mapFrom
   -- The Scarlet Keys
   --- guardian [tsk]
   , SomeAssetCard runicAxe
+  , SomeAssetCard handcuffs2
   -- Return to Night of the Zealot
   --- guardian [rtnotz]
   , SomeAssetCard physicalTraining2

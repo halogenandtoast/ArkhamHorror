@@ -27,15 +27,18 @@ guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
-            (AssetDealtDamage Timing.When (AssetWithId (toId x)))
-            Free
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
+        (AssetDealtDamage
+          Timing.When
+          (SourceIsEnemyAttack AnyEnemy)
+          (AssetWithId (toId x))
+        )
+        Free
     ]
 
 toEnemyId :: [Window] -> EnemyId
 toEnemyId [] = error "invalid"
-toEnemyId (Window _ (Window.DealtDamage source  _ _) : ws) = case source of
+toEnemyId (Window _ (Window.DealtDamage source _ _) : ws) = case source of
   EnemySource eid -> eid
   EnemyAttackSource eid -> eid
   _ -> toEnemyId ws

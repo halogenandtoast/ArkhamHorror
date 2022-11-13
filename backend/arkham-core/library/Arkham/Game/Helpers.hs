@@ -43,7 +43,7 @@ import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
-import Arkham.Helpers.Investigator (baseSkillValueFor)
+import Arkham.Helpers.Investigator ( baseSkillValueFor )
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
@@ -409,7 +409,8 @@ getCanAffordCost iid source mAction windows' = \case
     notNull <$> select (matcher <> Matcher.AssetReady)
   UseCost assetMatcher uType n -> do
     assets <- selectList assetMatcher
-    uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+    uses <-
+      sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
     pure $ uses >= n
   DynamicUseCost assetMatcher uType useCost -> case useCost of
     DrawnCardsValue -> do
@@ -419,11 +420,13 @@ getCanAffordCost iid source mAction windows' = \case
           _ -> 0
         drawnCardsValue = sum $ map toDrawnCards windows'
       assets <- selectList assetMatcher
-      uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+      uses <-
+        sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
       pure $ uses >= drawnCardsValue
   UseCostUpTo assetMatcher uType n _ -> do
     assets <- selectList assetMatcher
-    uses <- sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+    uses <-
+      sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
     pure $ uses >= n
   ActionCost n -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
@@ -500,7 +503,10 @@ getCanAffordCost iid source mAction windows' = \case
       total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
     pure $ total >= n
   ShuffleDiscardCost n cardMatcher -> do
-    discards <- fieldMap InvestigatorDiscard (filter (`cardMatch` cardMatcher)) iid
+    discards <- fieldMap
+      InvestigatorDiscard
+      (filter (`cardMatch` cardMatcher))
+      iid
     pure $ length discards >= n
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
@@ -684,6 +690,7 @@ sourceToTarget = \case
   EnemyAttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
   CampaignSource -> CampaignTarget
+  ThisCard -> error "not converted"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -777,7 +784,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier _ val = val
-    modifiedCardCost <- getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
+    modifiedCardCost <-
+      getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
       (passesCriteria iid source windows')
@@ -909,6 +917,8 @@ passesCriteria iid source windows' = \case
   Criteria.SelfHasModifier modifier -> case source of
     InvestigatorSource iid' ->
       elem modifier <$> getModifiers (InvestigatorTarget iid')
+    EnemySource iid' ->
+      elem modifier <$> getModifiers (EnemyTarget iid')
     _ -> pure False
   Criteria.Here -> case source of
     LocationSource lid -> fieldP InvestigatorLocation (== Just lid) iid
@@ -1126,8 +1136,9 @@ passesCriteria iid source windows' = \case
     elem logKey <$> scenarioFieldMap ScenarioRemembered HashSet.toList
   Criteria.RememberedAtLeast value logKeys -> do
     n <-
-      length . filter (`elem` logKeys)
-        <$> scenarioFieldMap ScenarioRemembered HashSet.toList
+      length
+      . filter (`elem` logKeys)
+      <$> scenarioFieldMap ScenarioRemembered HashSet.toList
     gameValueMatches n (Matcher.AtLeast value)
   Criteria.AtLeastNCriteriaMet n criteria -> do
     m <- countM (passesCriteria iid source windows') criteria
@@ -1198,7 +1209,8 @@ getModifiedCardCost iid c@(EncounterCard _) = do
     pure $ if c `cardMatch` cardMatcher then n + m else n
   applyModifier n _ = pure n
 
-getPotentiallyModifiedCardCost :: (Monad m, HasGame m) => InvestigatorId -> Card -> Int -> m Int
+getPotentiallyModifiedCardCost
+  :: (Monad m, HasGame m) => InvestigatorId -> Card -> Int -> m Int
 getPotentiallyModifiedCardCost iid c@(PlayerCard _) startingCost = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
@@ -1511,7 +1523,12 @@ windowMatches iid source window' = \case
       Window t (Window.InitiatedSkillTest who maction skillType difficulty)
         | t == whenMatcher -> andM
           [ matchWho iid who whoMatcher
-          , skillTestValueMatches iid difficulty maction skillType skillValueMatcher
+          , skillTestValueMatches
+            iid
+            difficulty
+            maction
+            skillType
+            skillValueMatcher
           , pure $ skillTypeMatches skillType skillTypeMatcher
           ]
       _ -> pure False
@@ -1758,10 +1775,15 @@ windowMatches iid source window' = \case
           (matchWho iid who whoMatcher)
           (targetListMatches targets targetListMatcher)
       _ -> pure False
-  Matcher.AssetDealtDamage timingMatcher assetMatcher -> case window' of
-    Window t (Window.DealtDamage _ _ (AssetTarget aid)) | t == timingMatcher ->
-      member aid <$> select assetMatcher
-    _ -> pure False
+  Matcher.AssetDealtDamage timingMatcher sourceMatcher assetMatcher ->
+    case window' of
+      Window t (Window.DealtDamage source' _ (AssetTarget aid))
+        | t == timingMatcher
+        -> andM
+          [ member aid <$> select assetMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher
     -> case window' of
       Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid))
@@ -1813,13 +1835,13 @@ windowMatches iid source window' = \case
     Window t (Window.LastClueRemovedFromAsset aid) | whenMatcher == t ->
       member aid <$> select assetMatcher
     _ -> pure False
-  Matcher.DrawsCards whenMatcher whoMatcher valueMatcher ->
-    case window' of
-      Window t (Window.DrawCards who cards) | whenMatcher == t -> andM
+  Matcher.DrawsCards whenMatcher whoMatcher valueMatcher -> case window' of
+    Window t (Window.DrawCards who cards) | whenMatcher == t ->
+      andM
         [ matchWho iid who whoMatcher
         , gameValueMatches (length cards) valueMatcher
         ]
-      _ -> pure False
+    _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher deckMatcher ->
     case window' of
       Window t (Window.DrawCard who card deck) | whenMatcher == t -> andM
@@ -1893,10 +1915,16 @@ gameValueMatches n = \case
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
 skillTestValueMatches
-  :: (Monad m, HasGame m) => InvestigatorId -> Int -> Maybe Action -> SkillType -> Matcher.SkillTestValueMatcher -> m Bool
+  :: (Monad m, HasGame m)
+  => InvestigatorId
+  -> Int
+  -> Maybe Action
+  -> SkillType
+  -> Matcher.SkillTestValueMatcher
+  -> m Bool
 skillTestValueMatches iid n maction skillType = \case
   Matcher.AnySkillTestValue -> pure True
-  Matcher.SkillTestGameValue valueMatcher  -> gameValueMatches n valueMatcher
+  Matcher.SkillTestGameValue valueMatcher -> gameValueMatches n valueMatcher
   Matcher.GreaterThanBaseValue -> do
     baseSkill <- baseSkillValueFor skillType maction [] iid
     pure $ n > baseSkill
@@ -1995,12 +2023,16 @@ sourceTraits = \case
   EnemyMatcherSource _ -> pure mempty
   CampaignSource -> pure mempty
 
+  ThisCard -> error "must be converted"
+
 sourceMatches
   :: (HasCallStack, Monad m, HasGame m)
   => Source
   -> Matcher.SourceMatcher
   -> m Bool
 sourceMatches s = \case
+  Matcher.SourceIsCancelable sm ->
+    if s == ThisCard then pure False else sourceMatches s sm
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of

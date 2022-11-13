@@ -42,7 +42,7 @@ instance HasAbilities MarkHarrigan where
           (ReactionAbility
             (OrWindowMatcher
               [ DealtDamage Timing.When AnySource You
-              , AssetDealtDamage Timing.When (AssetControlledBy You)
+              , AssetDealtDamage Timing.When AnySource (AssetControlledBy You)
               ]
             )
             Free

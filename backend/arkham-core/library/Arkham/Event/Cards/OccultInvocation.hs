@@ -43,6 +43,7 @@ instance RunMessage OccultInvocation where
           SkillIntellect
           mempty
           False
+        , Discard (toTarget attrs)
         ]
       pure e
     _ -> OccultInvocation <$> runMessage msg attrs

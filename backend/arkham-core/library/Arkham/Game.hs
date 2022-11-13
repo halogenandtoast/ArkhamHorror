@@ -2125,6 +2125,7 @@ instance Projection Investigator where
         -- Include in hand treacheries
         ts <- selectListMapM (fmap toCard . getTreachery) (TreacheryInHandOf (InvestigatorWithId iid))
         pure $ investigatorHand <> ts
+      InvestigatorHandSize -> getHandSize (toAttrs i)
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck
       InvestigatorDiscard -> pure investigatorDiscard

@@ -105,6 +105,7 @@ data ModifierType
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
   | ActionDoesNotCauseAttacksOfOpportunity Action
+  | CannotReady
   | DoesNotReadyDuringUpkeep
   | CannotFight EnemyMatcher
   | CannotMove
@@ -129,6 +130,7 @@ data ModifierType
   | Difficulty Int
   | DiscoveredClues Int
   | DoNotRemoveDoom
+  | CannotPlaceDoomOnThis
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
   | DoomThresholdModifier Int

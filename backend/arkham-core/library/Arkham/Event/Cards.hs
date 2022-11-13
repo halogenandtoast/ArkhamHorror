@@ -17,6 +17,8 @@ import Arkham.Modifier ( ModifierType (..) )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.SkillType
+import Arkham.Source
+import Arkham.Strategy
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Trait
@@ -89,6 +91,8 @@ allPlayerEventCards = mapFromList $ concatMap
   , bindMonster2
   , blindingLight
   , blindingLight2
+  , bloodEclipse1
+  , bloodEclipse3
   , bloodRite
   , burningTheMidnightOil
   , buryThemDeep
@@ -726,7 +730,8 @@ iveHadWorse4 :: CardDef
 iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just (DealtDamageOrHorror Timing.When AnySource You)
+  , cdFastWindow = Just
+    (DealtDamageOrHorror Timing.When (SourceIsCancelable AnySource) You)
   , cdLevel = 4
   , cdAlternateCardCodes = ["01684"]
   }
@@ -988,7 +993,8 @@ devilsLuck :: CardDef
 devilsLuck = (event "03157" "Devil's Luck" 1 Survivor)
   { cdSkills = [SkillAgility]
   , cdCardTraits = singleton Fortune
-  , cdFastWindow = Just (DealtDamageOrHorror Timing.When AnySource You)
+  , cdFastWindow = Just
+    (DealtDamageOrHorror Timing.When (SourceIsCancelable AnySource) You)
   , cdLevel = 1
   }
 
@@ -1367,7 +1373,7 @@ perseverance = (event "04111" "Perseverance" 2 Survivor)
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ InvestigatorWouldBeDefeated
     Timing.When
-    AnySource
+    (SourceIsCancelable AnySource)
     (ByAnyOf [ByHorror, ByDamage])
     You
   }
@@ -1449,7 +1455,8 @@ payDay1 = (event "04233" "Pay Day" 0 Rogue)
 
 sacrifice1 :: CardDef
 sacrifice1 = (event "04234" "Sacrifice" 0 Mystic)
-  { cdCardTraits = singleton Ritual
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Ritual
   , cdCriteria =
     Just
     $ Criteria.AssetExists
@@ -1457,6 +1464,19 @@ sacrifice1 = (event "04234" "Sacrifice" 0 Mystic)
     <> AssetControlledBy You
     <> DiscardableAsset
   , cdLevel = 1
+  }
+
+bloodEclipse3 :: CardDef
+bloodEclipse3 = (event "04266" "Blood Eclipse" 1 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Spell, Spirit]
+  , cdActions = [Action.Fight]
+  , cdAdditionalCost = Just $ UpTo 3 $ InvestigatorDamageCost
+    ThisCard
+    You
+    DamageAny
+    1
+  , cdLevel = 3
   }
 
 wingingIt :: CardDef
@@ -1548,6 +1568,15 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
     (AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
+  }
+
+bloodEclipse1 :: CardDef
+bloodEclipse1 = (event "53001" "Blood Eclipse" 1 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Spell, Spirit]
+  , cdActions = [Action.Fight]
+  , cdAdditionalCost = Just $ InvestigatorDamageCost ThisCard You DamageAny 2
+  , cdLevel = 1
   }
 
 cleanThemOut :: CardDef

@@ -163,6 +163,7 @@ allEvents = mapFrom
   , SomeEventCard payDay1
   , SomeEventCard sacrifice1
   , SomeEventCard bloodEclipse3
+  , SomeEventCard coupDeGrace
   , SomeEventCard wingingIt
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite

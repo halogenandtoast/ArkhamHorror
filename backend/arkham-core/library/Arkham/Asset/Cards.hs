@@ -155,6 +155,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , chicagoTypewriter4
   , clarityOfMind
   , claspOfBlackOnyx
+  , coltVestPocket
+  , coltVestPocket2
   , cornered2
   , combatTraining1
   , crystallineElderSign3
@@ -2384,6 +2386,14 @@ feedTheMind3 = (asset "04267" "Feed the Mind" 2 Seeker)
   , cdSlots = [ArcaneSlot]
   }
 
+coltVestPocket :: CardDef
+coltVestPocket = (asset "04268" "Colt Vest Pocket" 2 Rogue)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdUses = Uses Ammo 5
+  , cdSlots = [HandSlot]
+  }
+
 trackShoes :: CardDef
 trackShoes = (asset "05036" "Track Shoes" 3 Survivor)
   { cdCardTraits = setFromList [Item, Clothing, Footwear]
@@ -2489,6 +2499,15 @@ rabbitsFoot3 = (asset "50010" "Rabbit's Foot" 1 Survivor)
   , cdCardTraits = setFromList [Item, Charm]
   , cdLevel = 3
   , cdSlots = [AccessorySlot]
+  }
+
+coltVestPocket2 :: CardDef
+coltVestPocket2 = (asset "53006" "Colt Vest Pocket" 2 Rogue)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdUses = Uses Ammo 5
+  , cdSlots = [HandSlot]
+  , cdLevel = 2
   }
 
 randallCho :: CardDef

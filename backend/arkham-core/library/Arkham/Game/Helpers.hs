@@ -70,6 +70,11 @@ import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )
 import Data.HashSet qualified as HashSet
 
+replaceThisCard :: Card -> Source -> Source
+replaceThisCard c = \case
+  ThisCard -> CardCostSource (toCardId c)
+  s -> s
+
 cancelToken :: Token -> GameT ()
 cancelToken token = withQueue $ \queue ->
   ( filter
@@ -691,6 +696,7 @@ sourceToTarget = \case
   StorySource code -> StoryTarget code
   CampaignSource -> CampaignTarget
   ThisCard -> error "not converted"
+  CardCostSource -> error "not converted"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -788,7 +794,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
-      (passesCriteria iid source windows')
+      (passesCriteria iid (replaceThisCard c source) windows')
       (cdCriteria pcDef)
     inFastWindow <- maybe
       (pure False)
@@ -2023,7 +2029,8 @@ sourceTraits = \case
   EnemyMatcherSource _ -> pure mempty
   CampaignSource -> pure mempty
 
-  ThisCard -> error "must be converted"
+  ThisCard -> error "can not get traits"
+  CardCostSource _ -> pure mempty
 
 sourceMatches
   :: (HasCallStack, Monad m, HasGame m)
@@ -2031,8 +2038,9 @@ sourceMatches
   -> Matcher.SourceMatcher
   -> m Bool
 sourceMatches s = \case
-  Matcher.SourceIsCancelable sm ->
-    if s == ThisCard then pure False else sourceMatches s sm
+  Matcher.SourceIsCancelable sm -> case s of
+    CardCostSource _ -> pure False
+    _ -> sourceMatches s sm
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of

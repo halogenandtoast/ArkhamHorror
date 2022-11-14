@@ -283,6 +283,8 @@ library
       Arkham.Asset.Cards.ChicagoTypewriter4
       Arkham.Asset.Cards.ClarityOfMind
       Arkham.Asset.Cards.ClaspOfBlackOnyx
+      Arkham.Asset.Cards.ColtVestPocket
+      Arkham.Asset.Cards.ColtVestPocket2
       Arkham.Asset.Cards.CombatTraining1
       Arkham.Asset.Cards.ConstanceDumaine
       Arkham.Asset.Cards.Cornered2
@@ -855,6 +857,7 @@ library
       Arkham.Event.Cards.Counterpunch
       Arkham.Event.Cards.Counterpunch2
       Arkham.Event.Cards.Counterspell2
+      Arkham.Event.Cards.CoupDeGrace
       Arkham.Event.Cards.CrypticResearch4
       Arkham.Event.Cards.CrypticWritings
       Arkham.Event.Cards.CrypticWritings2

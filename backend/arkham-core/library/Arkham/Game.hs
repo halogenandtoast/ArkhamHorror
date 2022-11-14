@@ -3278,18 +3278,19 @@ runGameMessage msg g = case msg of
     modifiers' <- getModifiers (CardIdTarget $ toCardId card)
     modifiers'' <- getModifiers (CardTarget card)
     investigator' <- getInvestigator iid
-    let allModifiers = modifiers' <> modifiers''
-    activeCost <- createActiveCostForCard iid card IsPlayAction windows'
     let
+      allModifiers = modifiers' <> modifiers''
       isFast = case card of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc)
             || BecomesFast
             `elem` allModifiers
         _ -> False
+      isPlayAction = if isFast then NotPlayAction else IsPlayAction
       actions = case cdActions (toCardDef card) of
-        [] -> [Action.Play]
+        [] -> [Action.Play | not isFast]
         as -> as
+    activeCost <- createActiveCostForCard iid card isPlayAction windows'
 
     actionCost <- if isFast
       then pure Cost.Free

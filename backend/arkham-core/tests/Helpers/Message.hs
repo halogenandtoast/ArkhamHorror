@@ -30,7 +30,7 @@ moveFrom :: Investigator -> Location -> Message
 moveFrom i l = MoveFrom (toSource i) (toId i) (toId l)
 
 moveAllTo :: Location -> Message
-moveAllTo = MoveAllTo GameSource . toId
+moveAllTo = MoveAllTo (TestSource mempty) . toId
 
 enemySpawn :: Location -> Enemy -> Message
 enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)

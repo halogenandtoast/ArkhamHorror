@@ -1987,14 +1987,13 @@ instance Projection Asset where
       AssetPlacement -> pure assetPlacement
       AssetUses -> pure assetUses
       AssetStartingUses -> pure . cdUses $ toCardDef attrs
-      AssetController -> case assetPlacement of
-        InPlayArea iid -> pure $ Just iid
-        InThreatArea iid -> pure $ Just iid
-        _ -> do
-          modifiers' <- getModifiers (AssetTarget aid)
-          pure $ asum $ flip map modifiers' $ \case
+      AssetController -> do
+        modifiers' <- getModifiers (AssetTarget aid)
+        let
+          mcontroller = asum $ flip map modifiers' $ \case
             AsIfUnderControlOf iid -> Just iid
             _ -> Nothing
+        pure $ mcontroller <|> assetController
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid
         AttachedToLocation lid -> pure $ Just lid

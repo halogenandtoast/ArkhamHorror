@@ -26,6 +26,7 @@ import Arkham.Location.Helpers
 import Arkham.Matcher
   ( InvestigatorMatcher (..), LocationMatcher (..), locationWithEnemy )
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -154,6 +155,12 @@ instance RunMessage LocationAttrs where
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
+    PlaceAsset aid placement -> case placement of
+      AttachedToLocation lid | lid == locationId ->
+        pure $ a & assetsL %~ insertSet aid
+      AtLocation lid | lid == locationId ->
+        pure $ a & assetsL %~ insertSet aid
+      _ -> pure $ a & assetsL %~ deleteSet aid
     SetConnections lid connections | lid == locationId -> do
       pure
         $ a
@@ -348,10 +355,15 @@ locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
 getModifiedShroudValueFor :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure $ foldr applyModifier (locationShroud attrs) modifiers'
+  pure $ foldr
+    applyPostModifier
+    (foldr applyModifier (locationShroud attrs) modifiers')
+    modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
+  applyPostModifier (SetShroud m) _ = m
+  applyPostModifier _ n = n
 
 getInvestigateAllowed :: InvestigatorId -> LocationAttrs -> GameT Bool
 getInvestigateAllowed _iid attrs = do

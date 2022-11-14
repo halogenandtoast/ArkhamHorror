@@ -397,6 +397,7 @@ allAssets = mapFrom
   , SomeAssetCard feedTheMind3
   --- rogue [tdoy]
   , SomeAssetCard coltVestPocket
+  , SomeAssetCard theSkeletonKey2
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

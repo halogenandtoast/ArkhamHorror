@@ -175,6 +175,7 @@ data ModifierType
   | SanityModifier Int
   | SetDifficulty Int
   | ShroudModifier Int
+  | SetShroud Int
   | SkillModifier { skillType :: SkillType, value ::  Int }
   | AddSkillValue SkillType
   | SkillCannotBeIncreased SkillType

@@ -395,6 +395,8 @@ allAssets = mapFrom
   , SomeAssetCard handcuffs
   --- seeker [tdoy]
   , SomeAssetCard feedTheMind3
+  --- rogue [tdoy]
+  , SomeAssetCard coltVestPocket
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes
@@ -432,6 +434,9 @@ allAssets = mapFrom
   --- survivor [rtnotz]
   , SomeAssetCard digDeep2
   , SomeAssetCard rabbitsFoot3
+  -- Return to the Forgotten Age
+  --- rogue [rttfa]
+  , SomeAssetCard coltVestPocket2
   -- Investigator Starter Decks
   --- Nathaniel Cho
   , SomeAssetCard randallCho

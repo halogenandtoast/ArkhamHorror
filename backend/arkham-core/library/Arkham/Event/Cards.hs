@@ -103,6 +103,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , closeCall2
   , contraband
   , contraband2
+  , coupDeGrace
   , counterpunch
   , counterpunch2
   , counterspell2
@@ -1477,6 +1478,15 @@ bloodEclipse3 = (event "04266" "Blood Eclipse" 1 Guardian)
     DamageAny
     1
   , cdLevel = 3
+  }
+
+coupDeGrace :: CardDef
+coupDeGrace = (event "04269" "Coup de Grâce" 2 Rogue)
+  { cdSkills = [SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Tactic, Fated]
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ EnemyAt
+    YourLocation <> EnemyCanBeDamagedBySource ThisCard
   }
 
 wingingIt :: CardDef

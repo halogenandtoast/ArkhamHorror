@@ -161,6 +161,7 @@ data AssetAttrs = AssetAttrs
   , assetOriginalCardCode :: CardCode
   , assetPlacement :: Placement
   , assetOwner :: Maybe InvestigatorId
+  , assetController :: Maybe InvestigatorId
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
@@ -225,6 +226,9 @@ damageL = lens assetDamage $ \m x -> m { assetDamage = x }
 
 ownerL :: Lens' AssetAttrs (Maybe InvestigatorId)
 ownerL = lens assetOwner $ \m x -> m { assetOwner = x }
+
+controllerL :: Lens' AssetAttrs (Maybe InvestigatorId)
+controllerL = lens assetController $ \m x -> m { assetController = x }
 
 exhaustedL :: Lens' AssetAttrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
@@ -295,6 +299,7 @@ assetWith f cardDef g = CardBuilder
     , assetCardCode = toCardCode cardDef
     , assetOriginalCardCode = toCardCode cardDef
     , assetOwner = mOwner
+    , assetController = mOwner
     , assetPlacement = Unplaced
     , assetSlots = cdSlots cardDef
     , assetHealth = Nothing
@@ -356,11 +361,4 @@ getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
 getOwner = fromJustNote "asset must be owned" . view ownerL
 
 getController :: HasCallStack => AssetAttrs -> InvestigatorId
-getController attrs = case assetPlacement attrs of
-  InPlayArea iid -> iid
-  _ -> error "asset must be controlled"
-
-assetController :: AssetAttrs -> Maybe InvestigatorId
-assetController attrs = case assetPlacement attrs of
-  InPlayArea iid -> Just iid
-  _ -> Nothing
+getController = fromJustNote "asset must be controlled" . view controllerL

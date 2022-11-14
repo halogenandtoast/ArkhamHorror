@@ -366,6 +366,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , theNecronomiconPetrusDeDaciaTranslation5
   , thePallidMask
   , theRedGlovedMan5
+  , theSkeletonKey2
   , theTatteredCloak
   , thirtyTwoColt
   , toothOfEztli
@@ -2392,6 +2393,14 @@ coltVestPocket = (asset "04268" "Colt Vest Pocket" 2 Rogue)
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdUses = Uses Ammo 5
   , cdSlots = [HandSlot]
+  }
+
+theSkeletonKey2 :: CardDef
+theSkeletonKey2 = fast $ (asset "04270" "The Skeleton Key" 3 Rogue)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = setFromList [Item, Relic, Cursed]
+  , cdUnique = True
+  , cdKeywords = setFromList [Keyword.Exceptional]
   }
 
 trackShoes :: CardDef

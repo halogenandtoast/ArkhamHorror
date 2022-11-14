@@ -52,6 +52,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( AssetDamage, InvestigatorDamage, PaidCost )
 import Arkham.Name
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Scenario.Types ( Field (..) )
@@ -696,7 +697,7 @@ sourceToTarget = \case
   StorySource code -> StoryTarget code
   CampaignSource -> CampaignTarget
   ThisCard -> error "not converted"
-  CardCostSource -> error "not converted"
+  CardCostSource _ -> error "not converted"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -866,6 +867,26 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
+onSameLocation :: (HasGame m, Monad m) => InvestigatorId -> Placement -> m Bool
+onSameLocation iid = \case
+  AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
+  AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
+  InPlayArea iid' -> if iid == iid' then pure True else
+    liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
+  InThreatArea iid' -> if iid == iid' then pure True else
+    liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
+  AttachedToEnemy eid -> 
+    liftA2 (==) (field EnemyLocation eid) (field InvestigatorLocation iid)
+  AttachedToAsset aid _ -> do
+    placement' <- field AssetPlacement aid
+    onSameLocation iid placement'
+  AttachedToAct _ -> pure False
+  AttachedToAgenda _ -> pure False
+  AttachedToInvestigator iid' ->
+    liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
+  Unplaced -> pure False
+  TheVoid -> pure False
+
 passesCriteria
   :: (HasCallStack, Monad m, HasGame m)
   => InvestigatorId
@@ -977,8 +998,9 @@ passesCriteria iid source windows' = \case
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
-    AssetSource aid ->
-      liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
+    AssetSource aid -> do
+      placement <- field AssetPlacement aid
+      onSameLocation iid placement
     EnemySource eid -> liftA2
       (==)
       (selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid)

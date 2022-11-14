@@ -45,6 +45,7 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -394,6 +395,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
+  PlaceAsset aid placement | aid `member` investigatorAssets ->
+    case placement of
+      InPlayArea iid | iid == investigatorId -> pure a
+      _ -> pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
+  PlaceAsset aid placement | aid `notMember` investigatorAssets -> do
+    case placement of
+      InPlayArea iid | iid == investigatorId -> push $ InvestigatorPlayAsset iid aid
+      _ -> pure ()
+    pure a
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ insertSet tid
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do

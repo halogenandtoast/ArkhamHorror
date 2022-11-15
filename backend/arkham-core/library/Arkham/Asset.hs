@@ -398,6 +398,12 @@ allAssets = mapFrom
   --- rogue [tdoy]
   , SomeAssetCard coltVestPocket
   , SomeAssetCard theSkeletonKey2
+  --- mystic [tdoy]
+  , SomeAssetCard mistsOfRlyeh4
+  --- survivor [tdoy]
+  , SomeAssetCard oldHuntingRifle3
+  --- neutral [tdoy]
+  , SomeAssetCard thermos
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -420,6 +420,8 @@ library
       Arkham.Asset.Cards.MedicoDellaPeste
       Arkham.Asset.Cards.MiskatonicArchaeologyFunding4
       Arkham.Asset.Cards.MistsOfRlyeh
+      Arkham.Asset.Cards.MistsOfRlyeh2
+      Arkham.Asset.Cards.MistsOfRlyeh4
       Arkham.Asset.Cards.MitchBrown
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.Moxie1
@@ -429,6 +431,7 @@ library
       Arkham.Asset.Cards.Newspaper2
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OldBookOfLore
+      Arkham.Asset.Cards.OldHuntingRifle3
       Arkham.Asset.Cards.OldKeyring
       Arkham.Asset.Cards.OliveMcBride
       Arkham.Asset.Cards.OnYourOwn3
@@ -512,6 +515,7 @@ library
       Arkham.Asset.Cards.TheNecronomiconPetrusDeDaciaTranslation5
       Arkham.Asset.Cards.ThePallidMask
       Arkham.Asset.Cards.TheRedGlovedMan5
+      Arkham.Asset.Cards.Thermos
       Arkham.Asset.Cards.TheSkeletonKey2
       Arkham.Asset.Cards.TheTatteredCloak
       Arkham.Asset.Cards.ThirtyTwoColt

@@ -10,6 +10,11 @@ class SourceEntity a where
   isSource :: a -> Source -> Bool
   isSource = (==) . toSource
 
+isSkillTestSource :: SourceEntity a => a -> Source -> Bool
+isSkillTestSource a = \case
+  SkillTestSource _ _ source _ -> a `isSource` source
+  _ -> False
+
 instance SourceEntity Source where
   toSource = id
   isSource = (==)

@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.MistsOfRlyeh
-  ( mistsOfRlyeh
-  , MistsOfRlyeh(..)
-  , mistsOfRlyehEffect
-  , MistsOfRlyehEffect(..)
+module Arkham.Asset.Cards.MistsOfRlyeh2
+  ( mistsOfRlyeh2
+  , MistsOfRlyeh2(..)
+  , mistsOfRlyeh2Effect
+  , MistsOfRlyeh2Effect(..)
   ) where
 
 import Arkham.Prelude
@@ -23,42 +23,46 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Token
 
-newtype MistsOfRlyeh = MistsOfRlyeh AssetAttrs
+newtype MistsOfRlyeh2 = MistsOfRlyeh2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mistsOfRlyeh :: AssetCard MistsOfRlyeh
-mistsOfRlyeh = asset MistsOfRlyeh Cards.mistsOfRlyeh
+mistsOfRlyeh2 :: AssetCard MistsOfRlyeh2
+mistsOfRlyeh2 = asset MistsOfRlyeh2 Cards.mistsOfRlyeh2
 
-instance HasAbilities MistsOfRlyeh where
-  getAbilities (MistsOfRlyeh a) =
+instance HasAbilities MistsOfRlyeh2 where
+  getAbilities (MistsOfRlyeh2 a) =
     [ restrictedAbility a 1 ControlsThis $ ActionAbility
         (Just Action.Evade)
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
-instance RunMessage MistsOfRlyeh where
-  runMessage msg a@(MistsOfRlyeh attrs) = case msg of
+instance RunMessage MistsOfRlyeh2 where
+  runMessage msg a@(MistsOfRlyeh2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ pushAll
         [ createCardEffect
-          Cards.mistsOfRlyeh
+          Cards.mistsOfRlyeh2
           Nothing
           source
           (InvestigatorTarget iid)
+        , skillTestModifier
+          source
+          (InvestigatorTarget iid)
+          (SkillModifier SkillWillpower 1)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
-    _ -> MistsOfRlyeh <$> runMessage msg attrs
+    _ -> MistsOfRlyeh2 <$> runMessage msg attrs
 
-newtype MistsOfRlyehEffect = MistsOfRlyehEffect EffectAttrs
+newtype MistsOfRlyeh2Effect = MistsOfRlyeh2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mistsOfRlyehEffect :: EffectArgs -> MistsOfRlyehEffect
-mistsOfRlyehEffect = cardEffect MistsOfRlyehEffect Cards.mistsOfRlyeh
+mistsOfRlyeh2Effect :: EffectArgs -> MistsOfRlyeh2Effect
+mistsOfRlyeh2Effect = cardEffect MistsOfRlyeh2Effect Cards.mistsOfRlyeh2
 
-instance RunMessage MistsOfRlyehEffect where
-  runMessage msg e@(MistsOfRlyehEffect attrs@EffectAttrs {..}) = case msg of
+instance RunMessage MistsOfRlyeh2Effect where
+  runMessage msg e@(MistsOfRlyeh2Effect attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
       InvestigatorTarget iid' | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
@@ -83,4 +87,4 @@ instance RunMessage MistsOfRlyehEffect where
             _ -> push (DisableEffect effectId)
         _ -> error "Invalid Target"
       pure e
-    _ -> MistsOfRlyehEffect <$> runMessage msg attrs
+    _ -> MistsOfRlyeh2Effect <$> runMessage msg attrs

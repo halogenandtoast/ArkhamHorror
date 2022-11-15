@@ -279,6 +279,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , medicalTexts
   , miskatonicArchaeologyFunding4
   , mistsOfRlyeh
+  , mistsOfRlyeh2
+  , mistsOfRlyeh4
   , mitchBrown
   , monstrousTransformation
   , moxie1
@@ -287,6 +289,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , newspaper2
   , occultLexicon
   , oldBookOfLore
+  , oldHuntingRifle3
   , oldKeyring
   , oliveMcBride
   , onYourOwn3
@@ -368,6 +371,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , theRedGlovedMan5
   , theSkeletonKey2
   , theTatteredCloak
+  , thermos
   , thirtyTwoColt
   , toothOfEztli
   , trackShoes
@@ -1965,7 +1969,7 @@ thePallidMask =
     }
 
 mitchBrown :: CardDef
-mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Surviror") 3 Neutral)
+mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Survivor") 3 Neutral)
   { cdSkills = [SkillWild, SkillWild]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
@@ -2403,6 +2407,31 @@ theSkeletonKey2 = fast $ (asset "04270" "The Skeleton Key" 3 Rogue)
   , cdKeywords = setFromList [Keyword.Exceptional]
   }
 
+mistsOfRlyeh4 :: CardDef
+mistsOfRlyeh4 = (asset "04271" "Mists of R'lyeh" 2 Mystic)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = Uses Charge 5
+  , cdLevel = 4
+  }
+
+oldHuntingRifle3 :: CardDef
+oldHuntingRifle3 = (asset "04273" "Old Hunting Rifle" 3 Survivor)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 3
+  , cdLevel = 3
+  }
+
+thermos :: CardDef
+thermos = (asset "04274" "Thermos" 4 Neutral)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Item
+  , cdUses = Uses Supply 3
+  }
+
 trackShoes :: CardDef
 trackShoes = (asset "05036" "Track Shoes" 3 Survivor)
   { cdCardTraits = setFromList [Item, Clothing, Footwear]
@@ -2516,6 +2545,15 @@ coltVestPocket2 = (asset "53006" "Colt Vest Pocket" 2 Rogue)
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdUses = Uses Ammo 5
   , cdSlots = [HandSlot]
+  , cdLevel = 2
+  }
+
+mistsOfRlyeh2 :: CardDef
+mistsOfRlyeh2 = (asset "04271" "Mists of R'lyeh" 2 Mystic)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = Uses Charge 5
   , cdLevel = 2
   }
 

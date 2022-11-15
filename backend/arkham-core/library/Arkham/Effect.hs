@@ -22,13 +22,21 @@ import Arkham.Window ( Window )
 -- start importing directly
 import Arkham.Agenda.Agendas ( lostMemoriesEffect )
 import Arkham.Asset.Assets
-  ( fence1Effect, highRoller2Effect, miskatonicArchaeologyFunding4Effect, mistsOfRlyehEffect, yaotl1Effect, libraryDocent1Effect )
+  ( fence1Effect
+  , highRoller2Effect
+  , libraryDocent1Effect
+  , miskatonicArchaeologyFunding4Effect
+  , mistsOfRlyeh4Effect
+  , mistsOfRlyeh2Effect
+  , mistsOfRlyehEffect
+  , yaotl1Effect
+  )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect )
 import Arkham.Event.Events
   ( exposeWeakness3Effect
   , marksmanship1Effect
-  , mindOverMatterEffect
   , mindOverMatter2Effect
+  , mindOverMatterEffect
   , onTheLamEffect
   , oneTwoPunch5Effect
   , oneTwoPunchEffect
@@ -188,10 +196,12 @@ allEffects = mapFromList
   , ("04195", SomeEffect exposeWeakness3Effect)
   , ("04232", SomeEffect slipAwayEffect)
   , ("04239", SomeEffect lostMemoriesEffect)
+  , ("04271", SomeEffect mistsOfRlyeh4Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)
   , ("50044", SomeEffect jeremiahPierce)
+  , ("52007", SomeEffect mistsOfRlyeh2Effect)
   , ("60101", SomeEffect nathanielCho)
   , ("60103", SomeEffect tommyMalloy)
   , ("60117", SomeEffect oneTwoPunchEffect)

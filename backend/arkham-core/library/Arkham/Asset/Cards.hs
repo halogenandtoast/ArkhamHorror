@@ -374,6 +374,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , theTatteredCloak
   , thermos
   , thirtyTwoColt
+  , timewornBrand5
   , toothOfEztli
   , trackShoes
   , treasureHunter1
@@ -2439,6 +2440,14 @@ hemisphericMap2 = (asset "04275" "Hemispheric Map" 2 Neutral)
   , cdCardTraits = setFromList [Item, Relic]
   , cdSlots = [AccessorySlot]
   , cdLevel = 2
+  }
+
+timewornBrand5 :: CardDef
+timewornBrand5 = (asset "04276" "Timeworn Brand" 5 Neutral)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+  , cdSlots = [HandSlot]
+  , cdLevel = 5
   }
 
 trackShoes :: CardDef

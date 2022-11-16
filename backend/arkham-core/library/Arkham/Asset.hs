@@ -405,6 +405,7 @@ allAssets = mapFrom
   --- neutral [tdoy]
   , SomeAssetCard thermos
   , SomeAssetCard hemisphericMap2
+  , SomeAssetCard timewornBrand5
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -5,7 +5,7 @@ import Data.Aeson.Types
 import Data.Text qualified as T
 
 newtype CardCode = CardCode { unCardCode :: Text }
-  deriving newtype (Show, Hashable, IsString)
+  deriving newtype (Show, Ord, Hashable, IsString)
 
 instance Eq CardCode where
   (CardCode a) == (CardCode b) =

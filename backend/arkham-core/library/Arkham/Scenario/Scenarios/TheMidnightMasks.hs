@@ -63,7 +63,7 @@ instance RunMessage TheMidnightMasks where
     Setup -> do
       count' <- getPlayerCount
       investigatorIds <- getInvestigatorIds
-      (acolytes, darkCult) <- splitAt (count' - 1)
+      (acolytes, darkCult) <- splitAt (count' - 1) . sortOn toCardCode
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
 

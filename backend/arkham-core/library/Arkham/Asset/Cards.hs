@@ -223,6 +223,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , hardKnocks
   , hardKnocks2
   , heirloomOfHyperborea
+  , hemisphericMap2
   , henryDeveau
   , highRoller2
   , higherEducation
@@ -2430,6 +2431,14 @@ thermos = (asset "04274" "Thermos" 4 Neutral)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = singleton Item
   , cdUses = Uses Supply 3
+  }
+
+hemisphericMap2 :: CardDef
+hemisphericMap2 = (asset "04275" "Hemispheric Map" 2 Neutral)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdSlots = [AccessorySlot]
+  , cdLevel = 2
   }
 
 trackShoes :: CardDef

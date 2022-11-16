@@ -404,6 +404,7 @@ allAssets = mapFrom
   , SomeAssetCard oldHuntingRifle3
   --- neutral [tdoy]
   , SomeAssetCard thermos
+  , SomeAssetCard hemisphericMap2
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -42,8 +42,9 @@ data CreateDeckPost = CreateDeckPost
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
-newtype UpgradeDeckPost = UpgradeDeckPost
-  { udpDeckUrl :: Maybe Text
+data UpgradeDeckPost = UpgradeDeckPost
+  { udpInvestigatorId :: InvestigatorId
+  , udpDeckUrl :: Maybe Text
   }
   deriving stock (Show, Generic)
 
@@ -78,14 +79,12 @@ postApiV1ArkhamDecksR = do
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
-  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404
-    (UniquePlayer userId gameId)
   postData <- requireCheckJsonBody
   let
     Game {..} = arkhamGameCurrentData
-    investigatorId = coerce arkhamPlayerInvestigatorId
+    investigatorId = udpInvestigatorId postData
   msg <- case udpDeckUrl postData of
     Nothing -> pure $ Run []
     Just deckUrl -> do

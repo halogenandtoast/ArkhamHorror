@@ -180,6 +180,7 @@ data Trait
   | Witch
   | Woods
   | Yithian
+  | Yoth
   deriving stock (Show, Eq, Generic, Read)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

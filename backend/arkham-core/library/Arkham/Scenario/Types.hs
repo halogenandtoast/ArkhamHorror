@@ -45,6 +45,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioChaosBag :: Field Scenario ChaosBag
   ScenarioSetAsideCards :: Field Scenario [Card]
   ScenarioName :: Field Scenario Name
+  ScenarioMeta :: Field Scenario Value
   ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
 
 deriving stock instance Show (Field Scenario typ)
@@ -74,6 +75,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDiscard :: [EncounterCard]
   , scenarioResignedCardCodes :: [CardCode]
   , scenarioDecksLayout :: [GridTemplateRow]
+  , scenarioMeta :: Value
   -- for standalone
   , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
   }
@@ -128,6 +130,7 @@ scenario f cardCode name difficulty layout = f $ ScenarioAttrs
   , scenarioDiscard = mempty
   , scenarioResignedCardCodes = mempty
   , scenarioDecksLayout = ["agenda1 act1"]
+  , scenarioMeta = Null
   , scenarioStoryCards = mempty
   }
 
@@ -156,6 +159,9 @@ nameL = lens scenarioName $ \m x -> m { scenarioName = x }
 
 idL :: Lens' ScenarioAttrs ScenarioId
 idL = lens scenarioId $ \m x -> m { scenarioId = x }
+
+metaL :: Lens' ScenarioAttrs Value
+metaL = lens scenarioMeta $ \m x -> m { scenarioMeta = x }
 
 difficultyL :: Lens' ScenarioAttrs Difficulty
 difficultyL = lens scenarioDifficulty $ \m x -> m { scenarioDifficulty = x }

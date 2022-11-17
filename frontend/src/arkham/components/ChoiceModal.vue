@@ -44,6 +44,10 @@ const amountsLabel = computed(() => {
     return question.label
   }
 
+  if (question?.tag === QuestionType.QUESTION_LABEL && question?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
+    return question.question.label
+  }
+
   return null
 })
 
@@ -56,6 +60,8 @@ const amountsChoices = computed(() => {
     return question.value.paymentAmountChoices
   } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.value.amountChoices
+  } else if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question.tag === QuestionType.CHOOSE_AMOUNTS) {
+    return question.value.question.amountChoices
   }
 
   return null
@@ -102,6 +108,30 @@ const unmetAmountRequirements = computed(() => {
       case 'TotalAmountTarget':
         {
           const requiredTotal = question.value.amountTargetValue.contents
+          if (requiredTotal) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return total !== requiredTotal
+          }
+          break
+        }
+    }
+
+    return false
+  } else if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question.tag === QuestionType.CHOOSE_AMOUNTS) {
+    const actual = question.value.question
+    switch(actual.amountTargetValue.tag) {
+      case 'MaxAmountTarget':
+        {
+          const maxBound = actual.amountTargetValue.contents
+          if (maxBound) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return total > maxBound
+          }
+          break
+        }
+      case 'TotalAmountTarget':
+        {
+          const requiredTotal = actual.amountTargetValue.contents
           if (requiredTotal) {
             const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
             return total !== requiredTotal

@@ -106,6 +106,11 @@ data AbilityRef = AbilityRef Source Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+getChoiceAmount :: Text -> [(Text, Int)] -> Int
+getChoiceAmount key choices =
+ let choicesMap = mapFromList @(HashMap Text Int) choices
+ in findWithDefault 0 key choicesMap
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability
@@ -452,6 +457,7 @@ data Message
   | PlaceHorror Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId
+  | PlaceEnemy EnemyId Placement
   | PlaceLocation Card
   | PlaceLocationMatching CardMatcher
   | PlaceResources Target Int

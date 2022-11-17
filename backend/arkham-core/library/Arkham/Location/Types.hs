@@ -7,7 +7,6 @@ module Arkham.Location.Types
 
 import Arkham.Prelude
 
-import Data.Constraint
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
@@ -31,6 +30,8 @@ import Arkham.Name
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait ( Trait )
+import Data.Constraint
+import Data.Text qualified as T
 import Data.Typeable
 
 class
@@ -96,7 +97,8 @@ instance FromJSON (SomeField Location) where
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationName" -> pure $ SomeField LocationName
     "LocationConnectedMatchers" -> pure $ SomeField LocationConnectedMatchers
-    "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
+    "LocationRevealedConnectedMatchers" ->
+      pure $ SomeField LocationRevealedConnectedMatchers
     "LocationRevealed" -> pure $ SomeField LocationRevealed
     "LocationConnectsTo" -> pure $ SomeField LocationConnectsTo
     "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
@@ -257,6 +259,15 @@ location
   -> GameValue
   -> CardBuilder LocationId a
 location f def shroud' revealClues = locationWith f def shroud' revealClues id
+
+symbolLabel
+  :: (Entity a, EntityAttrs a ~ LocationAttrs)
+  => CardBuilder LocationId a
+  -> CardBuilder LocationId a
+symbolLabel = fmap
+  (overAttrs
+    (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs))
+  )
 
 locationWith
   :: (LocationAttrs -> a)

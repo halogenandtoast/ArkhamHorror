@@ -886,6 +886,7 @@ onSameLocation iid = \case
     liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
   Unplaced -> pure False
   TheVoid -> pure False
+  Pursuit -> pure False
 
 passesCriteria
   :: (HasCallStack, Monad m, HasGame m)

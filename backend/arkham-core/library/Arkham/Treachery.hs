@@ -264,6 +264,11 @@ allTreacheries = mapFrom
   , SomeTreacheryCard lostHumanity
   , SomeTreacheryCard captiveMind
   , SomeTreacheryCard outOfBodyExperience
+  -- The Depths of Yoth
+  , SomeTreacheryCard childrenOfValusia
+  , SomeTreacheryCard lightlessShadow
+  , SomeTreacheryCard bathophobia
+  , SomeTreacheryCard serpentsIre
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

@@ -104,6 +104,7 @@ allActCards = mapFromList $ map
   , intoTheRuins
   , inLostCarcosa
   , investigatingTheTrail
+  , journeyToTheNexus
   , leadingTheWay
   , magicAndScience
   , missingPersons
@@ -494,6 +495,9 @@ restrictedAccess = act "04242" "Restricted Access" 2 TheCityOfArchives
 
 repossession :: CardDef
 repossession = act "04243" "Repossession" 3 TheCityOfArchives
+
+journeyToTheNexus :: CardDef
+journeyToTheNexus = act "04285" "Journey to the Nexus" 1 TheDepthsOfYoth
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

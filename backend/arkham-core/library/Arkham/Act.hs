@@ -163,6 +163,8 @@ allActs = mapFrom
   , SomeActCard exploringPnakotus
   , SomeActCard restrictedAccess
   , SomeActCard repossession
+  -- The Depths of Yoth
+  , SomeActCard journeyToTheNexus
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

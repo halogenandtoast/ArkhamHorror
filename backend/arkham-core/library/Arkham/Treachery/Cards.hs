@@ -145,12 +145,14 @@ allEncounterTreacheryCards = mapFromList $ map
   , arousingSuspicions
   , arrowsFromTheTrees
   , attractingAttention
+  , bathophobia
   , beastOfTheBayou
   , beyondTheVeil
   , blackStarsRise
   , brokenRails
   , captiveMind
   , chaosInTheWater
+  , childrenOfValusia
   , chillFromBelow
   , clawsOfSteam
   , collapsingReality
@@ -189,6 +191,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , insatiableBloodlust
   , kidnapped
   , ledAstray
+  , lightlessShadow
   , lightOfAforgomon
   , lockedDoor
   , lostHumanity
@@ -225,6 +228,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , rottingRemainsBloodOnTheAltar
   , ruinAndDestruction
   , serpentsCall
+  , serpentsIre
   , shadowSpawned
   , shadowed
   , slitheringBehindYou
@@ -1134,6 +1138,26 @@ outOfBodyExperience = (weakness "04264" "Out of Body Experience")
   { cdCardTraits = setFromList [Madness, Paradox]
   , cdEncounterSet = Just TheCityOfArchives
   , cdEncounterSetQuantity = Just 4
+  }
+
+childrenOfValusia :: CardDef
+childrenOfValusia = (treachery "04299" "Children of Valusia" TheDepthsOfYoth 3)
+  { cdCardTraits = singleton Scheme
+  }
+
+lightlessShadow :: CardDef
+lightlessShadow = (treachery "04300" "Lightless Shadow" TheDepthsOfYoth 3)
+  { cdCardTraits = singleton Terror
+  }
+
+bathophobia :: CardDef
+bathophobia = (treachery "04301" "Bathophobia" TheDepthsOfYoth 3)
+  { cdCardTraits = singleton Terror
+  }
+
+serpentsIre :: CardDef
+serpentsIre = (treachery "04302" "Serpent's Ire" TheDepthsOfYoth 2)
+  { cdCardTraits = singleton Scheme
   }
 
 theHarbinger :: CardDef

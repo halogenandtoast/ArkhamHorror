@@ -69,18 +69,22 @@ allAgendaCards = mapFromList $ map
   , callingForthTheOldOnes
   , chaosAtTheCarnevale
   , chaosInTheCloverClub
+  , cityOfBlood
   , cityOfTheGreatRace
   , deadOfNight
   , drawnIn
   , empireOfTheDead
   , empireOfTheUndead
   , encore
+  , endlessCaverns
   , expeditionIntoTheWild
   , eyesInTheDark
   , fashionablyLate
   , feedTheBeast
+  , furyThatShakesTheEarth
   , hiddenEntanglements
   , hisDomain
+  , horrificDescent
   , horrorsUnleashed
   , humanityFading
   , intruders
@@ -115,6 +119,7 @@ allAgendaCards = mapFromList $ map
   , theCityFloods
   , theCloverClub
   , theCurseSpreads
+  , theDescentBegins
   , theEndOfAllThings
   , theEntityAboveTheFloodBelow
   , theEntityAboveTheVortexAbove
@@ -124,6 +129,7 @@ allAgendaCards = mapFromList $ map
   , theLonelyCaverns
   , theMawWidens
   , theOldOnesHunger
+  , theRedDepths
   , theRitualBegins
   , theRitualBeginsBlackStarsRise
   , theRougarouFeeds
@@ -141,6 +147,7 @@ allAgendaCards = mapFromList $ map
   , timeIsRunningShort
   , torturousDescent
   , undergroundMuscle
+  , vengeance
   , vengeanceAwaits
   , whatsGoingOn
   ]
@@ -382,6 +389,27 @@ lostMemories = agenda "04239" "Lost Memories" 2 TheCityOfArchives
 
 humanityFading :: CardDef
 humanityFading = agenda "04240" "Humanity Fading" 3 TheCityOfArchives
+
+theDescentBegins :: CardDef
+theDescentBegins = agenda "04278" "The Descent Begins" 1 TheDepthsOfYoth
+
+horrificDescent :: CardDef
+horrificDescent = agenda "04279" "Horrific Descent" 2 TheDepthsOfYoth
+
+endlessCaverns :: CardDef
+endlessCaverns = agenda "04280" "Endless Caverns" 3 TheDepthsOfYoth
+
+cityOfBlood :: CardDef
+cityOfBlood = agenda "04281" "City of Blood" 4 TheDepthsOfYoth
+
+furyThatShakesTheEarth :: CardDef
+furyThatShakesTheEarth = agenda "04282" "Fury That Shakes the Earth" 5 TheDepthsOfYoth
+
+theRedDepths :: CardDef
+theRedDepths = agenda "04283" "The Red Depths" 6 TheDepthsOfYoth
+
+vengeance :: CardDef
+vengeance = agenda "04284" "VENGEANCE" 7 TheDepthsOfYoth
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

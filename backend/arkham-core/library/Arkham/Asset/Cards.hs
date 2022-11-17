@@ -320,6 +320,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , relicHunter3
   , relicOfAgesADeviceOfSomeSort
   , relicOfAgesForestallingTheFuture
+  , relicOfAgesRepossessThePast
   , researchLibrarian
   , riteOfSeeking
   , riteOfSeeking4
@@ -2448,6 +2449,13 @@ timewornBrand5 = (asset "04276" "Timeworn Brand" 5 Neutral)
   , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
   , cdSlots = [HandSlot]
   , cdLevel = 5
+  }
+
+relicOfAgesRepossessThePast :: CardDef
+relicOfAgesRepossessThePast = (storyAsset "04303" ("Relic of Ages" <:> "Repossess the Past") 2 TheDepthsOfYoth)
+  { cdSkills = [SkillWild, SkillWild, SkillWild]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdUnique = True
   }
 
 trackShoes :: CardDef

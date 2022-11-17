@@ -212,6 +212,10 @@ allEnemies = mapFrom
   , SomeEnemyCard keeperOfTheGreatLibrary
   , SomeEnemyCard scientistOfYith
   , SomeEnemyCard scholarFromYith
+  -- The Depths of Yoth
+  , SomeEnemyCard yig
+  , SomeEnemyCard pitWarden
+  , SomeEnemyCard eaterOfTheDepths
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

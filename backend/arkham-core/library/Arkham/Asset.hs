@@ -406,6 +406,8 @@ allAssets = mapFrom
   , SomeAssetCard thermos
   , SomeAssetCard hemisphericMap2
   , SomeAssetCard timewornBrand5
+  --- story [tdoy]
+  , SomeAssetCard relicOfAgesRepossessThePast
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -137,6 +137,7 @@ data CampaignLogKey
   | TheProcessBackfiredSpectacularly
   | AlejandroRemembersEverything
   | AlejandroIsSetAgainstYou
+  | IchtacaIsSetAgainstYou
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

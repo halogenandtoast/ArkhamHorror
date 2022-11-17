@@ -439,6 +439,12 @@ handleAnswer Game {..} investigatorId = \case
           (HashMap.toList $ arAmounts response)
           target
       ]
+    Just (QuestionLabel _ (ChooseAmounts _ _ _ target)) ->
+      [ ResolveAmounts
+          investigatorId
+          (HashMap.toList $ arAmounts response)
+          target
+      ]
     _ -> error "Wrong question type"
   PaymentAmountsAnswer response ->
     case HashMap.lookup investigatorId gameQuestion of

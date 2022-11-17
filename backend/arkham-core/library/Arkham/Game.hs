@@ -1470,13 +1470,21 @@ getAssetsMatching matcher = do
         isHealthDamageable a =
           fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
       filterM isHealthDamageable assets
-    AssetWithDifferentTitleFromAtLeastOneCardInHand who cardMatcher assetMatcher -> do
-      iids <- selectList who
-      handCards <- concatMapM (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher))) iids
-      assets <- filterMatcher as assetMatcher
-      case handCards of
-        [x] -> filterM (fmap (/= (cdName $ toCardDef x)) . fieldMap AssetCard (cdName . toCardDef) . toId) assets
-        _ -> pure assets
+    AssetWithDifferentTitleFromAtLeastOneCardInHand who cardMatcher assetMatcher
+      -> do
+        iids <- selectList who
+        handCards <- concatMapM
+          (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher)))
+          iids
+        assets <- filterMatcher as assetMatcher
+        case handCards of
+          [x] -> filterM
+            (fmap (/= (cdName $ toCardDef x))
+            . fieldMap AssetCard (cdName . toCardDef)
+            . toId
+            )
+            assets
+          _ -> pure assets
     AssetCanBeAssignedHorrorBy iid -> do
       modifiers' <- getModifiers (InvestigatorTarget iid)
       let
@@ -1608,8 +1616,10 @@ enemyMatcherFilter = \case
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
-      CannotBeDamagedByPlayerSourcesExcept sourceMatcher -> sourceMatches source sourceMatcher
-      CannotBeDamagedByPlayerSources sourceMatcher -> not <$> sourceMatches source sourceMatcher
+      CannotBeDamagedByPlayerSourcesExcept sourceMatcher ->
+        sourceMatches source sourceMatcher
+      CannotBeDamagedByPlayerSources sourceMatcher ->
+        not <$> sourceMatches source sourceMatcher
       CannotBeDamaged -> pure False
       _ -> pure True
   EnemyWithAsset assetMatcher -> \enemy -> do
@@ -2006,6 +2016,7 @@ instance Projection Asset where
         AttachedToAgenda _ -> pure Nothing
         Unplaced -> pure Nothing
         TheVoid -> pure Nothing
+        Pursuit -> pure Nothing
       AssetCardCode -> pure assetCardCode
       AssetSlots -> pure assetSlots
       AssetSealedTokens -> pure assetSealedTokens
@@ -2122,7 +2133,9 @@ instance Projection Investigator where
       InvestigatorClues -> pure investigatorClues
       InvestigatorHand -> do
         -- Include in hand treacheries
-        ts <- selectListMapM (fmap toCard . getTreachery) (TreacheryInHandOf (InvestigatorWithId iid))
+        ts <- selectListMapM
+          (fmap toCard . getTreachery)
+          (TreacheryInHandOf (InvestigatorWithId iid))
         pure $ investigatorHand <> ts
       InvestigatorHandSize -> getHandSize (toAttrs i)
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
@@ -2211,16 +2224,19 @@ instance Query ExtendedCardMatcher where
       )
    where
     matches' c = \case
-      HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher -> do
-        iids <- selectList who
-        handCards <- concatMapM (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher))) iids
-        assets <- selectList assetMatcher
-        cards <- case assets of
-          [x] -> do
-            assetName <- fieldMap AssetCard (cdName . toCardDef) x
-            pure $ filter ((/= assetName) . cdName . toCardDef) handCards
-          _ -> pure handCards
-        pure $ c `elem` cards
+      HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher
+        -> do
+          iids <- selectList who
+          handCards <- concatMapM
+            (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher)))
+            iids
+          assets <- selectList assetMatcher
+          cards <- case assets of
+            [x] -> do
+              assetName <- fieldMap AssetCard (cdName . toCardDef) x
+              pure $ filter ((/= assetName) . cdName . toCardDef) handCards
+            _ -> pure handCards
+          pure $ c `elem` cards
       SetAsideCardMatch matcher' -> do
         cards <- scenarioField ScenarioSetAsideCards
         pure $ c `elem` filter (`cardMatch` matcher') cards
@@ -2534,6 +2550,7 @@ instance Projection Scenario where
       ScenarioChaosBag -> pure scenarioChaosBag
       ScenarioSetAsideCards -> pure scenarioSetAsideCards
       ScenarioName -> pure scenarioName
+      ScenarioMeta -> pure scenarioMeta
       ScenarioStoryCards -> pure scenarioStoryCards
       ScenarioCardsUnderScenarioReference ->
         pure scenarioCardsUnderScenarioReference
@@ -2753,7 +2770,13 @@ createActiveCostForCard iid card isPlayAction windows' = do
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
 
-  let cost = mconcat $ [resourceCost] <> (maybe [] pure . cdAdditionalCost $ toCardDef card) <> additionalCosts <> sealTokenCosts
+  let
+    cost =
+      mconcat
+        $ [resourceCost]
+        <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
+        <> additionalCosts
+        <> sealTokenCosts
   pure ActiveCost
     { activeCostId = acId
     , activeCostCosts = cost
@@ -3288,7 +3311,7 @@ runGameMessage msg g = case msg of
         _ -> False
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
       actions = case cdActions (toCardDef card) of
-        [] -> [Action.Play | not isFast]
+        [] -> [ Action.Play | not isFast ]
         as -> as
     activeCost <- createActiveCostForCard iid card isPlayAction windows'
 

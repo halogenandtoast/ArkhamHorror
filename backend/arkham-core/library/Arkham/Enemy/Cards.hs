@@ -126,6 +126,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , dianneDevine
   , discipleOfTheDevourer
   , donLagorio
+  , eaterOfTheDepths
   , elisabettaMagro
   , emergentMonstrosity
   , eztliGuardian
@@ -165,6 +166,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , padmaAmrita
   , peterWarren
   , pitViper
+  , pitWarden
   , poleman
   , poltergeist
   , possessedOathspeaker
@@ -210,6 +212,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , wizardOfYogSothoth
   , wolfManDrew
   , writhingAppendage
+  , yig
   , yithianObserver
   , yithianStarseeker
   , yogSothoth
@@ -1013,6 +1016,33 @@ scholarFromYith =
   (enemy "04259" "Scholar from Yith" TheCityOfArchives 3
     )
     { cdCardTraits = setFromList [Monster, Yithian]
+    }
+
+yig :: CardDef
+yig =
+  (enemy "04296" ("Yig" <:> "The Father of Serpents") TheDepthsOfYoth 1
+    )
+    { cdCardTraits = setFromList [AncientOne, Serpent, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 5
+    , cdUnique = True
+    }
+
+pitWarden :: CardDef
+pitWarden =
+  (enemy "04297" "Pit Warden" TheDepthsOfYoth 3
+    )
+    { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+    , cdVengeancePoints = Just 1
+    }
+
+eaterOfTheDepths :: CardDef
+eaterOfTheDepths =
+  (enemy "04298" "Eater of the Depths" TheDepthsOfYoth 1
+    )
+    { cdCardTraits = singleton Monster
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 2
     }
 
 corpseHungryGhoul :: CardDef

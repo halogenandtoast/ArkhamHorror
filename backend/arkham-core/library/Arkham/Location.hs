@@ -350,6 +350,17 @@ allLocations = mapFrom
   , SomeLocationCard laboratoryOfTheGreatRace
   , SomeLocationCard deconstructionRoom
   , SomeLocationCard towersOfPnakotus
+  -- The Depths of Yoth
+  , SomeLocationCard stepsOfYoth
+  , SomeLocationCard cityOfTheSerpents
+  , SomeLocationCard hallOfHeresy
+  , SomeLocationCard crumblingPrecipice
+  , SomeLocationCard cavernsOfYoth
+  , SomeLocationCard forkedPath
+  , SomeLocationCard bridgeOverNKai
+  , SomeLocationCard brokenPassage
+  , SomeLocationCard abandonedSite
+  , SomeLocationCard brightCanyon
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

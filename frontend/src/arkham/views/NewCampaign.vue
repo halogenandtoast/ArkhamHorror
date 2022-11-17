@@ -38,6 +38,7 @@ const scenarios = computed(() => {
     { id: '04161', name: 'The Boundary Beyond', campaign: "04", beta: true },
     { id: '04205', name: 'Heart of the Elders', campaign: "04", beta: true },
     { id: '04237', name: 'The City of Archives', campaign: "04", beta: true },
+    { id: '04277', name: 'The Depths of Yoth', campaign: "04", beta: true },
   ].filter((s) => {
     if (s.beta) {
       return currentUser.value && currentUser.value.beta

@@ -142,6 +142,14 @@ allAgendas = mapFrom
   , SomeAgendaCard cityOfTheGreatRace
   , SomeAgendaCard lostMemories
   , SomeAgendaCard humanityFading
+  -- The Depth of Yoth
+  , SomeAgendaCard theDescentBegins
+  , SomeAgendaCard horrificDescent
+  , SomeAgendaCard endlessCaverns
+  , SomeAgendaCard cityOfBlood
+  , SomeAgendaCard furyThatShakesTheEarth
+  , SomeAgendaCard theRedDepths
+  , SomeAgendaCard vengeance
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

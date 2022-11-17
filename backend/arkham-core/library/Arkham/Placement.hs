@@ -17,6 +17,7 @@ data Placement
   | AttachedToInvestigator InvestigatorId
   | Unplaced
   | TheVoid
+  | Pursuit
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

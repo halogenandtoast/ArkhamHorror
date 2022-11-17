@@ -6,7 +6,6 @@ module Arkham.Act.Cards.AscendingTheHillV2
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card

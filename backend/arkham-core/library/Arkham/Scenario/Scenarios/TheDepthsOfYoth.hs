@@ -178,10 +178,10 @@ instance RunMessage TheDepthsOfYoth where
            , PlaceLocation startLocation
            , MoveAllTo (toSource attrs) (toLocationId startLocation)
            ]
-        -- <> [ CreateEnemyAt harbingerOfValusia Pursuit (Just $ toTarget attrs)
-        --    | startsOnAgenda5
-        --    ]
-        -- <> [ CreateEnemyAt yig Pursuit Nothing | startsOnAgenda6 ]
+        <> [ CreateEnemyWithPlacement harbingerOfValusia Pursuit
+           | startsOnAgenda5
+           ]
+        <> [ CreateEnemyWithPlacement yig Pursuit | startsOnAgenda6 ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive

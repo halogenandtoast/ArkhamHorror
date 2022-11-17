@@ -587,6 +587,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withEnemyMetadata gameEnemiesInVoid) g)
+    , "outOfPlayEnemies"
+      .= toJSON (runReader (traverse withEnemyMetadata (entitiesEnemies gameOutOfPlayEntities)) g)
     , "assets"
       .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
     , "acts" .= toJSON (runReader (traverse withModifiers (gameActs g)) g)
@@ -3246,6 +3248,9 @@ runGameMessage msg g = case msg of
       else do
         pushAll [RemoveFromPlay (AssetSource assetId), AddToHand iid card]
     pure g
+  PlaceEnemy enemyId Pursuit -> do
+    push $ SetOutOfPlay (EnemyTarget enemyId)
+    pure g
   SetOutOfPlay target@(EnemyTarget enemyId) -> do
     pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay target]
     pure g
@@ -3253,13 +3258,8 @@ runGameMessage msg g = case msg of
     enemy <- getEnemy enemyId
     pure
       $ g
-      & entitiesL
-      . enemiesL
-      %~ deleteMap enemyId
-      & outOfPlayEntitiesL
-      . enemiesL
-      . at enemyId
-      ?~ enemy
+      & (entitiesL . enemiesL %~ deleteMap enemyId)
+      & (outOfPlayEntitiesL . enemiesL . at enemyId ?~ enemy)
   RemovedFromPlay (AssetSource assetId) -> do
     asset <- getAsset assetId
     let
@@ -3918,6 +3918,12 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       enemyId = toId enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+  CreateEnemyWithPlacement card placement -> do
+    let
+      enemy = createEnemy card
+      enemyId = toId enemy
+    push $ PlaceEnemy enemyId placement
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     matches' <- selectList locationMatcher

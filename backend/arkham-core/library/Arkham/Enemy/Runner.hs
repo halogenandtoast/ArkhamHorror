@@ -886,6 +886,8 @@ instance RunMessage EnemyAttrs where
         & (exhaustedL .~ False)
         & (doomL .~ 0)
         & (cluesL .~ 0)
+    PlaceEnemy eid placement | eid == enemyId -> do
+      pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
       push $ FightEnemy iid (toId a) (toSource iid) Nothing #combat False

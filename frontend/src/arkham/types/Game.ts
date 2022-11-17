@@ -32,6 +32,7 @@ export interface Game {
   assets: Record<string, Asset>;
   events: Record<string, Event>;
   enemies: Record<string, Enemy>;
+  outOfPlayEnemies: Record<string, Enemy>;
   enemiesInVoid: Record<string, Enemy>;
   gameState: string;
   investigators: Record<string, Investigator>;
@@ -128,6 +129,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     events: JsonDecoder.dictionary<Event>(eventDecoder, 'Dict<UUID, Event>'),
     enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
+    outOfPlayEnemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     enemiesInVoid: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameState: JsonDecoder.string,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),

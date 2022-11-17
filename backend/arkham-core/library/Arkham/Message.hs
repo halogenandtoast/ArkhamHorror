@@ -245,6 +245,7 @@ data Message
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | CreateEnemy Card
+  | CreateEnemyWithPlacement Card Placement
   | CreateEnemyAt Card LocationId (Maybe Target)
   | CreatedEnemyAt EnemyId LocationId Target
   | CreateEnemyAtLocationMatching Card LocationMatcher

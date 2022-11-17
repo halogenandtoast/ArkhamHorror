@@ -196,6 +196,8 @@ const topOfEncounterDiscard = computed(() => {
 const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
+const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) => enemy.placement?.tag === "Pursuit"))
+
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
 const cardsUnderAgenda = computed(() => {
@@ -290,6 +292,16 @@ const phase = computed(() => props.game.phase)
             @show="doShowCards"
           />
         </div>
+
+        <Enemy
+          v-for="enemy in pursuit"
+          :key="enemy.id"
+          :enemy="enemy"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="choose"
+        />
+
         <img
           class="card"
           :src="scenarioGuide"

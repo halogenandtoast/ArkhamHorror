@@ -1598,7 +1598,7 @@ getOutOfPlayEnemy eid =
   fromJustNote missingEnemy
     . preview (outOfPlayEntitiesL . enemiesL . ix eid)
     <$> getGame
-  where missingEnemy = "Unknown out of playenemy: " <> show eid
+  where missingEnemy = "Unknown out of play enemy: " <> show eid
 
 getVoidEnemy :: (Monad m, HasGame m) => EnemyId -> m Enemy
 getVoidEnemy eid =

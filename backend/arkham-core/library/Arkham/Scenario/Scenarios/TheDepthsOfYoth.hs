@@ -108,8 +108,25 @@ instance RunMessage TheDepthsOfYoth where
 
       yigsFury <- getRecordCount YigsFury
 
+      let
+        otherLocationCards =
+          [ Locations.cityOfTheSerpents
+          , Locations.hallOfHeresy
+          , Locations.crumblingPrecipice
+          , Locations.cavernsOfYoth
+          , Locations.forkedPath
+          , Locations.bridgeOverNKai
+          , Locations.brokenPassage
+          , Locations.abandonedSite
+          , Locations.brightCanyon
+          ]
+
       encounterDeck <- buildEncounterDeckExcluding
-        (Enemies.yig : [ Enemies.pitWarden | yigsFury == 0 ])
+        (Enemies.yig
+        : Locations.stepsOfYoth
+        : otherLocationCards
+        <> [ Enemies.pitWarden | yigsFury == 0 ]
+        )
         [ EncounterSet.TheDepthsOfYoth
         , EncounterSet.AgentsOfYig
         , EncounterSet.YigsVenom
@@ -119,18 +136,7 @@ instance RunMessage TheDepthsOfYoth where
         ]
 
       stepsOfYoth <- genCard Locations.stepsOfYoth
-      locations <- shuffleM =<< traverse
-        genCard
-        [ Locations.cityOfTheSerpents
-        , Locations.hallOfHeresy
-        , Locations.crumblingPrecipice
-        , Locations.cavernsOfYoth
-        , Locations.forkedPath
-        , Locations.bridgeOverNKai
-        , Locations.brokenPassage
-        , Locations.abandonedSite
-        , Locations.brightCanyon
-        ]
+      locations <- shuffleM =<< traverse genCard otherLocationCards
 
       let
         (startLocation, rest) = case locations of
@@ -175,6 +181,8 @@ instance RunMessage TheDepthsOfYoth where
            | isIntro4
            ]
         <> [ SetEncounterDeck encounterDeck
+           , SetAgendaDeck
+           , SetActDeck
            , PlaceLocation startLocation
            , MoveAllTo (toSource attrs) (toLocationId startLocation)
            ]
@@ -209,7 +217,7 @@ instance RunMessage TheDepthsOfYoth where
           )
         & (actStackL . at 1 ?~ [Acts.journeyToTheNexus])
         & (setAsideCardsL .~ setAsideCards)
-        & (metaL .~ toMeta 1)
+        & (metaL .~ toMeta 1 (toLocationId startLocation))
         )
     ResolveAmounts _ (getChoiceAmount "Fury" -> n) ScenarioTarget -> do
       push $ RecordCount YigsFury n

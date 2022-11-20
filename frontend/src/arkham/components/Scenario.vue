@@ -12,6 +12,7 @@ import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
@@ -302,10 +303,13 @@ const phase = computed(() => props.game.phase)
           @choose="choose"
         />
 
-        <img
-          class="card"
-          :src="scenarioGuide"
-        />
+        <div class="scenario-guide">
+          <img
+            class="card"
+            :src="scenarioGuide"
+          />
+          <PoolItem class="depth" v-if="scenario.meta?.currentDepth && scenario.meta.currentDepth > 0" type="resource" :amount="scenario.meta.currentDepth" />
+        </div>
         <ChaosBag
           :game="game"
           :chaosBag="scenario.chaosBag"
@@ -572,5 +576,14 @@ const phase = computed(() => props.game.phase)
 .active-phase {
   font-weight: bold;
   background-color: #8e9ca4;
+}
+
+.scenario-guide {
+  position: relative;
+  .depth {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
 }
 </style>

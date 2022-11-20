@@ -106,7 +106,7 @@ skill f cardDef = CardBuilder
 data Skill = forall a. IsSkill a => Skill a
 
 instance Eq Skill where
-  (Skill (a :: a)) == (Skill (b :: b)) = case eqT @a @b of
+  Skill (a :: a) == Skill (b :: b) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 
@@ -157,4 +157,3 @@ liftSomeSkillCard f (SomeSkillCard a) = f a
 
 someSkillCardCode :: SomeSkillCard -> CardCode
 someSkillCardCode = liftSomeSkillCard cbCardCode
-

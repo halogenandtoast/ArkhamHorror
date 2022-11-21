@@ -285,7 +285,7 @@ instance RunMessage TheDoomOfEztli where
         Nothing -> case setAsideHarbinger of
           Nothing -> pure []
           Just harbinger -> do
-            damage <- field SetAsideEnemyDamage harbinger
+            damage <- field (SetAsideEnemyField EnemyDamage) harbinger
             pure [RecordCount TheHarbingerIsStillAlive damage]
 
       case n of

@@ -642,6 +642,7 @@ data Message
   | UseSupply InvestigatorId Supply
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
+  | SetScenarioMeta Value
   | -- Fields
     UpdateLocation LocationAttrs LocationId
   deriving stock (Show, Eq)

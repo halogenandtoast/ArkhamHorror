@@ -70,7 +70,7 @@ instance RunMessage Thermos where
         | target <- targets
         ]
       pure a
-    UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (InvestigatorTarget iid') _ _
+    UseCardAbilityChoiceTarget _ (isSource attrs -> True) 1 (InvestigatorTarget iid') _ _
       -> do
         trauma <- field InvestigatorPhysicalTrauma iid'
         push $ HealDamage
@@ -97,7 +97,7 @@ instance RunMessage Thermos where
         | target <- targets
         ]
       pure a
-    UseCardAbilityChoiceTarget iid (isSource attrs -> True) 2 (InvestigatorTarget iid') _ _
+    UseCardAbilityChoiceTarget _ (isSource attrs -> True) 2 (InvestigatorTarget iid') _ _
       -> do
         trauma <- field InvestigatorMentalTrauma iid'
         push $ HealHorror

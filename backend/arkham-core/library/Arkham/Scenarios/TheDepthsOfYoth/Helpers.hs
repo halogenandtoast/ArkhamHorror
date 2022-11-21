@@ -42,15 +42,16 @@ getInPursuitEnemyWithHighestEvade = do
   inPursuit <- getInPursuitEnemies
   evadeValue <- getMax0 <$> selectAgg
     (Max . fromMaybe 0)
-    EnemyEvade
+    (SetAsideEnemyField EnemyEvade)
     (SetAsideMatcher $ EnemyOneOf $ map EnemyWithId $ toList inPursuit)
   setFromList <$> filterM
-    (fieldMap EnemyEvade (maybe False (== evadeValue)))
+    (fieldMap (SetAsideEnemyField EnemyEvade) (maybe False (== evadeValue)))
     (toList inPursuit)
 
 getInPursuitEnemies :: (HasGame m, Monad m) => m (HashSet EnemyId)
 getInPursuitEnemies = do
   enemies <- select $ SetAsideMatcher AnyEnemy
-  setFromList
-    <$> filterM (fieldMap EnemyPlacement (== Pursuit)) (toList enemies)
+  setFromList <$> filterM
+    (fieldMap (SetAsideEnemyField EnemyPlacement) (== Pursuit))
+    (toList enemies)
 

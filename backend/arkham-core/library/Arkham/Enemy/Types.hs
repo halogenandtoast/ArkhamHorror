@@ -63,7 +63,7 @@ data instance Field Enemy :: Type -> Type where
   EnemySealedTokens :: Field Enemy [Token]
 
 data instance Field (SetAsideEntity Enemy) :: Type -> Type where
-  SetAsideEnemyDamage :: Field (SetAsideEntity Enemy) Int
+  SetAsideEnemyField :: Field Enemy typ -> Field (SetAsideEntity Enemy) typ
 
 sealedTokensL :: Lens' EnemyAttrs [Token]
 sealedTokensL = lens enemySealedTokens $ \m x -> m { enemySealedTokens = x }

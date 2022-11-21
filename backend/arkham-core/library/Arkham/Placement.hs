@@ -21,6 +21,12 @@ data Placement
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+isOutOfPlayPlacement :: Placement -> Bool
+isOutOfPlayPlacement = \case
+  TheVoid -> True
+  Pursuit -> True
+  _ -> False
+
 data TreacheryPlacement
   = TreacheryAttachedTo Target
   | TreacheryInHandOf InvestigatorId

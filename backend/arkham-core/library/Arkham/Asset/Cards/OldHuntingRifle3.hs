@@ -55,7 +55,7 @@ instance HasAbilities OldHuntingRifle3 where
       NotJammed -> NoRestriction
 
 instance RunMessage OldHuntingRifle3 where
-  runMessage msg a@(OldHuntingRifle3 (attrs `With` meta@(Metadata rifleStatus)))
+  runMessage msg a@(OldHuntingRifle3 (attrs `With` meta))
     = case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         pushAll

@@ -27,8 +27,11 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype TheDepthsOfYoth = TheDepthsOfYoth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -229,5 +232,12 @@ instance RunMessage TheDepthsOfYoth where
         when (startingDamage > 0) $ push $ PlaceDamage
           (EnemyTarget harbingerId)
           startingDamage
+      pure s
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored
       pure s
     _ -> TheDepthsOfYoth <$> runMessage msg attrs

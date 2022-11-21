@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stack: ["2.7.5"]
-        ghc: ["9.0.2"]
+        stack: ["2.9.1"]
+        ghc: ["9.4.3"]
 
     steps:
     - uses: actions/checkout@v3

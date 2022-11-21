@@ -23,6 +23,7 @@ data Source
   | AfterSkillTestSource
   | AgendaDeckSource
   | AgendaSource AgendaId
+  | AgendaMatcherSource AgendaMatcher
   | AssetMatcherSource AssetMatcher
   | AssetSource AssetId
   | CardCodeSource CardCode

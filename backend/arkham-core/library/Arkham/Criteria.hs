@@ -105,6 +105,7 @@ data Criterion
   | ScenarioDeckWithCard ScenarioDeckKey
   | Self
   | SetAsideCardExists CardMatcher
+  | SetAsideEnemyExists EnemyMatcher
   | TreacheryExists TreacheryMatcher
   | Unowned
   | SelfHasModifier ModifierType

@@ -555,6 +555,11 @@ getActionsWith iid window f = do
     actions'
     \action -> do
       case abilitySource action of
+        ProxySource (AgendaMatcherSource m) base -> do
+          sources <- selectListMap AgendaSource m
+          pure $ map
+            (\source -> action { abilitySource = ProxySource source base })
+            sources
         ProxySource (AssetMatcherSource m) base -> do
           sources <- selectListMap AssetSource m
           pure $ map
@@ -690,6 +695,7 @@ sourceToTarget = \case
   AbilitySource{} -> error "not implemented"
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget
+  AgendaMatcherSource{} -> error "not converted"
   AssetMatcherSource{} -> error "not converted"
   LocationMatcherSource{} -> error "not converted"
   EnemyMatcherSource{} -> error "not converted"
@@ -1113,6 +1119,7 @@ passesCriteria iid source windows' = \case
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows' enemyCriteria
   Criteria.SetAsideCardExists matcher -> selectAny matcher
+  Criteria.SetAsideEnemyExists matcher -> selectAny $ Matcher.SetAsideMatcher matcher
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
@@ -1717,6 +1724,8 @@ windowMatches iid source window' = \case
   Matcher.MythosStep mythosStepMatcher -> case window' of
     Window t Window.AllDrawEncounterCard | t == Timing.When ->
       pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
+    Window t Window.AfterCheckDoomThreshold | t == Timing.When ->
+      pure $ mythosStepMatcher == Matcher.AfterCheckDoomThreshold
     _ -> pure False
   Matcher.WouldRevealChaosToken whenMatcher whoMatcher -> case window' of
     Window t (Window.WouldRevealChaosToken _ who) | whenMatcher == t ->
@@ -2015,6 +2024,7 @@ sourceTraits = \case
   AfterSkillTestSource -> pure mempty
   AgendaDeckSource -> pure mempty
   AgendaSource _ -> pure mempty
+  AgendaMatcherSource _ -> pure mempty
   AssetMatcherSource _ -> pure mempty
   AssetSource aid -> field AssetTraits aid
 

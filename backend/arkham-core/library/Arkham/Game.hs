@@ -3774,6 +3774,8 @@ runGameMessage msg g = case msg of
       ]
     allDrawWindow <- checkWindows
       [Window Timing.When Window.AllDrawEncounterCard]
+    afterCheckDoomThreshold <- checkWindows
+      [Window Timing.When Window.AfterCheckDoomThreshold]
     fastWindow <- checkWindows [Window Timing.When Window.FastPlayerWindow]
     modifiers <- getModifiers (PhaseTarget MythosPhase)
     pushAllEnd
@@ -3782,6 +3784,7 @@ runGameMessage msg g = case msg of
         | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
         ]
       <> [ AdvanceAgendaIfThresholdSatisfied
+         , afterCheckDoomThreshold
          , allDrawWindow
          , AllDrawEncounterCard
          , fastWindow

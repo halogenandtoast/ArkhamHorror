@@ -51,6 +51,7 @@ data WindowType
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId
   | AllDrawEncounterCard
+  | AfterCheckDoomThreshold
   | AllUndefeatedInvestigatorsResigned
   | AmongSearchedCards InvestigatorId
   | AnyPhaseBegins

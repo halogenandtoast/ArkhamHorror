@@ -685,7 +685,7 @@ data PhaseMatcher = AnyPhase | PhaseIs Phase
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data WindowMythosStepMatcher = WhenAllDrawEncounterCard
+data WindowMythosStepMatcher = WhenAllDrawEncounterCard | AfterCheckDoomThreshold
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -5,22 +5,46 @@ module Arkham.Agenda.Cards.Vengeance
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Ability
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Message
+import Arkham.Matcher
+import Arkham.Message hiding ( InvestigatorDefeated )
+import Arkham.Resolution
+import Arkham.Timing qualified as Timing
 
 newtype Vengeance = Vengeance AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengeance :: AgendaCard Vengeance
-vengeance = agenda (7, A) Vengeance Cards.vengeance (Static 0)
+vengeance = agendaWith
+  (7, A)
+  Vengeance
+  Cards.vengeance
+  (Static 0)
+  (doomThresholdL .~ Nothing)
+
+instance HasAbilities Vengeance where
+  getAbilities (Vengeance a) =
+    [ mkAbility a 1 $ ForcedAbility $ MythosStep AfterCheckDoomThreshold
+    , restrictedAbility
+        a
+        2
+        (Negate $ InvestigatorExists UneliminatedInvestigator)
+      $ ForcedAbility
+      $ InvestigatorDefeated Timing.When AnySource ByAny Anyone
+    ]
 
 instance RunMessage Vengeance where
-  runMessage msg a@(Vengeance attrs) =
-    case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-        a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-      _ -> Vengeance <$> runMessage msg attrs
+  runMessage msg a@(Vengeance attrs) = case msg of
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      push $ ScenarioResolution $ Resolution 1
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push AllDrawEncounterCard
+      pure a
+    _ -> Vengeance <$> runMessage msg attrs

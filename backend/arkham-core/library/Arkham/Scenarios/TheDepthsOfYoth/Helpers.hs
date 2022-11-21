@@ -47,7 +47,7 @@ getInPursuitEnemyWithHighestEvade = do
     (SetAsideEnemyField EnemyEvade)
     (SetAsideMatcher $ EnemyOneOf $ map EnemyWithId $ toList inPursuit)
   setFromList <$> filterM
-    (fieldMap (SetAsideEnemyField EnemyEvade) (maybe False (== evadeValue)))
+    (fieldMap (SetAsideEnemyField EnemyEvade) ((== Just evadeValue)))
     (toList inPursuit)
 
 getInPursuitEnemies :: (HasGame m, Monad m) => m (HashSet EnemyId)
@@ -63,7 +63,7 @@ getPlacePursuitEnemyMessages = do
   lead <- getLeadInvestigatorId
   depthStart <- getDepthStart
   pure $ do
-    guard $ null choices
+    guard $ notNull choices
     pure $ chooseOrRunOne
       lead
       [ targetLabel choice [PlaceEnemy choice $ AtLocation depthStart]

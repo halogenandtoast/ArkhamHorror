@@ -33,7 +33,7 @@ data instance Field Agenda :: Type -> Type where
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
-  , agendaDoomThreshold :: GameValue
+  , agendaDoomThreshold :: Maybe GameValue
   , agendaId :: AgendaId
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
@@ -58,7 +58,7 @@ treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
 doomL :: Lens' AgendaAttrs Int
 doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
 
-doomThresholdL :: Lens' AgendaAttrs GameValue
+doomThresholdL :: Lens' AgendaAttrs (Maybe GameValue)
 doomThresholdL =
   lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
 
@@ -118,7 +118,7 @@ agendaWith (n, side) f cardDef threshold g = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(deckId, aid) -> f . g $ AgendaAttrs
     { agendaDoom = 0
-    , agendaDoomThreshold = threshold
+    , agendaDoomThreshold = Just threshold
     , agendaId = aid
     , agendaSequence = AS.Sequence n side
     , agendaFlipped = False

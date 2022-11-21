@@ -50,5 +50,7 @@ data ScenarioLogKey
   | RealizedWhatYearItIs
   | ActivatedTheDevice
   -- ^ The City of Archives
+  | CollectedAStrangeLiquid
+  -- ^ The Depths of Yoth
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

@@ -64,7 +64,7 @@ instance RunMessage JourneyToTheNexus where
     UseCardAbility iid source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      depth <- getCurrentDepth
+      depth <- (+ 1) <$> getCurrentDepth
       isStandalone <- getIsStandalone
       if depth >= 5 && not isStandalone
         then push $ ScenarioResolution $ Resolution 2
@@ -95,7 +95,7 @@ instance RunMessage JourneyToTheNexus where
                , MoveAllTo (toSource attrs) (toLocationId newStart)
                , RemoveLocation stepsOfYoth
                , SetScenarioDeck ExplorationDeck newExplorationDeck
-               , SetScenarioMeta $ toMeta (depth + 1) (toLocationId newStart)
+               , SetScenarioMeta $ toMeta depth (toLocationId newStart)
                , RevertAct $ toId attrs
                ]
       pure a

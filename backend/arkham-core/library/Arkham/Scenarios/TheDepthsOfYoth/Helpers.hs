@@ -5,9 +5,11 @@ import Arkham.Prelude
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
@@ -55,3 +57,15 @@ getInPursuitEnemies = do
     (fieldMap (SetAsideEnemyField EnemyPlacement) (== Pursuit))
     (toList enemies)
 
+getPlacePursuitEnemyMessages :: (HasGame m, Monad m) => m [Message]
+getPlacePursuitEnemyMessages = do
+  choices <- toList <$> getInPursuitEnemyWithHighestEvade
+  lead <- getLeadInvestigatorId
+  depthStart <- getDepthStart
+  pure $ do
+    guard $ null choices
+    pure $ chooseOrRunOne
+      lead
+      [ targetLabel choice [PlaceEnemy choice $ AtLocation depthStart]
+      | choice <- choices
+      ]

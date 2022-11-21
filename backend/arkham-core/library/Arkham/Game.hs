@@ -587,8 +587,11 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withEnemyMetadata gameEnemiesInVoid) g)
-    , "outOfPlayEnemies"
-      .= toJSON (runReader (traverse withEnemyMetadata (entitiesEnemies gameOutOfPlayEntities)) g)
+    , "outOfPlayEnemies" .= toJSON
+      (runReader
+        (traverse withEnemyMetadata (entitiesEnemies gameOutOfPlayEntities))
+        g
+      )
     , "assets"
       .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
     , "acts" .= toJSON (runReader (traverse withModifiers (gameActs g)) g)
@@ -1104,7 +1107,14 @@ getLocationsMatching lmatcher = do
     IsIchtacasDestination ->
       filterM (remembered . IchtacasDestination . toId) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
-      filterM (selectAny . (<> whoMatcher) . InvestigatorCanDiscoverCluesAt . LocationWithId . toId) ls
+      filterM
+        (selectAny
+        . (<> whoMatcher)
+        . InvestigatorCanDiscoverCluesAt
+        . LocationWithId
+        . toId
+        )
+        ls
     SingleSidedLocation ->
       filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []
@@ -1586,7 +1596,7 @@ getSkill sid = do
     <|> getInDiscardEntity skillsL sid g
   where missingSkill = "Unknown skill: " <> show sid
 
-getEnemy :: (Monad m, HasGame m) => EnemyId -> m Enemy
+getEnemy :: (HasCallStack, Monad m, HasGame m) => EnemyId -> m Enemy
 getEnemy eid =
   fromJustNote missingEnemy
     . preview (entitiesL . enemiesL . ix eid)
@@ -2056,11 +2066,7 @@ instance Projection Act where
       ActCard -> pure $ lookupCard (unActId aid) (CardId nil)
 
 instance Projection (SetAsideEntity Enemy) where
-  field f eid = do
-    e <- getOutOfPlayEnemy eid
-    let EnemyAttrs {..} = toAttrs e
-    case f of
-      SetAsideEnemyDamage -> pure enemyDamage
+  field (SetAsideEnemyField f) = getEnemyField f <=< getOutOfPlayEnemy
 
 instance Projection VoidEnemy where
   field f eid = do
@@ -2070,38 +2076,40 @@ instance Projection VoidEnemy where
       VoidEnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId enemyId)
 
 instance Projection Enemy where
-  field f eid = do
-    e <- getEnemy eid
-    let attrs@EnemyAttrs {..} = toAttrs e
-    case f of
-      EnemyEngagedInvestigators -> case enemyPlacement of
-        InThreatArea iid -> pure $ singleton iid
-        _ -> do
-          isMassive <- fieldP EnemyKeywords (member Keyword.Massive) enemyId
-          if isMassive
-            then select (InvestigatorAt $ locationWithEnemy enemyId)
-            else pure mempty
-      EnemyPlacement -> pure enemyPlacement
-      EnemySealedTokens -> pure enemySealedTokens
-      EnemyDoom -> pure enemyDoom
-      EnemyEvade -> pure enemyEvade
-      EnemyFight -> pure enemyFight
-      EnemyClues -> pure enemyClues
-      EnemyDamage -> pure enemyDamage
-      EnemyRemainingHealth -> do
-        totalHealth <- getPlayerCountValue enemyHealth
-        pure (totalHealth - enemyDamage)
-      EnemyHealthDamage -> pure enemyHealthDamage
-      EnemySanityDamage -> pure enemySanityDamage
-      EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
-      EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
-      EnemyAbilities -> pure $ getAbilities e
-      EnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId eid)
-      EnemyCardCode -> pure enemyCardCode
-      EnemyLocation -> case enemyPlacement of
-        AtLocation lid -> pure $ Just lid
-        InThreatArea iid -> field InvestigatorLocation iid
-        _ -> pure Nothing
+  field f = getEnemyField f <=< getEnemy
+
+getEnemyField :: (HasGame m, Monad m) => Field Enemy typ -> Enemy -> m typ
+getEnemyField f e = do
+  let attrs@EnemyAttrs {..} = toAttrs e
+  case f of
+    EnemyEngagedInvestigators -> case enemyPlacement of
+      InThreatArea iid -> pure $ singleton iid
+      _ -> do
+        isMassive <- fieldP EnemyKeywords (member Keyword.Massive) enemyId
+        if isMassive
+          then select (InvestigatorAt $ locationWithEnemy enemyId)
+          else pure mempty
+    EnemyPlacement -> pure enemyPlacement
+    EnemySealedTokens -> pure enemySealedTokens
+    EnemyDoom -> pure enemyDoom
+    EnemyEvade -> pure enemyEvade
+    EnemyFight -> pure enemyFight
+    EnemyClues -> pure enemyClues
+    EnemyDamage -> pure enemyDamage
+    EnemyRemainingHealth -> do
+      totalHealth <- getPlayerCountValue enemyHealth
+      pure (totalHealth - enemyDamage)
+    EnemyHealthDamage -> pure enemyHealthDamage
+    EnemySanityDamage -> pure enemySanityDamage
+    EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
+    EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
+    EnemyAbilities -> pure $ getAbilities e
+    EnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId $ toId e)
+    EnemyCardCode -> pure enemyCardCode
+    EnemyLocation -> case enemyPlacement of
+      AtLocation lid -> pure $ Just lid
+      InThreatArea iid -> field InvestigatorLocation iid
+      _ -> pure Nothing
 
 instance Projection Investigator where
   field f iid = do
@@ -3251,6 +3259,20 @@ runGameMessage msg g = case msg of
   PlaceEnemy enemyId Pursuit -> do
     push $ SetOutOfPlay (EnemyTarget enemyId)
     pure g
+  PlaceEnemy enemyId placement | not (isOutOfPlayPlacement placement) -> do
+    mOutOfPlayEnemy <-
+      preview (outOfPlayEntitiesL . enemiesL . ix enemyId) <$> getGame
+    case mOutOfPlayEnemy of
+      Just enemy -> do
+        case placement of
+          AtLocation lid ->
+            push $ EnemySpawn Nothing lid enemyId
+          _ -> pure ()
+        pure
+          $ g
+          & (outOfPlayEntitiesL . enemiesL %~ deleteMap enemyId)
+          & (entitiesL . enemiesL . at enemyId ?~ enemy)
+      _ -> pure g
   SetOutOfPlay target@(EnemyTarget enemyId) -> do
     pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay target]
     pure g

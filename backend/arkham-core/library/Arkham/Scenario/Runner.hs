@@ -821,4 +821,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     iids <- getInvestigatorIds
     pushAll $ map SetupInvestigator iids
     pure a
+  SetScenarioMeta v -> do
+    pure $ a & metaL .~ v
   _ -> pure a

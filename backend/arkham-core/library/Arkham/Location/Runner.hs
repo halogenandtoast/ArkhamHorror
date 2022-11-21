@@ -158,8 +158,7 @@ instance RunMessage LocationAttrs where
     PlaceAsset aid placement -> case placement of
       AttachedToLocation lid | lid == locationId ->
         pure $ a & assetsL %~ insertSet aid
-      AtLocation lid | lid == locationId ->
-        pure $ a & assetsL %~ insertSet aid
+      AtLocation lid | lid == locationId -> pure $ a & assetsL %~ insertSet aid
       _ -> pure $ a & assetsL %~ deleteSet aid
     SetConnections lid connections | lid == locationId -> do
       pure
@@ -274,7 +273,8 @@ instance RunMessage LocationAttrs where
       windows' <- windows [Window.PlacedResources (toTarget a) n]
       pushAll windows'
       pure $ a & resourcesL +~ n
-    RemoveResources target n | isTarget a target -> pure $ a & resourcesL %~ max 0 . subtract n
+    RemoveResources target n | isTarget a target ->
+      pure $ a & resourcesL %~ max 0 . subtract n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId -> do
       let clueCount = max 0 $ subtract n locationClues
@@ -283,15 +283,19 @@ instance RunMessage LocationAttrs where
       pure $ a & cluesL .~ 0 & withoutCluesL .~ True
     RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
     PlacedLocation _ _ lid | lid == locationId -> do
-      when locationRevealed $ do
-        modifiers' <- getModifiers (toTarget a)
-        locationClueCount <- if CannotPlaceClues `elem` modifiers'
-          then pure 0
-          else getPlayerCountValue locationRevealClues
+      if locationRevealed
+        then do
+          modifiers' <- getModifiers (toTarget a)
+          locationClueCount <- if CannotPlaceClues `elem` modifiers'
+            then pure 0
+            else getPlayerCountValue locationRevealClues
 
-        pushAll
-          [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
-      pure a
+          pushAll
+            [ PlaceClues (toTarget a) locationClueCount
+            | locationClueCount > 0
+            ]
+          pure $ a & withoutCluesL .~ (locationClueCount == 0)
+        else pure a
     RevealLocation miid lid | lid == locationId -> do
       modifiers' <- getModifiers (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'

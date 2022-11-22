@@ -7,13 +7,16 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Card
 import Arkham.Cost
-import Arkham.Criteria
+import Arkham.Criteria hiding ( DuringTurn )
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -64,9 +67,24 @@ instance RunMessage UrsulaDowns where
       let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
       actions <-
         nub <$> concatMapM (\w -> getActionsWith iid w decreaseCost) windows'
-      push $ AskPlayer $ chooseOne iid $ map
-        ((\f -> f windows' []) . AbilityLabel iid)
-        (filter (`abilityIs` Action.Investigate) actions)
+      handCards <- field InvestigatorHand iid
+      let
+        investigateCards =
+          filter (elem Action.Investigate . cdActions . toCardDef) handCards
+      playableCards <- filterM
+        (getIsPlayable iid (toSource attrs) UnpaidCost windows')
+        investigateCards
+      push
+        $ AskPlayer
+        $ chooseOne iid
+        $ map
+            ((\f -> f windows' []) . AbilityLabel iid)
+            (filter (`abilityIs` Action.Investigate) actions)
+        <> [ TargetLabel
+               (CardIdTarget $ toCardId item)
+               [PayCardCost iid item windows']
+           | item <- playableCards
+           ]
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True

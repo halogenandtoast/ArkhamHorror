@@ -1507,6 +1507,7 @@ bloodRite :: CardDef
 bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
   , cdCardTraits = singleton Spell
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
 astoundingRevelation :: CardDef

@@ -51,6 +51,6 @@ instance RunMessage Streetwise3 where
       (skillTestModifier
         source
         (InvestigatorTarget iid)
-        (SkillModifier SkillIntellect 3)
+        (SkillModifier SkillAgility 3)
       )
     _ -> Streetwise3 <$> runMessage msg attrs

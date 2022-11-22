@@ -32,7 +32,7 @@ import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.Skill
 import Arkham.Skill.Cards qualified as Skills
-import Arkham.SkillType
+import Arkham.SkillType hiding (allSkills)
 import Arkham.Trait hiding ( Dunwich )
 import Arkham.Treachery
 import Arkham.Treachery.Cards qualified as Treacheries

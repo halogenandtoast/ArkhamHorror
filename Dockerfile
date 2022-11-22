@@ -64,7 +64,7 @@ RUN \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGStrict
 
-ARG GHC=9.4.2
+ARG GHC=9.4.3
 ARG CABAL=latest
 ARG STACK=latest
 
@@ -132,7 +132,7 @@ RUN \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGStrict
 
-ARG GHC=9.4.2
+ARG GHC=9.4.3
 ARG CABAL=latest
 ARG STACK=latest
 

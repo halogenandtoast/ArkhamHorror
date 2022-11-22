@@ -77,7 +77,7 @@ instance RunMessage StepsOfYhagharl where
           (const [])
         replaceMessageMatching
           (\case
-            After (Move _ iid' _ _) | iid == iid' -> True
+            After (Move _ iid' _) | iid == iid' -> True
             _ -> False
           )
           (const [])

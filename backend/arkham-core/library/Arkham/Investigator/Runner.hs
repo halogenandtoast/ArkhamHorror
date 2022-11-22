@@ -6,8 +6,8 @@ module Arkham.Investigator.Runner
 
 import Arkham.Prelude
 
-import Arkham.Classes as X
 import Arkham.ClassSymbol as X
+import Arkham.Classes as X
 import Arkham.Helpers.Investigator as X
 import Arkham.Investigator.Types as X
 import Arkham.Name as X
@@ -398,10 +398,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlaceAsset aid placement | aid `member` investigatorAssets ->
     case placement of
       InPlayArea iid | iid == investigatorId -> pure a
-      _ -> pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
+      _ ->
+        pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   PlaceAsset aid placement | aid `notMember` investigatorAssets -> do
     case placement of
-      InPlayArea iid | iid == investigatorId -> push $ InvestigatorPlayAsset iid aid
+      InPlayArea iid | iid == investigatorId ->
+        push $ InvestigatorPlayAsset iid aid
       _ -> pure ()
     pure a
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
@@ -673,21 +675,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindowMsg <- Helpers.checkWindows
       [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
     a <$ pushAll
-      (resolve (Move (toSource a) iid investigatorLocation lid)
+      (resolve (Move (toSource a) iid lid)
       <> [afterWindowMsg]
       )
-  Move source iid fromLocationId destinationLocationId
-    | iid == investigatorId -> do
-      windowMsgs <- Helpers.windows
-        [Window.Moves iid fromLocationId destinationLocationId]
-      a <$ pushAll
-        ([ Will (MoveFrom source iid fromLocationId)
-         , Will (MoveTo source iid destinationLocationId)
-         , MoveFrom source iid fromLocationId
-         , MoveTo source iid destinationLocationId
+  Move source iid destinationLocationId | iid == investigatorId -> do
+    mFromLocation <- field InvestigatorLocation iid
+    windowMsgs <- Helpers.windows
+      [Window.Moves iid mFromLocation destinationLocationId]
+    pushAll
+      $ [ Will (MoveFrom source iid fromLocationId)
+        | fromLocationId <- maybeToList mFromLocation
+        ]
+      <> [Will (MoveTo source iid destinationLocationId)]
+      <> [ MoveFrom source iid fromLocationId
+         | fromLocationId <- maybeToList mFromLocation
          ]
-        <> windowMsgs
-        )
+      <> [MoveTo source iid destinationLocationId]
+      <> windowMsgs
+    pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> do
       window <- checkWindows

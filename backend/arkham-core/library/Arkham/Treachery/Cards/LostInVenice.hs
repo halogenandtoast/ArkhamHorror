@@ -34,7 +34,7 @@ instance RunMessage LostInVenice where
             [ Label "Take 2 damage" [take2damage]
             , Label
               "Move to the location across from you"
-              [Move source iid lid acrossLocationId]
+              [Move source iid acrossLocationId]
             ]
       pure t
     _ -> LostInVenice <$> runMessage msg attrs

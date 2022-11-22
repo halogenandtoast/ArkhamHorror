@@ -38,13 +38,15 @@ instance HasModifiersFor IveGotAPlan where
 instance RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      e <$ push
-        (ChooseFightEnemy
+      pushAll
+        [ ChooseFightEnemy
           iid
           (EventSource eid)
           Nothing
           SkillIntellect
           mempty
           False
-        )
+        , Discard (toTarget attrs)
+        ]
+      pure e
     _ -> IveGotAPlan <$> runMessage msg attrs

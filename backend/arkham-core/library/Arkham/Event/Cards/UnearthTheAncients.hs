@@ -32,6 +32,10 @@ unearthTheAncients = event
   (UnearthTheAncients . (`with` Metadata Nothing))
   Cards.unearthTheAncients
 
+-- Rules as written says that yes, you could commit the chosen cards to the
+-- test, and put them into play when the test resolves. We may revisit this in
+-- a future FAQ (not 2.0, which is about to be released).
+
 instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do

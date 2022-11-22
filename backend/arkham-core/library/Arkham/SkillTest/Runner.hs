@@ -226,6 +226,8 @@ instance RunMessage SkillTest where
         )
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (SkillTarget skillId :)
+    PutCardIntoPlay _ card _ _ -> do
+      pure $ s & committedCardsL %~ deleteMap (toCardId card)
     SkillTestCommitCard iid card -> do
       pure $ s & committedCardsL %~ insertMap (toCardId card) (iid, card)
     SkillTestUncommitCard _ card ->

@@ -1516,9 +1516,12 @@ windowMatches iid source window' = \case
       (locationMatches iid source window' lid whereMatcher)
     _ -> pure False
   Matcher.Moves whenMatcher whoMatcher fromMatcher toMatcher -> case window' of
-    Window t (Window.Moves iid' fromLid toLid) | whenMatcher == t -> andM
+    Window t (Window.Moves iid' mFromLid toLid) | whenMatcher == t -> andM
       [ matchWho iid iid' whoMatcher
-      , locationMatches iid source window' fromLid fromMatcher
+      , case (fromMatcher, mFromLid) of
+          (Matcher.Anywhere, _) -> pure True
+          (_, Just fromLid) -> locationMatches iid source window' fromLid fromMatcher
+          _ -> pure False
       , locationMatches iid source window' toLid toMatcher
       ]
     _ -> pure False

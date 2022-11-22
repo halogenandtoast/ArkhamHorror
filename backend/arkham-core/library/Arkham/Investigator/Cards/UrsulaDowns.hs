@@ -61,8 +61,7 @@ instance RunMessage UrsulaDowns where
           , Window Timing.When Window.FastPlayerWindow
           , Window Timing.When Window.NonFast
           ]
-      let
-        decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
+      let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
       actions <-
         nub <$> concatMapM (\w -> getActionsWith iid w decreaseCost) windows'
       push $ AskPlayer $ chooseOne iid $ map
@@ -80,14 +79,7 @@ instance RunMessage UrsulaDowns where
           "Move to a connecting location"
           [ chooseOne
               (toId attrs)
-              [ targetLabel
-                  lid'
-                  [ Move
-                      (toSource attrs)
-                      (toId attrs)
-                      (investigatorLocation attrs)
-                      lid'
-                  ]
+              [ targetLabel lid' [Move (toSource attrs) (toId attrs) lid']
               | lid' <- targets
               ]
           ]

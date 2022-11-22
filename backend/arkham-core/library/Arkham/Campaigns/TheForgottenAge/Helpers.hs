@@ -124,9 +124,7 @@ explore iid source cardMatcher exploreRule = do
 
           pure
             $ locationAction
-            : [ MoveTo source iid lid
-              | canMove && exploreRule == PlaceExplored
-              ]
+            : [ Move source iid lid | canMove && exploreRule == PlaceExplored ]
             <> [ UpdateHistory iid historyItem
                , afterExploredWindow
                , afterPutIntoPlayWindow

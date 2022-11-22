@@ -40,11 +40,10 @@ instance RunMessage Shortcut2 where
       lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
-      lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid
       connectingLocations <- selectList $ AccessibleLocation
       push $ chooseOne
         iid
-        [ targetLabel lid' [Move (toSource attrs) iid lid lid']
+        [ targetLabel lid' [Move (toSource attrs) iid lid']
         | lid' <- connectingLocations
         ]
       pure e

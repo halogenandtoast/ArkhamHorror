@@ -238,6 +238,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , truthFromFiction
   , uncageTheSoul
   , unearthTheAncients
+  , unearthTheAncients2
   , wardOfProtection
   , wardOfProtection2
   , wardOfProtection5
@@ -1530,6 +1531,17 @@ scroungeForSupplies = (event "06165" "Scrounge for Supplies" 0 Survivor)
   { cdCardTraits = singleton Fortune
   , cdCriteria = Just
     $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithLevel 0)
+  }
+
+unearthTheAncients2 :: CardDef
+unearthTheAncients2 = (event "08039" "Unearth the Ancients" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Insight
+  , cdActions = [Action.Investigate]
+  , cdCriteria =
+    Just $ Criteria.ExtendedCardExists $ InHandOf You <> BasicCardMatch
+      (CardWithClass Seeker <> CardWithType AssetType)
+  , cdLevel = 2
   }
 
 dynamiteBlast2 :: CardDef

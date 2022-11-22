@@ -5,19 +5,20 @@ module Arkham.Event.Cards.UnearthTheAncients
 
 import Arkham.Prelude
 
-import Arkham.ClassSymbol
 import Arkham.Action qualified as Action
 import Arkham.Card
+import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Window (defaultWindows)
+import Arkham.Window ( defaultWindows )
 
 newtype Metadata = Metadata { chosenCard :: Maybe Card }
   deriving stock (Show, Eq, Generic)
@@ -52,7 +53,11 @@ instance RunMessage UnearthTheAncients where
     ResolveEvent iid eid (Just (CardTarget card)) _ | eid == toId attrs -> do
       lid <- getJustLocation iid
       pushAll
-        [ Investigate
+        [ skillTestModifier
+          (toSource attrs)
+          SkillTestTarget
+          (SetDifficulty $ getCost card)
+        , Investigate
           iid
           lid
           (toSource attrs)
@@ -69,8 +74,8 @@ instance RunMessage UnearthTheAncients where
             pushAll
               $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
               : [ DrawCards iid 1 False
-                 | Relic `member` cdCardTraits (toCardDef card)
-                 ]
+                | Relic `member` cdCardTraits (toCardDef card)
+                ]
           Nothing -> error "this should not happen"
         pure e
     _ -> UnearthTheAncients . (`with` metadata) <$> runMessage msg attrs

@@ -1095,10 +1095,6 @@ getGameAbilities = do
     <> effectAbilities
     <> investigatorAbilities
 
-getLocationMatching
-  :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m (Maybe Location)
-getLocationMatching = (listToMaybe <$>) . getLocationsMatching
-
 getLocationsMatching
   :: (HasCallStack, Monad m, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do

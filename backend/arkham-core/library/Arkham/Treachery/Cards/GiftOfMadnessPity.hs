@@ -6,18 +6,18 @@ module Arkham.Treachery.Cards.GiftOfMadnessPity
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Matcher hiding ( PlaceUnderneath, treacheryInHandOf )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
+import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessPity = GiftOfMadnessPity TreacheryAttrs
   deriving anyclass IsTreachery
@@ -27,7 +27,10 @@ giftOfMadnessPity :: TreacheryCard GiftOfMadnessPity
 giftOfMadnessPity = treachery GiftOfMadnessPity Cards.giftOfMadnessPity
 
 instance HasModifiersFor GiftOfMadnessPity where
-  getModifiersFor (InvestigatorHandTarget _) (GiftOfMadnessPity a) = pure $ toModifiers a [CannotFight (EnemyWithTrait Lunatic)]
+  getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessPity a) =
+    pure $ toModifiers
+      a
+      [ CannotFight (EnemyWithTrait Lunatic) | treacheryInHandOf a == Just iid ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GiftOfMadnessPity where

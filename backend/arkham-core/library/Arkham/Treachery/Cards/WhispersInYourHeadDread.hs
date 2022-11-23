@@ -6,13 +6,13 @@ module Arkham.Treachery.Cards.WhispersInYourHeadDread
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -25,7 +25,10 @@ whispersInYourHeadDread =
   treachery WhispersInYourHeadDread Cards.whispersInYourHeadDread
 
 instance HasModifiersFor WhispersInYourHeadDread where
-  getModifiersFor (InvestigatorHandTarget _) (WhispersInYourHeadDread a) = pure $ toModifiers a [CannotMoveMoreThanOnceEachTurn]
+  getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDread a) =
+    pure $ toModifiers
+      a
+      [ CannotMoveMoreThanOnceEachTurn | treacheryInHandOf a == Just iid ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadDread where

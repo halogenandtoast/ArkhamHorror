@@ -6,15 +6,15 @@ module Arkham.Treachery.Cards.WhispersInYourHeadDismay
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher
+import Arkham.Matcher hiding (treacheryInHandOf)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -27,7 +27,12 @@ whispersInYourHeadDismay =
   treachery WhispersInYourHeadDismay Cards.whispersInYourHeadDismay
 
 instance HasModifiersFor WhispersInYourHeadDismay where
-  getModifiersFor (InvestigatorHandTarget _) (WhispersInYourHeadDismay a) = pure $ toModifiers a [CannotCommitCards $ CardWithType SkillType]
+  getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDismay a) =
+    pure $ toModifiers
+      a
+      [ CannotCommitCards $ CardWithType SkillType
+      | treacheryInHandOf a == Just iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadDismay where

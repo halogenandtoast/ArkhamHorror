@@ -182,6 +182,7 @@ data ModifierType
   | SkipMythosPhaseStep MythosPhaseStep
   | SpawnNonEliteAtConnectingInstead
   | SpawnLocation LocationMatcher
+  | StartingHand Int
   | StartingResources Int
   | StartingClues Int
   | TokenFaceModifier [TokenFace]

@@ -417,6 +417,9 @@ allAssets = mapFrom
   -- The Wages of Sin
   --- survivor [wos]
   , SomeAssetCard drawingThin
+  -- In the Clutches of Chaos
+  --- seeker [icc]
+  , SomeAssetCard studious3
   -- Before the Black Throne
   --- seeker [bbt]
   , SomeAssetCard occultLexicon
@@ -424,14 +427,17 @@ allAssets = mapFrom
   --- mystic [sfk]
   , SomeAssetCard scrollOfProphecies
   -- Devil Reef
-  --- gurdian [def]
+  --- guardian [def]
   , SomeAssetCard keenEye
+  -- Into the Maelstrom
+  --- seeker [itm]
+  , SomeAssetCard ancestralKnowledge3
   -- Edge of the Earth
   --- signature [eote]
   , SomeAssetCard livreDeibon
   -- The Scarlet Keys
   --- guardian [tsk]
-  , SomeAssetCard runicAxe
+  -- , SomeAssetCard runicAxe
   , SomeAssetCard handcuffs2
   -- Return to Night of the Zealot
   --- guardian [rtnotz]
@@ -479,6 +485,7 @@ allAssets = mapFrom
   , SomeAssetCard theNecronomiconPetrusDeDaciaTranslation5
   --- Winnifred Habbamock
   , SomeAssetCard lockpicks
+  , SomeAssetCard streetwise
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

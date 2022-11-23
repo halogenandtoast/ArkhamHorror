@@ -64,7 +64,15 @@ instance RunMessage JourneyToTheNexus where
     UseCardAbility iid source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      depth <- (+ 1) <$> getCurrentDepth
+      pushAll
+        [NextAdvanceActStep (toId attrs) 1, NextAdvanceActStep (toId attrs) 2]
+      pure a
+    NextAdvanceActStep aid 1 | aid == toId attrs -> do
+      msgs <- incrementDepth
+      push msgs
+      pure a
+    NextAdvanceActStep aid 2 | aid == toId attrs -> do
+      depth <- getCurrentDepth
       isStandalone <- getIsStandalone
       if depth >= 5 && not isStandalone
         then push $ ScenarioResolution $ Resolution 2
@@ -75,10 +83,10 @@ instance RunMessage JourneyToTheNexus where
           explorationDeck <- getExplorationDeck
           stepsOfYoth <- selectJust $ locationIs Locations.stepsOfYoth
           stepsOfYothCard <- field LocationCard stepsOfYoth
-          otherLocations <- selectList $ NotLocation $ LocationWithId stepsOfYoth
+          otherLocations <- selectList $ NotLocation $ LocationWithId
+            stepsOfYoth
           locationCards <- traverse (field LocationCard) otherLocations
-          let
-            notStepsOfYoth = locationCards <> explorationDeck
+          let notStepsOfYoth = locationCards <> explorationDeck
           (newStart, rest) <- do
             shuffled <- shuffleM notStepsOfYoth
             case shuffled of
@@ -89,7 +97,9 @@ instance RunMessage JourneyToTheNexus where
             $ map (InvestigatorDefeated (toSource attrs)) defeated
             <> map InvestigatorDiscardAllClues defeated
             <> map (\e -> PlaceEnemy e Pursuit) enemies
-            <> map (RemoveAllDoom . LocationTarget) (stepsOfYoth : otherLocations)
+            <> map
+                 (RemoveAllDoom . LocationTarget)
+                 (stepsOfYoth : otherLocations)
             <> map RemoveLocation otherLocations
             <> [ PlaceLocation newStart
                , MoveAllTo (toSource attrs) (toLocationId newStart)

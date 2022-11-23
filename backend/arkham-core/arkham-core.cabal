@@ -246,6 +246,7 @@ library
       Arkham.Asset.Cards.AlejandroVela
       Arkham.Asset.Cards.AlyssaGraham
       Arkham.Asset.Cards.AnalyticalMind
+      Arkham.Asset.Cards.AncestralKnowledge3
       Arkham.Asset.Cards.AncientStone1
       Arkham.Asset.Cards.AncientStoneKnowledgeOfTheElders4
       Arkham.Asset.Cards.AncientStoneMindsInHarmony4
@@ -509,7 +510,9 @@ library
       Arkham.Asset.Cards.StrangeSolutionFreezingVariant4
       Arkham.Asset.Cards.StrangeSolutionRestorativeConcoction4
       Arkham.Asset.Cards.StrayCat
+      Arkham.Asset.Cards.Streetwise
       Arkham.Asset.Cards.Streetwise3
+      Arkham.Asset.Cards.Studious3
       Arkham.Asset.Cards.Suggestion4
       Arkham.Asset.Cards.SurvivalKnife
       Arkham.Asset.Cards.Switchblade

@@ -3,7 +3,6 @@ module Arkham.Treachery.Cards.DraggedUnder where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Matcher
@@ -11,6 +10,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype DraggedUnder = DraggedUnder TreacheryAttrs
@@ -39,21 +39,17 @@ instance RunMessage DraggedUnder where
       [ InvestigatorAssignDamage iid source DamageAny 2 0
       , Discard $ toTarget attrs
       ]
-    UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      t
-        <$ push
-             (BeginSkillTest
-               iid
-               source
-               (InvestigatorTarget iid)
-               Nothing
-               SkillAgility
-               3
-             )
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      push $ BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillAgility
+        3
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ when
         (isNothing $ treacheryAttachedTarget attrs)
         (push $ AttachTreachery (toId attrs) (InvestigatorTarget iid))
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> DraggedUnder <$> runMessage msg attrs

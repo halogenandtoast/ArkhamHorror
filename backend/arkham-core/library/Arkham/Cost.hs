@@ -5,7 +5,9 @@ module Arkham.Cost
 import Arkham.Prelude
 
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
+import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
@@ -15,7 +17,6 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token ( Token )
 import Data.Text qualified as T
-import {-# SOURCE #-} Arkham.Cost.FieldCost
 
 data CostStatus = UnpaidCost | PaidCost
   deriving stock Eq
@@ -116,6 +117,7 @@ data Cost
   | UpTo Int Cost
   | SealCost TokenMatcher
   | SealTokenCost Token -- internal to track sealed token
+  | SupplyCost LocationMatcher Supply
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -128,9 +130,11 @@ displayCostType :: Cost -> Text
 displayCostType = \case
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
-  DiscardCombinedCost n -> "Discard cards with a total combined cost of at least " <> tshow n
+  DiscardCombinedCost n ->
+    "Discard cards with a total combined cost of at least " <> tshow n
   DiscardHandCost -> "Discard your entire hand"
-  ShuffleDiscardCost n _ -> "Shuffle " <> pluralize n "matching card" <> " into your deck"
+  ShuffleDiscardCost n _ ->
+    "Shuffle " <> pluralize n "matching card" <> " into your deck"
   AdditionalActionsCost -> "Additional Action"
   ClueCost n -> pluralize n "Clue"
   PerPlayerClueCost n -> pluralize n "Clue" <> " per player"
@@ -166,8 +170,8 @@ displayCostType = \case
   EnemyDoomCost n _ -> "Place " <> pluralize n "Doom" <> " on a matching enemy"
   ExileCost _ -> "Exile"
   HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
-  ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
-  ReturnAssetToHandCost {} -> "Return asset to hand"
+  ReturnMatchingAssetToHandCost{} -> "Return matching asset to hand"
+  ReturnAssetToHandCost{} -> "Return asset to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
   HorrorCost _ _ n -> tshow n <> " Horror"
   Free -> "Free"
@@ -205,7 +209,9 @@ displayCostType = \case
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
   SealTokenCost _ -> "Seal token"
-  FieldResourceCost {} -> "X"
+  FieldResourceCost{} -> "X"
+  SupplyCost _ supply ->
+    "An investigator crosses off " <> tshow supply <> " from their supplies"
  where
   pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
 

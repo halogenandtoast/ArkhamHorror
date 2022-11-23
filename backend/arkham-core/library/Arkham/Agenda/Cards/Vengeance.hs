@@ -10,11 +10,14 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorDefeated )
 import Arkham.Resolution
+import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Data.List ( cycle )
 
 newtype Vengeance = Vengeance AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -45,6 +48,20 @@ instance RunMessage Vengeance where
       push $ ScenarioResolution $ Resolution 1
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push AllDrawEncounterCard
+      doom <- getDoomCount
+      iids <- getInvestigatorIds
+      pushAll $ zipWith
+        ($)
+        (replicate
+          doom
+          (\i -> chooseOne
+            i
+            [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard i]]
+          )
+        )
+        (cycle iids)
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+      push $ AdvanceAgenda (toId attrs)
       pure a
     _ -> Vengeance <$> runMessage msg attrs

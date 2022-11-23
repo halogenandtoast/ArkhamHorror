@@ -548,6 +548,7 @@ data WindowMatcher
   | Explored Timing Who ExploreMatcher
   | AttemptExplore Timing Who
   | PhaseStep Timing PhaseStepMatcher
+  | AddingToCurrentDepth
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

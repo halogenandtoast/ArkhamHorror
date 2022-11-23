@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.ClassSymbol
 import Arkham.Classes
+import Arkham.ClassSymbol
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -64,18 +64,12 @@ instance RunMessage UnearthTheAncients2 where
           (toSource attrs)
           SkillTestTarget
           (SetDifficulty $ sum $ map getCost $ chosenCards metadata)
-        , Investigate
-          iid
-          lid
-          (toSource attrs)
-          (Just $ toTarget attrs)
-          SkillIntellect
-          False
+        , Investigate iid lid (toSource attrs) Nothing SkillIntellect False
         , Discard (toTarget attrs)
         ]
       pure e
-    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
-      do
+    Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _
+      -> do
         pushAll
           $ [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
             | card <- chosenCards metadata

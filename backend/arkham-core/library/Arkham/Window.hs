@@ -150,6 +150,7 @@ data WindowType
   | Explored InvestigatorId (Result LocationId)
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep
+  | AddingToCurrentDepth
   -- used to avoid checking a window
   | DoNotCheckWindow
   deriving stock (Show, Generic, Eq)

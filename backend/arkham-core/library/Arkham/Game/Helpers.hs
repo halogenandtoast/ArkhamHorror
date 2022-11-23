@@ -1287,6 +1287,9 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.AddingToCurrentDepth -> case window' of
+    Window t Window.AddingToCurrentDepth -> t == timing
+    _ -> pure False
   Matcher.DrawingStartingHand timing whoMatcher -> case window' of
     Window t (Window.DrawingStartingHand who) | t == timing ->
       matchWho iid who whoMatcher

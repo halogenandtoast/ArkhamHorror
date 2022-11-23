@@ -22,6 +22,14 @@ data DepthsOfYothMeta = DepthsOfYothMeta
   deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
 
+incrementDepth :: (HasGame m) => m [Message]
+incrementDepth = do
+  addingToCurrentDepth <- checkWindows
+    [Window Timing.When Window.AddingToCurrentDepth]
+  depth <- (+ 1) <$> getCurrentDepth
+  start <- getDepthStart
+  pure [addingToCurrentDepth, SetScenarioMeta $ toMeta depth start]
+
 getCurrentDepth :: (HasGame m, Monad m) => m Int
 getCurrentDepth = currentDepth <$> getMeta
 

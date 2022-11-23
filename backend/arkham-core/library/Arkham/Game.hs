@@ -3091,6 +3091,11 @@ runGameMessage msg g = case msg of
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid
+  RemoveTreachery tid -> do
+    popMessageMatching_ $ \case
+      After (Revelation _ source) -> source == TreacherySource tid
+      _ -> False
+    pure $ g & entitiesL . treacheriesL %~ deleteMap tid
   When (RemoveLocation lid) -> do
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
@@ -3265,8 +3270,7 @@ runGameMessage msg g = case msg of
     case mOutOfPlayEnemy of
       Just enemy -> do
         case placement of
-          AtLocation lid ->
-            push $ EnemySpawn Nothing lid enemyId
+          AtLocation lid -> push $ EnemySpawn Nothing lid enemyId
           _ -> pure ()
         pure
           $ g
@@ -3307,8 +3311,11 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . eventsL %~ deleteMap eid
   ShuffleIntoDeck deck (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
-    push $ ShuffleCardsIntoDeck deck [toCard treachery]
-    pure $ g & entitiesL . treacheriesL %~ deleteMap treacheryId
+    pushAll
+      [ RemoveTreachery treacheryId
+      , ShuffleCardsIntoDeck deck [toCard treachery]
+      ]
+    pure g
   ShuffleIntoDeck deck (EnemyTarget enemyId) -> do
     -- The Thing That Follows
     card <- field EnemyCard enemyId

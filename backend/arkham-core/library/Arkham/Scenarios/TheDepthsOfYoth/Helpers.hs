@@ -7,14 +7,17 @@ import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
-import Data.Aeson ( Result (..) )
+import Arkham.Timing qualified as Timing
+import Arkham.Window ( Window(..) )
 import Arkham.Window qualified as Window
+import Data.Aeson ( Result (..) )
 
 data DepthsOfYothMeta = DepthsOfYothMeta
   { currentDepth :: Int
@@ -23,7 +26,7 @@ data DepthsOfYothMeta = DepthsOfYothMeta
   deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
 
-incrementDepth :: (HasGame m) => m [Message]
+incrementDepth :: (Monad m, HasGame m) => m [Message]
 incrementDepth = do
   addingToCurrentDepth <- checkWindows
     [Window Timing.When Window.AddingToCurrentDepth]

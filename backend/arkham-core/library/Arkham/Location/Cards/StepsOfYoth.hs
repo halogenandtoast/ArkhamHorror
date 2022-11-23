@@ -5,9 +5,17 @@ module Arkham.Location.Cards.StepsOfYoth
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype StepsOfYoth = StepsOfYoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,7 +27,8 @@ stepsOfYoth = symbolLabel $ location StepsOfYoth Cards.stepsOfYoth 3 (Static 0)
 instance HasAbilities StepsOfYoth where
   getAbilities (StepsOfYoth attrs) = withBaseAbilities
     attrs
-    [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility a 1 Here
+    [ limitedAbility (GroupLimit PerGame 1)
+      $ restrictedAbility attrs 1 Here
       $ ReactionAbility AddingToCurrentDepth
       $ SupplyCost (LocationWithId $ toId attrs) Rope
     ]
@@ -28,6 +37,6 @@ instance RunMessage StepsOfYoth where
   runMessage msg l@(StepsOfYoth attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       msgs <- incrementDepth
-      push msgs
+      pushAll msgs
       pure l
     _ -> StepsOfYoth <$> runMessage msg attrs

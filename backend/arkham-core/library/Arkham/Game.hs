@@ -863,7 +863,7 @@ getInvestigatorsMatching matcher = do
     UnengagedInvestigator -> pure . null . investigatorEngagedEnemies . toAttrs
     NoDamageDealtThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
-      pure $ notNull (historyDealtDamageTo history)
+      pure $ null (historyDealtDamageTo history)
     NoSuccessfulExploreThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ not (historySuccessfulExplore history)
@@ -3091,11 +3091,6 @@ runGameMessage msg g = case msg of
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid
-  RemoveTreachery tid -> do
-    popMessageMatching_ $ \case
-      After (Revelation _ source) -> source == TreacherySource tid
-      _ -> False
-    pure $ g & entitiesL . treacheriesL %~ deleteMap tid
   When (RemoveLocation lid) -> do
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
@@ -3637,7 +3632,7 @@ runGameMessage msg g = case msg of
     card <- field TreacheryCard tid
     windowMsgs <- windows [Window.AddedToVictory card]
     pushAll $ RemoveTreachery tid : windowMsgs
-    pure $ g & (entitiesL . treacheriesL %~ deleteMap tid) -- we might not want to remove here?
+    pure g
   AddToVictory (LocationTarget lid) -> do
     card <- field LocationCard lid
     windowMsgs <- windows [Window.AddedToVictory card]
@@ -4231,8 +4226,9 @@ runGameMessage msg g = case msg of
       & inDiscardEntitiesL
       . at iid
       ?~ (dEntities & eventsL . at (toId event') ?~ event')
-  Discarded (TreacheryTarget aid) _ ->
-    pure $ g & entitiesL . treacheriesL %~ deleteMap aid
+  Discarded (TreacheryTarget aid) _ -> do
+    push $ RemoveTreachery aid
+    pure g
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     event' <- getEvent eid

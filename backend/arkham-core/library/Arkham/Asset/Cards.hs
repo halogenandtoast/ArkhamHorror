@@ -113,6 +113,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , alejandroVela
   , alyssaGraham
   , analyticalMind
+  , ancestralKnowledge3
   , ancientStone1
   , ancientStoneKnowledgeOfTheElders4
   , ancientStoneMindsInHarmony4
@@ -329,6 +330,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , runicAxe
   , safeguard
   , scavenging
+  , scientificTheory1
   , scrapper
   , scrapper3
   , scrollOfProphecies
@@ -345,8 +347,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , spiritAthame1
   , stealth
   , stickToThePlan3
+  , streetwise
   , streetwise3
-  , scientificTheory1
+  , studious3
   , songOfTheDead2
   , spiritSpeaker
   , springfieldM19034
@@ -2478,6 +2481,11 @@ drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
   , cdCardTraits = singleton Talent
   }
 
+studious3 :: CardDef
+studious3 = permanent $ (asset "05276" "Studious" 0 Survivor)
+  { cdCardTraits = singleton Talent
+  }
+
 occultLexicon :: CardDef
 occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
   { cdSkills = [SkillIntellect]
@@ -2497,6 +2505,13 @@ keenEye :: CardDef
 keenEye = (asset "07152" "Keen Eye" 2 Guardian)
   { cdCardTraits = setFromList [Talent]
   , cdSkills = [SkillIntellect, SkillCombat]
+  }
+
+ancestralKnowledge3 :: CardDef
+ancestralKnowledge3 = permanent $ (asset "07303" "Ancestral Knowledge" 0 Seeker)
+  { cdCardTraits = singleton Talent
+  , cdKeywords = setFromList [Keyword.Exceptional]
+  , cdLevel = 3
   }
 
 livreDeibon :: CardDef
@@ -2796,6 +2811,11 @@ lockpicks = (asset "60305" "Lockpicks" 3 Rogue)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool, Illicit]
   , cdSlots = [HandSlot]
+  }
+
+streetwise :: CardDef
+streetwise = (asset "60311" "Streetwise" 0 Rogue)
+  { cdCardTraits = singleton Talent
   }
 
 eighteenDerringer :: CardDef

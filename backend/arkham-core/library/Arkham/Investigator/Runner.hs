@@ -199,7 +199,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
     pure $ a & (deckL .~ Deck deck'')
   DrawStartingHand iid | iid == investigatorId -> do
-    let (discard, hand, deck) = drawOpeningHand a 5
+    modifiers' <- getModifiers (toTarget a)
+    let
+      startingHandAmount = foldr applyModifier 5 modifiers'
+      applyModifier (StartingHand m) n =
+        max 0 (n + m)
+      applyModifier _ n = n
+    let (discard, hand, deck) = drawOpeningHand a startingHandAmount
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
   ReturnToHand iid (CardIdTarget cid) | iid == investigatorId -> do
     -- Card is assumed to be in your discard
@@ -296,8 +302,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just c -> a <$ push (DiscardCard investigatorId (toCardId c))
   FinishedWithMulligan iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
-    let (discard, hand, deck) = drawOpeningHand a (5 - length investigatorHand)
     let
+      startingHandAmount = foldl'
+        (\total -> \case
+          StartingHand n -> max 0 (total + n)
+          _ -> total
+        )
+        5
+        modifiers'
       startingResources = foldl'
         (\total -> \case
           StartingResources n -> max 0 (total + n)
@@ -305,6 +317,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         5
         modifiers'
+      (discard, hand, deck) = drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows
       [Window Timing.After (Window.DrawingStartingHand iid)]
     pushAll [ShuffleDiscardBackIn iid, window]
@@ -1710,6 +1723,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           Endo
             $ (assetsL %~ deleteSet (AssetId $ toCardId card))
             . (slotsL %~ removeFromSlots (AssetId $ toCardId card))
+            . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
         )
         cards
     pure $ a & cardsUnderneathL <>~ cards & update

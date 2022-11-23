@@ -187,6 +187,8 @@ instance RunMessage AssetAttrs where
       _ -> pure $ a & exhaustedL .~ False
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL <>~ cards
+    AddToHand _ card -> do
+      pure $ a & cardsUnderneathL %~ filter (/= card)
     PlaceAsset aid placement | aid == assetId ->
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a

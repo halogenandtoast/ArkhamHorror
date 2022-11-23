@@ -14,6 +14,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Data.Aeson ( Result (..) )
+import Arkham.Window qualified as Window
 
 data DepthsOfYothMeta = DepthsOfYothMeta
   { currentDepth :: Int

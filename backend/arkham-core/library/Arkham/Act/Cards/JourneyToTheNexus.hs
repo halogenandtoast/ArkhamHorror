@@ -69,7 +69,7 @@ instance RunMessage JourneyToTheNexus where
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs -> do
       msgs <- incrementDepth
-      push msgs
+      pushAll msgs
       pure a
     NextAdvanceActStep aid 2 | aid == toId attrs -> do
       depth <- getCurrentDepth

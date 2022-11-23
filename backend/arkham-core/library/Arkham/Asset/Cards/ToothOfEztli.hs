@@ -37,19 +37,14 @@ instance HasModifiersFor ToothOfEztli where
 
 instance HasAbilities ToothOfEztli where
   getAbilities (ToothOfEztli x) =
-    [ restrictedAbility
-        x
-        1
-        ControlsThis
-        (ReactionAbility
-          (SkillTestResult
-            Timing.After
-            You
-            (SkillTestOnTreachery AnyTreachery)
-            (SuccessResult AnyValue)
-          )
-          (ExhaustCost $ toTarget x)
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
+        (SkillTestResult
+          Timing.After
+          You
+          (SkillTestOnTreachery AnyTreachery)
+          (SuccessResult AnyValue)
         )
+        (ExhaustCost $ toTarget x)
     ]
 
 instance RunMessage ToothOfEztli where

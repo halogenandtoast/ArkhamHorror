@@ -28,8 +28,8 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
-import Arkham.Classes
 import Arkham.ClassSymbol
+import Arkham.Classes
 import Arkham.Cost
 import Arkham.Cost.FieldCost
 import Arkham.Criteria ( Criterion )
@@ -877,19 +877,29 @@ onSameLocation :: (HasGame m, Monad m) => InvestigatorId -> Placement -> m Bool
 onSameLocation iid = \case
   AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
-  InPlayArea iid' -> if iid == iid' then pure True else
-    liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
-  InThreatArea iid' -> if iid == iid' then pure True else
-    liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
-  AttachedToEnemy eid -> 
+  InPlayArea iid' -> if iid == iid'
+    then pure True
+    else liftA2
+      (==)
+      (field InvestigatorLocation iid')
+      (field InvestigatorLocation iid)
+  InThreatArea iid' -> if iid == iid'
+    then pure True
+    else liftA2
+      (==)
+      (field InvestigatorLocation iid')
+      (field InvestigatorLocation iid)
+  AttachedToEnemy eid ->
     liftA2 (==) (field EnemyLocation eid) (field InvestigatorLocation iid)
   AttachedToAsset aid _ -> do
     placement' <- field AssetPlacement aid
     onSameLocation iid placement'
   AttachedToAct _ -> pure False
   AttachedToAgenda _ -> pure False
-  AttachedToInvestigator iid' ->
-    liftA2 (==) (field InvestigatorLocation iid') (field InvestigatorLocation iid)
+  AttachedToInvestigator iid' -> liftA2
+    (==)
+    (field InvestigatorLocation iid')
+    (field InvestigatorLocation iid)
   Unplaced -> pure False
   TheVoid -> pure False
   Pursuit -> pure False
@@ -951,8 +961,7 @@ passesCriteria iid source windows' = \case
   Criteria.SelfHasModifier modifier -> case source of
     InvestigatorSource iid' ->
       elem modifier <$> getModifiers (InvestigatorTarget iid')
-    EnemySource iid' ->
-      elem modifier <$> getModifiers (EnemyTarget iid')
+    EnemySource iid' -> elem modifier <$> getModifiers (EnemyTarget iid')
     _ -> pure False
   Criteria.Here -> case source of
     LocationSource lid -> fieldP InvestigatorLocation (== Just lid) iid
@@ -1119,7 +1128,8 @@ passesCriteria iid source windows' = \case
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows' enemyCriteria
   Criteria.SetAsideCardExists matcher -> selectAny matcher
-  Criteria.SetAsideEnemyExists matcher -> selectAny $ Matcher.SetAsideMatcher matcher
+  Criteria.SetAsideEnemyExists matcher ->
+    selectAny $ Matcher.SetAsideMatcher matcher
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
@@ -1522,9 +1532,10 @@ windowMatches iid source window' = \case
     Window t (Window.Moves iid' mFromLid toLid) | whenMatcher == t -> andM
       [ matchWho iid iid' whoMatcher
       , case (fromMatcher, mFromLid) of
-          (Matcher.Anywhere, _) -> pure True
-          (_, Just fromLid) -> locationMatches iid source window' fromLid fromMatcher
-          _ -> pure False
+        (Matcher.Anywhere, _) -> pure True
+        (_, Just fromLid) ->
+          locationMatches iid source window' fromLid fromMatcher
+        _ -> pure False
       , locationMatches iid source window' toLid toMatcher
       ]
     _ -> pure False
@@ -1649,8 +1660,8 @@ windowMatches iid source window' = \case
                       , enemyMatches enemyId enemyMatcher
                       ]
                     _ -> pure False
-                Window t (Window.PassSkillTest _ _ who n)
-                  | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
+                Window t (Window.PassSkillTest _ _ who n) | whenMatcher == t ->
+                  liftA2
                     (&&)
                     (matchWho iid who whoMatcher)
                     (gameValueMatches n gameValueMatcher)

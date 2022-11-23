@@ -622,6 +622,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
     pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  AddToVictory (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
   DefeatedAddToVictory (EnemyTarget eid) ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
   -- TODO: WARNING: HERE BE DRAGONS
@@ -1789,7 +1790,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure $ (skillDifficulty - baseValue) >= n
               prevented = flip
                 any
-                modifiers'
+                (traceShowId modifiers')
                 \case
                   CanOnlyUseCardsInRole role -> null $ intersect
                     (cdClassSymbols $ toCardDef card)

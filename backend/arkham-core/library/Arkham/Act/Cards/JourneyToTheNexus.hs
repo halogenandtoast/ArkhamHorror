@@ -105,7 +105,7 @@ instance RunMessage JourneyToTheNexus where
                , MoveAllTo (toSource attrs) (toLocationId newStart)
                , RemoveLocation stepsOfYoth
                , SetScenarioDeck ExplorationDeck newExplorationDeck
-               , SetScenarioMeta $ toMeta depth (toLocationId newStart)
+               , SetScenarioMeta $ toMeta (toLocationId newStart)
                , RevertAct $ toId attrs
                ]
       pure a

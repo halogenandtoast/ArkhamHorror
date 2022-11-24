@@ -34,3 +34,6 @@ getRecordSet k = do
 
 remembered :: (Monad m, HasGame m) => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
+
+scenarioCount :: (Monad m, HasGame m) => ScenarioCountKey -> m Int
+scenarioCount k = fromMaybe 0 . lookup k <$> scenarioField ScenarioCounts

@@ -50,6 +50,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
 import Data.IntMap.Strict qualified as IntMap
+import Data.HashMap.Strict qualified as HashMap
 
 instance HasTokenValue ScenarioAttrs where
   getTokenValue iid tokenFace _ = case tokenFace of
@@ -259,6 +260,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       , afterMsg
       ]
   Remember logKey -> pure $ a & logL %~ insertSet logKey
+  ScenarioCountIncrementBy logKey n ->
+    pure $ a & countsL %~ HashMap.alter (Just . maybe n (+ n)) logKey
+  ScenarioCountDecrementBy logKey n ->
+    pure $ a & countsL %~ HashMap.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveToken _drawnToken token _iid | token == AutoFail ->
     a <$ push FailSkillTest
   EndOfScenario mNextCampaignStep -> do

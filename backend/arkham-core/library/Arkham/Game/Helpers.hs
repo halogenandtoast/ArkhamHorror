@@ -526,6 +526,7 @@ getCanAffordCost iid source mAction windows' = \case
   FieldResourceCost (FieldCost mtchr fld) -> do
     n <- getSum <$> selectAgg Sum fld mtchr
     fieldP InvestigatorResources (>= n) iid
+  SupplyCost locationMatcher supply -> iid <=~> (Matcher.InvestigatorWithSupply supply <> Matcher.InvestigatorAt locationMatcher)
 
 getActions :: (Monad m, HasGame m) => InvestigatorId -> Window -> m [Ability]
 getActions iid window = getActionsWith iid window id

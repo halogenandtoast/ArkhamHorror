@@ -2,6 +2,7 @@ module Arkham.Scenarios.TheDepthsOfYoth.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Helpers.Log
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.GameEnv
@@ -14,14 +15,14 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
+import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window(..) )
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.Aeson ( Result (..) )
 
-data DepthsOfYothMeta = DepthsOfYothMeta
-  { currentDepth :: Int
-  , depthLocation :: LocationId
+newtype DepthsOfYothMeta = DepthsOfYothMeta
+  { depthLocation :: LocationId
   }
   deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
@@ -30,12 +31,10 @@ incrementDepth :: (Monad m, HasGame m) => m [Message]
 incrementDepth = do
   addingToCurrentDepth <- checkWindows
     [Window Timing.When Window.AddingToCurrentDepth]
-  depth <- (+ 1) <$> getCurrentDepth
-  start <- getDepthStart
-  pure [addingToCurrentDepth, SetScenarioMeta $ toMeta depth start]
+  pure [addingToCurrentDepth, ScenarioCountIncrementBy CurrentDepth 1]
 
 getCurrentDepth :: (HasGame m, Monad m) => m Int
-getCurrentDepth = currentDepth <$> getMeta
+getCurrentDepth = scenarioCount CurrentDepth
 
 getDepthStart :: (HasGame m, Monad m) => m LocationId
 getDepthStart = depthLocation <$> getMeta
@@ -47,8 +46,8 @@ getMeta = do
     Error _ -> error "invalid meta for depths of yoth"
     Success a -> a
 
-toMeta :: Int -> LocationId -> Value
-toMeta n lid = toJSON $ DepthsOfYothMeta n lid
+toMeta :: LocationId -> Value
+toMeta lid = toJSON $ DepthsOfYothMeta lid
 
 getInPursuitEnemyWithHighestEvade
   :: (HasGame m, Monad m) => m (HashSet EnemyId)

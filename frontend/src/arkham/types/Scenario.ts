@@ -27,11 +27,6 @@ export interface ScenarioDeck {
   deckSize: number;
 }
 
-type ScenarioMeta = { currentDepth: number }
-
-export const scenarioMetaDecoder = JsonDecoder.oneOf<ScenarioMeta>([
-  JsonDecoder.object<ScenarioMeta>({ currentDepth: JsonDecoder.number }, 'ScenarioMeta')], 'ScenarioMeta')
-
 export interface Scenario {
   name: ScenarioName;
   id: string;
@@ -47,7 +42,7 @@ export interface Scenario {
   discard: EncounterCardContents[];
   victoryDisplay: Card[];
   standaloneCampaignLog: LogContents | null;
-  meta: ScenarioMeta | null;
+  counts: [string, number][]; // eslint-disable-line
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -70,5 +65,5 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,
-  meta: JsonDecoder.nullable(scenarioMetaDecoder),
+  counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]'),
 }, 'Scenario');

@@ -87,17 +87,18 @@ const hideCards = () => showCards.ref = noCards
 
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
+const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
 </script>
 
 <template>
   <div class="player-cards">
     <section class="in-play">
       <Event
-        v-for="event in player.events"
-        :event="game.events[event]"
+        v-for="event in events"
+        :event="event"
         :game="game"
         :investigatorId="investigatorId"
-        :key="event"
+        :key="event.id"
         @choose="$emit('choose', $event)"
         @showCards="doShowCards"
       />

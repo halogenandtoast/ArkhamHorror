@@ -24,6 +24,7 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
 import Arkham.Target
@@ -220,7 +221,8 @@ instance RunMessage TheDepthsOfYoth where
           )
         & (actStackL . at 1 ?~ [Acts.journeyToTheNexus])
         & (setAsideCardsL .~ setAsideCards)
-        & (metaL .~ toMeta 1 (toLocationId startLocation))
+        & (metaL .~ toMeta (toLocationId startLocation))
+        & (countsL .~ mapFromList [(CurrentDepth, 1)])
         )
     ResolveAmounts _ (getChoiceAmount "Fury" -> n) ScenarioTarget -> do
       push $ RecordCount YigsFury n

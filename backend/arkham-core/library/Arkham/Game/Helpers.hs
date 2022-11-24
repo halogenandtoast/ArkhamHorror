@@ -1238,6 +1238,8 @@ getModifiedCardCost iid c@(PlayerCard _) = do
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
     Nothing -> 0
+  -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
+  applyModifier n _ | isNothing (cdCost pcDef) = pure n
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do

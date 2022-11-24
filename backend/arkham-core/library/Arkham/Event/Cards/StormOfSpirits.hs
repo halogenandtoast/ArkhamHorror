@@ -39,6 +39,7 @@ instance RunMessage StormOfSpirits where
           SkillWillpower
           mempty
           False
+        , Discard (toTarget attrs)
         ]
     Successful (Action.Fight, EnemyTarget eid) iid _ target _
       | isTarget attrs target -> do

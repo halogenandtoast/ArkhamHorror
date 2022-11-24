@@ -489,6 +489,8 @@ data Message
   | CrossOutRecordSetEntries CampaignLogKey [CardCode]
   | RefillSlots InvestigatorId SlotType [AssetId]
   | Remember ScenarioLogKey
+  | ScenarioCountIncrementBy ScenarioCountKey Int
+  | ScenarioCountDecrementBy ScenarioCountKey Int
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemovePlayerCardFromGame Card
   | RemoveAllClues Target

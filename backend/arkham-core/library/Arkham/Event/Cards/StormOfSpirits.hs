@@ -35,7 +35,7 @@ instance RunMessage StormOfSpirits where
         , ChooseFightEnemy
           iid
           (toSource attrs)
-          Nothing
+          (Just $ toTarget attrs)
           SkillWillpower
           mempty
           False

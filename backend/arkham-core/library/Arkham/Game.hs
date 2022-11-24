@@ -2551,6 +2551,7 @@ instance Projection Scenario where
       ScenarioDecks -> pure scenarioDecks
       ScenarioVictoryDisplay -> pure scenarioVictoryDisplay
       ScenarioRemembered -> pure scenarioLog
+      ScenarioCounts -> pure scenarioCounts
       ScenarioStandaloneCampaignLog -> pure scenarioStandaloneCampaignLog
       ScenarioResignedCardCodes -> pure scenarioResignedCardCodes
       ScenarioChaosBag -> pure scenarioChaosBag

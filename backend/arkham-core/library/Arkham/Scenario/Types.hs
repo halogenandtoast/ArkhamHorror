@@ -40,6 +40,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioDecks :: Field Scenario (HashMap ScenarioDeckKey [Card])
   ScenarioVictoryDisplay :: Field Scenario [Card]
   ScenarioRemembered :: Field Scenario (HashSet ScenarioLogKey)
+  ScenarioCounts :: Field Scenario (HashMap ScenarioCountKey Int)
   ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
   ScenarioChaosBag :: Field Scenario ChaosBag
@@ -65,6 +66,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLocationLayout :: [GridTemplateRow]
   , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
+  , scenarioCounts :: HashMap ScenarioCountKey Int
   , scenarioStandaloneCampaignLog :: CampaignLog
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
@@ -119,6 +121,7 @@ scenario f cardCode name difficulty layout = f $ ScenarioAttrs
   , scenarioLocationLayout = layout
   , scenarioDecks = mempty
   , scenarioLog = mempty
+  , scenarioCounts = mempty
   , scenarioSetAsideCards = mempty
   , scenarioStandaloneCampaignLog = mkCampaignLog
   , scenarioCardsUnderScenarioReference = mempty
@@ -209,6 +212,9 @@ decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
 
 logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
 logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
+
+countsL :: Lens' ScenarioAttrs (HashMap ScenarioCountKey Int)
+countsL = lens scenarioCounts $ \m x -> m { scenarioCounts = x }
 
 standaloneCampaignLogL :: Lens' ScenarioAttrs CampaignLog
 standaloneCampaignLogL = lens scenarioStandaloneCampaignLog

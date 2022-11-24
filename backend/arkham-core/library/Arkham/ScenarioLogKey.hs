@@ -54,3 +54,7 @@ data ScenarioLogKey
   -- ^ The Depths of Yoth
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+
+data ScenarioCountKey = CurrentDepth | PlaceholderCountKey
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

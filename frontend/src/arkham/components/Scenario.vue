@@ -214,6 +214,7 @@ const cardsNextToAct = computed(() => {
 })
 
 const phase = computed(() => props.game.phase)
+const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 </script>
 
 <template>
@@ -308,7 +309,7 @@ const phase = computed(() => props.game.phase)
             class="card"
             :src="scenarioGuide"
           />
-          <PoolItem class="depth" v-if="scenario.meta?.currentDepth && scenario.meta.currentDepth > 0" type="resource" :amount="scenario.meta.currentDepth" />
+          <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
         </div>
         <ChaosBag
           :game="game"

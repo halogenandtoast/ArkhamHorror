@@ -9,7 +9,7 @@ http {
   server {
     listen 3000;
     server_name .arkham-horror-api.com;
-    client_max_body_size 10M;
+    client_max_body_size 20M;
 
     location / {
       proxy_pass http://localhost:3001;

@@ -4,7 +4,7 @@ concurrent-tests: false
 
 system-ghc: true
 install-ghc: false
-resolver: nightly-2022-11-08
+resolver: nightly-2022-11-22
 compiler: ghc-9.4.3
 
 ghc-options:
@@ -37,7 +37,7 @@ packages:
   - arkham-api
   - validate
 
+allow-newer: true
+
 extra-deps:
-- Cabal-syntax-3.8.1.0
-- primitive-0.7.4.0
-- memory-0.18.0
+- relude-1.1.0.0@sha256:fe82b67d4560b9eff8d7dd12c5e1f786b25d52d64f7302ad82a3bbec9a0bd55e,11747

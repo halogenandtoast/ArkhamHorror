@@ -11,8 +11,10 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.Id
 import Arkham.Json
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
@@ -113,7 +115,13 @@ onSide side ActAttrs {..} = AS.actSide actSequence == side
 
 instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost -> [mkAbility attrs 999 (Objective $ FastAbility cost)]
+    Just cost ->
+      [ restrictedAbility
+          attrs
+          999
+          (DuringTurn Anyone)
+          (Objective $ FastAbility cost)
+      ]
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a

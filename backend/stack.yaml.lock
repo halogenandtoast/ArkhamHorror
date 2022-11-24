@@ -5,29 +5,15 @@
 
 packages:
 - completed:
-    hackage: Cabal-syntax-3.8.1.0@sha256:4936765e9a7a8ecbf8fdbe9067f6d972bc0299220063abb2632a9950af64b966,7619
+    hackage: relude-1.1.0.0@sha256:fe82b67d4560b9eff8d7dd12c5e1f786b25d52d64f7302ad82a3bbec9a0bd55e,11747
     pantry-tree:
-      sha256: 0471cade235bb93e1fd32630f6d5fa69735a879d2712f47067c51bed0c46d536
-      size: 11052
+      sha256: 1482f23099d4b66e2db69e90403456c51cd2573bb0f3e51b86d449c3cf47ebc8
+      size: 4286
   original:
-    hackage: Cabal-syntax-3.8.1.0
-- completed:
-    hackage: primitive-0.7.4.0@sha256:89b88a3e08493b7727fa4089b0692bfbdf7e1e666ef54635f458644eb8358764,2857
-    pantry-tree:
-      sha256: 71a850c658b70e869da19f61615d87d9d6ecec597f0e3d4b498da56559114829
-      size: 1655
-  original:
-    hackage: primitive-0.7.4.0
-- completed:
-    hackage: memory-0.18.0@sha256:e12bde756b01c1a28c62e46f0f8433c4890898051a786794a7d88907ca14abca,4468
-    pantry-tree:
-      sha256: 55d15393452ad50b1f8dbe3ff2c4961a3cde9381f2c348f904449a3339c6951d
-      size: 2436
-  original:
-    hackage: memory-0.18.0
+    hackage: relude-1.1.0.0@sha256:fe82b67d4560b9eff8d7dd12c5e1f786b25d52d64f7302ad82a3bbec9a0bd55e,11747
 snapshots:
 - completed:
-    sha256: d3c0b7d9145c95a343a1f879f39e4c15f9c9bd34a1231c0aa144c1cc598305f6
-    size: 647779
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/11/8.yaml
-  original: nightly-2022-11-08
+    sha256: 92126d00df5676c3790f67dcb0addd6e8b9cf5bcfbe69ba48335dc43bebf9f34
+    size: 546216
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/11/22.yaml
+  original: nightly-2022-11-22

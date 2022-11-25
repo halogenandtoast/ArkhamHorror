@@ -908,6 +908,7 @@ laboratoryAssistant = (asset "02020" "Laboratory Assistant" 2 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Miskatonic, Science]
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["60212"]
   }
 
 strangeSolution :: CardDef

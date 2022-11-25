@@ -58,8 +58,8 @@ investigator cardCode name classSymbol traits = CardDef
   }
 
 allInvestigatorCards :: HashMap CardCode CardDef
-allInvestigatorCards = mapFromList $ map
-  (toCardCode &&& id)
+allInvestigatorCards = mapFromList $ concatMap
+  toCardCodePairs
   [ rolandBanks
   , daisyWalker
   , skidsOToole
@@ -88,28 +88,37 @@ allInvestigatorCards = mapFromList $ map
   , daisyWalkerParallel
   ]
 
+withAlternate :: CardCode -> CardDef -> CardDef
+withAlternate ccode def = def { cdAlternateCardCodes = [ccode] }
+
 rolandBanks :: CardDef
-rolandBanks = investigator
+rolandBanks = withAlternate "01501" $ investigator
   "01001"
   ("Roland Banks" <:> "The Fed")
   Guardian
   [Agency, Detective]
 
 daisyWalker :: CardDef
-daisyWalker =
-  investigator "01002" ("Daisy Walker" <:> "The Librarian") Seeker [Miskatonic]
+daisyWalker = withAlternate "01502" $ investigator
+  "01002"
+  ("Daisy Walker" <:> "The Librarian")
+  Seeker
+  [Miskatonic]
 
 skidsOToole :: CardDef
-skidsOToole =
-  investigator "01003" ("\"Skids\" O'Toole" <:> "The Ex-Con") Rogue [Criminal]
+skidsOToole = withAlternate "01503" $ investigator
+  "01003"
+  ("\"Skids\" O'Toole" <:> "The Ex-Con")
+  Rogue
+  [Criminal]
 
 agnesBaker :: CardDef
-agnesBaker =
-  investigator "01004" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
+agnesBaker = withAlternate "01504"
+  $ investigator "01004" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
 
 wendyAdams :: CardDef
-wendyAdams =
-  investigator "01005" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter]
+wendyAdams = withAlternate "01505"
+  $ investigator "01005" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter]
 
 zoeySamaras :: CardDef
 zoeySamaras = investigator

@@ -702,6 +702,7 @@ preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Insight
   , cdCriteria = Just Criteria.ClueOnLocation
+  , cdAlternateCardCodes = ["60218"]
   }
 
 emergencyCache2 :: CardDef
@@ -1409,7 +1410,7 @@ customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
   }
 
 exposeWeakness3 :: CardDef
-exposeWeakness3 = (event "04194" "Expose Weakness" 0 Seeker)
+exposeWeakness3 = (event "04195" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillWild]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just FastPlayerWindow

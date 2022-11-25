@@ -124,7 +124,7 @@ viciousBlow = (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
 deduction :: CardDef
 deduction = (skill "01039" "Deduction" [SkillIntellect] Seeker)
   { cdCardTraits = setFromList [Practiced]
-  , cdAlternateCardCodes = ["01539"]
+  , cdAlternateCardCodes = ["01539", "60219"]
   }
 
 opportunist :: CardDef

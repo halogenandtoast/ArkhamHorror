@@ -5,7 +5,11 @@ module Arkham.Scenario
 
 import Arkham.Prelude
 
+import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.Name
+import Arkham.EncounterSet (EncounterSet)
+import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Helpers.Modifiers
@@ -59,6 +63,60 @@ lookupScenario scenarioId =
 
 data SomeScenario = forall a . IsScenario a => SomeScenario (Difficulty -> a)
 
+scenarioCard :: CardCode -> Name -> EncounterSet -> CardDef
+scenarioCard cCode name ecSet = CardDef
+  { cdCardCode = cCode
+  , cdName = name
+  , cdRevealedName = Nothing
+  , cdCost = Nothing
+  , cdAdditionalCost = Nothing
+  , cdLevel = 0
+  , cdCardType = ScenarioType
+  , cdCardSubType = Nothing
+  , cdClassSymbols = mempty
+  , cdSkills = mempty
+  , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
+  , cdKeywords = mempty
+  , cdFastWindow = Nothing
+  , cdActions = mempty
+  , cdRevelation = False
+  , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
+  , cdCriteria = Nothing
+  , cdOverrideActionPlayableIfCriteriaMet = False
+  , cdCommitRestrictions = mempty
+  , cdAttackOfOpportunityModifiers = mempty
+  , cdPermanent = False
+  , cdEncounterSet = Just ecSet
+  , cdEncounterSetQuantity = Nothing
+  , cdUnique = True
+  , cdDoubleSided = True
+  , cdLimits = []
+  , cdExceptional = False
+  , cdUses = NoUses
+  , cdPlayableFromDiscard = False
+  , cdStage = Nothing
+  , cdSlots = mempty
+  , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = mempty
+  , cdArt = unCardCode cCode
+  , cdLocationSymbol = Nothing
+  , cdLocationRevealedSymbol = Nothing
+  , cdLocationConnections = mempty
+  , cdLocationRevealedConnections = mempty
+  , cdPurchaseMentalTrauma = Nothing
+  }
+
+allScenarioCards :: HashMap CardCode CardDef
+allScenarioCards =
+  mapFromList $ flip map (mapToList allScenarios) $ \(c, SomeScenario s) -> do
+    let ecSet = fromJustNote "you forgot to add the encounter set" $ lookup c scenarioEncounterSets
+        name = scenarioName $ toAttrs $ Scenario (s Easy)
+    (c, scenarioCard c name ecSet)
+
 allScenarios :: HashMap CardCode SomeScenario
 allScenarios = mapFromList
   [ ("01104", SomeScenario theGathering)
@@ -92,4 +150,39 @@ allScenarios = mapFromList
   , ("50032", SomeScenario returnToTheDevourerBelow)
   , ("81001", SomeScenario curseOfTheRougarou)
   , ("82001", SomeScenario carnevaleOfHorrors)
+  ]
+
+scenarioEncounterSets :: HashMap CardCode EncounterSet
+scenarioEncounterSets = mapFromList
+  [ ("01104", EncounterSet.TheGathering)
+  , ("01120", EncounterSet.TheMidnightMasks)
+  , ("01142", EncounterSet.TheDevourerBelow)
+  , ("02041", EncounterSet.ExtracurricularActivity)
+  , ("02062", EncounterSet.TheHouseAlwaysWins)
+  , ("02118", EncounterSet.TheMiskatonicMuseum)
+  , ("02159", EncounterSet.TheEssexCountyExpress)
+  , ("02195", EncounterSet.BloodOnTheAltar)
+  , ("02236", EncounterSet.UndimensionedAndUnseen)
+  , ("02274", EncounterSet.WhereDoomAwaits)
+  , ("02311", EncounterSet.LostInTimeAndSpace)
+  , ("03043", EncounterSet.CurtainCall)
+  , ("03061", EncounterSet.TheLastKing)
+  , ("03120", EncounterSet.EchoesOfThePast)
+  , ("03159", EncounterSet.TheUnspeakableOath)
+  , ("03200", EncounterSet.APhantomOfTruth)
+  , ("03240", EncounterSet.ThePallidMask)
+  , ("03274", EncounterSet.BlackStarsRise)
+  , ("03316", EncounterSet.DimCarcosa)
+  , ("04043", EncounterSet.TheUntamedWilds)
+  , ("04054", EncounterSet.TheDoomOfEztli)
+  , ("04113", EncounterSet.ThreadsOfFate)
+  , ("04161", EncounterSet.TheBoundaryBeyond)
+  , ("04205", EncounterSet.HeartOfTheElders)
+  , ("04237", EncounterSet.TheCityOfArchives)
+  , ("04277", EncounterSet.TheDepthsOfYoth)
+  , ("50011", EncounterSet.ReturnToTheGathering)
+  , ("50025", EncounterSet.ReturnToTheMidnightMasks)
+  , ("50032", EncounterSet.ReturnToTheDevourerBelow)
+  , ("81001", EncounterSet.CurseOfTheRougarou)
+  , ("82001", EncounterSet.CarnevaleOfHorrors)
   ]

@@ -16,6 +16,7 @@ data CardType
   | AgendaType
   | StoryType
   | InvestigatorType
+  | ScenarioType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

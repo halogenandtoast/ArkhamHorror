@@ -10,6 +10,7 @@ import Arkham.Card.CardDef
 import Arkham.EncounterCard
 import Arkham.Investigator.Cards
 import Arkham.PlayerCard
+import Arkham.Scenario
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
 
@@ -19,14 +20,28 @@ getApiV1ArkhamCardsR = do
     <$> lookupGetParam "includeEncounter"
   let
     cards = if showEncounter
-      then allInvestigatorCards <> allPlayerCards <> allEncounterCards
+      then
+        allInvestigatorCards
+        <> allPlayerCards
+        <> allEncounterCards
+        <> allScenarioCards
       else
         allInvestigatorCards
           <> HashMap.filter (isNothing . cdEncounterSet) allPlayerCards
+    safeBCodes = ["03047b", "03084b"]
+    safeDCodes = ["03084d"]
+
   pure
     $ filter
         (and
-        . sequence [(/= "01000"), (not . T.isSuffixOf "b" . unCardCode)]
+        . sequence
+            [ (/= "01000")
+            , or . sequence
+              [(not . T.isSuffixOf "b" . unCardCode), (`elem` safeBCodes)]
+            , or . sequence
+              [(not . T.isSuffixOf "d" . unCardCode), (`elem` safeDCodes)]
+            , (not . T.isSuffixOf "f" . unCardCode)
+            ]
         . toCardCode
         )
     $ toList

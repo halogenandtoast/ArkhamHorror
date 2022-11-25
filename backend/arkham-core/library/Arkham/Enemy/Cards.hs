@@ -131,6 +131,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , emergentMonstrosity
   , eztliGuardian
   , fanatic
+  , fangOfYig
   , fleshEater
   , ghoulFromTheDepths
   , ghoulMinion

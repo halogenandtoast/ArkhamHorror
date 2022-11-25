@@ -1800,7 +1800,7 @@ danielChesterfield = (storyAsset
   }
 
 straitjacket :: CardDef
-straitjacket = (storyAsset "03185" "Straitjacket" 0 TheUnspeakableOath)
+straitjacket = (storyAsset "x03185" "Straitjacket" 0 TheUnspeakableOath)
   { cdCardTraits = setFromList [Item, Clothing]
   , cdCardType = EncounterAssetType
   , cdSlots = [BodySlot, HandSlot, HandSlot]

@@ -49,7 +49,7 @@ const cycleCount = (cycle) => {
 const cycleCountText = (cycle) => {
   const implementedCount = cycleCount(cycle)
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
-  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter ? set.max - set.min : set.playerCards), 0)
+  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards), 0)
 
   if (implementedCount == total) {
     return ""
@@ -64,7 +64,7 @@ const setCount = (set) => {
 
 const setCountText = (set) => {
   const implementedCount = setCount(set)
-  const total = includeEncounter ? set.max - set.min : set.playerCards
+  const total = includeEncounter ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards
 
   if (implementedCount == total) {
     return ""
@@ -241,18 +241,18 @@ const sets = [
   { name: "Where Doom Awaits", min: 2260, max: 2298, playerCards: 14, code: "wda", cycle: 2 },
   { name: "Lost in Time and Space", min: 2299, max: 2333, playerCards: 12, code: "litas", cycle: 2 },
 
-  { name: "The Path to Carcosa", min: 3001, max: 3105, playerCards: 42, code: "ptc", cycle: 3 },
+  { name: "The Path to Carcosa", min: 3001, max: 3105, playerCards: 42, encounterDuplicates: 5, code: "ptc", cycle: 3 },
   { name: "Echoes of the Past", min: 3106, max: 3146, playerCards: 14, code: "eotp", cycle: 3 },
   { name: "The Unspeakable Oath", min: 3147, max: 3188, playerCards: 12, code: "tuo", cycle: 3 },
   { name: "A Phantom of Truth", min: 3189, max: 3227, playerCards: 11, code: "apot", cycle: 3 },
   { name: "The Pallid Mask", min: 3228, max: 3262, playerCards: 12, code: "tpm", cycle: 3 },
   { name: "Black Stars Rise", min: 3263, max: 3303, playerCards: 11, code: "bsr", cycle: 3 },
-  { name: "Dim Carcosa", min: 3304, max: 3342, playerCards: 12, code: "dca", cycle: 3 },
+  { name: "Dim Carcosa", min: 3304, max: 3342, encounterDuplicates: 6, playerCards: 12, code: "dca", cycle: 3 },
 
   { name: "The Forgotten Age", min: 4001, max: 4102, playerCards: 42, code: "tfa", cycle: 4 },
   { name: "Threads of Fate", min: 4103, max: 4148, playerCards: 10, code: "tof", cycle: 4 },
   { name: "The Boundary Beyond", min: 4149, max: 4191, playerCards: 12, code: "tbb", cycle: 4 },
-  { name: "Heart of the Elders", min: 4191, max: 4228, playerCards: 13, code: "hote", cycle: 4 },
+  { name: "Heart of the Elders", min: 4192, max: 4228, playerCards: 13, code: "hote", cycle: 4 },
   { name: "The City of Archives", min: 4229, max: 4264, playerCards: 8, code: "tcoa", cycle: 4 },
   { name: "The Depths of Yoth", min: 4265, max: 4303, playerCards: 12, code: "tdoy", cycle: 4 },
   { name: "Shattered Aeons", min: 4304, max: 4347, playerCards: 12, code: "sha", cycle: 4 },
@@ -297,7 +297,7 @@ const sets = [
   { name: "Nathaniel Cho", min: 60101, max: 60132, playerCards: 32, code: "nat", cycle: 60 },
   { name: "Harvey Walters", min: 60201, max: 60233, playerCards: 33, code: "har", cycle: 60 },
   { name: "Winifred Habbamock", min: 60301, max: 60332, playerCards: 32, code: "win", cycle: 60 },
-  { name: "Jacqueline Fine", min: 60401, max: 60132, playerCards: 32, code: "jac", cycle: 60 },
+  { name: "Jacqueline Fine", min: 60401, max: 60432, playerCards: 32, code: "jac", cycle: 60 },
   { name: "Stella Clark", min: 60501, max: 60531, playerCards: 31, code: "ste", cycle: 60 },
 
   { name: "Curse of the Rougarou", min: 81001, max: 81036, playerCards: 0, code: "cotr", cycle: 70 },

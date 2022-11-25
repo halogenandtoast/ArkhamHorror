@@ -169,6 +169,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , deadlyFate
   , deepDark
   , descentIntoMadness
+  , dismalCurse
   , dissonantVoices
   , draggedUnder
   , dreamsOfRlyeh

@@ -327,7 +327,6 @@ allPlayerAssetCards = mapFromList $ concatMap
   , riteOfSeeking4
   , ritualCandles
   , rolands38Special
-  , runicAxe
   , safeguard
   , scavenging
   , scientificTheory1

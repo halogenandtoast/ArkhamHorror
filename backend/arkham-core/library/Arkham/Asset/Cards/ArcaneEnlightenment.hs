@@ -29,7 +29,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 instance RunMessage ArcaneEnlightenment where
   runMessage msg (ArcaneEnlightenment attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    PlayedCard iid card | toCardId card == toCardId attrs -> do
+    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push (AddSlot iid HandSlot (slot attrs))
       ArcaneEnlightenment <$> runMessage msg attrs
     _ -> ArcaneEnlightenment <$> runMessage msg attrs

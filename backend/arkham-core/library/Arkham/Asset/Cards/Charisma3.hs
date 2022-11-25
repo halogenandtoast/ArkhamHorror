@@ -22,7 +22,7 @@ slot attrs = Slot (toSource attrs) Nothing
 instance RunMessage Charisma3 where
   runMessage msg (Charisma3 attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    PlayedCard iid card | toCardId card == toCardId attrs -> do
+    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid AllySlot (slot attrs)
       Charisma3 <$> runMessage msg attrs
     _ -> Charisma3 <$> runMessage msg attrs

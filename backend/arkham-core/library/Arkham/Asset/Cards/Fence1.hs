@@ -68,6 +68,6 @@ instance HasModifiersFor Fence1Effect where
 
 instance RunMessage Fence1Effect where
   runMessage msg e@(Fence1Effect attrs) = case msg of
-    PlayedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
+    CardEnteredPlay _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
       e <$ push (DisableEffect $ toId attrs)
     _ -> Fence1Effect <$> runMessage msg attrs

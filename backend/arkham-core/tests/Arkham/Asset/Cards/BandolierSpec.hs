@@ -16,7 +16,7 @@ spec = describe "Bandolier" $ do
     bandolier <- buildAsset Assets.bandolier (Just investigator)
     gameTest
         investigator
-        [ PlayedCard (toId investigator) (toCard $ toAttrs bandolier)
+        [ CardEnteredPlay (toId investigator) (toCard $ toAttrs bandolier)
         , playAsset investigator bandolier
         ]
         (entitiesL . assetsL %~ insertEntity bandolier)

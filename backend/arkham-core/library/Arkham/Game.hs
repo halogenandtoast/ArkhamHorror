@@ -2032,7 +2032,9 @@ instance Projection Asset where
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
       AssetTraits -> pure . cdCardTraits $ toCardDef attrs
       AssetCardDef -> pure $ toCardDef attrs
-      AssetCard -> pure $ lookupCard assetCardCode (unAssetId aid)
+      AssetCard -> pure $ case lookupCard assetCardCode (unAssetId aid) of
+        PlayerCard pc -> PlayerCard $ pc { pcOwner = assetOwner }
+        ec -> ec
       AssetAbilities -> pure $ getAbilities a
 
 instance Projection (DiscardedEntity Asset) where
@@ -3374,7 +3376,7 @@ runGameMessage msg g = case msg of
             (SetOriginalCardCode $ pcOriginalCardCode pc)
             (createAsset card)
           pushAll
-            [ PlayedCard iid card
+            [ CardEnteredPlay iid card
             , InvestigatorPlayAsset iid aid
             , ResolvedCard iid card
             ]
@@ -3390,7 +3392,7 @@ runGameMessage msg g = case msg of
               then Zone.FromHand
               else Zone.FromDiscard
           pushAll
-            [ PlayedCard iid card
+            [ CardEnteredPlay iid card
             , InvestigatorPlayEvent iid eid mtarget windows' zone
             , ResolvedCard iid card
             ]

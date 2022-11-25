@@ -575,6 +575,8 @@ theManInThePallidMask = (weakness "03059" "The Man in the Pallid Mask")
   { cdCardTraits = setFromList [Humanoid, Elite]
   , cdKeywords = setFromList [Keyword.Aloof]
   , cdUnique = True
+  , cdEncounterSet = Just CurtainCall
+  , cdEncounterSetQuantity = Just 1
   }
 
 royalEmissary :: CardDef

@@ -40,7 +40,7 @@ instance HasAbilities BookOfShadows3 where
 instance RunMessage BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    PlayedCard iid card | toCardId card == toCardId attrs -> do
+    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do

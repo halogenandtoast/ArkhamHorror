@@ -50,7 +50,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 instance RunMessage DaisysToteBagAdvanced where
   runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    PlayedCard iid card | toCardId card == toCardId attrs -> do
+    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
     UseCardAbility _ source 1 [Window Timing.When (Window.PlayCard _ card)] _

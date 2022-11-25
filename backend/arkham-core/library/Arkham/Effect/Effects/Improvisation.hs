@@ -31,7 +31,7 @@ instance HasModifiersFor Improvisation where
 
 instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
-    PlayedCard iid card | effectTarget attrs == InvestigatorTarget iid -> do
+    CardEnteredPlay iid card | effectTarget attrs == InvestigatorTarget iid -> do
       role <- field InvestigatorClass iid
       e <$ when
         (maybe False (== role) . headMay . toList $ cdClassSymbols

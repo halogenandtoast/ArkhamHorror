@@ -1286,14 +1286,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> False
     unless shouldSkip $ do
       let card = findCard cardId a
+      afterPlayCard <- checkWindows [Window Timing.After (Window.PlayCard iid card)]
+
       pushAll
         [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
         , PlayCard iid card mtarget (Window.defaultWindows iid) asAction
+        , afterPlayCard
         ]
     pure a
-  PlayedCard iid card | iid == investigatorId -> do
+  CardEnteredPlay iid card | iid == investigatorId -> do
     send $ format a <> " played " <> format card
-    push =<< checkWindows [Window Timing.After (Window.PlayCard iid card)]
     pure
       $ a
       & (handL %~ filter (/= card))

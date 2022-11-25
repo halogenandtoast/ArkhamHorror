@@ -41,7 +41,7 @@ instance HasModifiersFor CharlesRossEsq where
 
 instance RunMessage CharlesRossEsq where
   runMessage msg e@(CharlesRossEsq attrs) = case msg of
-    PlayedCard iid card -> case effectSource attrs of
+    CardEnteredPlay iid card -> case effectSource attrs of
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid

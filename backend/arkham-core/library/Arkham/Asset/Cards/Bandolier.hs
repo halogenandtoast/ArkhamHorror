@@ -23,7 +23,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 instance RunMessage Bandolier where
   runMessage msg (Bandolier attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    PlayedCard iid card | toCardId card == toCardId attrs -> do
+    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid HandSlot (slot attrs)
       Bandolier <$> runMessage msg attrs
     _ -> Bandolier <$> runMessage msg attrs

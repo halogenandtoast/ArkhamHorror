@@ -129,6 +129,7 @@ displayCardType = \case
   AgendaType -> "act"
   AssetType -> "asset"
   EventType -> "event"
+  ScenarioType -> "scenario"
   SkillType -> "skill"
   StoryType -> "story"
   PlayerTreacheryType -> "treachery"

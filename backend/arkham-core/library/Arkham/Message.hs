@@ -469,7 +469,7 @@ data Message
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
-  | PlayedCard InvestigatorId Card
+  | CardEnteredPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef

@@ -30,7 +30,7 @@ instance HasModifiersFor GildedVolto where
 
 instance RunMessage GildedVolto where
   runMessage msg e@(GildedVolto attrs) = case msg of
-    PlayedCard iid card
+    CardEnteredPlay iid card
       | InvestigatorTarget iid == effectTarget attrs && cardMatch
         card
         (CardWithType AssetType)

@@ -257,7 +257,9 @@ instance FromJSON AssetAttrs where
 
 instance IsCard AssetAttrs where
   toCardId = unAssetId . assetId
-  toCard a = lookupCard (assetOriginalCardCode a) (toCardId a)
+  toCard a = case lookupCard (assetOriginalCardCode a) (toCardId a) of
+    PlayerCard pc -> PlayerCard $ pc { pcOwner = assetOwner a }
+    ec -> ec
   toCardOwner = assetOwner
 
 asset

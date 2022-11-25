@@ -39,7 +39,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
   PayCardCost _ card _ | toCardId a == toCardId card ->
     pure $ a & beingPaidForL .~ True
-  PlayedCard _ card | toCardId a == toCardId card ->
+  CardEnteredPlay _ card | toCardId a == toCardId card ->
     pure $ a & beingPaidForL .~ False
   SealedToken token card | toCardId card == toCardId a ->
     pure $ a & sealedTokensL %~ (token :)

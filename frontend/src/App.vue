@@ -86,6 +86,13 @@ body {
   }
 }
 
+.wild-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0047";
+  }
+}
+
 .fast-icon {
   &:before {
     font-family: "arkham";

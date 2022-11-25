@@ -1352,6 +1352,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
       & (discardL %~ filter ((/= cardCode) . toCardCode))
       & (handL %~ filter ((/= cardCode) . toCardCode))
+  PutCardIntoPlay _ card _ _ -> do
+    pure
+      $ a
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      & (discardL %~ filter ((/= card) . PlayerCard))
+      & (handL %~ filter (/= card))
   Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId ->
     pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId ->
@@ -1790,7 +1796,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure $ (skillDifficulty - baseValue) >= n
               prevented = flip
                 any
-                (traceShowId modifiers')
+                modifiers'
                 \case
                   CanOnlyUseCardsInRole role -> null $ intersect
                     (cdClassSymbols $ toCardDef card)

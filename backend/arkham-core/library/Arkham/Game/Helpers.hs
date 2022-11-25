@@ -2157,6 +2157,9 @@ sourceMatches s = \case
     InvestigatorType -> case s of
       InvestigatorSource _ -> True
       _ -> False
+    ScenarioType -> case s of
+      ScenarioSource -> True
+      _ -> False
   Matcher.EncounterCardSource -> pure $ case s of
     ActSource _ -> True
     AgendaSource _ -> True

@@ -61,7 +61,9 @@ instance IsCard Card where
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: a -> Card
-  toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
+  toCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
+    PlayerCard pc -> PlayerCard $ pc { pcOwner = toCardOwner a }
+    ec -> ec
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
 

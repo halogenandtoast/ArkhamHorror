@@ -44,7 +44,6 @@ export const fetchDecks = (): Promise<Deck[]> => api
   .then((resp) => JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodeToPromise(resp.data));
 
 export const fetchCards = (includeEncounter = false): Promise<CardDef[]> => {
-  console.log(includeEncounter)
   const query = includeEncounter ? "?includeEncounter" : ""
   return api
   .get(`arkham/cards${query}`)

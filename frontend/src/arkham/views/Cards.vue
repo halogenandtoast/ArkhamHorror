@@ -414,10 +414,12 @@ const setSet = (set) => {
 <style scoped lang="scss">
 .container {
   display: flex;
+  height: 100%;
 }
 
 .results {
   flex: 1;
+  overflow-y: auto;
 }
 .card {
   width: calc(100% - 20px);
@@ -426,6 +428,7 @@ const setSet = (set) => {
 }
 
 .cards {
+  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(auto-fill, calc(1 / 10 * 100%));
   padding: 10px;
@@ -531,6 +534,7 @@ a {
 
 .cycles {
   color: #999;
+  overflow-y: auto;
 }
 
 button {

@@ -57,7 +57,12 @@ async function upgrade() {
 }
 
 async function skip() {
-  upgradeDeck(props.game.id).then(() => waiting.value = true);
+  upgradeDeck(props.game.id, props.investigatorId).then(() => {
+    if(!solo.value) {
+      waiting.value = true
+    }
+    skipping.value = false
+  });
 }
 </script>
 

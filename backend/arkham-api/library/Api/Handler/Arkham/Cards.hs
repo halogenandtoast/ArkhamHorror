@@ -25,6 +25,7 @@ getApiV1ArkhamCardsR = do
         <> allPlayerCards
         <> allEncounterCards
         <> allScenarioCards
+        <> allEncounterInvestigatorCards
       else
         allInvestigatorCards
           <> HashMap.filter (isNothing . cdEncounterSet) allPlayerCards

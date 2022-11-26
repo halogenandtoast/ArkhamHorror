@@ -88,6 +88,11 @@ allInvestigatorCards = mapFromList $ concatMap
   , daisyWalkerParallel
   ]
 
+allEncounterInvestigatorCards :: HashMap CardCode CardDef
+allEncounterInvestigatorCards = mapFromList $ concatMap
+  toCardCodePairs
+  [ bodyOfAYithian ]
+
 withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode def = def { cdAlternateCardCodes = [ccode] }
 
@@ -198,6 +203,13 @@ calvinWright = investigator
   ("Calvin Wright" <:> "The Haunted")
   Survivor
   [Cursed, Drifter]
+
+bodyOfAYithian :: CardDef
+bodyOfAYithian = investigator
+  "04244"
+  ("Body of a Yithian" <:> "Captive in Another Form")
+  Neutral
+  [Monster, Yithian]
 
 normanWithers :: CardDef
 normanWithers = investigator

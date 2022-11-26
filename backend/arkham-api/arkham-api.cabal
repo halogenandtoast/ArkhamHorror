@@ -26,7 +26,6 @@ library
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.Decks
       Api.Handler.Arkham.Games
-      Api.Handler.Arkham.Investigators
       Api.Handler.Arkham.PendingGames
       Api.Handler.Arkham.Replay
       Api.Handler.Arkham.Undo

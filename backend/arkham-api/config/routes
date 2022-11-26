@@ -7,7 +7,6 @@
     /settings ApiV1SettingsR PUT
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
-      /investigators ApiV1ArkhamInvestigatorsR GET
       /decks ApiV1ArkhamDecksP:
         / ApiV1ArkhamDecksR GET POST
         /#ArkhamDeckId ApiV1ArkhamDeckP:

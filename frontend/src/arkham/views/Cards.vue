@@ -1,16 +1,12 @@
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue';
+import { watchEffect, ref, computed, inject } from 'vue';
 import { fetchCards } from '@/arkham/api';
 import * as Arkham from '@/arkham/types/CardDef';
-import { useRoute } from 'vue-router'
 
-const route = useRoute()
 const allCards = ref<Arkham.CardDef[]>([])
 const ready = ref(false)
 const baseUrl = inject('baseUrl')
-const { encounter } = route.query
-
-const includeEncounter = encounter !== undefined
+const includeEncounter = ref(false)
 
 interface Filter {
   cardType: string | null
@@ -26,19 +22,21 @@ enum View {
   List = "LIST",
 }
 
-fetchCards(includeEncounter).then((response) => {
-  allCards.value = response.sort((a, b) => {
-    if (a.art < b.art) {
-      return -1
-    }
+watchEffect(() => {
+  fetchCards(includeEncounter.value).then((response) => {
+    allCards.value = response.sort((a, b) => {
+      if (a.art < b.art) {
+        return -1
+      }
 
-    if (a.art > b.art) {
-      return 1
-    }
+      if (a.art > b.art) {
+        return 1
+      }
 
-    return 0
+      return 0
+    })
+    ready.value = true
   })
-  ready.value = true
 })
 
 const cycleCount = (cycle) => {
@@ -49,7 +47,7 @@ const cycleCount = (cycle) => {
 const cycleCountText = (cycle) => {
   const implementedCount = cycleCount(cycle)
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
-  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards), 0)
+  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards), 0)
 
   if (implementedCount == total) {
     return ""
@@ -64,7 +62,7 @@ const setCount = (set) => {
 
 const setCountText = (set) => {
   const implementedCount = setCount(set)
-  const total = includeEncounter ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards
+  const total = includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards
 
   if (implementedCount == total) {
     return ""
@@ -377,9 +375,16 @@ const setSet = (set) => {
       <header>
         <form @submit.prevent="setFilter">
           <input v-model="query" />
+          <button type="submit"><font-awesome-icon icon="search" /></button>
         </form>
         <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }"><font-awesome-icon icon="list" /></button>
         <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }"><font-awesome-icon icon="image" /></button>
+        <div>
+          <label for="include-encounter">
+            <input type="checkbox" v-model="includeEncounter" id="include-encounter" />
+            Include Encounter
+          </label>
+        </div>
       </header>
       <div class="cards" v-if="view == View.Image">
         <img class="card" v-for="card in cards" :key="card.art" :src="image(card)" />
@@ -539,5 +544,61 @@ i {
 .pressed {
   background-color: #777;
   color: white;
+}
+
+thead tr th {
+  background-color: #BBB;
+
+  &:nth-child(1) {
+    border-top-left-radius: 10px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
+}
+
+header {
+  margin-left: 20px;
+  margin-right: 20px;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  color: white;
+  padding: 10px 20px 15px 20px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+
+  input {
+    margin-right: 10px;
+  }
+
+  input[type=checkbox] {
+    margin-left: 20px;
+  }
+
+  button {
+    padding: 5px;
+  }
+
+  form {
+    margin-right: 20px;
+  }
+
+  form button {
+    border: 0;
+    height: 100%;
+    box-sizing: content-box;
+    padding: 5px;
+  }
+
+  form input {
+    outline: none;
+    padding: 5px;
+    border: 0;
+    height: 100%;
+    margin: 0;
+    box-sizing: content-box;
+  }
 }
 </style>

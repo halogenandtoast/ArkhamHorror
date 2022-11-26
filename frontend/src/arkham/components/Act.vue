@@ -25,7 +25,8 @@ const baseUrl = inject('baseUrl')
 const id = computed(() => props.act.id)
 const image = computed(() => {
   const side = props.act.sequence.side.toLowerCase().replace('a', '')
-  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
+  const sidePart = id.value.endsWith(side) ? "" : side
+  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${sidePart}.jpg`
 })
 
 const imageForCard = (card: Card) => {

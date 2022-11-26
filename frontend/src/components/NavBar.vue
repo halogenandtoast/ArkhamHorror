@@ -30,7 +30,6 @@ async function logout() {
       <router-link to="/" class="home-link">Home</router-link>{{' '}}
       <router-link v-if="currentUser" to="/decks">My Decks</router-link>
       <router-link v-if="currentUser" to="/cards">Cards</router-link>
-      <router-link v-if="currentUser" to="/investigators">Investigators</router-link>
     </span>
 
     <input type="checkbox" id="dropdown-toggle" />

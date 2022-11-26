@@ -74,6 +74,7 @@ data Payment
   | SealTokenPayment Token
   | ReturnToHandPayment Card
   | NoPayment
+  | SupplyPayment Supply
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -322,6 +322,10 @@ instance RunMessage ActiveCost where
             <>~ SealTokenPayment token
             & costSealedTokensL
             %~ (token :)
+        SupplyCost matcher supply -> do
+          iid' <- selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
+          push $ UseSupply iid' supply
+          withPayment $ SupplyPayment supply
         DiscardCost target -> do
           pushAll [DiscardedCost target, Discard target]
           withPayment $ DiscardPayment [target]

@@ -42,7 +42,7 @@ export interface Scenario {
   discard: EncounterCardContents[];
   victoryDisplay: Card[];
   standaloneCampaignLog: LogContents | null;
-  counts: [string, number][]; // eslint-disable-line
+  counts: Record<string, number>; // eslint-disable-line
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -65,5 +65,10 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,
-  counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]'),
+  counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]').map<Record<string, number>>(res => {
+    return res.reduce<Record<string, number>>((acc, [k, v]) => {
+      acc[k] = v
+      return acc
+    }, {})
+  })
 }, 'Scenario');

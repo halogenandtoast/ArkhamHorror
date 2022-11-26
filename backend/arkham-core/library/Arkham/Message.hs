@@ -582,6 +582,7 @@ data Message
   | SkillTestCommitCard InvestigatorId Card
   | SkillTestEnds Source
   | AfterSkillTestEnds Source Target Int
+  | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData
   | SkillTestUncommitCard InvestigatorId Card
   | SpawnEnemyAt Card LocationId

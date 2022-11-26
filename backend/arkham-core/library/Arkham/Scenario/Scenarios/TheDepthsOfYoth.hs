@@ -108,7 +108,7 @@ instance RunMessage TheDepthsOfYoth where
         .~ standaloneCampaignLog
     Setup -> do
       isStandalone <- getIsStandalone
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       yigsFury <- getRecordCount YigsFury
 

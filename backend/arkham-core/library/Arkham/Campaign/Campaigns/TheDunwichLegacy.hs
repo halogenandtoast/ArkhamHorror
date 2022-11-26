@@ -36,7 +36,7 @@ theDunwichLegacy difficulty = campaign
 instance RunMessage TheDunwichLegacy where
   runMessage msg c@(TheDunwichLegacy attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       c <$ pushAll
         [ story investigatorIds prologue
@@ -53,7 +53,7 @@ instance RunMessage TheDunwichLegacy where
     CampaignStep (Just (InterludeStep 1 _)) -> do
       unconsciousForSeveralHours <- getHasRecord
         InvestigatorsWereUnconsciousForSeveralHours
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       if unconsciousForSeveralHours
         then c <$ pushAll
@@ -73,7 +73,7 @@ instance RunMessage TheDunwichLegacy where
           ]
     CampaignStep (Just (InterludeStep 2 _)) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       drHenryArmitageUnowned <- isNothing <$> findOwner "02040"
       professorWarrenRiceUnowned <- isNothing <$> findOwner "02061"

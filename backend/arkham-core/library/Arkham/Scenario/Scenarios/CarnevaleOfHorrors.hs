@@ -99,7 +99,7 @@ abbessSatisfied leadInvestigatorId investigatorIds =
 additionalRewards :: (Monad m, HasGame m) => ScenarioAttrs -> m [Message]
 additionalRewards s = do
   leadInvestigatorId <- getLeadInvestigatorId
-  investigatorIds <- getInvestigatorIds
+  investigatorIds <- allInvestigatorIds
   let
     proceedToSacrificesMade =
       if null (scenarioCardsUnderActDeck s)
@@ -120,7 +120,7 @@ additionalRewards s = do
 instance RunMessage CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       -- Encounter Deck
       encounterDeck <- buildEncounterDeckExcluding
@@ -349,7 +349,7 @@ instance RunMessage CarnevaleOfHorrors where
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards
         (attrs
@@ -365,7 +365,7 @@ instance RunMessage CarnevaleOfHorrors where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
       pushAll
@@ -377,7 +377,7 @@ instance RunMessage CarnevaleOfHorrors where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
       pushAll

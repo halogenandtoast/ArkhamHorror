@@ -144,7 +144,7 @@ instance RunMessage TheLastKing where
         toLocationId
         [courtyard, livingRoom, ballroom, diningRoom, gallery]
 
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       pushAll
         ([ story investigatorIds intro
@@ -282,7 +282,7 @@ instance RunMessage TheLastKing where
       -- evenly and apply, this will have a weird interaction with Hospital Debts so we
       -- want to handle `getXp` in two phases. The first phase will essentially evenly
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       investigatorIdsWithNames <- traverse
         (traverseToSnd (field InvestigatorName))
         investigatorIds
@@ -331,7 +331,7 @@ instance RunMessage TheLastKing where
                <> [ScenarioResolutionStep 1 (Resolution n)]
         )
     ScenarioResolutionStep 1 (Resolution n) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       gainXp <- map (uncurry GainXP) <$> getXp
       s <$ case n of
         1 ->

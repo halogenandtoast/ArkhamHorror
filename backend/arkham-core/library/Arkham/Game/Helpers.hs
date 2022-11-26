@@ -371,7 +371,7 @@ getCanAffordUse iid ability window = do
         fmap (map usedAbility)
         . filterDepthSpecificAbilities
         =<< concatMapM (field InvestigatorUsedAbilities)
-        =<< getInvestigatorIds
+        =<< allInvestigatorIds
       let total = count (== ability) usedAbilities'
       pure $ total < n
 
@@ -2486,7 +2486,7 @@ getDoomCount = getSum . fold <$> sequence
   , selectAgg Sum LocationDoom Matcher.Anywhere
   , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
   , selectAgg Sum AgendaDoom Matcher.AnyAgenda
-  , selectAgg Sum InvestigatorDoom Matcher.Anyone
+  , selectAgg Sum InvestigatorDoom Matcher.UneliminatedInvestigator
   ]
 
 getPotentialSlots

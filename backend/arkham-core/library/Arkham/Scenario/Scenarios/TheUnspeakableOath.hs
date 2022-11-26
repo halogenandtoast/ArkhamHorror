@@ -91,7 +91,7 @@ standaloneTokens =
 
 investigatorDefeat :: (Monad m, HasGame m) => m [Message]
 investigatorDefeat = do
-  investigatorIds <- getInvestigatorIds
+  investigatorIds <- allInvestigatorIds
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
@@ -155,7 +155,7 @@ instance RunMessage TheUnspeakableOath where
         (lunatics, deck'') =
           partition (`cardMatch` CardWithTrait Lunatic) deck'
         encounterDeck = Deck deck''
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       constanceInterviewed <- interviewed Assets.constanceDumaine
       courageMessages <- if constanceInterviewed
         then concat <$> for
@@ -299,7 +299,7 @@ instance RunMessage TheUnspeakableOath where
     ScenarioResolution (Resolution n) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       gainXp <- map (uncurry GainXP) <$> getXp
       constanceSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)

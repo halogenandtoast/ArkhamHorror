@@ -113,7 +113,7 @@ investigatorDefeat attrs = do
   if null defeatedInvestigatorIds
     then pure []
     else do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       yigsFury <- getRecordCount YigsFury
       if yigsFury >= 4
         then do
@@ -156,7 +156,7 @@ instance RunMessage TheDoomOfEztli where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       -- | Determine intro
       forcedToWaitForAdditionalSupplies <- getHasRecord
         TheInvestigatorsWereForcedToWaitForAdditionalSupplies
@@ -270,7 +270,7 @@ instance RunMessage TheDoomOfEztli where
       pure s
     ScenarioResolution n -> do
       vengeance <- getVengeanceInVictoryDisplay
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       yigsFury <- getRecordCount YigsFury
       defeatMessages <- investigatorDefeat attrs

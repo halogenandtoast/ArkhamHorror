@@ -56,7 +56,7 @@ instance HasTokenValue TheHouseAlwaysWins where
 instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       encounterDeck <- buildEncounterDeckExcluding
         [Assets.peterClover, Enemies.cloverClubPitBoss]
@@ -150,7 +150,7 @@ instance RunMessage TheHouseAlwaysWins where
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution 1) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story investigatorIds resolution1
@@ -163,7 +163,7 @@ instance RunMessage TheHouseAlwaysWins where
       pure s
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story investigatorIds resolution2
@@ -189,7 +189,7 @@ instance RunMessage TheHouseAlwaysWins where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution3
@@ -201,7 +201,7 @@ instance RunMessage TheHouseAlwaysWins where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution4

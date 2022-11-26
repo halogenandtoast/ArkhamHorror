@@ -662,8 +662,18 @@ getInvestigatorsMatching
   :: (Monad m, HasGame m) => InvestigatorMatcher -> m [Investigator]
 getInvestigatorsMatching matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
-  filterM (go matcher) investigators
+  investigators' <- if includeEliminated matcher
+    then pure investigators
+    else filterM (fmap not . isEliminated . toId) investigators
+  filterM (go matcher) investigators'
  where
+  includeEliminated Anyone = True
+  includeEliminated TurnInvestigator = True
+  includeEliminated ResignedInvestigator = True
+  includeEliminated DefeatedInvestigator = True
+  includeEliminated (InvestigatorMatches xs) = any includeEliminated xs
+  includeEliminated (AnyInvestigator xs) = any includeEliminated xs
+  includeEliminated _ = False
   go = \case
     NoOne -> pure . const False
     DeckIsEmpty -> fieldP InvestigatorDeck (null . unDeck) . toId
@@ -696,20 +706,20 @@ getInvestigatorsMatching matcher = do
     LowestRemainingHealth -> \i -> do
       h <- field InvestigatorRemainingHealth (toId i)
       lowestRemainingHealth <-
-        getMin <$> selectAgg Min InvestigatorRemainingHealth Anyone
+        getMin <$> selectAgg Min InvestigatorRemainingHealth UneliminatedInvestigator
       pure $ lowestRemainingHealth == h
     LowestRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       lowestRemainingSanity <-
-        getMin <$> selectAgg Min InvestigatorRemainingSanity Anyone
+        getMin <$> selectAgg Min InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ lowestRemainingSanity == remainingSanity
     MostRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <-
-        getMax0 <$> selectAgg Max InvestigatorRemainingSanity Anyone
+        getMax0 <$> selectAgg Max InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
-      mostHorrorCount <- getMax0 <$> selectAgg Max InvestigatorHorror Anyone
+      mostHorrorCount <- getMax0 <$> selectAgg Max InvestigatorHorror UneliminatedInvestigator
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToLocation locationMatcher -> \i -> do
       let
@@ -775,7 +785,7 @@ getInvestigatorsMatching matcher = do
     HasMatchingSkill skillMatcher -> \i -> selectAny
       (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
     MostClues -> \i -> do
-      mostClueCount <- getMax0 <$> selectAgg Max InvestigatorClues Anyone
+      mostClueCount <- getMax0 <$> selectAgg Max InvestigatorClues UneliminatedInvestigator
       pure $ mostClueCount == investigatorClues (toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
@@ -2211,15 +2221,15 @@ infixl 4 <$$>
 
 instance Query ExtendedCardMatcher where
   select matcher = do
-    handCards <- selectAgg id InvestigatorHand Anyone
+    handCards <- selectAgg id InvestigatorHand UneliminatedInvestigator
     deckCards <-
-      map PlayerCard . unDeck <$> selectAgg id InvestigatorDeck Anyone
-    discards <- PlayerCard <$$> selectAgg id InvestigatorDiscard Anyone
+      map PlayerCard . unDeck <$> selectAgg id InvestigatorDeck UneliminatedInvestigator
+    discards <- PlayerCard <$$> selectAgg id InvestigatorDiscard UneliminatedInvestigator
     setAsideCards <- scenarioField ScenarioSetAsideCards
     victoryDisplayCards <- scenarioField ScenarioVictoryDisplay
     underScenarioReferenceCards <- scenarioField
       ScenarioCardsUnderScenarioReference
-    underneathCards <- selectAgg id InvestigatorCardsUnderneath Anyone
+    underneathCards <- selectAgg id InvestigatorCardsUnderneath UneliminatedInvestigator
     setFromList <$> filterM
       (`matches'` matcher)
       (handCards
@@ -2995,13 +3005,17 @@ runGameMessage msg g = case msg of
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> do
-    when (length (g ^. entitiesL . investigatorsL) > 1)
-      $ push
-      $ questionLabel "Choose lead investigator" (g ^. leadInvestigatorIdL)
-      $ ChooseOne
-          [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
-          | iid <- g ^. entitiesL . investigatorsL . to keys
-          ]
+    iids <- getInvestigatorIds
+    case iids of
+      [x] -> push $ ChoosePlayer x SetLeadInvestigator
+      xs@(x : _) -> 
+        push
+          $ questionLabel "Choose lead investigator" x
+          $ ChooseOne
+              [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
+              | iid <- xs
+              ]
+      [] -> pure ()
     pure g
   ChoosePlayer iid SetLeadInvestigator -> do
     let allPlayers = view playerOrderL g

@@ -110,7 +110,7 @@ instance RunMessage TheCityOfArchives where
         <> map (RemoveFromGame . AssetTarget) uniqueItemAssets
       pure . TheCityOfArchives $ attrs & setAsideUpdate
     Setup -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       leadInvestigator <- getLeadInvestigatorId
       pushAll
         $ map BecomeYithian iids
@@ -225,7 +225,7 @@ instance RunMessage TheCityOfArchives where
         _ -> pure ()
       pure s
     ScenarioResolution r -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       case r of
         NoResolution ->
           pushAll

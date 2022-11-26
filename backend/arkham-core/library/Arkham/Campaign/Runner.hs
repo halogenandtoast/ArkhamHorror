@@ -27,7 +27,7 @@ instance RunMessage CampaignAttrs where
     CampaignStep (Just (ScenarioStep sid)) -> do
       a <$ pushAll [ResetGame, StartScenario sid]
     CampaignStep (Just (UpgradeDeckStep _)) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       a <$ pushAll
         (ResetGame
         : map chooseUpgradeDeck investigatorIds

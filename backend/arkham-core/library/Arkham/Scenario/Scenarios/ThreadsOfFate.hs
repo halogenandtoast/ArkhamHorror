@@ -98,7 +98,7 @@ instance RunMessage ThreadsOfFate where
         ]
       pure s
     Setup -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       gaveCustodyToHarlan <- getHasRecord
         TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
@@ -356,7 +356,7 @@ instance RunMessage ThreadsOfFate where
           (scenarioCompletedActStack attrs)
         act1sCompleted = length $ keys (scenarioCompletedActStack attrs)
 
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       gainXp <- map (uncurry GainXP) <$> getXpWithBonus act1sCompleted
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort

@@ -26,7 +26,7 @@ nightOfTheZealot difficulty = campaign
 instance RunMessage NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       c <$ pushAll [story investigatorIds prologue, NextCampaignStep Nothing]
     NextCampaignStep _ -> do
       let step = nextStep attrs

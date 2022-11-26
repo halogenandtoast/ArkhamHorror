@@ -108,7 +108,7 @@ instance RunMessage UndimensionedAndUnseen where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ pushAll
         [ story investigatorIds intro
@@ -124,7 +124,7 @@ instance RunMessage UndimensionedAndUnseen where
         ]
     SetupStep (isTarget attrs -> True) n -> do
       standalone <- getIsStandalone
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.broodOfYogSothoth, Assets.esotericFormula]
         [ EncounterSet.UndimensionedAndUnseen
@@ -288,7 +288,7 @@ instance RunMessage UndimensionedAndUnseen where
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
     ScenarioResolution (Resolution 1) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
@@ -303,7 +303,7 @@ instance RunMessage UndimensionedAndUnseen where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]

@@ -44,7 +44,7 @@ instance RunMessage ReturnToTheMidnightMasks where
     = case msg of
       Setup -> do
         count' <- getPlayerCount
-        investigatorIds <- getInvestigatorIds
+        investigatorIds <- allInvestigatorIds
         (acolytes, theDevourersCult) <- splitAt (count' - 1)
           <$> gatherEncounterSet EncounterSet.TheDevourersCult
         -- we will spawn these disciples of the devourer

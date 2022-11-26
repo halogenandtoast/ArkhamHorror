@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.History
+import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType
@@ -23,7 +23,8 @@ takeTheInitiative = skill TakeTheInitiative Cards.takeTheInitiative
 
 instance HasModifiersFor TakeTheInitiative where
   getModifiersFor target (TakeTheInitiative a) | isTarget a target = do
-    iids <- getInvestigatorIds
+    -- we want to include investigators that were eliminated
+    iids <- selectList Anyone
     histories <- traverse (getHistory PhaseHistory) iids
     let total = sum $ map historyActionsCompleted histories
     pure $ toModifiers

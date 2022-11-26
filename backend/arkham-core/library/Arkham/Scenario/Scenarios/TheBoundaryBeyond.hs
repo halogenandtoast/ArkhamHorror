@@ -99,7 +99,7 @@ instance RunMessage TheBoundaryBeyond where
       whenM getIsStandalone $ push $ SetTokens standaloneTokens
       pure s
     Setup -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       forgedABondWithIchtaca <- getHasRecord
         TheInvestigatorsForgedABondWithIchtaca
       foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
@@ -309,7 +309,7 @@ instance RunMessage TheBoundaryBeyond where
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs

@@ -112,7 +112,7 @@ instance RunMessage EchoesOfThePast where
         then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
         else pure ()
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       -- generate without seekerOfCarcosa as we add based on player count
       partialEncounterDeck <- buildEncounterDeckExcluding
@@ -283,7 +283,7 @@ instance RunMessage EchoesOfThePast where
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       s
         <$ pushAll
              [ story investigatorIds noResolution
@@ -291,7 +291,7 @@ instance RunMessage EchoesOfThePast where
              ]
     ScenarioResolution (Resolution n) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       gainXp <- map (uncurry GainXP)
         <$> getXpWithBonus (if n == 4 then 1 else 0)
       sebastienSlain <- selectOne

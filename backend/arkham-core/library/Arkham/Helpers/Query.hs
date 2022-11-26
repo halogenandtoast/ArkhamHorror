@@ -17,7 +17,10 @@ getActiveInvestigatorId :: (Monad m, HasGame m) => m InvestigatorId
 getActiveInvestigatorId = selectJust TurnInvestigator
 
 getInvestigatorIds :: (Monad m, HasGame m) => m [InvestigatorId]
-getInvestigatorIds = selectList Anyone
+getInvestigatorIds = selectList UneliminatedInvestigator
+
+allInvestigatorIds :: (Monad m, HasGame m) => m [InvestigatorId]
+allInvestigatorIds = selectList Anyone
 
 selectAssetController
   :: (Monad m, HasGame m) => AssetId -> m (Maybe InvestigatorId)

@@ -34,7 +34,7 @@ thePathToCarcosa difficulty = campaign
 instance RunMessage ThePathToCarcosa where
   runMessage msg c@(ThePathToCarcosa a) = case msg of
     CampaignStep (Just PrologueStep) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       lolaHayesChosen <- isJust
         <$> selectOne (InvestigatorWithTitle "Lola Hayes")
       pushAll
@@ -44,7 +44,7 @@ instance RunMessage ThePathToCarcosa where
       pure c
     CampaignStep (Just (InterludeStep 1 _)) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       doubt <- getRecordCount Doubt
       conviction <- getRecordCount Conviction
       push $ chooseOne
@@ -87,7 +87,7 @@ instance RunMessage ThePathToCarcosa where
         ]
       pure c
     CampaignStep (Just (InterludeStep 2 mInterludeKey)) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt

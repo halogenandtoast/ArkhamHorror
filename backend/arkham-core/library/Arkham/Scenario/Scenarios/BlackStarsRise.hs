@@ -124,7 +124,7 @@ instance RunMessage BlackStarsRise where
       push $ ShuffleCardsIntoDeck (InvestigatorDeck leadInvestigatorId) [theManInThePallidMask]
       pure s
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       ashleighInterviewed <- interviewed Assets.ashleighClarke
       version <- sample versions
 
@@ -261,7 +261,7 @@ instance RunMessage BlackStarsRise where
       ashleighSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke)
       gainXp <- map (uncurry GainXP) <$> getXp
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       let
         updateSlain =
           [ RecordSetInsert VIPsSlain [toCardCode ashleigh]

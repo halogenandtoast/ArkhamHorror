@@ -62,7 +62,7 @@ instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
     Setup -> do
       count' <- getPlayerCount
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       (acolytes, darkCult) <- splitAt (count' - 1) . sortOn toCardCode
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
@@ -178,7 +178,7 @@ instance RunMessage TheMidnightMasks where
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution n) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       victoryDisplay <- mapSet toCardCode
         <$> select (VictoryDisplayCardMatch AnyCard)
       xp <- getXp

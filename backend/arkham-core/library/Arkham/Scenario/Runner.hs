@@ -77,7 +77,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResetGame -> do
     standalone <- getIsStandalone
     when standalone $ do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       for_ investigatorIds $ \iid -> do
         deck <- fieldMap InvestigatorDeck unDeck iid
         hand <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
@@ -823,7 +823,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       ]
     pure a
   SetupInvestigators -> do
-    iids <- getInvestigatorIds
+    iids <- allInvestigatorIds
     pushAll $ map SetupInvestigator iids
     pure a
   SetScenarioMeta v -> do

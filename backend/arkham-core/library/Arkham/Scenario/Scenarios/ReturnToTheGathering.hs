@@ -42,7 +42,7 @@ instance RunMessage ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) =
     case msg of
       Setup -> do
-        investigatorIds <- getInvestigatorIds
+        investigatorIds <- allInvestigatorIds
 
         encounterDeck <- buildEncounterDeckExcluding
           [Enemies.ghoulPriest]

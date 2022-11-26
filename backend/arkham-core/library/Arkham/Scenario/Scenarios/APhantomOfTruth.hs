@@ -162,7 +162,7 @@ instance RunMessage APhantomOfTruth where
         ]
       pure s
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
 
       theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
@@ -279,7 +279,7 @@ instance RunMessage APhantomOfTruth where
 
       jordanInterviewed <- elem (Recorded $ toCardCode Assets.jordanPerry)
         <$> getRecordSet VIPsInterviewed
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       let
         startingLocation =
@@ -341,7 +341,7 @@ instance RunMessage APhantomOfTruth where
       ElderThing -> s <$ push (LoseResources iid n)
       _ -> pure s
     ScenarioResolution res -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       jordanSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry)
       gainXp <- map (uncurry GainXP)

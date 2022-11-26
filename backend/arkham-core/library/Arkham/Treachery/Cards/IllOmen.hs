@@ -22,7 +22,7 @@ illOmen = treachery IllOmen Cards.illOmen
 instance RunMessage IllOmen where
   runMessage msg t@(IllOmen attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lids <- selectList $ LocationWithInvestigator Anyone
+      lids <- selectList $ LocationWithInvestigator UneliminatedInvestigator
       locationsWithInvestigators <- traverse
         (traverseToSnd (selectList . investigatorAt))
         lids

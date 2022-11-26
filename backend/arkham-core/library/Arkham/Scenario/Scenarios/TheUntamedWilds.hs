@@ -78,7 +78,7 @@ instance HasTokenValue TheUntamedWilds where
 instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       expeditionCamp <- genCard Locations.expeditionCamp
 
       explorationDeck <- shuffleM =<< traverse
@@ -178,7 +178,7 @@ instance RunMessage TheUntamedWilds where
       explore iid source locationMatcher PlaceExplored
       pure s
     ScenarioResolution res -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       actStep <- fieldMap ActSequence (AS.unActStep . AS.actStep)
         =<< selectJust AnyAct
       xp <- getXp

@@ -58,7 +58,7 @@ instance HasTokenValue ExtracurricularActivity where
 instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       encounterDeck <- buildEncounterDeckExcluding
         [ Enemies.theExperiment
@@ -151,7 +151,7 @@ instance RunMessage ExtracurricularActivity where
           push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids noResolution
@@ -164,7 +164,7 @@ instance RunMessage ExtracurricularActivity where
       pure s
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution1
@@ -185,7 +185,7 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution2
@@ -196,7 +196,7 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution3
@@ -207,7 +207,7 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution4

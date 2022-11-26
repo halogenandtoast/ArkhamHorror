@@ -51,7 +51,7 @@ instance RunMessage TheParisianConspiracyV1 where
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
         _ -> do
-          investigatorIds <- selectList Anyone
+          investigatorIds <- getInvestigatorIds
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
           leadInvestigatorId <- getLeadInvestigatorId
           pushAll

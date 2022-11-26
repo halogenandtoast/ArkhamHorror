@@ -145,7 +145,7 @@ instance RunMessage ThePallidMask where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       didNotEscapeGazeOfThePhantom <- getHasRecord
         YouDidNotEscapeTheGazeOfThePhantom
       unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
@@ -298,7 +298,7 @@ instance RunMessage ThePallidMask where
         pure s
       _ -> pure s
     ScenarioResolution res -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       harukoSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)

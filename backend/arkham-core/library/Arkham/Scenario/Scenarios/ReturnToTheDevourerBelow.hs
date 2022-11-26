@@ -48,7 +48,7 @@ instance RunMessage ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs))
     = case msg of
       Setup -> do
-        investigatorIds <- getInvestigatorIds
+        investigatorIds <- allInvestigatorIds
         pastMidnight <- getHasRecord ItIsPastMidnight
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
         cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway

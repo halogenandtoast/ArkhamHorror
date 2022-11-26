@@ -74,7 +74,7 @@ instance RunMessage CurtainCall where
       balcony <- genCard Locations.balcony
       backstage <- genCard Locations.backstage
 
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       let
         theatreInvestigatorIds =
@@ -130,7 +130,7 @@ instance RunMessage CurtainCall where
         )
     ScenarioResolution resolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       gainXP <- map (uncurry GainXP) <$> getXp
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt

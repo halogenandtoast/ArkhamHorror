@@ -131,7 +131,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           [ Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5] ]
     pure s
   Setup -> do
-    iids <- getInvestigatorIds
+    iids <- allInvestigatorIds
     leadInvestigatorId <- getLeadInvestigatorId
 
     mIchtacaInvestigator <- getOwner Assets.ichtacaTheForgottenGuardian
@@ -368,7 +368,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         )
       )
   ScenarioResolution r -> do
-    iids <- getInvestigatorIds
+    iids <- allInvestigatorIds
     vengeance <- getVengeanceInVictoryDisplay
     yigsFury <- getRecordCount YigsFury
     inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs

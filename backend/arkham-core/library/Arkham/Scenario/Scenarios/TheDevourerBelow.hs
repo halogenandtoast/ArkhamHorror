@@ -63,7 +63,7 @@ agendaDeck =
 instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       pastMidnight <- getHasRecord ItIsPastMidnight
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
       cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
@@ -187,7 +187,7 @@ instance RunMessage TheDevourerBelow where
           Resolution 3 ->
             (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
           _ -> error "Invalid resolution"
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       pushAll [story iids resolution, Record record, EndOfGame Nothing]
       pure s
     _ -> TheDevourerBelow <$> runMessage msg attrs

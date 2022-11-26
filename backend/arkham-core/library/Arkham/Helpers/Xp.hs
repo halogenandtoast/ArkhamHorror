@@ -20,7 +20,7 @@ getXp = getXpWithBonus 0
 
 getXpWithBonus :: (HasCallStack, Monad m, HasGame m) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
-  investigatorIds <- getInvestigatorIds
+  investigatorIds <- allInvestigatorIds
   for
     investigatorIds
     \iid -> do

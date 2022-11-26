@@ -114,7 +114,7 @@ instance RunMessage TheEssexCountyExpress where
         standalone <- getIsStandalone
         s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
-        investigatorIds <- getInvestigatorIds
+        investigatorIds <- allInvestigatorIds
 
         let toLocationCard = fmap EncounterCard . genEncounterCard
 
@@ -235,7 +235,7 @@ instance RunMessage TheEssexCountyExpress where
         s <$ pushAll [ScenarioResolution $ Resolution 2]
       ScenarioResolution (Resolution 1) -> do
         msgs <- readInvestigatorDefeat
-        iids <- getInvestigatorIds
+        iids <- allInvestigatorIds
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
         pushAll
@@ -250,7 +250,7 @@ instance RunMessage TheEssexCountyExpress where
         pure s
       ScenarioResolution (Resolution 2) -> do
         msgs <- readInvestigatorDefeat
-        iids <- getInvestigatorIds
+        iids <- allInvestigatorIds
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
         pushAll

@@ -33,7 +33,7 @@ eideticMemory3 =
 instance RunMessage EideticMemory3 where
   runMessage msg e@(EideticMemory3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      discards <- map PlayerCard <$> selectAgg id InvestigatorDiscard Anyone
+      discards <- map PlayerCard <$> selectAgg id InvestigatorDiscard UneliminatedInvestigator
       let
         candidates =
           filter (`cardMatch` (CardWithTrait Insight <> Matcher.EventCard)) discards

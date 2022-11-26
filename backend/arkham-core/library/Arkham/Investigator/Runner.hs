@@ -202,8 +202,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toTarget a)
     let
       startingHandAmount = foldr applyModifier 5 modifiers'
-      applyModifier (StartingHand m) n =
-        max 0 (n + m)
+      applyModifier (StartingHand m) n = max 0 (n + m)
       applyModifier _ n = n
     let (discard, hand, deck) = drawOpeningHand a startingHandAmount
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
@@ -317,7 +316,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         5
         modifiers'
-      (discard, hand, deck) = drawOpeningHand a (startingHandAmount - length investigatorHand)
+      (discard, hand, deck) =
+        drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows
       [Window Timing.After (Window.DrawingStartingHand iid)]
     pushAll [ShuffleDiscardBackIn iid, window]
@@ -337,8 +337,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
   Resign iid | iid == investigatorId -> do
-    pushAll $ resolve $ Msg.InvestigatorResigned iid
-    pure $ a & resignedL .~ True
+    isLead <- (== iid) <$> getLeadInvestigatorId
+    pushAll $
+      [ ChooseLeadInvestigator | isLead ]
+      <> resolve (Msg.InvestigatorResigned iid)
+    pure $ a & resignedL .~ True & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid -> do
     -- a card effect defeats an investigator directly
     windowMsg <- checkWindows
@@ -352,6 +355,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorIsDefeated source iid | iid == investigatorId -> do
+    isLead <- (== iid) <$> getLeadInvestigatorId
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a
     let
@@ -373,7 +377,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     killed <- hasModifier a KilledIfDefeated
     pushAll
       $ windowMsg
-      : [ InvestigatorKilled (toSource a) iid | killed ]
+      : [ ChooseLeadInvestigator | isLead ]
+      <> [ InvestigatorKilled (toSource a) iid | killed ]
       <> [InvestigatorWhenEliminated (toSource a) iid]
     pure
       $ a
@@ -382,8 +387,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (physicalTraumaL +~ physicalTrauma)
       & (mentalTraumaL +~ mentalTrauma)
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
-    push (InvestigatorWhenEliminated (toSource a) iid)
-    pure $ a & resignedL .~ True
+    isLead <- (== iid) <$> getLeadInvestigatorId
+    pushAll
+      $ [ ChooseLeadInvestigator | isLead && not investigatorResigned ]
+      <> [InvestigatorWhenEliminated (toSource a) iid]
+    pure $ a & resignedL .~ True & endedTurnL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
@@ -688,10 +696,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <- Helpers.checkWindows
       [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
-    a <$ pushAll
-      (resolve (Move (toSource a) iid lid)
-      <> [afterWindowMsg]
-      )
+    a <$ pushAll (resolve (Move (toSource a) iid lid) <> [afterWindowMsg])
   Move source iid destinationLocationId | iid == investigatorId -> do
     mFromLocation <- field InvestigatorLocation iid
     windowMsgs <- Helpers.windows
@@ -1286,7 +1291,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> False
     unless shouldSkip $ do
       let card = findCard cardId a
-      afterPlayCard <- checkWindows [Window Timing.After (Window.PlayCard iid card)]
+      afterPlayCard <- checkWindows
+        [Window Timing.After (Window.PlayCard iid card)]
 
       pushAll
         [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
@@ -1460,7 +1466,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll $ [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
-    unless investigatorDefeated $ push (Msg.InvestigatorDefeated source iid)
+    unless investigatorDefeated $ do
+      isLead <- (== iid) <$> getLeadInvestigatorId
+      pushAll
+        $ [ ChooseLeadInvestigator | isLead ]
+        <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo source investigatorId lid)

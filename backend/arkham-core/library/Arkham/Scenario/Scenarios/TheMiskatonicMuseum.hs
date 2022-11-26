@@ -96,7 +96,7 @@ instance RunMessage TheMiskatonicMuseum where
             ]
       pure s
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
 
       armitageKidnapped <- getHasRecordOrStandalone
         DrHenryArmitageWasKidnapped
@@ -212,7 +212,7 @@ instance RunMessage TheMiskatonicMuseum where
       lid <- getJustLocation iid
       s <$ push (EnemySpawnFromVoid Nothing lid eid)
     ScenarioResolution NoResolution -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids noResolution
@@ -222,7 +222,7 @@ instance RunMessage TheMiskatonicMuseum where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story iids resolution1
@@ -233,7 +233,7 @@ instance RunMessage TheMiskatonicMuseum where
       pure s
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story investigatorIds resolution2

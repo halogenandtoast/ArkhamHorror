@@ -154,7 +154,7 @@ instance RunMessage DimCarcosa where
           3 -> Acts.searchForTheStrangerV3
           _ -> error $ "Invalid setup step, got: " <> show n
 
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
         [ Enemies.hasturTheKingInYellow
         , Enemies.hasturLordOfCarcosa
@@ -283,7 +283,7 @@ instance RunMessage DimCarcosa where
         _ -> pure ()
       pure s
     ScenarioResolution res -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       conviction <- getConviction
       doubt <- getDoubt
       gainXp <- map (uncurry GainXP) <$> getXpWithBonus 5

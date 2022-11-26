@@ -119,7 +119,7 @@ instance RunMessage LostInTimeAndSpace where
       standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.yogSothoth]
         [ EncounterSet.LostInTimeAndSpace
@@ -214,7 +214,7 @@ instance RunMessage LostInTimeAndSpace where
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 1) -> do
       msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ msgs
@@ -227,13 +227,13 @@ instance RunMessage LostInTimeAndSpace where
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do
       msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       pushAll $ msgs <> [story investigatorIds resolution2, EndOfGame Nothing]
 
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 3) -> do
       msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       pushAll
         $ msgs
         <> [ story investigatorIds resolution3
@@ -244,7 +244,7 @@ instance RunMessage LostInTimeAndSpace where
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 4) -> do
       msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       pushAll
         $ msgs
         <> [ story investigatorIds resolution4

@@ -116,7 +116,7 @@ instance RunMessage WhereDoomAwaits where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.sethBishop]
@@ -253,7 +253,7 @@ instance RunMessage WhereDoomAwaits where
       s <$ push (ScenarioResolution $ Resolution 2)
     ScenarioResolution (Resolution 1) -> do
       xp <- getXp
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       pushAll
         $ [ story investigatorIds resolution1
           , Record TheInvestigatorsEnteredTheGate
@@ -262,7 +262,7 @@ instance RunMessage WhereDoomAwaits where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       pushAll
         $ [ story investigatorIds resolution2
           , Record

@@ -64,7 +64,7 @@ instance HasTokenValue CurseOfTheRougarou where
 instance RunMessage CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
       result <- shuffleM $ keys locationsByTrait
       let
@@ -207,7 +207,7 @@ instance RunMessage CurseOfTheRougarou where
     ScenarioResolution NoResolution ->
       runMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [story iids resolution1, Record TheRougarouContinuesToHauntTheBayou]
@@ -215,7 +215,7 @@ instance RunMessage CurseOfTheRougarou where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       xp <- getXp
       pushAll
@@ -234,7 +234,7 @@ instance RunMessage CurseOfTheRougarou where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       xp <- getXp
       pushAll

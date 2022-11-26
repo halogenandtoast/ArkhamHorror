@@ -105,7 +105,7 @@ instance RunMessage BloodOnTheAltar where
         whenM getIsStandalone $ push $ SetTokens standaloneTokens
         pure s
       Setup -> do
-        investigatorIds <- getInvestigatorIds
+        investigatorIds <- allInvestigatorIds
         bishopsBrook <-
           genCard =<< sample
             (Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203])
@@ -262,7 +262,7 @@ instance RunMessage BloodOnTheAltar where
             push (PlaceDoom (AgendaTarget agendaId) 1)
           _ -> pure ()
       ScenarioResolution NoResolution -> do
-        iids <- getInvestigatorIds
+        iids <- allInvestigatorIds
         agendaId <- selectJust AnyAgenda
         xp <- getXp
         let
@@ -283,7 +283,7 @@ instance RunMessage BloodOnTheAltar where
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 1) -> do
-        iids <- getInvestigatorIds
+        iids <- allInvestigatorIds
         xp <- getXp
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
@@ -296,7 +296,7 @@ instance RunMessage BloodOnTheAltar where
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 2) -> do
-        iids <- getInvestigatorIds
+        iids <- allInvestigatorIds
         xp <- getXp
         pushAll
           $ [story iids resolution2, Record TheInvestigatorsRestoredSilasBishop]
@@ -305,7 +305,7 @@ instance RunMessage BloodOnTheAltar where
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 3) -> do
-        iids <- getInvestigatorIds
+        iids <- allInvestigatorIds
         xp <- getXp
         removeNecronomicon <- getRemoveNecronomicon
         pushAll

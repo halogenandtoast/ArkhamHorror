@@ -58,7 +58,7 @@ theGatheringAgendaDeck =
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.ghoulPriest]
         [ EncounterSet.TheGathering
@@ -132,7 +132,7 @@ instance RunMessage TheGathering where
       pure s
     ScenarioResolution resolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       xp <- getXp
       let
         xpGain = [ GainXP iid (n + 2) | (iid, n) <- xp ]

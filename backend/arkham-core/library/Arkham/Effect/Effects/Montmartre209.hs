@@ -42,7 +42,7 @@ instance RunMessage Montmartre209 where
                 UnpaidCost
                 [Window Timing.When (Window.DuringTurn iid)]
               )
-          =<< selectList (TopOfDeckOf Anyone)
+          =<< selectList (TopOfDeckOf UneliminatedInvestigator)
         pushAll
           [ chooseOne iid
           $ Label "Play no cards" []

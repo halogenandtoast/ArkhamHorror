@@ -28,14 +28,17 @@ instance RunMessage GetOverHere where
       enemies <-
         selectList $ NonEliteEnemy <> EnemyAt
           (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m])
-      push $ chooseOne
-        iid
-        [ targetLabel
-            enemy
-            [ EnemyEngageInvestigator enemy iid
-            , FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
-            ]
-        | enemy <- enemies
+      pushAll
+        [ chooseOne
+          iid
+          [ targetLabel
+              enemy
+              [ EnemyEngageInvestigator enemy iid
+              , FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
+              ]
+          | enemy <- enemies
+          ]
+        , Discard (toTarget attrs)
         ]
       pure e
     _ -> GetOverHere <$> runMessage msg attrs

@@ -70,7 +70,10 @@ instance RunMessage CampaignAttrs where
     UpgradeDeck iid deck -> do
       let
         oldDeck = fromJustNote "No deck?" $ lookup iid campaignDecks
-        deckDiff = (unDeck deck) \\ (unDeck oldDeck)
+        deckDiff = foldr
+          (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))
+          (unDeck deck)
+          (unDeck oldDeck)
         mentalTrauma = getSum $ foldMap
           (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
           deckDiff

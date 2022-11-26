@@ -3827,50 +3827,54 @@ runGameMessage msg g = case msg of
     availableSkills <- getAvailableSkillsFor skillType iid
     windows' <- windows
       [Window.InitiatedSkillTest iid maction skillType difficulty]
-    case availableSkills of
-      [] ->
-        pushAll
-          $ windows'
-          <> [ BeginSkillTestAfterFast
-                 iid
-                 source
-                 target
-                 maction
-                 skillType
-                 difficulty
-             ]
-      [_] ->
-        pushAll
-          $ windows'
-          <> [ BeginSkillTestAfterFast
-                 iid
-                 source
-                 target
-                 maction
-                 skillType
-                 difficulty
-             ]
-      xs -> push $ chooseOne
-        iid
-        [ SkillLabel
-            skillType'
-            (windows'
-            <> [ BeginSkillTestAfterFast
-                   iid
-                   source
-                   target
-                   maction
-                   skillType'
-                   difficulty
-               ]
-            )
-        | skillType' <- xs
-        ]
+    let
+      msgs =
+        case availableSkills of
+          [] -> windows'
+              <> [ BeginSkillTestAfterFast
+                     iid
+                     source
+                     target
+                     maction
+                     skillType
+                     difficulty
+                 ]
+          [_] ->
+              windows'
+              <> [ BeginSkillTestAfterFast
+                     iid
+                     source
+                     target
+                     maction
+                     skillType
+                     difficulty
+                 ]
+          xs -> [chooseOne
+            iid
+            [ SkillLabel
+                skillType'
+                (windows'
+                <> [ BeginSkillTestAfterFast
+                       iid
+                       source
+                       target
+                       maction
+                       skillType'
+                       difficulty
+                   ]
+                )
+            | skillType' <- xs
+            ]]
+
+    mSkillTest <- getSkillTest
+    case mSkillTest of
+      Nothing -> pushAll msgs
+      Just _ -> insertAfterMatching msgs (== EndSkillTestWindow)
     pure g
   BeforeSkillTest iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   BeginSkillTestAfterFast iid source target maction skillType difficulty -> do
     windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
-    pushAll [windowMsg, BeforeSkillTest iid skillType difficulty]
+    pushAll [windowMsg, BeforeSkillTest iid skillType difficulty, EndSkillTestWindow]
     skillValue <- getSkillValue skillType iid
     pure
       $ g

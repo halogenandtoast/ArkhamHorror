@@ -6,20 +6,24 @@ module Arkham.Location.Cards.CityOfTheSerpents
 import Arkham.Prelude
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Projection
 
 newtype CityOfTheSerpents = CityOfTheSerpents LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cityOfTheSerpents :: LocationCard CityOfTheSerpents
 cityOfTheSerpents = symbolLabel
   $ location CityOfTheSerpents Cards.cityOfTheSerpents 3 (PerPlayer 1)
 
-instance HasAbilities CityOfTheSerpents where
-  getAbilities (CityOfTheSerpents attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+instance HasModifiersFor CityOfTheSerpents where
+  getModifiersFor target (CityOfTheSerpents a) | isTarget a target = do
+    clueless <- fieldMap LocationClues (== 0) (toId a)
+    pure $ toModifiers a [ InVictoryDisplayForCountingVengeance | clueless ]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage CityOfTheSerpents where
   runMessage msg (CityOfTheSerpents attrs) =

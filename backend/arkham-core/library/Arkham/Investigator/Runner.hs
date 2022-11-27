@@ -400,6 +400,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
+  EnemyEngageInvestigator eid iid | iid /= investigatorId ->
+    pure $ a & engagedEnemiesL %~ deleteSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   RemovedFromPlay (EnemySource eid) ->
     pure $ a & engagedEnemiesL %~ deleteSet eid

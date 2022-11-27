@@ -348,7 +348,6 @@ data Message
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]
-  | FocusTargets [Target]
   | FocusTokens [Token]
   | Force Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard

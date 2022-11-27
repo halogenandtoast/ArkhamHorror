@@ -23,8 +23,7 @@ import Json
 import Orphans ()
 
 data Choice = Choice
-  { choicePatchUp :: Patch
-  , choicePatchDown :: Patch
+  { choicePatchDown :: Patch
   , choiceMessages :: [Message]
   }
   deriving stock (Show, Generic)

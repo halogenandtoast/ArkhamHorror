@@ -222,7 +222,7 @@ postApiV1ArkhamGamesR = do
         gameId <- insert $ ArkhamGame
           campaignName
           ge
-          [Choice mempty mempty updatedQueue]
+          [Choice mempty updatedQueue]
           []
           multiplayerVariant
           now
@@ -234,7 +234,7 @@ postApiV1ArkhamGamesR = do
         (ArkhamGame
           campaignName
           ge
-          [Choice mempty mempty updatedQueue]
+          [Choice mempty updatedQueue]
           []
           multiplayerVariant
           now
@@ -250,14 +250,13 @@ postApiV1ArkhamGamesR = do
           (runMessages Nothing)
         ge <- readIORef gameRef
         let
-          diffUp = diff game ge
           diffDown = diff ge game
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
           gameId <- insert $ ArkhamGame
             campaignName
             ge
-            [Choice diffUp diffDown updatedQueue]
+            [Choice diffDown updatedQueue]
             []
             multiplayerVariant
             now
@@ -269,7 +268,7 @@ postApiV1ArkhamGamesR = do
           (ArkhamGame
             campaignName
             ge
-            [Choice diffUp diffDown updatedQueue]
+            [Choice diffDown updatedQueue]
             []
             multiplayerVariant
             now
@@ -337,7 +336,6 @@ putApiV1ArkhamGameR gameId = do
     (runMessages Nothing)
   ge <- readIORef gameRef
   let
-    diffUp = diff arkhamGameCurrentData ge
     diffDown = diff ge arkhamGameCurrentData
 
   updatedQueue <- readIORef queueRef
@@ -347,7 +345,7 @@ putApiV1ArkhamGameR gameId = do
     replace gameId $ ArkhamGame
       arkhamGameName
       ge
-      (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+      (Choice diffDown updatedQueue : arkhamGameChoices)
       updatedLog
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
@@ -394,7 +392,6 @@ putApiV1ArkhamGameRawR gameId = do
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   let
-    diffUp = diff arkhamGameCurrentData ge
     diffDown = diff ge arkhamGameCurrentData
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   atomically $ writeTChan
@@ -407,7 +404,7 @@ putApiV1ArkhamGameRawR gameId = do
       (ArkhamGame
         arkhamGameName
         ge
-        (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+        (Choice diffDown updatedQueue : arkhamGameChoices)
         updatedLog
         arkhamGameMultiplayerVariant
         arkhamGameCreatedAt

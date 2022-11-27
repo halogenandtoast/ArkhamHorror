@@ -120,8 +120,8 @@ data WindowType
   | PlaceUnderneath Target Card
   | PlacedClues Target Int
   | PlacedResources Target Int
-  | PlacedDamage InvestigatorId Int
-  | PlacedHorror InvestigatorId Int
+  | PlacedDamage Target Int
+  | PlacedHorror Target Int
   | PlacedDoom Target Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId

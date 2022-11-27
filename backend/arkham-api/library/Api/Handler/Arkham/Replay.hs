@@ -21,31 +21,32 @@ newtype ReplayId = ReplayId {id :: ArkhamGameId}
 
 getApiV1ArkhamGameReplayR :: ArkhamGameId -> Int -> Handler GetReplayJson
 getApiV1ArkhamGameReplayR gameId step = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
-  ge <- runDB $ get404 gameId
-  let gameJson@Game {..} = arkhamGameCurrentData ge
-  let choices = reverse (take step (reverse $ arkhamGameChoices ge))
-
-  gameRef <- newIORef gameJson
-  queueRef <- newIORef []
-  genRef <- newIORef (mkStdGen gameSeed)
-
-  runGameApp
-    (GameApp gameRef queueRef genRef $ \_ -> pure ())
-    (replayChoices $ map choicePatchUp choices)
-
-  ge' <- readIORef gameRef
-  pure $ GetReplayJson
-    (length choices)
-    (toPublicGame $ Entity
-      gameId
-      (ArkhamGame
-        (arkhamGameName ge)
-        ge'
-        (arkhamGameChoices ge)
-        []
-        (arkhamGameMultiplayerVariant ge)
-        (arkhamGameCreatedAt ge)
-        (arkhamGameUpdatedAt ge)
-      )
-    )
+  error "broken for now"
+  -- _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  -- ge <- runDB $ get404 gameId
+  -- let gameJson@Game {..} = arkhamGameCurrentData ge
+  -- let choices = reverse (take step (reverse $ arkhamGameChoices ge))
+  --
+  -- gameRef <- newIORef gameJson
+  -- queueRef <- newIORef []
+  -- genRef <- newIORef (mkStdGen gameSeed)
+  --
+  -- runGameApp
+  --   (GameApp gameRef queueRef genRef $ \_ -> pure ())
+  --   (replayChoices $ map choicePatchUp choices)
+  --
+  -- ge' <- readIORef gameRef
+  -- pure $ GetReplayJson
+  --   (length choices)
+  --   (toPublicGame $ Entity
+  --     gameId
+  --     (ArkhamGame
+  --       (arkhamGameName ge)
+  --       ge'
+  --       (arkhamGameChoices ge)
+  --       []
+  --       (arkhamGameMultiplayerVariant ge)
+  --       (arkhamGameCreatedAt ge)
+  --       (arkhamGameUpdatedAt ge)
+  --     )
+  --   )

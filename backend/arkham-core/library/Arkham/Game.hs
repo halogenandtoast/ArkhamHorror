@@ -120,7 +120,7 @@ import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
 import Control.Exception ( throw )
 import Control.Lens ( each, itraverseOf, itraversed, set )
-import Control.Monad.Random ( StdGen, mkStdGen )
+import Control.Monad.Random ( StdGen )
 import Control.Monad.Reader ( runReader )
 import Control.Monad.State.Strict hiding ( filterM, foldM, state )
 import Data.Aeson ( Result (..) )
@@ -191,7 +191,6 @@ data Game = Game
   , gameSkillTest :: Maybe SkillTest
   , gameFocusedCards :: [Card]
   , gameFoundCards :: HashMap Zone [Card]
-  , gameFocusedTargets :: [Target]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
   , gameActiveAbilities :: [Ability]
@@ -293,7 +292,6 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameGameState = state
       , gameFocusedCards = mempty
       , gameFoundCards = mempty
-      , gameFocusedTargets = mempty
       , gameFocusedTokens = mempty
       , gameActiveCard = Nothing
       , gameActiveAbilities = mempty
@@ -382,45 +380,13 @@ toExternalGame g mq = do
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
 replayChoices
-  :: ( MonadIO m
-     , HasGameRef env
-     , HasStdGen env
-     , MonadReader env m
-     , HasQueue Message m
-     , HasGameLogger env
-     )
-  => [Diff.Patch]
-  -> m ()
-replayChoices choices = do
-  gameRef <- view gameRefL
-  genRef <- view genL
-  currentGame <- readIORef gameRef
-  writeIORef genRef (mkStdGen (gameInitialSeed currentGame))
-
-  let
-    GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
-      gameParams currentGame
-
-  (msgRef, replayedGame) <- newGame
-    scenarioOrCampaignId
-    (gameInitialSeed currentGame)
-    playerCount
-    investigatorsList
-    difficulty
-
-  msgs <- readIORef msgRef
-  writeIORef gameRef replayedGame
-
-  clearQueue
-  pushAll msgs
-
-  runMessages Nothing
-
-  replayedGame' <- readIORef gameRef
-
-  case foldM patch replayedGame' (reverse choices) of
+  :: Game
+  -> [Diff.Patch]
+  -> Game
+replayChoices currentGame choices = do
+  case foldM patch currentGame choices of
     Error e -> error e
-    Success g -> writeIORef gameRef g
+    Success g -> g
 
 modeScenario :: GameMode -> Maybe Scenario
 modeScenario = \case
@@ -618,7 +584,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       )
     , "focusedCards" .= toJSON gameFocusedCards
     , "foundCards" .= toJSON gameFoundCards
-    , "focusedTargets" .= toJSON gameFocusedTargets
     , "focusedTokens"
       .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
     , "activeCard" .= toJSON gameActiveCard
@@ -3000,8 +2965,6 @@ runGameMessage msg g = case msg of
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   PutCardOnTopOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
   PutCardOnBottomOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
-  FocusTargets targets -> pure $ g & focusedTargetsL .~ targets
-  UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> do

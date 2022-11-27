@@ -89,10 +89,10 @@ instance RunMessage TheMiskatonicMuseum where
     LookAtTopOfDeck iid ScenarioDeckTarget n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
         xs -> do
-          let lids = map (CardCodeTarget . toCardCode) $ take n xs
+          let cards = take n xs
           pushAll
-            [ FocusTargets lids
-            , chooseOne iid [Label "Continue" [UnfocusTargets]]
+            [ FocusCards cards
+            , chooseOne iid [Label "Continue" [UnfocusCards]]
             ]
       pure s
     Setup -> do

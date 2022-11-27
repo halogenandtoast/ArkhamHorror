@@ -4,7 +4,6 @@ module Api.Handler.Arkham.Replay
 
 import Api.Arkham.Helpers
 import Arkham.Game
-import Control.Monad.Random ( mkStdGen )
 import Import hiding ( delete, on, (==.) )
 import Safe ( fromJustNote )
 
@@ -21,32 +20,23 @@ newtype ReplayId = ReplayId {id :: ArkhamGameId}
 
 getApiV1ArkhamGameReplayR :: ArkhamGameId -> Int -> Handler GetReplayJson
 getApiV1ArkhamGameReplayR gameId step = do
-  error "broken for now"
-  -- _ <- fromJustNote "Not authenticated" <$> getRequestUserId
-  -- ge <- runDB $ get404 gameId
-  -- let gameJson@Game {..} = arkhamGameCurrentData ge
-  -- let choices = reverse (take step (reverse $ arkhamGameChoices ge))
-  --
-  -- gameRef <- newIORef gameJson
-  -- queueRef <- newIORef []
-  -- genRef <- newIORef (mkStdGen gameSeed)
-  --
-  -- runGameApp
-  --   (GameApp gameRef queueRef genRef $ \_ -> pure ())
-  --   (replayChoices $ map choicePatchUp choices)
-  --
-  -- ge' <- readIORef gameRef
-  -- pure $ GetReplayJson
-  --   (length choices)
-  --   (toPublicGame $ Entity
-  --     gameId
-  --     (ArkhamGame
-  --       (arkhamGameName ge)
-  --       ge'
-  --       (arkhamGameChoices ge)
-  --       []
-  --       (arkhamGameMultiplayerVariant ge)
-  --       (arkhamGameCreatedAt ge)
-  --       (arkhamGameUpdatedAt ge)
-  --     )
-  --   )
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  ge <- runDB $ get404 gameId
+  let gameJson = arkhamGameCurrentData ge
+  let choices = reverse $ drop step $ reverse $ arkhamGameChoices ge
+  let gameJson' = replayChoices gameJson $ map choicePatchDown choices
+
+  pure $ GetReplayJson
+    (length choices)
+    (toPublicGame $ Entity
+      gameId
+      (ArkhamGame
+        (arkhamGameName ge)
+        gameJson'
+        (arkhamGameChoices ge)
+        []
+        (arkhamGameMultiplayerVariant ge)
+        (arkhamGameCreatedAt ge)
+        (arkhamGameUpdatedAt ge)
+      )
+    )

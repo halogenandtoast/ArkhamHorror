@@ -2,7 +2,6 @@ import api from '@/api';
 import { Game, gameDecoder } from '@/arkham/types/Game';
 import { Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
-import { Investigator, investigatorDecoder } from '@/arkham/types/Investigator';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { JsonDecoder } from 'ts.data.json';
 
@@ -50,9 +49,9 @@ export const fetchCards = (includeEncounter = false): Promise<CardDef[]> => {
   .then((resp) => JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodeToPromise(resp.data));
 }
 
-export const fetchInvestigators = (): Promise<Investigator[]> => api
+export const fetchInvestigators = (): Promise<CardDef[]> => api
   .get('arkham/investigators')
-  .then((resp) => JsonDecoder.array(investigatorDecoder, 'Investigator[]').decodeToPromise(resp.data));
+  .then((resp) => JsonDecoder.array(cardDefDecoder, 'CardDef[]').decodeToPromise(resp.data));
 
 export const newDeck = (
   deckId: string,

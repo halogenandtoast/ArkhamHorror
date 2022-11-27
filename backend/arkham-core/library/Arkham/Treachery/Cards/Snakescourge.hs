@@ -16,6 +16,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Trait ( Trait (Item) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -29,12 +30,12 @@ snakescourge = treachery Snakescourge Cards.snakescourge
 instance HasModifiersFor Snakescourge where
   getModifiersFor (AssetTarget aid) (Snakescourge attrs) = do
     miid <- field AssetController aid
-    nonweakness <- aid <=~> NonWeaknessAsset
+    nonweaknessItem <- aid <=~> (NonWeaknessAsset <> AssetWithTrait Item)
     pure $ toModifiers
       attrs
       [ Blank
       | iid <- maybeToList miid
-      , nonweakness
+      , nonweaknessItem
       , treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ _ = pure []

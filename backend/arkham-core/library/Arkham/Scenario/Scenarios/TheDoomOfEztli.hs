@@ -257,6 +257,7 @@ instance RunMessage TheDoomOfEztli where
       explore iid source locationMatcher PlaceExplored
       pure s
     ResolveToken _ ElderThing iid -> do
+      push $ DrawAnotherToken iid
       when (isHardExpert attrs) $ do
         mlid <- field InvestigatorLocation iid
         for_ mlid $ \lid -> push $ PlaceDoom (LocationTarget lid) 1

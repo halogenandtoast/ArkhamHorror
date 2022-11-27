@@ -10,8 +10,11 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
 
+-- Anyone is bit of a hack, if all investigators are defeated there is not lead
+-- investigator so we use the `Anyone` scope to bring in all eliminated
+-- investigators as well, for which the last should be the lead.
 getLeadInvestigatorId :: (Monad m, HasGame m) => m InvestigatorId
-getLeadInvestigatorId = selectJust LeadInvestigator
+getLeadInvestigatorId = selectJust $ Anyone <> LeadInvestigator
 
 getActiveInvestigatorId :: (Monad m, HasGame m) => m InvestigatorId
 getActiveInvestigatorId = selectJust TurnInvestigator

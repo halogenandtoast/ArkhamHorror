@@ -823,7 +823,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
 
     canAffordAdditionalCosts <- allM
       (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows')
-      (additionalCosts <> sealedTokenCost)
+      ([ActionCost 1 | not inFastWindow] <> additionalCosts <> sealedTokenCost)
 
     passesSlots <- if null (cdSlots pcDef)
       then pure True

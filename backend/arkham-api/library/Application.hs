@@ -61,6 +61,7 @@ import Text.Regex.Posix ((=~))
 import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Games
+import Api.Handler.Arkham.Investigators
 import Api.Handler.Arkham.PendingGames
 import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo

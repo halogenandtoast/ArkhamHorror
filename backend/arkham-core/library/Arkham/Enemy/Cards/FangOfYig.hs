@@ -26,7 +26,11 @@ fangOfYig = enemyWith
 
 instance HasModifiersFor FangOfYig where
   getModifiersFor (InvestigatorTarget iid) (FangOfYig a) = do
-    affected <- iid <=~> investigatorEngagedWith (toId a)
+    affected <-
+      iid
+        <=~> (investigatorEngagedWith (toId a)
+             <> HasMatchingTreachery (treacheryIs Treacheries.poisoned)
+             )
     pure $ toModifiers a $ if affected
       then [CannotPlay AnyCard, CannotCommitCards AnyCard]
       else []

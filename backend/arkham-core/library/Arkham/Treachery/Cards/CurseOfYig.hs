@@ -26,7 +26,7 @@ instance HasModifiersFor CurseOfYig where
     pure $ if treacheryOnInvestigator iid attrs
       then toModifiers
         attrs
-        [SkillModifier SkillCombat (-1), HealthModifier (-10), AddTrait Serpent]
+        [SkillModifier SkillCombat (-1), HealthModifier (-1), AddTrait Serpent]
       else []
   getModifiersFor _ _ = pure []
 

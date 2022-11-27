@@ -338,9 +338,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $ a & discardL .~ [] & deckL .~ Deck deck
   Resign iid | iid == investigatorId -> do
     isLead <- (== iid) <$> getLeadInvestigatorId
-    pushAll $
-      [ ChooseLeadInvestigator | isLead ]
-      <> resolve (Msg.InvestigatorResigned iid)
+    pushAll $ [ ChooseLeadInvestigator | isLead ] <> resolve
+      (Msg.InvestigatorResigned iid)
     pure $ a & resignedL .~ True & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid -> do
     -- a card effect defeats an investigator directly
@@ -801,7 +800,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              []
              []
            , CheckDefeated source
-           , After (InvestigatorTakeDamage iid source damage horror)
            ]
         )
       pure a
@@ -850,45 +848,45 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                []
              , CheckDefeated source
              ]
-          <> [After (InvestigatorTakeDamage iid source damage horror)]
           )
-  After (InvestigatorTakeDamage iid source damage horror)
-    | iid == investigatorId && (damage > 0 || horror > 0) -> do
+  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
+    | iid == investigatorId
+    -> do
       let
         damageEffect = case source of
           EnemyAttackSource _ -> AttackDamageEffect
           _ -> NonAttackDamageEffect
+        damageMap = frequencies damageTargets
+        horrorMap = frequencies horrorTargets
         placedWindows =
-          [ Window.PlacedDamage iid damage | damage > 0 ]
-          <> [ Window.PlacedHorror iid horror | horror > 0 ]
-        dealtWindows =
-          [ Window.DealtDamage source damageEffect (InvestigatorTarget iid)
-          | damage > 0
+          [ Window.PlacedDamage target damage
+          | (target, damage) <- mapToList damageMap
           ]
-          <> [ Window.DealtHorror source (InvestigatorTarget iid) | horror > 0 ]
+          <> [ Window.PlacedHorror target horror
+             | (target, horror) <- mapToList horrorMap
+             ]
       placedWindowMsg <-
         checkWindows
           $ (concatMap
               (\t -> map (Window t) placedWindows)
               [Timing.When, Timing.After]
             )
-      dealtWindowMsgs <- checkWindows $ map (Window Timing.After) dealtWindows
-      pushAll [placedWindowMsg, dealtWindowMsgs]
-      pure a
-  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
-    | iid == investigatorId
-    -> do
-      push
-        $ CheckWindow [iid]
-        $ [ Window
-              Timing.When
-              (Window.DealtDamage source NonAttackDamageEffect target)
-          | target <- nub damageTargets
+      pushAll
+        $ [ placedWindowMsg
+          , CheckWindow [iid]
+          $ [ Window
+                Timing.When
+                (Window.DealtDamage source damageEffect target)
+            | target <- nub damageTargets
+            ]
+          <> [ Window Timing.When (Window.DealtHorror source target)
+             | target <- nub horrorTargets
+             ]
+          <> [ Window
+                 Timing.When
+                 (Window.AssignedHorror source iid horrorTargets)
+             ]
           ]
-        <> [ Window Timing.When (Window.DealtHorror source target)
-           | target <- nub horrorTargets
-           ]
-        <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
       when
           (damageStrategy
           == DamageFromHastur

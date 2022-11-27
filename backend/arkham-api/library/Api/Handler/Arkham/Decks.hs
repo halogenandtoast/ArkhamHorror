@@ -106,7 +106,6 @@ putApiV1ArkhamGameDecksR gameId = do
   ge <- readIORef gameRef
 
   let
-    diffUp = diff arkhamGameCurrentData ge
     diffDown = diff ge arkhamGameCurrentData
   updatedQueue <- readIORef queueRef
   let updatedMessages = []
@@ -118,7 +117,7 @@ putApiV1ArkhamGameDecksR gameId = do
   runDB $ replace gameId $ ArkhamGame
     arkhamGameName
     ge
-    (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+    (Choice diffDown updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
     arkhamGameCreatedAt

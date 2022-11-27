@@ -58,7 +58,7 @@ putApiV1ArkhamPendingGameR gameId = do
   runDB $ replace gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    (Choice mempty mempty updatedQueue : arkhamGameChoices)
+    (Choice mempty updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
     arkhamGameCreatedAt
@@ -67,7 +67,7 @@ putApiV1ArkhamPendingGameR gameId = do
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    (Choice mempty mempty updatedQueue : arkhamGameChoices)
+    (Choice mempty updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
     arkhamGameCreatedAt

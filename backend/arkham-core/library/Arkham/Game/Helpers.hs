@@ -1418,12 +1418,12 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedHorror iid' n)
+      Window t (Window.PlacedHorror (InvestigatorTarget iid') n)
         | t == whenMatcher && counterMatcher == Matcher.HorrorCounter -> liftA2
           (&&)
           (matchWho iid iid' whoMatcher)
           (gameValueMatches n valueMatcher)
-      Window t (Window.PlacedDamage iid' n)
+      Window t (Window.PlacedDamage (InvestigatorTarget iid') n)
         | t == whenMatcher && counterMatcher == Matcher.DamageCounter -> liftA2
           (&&)
           (matchWho iid iid' whoMatcher)

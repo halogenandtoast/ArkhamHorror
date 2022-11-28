@@ -1967,6 +1967,10 @@ matchWho
   -> m Bool
 matchWho iid who Matcher.You = pure $ iid == who
 matchWho iid who Matcher.NotYou = pure $ iid /= who
+matchWho iid who (Matcher.InvestigatorAt matcher) = do
+  mlid <- field InvestigatorLocation iid
+  member who <$> select
+    (Matcher.InvestigatorAt $ Matcher.replaceYourLocation iid mlid matcher)
 matchWho _ who matcher = member who <$> select matcher
 
 gameValueMatches

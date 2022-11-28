@@ -18,11 +18,12 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message ( Message (EnemySpawnAtLocationMatching), resolve )
+import Arkham.Message ( Message (EnemySpawnAtLocationMatching, PlaceEnemy), resolve )
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window qualified as Window
@@ -45,11 +46,18 @@ emptyLocationMap = mempty
 isActionTarget :: EnemyAttrs -> Target -> Bool
 isActionTarget attrs = isTarget attrs . toProxyTarget
 
-spawnAt :: EnemyId -> LocationMatcher -> GameT ()
-spawnAt eid locationMatcher = do
+spawnAt :: EnemyId -> SpawnAt -> GameT ()
+spawnAt eid (SpawnLocation locationMatcher) = do
   windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
   pushAll $ windows' <> resolve
     (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
+spawnAt eid (SpawnPlaced placement) = do
+  push $ PlaceEnemy eid placement
+spawnAt eid (SpawnAtFirst (x:xs)) = case x of
+  SpawnLocation matcher -> do
+    willMatch <- selectAny matcher
+    if willMatch then spawnAt eid (SpawnLocation matcher) else spawnAt eid (SpawnAtFirst xs)
+  other -> spawnAt eid other
 
 modifiedEnemyFight :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do

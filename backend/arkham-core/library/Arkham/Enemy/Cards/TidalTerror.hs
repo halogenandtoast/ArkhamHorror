@@ -20,10 +20,12 @@ tidalTerror = enemyWith
   Cards.tidalTerror
   (4, Static 4, 2)
   (1, 2)
-  (spawnAtL ?~ LocationMatchAny
-    [ LocationWithTitle "Porte de l'Avancée"
-    , LocationWithTitle "Chapel of St. Aubert"
-    ]
+  (spawnAtL ?~ SpawnLocation
+    (LocationMatchAny
+      [ LocationWithTitle "Porte de l'Avancée"
+      , LocationWithTitle "Chapel of St. Aubert"
+      ]
+    )
   )
 
 instance RunMessage TidalTerror where

@@ -236,7 +236,7 @@ instance RunMessage TheBoundaryBeyond where
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do
-      explore iid source locationMatcher ReplaceExplored
+      explore iid source locationMatcher ReplaceExplored 1
       pure s
     AddToVictory (LocationTarget lid) -> do
       -- We want to replace the card ID to avoid UI confusion

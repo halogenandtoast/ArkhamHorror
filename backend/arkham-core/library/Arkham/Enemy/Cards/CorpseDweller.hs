@@ -6,7 +6,6 @@ module Arkham.Enemy.Cards.CorpseDweller
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
@@ -24,14 +23,21 @@ corpseDweller = enemyWith
   Cards.corpseDweller
   (3, Static 5, 4)
   (2, 1)
-  ((spawnAtL ?~ LocationWithEnemy (EnemyWithTrait Humanoid)) . (surgeIfUnableToSpawnL .~ True))
+  ((spawnAtL ?~ SpawnLocation (LocationWithEnemy (EnemyWithTrait Humanoid)))
+  . (surgeIfUnableToSpawnL .~ True)
+  )
 
 instance RunMessage CorpseDweller where
   runMessage msg (CorpseDweller attrs) = case msg of
     EnemySpawn miid lid eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       let iid = fromMaybe leadInvestigatorId miid
-      humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt (LocationWithId lid)
-      push $ chooseOrRunOne iid [targetLabel humanoid [Discard (EnemyTarget humanoid)] | humanoid <- humanoids]
+      humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt
+        (LocationWithId lid)
+      push $ chooseOrRunOne
+        iid
+        [ targetLabel humanoid [Discard (EnemyTarget humanoid)]
+        | humanoid <- humanoids
+        ]
       CorpseDweller <$> runMessage msg attrs
     _ -> CorpseDweller <$> runMessage msg attrs

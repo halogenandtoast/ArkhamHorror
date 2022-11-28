@@ -26,7 +26,7 @@ specterOfDeath = enemyWith
   Cards.specterOfDeath
   (0, Static 1, 0)
   (0, 0)
-  (spawnAtL ?~ LocationWithLabel (positionToLabel startPosition))
+  (spawnAtL ?~ SpawnLocation (LocationWithLabel $ positionToLabel startPosition))
 
 instance HasAbilities SpecterOfDeath where
   getAbilities (SpecterOfDeath a) =

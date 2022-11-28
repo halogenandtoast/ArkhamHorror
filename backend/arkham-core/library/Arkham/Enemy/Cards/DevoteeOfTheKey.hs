@@ -25,7 +25,7 @@ devoteeOfTheKey = enemyWith
   Cards.devoteeOfTheKey
   (3, Static 3, 3)
   (1, 1)
-  (spawnAtL ?~ LocationWithTitle "Base of the Hill")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Base of the Hill"))
 
 instance HasAbilities DevoteeOfTheKey where
   getAbilities (DevoteeOfTheKey attrs) = withBaseAbilities

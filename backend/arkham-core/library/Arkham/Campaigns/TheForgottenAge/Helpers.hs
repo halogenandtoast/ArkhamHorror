@@ -81,19 +81,29 @@ getSetAsidePoisoned =
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock Eq
 
-explore :: InvestigatorId -> Source -> CardMatcher -> ExploreRule -> GameT ()
-explore iid source cardMatcher exploreRule = do
+explore
+  :: InvestigatorId -> Source -> CardMatcher -> ExploreRule -> Int -> GameT ()
+explore iid source cardMatcher exploreRule matchCount = do
   explorationDeck <- getExplorationDeck
   canMove <- iid <=~> InvestigatorCanMove
   let
     cardMatcher' = CardWithOneOf [CardWithType TreacheryType, cardMatcher]
-    (notMatched, matchedOnTop) =
-      break (`cardMatch` cardMatcher') explorationDeck
-  case matchedOnTop of
+    splitAtMatch d = case break (`cardMatch` cardMatcher') d of
+      (l, []) -> (l, [])
+      (l, x : xs) -> (l <> [x], xs)
+    (drawn, rest) = foldr
+      (\_ (drawn', rest') ->
+        let (drawn'', rest'') = splitAtMatch rest'
+        in (drawn' <> drawn'', rest'')
+      )
+      ([], explorationDeck)
+      [1 .. matchCount]
+    (matched, notMatched) = partition (`cardMatch` cardMatcher') drawn
+  case matched of
     [] -> do
-      deck' <- shuffleM notMatched
+      deck' <- shuffleM (drawn <> rest)
       pushAll
-        [ FocusCards notMatched
+        [ FocusCards drawn
         , chooseOne
           iid
           [ Label
@@ -101,7 +111,7 @@ explore iid source cardMatcher exploreRule = do
               [UnfocusCards, SetScenarioDeck ExplorationDeck deck']
           ]
         ]
-    (x : xs) -> do
+    [x] -> do
       msgs <- if cdCardType (toCardDef x) == LocationType
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
@@ -136,7 +146,9 @@ explore iid source cardMatcher exploreRule = do
             [ DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x
             , windowMsg
             ]
-      deck' <- if null notMatched then pure xs else shuffleM (xs <> notMatched)
+      deck' <- if null notMatched
+        then pure rest
+        else shuffleM (rest <> notMatched)
       pushAll
         [ FocusCards (notMatched <> [x])
         , chooseOne
@@ -146,3 +158,44 @@ explore iid source cardMatcher exploreRule = do
               (UnfocusCards : SetScenarioDeck ExplorationDeck deck' : msgs)
           ]
         ]
+    xs -> do
+      -- we assume only locations, triggered by forked path
+      -- This can only be PlaceExplored
+      msgs <- do
+        let
+          historyItem = mempty { historySuccessfulExplore = True }
+          locationIds = map toLocationId xs
+
+        afterPutIntoPlayWindow <- checkWindows
+          [ Window Timing.After (Window.PutLocationIntoPlay iid lid)
+          | lid <- locationIds
+          ]
+        afterExploredWindow <- checkWindows
+          [ Window Timing.After $ Window.Explored iid (Success lid)
+          | lid <- locationIds
+          ]
+
+        pure
+          $ map PlaceLocation xs
+          <> [ chooseOne
+                 iid
+                 [ targetLabel lid [Move source iid lid] | lid <- locationIds ]
+             | canMove
+             ]
+          <> [ UpdateHistory iid historyItem
+             , afterExploredWindow
+             , afterPutIntoPlayWindow
+             ]
+      deck' <- if null notMatched
+        then pure rest
+        else shuffleM (rest <> notMatched)
+      pushAll
+        $ [ FocusCards drawn
+          , chooseN
+            iid
+            (min matchCount $ length xs)
+            [ TargetLabel (CardIdTarget $ toCardId x) [] | x <- xs ]
+          , UnfocusCards
+          , SetScenarioDeck ExplorationDeck deck'
+          ]
+        <> msgs

@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.FleshEater
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ fleshEater = enemyWith
   Cards.fleshEater
   (4, Static 4, 1)
   (1, 2)
-  (spawnAtL ?~ LocationWithTitle "Attic")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Attic"))
 
 instance RunMessage FleshEater where
   runMessage msg (FleshEater attrs) = FleshEater <$> runMessage msg attrs

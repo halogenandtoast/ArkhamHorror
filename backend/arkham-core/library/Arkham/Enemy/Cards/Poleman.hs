@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.Poleman
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ poleman = enemyWith
   Cards.poleman
   (4, Static 4, 2)
   (1, 1)
-  ((spawnAtL ?~ LocationWithTitle "Canal-side")
+  ((spawnAtL ?~ SpawnLocation (LocationWithTitle "Canal-side"))
   . (preyL .~ Prey (HasMostMatchingAsset (AssetWithTitle "Innocent Reveler")))
   )
 

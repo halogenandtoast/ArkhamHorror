@@ -6,8 +6,8 @@ module Arkham.Enemy.Cards.MadPatient
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -24,7 +24,9 @@ madPatient = enemyWith
   (2, Static 2, 3)
   (1, 0)
   ((preyL .~ Prey MostRemainingSanity)
-  . (spawnAtL ?~ NearestLocationToYou (LocationWithTitle "Asylum Halls"))
+  . (spawnAtL ?~ SpawnLocation
+      (NearestLocationToYou $ LocationWithTitle "Asylum Halls")
+    )
   )
 
 instance HasAbilities MadPatient where

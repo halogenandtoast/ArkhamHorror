@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.HermanCollins
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Action hiding (Ability)
+import Arkham.Action hiding ( Ability )
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -25,14 +25,15 @@ hermanCollins = enemyWith
   Cards.hermanCollins
   (3, Static 4, 4)
   (1, 1)
-  (spawnAtL ?~ LocationWithTitle "Graveyard")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Graveyard"))
 
 instance HasAbilities HermanCollins where
   getAbilities (HermanCollins attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility
-        (Just Parley)
-        (Costs [ActionCost 1, HandDiscardCost 4 AnyCard])
+    [ restrictedAbility attrs 1 OnSameLocation
+        $ ActionAbility
+            (Just Parley)
+            (Costs [ActionCost 1, HandDiscardCost 4 AnyCard])
     ]
 
 instance RunMessage HermanCollins where

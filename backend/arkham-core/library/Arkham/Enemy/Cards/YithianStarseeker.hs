@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.YithianStarseeker
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks)
+import Arkham.Message hiding ( EnemyAttacks )
 import Arkham.Timing qualified as Timing
 
 newtype YithianStarseeker = YithianStarseeker EnemyAttrs
@@ -23,7 +23,7 @@ yithianStarseeker = enemyWith
   Cards.yithianStarseeker
   (3, Static 4, 5)
   (2, 1)
-  (spawnAtL ?~ LocationWithTitle "Another Dimension")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Another Dimension"))
 
 instance HasAbilities YithianStarseeker where
   getAbilities (YithianStarseeker attrs) = withBaseAbilities

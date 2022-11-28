@@ -28,7 +28,7 @@ darkYoungHost = enemyWith
   Cards.darkYoungHost
   (4, Static 5, 2)
   (2, 2)
-  (spawnAtL ?~ LocationWithTrait Bayou)
+  (spawnAtL ?~ SpawnLocation (LocationWithTrait Bayou))
 
 instance HasAbilities DarkYoungHost where
   getAbilities (DarkYoungHost attrs) =

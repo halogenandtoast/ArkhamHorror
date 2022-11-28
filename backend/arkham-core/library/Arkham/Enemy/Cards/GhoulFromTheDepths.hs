@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.GhoulFromTheDepths
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ ghoulFromTheDepths = enemyWith
   Cards.ghoulFromTheDepths
   (3, Static 4, 2)
   (1, 1)
-  (spawnAtL ?~ LocationWithTitle "Bathroom")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Bathroom"))
 
 instance RunMessage GhoulFromTheDepths where
   runMessage msg (GhoulFromTheDepths attrs) =

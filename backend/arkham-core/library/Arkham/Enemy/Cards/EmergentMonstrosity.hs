@@ -5,9 +5,9 @@ module Arkham.Enemy.Cards.EmergentMonstrosity
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -21,8 +21,8 @@ emergentMonstrosity = enemyWith
   Cards.emergentMonstrosity
   (4, Static 5, 3)
   (2, 2)
-  ((spawnAtL
-   ?~ FirstLocation [LocationInDirection RightOf YourLocation, YourLocation]
+  ((spawnAtL ?~ SpawnLocation
+     (FirstLocation [LocationInDirection RightOf YourLocation, YourLocation])
    )
   . (exhaustedL .~ True)
   )

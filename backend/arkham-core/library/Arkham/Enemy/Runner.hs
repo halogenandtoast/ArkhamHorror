@@ -11,6 +11,7 @@ import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
+import Arkham.Spawn as X
 
 import Arkham.Action qualified as Action
 import Arkham.Attack
@@ -810,7 +811,7 @@ instance RunMessage EnemyAttrs where
       modifiers' <- getModifiers (EnemyTarget enemyId)
       let
         getModifiedSpawnAt [] = enemySpawnAt
-        getModifiedSpawnAt (SpawnLocation m : _) = Just m
+        getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnLocation m
         getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
         spawnAtMatcher = getModifiedSpawnAt modifiers'
       case spawnAtMatcher of

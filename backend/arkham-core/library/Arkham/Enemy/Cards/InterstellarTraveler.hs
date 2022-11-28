@@ -27,7 +27,7 @@ interstellarTraveler = enemyWith
   Cards.interstellarTraveler
   (4, Static 3, 2)
   (1, 2)
-  (spawnAtL ?~ LocationWithTrait Extradimensional)
+  (spawnAtL ?~ SpawnLocation (LocationWithTrait Extradimensional))
 
 instance HasAbilities InterstellarTraveler where
   getAbilities (InterstellarTraveler attrs) = withBaseAbilities

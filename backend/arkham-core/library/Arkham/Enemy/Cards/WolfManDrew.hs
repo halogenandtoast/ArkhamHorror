@@ -23,7 +23,7 @@ wolfManDrew = enemyWith
   Cards.wolfManDrew
   (4, Static 4, 2)
   (2, 0)
-  (spawnAtL ?~ LocationWithTitle "Downtown")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Downtown"))
 
 instance HasAbilities WolfManDrew where
   getAbilities (WolfManDrew a) = withBaseAbilities

@@ -28,6 +28,7 @@ import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
@@ -79,7 +80,7 @@ movedFromHunterKeywordL = lens enemyMovedFromHunterKeyword
 bearerL :: Lens' EnemyAttrs (Maybe InvestigatorId)
 bearerL = lens enemyBearer $ \m x -> m { enemyBearer = x }
 
-spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
+spawnAtL :: Lens' EnemyAttrs (Maybe SpawnAt)
 spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
 
 surgeIfUnableToSpawnL :: Lens' EnemyAttrs Bool

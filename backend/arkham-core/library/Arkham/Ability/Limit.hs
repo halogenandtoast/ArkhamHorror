@@ -36,5 +36,6 @@ data AbilityLimitType
   | PerWindow
   | PerTestOrAbility
   | PerSearch Trait
+  | PerDepthLevel
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

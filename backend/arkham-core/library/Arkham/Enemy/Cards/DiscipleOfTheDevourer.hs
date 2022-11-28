@@ -28,7 +28,7 @@ discipleOfTheDevourer = enemyWith
   Cards.discipleOfTheDevourer
   (3, Static 1, 1)
   (1, 0)
-  (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
+  (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation))
 
 instance HasAbilities DiscipleOfTheDevourer where
   getAbilities (DiscipleOfTheDevourer x) = withBaseAbilities

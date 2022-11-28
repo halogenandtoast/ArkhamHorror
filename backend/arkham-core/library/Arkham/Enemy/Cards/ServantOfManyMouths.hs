@@ -26,7 +26,7 @@ servantOfManyMouths = enemyWith
   Cards.servantOfManyMouths
   (3, Static 2, 1)
   (2, 0)
-  (spawnAtL ?~ EmptyLocation)
+  (spawnAtL ?~ SpawnLocation EmptyLocation)
 
 instance HasAbilities ServantOfManyMouths where
   getAbilities (ServantOfManyMouths attrs) = withBaseAbilities

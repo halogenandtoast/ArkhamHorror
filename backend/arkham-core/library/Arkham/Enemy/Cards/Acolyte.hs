@@ -23,7 +23,7 @@ acolyte = enemyWith
   Cards.acolyte
   (3, Static 1, 2)
   (1, 0)
-  (spawnAtL ?~ EmptyLocation)
+  (spawnAtL ?~ SpawnLocation EmptyLocation)
 
 instance HasAbilities Acolyte where
   getAbilities (Acolyte a) = withBaseAbilities

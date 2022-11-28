@@ -406,7 +406,7 @@ instance RunMessage HeartOfTheElders where
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do
-      explore iid source locationMatcher PlaceExplored
+      explore iid source locationMatcher PlaceExplored 1
       pure s
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s

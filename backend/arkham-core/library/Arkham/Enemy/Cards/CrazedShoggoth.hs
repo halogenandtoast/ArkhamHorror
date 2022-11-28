@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.CrazedShoggoth
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorDefeated)
+import Arkham.Message hiding ( InvestigatorDefeated )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -24,7 +24,7 @@ crazedShoggoth = enemyWith
   Cards.crazedShoggoth
   (3, Static 6, 4)
   (2, 2)
-  (spawnAtL ?~ NearestLocationToYou (LocationWithTrait Altered))
+  (spawnAtL ?~ SpawnLocation (NearestLocationToYou $ LocationWithTrait Altered))
 
 instance HasAbilities CrazedShoggoth where
   getAbilities (CrazedShoggoth attrs) = withBaseAbilities

@@ -30,7 +30,7 @@ instance HasAbilities Lockpicks where
   getAbilities (Lockpicks a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, ExhaustCost $ toTarget a]
+        $ ActionCost 1 <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage Lockpicks where

@@ -1428,6 +1428,9 @@ getAssetsMatching matcher = do
     AssetWithUseType uType -> filterM
       (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)
       as
+    AssetWithUseCount uType n -> filterM
+      (fmap (and . sequence [(== Just uType) . useType, (== n) . useCount]) . field AssetUses . toId)
+      as
     AssetWithFewestClues assetMatcher -> do
       matches' <- getAssetsMatching assetMatcher
       mins <$> traverse (traverseToSnd (field AssetClues . toId)) matches'

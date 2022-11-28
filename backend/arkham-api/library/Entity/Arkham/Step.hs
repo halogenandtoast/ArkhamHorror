@@ -12,7 +12,6 @@ import Arkham.Message
 import Data.Aeson.Diff
 import Data.Aeson.Types
 import Data.Text qualified as T
-import Data.Time.Clock
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql

@@ -120,6 +120,7 @@ data AssetMatcher
   | AssetWithoutModifier ModifierType
   | AssetWithUseType UseType
   | AssetWithUses UseType
+  | AssetWithUseCount UseType Int
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher
   | AssetInSlot SlotType

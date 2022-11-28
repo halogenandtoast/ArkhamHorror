@@ -1530,6 +1530,7 @@ archaicGlyphs = (asset "03025" ("Archaic Glyphs" <:> "Untranslated") 0 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Occult, Tome]
   , cdSlots = [HandSlot]
+  , cdUses = Uses Secret 0
   }
 
 inTheKnow1 :: CardDef

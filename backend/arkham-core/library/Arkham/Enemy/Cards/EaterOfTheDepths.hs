@@ -19,7 +19,7 @@ eaterOfTheDepths = enemyWith
   Cards.eaterOfTheDepths
   (5, Static 6, 0)
   (3, 2)
-  (evadeL .~ Nothing)
+  ((evadeL .~ Nothing) . (spawnAtL ?~ SpawnAtRandomSetAsideLocation))
 
 instance RunMessage EaterOfTheDepths where
   runMessage msg (EaterOfTheDepths attrs) =

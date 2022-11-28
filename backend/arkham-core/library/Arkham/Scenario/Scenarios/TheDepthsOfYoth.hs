@@ -146,7 +146,9 @@ instance RunMessage TheDepthsOfYoth where
         (startLocation, rest) = case locations of
           (x : xs) -> (x, xs)
           _ -> error "impossible"
+        setAsideLocations = drop 4 rest
       explorationDeck <- shuffleM $ stepsOfYoth : take 4 rest
+
 
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       ichtacasFaithIsRestored <- getHasRecord IchtacasFaithIsRestored
@@ -220,7 +222,7 @@ instance RunMessage TheDepthsOfYoth where
           <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
           )
         & (actStackL . at 1 ?~ [Acts.journeyToTheNexus])
-        & (setAsideCardsL .~ setAsideCards)
+        & (setAsideCardsL .~ setAsideCards <> setAsideLocations)
         & (metaL .~ toMeta (toLocationId startLocation))
         & (countsL .~ mapFromList [(CurrentDepth, 1)])
         )

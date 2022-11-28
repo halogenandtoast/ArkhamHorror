@@ -51,6 +51,7 @@ instance RunMessage ThePaintedWorld where
             (CardIdTarget $ toCardId attrs)
         ]
         LeaveChosenCard
+        playableWindows
         True
       pure e
     _ -> ThePaintedWorld <$> runMessage msg attrs

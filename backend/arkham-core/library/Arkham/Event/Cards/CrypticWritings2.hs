@@ -44,8 +44,8 @@ instance RunMessage CrypticWritings2 where
       let n = if hasTenOrMoreCards then 4 else 3
       pushAll [TakeResources iid n False, Discard (toTarget attrs)]
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _)
       | iid' == iid -> do
-        push $ InitiatePlayCard iid (toCardId attrs) Nothing False
+        push $ InitiatePlayCard iid (toCardId attrs) Nothing windows' False
         pure e
     _ -> CrypticWritings2 <$> runMessage msg attrs

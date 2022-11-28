@@ -48,7 +48,13 @@ instance RunMessage Montmartre209 where
           $ Label "Play no cards" []
           : [ TargetLabel
                 (CardIdTarget card)
-                [InitiatePlayCard iid card Nothing False]
+                [ InitiatePlayCard
+                    iid
+                    card
+                    Nothing
+                    (Window.defaultWindows iid)
+                    False
+                ]
             | card <- cards
             ]
           , DisableEffect eid

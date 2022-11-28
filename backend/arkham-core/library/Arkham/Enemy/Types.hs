@@ -206,6 +206,7 @@ instance HasAbilities EnemyAttrs where
         AbilityEngage
         (OnSameLocation
         <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+        <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
         )
       $ ActionAbility (Just Action.Engage) (ActionCost 1)
     ]

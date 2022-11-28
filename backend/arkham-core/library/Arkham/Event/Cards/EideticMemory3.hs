@@ -54,6 +54,7 @@ instance RunMessage EideticMemory3 where
             (CardIdTarget $ toCardId attrs)
         ]
         RemoveChosenCardFromGame
+        playableWindows
         True
       pure e
     _ -> EideticMemory3 <$> runMessage msg attrs

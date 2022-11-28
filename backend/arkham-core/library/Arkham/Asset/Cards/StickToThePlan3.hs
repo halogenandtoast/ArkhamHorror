@@ -74,7 +74,7 @@ instance RunMessage StickToThePlan3 where
         | card <- tacticsAndSupplies
         ]
       pure a
-    InitiatePlayCard iid cardId _ _
+    InitiatePlayCard iid cardId _ _ _
       | controlledBy attrs iid && cardId `elem` map
         toCardId
         (assetCardsUnderneath attrs)

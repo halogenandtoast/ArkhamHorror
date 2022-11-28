@@ -65,7 +65,7 @@ instance RunMessage Backpack where
     SearchNoneFound iid target | isTarget attrs target -> do
       push $ chooseOne iid [Label "No Cards Found" []]
       pure a
-    InitiatePlayCard iid cardId _ _
+    InitiatePlayCard iid cardId _ _ _
       | controlledBy attrs iid && cardId `elem` map
         toCardId
         (assetCardsUnderneath attrs)

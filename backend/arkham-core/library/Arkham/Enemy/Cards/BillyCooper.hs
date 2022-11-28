@@ -7,11 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
-import qualified Arkham.Timing as Timing
+import Arkham.Message hiding ( EnemyDefeated )
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
@@ -24,7 +24,7 @@ billyCooper = enemyWith
   Cards.billyCooper
   (5, Static 4, 2)
   (2, 0)
-  (spawnAtL ?~ LocationWithTitle "Easttown")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Easttown"))
 
 instance HasAbilities BillyCooper where
   getAbilities (BillyCooper attrs) = withBaseAbilities

@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.CorpseHungryGhoul
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ corpseHungryGhoul = enemyWith
   Cards.corpseHungryGhoul
   (4, Static 3, 3)
   (2, 2)
-  (spawnAtL ?~ LocationWithTitle "Bedroom")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Bedroom"))
 
 instance RunMessage CorpseHungryGhoul where
   runMessage msg (CorpseHungryGhoul attrs) =

@@ -6,12 +6,12 @@ module Arkham.Enemy.Cards.TheThingThatFollows
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Timing qualified as Timing
 
 newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs
@@ -24,8 +24,8 @@ theThingThatFollows = enemyWith
   Cards.theThingThatFollows
   (3, Static 2, 3)
   (1, 1)
-  ((spawnAtL ?~ FarthestLocationFromYou Anywhere)
-  .  (\a -> a & preyL .~ BearerOf (toId a))
+  ((spawnAtL ?~ SpawnLocation (FarthestLocationFromYou Anywhere))
+  . (\a -> a & preyL .~ BearerOf (toId a))
   )
 
 instance HasAbilities TheThingThatFollows where
@@ -41,5 +41,7 @@ instance HasAbilities TheThingThatFollows where
 instance RunMessage TheThingThatFollows where
   runMessage msg e@(TheThingThatFollows attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ pushAll
-      [CancelNext EnemyDefeatedMessage, ShuffleIntoDeck (Deck.InvestigatorDeck iid) $ toTarget attrs]
+      [ CancelNext EnemyDefeatedMessage
+      , ShuffleIntoDeck (Deck.InvestigatorDeck iid) $ toTarget attrs
+      ]
     _ -> TheThingThatFollows <$> runMessage msg attrs

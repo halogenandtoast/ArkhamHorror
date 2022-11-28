@@ -22,7 +22,7 @@ scientistOfYith = enemyWith
   Cards.scientistOfYith
   (4, Static 3, 1)
   (2, 0)
-  (spawnAtL ?~ LocationWithTitle "Laboratory of the Great Race")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Laboratory of the Great Race"))
 
 instance HasModifiersFor ScientistOfYith where
   getModifiersFor target (ScientistOfYith a) | isTarget a target = do

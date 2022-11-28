@@ -25,7 +25,7 @@ corpseTaker = enemyWith
   Cards.corpseTaker
   (4, Static 3, 3)
   (1, 2)
-  (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
+  (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation))
 
 instance HasAbilities CorpseTaker where
   getAbilities (CorpseTaker x) = withBaseAbilities

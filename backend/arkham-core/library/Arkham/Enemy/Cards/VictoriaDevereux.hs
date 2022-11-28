@@ -25,7 +25,7 @@ victoriaDevereux = enemyWith
   Cards.victoriaDevereux
   (3, Static 3, 2)
   (1, 0)
-  (spawnAtL ?~ LocationWithTitle "Northside")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Northside"))
 
 instance HasAbilities VictoriaDevereux where
   getAbilities (VictoriaDevereux attrs) = withBaseAbilities

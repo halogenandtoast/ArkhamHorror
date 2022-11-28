@@ -6,8 +6,8 @@ module Arkham.Enemy.Cards.SlimeCoveredDhole
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -24,7 +24,9 @@ slimeCoveredDhole = enemyWith
   Cards.slimeCoveredDhole
   (2, Static 3, 3)
   (1, 1)
-  ((preyL .~ Prey LowestRemainingHealth) . (spawnAtL ?~ LocationWithoutTrait Bayou))
+  ((preyL .~ Prey LowestRemainingHealth)
+  . (spawnAtL ?~ SpawnLocation (LocationWithoutTrait Bayou))
+  )
 
 instance HasAbilities SlimeCoveredDhole where
   getAbilities (SlimeCoveredDhole attrs) = withBaseAbilities

@@ -10,6 +10,7 @@ import Arkham.Matcher
 import Arkham.Modifier ( Modifier )
 import Arkham.Placement
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Token
 
@@ -29,7 +30,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDoom :: Int
   , enemyClues :: Int
   , enemyResources :: Int
-  , enemySpawnAt :: Maybe LocationMatcher
+  , enemySpawnAt :: Maybe SpawnAt
   , enemySurgeIfUnabledToSpawn :: Bool
   , enemyAsSelfLocation :: Maybe Text
   , enemyMovedFromHunterKeyword :: Bool

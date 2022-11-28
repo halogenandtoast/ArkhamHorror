@@ -46,5 +46,5 @@ instance RunMessage CarnevaleSentinel where
       acrossLocationId <- getAcrossLocation lid
       CarnevaleSentinel <$> runMessage
         msg
-        (attrs & spawnAtL ?~ LocationWithId acrossLocationId)
+        (attrs & spawnAtL ?~ SpawnLocation (LocationWithId acrossLocationId))
     _ -> CarnevaleSentinel <$> runMessage msg attrs

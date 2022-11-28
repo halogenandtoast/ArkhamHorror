@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.PeterWarren
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Action hiding (Ability)
+import Arkham.Action hiding ( Ability )
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -25,7 +25,7 @@ peterWarren = enemyWith
   Cards.peterWarren
   (2, Static 3, 3)
   (1, 0)
-  (spawnAtL ?~ LocationWithTitle "Miskatonic University")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Miskatonic University"))
 
 instance HasAbilities PeterWarren where
   getAbilities (PeterWarren attrs) = withBaseAbilities

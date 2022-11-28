@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Enemy.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
@@ -28,7 +27,7 @@ catacombsDocent = enemyWith
   Cards.catacombsDocent
   (3, Static 2, 2)
   (0, 1)
-  (spawnAtL ?~ NearestLocationToYou UnrevealedLocation)
+  (spawnAtL ?~ SpawnLocation (NearestLocationToYou UnrevealedLocation))
 
 instance HasAbilities CatacombsDocent where
   getAbilities (CatacombsDocent a) = withBaseAbilities

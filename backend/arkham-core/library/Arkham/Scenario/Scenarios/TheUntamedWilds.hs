@@ -175,7 +175,7 @@ instance RunMessage TheUntamedWilds where
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do
-      explore iid source locationMatcher PlaceExplored
+      explore iid source locationMatcher PlaceExplored 1
       pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds

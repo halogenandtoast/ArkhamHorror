@@ -26,8 +26,8 @@ eztliGuardian = enemyWith
   Cards.eztliGuardian
   (4, Static 2, 2)
   (1, 0)
-  (spawnAtL ?~ FirstLocation
-    [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation]
+  (spawnAtL ?~ SpawnLocation
+    (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
   )
 
 instance HasAbilities EztliGuardian where

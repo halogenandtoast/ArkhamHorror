@@ -181,7 +181,7 @@ data ModifierType
   | SkillCannotBeIncreased SkillType
   | SkipMythosPhaseStep MythosPhaseStep
   | SpawnNonEliteAtConnectingInstead
-  | SpawnLocation LocationMatcher
+  | ForceSpawnLocation LocationMatcher
   | StartingHand Int
   | StartingResources Int
   | StartingClues Int

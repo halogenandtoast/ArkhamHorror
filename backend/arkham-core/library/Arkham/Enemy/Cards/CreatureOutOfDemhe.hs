@@ -27,7 +27,7 @@ creatureOutOfDemhe = enemyWith
   Cards.creatureOutOfDemhe
   (5, Static 4, 2)
   (1, 1)
-  (spawnAtL ?~ LocationWithTitle "Depths of Demhe")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Depths of Demhe"))
 
 instance HasAbilities CreatureOutOfDemhe where
   getAbilities (CreatureOutOfDemhe a) =

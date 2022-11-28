@@ -6,8 +6,8 @@ module Arkham.Investigator.Runner
 
 import Arkham.Prelude
 
-import Arkham.ClassSymbol as X
 import Arkham.Classes as X
+import Arkham.ClassSymbol as X
 import Arkham.Helpers.Investigator as X
 import Arkham.Investigator.Types as X
 import Arkham.Name as X
@@ -47,6 +47,7 @@ import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.ScenarioLogKey
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
@@ -874,9 +875,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         $ [ placedWindowMsg
           , CheckWindow [iid]
-          $ [ Window
-                Timing.When
-                (Window.DealtDamage source damageEffect target)
+          $ [ Window Timing.When (Window.DealtDamage source damageEffect target)
             | target <- nub damageTargets
             ]
           <> [ Window Timing.When (Window.DealtHorror source target)
@@ -2487,6 +2486,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (usedAbilitiesL %~ filter
           (\UsedAbility {..} ->
             abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+          )
+        )
+  ScenarioCountIncrementBy CurrentDepth n | n > 0 -> do
+    pure
+      $ a
+      & (usedAbilitiesL %~ filter
+          (\UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel
           )
         )
   EndUpkeep -> do

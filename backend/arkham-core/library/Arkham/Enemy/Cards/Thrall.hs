@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.Thrall
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ thrall = enemyWith
   Cards.thrall
   (2, Static 2, 2)
   (1, 1)
-  (spawnAtL ?~ LocationWithMostClues Anywhere)
+  (spawnAtL ?~ SpawnLocation (LocationWithMostClues Anywhere))
 
 instance RunMessage Thrall where
   runMessage msg (Thrall attrs) = Thrall <$> runMessage msg attrs

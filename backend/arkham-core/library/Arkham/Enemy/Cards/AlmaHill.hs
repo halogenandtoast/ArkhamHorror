@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.AlmaHill
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -25,7 +25,7 @@ almaHill = enemyWith
   Cards.almaHill
   (3, Static 3, 3)
   (0, 2)
-  (spawnAtL ?~ LocationWithTitle "Southside")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Southside"))
 
 instance HasAbilities AlmaHill where
   getAbilities (AlmaHill attrs) = withBaseAbilities

@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.RuthTurner
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyEvaded)
+import Arkham.Message hiding ( EnemyEvaded )
 import Arkham.Timing qualified as Timing
 
 newtype RuthTurner = RuthTurner EnemyAttrs
@@ -23,7 +23,7 @@ ruthTurner = enemyWith
   Cards.ruthTurner
   (2, Static 4, 5)
   (1, 0)
-  (spawnAtL ?~ LocationWithTitle "St. Mary's Hospital")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "St. Mary's Hospital"))
 
 instance HasAbilities RuthTurner where
   getAbilities (RuthTurner a) = withBaseAbilities

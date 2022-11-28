@@ -1574,6 +1574,7 @@ library
       Arkham.Slot
       Arkham.SlotType
       Arkham.Source
+      Arkham.Spawn
       Arkham.Stats
       Arkham.Story.Cards
       Arkham.Strategy

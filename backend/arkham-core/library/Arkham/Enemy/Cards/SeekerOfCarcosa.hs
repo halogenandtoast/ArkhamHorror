@@ -27,7 +27,9 @@ seekerOfCarcosa = enemyWith
   Cards.seekerOfCarcosa
   (2, Static 3, 2)
   (0, 1)
-  (spawnAtL ?~ EmptyLocation <> LocationWithTitle "Historical Society")
+  (spawnAtL
+  ?~ SpawnLocation (EmptyLocation <> LocationWithTitle "Historical Society")
+  )
 
 instance HasAbilities SeekerOfCarcosa where
   getAbilities (SeekerOfCarcosa attrs) = withBaseAbilities

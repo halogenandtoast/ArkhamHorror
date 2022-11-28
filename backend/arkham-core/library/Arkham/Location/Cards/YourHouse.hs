@@ -33,7 +33,7 @@ instance HasModifiersFor YourHouse where
     isGhoulPriest <- member eid <$> select (enemyIs $ Cards.ghoulPriest)
     pure $ toModifiers
       attrs
-      [ SpawnLocation (LocationWithId $ toId attrs) | isGhoulPriest ]
+      [ ForceSpawnLocation (LocationWithId $ toId attrs) | isGhoulPriest ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities YourHouse where

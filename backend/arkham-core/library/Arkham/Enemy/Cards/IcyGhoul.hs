@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.IcyGhoul
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ icyGhoul = enemyWith
   Cards.icyGhoul
   (3, Static 4, 4)
   (2, 1)
-  (spawnAtL ?~ LocationWithTitle "Cellar")
+  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Cellar"))
 
 instance RunMessage IcyGhoul where
   runMessage msg (IcyGhoul attrs) = IcyGhoul <$> runMessage msg attrs

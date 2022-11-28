@@ -3,7 +3,7 @@ module Arkham.Helpers.Enemy where
 import Arkham.Prelude
 
 import Arkham.Asset.Types ( Field (..) )
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -18,7 +18,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message ( Message (EnemySpawnAtLocationMatching, PlaceEnemy), resolve )
+import Arkham.Message ( Message (EnemySpawnAtLocationMatching, PlaceEnemy, PlaceLocation), resolve )
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Projection
@@ -53,11 +53,32 @@ spawnAt eid (SpawnLocation locationMatcher) = do
     (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 spawnAt eid (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
-spawnAt eid (SpawnAtFirst (x:xs)) = case x of
+spawnAt _ (SpawnAtFirst []) = error "must have something"
+spawnAt eid (SpawnAtFirst (x : xs)) = case x of
   SpawnLocation matcher -> do
     willMatch <- selectAny matcher
-    if willMatch then spawnAt eid (SpawnLocation matcher) else spawnAt eid (SpawnAtFirst xs)
+    if willMatch
+      then spawnAt eid (SpawnLocation matcher)
+      else spawnAt eid (SpawnAtFirst xs)
   other -> spawnAt eid other
+spawnAt eid SpawnAtRandomSetAsideLocation = do
+  cards <- getSetAsideCardsMatching (CardWithType LocationType)
+  case nonEmpty cards of
+    Nothing -> do
+      windows' <- windows [Window.EnemyAttemptsToSpawnAt eid Nowhere]
+      pushAll $ windows' <> resolve
+        (EnemySpawnAtLocationMatching Nothing Nowhere eid)
+    Just locations -> do
+      x <- sample locations
+      windows' <-
+        windows
+          [Window.EnemyAttemptsToSpawnAt eid (LocationWithId $ toLocationId x)]
+      pushAll $ PlaceLocation x : windows' <> resolve
+        (EnemySpawnAtLocationMatching
+          Nothing
+          (LocationWithId $ toLocationId x)
+          eid
+        )
 
 modifiedEnemyFight :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do

@@ -39,6 +39,7 @@ arkhamGameToExportData :: ArkhamGame -> [ArkhamStep] -> ArkhamGameExportData
 arkhamGameToExportData ArkhamGame {..} steps = ArkhamGameExportData
   { agedName = arkhamGameName
   , agedCurrentData = arkhamGameCurrentData
+  , agedStep = arkhamGameStep
   , agedSteps = steps
   , agedLog = arkhamGameLog
   , agedMultiplayerVariant = arkhamGameMultiplayerVariant

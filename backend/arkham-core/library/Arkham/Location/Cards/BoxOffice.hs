@@ -26,7 +26,10 @@ boxOffice = location BoxOffice Cards.boxOffice 2 (Static 0)
 instance HasAbilities BoxOffice where
   getAbilities (BoxOffice attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+    [ limitedAbility (GroupLimit PerGame 1)
+      $ restrictedAbility attrs 1 Here
+      $ ActionAbility Nothing
+      $ ActionCost 1
     | locationRevealed attrs
     ]
 

@@ -9,6 +9,7 @@ import Arkham.Card.CardCode
 import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator
+import Entity.Arkham.Step
 import Control.Monad.Random ( mkStdGen )
 import Data.Aeson
 import Data.HashMap.Strict qualified as HashMap
@@ -33,7 +34,8 @@ putApiV1ArkhamPendingGameR gameId = do
 
   runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)
 
-  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+  mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
+  let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef currentQueue
@@ -55,19 +57,21 @@ putApiV1ArkhamPendingGameR gameId = do
 
   now <- liftIO getCurrentTime
 
-  runDB $ replace gameId $ ArkhamGame
-    arkhamGameName
-    updatedGame
-    (Choice mempty updatedQueue : arkhamGameChoices)
-    updatedMessages
-    arkhamGameMultiplayerVariant
-    arkhamGameCreatedAt
-    now
+  runDB $ do
+    replace gameId $ ArkhamGame
+      arkhamGameName
+      updatedGame
+      (arkhamGameStep + 1)
+      updatedMessages
+      arkhamGameMultiplayerVariant
+      arkhamGameCreatedAt
+      now
+    insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1)
 
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    (Choice mempty updatedQueue : arkhamGameChoices)
+    (arkhamGameStep + 1)
     updatedMessages
     arkhamGameMultiplayerVariant
     arkhamGameCreatedAt

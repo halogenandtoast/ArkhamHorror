@@ -35,6 +35,7 @@ import Data.Time.Clock
 import Data.Traversable ( for )
 import Database.Esqueleto.Experimental hiding ( update )
 import Entity.Arkham.Player
+import Entity.Arkham.Step
 import Import hiding ( delete, on, (==.) )
 import Json
 import Network.WebSockets ( ConnectionException )
@@ -152,9 +153,14 @@ getApiV1ArkhamGameExportR gameId = do
     players <- from $ table @ArkhamPlayer
     where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
     pure players
+  steps <- runDB $ select $ do
+    steps <- from $ table @ArkhamStep
+    where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
+    orderBy [desc $ steps ^. ArkhamStepStep]
+    pure steps
   pure $ ArkhamExport
     { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-    , aeCampaignData = arkhamGameToExportData ge
+    , aeCampaignData = arkhamGameToExportData ge (map entityVal steps)
     }
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
@@ -181,16 +187,17 @@ postApiV1ArkhamGamesImportR = do
         gameId <- insert $ ArkhamGame
           agedName
           agedCurrentData
-          agedChoices
+          agedStep
           agedLog
           Solo
           now
           now
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
+        traverse_ (\s -> insert_ $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s)) agedSteps
         pure gameId
       pure $ toPublicGame $ Entity
         key
-        (ArkhamGame agedName agedCurrentData agedChoices agedLog Solo now now)
+        (ArkhamGame agedName agedCurrentData agedStep agedLog Solo now now)
 
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
@@ -222,19 +229,20 @@ postApiV1ArkhamGamesR = do
         gameId <- insert $ ArkhamGame
           campaignName
           ge
-          [Choice mempty updatedQueue]
+          0
           []
           multiplayerVariant
           now
           now
         insert_ $ ArkhamPlayer userId gameId investigatorId
+        insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0
         pure gameId
       pure $ toPublicGame $ Entity
         key
         (ArkhamGame
           campaignName
           ge
-          [Choice mempty updatedQueue]
+          0
           []
           multiplayerVariant
           now
@@ -249,26 +257,26 @@ postApiV1ArkhamGamesR = do
           (GameApp gameRef queueRef genRef $ pure . const ())
           (runMessages Nothing)
         ge <- readIORef gameRef
-        let
-          diffDown = diff ge game
+        let diffDown = diff ge game
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
           gameId <- insert $ ArkhamGame
             campaignName
             ge
-            [Choice diffDown updatedQueue]
+            0
             []
             multiplayerVariant
             now
             now
           insert_ $ ArkhamPlayer userId gameId investigatorId
+          insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0
           pure gameId
         pure $ toPublicGame $ Entity
           key
           (ArkhamGame
             campaignName
             ge
-            [Choice diffDown updatedQueue]
+            0
             []
             multiplayerVariant
             now
@@ -315,6 +323,7 @@ putApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
+  mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   Entity pid arkhamPlayer@ArkhamPlayer {..} <- runDB
     $ getBy404 (UniquePlayer userId gameId)
   let
@@ -323,8 +332,7 @@ putApiV1ArkhamGameR gameId = do
       (coerce arkhamPlayerInvestigatorId)
       (answerInvestigator response)
     messages = handleAnswer gameJson investigatorId response
-
-  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+    currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef gameJson
   queueRef <- newIORef (messages <> currentQueue)
@@ -335,8 +343,7 @@ putApiV1ArkhamGameR gameId = do
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     (runMessages Nothing)
   ge <- readIORef gameRef
-  let
-    diffDown = diff ge arkhamGameCurrentData
+  let diffDown = diff ge arkhamGameCurrentData
 
   updatedQueue <- readIORef queueRef
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
@@ -345,11 +352,12 @@ putApiV1ArkhamGameR gameId = do
     replace gameId $ ArkhamGame
       arkhamGameName
       ge
-      (Choice diffDown updatedQueue : arkhamGameChoices)
+      (arkhamGameStep + 1)
       updatedLog
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now
+    insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
     case arkhamGameMultiplayerVariant of
       Solo -> replace pid $ arkhamPlayer
         { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
@@ -377,10 +385,11 @@ putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
+  mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
     gameJson@Game {..} = arkhamGameCurrentData
     message = gameMessage response
-  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+    currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
   gameRef <- newIORef gameJson
   queueRef <- newIORef (message : currentQueue)
   logRef <- newIORef []
@@ -391,29 +400,32 @@ putApiV1ArkhamGameRawR gameId = do
     (runMessages Nothing)
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
-  let
-    diffDown = diff ge arkhamGameCurrentData
+  let diffDown = diff ge arkhamGameCurrentData
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   now <- liftIO getCurrentTime
-  void $ runDB
-    (replace
+  void $ runDB $ do
+    replace
       gameId
       (ArkhamGame
         arkhamGameName
         ge
-        (Choice diffDown updatedQueue : arkhamGameChoices)
+        (arkhamGameStep + 1)
         updatedLog
         arkhamGameMultiplayerVariant
         arkhamGameCreatedAt
         now
       )
-    )
+    insert
+      $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do
+  delete $ do
+    steps <- from $ table @ArkhamStep
+    where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
   delete $ do
     players <- from $ table @ArkhamPlayer
     where_ $ players ^. ArkhamPlayerArkhamGameId ==. val gameId

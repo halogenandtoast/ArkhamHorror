@@ -43,7 +43,7 @@ runGameMessage gameUUID msg = do
     replace gameId $ ArkhamGame
       arkhamGameName
       ge
-      arkhamGameChoices
+      arkhamGameStep
       arkhamGameLog
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt

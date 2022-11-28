@@ -4,6 +4,7 @@ import Import.NoFoundation
 
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Game
+import Entity.Arkham.Step
 import Json
 
 data ArkhamExport = ArkhamExport
@@ -21,7 +22,8 @@ instance FromJSON ArkhamExport where
 data ArkhamGameExportData = ArkhamGameExportData
   { agedName :: Text
   , agedCurrentData :: Game
-  , agedChoices :: [Choice]
+  , agedStep :: Int
+  , agedSteps :: [ArkhamStep]
   , agedLog :: [Text]
   , agedMultiplayerVariant :: MultiplayerVariant
   }
@@ -33,11 +35,11 @@ instance ToJSON ArkhamGameExportData where
 instance FromJSON ArkhamGameExportData where
   parseJSON = genericParseJSON (aesonOptions $ Just "aged")
 
-arkhamGameToExportData :: ArkhamGame -> ArkhamGameExportData
-arkhamGameToExportData ArkhamGame {..} = ArkhamGameExportData
+arkhamGameToExportData :: ArkhamGame -> [ArkhamStep] -> ArkhamGameExportData
+arkhamGameToExportData ArkhamGame {..} steps = ArkhamGameExportData
   { agedName = arkhamGameName
   , agedCurrentData = arkhamGameCurrentData
-  , agedChoices = arkhamGameChoices
+  , agedSteps = steps
   , agedLog = arkhamGameLog
   , agedMultiplayerVariant = arkhamGameMultiplayerVariant
   }

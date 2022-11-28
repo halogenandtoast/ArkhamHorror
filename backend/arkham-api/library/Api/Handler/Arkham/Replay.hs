@@ -4,6 +4,8 @@ module Api.Handler.Arkham.Replay
 
 import Api.Arkham.Helpers
 import Arkham.Game
+import Database.Esqueleto.Experimental
+import Entity.Arkham.Step
 import Import hiding ( delete, on, (==.) )
 import Safe ( fromJustNote )
 
@@ -22,8 +24,13 @@ getApiV1ArkhamGameReplayR :: ArkhamGameId -> Int -> Handler GetReplayJson
 getApiV1ArkhamGameReplayR gameId step = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
   ge <- runDB $ get404 gameId
+  allChoices <- runDB $ select $ do
+    steps <- from $ table @ArkhamStep
+    where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
+    orderBy [asc $ steps ^. ArkhamStepStep]
+    pure steps
   let gameJson = arkhamGameCurrentData ge
-  let choices = reverse $ drop step $ reverse $ arkhamGameChoices ge
+  let choices = map (arkhamStepChoice . entityVal) $ reverse $ drop step allChoices
   let gameJson' = replayChoices gameJson $ map choicePatchDown choices
 
   pure $ GetReplayJson
@@ -33,7 +40,7 @@ getApiV1ArkhamGameReplayR gameId step = do
       (ArkhamGame
         (arkhamGameName ge)
         gameJson'
-        (arkhamGameChoices ge)
+        (arkhamGameStep ge)
         []
         (arkhamGameMultiplayerVariant ge)
         (arkhamGameCreatedAt ge)

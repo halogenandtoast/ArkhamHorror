@@ -22,24 +22,6 @@ import Database.Persist.TH
 import Json
 import Orphans ()
 
-data Choice = Choice
-  { choicePatchDown :: Patch
-  , choiceMessages :: [Message]
-  }
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-instance PersistFieldSql [Choice] where
-  sqlType _ = SqlString
-
-instance PersistField [Choice] where
-  toPersistValue = toPersistValue . toJSON
-  fromPersistValue val =
-    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
-   where
-    fmapLeft f (Left a) = Left (f a)
-    fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
-
 share
   [mkPersist sqlSettings]
   [persistLowerCase|
@@ -47,7 +29,7 @@ ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text
   currentData Game
-  choices [Choice]
+  step Int
   log [Text]
   multiplayerVariant MultiplayerVariant
   createdAt UTCTime

@@ -42,6 +42,7 @@ library
       Entity.Arkham.Deck
       Entity.Arkham.Game
       Entity.Arkham.Player
+      Entity.Arkham.Step
       Entity.User
       Foundation
       GHCI

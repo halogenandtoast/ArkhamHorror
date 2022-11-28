@@ -15,6 +15,7 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
+import Entity.Arkham.Step
 import Control.Monad.Random ( mkStdGen )
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
@@ -81,10 +82,12 @@ putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
+  mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
   postData <- requireCheckJsonBody
   let
     Game {..} = arkhamGameCurrentData
     investigatorId = udpInvestigatorId postData
+    currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
   msg <- case udpDeckUrl postData of
     Nothing -> pure $ Run []
     Just deckUrl -> do
@@ -94,8 +97,6 @@ putApiV1ArkhamGameDecksR gameId = do
         Right decklist -> do
           cards <- liftIO $ loadDecklistCards decklist
           pure $ UpgradeDeck investigatorId (Deck cards)
-
-  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef $ msg : currentQueue
@@ -114,14 +115,16 @@ putApiV1ArkhamGameDecksR gameId = do
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
   now <- liftIO getCurrentTime
-  runDB $ replace gameId $ ArkhamGame
-    arkhamGameName
-    ge
-    (Choice diffDown updatedQueue : arkhamGameChoices)
-    updatedMessages
-    arkhamGameMultiplayerVariant
-    arkhamGameCreatedAt
-    now
+  runDB $ do
+    replace gameId $ ArkhamGame
+      arkhamGameName
+      ge
+      (arkhamGameStep + 1)
+      updatedMessages
+      arkhamGameMultiplayerVariant
+      arkhamGameCreatedAt
+      now
+    insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

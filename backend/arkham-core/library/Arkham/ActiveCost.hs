@@ -11,7 +11,7 @@ import Arkham.ActiveCost.Base as X
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Types ( Field (AssetCard, AssetUses, AssetController) )
+import Arkham.Asset.Types ( Field (AssetCard, AssetController, AssetUses) )
 import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Card
 import Arkham.Card.Cost
@@ -21,8 +21,8 @@ import Arkham.Cost hiding ( PaidCost )
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
-import Arkham.GameValue
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
@@ -85,7 +85,11 @@ getActionCostModifier ac = do
     [] -> error "expected action"
     as -> as
   applyModifier takenActions (ActionCostOf match m) n =
-    if any (matchTarget takenActions match) actions then n + m else n
+    -- For cards we've already calculated the cost as an additional cost for
+    -- the action specifically
+    case activeCostTarget ac of
+      ForCard{} -> n
+      _ -> if any (matchTarget takenActions match) actions then n + m else n
   applyModifier _ _ n = n
 
 countAdditionalActionPayments :: Payment -> Int
@@ -254,10 +258,12 @@ instance RunMessage ActiveCost where
           canAfford <- andM $ map
             (\a -> getCanAffordCost iid source (Just a) [] cost')
             actions
-          maxUpTo <-
-            case cost' of
-              ResourceCost resources -> fieldMap InvestigatorResources (\x -> min n (x `div` resources)) iid
-              _ -> pure n
+          maxUpTo <- case cost' of
+            ResourceCost resources -> fieldMap
+              InvestigatorResources
+              (\x -> min n (x `div` resources))
+              iid
+            _ -> pure n
           c <$ when
             canAfford
             (push $ Ask iid $ ChoosePaymentAmounts
@@ -313,7 +319,8 @@ instance RunMessage ActiveCost where
             & costSealedTokensL
             %~ (token :)
         SupplyCost matcher supply -> do
-          iid' <- selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
+          iid' <-
+            selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
           push $ UseSupply iid' supply
           withPayment $ SupplyPayment supply
         DiscardCost target -> do
@@ -379,16 +386,17 @@ instance RunMessage ActiveCost where
               push $ InvestigatorDirectDamage iid' source x 0
               withPayment $ DirectDamagePayment x
             _ -> error "exactly one investigator expected for direct damage"
-        InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
-          investigators <- selectList investigatorMatcher
-          push $ chooseOrRunOne
-            iid
-            [ targetLabel
-                iid'
-                [InvestigatorAssignDamage iid' source' damageStrategy x 0]
-            | iid' <- investigators
-            ]
-          withPayment $ InvestigatorDamagePayment x
+        InvestigatorDamageCost source' investigatorMatcher damageStrategy x ->
+          do
+            investigators <- selectList investigatorMatcher
+            push $ chooseOrRunOne
+              iid
+              [ targetLabel
+                  iid'
+                  [InvestigatorAssignDamage iid' source' damageStrategy x 0]
+              | iid' <- investigators
+              ]
+            withPayment $ InvestigatorDamagePayment x
         FieldResourceCost (FieldCost mtchr fld) -> do
           n <- getSum <$> selectAgg Sum fld mtchr
           push $ PayCost acId iid skipAdditionalCosts (ResourceCost n)
@@ -558,12 +566,15 @@ instance RunMessage ActiveCost where
             (mapMaybe (preview _PlayerCard))
             iid
           let
-            notCostCard =
-              case activeCostTarget c of
-                ForAbility {} -> const True
-                ForCard _ card' -> (/= card')
-                ForCost card' -> (/= card')
-            cards = filter (and . sequence [(`cardMatch` cardMatcher), notCostCard . PlayerCard]) handCards
+            notCostCard = case activeCostTarget c of
+              ForAbility{} -> const True
+              ForCard _ card' -> (/= card')
+              ForCost card' -> (/= card')
+            cards = filter
+              (and . sequence
+                [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
+              )
+              handCards
           push $ chooseN
             iid
             x
@@ -595,7 +606,10 @@ instance RunMessage ActiveCost where
           pure c
         ReturnAssetToHandCost assetId -> do
           card <- field AssetCard assetId
-          controller <- fieldMap AssetController (fromJustNote "Missing controller") assetId
+          controller <- fieldMap
+            AssetController
+            (fromJustNote "Missing controller")
+            assetId
           push $ ReturnToHand controller $ AssetTarget assetId
           withPayment $ ReturnToHandPayment card
         DiscardHandCost -> do

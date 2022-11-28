@@ -35,6 +35,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist, Expert )
+import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -176,6 +177,7 @@ instance RunMessage TheUnspeakableOath where
                     courage
                     []
                     LeaveChosenCard
+                    (Window.defaultWindows iid)
                     False
                   ]
               _ -> error "empty investigator deck"

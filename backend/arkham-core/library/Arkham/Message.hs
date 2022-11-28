@@ -377,9 +377,9 @@ data Message
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card
-  | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] ChosenCardStrategy Bool
-  | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy Bool
-  | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
+  | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] ChosenCardStrategy [Window] Bool
+  | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy [Window] Bool
+  | InitiatePlayCard InvestigatorId CardId (Maybe Target) [Window] Bool
   -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | -- Maybe Target is handler for success

@@ -3,12 +3,12 @@ module Arkham.Investigator.Cards.SefinaRousseau where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
 import Arkham.Target
@@ -77,7 +77,7 @@ instance RunMessage SefinaRousseau where
               ]
           )
           hand
-      push (CheckHandSize $ toId attrs)
+      pushAll [ShuffleDiscardBackIn iid, CheckHandSize $ toId attrs]
       when
         (notNull events)
         (push

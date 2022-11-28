@@ -55,19 +55,21 @@ instance HasAbilities WilliamYorick where
 
 instance RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       let
-        windows' =
-          [ Window Timing.When Window.NonFast
-          , Window Timing.When (Window.DuringTurn iid)
-          ]
+        windows'' =
+          nub
+            $ windows'
+            <> [ Window Timing.When Window.NonFast
+               , Window Timing.When (Window.DuringTurn iid)
+               ]
         targets =
           filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
         playCardMsgs c = [AddToHand iid c] <> if isFastCard c
-          then [InitiatePlayCard iid (toCardId c) Nothing False]
-          else [PayCardCost iid c windows']
+          then [InitiatePlayCard iid (toCardId c) Nothing windows'' False]
+          else [PayCardCost iid c windows'']
       playableTargets <- filterM
-        (getIsPlayable iid source UnpaidCost windows' . PlayerCard)
+        (getIsPlayable iid source UnpaidCost windows'' . PlayerCard)
         targets
       i <$ push
         (chooseOne iid

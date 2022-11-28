@@ -1244,7 +1244,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllCluesTo target | not (isTarget a target) -> do
     when (investigatorClues > 0) (push $ PlaceClues target investigatorClues)
     pure $ a & cluesL .~ 0
-  InitiatePlayCardAsChoose iid cardId choices msgs chosenCardStrategy asAction
+  InitiatePlayCardAsChoose iid cardId choices msgs chosenCardStrategy windows' asAction
     | iid == investigatorId -> do
       a <$ push
         (chooseOne
@@ -1258,12 +1258,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 choice
                 msgs
                 chosenCardStrategy
+                windows'
                 asAction
               ]
           | choice <- choices
           ]
         )
-  InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy asAction
+  InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy windows' asAction
     | iid == investigatorId -> do
       let
         card = findCard cardId a
@@ -1278,10 +1279,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         $ chosenCardMsgs
         <> msgs
-        <> [InitiatePlayCard iid cardId Nothing asAction]
+        <> [InitiatePlayCard iid cardId Nothing windows' asAction]
       pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
         ((/= cardId) . toCardId)
-  InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
+  InitiatePlayCard iid cardId mtarget windows' asAction | iid == investigatorId -> do
     -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
     modifiers' <- getModifiers (toTarget a)
     let
@@ -1295,7 +1296,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
       pushAll
         [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
-        , PlayCard iid card mtarget (Window.defaultWindows iid) asAction
+        , PlayCard iid card mtarget windows' asAction
         , afterPlayCard
         ]
     pure a
@@ -2437,7 +2438,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
           <> [ TargetLabel
                  (CardIdTarget $ toCardId c)
-                 [InitiatePlayCard iid (toCardId c) Nothing usesAction]
+                 [InitiatePlayCard iid (toCardId c) Nothing windows usesAction]
              | c <- playableCards
              , canAffordPlayCard || isFastCard c
              ]
@@ -2463,6 +2464,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                        investigatorId
                        (toCardId c)
                        Nothing
+                       windows
                        usesAction
                    ]
                | c <- playableCards

@@ -754,7 +754,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                  (card : discardedCards)
              ]
         pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
-  CreatedEnemyAt enemyId _ _ -> do
+  When (EnemySpawn _ _ enemyId) -> do
     card <- field EnemyCard enemyId
     pure $ a & (victoryDisplayL %~ delete card)
   SetEncounterDeck encounterDeck -> pure $ a & encounterDeckL .~ encounterDeck

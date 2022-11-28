@@ -40,8 +40,8 @@ instance RunMessage CrypticWritings where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll [TakeResources iid 2 False, Discard (toTarget attrs)]
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _)
       | iid' == iid -> do
-        push $ InitiatePlayCard iid (toCardId attrs) Nothing False
+        push $ InitiatePlayCard iid (toCardId attrs) Nothing windows' False
         pure e
     _ -> CrypticWritings <$> runMessage msg attrs

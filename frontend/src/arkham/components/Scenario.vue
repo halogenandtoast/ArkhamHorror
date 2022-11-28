@@ -214,10 +214,7 @@ const cardsNextToAct = computed(() => {
 })
 
 const phase = computed(() => props.game.phase)
-const currentDepth = computed(() => {
-  console.log(props.scenario.counts)
-  return props.scenario.counts["CurrentDepth"]
-})
+const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 </script>
 
 <template>

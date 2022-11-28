@@ -254,29 +254,19 @@ instance RunMessage ActiveCost where
           canAfford <- andM $ map
             (\a -> getCanAffordCost iid source (Just a) [] cost')
             actions
+          maxUpTo <-
+            case cost' of
+              ResourceCost resources -> fieldMap InvestigatorResources (\x -> min n (x `div` resources)) iid
+              _ -> pure n
           c <$ when
             canAfford
             (push $ Ask iid $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [ PaymentAmountChoice iid 0 n
+              [ PaymentAmountChoice iid 0 maxUpTo
                   $ PayCost acId iid skipAdditionalCosts cost'
               ]
             )
-            --   iid
-            --   [ Label
-            --     "Pay dynamic cost"
-            --     [ PayCost source iid mAction skipAdditionalCosts cost'
-            --     , PayCost
-            --       source
-            --       iid
-            --       mAction
-            --       skipAdditionalCosts
-            --       (UpTo (n - 1) cost')
-            --     ]
-            --   , Label "Done with dynamic cost" []
-            --   ]
-            -- )
         DiscardTopOfDeckCost n -> do
           cards <- fieldMap
             InvestigatorDeck

@@ -56,7 +56,7 @@ instance HasAbilities PassengerCar_171 where
 instance RunMessage PassengerCar_171 where
   runMessage msg l@(PassengerCar_171 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      let cost = SkillIconCost 1 (singleton SkillWild)
+      let cost = SkillIconCost 1 (singleton WildIcon)
       hasSkills <- getCanAffordCost
         iid
         (toSource attrs)

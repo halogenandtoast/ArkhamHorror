@@ -28,7 +28,7 @@ instance HasModifiersFor Leadership where
       mSkillTestSource <- getSkillTestSource
       case mSkillTestSource of
         Just (SkillTestSource iid' _ _ _) | skillOwner attrs /= iid' ->
-          pure $ toModifiers attrs [AddSkillIcons [SkillWillpower, SkillWild]]
+          pure $ toModifiers attrs [AddSkillIcons [SkillIcon SkillWillpower, WildIcon]]
         _ -> pure []
   getModifiersFor _ _ = pure []
 

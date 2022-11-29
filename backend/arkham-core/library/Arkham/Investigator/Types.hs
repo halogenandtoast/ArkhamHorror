@@ -104,6 +104,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorTreacheries :: HashSet TreacheryId
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
+  , investigatorKilled :: Bool
+  , investigatorDrivenInsane :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
   , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
@@ -284,6 +286,12 @@ resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
 
 defeatedL :: Lens' InvestigatorAttrs Bool
 defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
+
+killedL :: Lens' InvestigatorAttrs Bool
+killedL = lens investigatorKilled $ \m x -> m { investigatorKilled = x }
+
+drivenInsaneL :: Lens' InvestigatorAttrs Bool
+drivenInsaneL = lens investigatorDrivenInsane $ \m x -> m { investigatorDrivenInsane = x }
 
 endedTurnL :: Lens' InvestigatorAttrs Bool
 endedTurnL =

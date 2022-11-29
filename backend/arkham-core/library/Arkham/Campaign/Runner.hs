@@ -138,6 +138,10 @@ instance RunMessage CampaignAttrs where
       (<>)
       DrivenInsaneInvestigators
       (singleton $ Recorded $ unInvestigatorId iid)
+    InvestigatorKilled _ iid -> pure $ a & logL . recordedSets %~ insertWith
+      (<>)
+      KilledInvestigators
+      (singleton $ Recorded $ unInvestigatorId iid)
     CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
       pure
         $ a

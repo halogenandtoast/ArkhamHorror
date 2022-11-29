@@ -45,8 +45,8 @@ data ModifierType
   | ActionsAreFree
   | AddKeyword Keyword
   | AddTrait Trait
-  | AddSkillIcons [SkillType]
-  | RemoveSkillIcons [SkillType]
+  | AddSkillIcons [SkillIcon]
+  | RemoveSkillIcons [SkillIcon]
   | AdditionalActions Int
   | GiveAdditionalAction AdditionalAction
   | AdditionalStartingUses Int

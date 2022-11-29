@@ -49,7 +49,7 @@ data CardDef = CardDef
   , cdCardType :: CardType
   , cdCardSubType :: Maybe CardSubType
   , cdClassSymbols :: HashSet ClassSymbol
-  , cdSkills :: [SkillType]
+  , cdSkills :: [SkillIcon]
   , cdCardTraits :: HashSet Trait
   , cdRevealedCardTraits :: HashSet Trait
   , cdKeywords :: HashSet Keyword

@@ -652,7 +652,7 @@ instance RunMessage ActiveCost where
           let
             cards = filter ((> 0) . fst) $ map
               (toFst
-                (count (`member` insertSet SkillWild skillTypes)
+                (count (`member` insertSet WildIcon skillTypes)
                 . cdSkills
                 . toCardDef
                 )

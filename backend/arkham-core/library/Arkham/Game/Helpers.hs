@@ -497,7 +497,7 @@ getCanAffordCost iid source mAction windows' = \case
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     let
       total = sum $ map
-        (count (`member` insertSet SkillWild skillTypes) . cdSkills . toCardDef)
+        (count (`member` insertSet WildIcon skillTypes) . cdSkills . toCardDef)
         handCards
     pure $ total >= n
   DiscardCombinedCost n -> do

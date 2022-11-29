@@ -18,6 +18,7 @@ unrecorded = \case
 
 data CampaignLogKey
   = DrivenInsaneInvestigators
+  | KilledInvestigators
   | GhoulPriestIsStillAlive
   | YourHouseIsStillStanding
   | YourHouseHasBurnedToTheGround
@@ -138,6 +139,8 @@ data CampaignLogKey
   | AlejandroRemembersEverything
   | AlejandroIsSetAgainstYou
   | IchtacaIsSetAgainstYou
+  | TheInvestigatorsFellIntoTheDepths
+  | TheNexusIsNear
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

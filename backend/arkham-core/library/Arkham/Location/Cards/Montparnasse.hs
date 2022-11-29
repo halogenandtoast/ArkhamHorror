@@ -39,7 +39,7 @@ instance RunMessage Montparnasse where
     UseCardAbility iid source 1 _ (DiscardCardPayment cards)
       | isSource attrs source -> do
         let
-          countWillpower = count (== SkillWillpower) . cdSkills . toCardDef
+          countWillpower = count (== SkillIcon SkillWillpower) . cdSkills . toCardDef
           totalWillpower = sum $ map countWillpower cards
         a <$ push (TakeResources iid totalWillpower False)
     _ -> Montparnasse <$> runMessage msg attrs

@@ -44,7 +44,7 @@ instance HasAbilities RivertownAbandonedWarehouse where
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardCardPayment cards) =
-  sum $ map (count (== SkillWillpower) . cdSkills . toCardDef) cards
+  sum $ map (count (== SkillIcon SkillWillpower) . cdSkills . toCardDef) cards
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 

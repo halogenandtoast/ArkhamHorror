@@ -15,8 +15,8 @@ import Arkham.Name
 import Arkham.SkillType
 import Arkham.Trait
 
-skill :: CardCode -> Name -> [SkillType] -> ClassSymbol -> CardDef
-skill cardCode name skills classSymbol = CardDef
+skill :: CardCode -> Name -> [SkillIcon] -> ClassSymbol -> CardDef
+skill cardCode name icons classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
   , cdRevealedName = Nothing
@@ -26,7 +26,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdCardType = SkillType
   , cdCardSubType = Nothing
   , cdClassSymbols = singleton classSymbol
-  , cdSkills = skills
+  , cdSkills = icons
   , cdCardTraits = mempty
   , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
@@ -116,38 +116,38 @@ allPlayerSkillCards = mapFromList $ concatMap
   ]
 
 viciousBlow :: CardDef
-viciousBlow = (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
+viciousBlow = (skill "01025" "Vicious Blow" [#combat] Guardian)
   { cdCardTraits = setFromList [Practiced]
   , cdAlternateCardCodes = ["01525", "60119"]
   }
 
 deduction :: CardDef
-deduction = (skill "01039" "Deduction" [SkillIntellect] Seeker)
+deduction = (skill "01039" "Deduction" [#intellect] Seeker)
   { cdCardTraits = setFromList [Practiced]
   , cdAlternateCardCodes = ["01539", "60219"]
   }
 
 opportunist :: CardDef
-opportunist = (skill "01053" "Opportunist" [SkillWild] Rogue)
+opportunist = (skill "01053" "Opportunist" [#wild] Rogue)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [OnlyYourTest]
   , cdAlternateCardCodes = ["01553"]
   }
 
 fearless :: CardDef
-fearless = (skill "01067" "Fearless" [SkillWillpower] Mystic)
+fearless = (skill "01067" "Fearless" [#willpower] Mystic)
   { cdCardTraits = setFromList [Innate]
   , cdAlternateCardCodes = ["01567"]
   }
 
 survivalInstinct :: CardDef
-survivalInstinct = (skill "01081" "Survival Instinct" [SkillAgility] Survivor)
+survivalInstinct = (skill "01081" "Survival Instinct" [#agility] Survivor)
   { cdCardTraits = setFromList [Innate]
   , cdAlternateCardCodes = ["01581"]
   }
 
 guts :: CardDef
-guts = (skill "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
+guts = (skill "01089" "Guts" [#willpower, #willpower] Neutral)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdAlternateCardCodes = ["01589"]
@@ -155,14 +155,14 @@ guts = (skill "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
 
 perception :: CardDef
 perception =
-  (skill "01090" "Perception" [SkillIntellect, SkillIntellect] Neutral)
+  (skill "01090" "Perception" [#intellect, #intellect] Neutral)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [MaxOnePerTest]
   , cdAlternateCardCodes = ["01590"]
     }
 
 overpower :: CardDef
-overpower = (skill "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
+overpower = (skill "01091" "Overpower" [#combat, #combat] Neutral)
   { cdCardTraits = setFromList [Practiced]
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdAlternateCardCodes = ["01591"]
@@ -170,7 +170,7 @@ overpower = (skill "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
 
 manualDexterity :: CardDef
 manualDexterity =
-  (skill "01092" "Manual Dexterity" [SkillAgility, SkillAgility] Neutral)
+  (skill "01092" "Manual Dexterity" [#agility, #agility] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
   , cdAlternateCardCodes = ["01592"]
@@ -178,27 +178,27 @@ manualDexterity =
 
 unexpectedCourage :: CardDef
 unexpectedCourage =
-  (skill "01093" "Unexpected Courage" [SkillWild, SkillWild] Neutral)
+  (skill "01093" "Unexpected Courage" [#wild, #wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdAlternateCardCodes = ["01593"]
     }
 
 doubleOrNothing :: CardDef
-doubleOrNothing = (skill "02026" "Double or Nothing" [SkillWild] Rogue)
+doubleOrNothing = (skill "02026" "Double or Nothing" [#wild] Rogue)
   { cdCardTraits = singleton Fortune
   , cdCommitRestrictions = [MaxOnePerTest]
   }
 
 deduction2 :: CardDef
-deduction2 = (skill "02150" "Deduction" [SkillIntellect, SkillIntellect] Seeker
+deduction2 = (skill "02150" "Deduction" [#intellect, #intellect] Seeker
              )
   { cdCardTraits = setFromList [Practiced, Expert]
   , cdLevel = 2
   }
 
 defiance :: CardDef
-defiance = (skill "02190" "Defiance" [SkillWild] Mystic)
+defiance = (skill "02190" "Defiance" [#wild] Mystic)
   { cdCardTraits = singleton Innate
   }
 
@@ -206,7 +206,7 @@ riseToTheOccasion :: CardDef
 riseToTheOccasion = (skill
                       "02192"
                       "Rise to the Occasion"
-                      [SkillWild, SkillWild, SkillWild]
+                      [#wild, #wild, #wild]
                       Survivor
                     )
   { cdCardTraits = singleton Innate
@@ -215,18 +215,18 @@ riseToTheOccasion = (skill
 
 inquiringMind :: CardDef
 inquiringMind =
-  (skill "02227" "Inquiring Mind" [SkillWild, SkillWild, SkillWild] Seeker)
+  (skill "02227" "Inquiring Mind" [#wild, #wild, #wild] Seeker)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyIfYourLocationHasClues]
     }
 
 quickThinking :: CardDef
-quickThinking = (skill "02229" "Quick Thinking" [SkillWild] Rogue)
+quickThinking = (skill "02229" "Quick Thinking" [#wild] Rogue)
   { cdCardTraits = singleton Innate
   }
 
 opportunist2 :: CardDef
-opportunist2 = (skill "02231" "Opportunist" [SkillWild] Rogue)
+opportunist2 = (skill "02231" "Opportunist" [#wild] Rogue)
   { cdCardTraits = setFromList [Innate, Developed]
   , cdCommitRestrictions = [OnlyYourTest]
   , cdLevel = 2
@@ -234,24 +234,24 @@ opportunist2 = (skill "02231" "Opportunist" [SkillWild] Rogue)
 
 survivalInstinct2 :: CardDef
 survivalInstinct2 =
-  (skill "02235" "Survival Instinct" [SkillAgility, SkillAgility] Survivor)
+  (skill "02235" "Survival Instinct" [#agility, #agility] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = 2
     }
 
 leadership :: CardDef
-leadership = (skill "02260" "Leadership" [SkillWild] Guardian)
+leadership = (skill "02260" "Leadership" [#wild] Guardian)
   { cdCardTraits = singleton Practiced
   }
 
 fearless2 :: CardDef
-fearless2 = (skill "02268" "Fearless" [SkillWillpower, SkillWillpower] Mystic)
+fearless2 = (skill "02268" "Fearless" [#willpower, #willpower] Mystic)
   { cdCardTraits = setFromList [Innate, Developed]
   , cdLevel = 2
   }
 
 strokeOfLuck2 :: CardDef
-strokeOfLuck2 = (skill "02271" "Stroke of Luck" [SkillWild] Survivor)
+strokeOfLuck2 = (skill "02271" "Stroke of Luck" [#wild] Survivor)
   { cdCardTraits = setFromList [Innate, Fortune]
   , cdLevel = 2
   , cdCommitRestrictions = [OnlyYourTest]
@@ -259,14 +259,14 @@ strokeOfLuck2 = (skill "02271" "Stroke of Luck" [SkillWild] Survivor)
 
 viciousBlow2 :: CardDef
 viciousBlow2 =
-  (skill "02299" "Vicious Blow" [SkillCombat, SkillCombat] Guardian)
+  (skill "02299" "Vicious Blow" [#combat, #combat] Guardian)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = 2
     }
 
 theHomeFront :: CardDef
 theHomeFront =
-  (skill "03007" "The Home Front" (replicate 4 SkillCombat) Neutral)
+  (skill "03007" "The Home Front" (replicate 4 #combat) Neutral)
     { cdCardTraits = setFromList [Practiced, Expert]
     }
 
@@ -274,7 +274,7 @@ resourceful :: CardDef
 resourceful = (skill
                 "03039"
                 "Resourceful"
-                [SkillIntellect, SkillCombat, SkillAgility]
+                [#intellect, #combat, #agility]
                 Survivor
               )
   { cdCardTraits = singleton Innate
@@ -284,10 +284,10 @@ sayYourPrayers :: CardDef
 sayYourPrayers = (skill
                    "03116"
                    "Say Your Prayers"
-                   [ SkillWillpower
-                   , SkillWillpower
-                   , SkillWillpower
-                   , SkillWillpower
+                   [ #willpower
+                   , #willpower
+                   , #willpower
+                   , #willpower
                    ]
                    Neutral
                  )
@@ -302,10 +302,10 @@ desperateSearch :: CardDef
 desperateSearch = (skill
                     "03117"
                     "Desperate Search"
-                    [ SkillIntellect
-                    , SkillIntellect
-                    , SkillIntellect
-                    , SkillIntellect
+                    [ #intellect
+                    , #intellect
+                    , #intellect
+                    , #intellect
                     ]
                     Neutral
                   )
@@ -320,7 +320,7 @@ recklessAssault :: CardDef
 recklessAssault = (skill
                     "03118"
                     "Reckless Assault"
-                    [SkillCombat, SkillCombat, SkillCombat, SkillCombat]
+                    [#combat, #combat, #combat, #combat]
                     Neutral
                   )
   { cdCardTraits = singleton Desperate
@@ -334,7 +334,7 @@ runForYourLife :: CardDef
 runForYourLife = (skill
                    "03119"
                    "Run For Your Life"
-                   [SkillAgility, SkillAgility, SkillAgility, SkillAgility]
+                   [#agility, #agility, #agility, #agility]
                    Neutral
                  )
   { cdCardTraits = singleton Desperate
@@ -345,78 +345,78 @@ runForYourLife = (skill
   }
 
 inspiringPresence :: CardDef
-inspiringPresence = (skill "03228" "Inspiring Presence" [SkillWillpower, SkillIntellect, SkillCombat] Guardian)
+inspiringPresence = (skill "03228" "Inspiring Presence" [#willpower, #intellect, #combat] Guardian)
   { cdCardTraits = singleton Innate
   }
 
 eureka :: CardDef
-eureka = (skill "03231" "Eureka!" [SkillWillpower, SkillIntellect, SkillAgility] Seeker)
+eureka = (skill "03231" "Eureka!" [#willpower, #intellect, #agility] Seeker)
   { cdCardTraits = singleton Innate
   }
 
 watchThis :: CardDef
-watchThis = (skill "03233" "\"Watch this!\"" [SkillWillpower, SkillCombat, SkillAgility] Rogue)
+watchThis = (skill "03233" "\"Watch this!\"" [#willpower, #combat, #agility] Rogue)
   { cdCardTraits = singleton Gambit
   , cdCommitRestrictions = [OnlyYourTest]
   }
 
 torrentOfPower :: CardDef
-torrentOfPower = (skill "03235" "Torrent of Power" [SkillWild] Mystic)
+torrentOfPower = (skill "03235" "Torrent of Power" [#wild] Mystic)
   { cdCardTraits = singleton Practiced
   }
 
 notWithoutAFight :: CardDef
-notWithoutAFight = (skill "03272" "\"Not without a fight!\"" [SkillWillpower, SkillCombat, SkillAgility] Survivor)
+notWithoutAFight = (skill "03272" "\"Not without a fight!\"" [#willpower, #combat, #agility] Survivor)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [SelfCanCommitWhen $ InvestigatorEngagedWith AnyEnemy]
   }
 
 sealOfTheElderSign5 :: CardDef
-sealOfTheElderSign5 = (skill "03312" "Seal of the Elder Sign" [SkillWild] Mystic)
+sealOfTheElderSign5 = (skill "03312" "Seal of the Elder Sign" [#wild] Mystic)
   { cdCardTraits = setFromList [Spell, Expert]
   , cdLevel = 5
   }
 
 lastChance :: CardDef
-lastChance = (skill "04036" "Last Chance" [SkillWild, SkillWild, SkillWild, SkillWild, SkillWild] Survivor)
+lastChance = (skill "04036" "Last Chance" [#wild, #wild, #wild, #wild, #wild] Survivor)
   { cdCardTraits = singleton Gambit
   , cdCommitRestrictions = [OnlyCardCommittedToTest]
   }
 
 stunningBlow :: CardDef
-stunningBlow = (skill "04112" "Stunning Blow" [SkillCombat] Survivor)
+stunningBlow = (skill "04112" "Stunning Blow" [#combat] Survivor)
   { cdCardTraits = singleton Practiced
   }
 
 takeTheInitiative :: CardDef
-takeTheInitiative = (skill "04150" "Take the Initiative" [SkillWild, SkillWild, SkillWild] Guardian)
+takeTheInitiative = (skill "04150" "Take the Initiative" [#wild, #wild, #wild] Guardian)
   { cdCardTraits = setFromList [Practiced, Bold]
   , cdCommitRestrictions = [OnlyYourTest]
   }
 
 trueUnderstanding :: CardDef
-trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
+trueUnderstanding = (skill "04153" "True Understanding" [#wild] Seeker)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [ScenarioAbility]
   }
 
 hatchetMan :: CardDef
-hatchetMan = (skill "04155" "Hatchet Man" [SkillAgility] Rogue)
+hatchetMan = (skill "04155" "Hatchet Man" [#agility] Rogue)
   { cdCardTraits = singleton Practiced
   }
 
 enraptured :: CardDef
-enraptured = (skill "04157" "Enraptured" [SkillIntellect] Mystic)
+enraptured = (skill "04157" "Enraptured" [#intellect] Mystic)
   { cdCardTraits = singleton Practiced
   }
 
 intrepid :: CardDef
-intrepid = (skill "04192" "Intrepid" [SkillWillpower] Guardian)
+intrepid = (skill "04192" "Intrepid" [#willpower] Guardian)
   { cdCardTraits = singleton Innate
   }
 
 defiance2 :: CardDef
-defiance2 = (skill "04198" "Defiance" [SkillWild] Mystic)
+defiance2 = (skill "04198" "Defiance" [#wild] Mystic)
   { cdCardTraits = setFromList [Innate, Developed]
   , cdLevel = 2
   }
@@ -429,13 +429,13 @@ takeHeart = (skill "04201" "Take Heart" [] Survivor)
   }
 
 daring :: CardDef
-daring = (skill "06111" "Daring" [SkillWild, SkillWild, SkillWild] Guardian)
+daring = (skill "06111" "Daring" [#wild, #wild, #wild] Guardian)
   { cdCardTraits = singleton Innate
   , cdCommitRestrictions = [OnlyTestWithActions [Action.Fight, Action.Evade]]
   }
 
 overpower2 :: CardDef
-overpower2 = (skill "60126" "Overpower" [SkillCombat, SkillCombat, SkillCombat] Guardian)
+overpower2 = (skill "60126" "Overpower" [#combat, #combat, #combat] Guardian)
   { cdCardTraits = setFromList [Practiced, Expert]
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdLevel = 2
@@ -443,7 +443,7 @@ overpower2 = (skill "60126" "Overpower" [SkillCombat, SkillCombat, SkillCombat] 
 
 perception2 :: CardDef
 perception2 =
-  (skill "60228" "Perception" [SkillIntellect, SkillIntellect, SkillIntellect] Seeker)
+  (skill "60228" "Perception" [#intellect, #intellect, #intellect] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdCommitRestrictions = [MaxOnePerTest]
     }
@@ -452,7 +452,7 @@ neitherRainNorSnow :: CardDef
 neitherRainNorSnow = (skill
                        "60502"
                        "Neither Rain nor Snow"
-                       [SkillWild, SkillWild, SkillWild]
+                       [#wild, #wild, #wild]
                        Survivor
                      )
   { cdCardTraits = setFromList [Innate, Developed]
@@ -460,7 +460,7 @@ neitherRainNorSnow = (skill
 
 unexpectedCourage2 :: CardDef
 unexpectedCourage2 =
-  (skill "60526" "Unexpected Courage" [SkillWild, SkillWild] Survivor)
+  (skill "60526" "Unexpected Courage" [#wild, #wild] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = 2

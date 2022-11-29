@@ -1821,9 +1821,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             pure
               $ PlayerCard card
               `notElem` committedCards
-              && (SkillWild
+              && (WildIcon
                  `elem` cdSkills (toCardDef card)
-                 || skillType
+                 || SkillIcon skillType
                  `elem` cdSkills (toCardDef card)
                  || (null (cdSkills $ toCardDef card)
                     && toCardType card
@@ -1931,9 +1931,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure
                     $ PlayerCard card
                     `notElem` committedCards
-                    && (SkillWild
+                    && (WildIcon
                        `elem` cdSkills (toCardDef card)
-                       || skillType
+                       || SkillIcon skillType
                        `elem` cdSkills (toCardDef card)
                        )
                     && passesCriterias
@@ -2260,8 +2260,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId ->
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
-  SufferTrauma iid physical mental | iid == investigatorId ->
+  SufferTrauma iid physical mental | iid == investigatorId -> do
+    push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
+  CheckTrauma iid | iid == investigatorId -> do
+    when (investigatorPhysicalTrauma >= investigatorHealth) $
+      push $ InvestigatorKilled (toSource a) iid
+    when (investigatorMentalTrauma >= investigatorSanity) $
+      push $ DrivenInsane iid
+    pure a
   HealTrauma iid physical mental | iid == investigatorId ->
     pure
       $ a

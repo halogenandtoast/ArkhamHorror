@@ -21,6 +21,11 @@ pattern InvestigatorWithAnyActionsRemaining <-
   InvestigatorWithAnyActionsRemaining =
     InvestigatorWithActionsRemaining (GreaterThan (Static 0))
 
+pattern InvestigatorWithAnyDoom :: InvestigatorMatcher
+pattern InvestigatorWithAnyDoom <-
+  InvestigatorWithDoom (GreaterThan (Static 0)) where
+  InvestigatorWithAnyDoom = InvestigatorWithDoom (GreaterThan (Static 0))
+
 pattern InvestigatorWithAnyDamage :: InvestigatorMatcher
 pattern InvestigatorWithAnyDamage <-
   InvestigatorWithDamage (GreaterThan (Static 0)) where
@@ -226,3 +231,8 @@ pattern AgendaWithAnyDoom :: AgendaMatcher
 pattern AgendaWithAnyDoom <- AgendaWithDoom (GreaterThan (Static 0)) where
   AgendaWithAnyDoom = AgendaWithDoom (GreaterThan (Static 0))
 
+-- ** Treachery Patterns **
+
+pattern TreacheryWithAnyDoom :: TreacheryMatcher
+pattern TreacheryWithAnyDoom <- TreacheryWithDoom (GreaterThan (Static 0)) where
+  TreacheryWithAnyDoom = TreacheryWithDoom (GreaterThan (Static 0))

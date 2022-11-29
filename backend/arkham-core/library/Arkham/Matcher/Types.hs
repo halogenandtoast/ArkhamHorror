@@ -63,6 +63,7 @@ data InvestigatorMatcher
   | InvestigatorWithActionsRemaining ValueMatcher
   | InvestigatorWithClues ValueMatcher
   | InvestigatorWithDamage ValueMatcher
+  | InvestigatorWithDoom ValueMatcher
   | InvestigatorWithHorror ValueMatcher
   | InvestigatorWithRemainingSanity ValueMatcher
   | InvestigatorWithResources ValueMatcher
@@ -83,6 +84,7 @@ data InvestigatorMatcher
   | InvestigatorWithSupply Supply
   | InvestigatorCanDiscoverCluesAtOneOf LocationMatcher -- NOTE: Use matcher above
   | DeckIsEmpty
+  | AliveInvestigator
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -365,6 +367,7 @@ data TreacheryMatcher
   = TreacheryWithTitle Text
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
+  | TreacheryWithDoom ValueMatcher
   | TreacheryWithTrait Trait
   | TreacheryInHandOf InvestigatorMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher

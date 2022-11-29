@@ -32,7 +32,6 @@ getSkillValue st iid = case st of
   SkillIntellect -> field InvestigatorIntellect iid
   SkillCombat -> field InvestigatorCombat iid
   SkillAgility -> field InvestigatorAgility iid
-  SkillWild -> error "no wild skill"
 
 skillValueFor
   :: forall m. (Monad m, HasGame m)
@@ -240,6 +239,8 @@ investigator f cardDef Stats {..} =
         , investigatorHand = mempty
         , investigatorTraits = cdCardTraits cardDef
         , investigatorTreacheries = mempty
+        , investigatorKilled = False
+        , investigatorDrivenInsane = False
         , investigatorDefeated = False
         , investigatorResigned = False
         , investigatorSlots = mapFromList

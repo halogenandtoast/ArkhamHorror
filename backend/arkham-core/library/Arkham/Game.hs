@@ -636,6 +636,7 @@ getInvestigatorsMatching matcher = do
   includeEliminated TurnInvestigator = True
   includeEliminated ResignedInvestigator = True
   includeEliminated DefeatedInvestigator = True
+  includeEliminated AliveInvestigator = True
   includeEliminated (InvestigatorMatches xs) = any includeEliminated xs
   includeEliminated (AnyInvestigator xs) = any includeEliminated xs
   includeEliminated _ = False
@@ -654,6 +655,9 @@ getInvestigatorsMatching matcher = do
       locations <- select matcher'
       pure $ any (`notElem` invalidLocations) locations
     InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
+    AliveInvestigator -> \i -> do
+      let attrs = toAttrs i
+      pure $ not $ investigatorKilled attrs || investigatorDrivenInsane attrs
     FewestCardsInHand -> \i -> do
       let cardCount = length . investigatorHand $ toAttrs i
       minCardCount <-
@@ -800,6 +804,8 @@ getInvestigatorsMatching matcher = do
       field InvestigatorRemainingActions
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
+    InvestigatorWithDoom gameValueMatcher ->
+      (`gameValueMatches` gameValueMatcher) . investigatorDoom . toAttrs
     InvestigatorWithDamage gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . investigatorHealthDamage . toAttrs
     InvestigatorWithHorror gameValueMatcher ->
@@ -972,6 +978,9 @@ getTreacheriesMatching matcher = do
       pure $ case treacheryOwner (toAttrs treachery) of
         Just iid -> iid `member` iids
         Nothing -> False
+    TreacheryWithDoom gameValueMatcher -> \t -> do
+      doom <- field TreacheryDoom (toId t)
+      doom `gameValueMatches` gameValueMatcher
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
     TreacheryOneOf matchers ->
@@ -2258,9 +2267,9 @@ instance Query ExtendedCardMatcher where
         case mSkillTest of
           Nothing -> pure False
           Just st -> pure
-            (SkillWild
+            (WildIcon
             `elem` cdSkills (toCardDef c)
-            || skillTestSkillType st
+            || SkillIcon (skillTestSkillType st)
             `elem` cdSkills (toCardDef c)
             || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
             )
@@ -2293,37 +2302,6 @@ instance HasTokenValue InvestigatorId where
   getTokenValue iid token iid' = do
     investigator' <- getInvestigator iid'
     getTokenValue iid token investigator'
-
--- instance HasModifiersFor () where
---   getModifiersFor target _ = do
---     g <- getGame
---     allModifiers' <- concat <$> sequence
---       [ getModifiersFor target (g ^. entitiesL)
---       , case target of
---         InvestigatorTarget i -> maybe
---           (pure [])
---           (getModifiersFor (InvestigatorHandTarget i))
---           (g ^. inHandEntitiesL . at i)
---         _ -> pure []
---       , case target of
---         InvestigatorTarget i -> maybe
---           (pure [])
---           (getModifiersFor (InvestigatorDiscardTarget i))
---           (g ^. inDiscardEntitiesL . at i)
---         _ -> pure []
---       , maybe (pure []) (getModifiersFor target) (modeScenario $ g ^. modeL)
---       , maybe (pure []) (getModifiersFor target) (modeCampaign $ g ^. modeL)
---       ]
---     traits <- targetTraits target
---     let
---       applyTraitRestrictedModifiers m = case modifierType m of
---         TraitRestrictedModifier trait modifierType' ->
---           m { modifierType = modifierType' } <$ guard (trait `member` traits)
---         _ -> Just m
---       allModifiers = mapMaybe applyTraitRestrictedModifiers allModifiers'
---     pure $ if any ((== Blank) . modifierType) allModifiers
---       then filter ((/= targetToSource target) . modifierSource) allModifiers
---       else allModifiers
 
 instance HasModifiersFor Entities where
   getModifiersFor target e = concat <$> sequence

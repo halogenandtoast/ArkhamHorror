@@ -408,3 +408,96 @@ tossingAndTurningInterlude4 = FlavorText
     \   When “morning” comes, you are even more weary than you were the previous\
     \ night."
   ]
+
+theDarkness1 :: FlavorText
+theDarkness1 = FlavorText
+  (Just "The Darkness 1")
+  [ "You stir awake, lying facedown on the cold, hard stone of the cavern. You are\
+    \ bruised and battered but, somehow, alive. It takes several minutes before you\
+    \ regain enough of your strength to stand. You are absolutely and hopelessly lost\
+    \ within the impossibly vast caverns, enveloped by pitch-black darkness. Have you\
+    \ survived all this way only to perish here, lost to all humanity?"
+  ]
+
+theDarkness2 :: FlavorText
+theDarkness2 = FlavorText
+  (Just "The Darkness 2")
+  [ "The grim, blood-red caverns and resentful cities of Yoth hold no candle to the\
+    \ terrifying depths that lie below them. You are in the deepest level of this\
+    \ subterranean realm now: the caverns Ichtaca referred to as “N’kai.” Nothing\
+    \ could have prepared you for the impervious murk that surrounds you on all\
+    \ sides, an inky darkness that none of your light sources can penetrate. You\
+    \ grope around in the darkness until you feel the jagged wall of the cavern and\
+    \ begin to follow it aimlessly, desperately hoping to find the way forward. A\
+    \ grim realization dawns on you: Even should you complete your task, you will\
+    \ surely never find a way back to the surface. The overwhelming darkness of the\
+    \ cavern fills you with a dread you have never before experienced. You cannot see\
+    \ your hands as you grope about in the darkness, nor can you tell if you are in a\
+    \ narrow tunnel or a vast open space. The ground beside you could extend for\
+    \ miles or abruptly become a bottomless cavern, and you would not be able to tell\
+    \ the difference unless you stepped there. Hours pass as you stumble in the dark,\
+    \ slowly, carefully, nervously. Every step could be your last."
+  ]
+
+arcaneThrumming :: FlavorText
+arcaneThrumming = FlavorText
+  (Just "Arcane Thrumming")
+  [ "Worried that your fall may have damaged the Eztli relic, you pull it out of\
+    \ your pack and examine it. Oddly, the device seems completely undamaged. It\
+    \ vibrates with a growing intensity, humming louder now than ever before."
+  ]
+
+growingConcern :: FlavorText
+growingConcern = FlavorText
+  (Just "Growing Concerns")
+  [ "As you rise to your feet, the ground rumbles and growls. Something deep below\
+    \ you is moving. Shifting. Mutating."
+  ]
+
+finalDawning :: FlavorText
+finalDawning = FlavorText
+  (Just "Final Dawning")
+  [ "Without Alejandro or Ichtaca to distract you, you find yourself studying the\
+    \ relic intently. Both of your “guides” have only fed you lies. They hid the\
+    \ relic’s true nature from you, manipulating you in an attempt to bring the relic\
+    \ to this very place. After your experience with the Great Race of Yith, you\
+    \ think you understand why. The technology behind the device’s design is far\
+    \ beyond what any human could accomplish, but quite possible for the Yithians.\
+    \ You even recognize some elements of the relic’s construction from the\
+    \ technology in Pnakotus. Somehow, it ended up in the hands of the Eztli, who\
+    \ defended it with care from all manner of creatures. Creatures that predate\
+    \ humanity. Creatures who wished to use it to turn back time. And now that the\
+    \ relic is in your possession, only you can stop this from occurring."
+  ]
+
+torchlight :: FlavorText
+torchlight = FlavorText
+  (Just "Torchlight")
+  [ "Though the light from your torches is snuffed by the overpowering darkness of\
+    \ this realm, you decide to try to light the brazier with the flames. To your\
+    \ surprise, after you hold the torch against the strange cubes for several\
+    \ moments, the brazier erupts in a fury of blue and silver flames, consuming your\
+    \ torch and almost melting your hand to the bone. Though the light from the\
+    \ brilliant flame only reaches a few yards around you, more braziers light up in\
+    \ the distance, their flames guiding your path forward. At least, you hope..."
+  ]
+
+theAbyss :: FlavorText
+theAbyss = FlavorText
+  (Just "The Abyss")
+  [ "The odd material inside does not seem to accept any source of fire you use to\
+    \ try to light it. Your hope is snuffed out along with the light around you.\
+    \ Miserable, you prepare to endure the darkness ahead."
+  ]
+
+
+readingSigns :: FlavorText
+readingSigns = FlavorText
+  (Just "Reading Signs")
+  [ "As you traverse the caverns, something catches your attention: streams of cold,\
+    \ gentle water that drip down the walls of the cavern. Curious, you unfold the\
+    \ previous expedition’s map and sit by one of the lit braziers, mentally\
+    \ retracing your steps. If your calculations are correct, you have traveled much\
+    \ farther south than you could have possibly guessed. Could it be these caverns\
+    \ extend all the way to the coastline? Do the caverns never end?"
+  ]

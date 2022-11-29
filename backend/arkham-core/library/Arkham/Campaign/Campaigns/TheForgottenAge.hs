@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
 import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -17,6 +17,7 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Campaign
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
@@ -734,6 +735,84 @@ instance RunMessage TheForgottenAge where
                ]
              )
              withoutBlanket
+      pure c
+    CampaignStep (Just (InterludeStep 5 mkey)) -> do
+      iids <- allInvestigatorIds
+      fellIntoTheDepths <- getHasRecord TheInvestigatorsFellIntoTheDepths
+      pushAll
+        $ [ story iids theDarkness1 | fellIntoTheDepths ]
+        <> [ story iids theDarkness2
+           , CampaignStep (Just (InterludeStepPart 5 mkey 1))
+           , CampaignStep (Just (InterludeStepPart 5 mkey 2))
+           , CampaignStep (Just (InterludeStepPart 5 mkey 3))
+           , CampaignStep (Just (InterludeStepPart 5 mkey 4))
+           , NextCampaignStep Nothing
+           ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 5 _ 1)) -> do
+      iids <- allInvestigatorIds
+      foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
+      recoveredTheRelicOfAges <- getHasRecord
+        TheInvestigatorsRecoveredTheRelicOfAges
+      forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
+
+      mRelicOfAgesADeviceOfSomeSort <- getOwner
+        Assets.relicOfAgesADeviceOfSomeSort
+      mRelicOfAgesForestallingTheFutureOwner <- getOwner
+        Assets.relicOfAgesForestallingTheFuture
+
+
+      let
+        mRelicOfAgesOwner =
+          mRelicOfAgesADeviceOfSomeSort
+            <|> mRelicOfAgesForestallingTheFutureOwner
+        readFinalDawning =
+          foundTheMissingRelic && recoveredTheRelicOfAges && forgingYourOwnPath
+        newToken = case campaignDifficulty attrs of
+          Easy -> MinusThree
+          Standard -> MinusFour
+          Hard -> MinusFive
+          Expert -> MinusSix
+      pushAll
+        $ [ story iids arcaneThrumming | foundTheMissingRelic ]
+        <> [ story iids growingConcern | not foundTheMissingRelic ]
+        <> [ AddToken newToken | not foundTheMissingRelic ]
+        <> [ story iids finalDawning | readFinalDawning ]
+        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+           | readFinalDawning
+           ]
+        <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
+           | readFinalDawning
+           ]
+        <> [ AddCampaignCardToDeck iid Assets.relicOfAgesRepossessThePast
+           | readFinalDawning
+           , iid <- maybeToList mRelicOfAgesOwner
+           ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 5 _ 2)) -> do
+      iids <- allInvestigatorIds
+      hasTorches <- getAnyHasSupply Torches
+      pushAll
+        $ [ story iids $ if hasTorches then torchlight else theAbyss
+          , Record
+            $ if hasTorches then TheBraziersAreLit else TheBraziersRemainUnlit
+          ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 5 _ 3)) -> do
+      theBraziersAreLit <- getHasRecord TheBraziersAreLit
+      hasMap <- selectList $ InvestigatorWithSupply Map
+      when (theBraziersAreLit && notNull hasMap) $ do
+        iids <- allInvestigatorIds
+        pushAll $ story iids readingSigns : map (`GainXP` 2) hasMap
+      pure c
+    CampaignStep (Just (InterludeStepPart 5 _ 4)) -> do
+      iids <- allInvestigatorIds
+      for_ iids $ \iid -> do
+        supplies <- field InvestigatorSupplies iid
+        for_ supplies $ \case
+          Medicine -> push $ UseSupply iid Medicine
+          Provisions -> push $ UseSupply iid Provisions
+          _ -> pure ()
       pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs

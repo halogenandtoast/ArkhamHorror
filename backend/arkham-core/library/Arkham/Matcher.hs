@@ -125,6 +125,7 @@ replaceYourLocation iid (Just lid) = go
     LocationWithSymbol{} -> matcher
     LocationLeavingPlay -> matcher
     LocationWithDoom{} -> matcher
+    LocationWithDefeatedEnemyThisRound{} -> matcher
     YourLocation -> LocationWithId lid
     SameLocation -> LocationWithId lid
     NotYourLocation -> NotLocation (LocationWithId lid)

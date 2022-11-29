@@ -6,6 +6,7 @@ import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Projection
 import Arkham.Query
+import Arkham.Target
 import Data.HashSet qualified as HashSet
 
 selectCount :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Int
@@ -35,6 +36,12 @@ selectListMap
   -> a
   -> m [b]
 selectListMap f = selectListMapM (pure . f)
+
+selectTargets
+  :: (HasCallStack, Query a, HasGame m, Monad m, IdToTarget (QueryElement a))
+  => a
+  -> m [Target]
+selectTargets = selectListMap idToTarget
 
 selectListMapM
   :: (HasCallStack, Query a, HasGame m, Monad m)

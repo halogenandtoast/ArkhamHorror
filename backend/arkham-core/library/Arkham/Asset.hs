@@ -408,6 +408,9 @@ allAssets = mapFrom
   , SomeAssetCard timewornBrand5
   --- story [tdoy]
   , SomeAssetCard relicOfAgesRepossessThePast
+  --- Shattered Aesons
+  --- guardian [sha]
+  , SomeAssetCard kerosene1
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -29,7 +29,7 @@ instance HasModifiersFor TakeTheInitiative where
     let total = sum $ map historyActionsCompleted histories
     pure $ toModifiers
       a
-      [ RemoveSkillIcons $ replicate (min 3 total) SkillWild | total > 0 ]
+      [ RemoveSkillIcons $ replicate (min 3 total) WildIcon | total > 0 ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TakeTheInitiative where

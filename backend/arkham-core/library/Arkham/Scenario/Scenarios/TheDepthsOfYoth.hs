@@ -14,22 +14,28 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message hiding (EnemyDamage)
 import Arkham.Placement
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Trait ( Trait (Injury) )
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -243,5 +249,61 @@ instance RunMessage TheDepthsOfYoth where
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
+      pure s
+    ScenarioResolution r -> do
+      iids <- allInvestigatorIds
+      depth <- getCurrentDepth
+      gainXp <- map (uncurry GainXP) <$> getXpWithBonus depth
+      vengeance <- getVengeanceInVictoryDisplay
+      yigsFury <- getRecordCount YigsFury
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs
+        Enemies.harbingerOfValusia
+      inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
+      damage <- case inPlayHarbinger of
+        Just eid -> field EnemyDamage eid
+        Nothing -> getRecordCount TheHarbingerIsStillAlive
+      case r of
+        NoResolution -> push $ ScenarioResolution (Resolution 1)
+        Resolution n | n == 1 || n == 2 -> do
+          currentDepth <- getCurrentDepth
+          let
+            resolution = if n == 1 then resolution1 else resolution2
+            recordEntry = if n == 1
+              then TheInvestigatorsFellIntoTheDepths
+              else TheNexusIsNear
+            depthMessages = if n > 1
+              then []
+              else case currentDepth of
+                1 -> map (InvestigatorKilled ScenarioSource) iids <> [GameOver]
+                2 ->
+                  map (\i -> SufferTrauma i 2 0) iids
+                    <> [ScenarioResolutionStep 1 (Resolution 1)]
+                    <> map
+                         (\i ->
+                           SearchCollectionForRandom i (toSource attrs)
+                             $ WeaknessCard
+                             <> CardWithTrait Injury
+                         )
+                         iids
+                3 ->
+                  map (\i -> SufferTrauma i 1 0) iids
+                    <> [ScenarioResolutionStep 1 (Resolution 1)]
+                _ -> []
+          pushAll
+            $ [story iids resolution, Record recordEntry]
+            <> depthMessages
+            <> [ CrossOutRecord TheHarbingerIsStillAlive | inVictory ]
+            <> [ RecordCount TheHarbingerIsStillAlive damage | not inVictory ]
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+        _ -> error "Unknown Resolution"
+      pure s
+    ScenarioResolutionStep 1 (Resolution 1) -> do
+      allKilled <- selectNone AliveInvestigator
+      when allKilled $ push GameOver
+      pure s
+    RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
+      for_ mcard $ \card -> push
+        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s
     _ -> TheDepthsOfYoth <$> runMessage msg attrs

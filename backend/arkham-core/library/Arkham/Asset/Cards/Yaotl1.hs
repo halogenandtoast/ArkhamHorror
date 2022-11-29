@@ -13,9 +13,9 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Effect.Types
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
@@ -60,13 +60,22 @@ yaotl1Effect :: EffectArgs -> Yaotl1Effect
 yaotl1Effect = Yaotl1Effect . uncurry4 (baseAttrs "04035")
 
 instance HasModifiersFor Yaotl1Effect where
-  getModifiersFor target@(InvestigatorTarget iid) (Yaotl1Effect a) | effectTarget a == target = do
-    discard <- field InvestigatorDiscard iid
-    case discard of
-      [] -> pure []
-      (x:_) -> do
-        let skillsWithCounts = mapToList $ frequencies (filter (/= SkillWild) . cdSkills $ toCardDef x)
-        pure $ toModifiers a $ map (uncurry SkillModifier) skillsWithCounts
+  getModifiersFor target@(InvestigatorTarget iid) (Yaotl1Effect a)
+    | effectTarget a == target = do
+      discard <- field InvestigatorDiscard iid
+      case discard of
+        [] -> pure []
+        (x : _) -> do
+          let
+            skillIcons = cdSkills $ toCardDef x
+            skillCount sk = count (== SkillIcon sk) skillIcons
+          pure
+            $ toModifiers a
+            $ [ SkillModifier sk n
+              | sk <- allSkills
+              , let n = skillCount sk
+              , n > 0
+              ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Yaotl1Effect where

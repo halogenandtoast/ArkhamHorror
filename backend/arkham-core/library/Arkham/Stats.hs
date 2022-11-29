@@ -23,7 +23,6 @@ statsSkillValue Stats {..} = \case
   SkillIntellect -> intellect
   SkillCombat -> combat
   SkillAgility -> agility
-  SkillWild -> 0
 
 instance Semigroup Stats where
   Stats a1 b1 c1 d1 e1 f1 <> Stats a2 b2 c2 d2 e2 f2 =

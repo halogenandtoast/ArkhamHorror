@@ -24,7 +24,7 @@ minhThiPhan = MinhThiPhan . uncurry4 (baseAttrs "03002")
 instance HasModifiersFor MinhThiPhan where
   getModifiersFor target@(CardIdTarget _) (MinhThiPhan attrs)
     | effectTarget attrs == target = pure
-    $ toModifiers attrs [AddSkillIcons [SkillWild]]
+    $ toModifiers attrs [AddSkillIcons [WildIcon]]
   getModifiersFor target@(SkillTarget _) (MinhThiPhan attrs)
     | effectTarget attrs == target = pure
     $ toModifiers attrs [ReturnToHandAfterTest]

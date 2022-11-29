@@ -58,7 +58,7 @@ instance RunMessage WellPrepared2 where
             x <- fieldMap
               AssetCard
               (length
-              . filter (`elem` [skillType, SkillWild])
+              . filter (`elem` [SkillIcon skillType, WildIcon])
               . cdSkills
               . toCardDef
               )

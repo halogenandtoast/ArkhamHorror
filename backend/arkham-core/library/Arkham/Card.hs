@@ -83,7 +83,7 @@ cardMatch a = \case
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
   CardWithSkill skillType ->
-    skillType `member` setFromList @(HashSet SkillType) (cdSkills $ toCardDef a)
+    SkillIcon skillType `member` setFromList @(HashSet SkillIcon) (cdSkills $ toCardDef a)
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title

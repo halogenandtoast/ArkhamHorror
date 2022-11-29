@@ -41,7 +41,7 @@ instance HasModifiersFor TorrentOfPower where
           let n = maybe 0 chargesSpent (skillAdditionalPayment attrs)
           pure $ toModifiers
             attrs
-            [AddSkillIcons $ cycleN n [SkillWillpower, SkillWild]]
+            [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, WildIcon]]
         _ -> pure []
   getModifiersFor _ _ = pure []
 

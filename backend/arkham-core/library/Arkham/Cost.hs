@@ -69,7 +69,7 @@ data Payment
   | DamagePayment Int
   | DirectDamagePayment Int
   | InvestigatorDamagePayment Int
-  | SkillIconPayment [SkillType]
+  | SkillIconPayment [SkillIcon]
   | Payments [Payment]
   | SealTokenPayment Token
   | ReturnToHandPayment Card
@@ -105,7 +105,7 @@ data Cost
   | HandDiscardCost Int CardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
-  | SkillIconCost Int (HashSet SkillType)
+  | SkillIconCost Int (HashSet SkillIcon)
   | DiscardCombinedCost Int
   | ShuffleDiscardCost Int CardMatcher
   | HorrorCost Source Target Int

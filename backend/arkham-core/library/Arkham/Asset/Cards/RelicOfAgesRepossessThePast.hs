@@ -5,17 +5,61 @@ module Arkham.Asset.Cards.RelicOfAgesRepossessThePast
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Helpers.Doom
+import Arkham.SkillType
+import Arkham.Target
 
-newtype RelicOfAgesRepossessThePast = RelicOfAgesRepossessThePast AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+newtype Metadata = Metadata { successTriggered :: Bool }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype RelicOfAgesRepossessThePast = RelicOfAgesRepossessThePast (AssetAttrs `With` Metadata)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relicOfAgesRepossessThePast :: AssetCard RelicOfAgesRepossessThePast
-relicOfAgesRepossessThePast =
-  asset RelicOfAgesRepossessThePast Cards.relicOfAgesRepossessThePast
+relicOfAgesRepossessThePast = asset
+  (RelicOfAgesRepossessThePast . (`with` Metadata False))
+  Cards.relicOfAgesRepossessThePast
+
+instance HasAbilities RelicOfAgesRepossessThePast where
+  getAbilities (RelicOfAgesRepossessThePast (a `With` _)) =
+    [ restrictedAbility a 1 ControlsThis
+        $ FastAbility
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
+    ]
 
 instance RunMessage RelicOfAgesRepossessThePast where
-  runMessage msg (RelicOfAgesRepossessThePast attrs) =
-    RelicOfAgesRepossessThePast <$> runMessage msg attrs
+  runMessage msg a@(RelicOfAgesRepossessThePast (attrs `With` metadata)) =
+    case msg of
+      UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+        let
+          beginSkillTest skillType = BeginSkillTest
+            iid
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            Nothing
+            skillType
+            4
+        push $ chooseOne
+          iid
+          [ SkillLabel skillType [beginSkillTest skillType]
+          | skillType <- [SkillWillpower, SkillIntellect]
+          ]
+        pure a
+      PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+        | not (successTriggered metadata)
+        -> do
+          targets <- targetsWithDoom
+          push $ chooseOne
+            iid
+            [ TargetLabel target [RemoveDoom target 1] | target <- targets ]
+          pure . RelicOfAgesRepossessThePast $ attrs `with` Metadata True
+      _ ->
+        RelicOfAgesRepossessThePast . (`with` metadata) <$> runMessage msg attrs

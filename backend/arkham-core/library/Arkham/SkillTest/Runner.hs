@@ -44,8 +44,8 @@ skillIconCount SkillTest {..} = do
       (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
       modifiers'
   iconsForCard _ = pure []
-  matches SkillWild = True
-  matches s = s == skillTestSkillType
+  matches WildIcon = True
+  matches (SkillIcon s) = s == skillTestSkillType
   applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
   applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
   applySkillModifiers _ ys = ys

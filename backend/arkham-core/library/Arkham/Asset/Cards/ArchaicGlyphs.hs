@@ -32,7 +32,7 @@ instance HasAbilities ArchaicGlyphs where
     [ restrictedAbility attrs 1 ControlsThis
       $ ActionAbility Nothing
       $ ActionCost 1
-      <> SkillIconCost 1 (singleton SkillIntellect)
+      <> SkillIconCost 1 (singleton $ SkillIcon SkillIntellect)
     , restrictedAbility attrs 2 ability2Criteria $ ForcedAbility AnyWindow
     ]
    where

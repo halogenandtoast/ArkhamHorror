@@ -597,6 +597,7 @@ data Message
     -- to handle the result
     Successful (Action, Target) InvestigatorId Source Target Int
   | SufferTrauma InvestigatorId Int Int
+  | CheckTrauma InvestigatorId
   | HealTrauma InvestigatorId Int Int
   | Surge InvestigatorId Source
   | TakeAction InvestigatorId (Maybe Action) Cost

@@ -112,3 +112,32 @@ intro8 = FlavorText
     \ you until she leaves your sight. Despite her warning, you feel that you have no\
     \ choice but to follow. If you don’t, who will protect humanity?"
   ]
+
+resolution1 :: FlavorText
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "After hours and hours of travel, you’ve only just scratched the surface of this\
+    \ boundless subterranean world. Humanity could spend centuries mapping out these\
+    \ tunnels and never complete the task. No matter how quickly you plumb the\
+    \ depths, the serpents chasing you are hot on your tail. You are intruders in\
+    \ their home, and they know these hellish tunnels better than you. With your\
+    \ wounds slowing you down and panic seeping into every one of your decisions,\
+    \ your death at the hands of these creatures is inevitable. Despair worms its way\
+    \ into your mind. When the serpents inevitably catch up to you, you are crossing\
+    \ one of the cavern’s many long bridges of stone that span a wide, dark chasm.\
+    \ Serpent creatures on both sides of the chasm flank you, spear tips corralling\
+    \ you against the precarious edge of the bridge. A small hunk of stone cracks at\
+    \ your heel and detaches, falling into the inky void below. You do not hear it\
+    \ strike the floor of the chasm. There is no hope to escape or flee this time—you\
+    \ have no choice but to accept your fate. The spear tips press you closer to the\
+    \ edge. You close your eyes and fall."
+  ]
+
+resolution2 :: FlavorText
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "Somehow, despite the odds stacked against you, you’ve reached your destination.\
+    \ The telltale red glow that has enveloped you since you entered Yoth recedes,\
+    \ replaced with an unpierceable inky darkness. The Nexus must be close... You can\
+    \ feel it."
+  ]

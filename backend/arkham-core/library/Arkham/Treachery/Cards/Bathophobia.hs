@@ -5,8 +5,11 @@ module Arkham.Treachery.Cards.Bathophobia
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Classes
 import Arkham.Message
+import Arkham.SkillType
+import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -19,5 +22,12 @@ bathophobia = treachery Bathophobia Cards.bathophobia
 
 instance RunMessage Bathophobia where
   runMessage msg t@(Bathophobia attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid source | isSource attrs source -> do
+      n <- getCurrentDepth
+      push $ RevelationSkillTest iid source SkillWillpower (1 + n)
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+        pure t
     _ -> Bathophobia <$> runMessage msg attrs

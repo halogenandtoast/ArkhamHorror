@@ -7,4 +7,4 @@ class HasCost a where
   getCost :: a -> Int
 
 class HasSkillIcons a where
-  getSkillIcons :: a -> [SkillType]
+  getSkillIcons :: a -> [SkillIcon]

@@ -28,7 +28,7 @@ instance HasModifiersFor NotWithoutAFight where
         attrs
       pure $ toModifiers
         attrs
-        [AddSkillIcons $ cycleN n [SkillWillpower, SkillCombat, SkillAgility]]
+        [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, SkillIcon SkillCombat, SkillIcon SkillAgility]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage NotWithoutAFight where

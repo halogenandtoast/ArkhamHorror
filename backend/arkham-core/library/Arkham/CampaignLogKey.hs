@@ -141,6 +141,8 @@ data CampaignLogKey
   | IchtacaIsSetAgainstYou
   | TheInvestigatorsFellIntoTheDepths
   | TheNexusIsNear
+  | TheBraziersAreLit
+  | TheBraziersRemainUnlit
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

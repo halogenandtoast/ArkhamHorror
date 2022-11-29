@@ -379,10 +379,7 @@ toExternalGame g mq = do
   newGameSeed <- getRandom
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
-replayChoices
-  :: Game
-  -> [Diff.Patch]
-  -> Game
+replayChoices :: Game -> [Diff.Patch] -> Game
 replayChoices currentGame choices = do
   case foldM patch currentGame choices of
     Error e -> error e
@@ -675,20 +672,24 @@ getInvestigatorsMatching matcher = do
     LowestRemainingHealth -> \i -> do
       h <- field InvestigatorRemainingHealth (toId i)
       lowestRemainingHealth <-
-        getMin <$> selectAgg Min InvestigatorRemainingHealth UneliminatedInvestigator
+        getMin
+          <$> selectAgg Min InvestigatorRemainingHealth UneliminatedInvestigator
       pure $ lowestRemainingHealth == h
     LowestRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       lowestRemainingSanity <-
-        getMin <$> selectAgg Min InvestigatorRemainingSanity UneliminatedInvestigator
+        getMin
+          <$> selectAgg Min InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ lowestRemainingSanity == remainingSanity
     MostRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <-
-        getMax0 <$> selectAgg Max InvestigatorRemainingSanity UneliminatedInvestigator
+        getMax0
+          <$> selectAgg Max InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
-      mostHorrorCount <- getMax0 <$> selectAgg Max InvestigatorHorror UneliminatedInvestigator
+      mostHorrorCount <-
+        getMax0 <$> selectAgg Max InvestigatorHorror UneliminatedInvestigator
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToLocation locationMatcher -> \i -> do
       let
@@ -754,7 +755,8 @@ getInvestigatorsMatching matcher = do
     HasMatchingSkill skillMatcher -> \i -> selectAny
       (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
     MostClues -> \i -> do
-      mostClueCount <- getMax0 <$> selectAgg Max InvestigatorClues UneliminatedInvestigator
+      mostClueCount <-
+        getMax0 <$> selectAgg Max InvestigatorClues UneliminatedInvestigator
       pure $ mostClueCount == investigatorClues (toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
@@ -1337,6 +1339,16 @@ getLocationsMatching lmatcher = do
     BlockedLocation ->
       flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
     LocationWithoutClues -> pure $ filter (locationWithoutClues . toAttrs) ls
+    LocationWithDefeatedEnemyThisRound -> do
+      iids <- allInvestigatorIds
+      enemiesDefeated <- historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
+      let
+        validLids = flip mapMaybe enemiesDefeated $ \e ->
+          case enemyPlacement e of
+            AtLocation x -> Just x
+            _ -> Nothing
+      pure $ filter ((`elem` validLids) . toId) ls
+
     -- these can not be queried
     LocationLeavingPlay -> pure []
     SameLocation -> pure []
@@ -1438,7 +1450,10 @@ getAssetsMatching matcher = do
       (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)
       as
     AssetWithUseCount uType n -> filterM
-      (fmap (and . sequence [(== Just uType) . useType, (== n) . useCount]) . field AssetUses . toId)
+      (fmap (and . sequence [(== Just uType) . useType, (== n) . useCount])
+      . field AssetUses
+      . toId
+      )
       as
     AssetWithFewestClues assetMatcher -> do
       matches' <- getAssetsMatching assetMatcher
@@ -2200,13 +2215,19 @@ instance Query ExtendedCardMatcher where
   select matcher = do
     handCards <- selectAgg id InvestigatorHand UneliminatedInvestigator
     deckCards <-
-      map PlayerCard . unDeck <$> selectAgg id InvestigatorDeck UneliminatedInvestigator
-    discards <- PlayerCard <$$> selectAgg id InvestigatorDiscard UneliminatedInvestigator
+      map PlayerCard
+      . unDeck
+      <$> selectAgg id InvestigatorDeck UneliminatedInvestigator
+    discards <-
+      PlayerCard <$$> selectAgg id InvestigatorDiscard UneliminatedInvestigator
     setAsideCards <- scenarioField ScenarioSetAsideCards
     victoryDisplayCards <- scenarioField ScenarioVictoryDisplay
     underScenarioReferenceCards <- scenarioField
       ScenarioCardsUnderScenarioReference
-    underneathCards <- selectAgg id InvestigatorCardsUnderneath UneliminatedInvestigator
+    underneathCards <- selectAgg
+      id
+      InvestigatorCardsUnderneath
+      UneliminatedInvestigator
     setFromList <$> filterM
       (`matches'` matcher)
       (handCards
@@ -2952,13 +2973,11 @@ runGameMessage msg g = case msg of
     iids <- getInvestigatorIds
     case iids of
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
-      xs@(x : _) -> 
-        push
-          $ questionLabel "Choose lead investigator" x
-          $ ChooseOne
-              [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
-              | iid <- xs
-              ]
+      xs@(x : _) ->
+        push $ questionLabel "Choose lead investigator" x $ ChooseOne
+          [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
+          | iid <- xs
+          ]
       [] -> pure ()
     pure g
   ChoosePlayer iid SetLeadInvestigator -> do
@@ -2977,8 +2996,12 @@ runGameMessage msg g = case msg of
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   EnemyDefeated eid iid _ _ _ -> do
     attrs <- toAttrs <$> getEnemy eid
+    mlid <- field EnemyLocation eid
     let
-      historyItem = mempty { historyEnemiesDefeated = [attrs] }
+      placement' = maybe (enemyPlacement attrs) AtLocation mlid
+      historyItem = mempty
+        { historyEnemiesDefeated = [attrs { enemyPlacement = placement' }]
+        }
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -3772,43 +3795,45 @@ runGameMessage msg g = case msg of
     windows' <- windows
       [Window.InitiatedSkillTest iid maction skillType difficulty]
     let
-      msgs =
-        case availableSkills of
-          [] -> windows'
-              <> [ BeginSkillTestAfterFast
-                     iid
-                     source
-                     target
-                     maction
-                     skillType
-                     difficulty
-                 ]
-          [_] ->
-              windows'
-              <> [ BeginSkillTestAfterFast
-                     iid
-                     source
-                     target
-                     maction
-                     skillType
-                     difficulty
-                 ]
-          xs -> [chooseOne
-            iid
-            [ SkillLabel
-                skillType'
-                (windows'
-                <> [ BeginSkillTestAfterFast
-                       iid
-                       source
-                       target
-                       maction
-                       skillType'
-                       difficulty
-                   ]
-                )
-            | skillType' <- xs
-            ]]
+      msgs = case availableSkills of
+        [] ->
+          windows'
+            <> [ BeginSkillTestAfterFast
+                   iid
+                   source
+                   target
+                   maction
+                   skillType
+                   difficulty
+               ]
+        [_] ->
+          windows'
+            <> [ BeginSkillTestAfterFast
+                   iid
+                   source
+                   target
+                   maction
+                   skillType
+                   difficulty
+               ]
+        xs ->
+          [ chooseOne
+              iid
+              [ SkillLabel
+                  skillType'
+                  (windows'
+                  <> [ BeginSkillTestAfterFast
+                         iid
+                         source
+                         target
+                         maction
+                         skillType'
+                         difficulty
+                     ]
+                  )
+              | skillType' <- xs
+              ]
+          ]
 
     mSkillTest <- getSkillTest
     case mSkillTest of
@@ -3818,7 +3843,8 @@ runGameMessage msg g = case msg of
   BeforeSkillTest iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   BeginSkillTestAfterFast iid source target maction skillType difficulty -> do
     windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
-    pushAll [windowMsg, BeforeSkillTest iid skillType difficulty, EndSkillTestWindow]
+    pushAll
+      [windowMsg, BeforeSkillTest iid skillType difficulty, EndSkillTestWindow]
     skillValue <- getSkillValue skillType iid
     pure
       $ g

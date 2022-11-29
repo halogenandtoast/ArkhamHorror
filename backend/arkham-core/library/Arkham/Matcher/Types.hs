@@ -307,6 +307,7 @@ data LocationMatcher
   | LocationCanBeFlipped
   | SingleSidedLocation
   | ClosestPathLocation LocationId LocationId
+  | LocationWithDefeatedEnemyThisRound
   -- ^ start destination / end destination
   | BlockedLocation
   | ThisLocation

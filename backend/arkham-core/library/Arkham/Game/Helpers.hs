@@ -2215,6 +2215,7 @@ locationMatches investigatorId source window locationId matcher' = do
     -- special cases
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
+    Matcher.LocationWithDefeatedEnemyThisRound -> locationId <=~> matcher
     Matcher.LocationWithDiscoverableCluesBy _ -> locationId <=~> matcher
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
     Matcher.LocationWithModifier _ -> locationId <=~> matcher

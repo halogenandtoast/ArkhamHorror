@@ -243,6 +243,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , joeyTheRatVigil
   , keenEye
   , keenEye3
+  , kerosene1
   , keyOfYs
   , knife
   , knuckleduster
@@ -2460,6 +2461,13 @@ relicOfAgesRepossessThePast = (storyAsset "04303" ("Relic of Ages" <:> "Reposses
   { cdSkills = [#wild, #wild, #wild]
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
+  }
+
+kerosene1 :: CardDef
+kerosene1 = (asset "04304" "Kerosene" 3 Guardian)
+  { cdSkills = [#willpower]
+  , cdCardTraits = singleton Item
+  , cdUses = Uses Supply 3
   }
 
 trackShoes :: CardDef

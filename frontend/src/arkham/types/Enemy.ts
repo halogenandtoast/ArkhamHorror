@@ -9,6 +9,7 @@ export interface Enemy {
   id: string;
   cardCode: string;
   damage: number;
+  assignedDamage: number;
   doom: number;
   clues: number;
   resources: number;
@@ -25,10 +26,22 @@ export const placementDecoder = JsonDecoder.object<Placement>({
   tag: JsonDecoder.string,
 }, 'Placement')
 
+type DamageAssignment = { damageAssignmentAmount: number }
+
 export const enemyDecoder = JsonDecoder.object<Enemy>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   damage: JsonDecoder.number,
+  assignedDamage: JsonDecoder.array<[boolean, number]>(
+    JsonDecoder.tuple(
+      [ JsonDecoder.constant(true),
+        JsonDecoder.object<DamageAssignment>(
+          { damageAssignmentAmount: JsonDecoder.number },
+          'DamageAssignment'
+        ).map(o => o.damageAssignmentAmount)
+      ], '[bool, number]'),
+    '[bool, number][]'
+  ).map(a => a.reduce((acc, v) => acc + v[1], 0)),
   doom: JsonDecoder.number,
   clues: JsonDecoder.number,
   resources: JsonDecoder.number,

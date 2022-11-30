@@ -11,11 +11,13 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.DamageEffect
+import Arkham.Enemy.Types qualified as Field ( Field (..) )
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Projection
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Enemy.Types qualified as Field ( Field (..) )
 
 newtype Flamethrower5 = Flamethrower5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -35,7 +37,8 @@ instance HasAbilities Flamethrower5 where
 instance RunMessage Flamethrower5 where
   runMessage msg a@(Flamethrower5 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      enemies <- withMaxField Field.EnemyFight =<< selectList (enemyEngagedWith iid)
+      enemies <- withMaxField Field.EnemyFight
+        =<< selectList (enemyEngagedWith iid)
       pushAll
         [ skillTestModifier
           attrs
@@ -50,19 +53,26 @@ instance RunMessage Flamethrower5 where
           False
         ]
       pure a
-    Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
-      -- damage <- damageValueFor 4 iid
-      -- engaged <- selectList $ enemyEngagedWith iid
-      -- let
-      --   toMsg eid' = if eid == eid'
-      --     then EnemyDamage eid' iid (toSource attrs) AttackDamageEffect 2
-      --     else DirectEnemyDamage
-      --       eid'
-      --       iid
-      --       (toSource attrs)
-      --       AttackDamageEffect
-      --       2
-      -- msgs <- selectListMap toMsg $ EnemyAt YourLocation
-      -- e <$ pushAll msgs
-      pure a
+    Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _
+      -> do
+        damage <- damageValueFor 4 iid
+        engaged <- selectList $ enemyEngagedWith iid
+        let
+          toMsg eid' =
+            EnemyDamage eid' $ delayDamage $ directDamage $ attack attrs 1
+        pushAll
+          $ [ chooseOne
+              iid
+              [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
+              , Label "Assign up to 4 damage among enemies engaged with you"
+                $ replicate
+                    damage
+                    (chooseOne
+                      iid
+                      [ targetLabel eid' [toMsg eid'] | eid' <- engaged ]
+                    )
+              ]
+            , CheckDefeated (toSource attrs)
+            ]
+        pure a
     _ -> Flamethrower5 <$> runMessage msg attrs

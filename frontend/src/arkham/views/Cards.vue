@@ -199,14 +199,21 @@ const levelText = (card: Arkham.CardDef) => {
 
 const cardIcons = (card: Arkham.CardDef) => {
   return card.skills.map((s) => {
-    switch(s) {
-      case "SkillWillpower": return "willpower"
-      case "SkillIntellect": return "intellect"
-      case "SkillCombat": return "combat"
-      case "SkillAgility": return "agility"
-      case "SkillWild": return "wild"
-      default: return "unknown"
+    if(s.tag === "SkillIcon") {
+      switch(s.contents) {
+        case "SkillWillpower": return "willpower"
+        case "SkillIntellect": return "intellect"
+        case "SkillCombat": return "combat"
+        case "SkillAgility": return "agility"
+        default: return "unknown"
+      }
     }
+
+    if (s.tag == "WildIcon") {
+      return "wild"
+    }
+
+    return "unknown"
   })
 }
 

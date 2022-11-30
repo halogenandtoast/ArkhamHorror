@@ -3,6 +3,8 @@ import { Name, nameDecoder } from '@/arkham/types/Name';
 
 type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" }
 
+type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" }
+
 
 export interface CardDef {
   cardCode: string;
@@ -12,7 +14,7 @@ export interface CardDef {
   level: number;
   name: Name;
   cardTraits: string[];
-  skills: string[];
+  skills: SkillIcon[];
   cost: CardCost | null;
 }
 
@@ -20,6 +22,11 @@ const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
   JsonDecoder.object({ contents: JsonDecoder.number, tag: JsonDecoder.isExactly("StaticCost") }, 'StaticCost'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly("DynamicCost") }, 'DynamicCost')
 ], 'CardCost')
+
+const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
+  JsonDecoder.object({ contents: JsonDecoder.string, tag: JsonDecoder.isExactly("SkillIcon") }, 'SkillIcon'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("WildIcon") }, 'WildIcon')
+], 'SkillIcon')
 
 export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
@@ -29,7 +36,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     cardCode: JsonDecoder.string,
     classSymbols: JsonDecoder.array<string>(JsonDecoder.string, 'string[]'),
     cardTraits: JsonDecoder.array<string>(JsonDecoder.string, 'string[]'),
-    skills: JsonDecoder.array<string>(JsonDecoder.string, 'string[]'),
+    skills: JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]'),
     name: nameDecoder,
     cost: JsonDecoder.nullable(cardCostDecoder),
   },

@@ -28,7 +28,8 @@ instance RunMessage DynamiteBlast2 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
+      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+        currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- selectList $ EnemyAt $ LocationWithId lid
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
@@ -36,7 +37,7 @@ instance RunMessage DynamiteBlast2 where
           ( lid
           , map
               (\enid ->
-                EnemyDamage enid iid (EventSource eid) NonAttackDamageEffect 3
+                EnemyDamage enid (EventSource eid) NonAttackDamageEffect 3
               )
               enemyIds
             <> map

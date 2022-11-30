@@ -1779,7 +1779,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyDefeated who enemyId) | timingMatcher == t -> liftA2
+      Window t (Window.EnemyDefeated (Just who) enemyId) | timingMatcher == t -> liftA2
         (&&)
         (enemyMatches enemyId enemyMatcher)
         (matchWho iid who whoMatcher)
@@ -2095,6 +2095,14 @@ sourceTraits = \case
 
   ThisCard -> error "can not get traits"
   CardCostSource _ -> pure mempty
+
+getSourceController :: (Monad m, HasGame m) => Source -> m (Maybe InvestigatorId)
+getSourceController = \case
+  AssetSource aid -> selectAssetController aid
+  EventSource eid -> selectEventController eid
+  SkillSource sid -> selectSkillController sid
+  InvestigatorSource iid -> pure $ Just iid
+  _ -> pure Nothing
 
 sourceMatches
   :: (HasCallStack, Monad m, HasGame m)

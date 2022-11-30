@@ -144,7 +144,7 @@ instance RunMessage ThePathToCarcosa where
         $ a
         & (stepL .~ step)
         & (completedStepsL %~ completeStep (campaignStep a))
-    EnemyDefeated _ _ cardCode _ _
+    EnemyDefeated _ cardCode _ _
       | cardCode == toCardCode Enemies.theManInThePallidMask -> do
         n <- getRecordCount ChasingTheStranger
         c <$ push (RecordCount ChasingTheStranger (n + 1))

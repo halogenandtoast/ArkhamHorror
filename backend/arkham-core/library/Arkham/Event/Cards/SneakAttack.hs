@@ -21,10 +21,10 @@ instance RunMessage SneakAttack where
   runMessage msg e@(SneakAttack attrs) = case msg of
     InvestigatorPlayEvent you eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ ExhaustedEnemy <> enemiesColocatedWith you
-      e <$ pushAll
-        ([ EnemyDamage enemy you (toSource attrs) NonAttackDamageEffect 2
-         | enemy <- enemies
-         ]
+      pushAll
+        $ [ EnemyDamage enemy (toSource attrs) NonAttackDamageEffect 2
+          | enemy <- enemies
+          ]
         <> [Discard $ toTarget attrs]
-        )
+      pure e
     _ -> SneakAttack <$> runMessage msg attrs

@@ -18,6 +18,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -56,7 +57,7 @@ instance RunMessage PalaceOfTheKing where
       -- we do 0 damage to hastur to force a defeat check
       pushAll
         [ Remember KnowTheSecret
-        , Msg.EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect 0
+        , Msg.EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect 0
         ]
       pure l
     _ -> PalaceOfTheKing <$> runMessage msg attrs

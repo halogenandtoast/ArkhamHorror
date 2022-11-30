@@ -14,6 +14,7 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message hiding ( EnemyAttacks, EnemyDefeated )
 import Arkham.Message qualified as Msg
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
@@ -50,8 +51,7 @@ instance RunMessage WrithingAppendage where
       case mCnidathquaId of
         Just cnidathquaId -> push $ Msg.EnemyDamage
           cnidathquaId
-          iid
-          (toSource attrs)
+          (InvestigatorSource iid)
           NonAttackDamageEffect
           1
         Nothing -> pure ()

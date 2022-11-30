@@ -411,6 +411,7 @@ allAssets = mapFrom
   --- Shattered Aesons
   --- guardian [sha]
   , SomeAssetCard kerosene1
+  , SomeAssetCard flamethrower5
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

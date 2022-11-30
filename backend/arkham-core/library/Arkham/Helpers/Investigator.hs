@@ -80,9 +80,9 @@ baseSkillValueFor skill _maction tempModifiers iid = do
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
 
-damageValueFor :: (Monad m, HasGame m) => Int -> InvestigatorAttrs -> m Int
-damageValueFor baseValue attrs = do
-  modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
+damageValueFor :: (Monad m, HasGame m) => Int -> InvestigatorId -> m Int
+damageValueFor baseValue iid = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
   pure $ foldr applyModifier baseValue modifiers
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)

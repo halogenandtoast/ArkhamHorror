@@ -617,7 +617,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> pure ()
     pure a
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
-    damage <- damageValueFor 1 a
+    damage <- damageValueFor 1 iid
     push $ InvestigatorAssignDamage
       xid
       (InvestigatorSource iid)
@@ -626,8 +626,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       0
     pure a
   InvestigatorDamageEnemy iid eid source | iid == investigatorId -> do
-    damage <- damageValueFor 1 a
-    a <$ push (EnemyDamage eid iid source AttackDamageEffect damage)
+    damage <- damageValueFor 1 iid
+    a <$ push (EnemyDamage eid source AttackDamageEffect damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
     push =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
     pure $ a & engagedEnemiesL %~ deleteSet eid

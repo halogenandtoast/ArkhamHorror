@@ -45,13 +45,12 @@ instance RunMessage StormOfSpirits where
       | isTarget attrs target -> do
         let
           toMsg eid' = if eid == eid'
-            then EnemyDamage eid' iid (toSource attrs) AttackDamageEffect 2
+            then EnemyDamage eid' (toSource attrs) AttackDamageEffect 2
             else DirectEnemyDamage
               eid'
-              iid
               (toSource attrs)
               AttackDamageEffect
               2
-        msgs <- selectListMap toMsg $ EnemyAt YourLocation
+        msgs <- selectListMap toMsg $ EnemyAt (locationWithInvestigator iid)
         e <$ pushAll msgs
     _ -> StormOfSpirits <$> runMessage msg attrs

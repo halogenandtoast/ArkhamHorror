@@ -80,7 +80,7 @@ data WindowType
   | EnemyAttacks InvestigatorId EnemyId EnemyAttackType
   | EnemyAttacksEvenIfCancelled InvestigatorId EnemyId EnemyAttackType
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
-  | EnemyDefeated InvestigatorId EnemyId
+  | EnemyDefeated (Maybe InvestigatorId) EnemyId
   | EnemyEngaged InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId

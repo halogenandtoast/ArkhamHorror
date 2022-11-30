@@ -35,7 +35,7 @@ instance RunMessage DynamiteBlast3 where
           ( lid
           , map
               (\enid ->
-                EnemyDamage enid iid (EventSource eid) NonAttackDamageEffect 3
+                EnemyDamage enid (EventSource eid) NonAttackDamageEffect 3
               )
               enemyIds
             <> map

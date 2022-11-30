@@ -115,6 +115,9 @@ preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
 damageL :: Lens' EnemyAttrs Int
 damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
 
+assignedDamageL :: Lens' EnemyAttrs (HashMap Source DamageAssignment)
+assignedDamageL = lens enemyAssignedDamage $ \m x -> m { enemyAssignedDamage = x }
+
 exhaustedL :: Lens' EnemyAttrs Bool
 exhaustedL = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
@@ -165,6 +168,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyHealth = health
       , enemyEvade = Just evade
       , enemyDamage = 0
+      , enemyAssignedDamage = mempty
       , enemyHealthDamage = healthDamage
       , enemySanityDamage = sanityDamage
       , enemyPrey = Prey Anyone

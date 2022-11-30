@@ -91,7 +91,7 @@ instance RunMessage TheRougarou where
           <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      Msg.EnemyDamage eid _ _ _ n | eid == enemyId ->
+      Msg.EnemyDamage eid _ _ n | eid == enemyId ->
         TheRougarou
           . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
           <$> runMessage msg attrs

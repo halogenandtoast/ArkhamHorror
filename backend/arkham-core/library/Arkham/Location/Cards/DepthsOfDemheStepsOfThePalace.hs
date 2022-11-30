@@ -14,6 +14,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -44,7 +45,7 @@ instance RunMessage DepthsOfDemheStepsOfThePalace where
       investigatorIds <- selectList $ investigatorEngagedWith hastur
       n <- getPlayerCountValue (PerPlayer 1)
       pushAll
-        $ [ EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect n
+        $ [ EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
           , Exhaust (EnemyTarget hastur)
           ]
         <> [ DisengageEnemy iid' hastur | iid' <- investigatorIds ]

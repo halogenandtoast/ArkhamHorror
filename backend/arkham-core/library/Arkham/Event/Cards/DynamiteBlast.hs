@@ -7,10 +7,9 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Target
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
@@ -27,7 +26,8 @@ instance RunMessage DynamiteBlast where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
+      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+        currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- selectList $ EnemyAt $ LocationWithId lid
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
@@ -35,13 +35,13 @@ instance RunMessage DynamiteBlast where
           ( lid
           , map
               (\enid ->
-                EnemyDamage enid iid (EventSource eid) NonAttackDamageEffect 3
+                EnemyDamage enid (toSource attrs) NonAttackDamageEffect 3
               )
               enemyIds
             <> map
                  (\iid' -> InvestigatorAssignDamage
                    iid'
-                   (EventSource eid)
+                   (toSource attrs)
                    DamageAny
                    3
                    0

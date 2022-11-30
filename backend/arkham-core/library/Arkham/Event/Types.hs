@@ -32,6 +32,10 @@ data instance Field Event :: Type -> Type where
   EventCard :: Field Event Card
   EventSealedTokens :: Field Event [Token]
 
+-- These could be different, update in the future
+eventController :: EventAttrs -> InvestigatorId
+eventController = eventOwner
+
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode
   , eventOriginalCardCode :: CardCode

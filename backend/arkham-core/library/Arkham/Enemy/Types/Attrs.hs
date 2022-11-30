@@ -3,6 +3,7 @@ module Arkham.Enemy.Types.Attrs where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.DamageEffect
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -14,6 +15,13 @@ import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Token
 
+data DamageAssignment = DamageAssignment
+  { damageAssignmentAmount :: Int
+  , damageAssignmentDamageEffect :: DamageEffect
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
   , enemyCardCode :: CardCode
@@ -22,6 +30,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyHealth :: GameValue
   , enemyEvade :: Maybe Int
   , enemyDamage :: Int
+  , enemyAssignedDamage :: HashMap Source DamageAssignment
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
   , enemyPrey :: PreyMatcher

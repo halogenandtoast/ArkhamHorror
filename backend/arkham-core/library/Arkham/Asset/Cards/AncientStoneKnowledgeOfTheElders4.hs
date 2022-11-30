@@ -53,13 +53,7 @@ instance RunMessage AncientStoneKnowledgeOfTheElders4 where
         $ chooseOrRunOne iid
         $ [ targetLabel
               enemy
-              [ EnemyDamage
-                  enemy
-                  iid
-                  (toSource attrs)
-                  NonAttackDamageEffect
-                  damage
-              ]
+              [EnemyDamage enemy (toSource attrs) NonAttackDamageEffect damage]
           | enemy <- enemies
           ]
       pure a

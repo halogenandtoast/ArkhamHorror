@@ -79,7 +79,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
           iid
           [ targetLabel
               eid
-              [EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 3]
+              [EnemyDamage eid (toSource attrs) NonAttackDamageEffect 3]
           | eid <- eids
           ]
         pure a

@@ -16,6 +16,7 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.SkillType
+import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -60,7 +61,7 @@ instance RunMessage DimStreetsMappingTheStreets where
           Nothing
           SkillIntellect
           3
-        , EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect n
+        , EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
         ]
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n

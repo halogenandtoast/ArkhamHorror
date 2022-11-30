@@ -41,12 +41,10 @@ instance HasAbilities BeatCop2 where
 instance RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      enemies <- selectList (EnemyAt YourLocation)
+      enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
       push $ chooseOrRunOne
         iid
-        [ targetLabel
-            eid
-            [EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 1]
+        [ targetLabel eid [EnemyDamage eid source NonAttackDamageEffect 1]
         | eid <- enemies
         ]
       pure a

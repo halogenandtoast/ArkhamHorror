@@ -199,6 +199,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fireExtinguisher1
   , firstAid
   , firstAid3
+  , flamethrower5
   , flashlight
   , fleshWard
   , forbiddenKnowledge
@@ -2468,6 +2469,16 @@ kerosene1 = (asset "04304" "Kerosene" 3 Guardian)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Item
   , cdUses = Uses Supply 3
+  , cdLevel = 1
+  }
+
+flamethrower5 :: CardDef
+flamethrower5 = (asset "04305" "Flamethrower" 4 Guardian)
+  { cdSkills = [#combat, #combat, #wild]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm]
+  , cdUses = Uses Ammo 4
+  , cdSlots = [BodySlot, HandSlot, HandSlot]
+  , cdLevel = 5
   }
 
 trackShoes :: CardDef

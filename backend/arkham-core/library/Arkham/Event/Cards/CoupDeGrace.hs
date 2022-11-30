@@ -33,13 +33,13 @@ instance RunMessage CoupDeGrace where
             iid
             [ targetLabel
                 enemy
-                [EnemyDamage enemy iid (toSource attrs) NonAttackDamageEffect 1]
+                [EnemyDamage enemy (toSource attrs) NonAttackDamageEffect 1]
             | enemy <- enemies
             ]
         : [ ChooseEndTurn iid | isTurn ]
         <> [Discard (toTarget attrs)]
       pure e
-    EnemyDefeated _ iid _ (isSource attrs -> True) _ -> do
-      push $ DrawCards iid 1 False
+    EnemyDefeated _ _ (isSource attrs -> True) _ -> do
+      push $ DrawCards (eventController attrs) 1 False
       pure e
     _ -> CoupDeGrace <$> runMessage msg attrs

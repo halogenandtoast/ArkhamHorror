@@ -339,6 +339,7 @@ library
       Arkham.Asset.Cards.FirstAid
       Arkham.Asset.Cards.FirstAid3
       Arkham.Asset.Cards.FishingNet
+      Arkham.Asset.Cards.Flamethrower5
       Arkham.Asset.Cards.Flashlight
       Arkham.Asset.Cards.FleshWard
       Arkham.Asset.Cards.ForbiddenKnowledge
@@ -1050,6 +1051,7 @@ library
       Arkham.Helpers.Location
       Arkham.Helpers.Log
       Arkham.Helpers.Modifiers
+      Arkham.Helpers.Projection
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest

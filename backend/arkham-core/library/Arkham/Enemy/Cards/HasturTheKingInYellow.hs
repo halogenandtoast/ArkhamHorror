@@ -58,7 +58,7 @@ instance RunMessage HasturTheKingInYellow where
       | isSource attrs source -> do
       push $ Exhaust (toTarget attrs)
       pure e
-    Msg.EnemyDamage eid _ _ StoryCardDamageEffect _
+    Msg.EnemyDamage eid _ StoryCardDamageEffect _
       | eid == toId attrs -> HasturTheKingInYellow <$> runMessage msg attrs
-    Msg.EnemyDamage eid _ _ _ _ | eid == toId attrs -> pure e
+    Msg.EnemyDamage eid _ _ _ | eid == toId attrs -> pure e
     _ -> HasturTheKingInYellow <$> runMessage msg attrs

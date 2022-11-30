@@ -14,7 +14,7 @@ import Arkham.Criteria
 import Arkham.Matcher hiding ( EnemyDefeated )
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Trait (Trait(Elite))
+import Arkham.Trait ( Trait (Elite) )
 
 newtype TimewornBrand5 = TimewornBrand5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -74,7 +74,8 @@ instance RunMessage TimewornBrand5 where
           False
         ]
       pure a
-    EnemyDefeated _ iid _ (isAbilitySource attrs 2 -> True) traits -> do
-      when (Elite `elem` traits) $ push $ DrawCards iid 3 False
+    EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) traits -> do
+      when (Elite `elem` traits) $ for_ (assetController attrs) $ \iid ->
+        push $ DrawCards iid 3 False
       pure a
     _ -> TimewornBrand5 <$> runMessage msg attrs

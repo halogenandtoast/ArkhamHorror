@@ -34,7 +34,7 @@ instance RunMessage DiscOfItzamna where
       -> do
         pushAll
           [ EnemyEvaded iid eid
-          , EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 2
+          , EnemyDamage eid (toSource attrs) NonAttackDamageEffect 2
           ]
         pure a
     _ -> DiscOfItzamna <$> runMessage msg attrs

@@ -14,6 +14,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -45,7 +46,7 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       let
         damageEnemy enemy = targetLabel
           enemy
-          [EnemyDamage enemy iid (toSource attrs) NonAttackDamageEffect 4]
+          [EnemyDamage enemy (InvestigatorSource iid) NonAttackDamageEffect 4]
       setAsideBleakPlains <- getSetAsideCardsMatching
         $ CardWithTitle "Bleak Plains"
       otherBleakPlain <- case setAsideBleakPlains of

@@ -56,7 +56,7 @@ instance RunMessage Poltergeist where
         SkillIntellect
         3
       )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> e
-      <$ push (Msg.EnemyDamage (toId attrs) iid source NonAttackDamageEffect 1)
+      <$ push (Msg.EnemyDamage (toId attrs) source NonAttackDamageEffect 1)
     _ -> Poltergeist <$> runMessage msg attrs

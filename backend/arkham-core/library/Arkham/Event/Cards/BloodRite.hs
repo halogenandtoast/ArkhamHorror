@@ -81,7 +81,7 @@ instance RunMessage BloodRite where
                  [ SpendResources iid 1
                  , chooseOne
                    iid
-                   [ targetLabel enemyId [EnemyDamage enemyId iid source NonAttackDamageEffect 1]
+                   [ targetLabel enemyId [EnemyDamage enemyId source NonAttackDamageEffect 1]
                    | enemyId <- enemyIds
                    ]
                  ]

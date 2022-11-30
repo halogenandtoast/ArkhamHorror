@@ -11,9 +11,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
@@ -32,7 +32,8 @@ instance HasAbilities ZoeysCross where
 
 instance RunMessage ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of
-    UseCardAbility iid source 1 [Window _ (Window.EnemyEngaged _ eid)] _
-      | isSource attrs source -> a
-      <$ push (EnemyDamage eid iid source NonAttackDamageEffect 1)
+    UseCardAbility _ (isSource attrs -> True) 1 [Window _ (Window.EnemyEngaged _ eid)] _
+      -> do
+        push $ EnemyDamage eid (toSource attrs) NonAttackDamageEffect 1
+        pure a
     _ -> ZoeysCross <$> runMessage msg attrs

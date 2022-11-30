@@ -588,7 +588,7 @@ instance RunMessage EnemyAttrs where
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
-    Msg.EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
+    Msg.EnemyDamage eid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
       a <$ when
         canDamage
@@ -617,10 +617,10 @@ instance RunMessage EnemyAttrs where
             [ dealtDamageWhenMsg
             , dealtDamageAfterMsg
             , takeDamageWhenMsg
-            , EnemyDamaged eid iid source damageEffect amount False
+            , EnemyDamaged eid source damageEffect amount False
             , takeDamageAfterMsg
             ]
-    DirectEnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
+    DirectEnemyDamage eid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
       a <$ when
         canDamage
@@ -649,66 +649,86 @@ instance RunMessage EnemyAttrs where
             [ dealtDamageWhenMsg
             , dealtDamageAfterMsg
             , takeDamageWhenMsg
-            , EnemyDamaged eid iid source damageEffect amount True
+            , EnemyDamaged eid source damageEffect amount True
             , takeDamageAfterMsg
             ]
-    EnemyDamaged eid iid source damageEffect amount direct | eid == enemyId ->
+    EnemyDamaged eid source damageEffect amount direct | eid == enemyId -> do
+      canDamage <- sourceCanDamageEnemy eid source
+      if canDamage
+        then do
+          amount' <- getModifiedDamageAmount a direct amount
+          let
+            damageAssignment = DamageAssignment
+              { damageAssignmentAmount = amount'
+              , damageAssignmentDamageEffect = damageEffect
+              }
+            combine l r = if damageAssignmentDamageEffect l == damageAssignmentDamageEffect r
+              then l { damageAssignmentAmount = damageAssignmentAmount l + damageAssignmentAmount r }
+              else error $ "mismatched damage assignments\n\nassignment: " <> show l <> "\nnew assignment: " <> show r
+          pure $ a & assignedDamageL %~ insertWith combine source damageAssignment
+        else pure a
+    CheckDefeated source -> do
       do
-        amount' <- getModifiedDamageAmount a direct amount
-        canBeDefeated <- withoutModifier a CannotBeDefeated
-        modifiers' <- getModifiers (toTarget a)
-        let
-          canOnlyBeDefeatedByModifier = \case
-            CanOnlyBeDefeatedBy source' -> First (Just source')
-            _ -> First Nothing
-          mOnlyBeDefeatedByModifier =
-            getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-          validDefeat =
-            canBeDefeated && maybe True (== source) mOnlyBeDefeatedByModifier
-        when validDefeat $ do
-          modifiedHealth <- getModifiedHealth a
-          when (a ^. damageL + amount' >= modifiedHealth) $ do
-            let excess = (a ^. damageL + amount') - modifiedHealth
-            whenMsg <- checkWindows
-              [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
-            afterMsg <- checkWindows
-              [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-            whenExcessMsg <- checkWindows
-              [ Window
-                  Timing.When
-                  (Window.DealtExcessDamage
+        let mDamageAssignment = lookup source enemyAssignedDamage
+        case mDamageAssignment of
+          Nothing -> pure a
+          Just da -> do
+            canBeDefeated <- withoutModifier a CannotBeDefeated
+            modifiers' <- getModifiers (toTarget a)
+            let
+              eid = toId a
+              amount' = damageAssignmentAmount da
+              damageEffect = damageAssignmentDamageEffect da
+              canOnlyBeDefeatedByModifier = \case
+                CanOnlyBeDefeatedBy source' -> First (Just source')
+                _ -> First Nothing
+              mOnlyBeDefeatedByModifier =
+                getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+              validDefeat =
+                canBeDefeated && maybe True (== source) mOnlyBeDefeatedByModifier
+            when validDefeat $ do
+              modifiedHealth <- getModifiedHealth a
+              when (a ^. damageL + amount' >= modifiedHealth) $ do
+                let excess = (a ^. damageL + amount') - modifiedHealth
+                whenMsg <- checkWindows
+                  [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+                afterMsg <- checkWindows
+                  [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+                whenExcessMsg <- checkWindows
+                  [ Window
+                      Timing.When
+                      (Window.DealtExcessDamage
+                        source
+                        damageEffect
+                        (EnemyTarget eid)
+                        excess
+                      )
+                  | excess > 0
+                  ]
+                afterExcessMsg <- checkWindows
+                  [ Window
+                      Timing.After
+                      (Window.DealtExcessDamage
+                        source
+                        damageEffect
+                        (EnemyTarget eid)
+                        excess
+                      )
+                  | excess > 0
+                  ]
+                pushAll
+                  [ whenExcessMsg
+                  , afterExcessMsg
+                  , whenMsg
+                  , afterMsg
+                  , EnemyDefeated
+                    eid
+                    (toCardCode a)
                     source
-                    damageEffect
-                    (EnemyTarget eid)
-                    excess
-                  )
-              | excess > 0
-              ]
-            afterExcessMsg <- checkWindows
-              [ Window
-                  Timing.After
-                  (Window.DealtExcessDamage
-                    source
-                    damageEffect
-                    (EnemyTarget eid)
-                    excess
-                  )
-              | excess > 0
-              ]
-            pushAll
-              [ whenExcessMsg
-              , afterExcessMsg
-              , whenMsg
-              , afterMsg
-              , EnemyDefeated
-                eid
-                iid
-                (toCardCode a)
-                source
-                (setToList $ toTraits a)
-              ]
-        pure $ a & damageL +~ amount'
-    DefeatEnemy eid iid source | eid == enemyId -> do
+                    (setToList $ toTraits a)
+                  ]
+            pure $ a & damageL +~ amount' & assignedDamageL .~ mempty
+    DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiedHealth <- getModifiedHealth a
       canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
@@ -726,16 +746,16 @@ instance RunMessage EnemyAttrs where
             && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
       when validDefeat $ push $ EnemyDefeated
         eid
-        iid
         (toCardCode a)
         source
         (setToList $ toTraits a)
       pure a
-    EnemyDefeated eid iid _ _ _ | eid == toId a -> do
+    EnemyDefeated eid _ source _ | eid == toId a -> do
+      miid <- getSourceController source
       whenMsg <- checkWindows
-        [Window Timing.When (Window.EnemyDefeated iid eid)]
+        [Window Timing.When (Window.EnemyDefeated miid eid)]
       afterMsg <- checkWindows
-        [Window Timing.After (Window.EnemyDefeated iid eid)]
+        [Window Timing.After (Window.EnemyDefeated miid eid)]
       let
         victory = cdVictoryPoints $ toCardDef a
         vengeance = cdVengeancePoints $ toCardDef a
@@ -898,5 +918,9 @@ instance RunMessage EnemyAttrs where
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEngage _ _ -> do
       push $ EngageEnemy iid (toId a) False
+      pure a
+    AssignDamage target | isTarget a target -> do
+      let sources = keys enemyAssignedDamage
+      pushAll $ map CheckDefeated sources
       pure a
     _ -> pure a

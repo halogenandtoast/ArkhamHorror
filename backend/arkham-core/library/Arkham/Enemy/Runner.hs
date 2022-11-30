@@ -593,38 +593,37 @@ instance RunMessage EnemyAttrs where
       let
         source = damageAssignmentSource damageAssignment
         damageEffect = damageAssignmentDamageEffect damageAssignment
-      canDamage <- sourceCanDamageEnemy eid $ damageAssignmentSource source
-      a <$ when
-        canDamage
-        do
-          dealtDamageWhenMsg <- checkWindows
-            [ Window
-                Timing.When
-                (Window.DealtDamage source damageEffect $ toTarget a)
-            ]
-          dealtDamageAfterMsg <- checkWindows
-            [ Window
-                Timing.After
-                (Window.DealtDamage source damageEffect $ toTarget a)
-            ]
-          takeDamageWhenMsg <- checkWindows
-            [ Window
-                Timing.When
-                (Window.TakeDamage source damageEffect $ toTarget a)
-            ]
-          takeDamageAfterMsg <- checkWindows
-            [ Window
-                Timing.After
-                (Window.TakeDamage source damageEffect $ toTarget a)
-            ]
-          pushAll
-            [ dealtDamageWhenMsg
-            , dealtDamageAfterMsg
-            , takeDamageWhenMsg
-            , EnemyDamaged eid damageAssignment
-            , takeDamageAfterMsg
-            ]
-    EnemyDamaged eid damageAssignment direct | eid == enemyId -> do
+      canDamage <- sourceCanDamageEnemy eid source
+      when canDamage do
+        dealtDamageWhenMsg <- checkWindows
+          [ Window
+              Timing.When
+              (Window.DealtDamage source damageEffect $ toTarget a)
+          ]
+        dealtDamageAfterMsg <- checkWindows
+          [ Window
+              Timing.After
+              (Window.DealtDamage source damageEffect $ toTarget a)
+          ]
+        takeDamageWhenMsg <- checkWindows
+          [ Window
+              Timing.When
+              (Window.TakeDamage source damageEffect $ toTarget a)
+          ]
+        takeDamageAfterMsg <- checkWindows
+          [ Window
+              Timing.After
+              (Window.TakeDamage source damageEffect $ toTarget a)
+          ]
+        pushAll
+          [ dealtDamageWhenMsg
+          , dealtDamageAfterMsg
+          , takeDamageWhenMsg
+          , EnemyDamaged eid damageAssignment
+          , takeDamageAfterMsg
+          ]
+      pure a
+    EnemyDamaged eid damageAssignment | eid == enemyId -> do
       let
         direct = damageAssignmentDirect damageAssignment
         source = damageAssignmentSource damageAssignment
@@ -640,6 +639,8 @@ instance RunMessage EnemyAttrs where
             combine l r = if damageAssignmentDamageEffect l == damageAssignmentDamageEffect r
               then l { damageAssignmentAmount = damageAssignmentAmount l + damageAssignmentAmount r }
               else error $ "mismatched damage assignments\n\nassignment: " <> show l <> "\nnew assignment: " <> show r
+          unless (damageAssignmentDelayed damageAssignment') $
+            push $ CheckDefeated source
           pure $ a & assignedDamageL %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do

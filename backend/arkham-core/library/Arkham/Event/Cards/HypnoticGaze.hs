@@ -6,11 +6,11 @@ module Arkham.Event.Cards.HypnoticGaze
 import Arkham.Prelude
 
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
+import Arkham.Enemy.Types hiding ( EnemyDamage )
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Enemy.Types hiding (EnemyDamage)
 import Arkham.Id
 import Arkham.Message
 import Arkham.Projection
@@ -45,11 +45,7 @@ instance RunMessage HypnoticGaze where
         then do
           healthDamage' <- field EnemyHealthDamage enemyId
           e <$ pushAll
-            [ EnemyDamage
-              enemyId
-              (toSource attrs)
-              NonAttackDamageEffect
-              healthDamage'
+            [ EnemyDamage enemyId $ nonAttack attrs healthDamage'
             , Discard $ toTarget attrs
             ]
         else e <$ push (Discard $ toTarget attrs)

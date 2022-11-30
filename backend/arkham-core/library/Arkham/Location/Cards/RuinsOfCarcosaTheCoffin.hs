@@ -51,6 +51,6 @@ instance RunMessage RuinsOfCarcosaTheCoffin where
     ResolveStory iid story' | story' == Story.theCoffin -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 1)
-      push $ EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
+      push $ EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
       pure l
     _ -> RuinsOfCarcosaTheCoffin <$> runMessage msg attrs

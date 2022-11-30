@@ -10,6 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
@@ -91,7 +92,7 @@ instance RunMessage TheRougarou where
           <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      Msg.EnemyDamage eid _ _ n | eid == enemyId ->
+      Msg.EnemyDamage eid (damageAssignmentAmount -> n) | eid == enemyId ->
         TheRougarou
           . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
           <$> runMessage msg attrs

@@ -5,10 +5,11 @@ module Arkham.Enemy.Cards.BroodOfYogSothoth
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card.CardCode
 import Arkham.Classes
-import Arkham.Asset.Types (Field(..))
+import Arkham.DamageEffect
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Message qualified as Msg
 import Arkham.Name
@@ -35,10 +36,11 @@ instance HasModifiersFor BroodOfYogSothoth where
 
 instance RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
-    Msg.EnemyDamage eid (AssetSource aid) _ _ | eid == enemyId attrs -> do
-      name <- field AssetName aid
-      if name == mkName "Esoteric Formula"
-        then BroodOfYogSothoth <$> runMessage msg attrs
-        else pure e
-    Msg.EnemyDamage eid _ _ _ | eid == enemyId attrs -> pure e
+    Msg.EnemyDamage eid (damageAssignmentSource -> AssetSource aid)
+      | eid == enemyId attrs -> do
+        name <- field AssetName aid
+        if name == mkName "Esoteric Formula"
+          then BroodOfYogSothoth <$> runMessage msg attrs
+          else pure e
+    Msg.EnemyDamage eid _ | eid == enemyId attrs -> pure e
     _ -> BroodOfYogSothoth <$> runMessage msg attrs

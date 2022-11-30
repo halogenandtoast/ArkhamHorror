@@ -22,9 +22,7 @@ instance RunMessage SneakAttack where
     InvestigatorPlayEvent you eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ ExhaustedEnemy <> enemiesColocatedWith you
       pushAll
-        $ [ EnemyDamage enemy (toSource attrs) NonAttackDamageEffect 2
-          | enemy <- enemies
-          ]
+        $ [ EnemyDamage enemy $ nonAttack attrs 2 | enemy <- enemies ]
         <> [Discard $ toTarget attrs]
       pure e
     _ -> SneakAttack <$> runMessage msg attrs

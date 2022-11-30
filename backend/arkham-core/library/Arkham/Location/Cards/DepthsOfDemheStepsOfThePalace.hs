@@ -45,7 +45,7 @@ instance RunMessage DepthsOfDemheStepsOfThePalace where
       investigatorIds <- selectList $ investigatorEngagedWith hastur
       n <- getPlayerCountValue (PerPlayer 1)
       pushAll
-        $ [ EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
+        $ [ EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
           , Exhaust (EnemyTarget hastur)
           ]
         <> [ DisengageEnemy iid' hastur | iid' <- investigatorIds ]

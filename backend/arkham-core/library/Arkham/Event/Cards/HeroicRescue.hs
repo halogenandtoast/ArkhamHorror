@@ -5,12 +5,12 @@ module Arkham.Event.Cards.HeroicRescue
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype HeroicRescue = HeroicRescue EventAttrs
@@ -30,8 +30,8 @@ instance RunMessage HeroicRescue where
             any
             windows
             \case
-              Window _ (Window.EnemyAttacks targetInvestigator targetEnemy _) ->
-                targetInvestigator == iid' && targetEnemy == eid'
+              Window _ (Window.EnemyAttacks targetInvestigator targetEnemy _)
+                -> targetInvestigator == iid' && targetEnemy == eid'
               _ -> False
           _ -> False
         popMessageMatching_ \case
@@ -46,11 +46,7 @@ instance RunMessage HeroicRescue where
           \case
             PerformEnemyAttack _ targetEnemy damageStrategy attackType ->
               [ EnemyAttack iid targetEnemy damageStrategy attackType
-              , EnemyDamage
-                targetEnemy
-                (toSource attrs)
-                NonAttackDamageEffect
-                1
+              , EnemyDamage targetEnemy $ nonAttack attrs 1
               ]
             _ -> error "Mismatched"
         e <$ pushAll [Discard (toTarget attrs)]

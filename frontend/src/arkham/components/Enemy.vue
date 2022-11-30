@@ -95,7 +95,7 @@ const debugChoose = inject('debugChoose')
       @click="$emit('choose', ability)"
       />
     <div class="pool">
-      <PoolItem type="health" :amount="enemy.damage" />
+      <PoolItem type="health" :amount="enemy.damage + enemy.assignedDamage" />
       <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />
       <PoolItem v-if="enemy.clues > 0" type="clue" :amount="enemy.clues" />
       <PoolItem v-if="enemy.resources > 0" type="resource" :amount="enemy.resources" />

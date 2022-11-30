@@ -42,6 +42,7 @@ import Arkham.Event.Events
   , oneTwoPunchEffect
   , slipAwayEffect
   , willToSurviveEffect
+  , vantagePointEffect
   )
 import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect )
 import Arkham.Skill.Skills ( hatchetManEffect )
@@ -198,6 +199,7 @@ allEffects = mapFromList
   , ("04239", SomeEffect lostMemoriesEffect)
   , ("04271", SomeEffect mistsOfRlyeh4Effect)
   , ("04283", SomeEffect theRedDepthsEffect)
+  , ("04306", SomeEffect vantagePointEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

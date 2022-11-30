@@ -49,10 +49,8 @@ instance RunMessage WrithingAppendage where
       -- triggering any abilities
       mCnidathquaId <- getCnidathqua
       case mCnidathquaId of
-        Just cnidathquaId -> push $ Msg.EnemyDamage
-          cnidathquaId
+        Just cnidathquaId -> push $ Msg.EnemyDamage cnidathquaId $ nonAttack
           (InvestigatorSource iid)
-          NonAttackDamageEffect
           1
         Nothing -> pure ()
       WrithingAppendage <$> runMessage msg attrs

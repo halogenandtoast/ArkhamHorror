@@ -37,7 +37,7 @@ instance RunMessage TheHomeFront where
             do
               pushAll
                 [ HealDamage (InvestigatorTarget skillOwner) 1
-                , EnemyDamage eid (toSource attrs) NonAttackDamageEffect 1
+                , EnemyDamage eid $ nonAttack attrs 1
                 ]
         _ -> pure ()
     _ -> TheHomeFront <$> runMessage msg attrs

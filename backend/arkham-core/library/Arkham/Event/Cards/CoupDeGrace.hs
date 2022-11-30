@@ -33,7 +33,7 @@ instance RunMessage CoupDeGrace where
             iid
             [ targetLabel
                 enemy
-                [EnemyDamage enemy (toSource attrs) NonAttackDamageEffect 1]
+                [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
             | enemy <- enemies
             ]
         : [ ChooseEndTurn iid | isTurn ]

@@ -54,7 +54,7 @@ instance RunMessage Ambush1 where
       e <$ push (Discard $ toTarget attrs)
     UseCardAbility _ source 2 [Window _ (Window.EnemySpawns enemyId _)] _
       | isSource attrs source -> e <$ pushAll
-        [ EnemyDamage enemyId source NonAttackDamageEffect 2
+        [ EnemyDamage enemyId $ nonAttack source 2
         , Discard $ toTarget attrs
         ]
     _ -> Ambush1 <$> runMessage msg attrs

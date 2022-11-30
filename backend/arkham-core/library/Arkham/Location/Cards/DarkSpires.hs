@@ -45,7 +45,7 @@ instance RunMessage DarkSpires where
         , Label
           "Realizing what you must do, you step forward and push her."
           [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-          , EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
+          , EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
           ]
         ]
       pure l

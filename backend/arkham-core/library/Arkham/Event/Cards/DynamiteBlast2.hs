@@ -35,11 +35,7 @@ instance RunMessage DynamiteBlast2 where
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
         pure
           ( lid
-          , map
-              (\enid ->
-                EnemyDamage enid (EventSource eid) NonAttackDamageEffect 3
-              )
-              enemyIds
+          , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
             <> map
                  (\iid' -> InvestigatorAssignDamage
                    iid'

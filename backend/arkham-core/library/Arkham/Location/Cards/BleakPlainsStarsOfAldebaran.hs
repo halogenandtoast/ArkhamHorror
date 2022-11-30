@@ -46,7 +46,7 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       let
         damageEnemy enemy = targetLabel
           enemy
-          [EnemyDamage enemy (InvestigatorSource iid) NonAttackDamageEffect 4]
+          [EnemyDamage enemy $ storyDamage (InvestigatorSource iid) 4]
       setAsideBleakPlains <- getSetAsideCardsMatching
         $ CardWithTitle "Bleak Plains"
       otherBleakPlain <- case setAsideBleakPlains of

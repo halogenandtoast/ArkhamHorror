@@ -40,7 +40,7 @@ instance RunMessage ShoresOfHali where
       investigatorIds <- selectList $ investigatorEngagedWith hastur
       n <- getPlayerCountValue (PerPlayer 1)
       pushAll
-        $ [ EnemyDamage hastur (InvestigatorSource iid) NonAttackDamageEffect n
+        $ [ EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
           , Exhaust (EnemyTarget hastur)
           ]
         <> [ DisengageEnemy iid' hastur | iid' <- investigatorIds ]

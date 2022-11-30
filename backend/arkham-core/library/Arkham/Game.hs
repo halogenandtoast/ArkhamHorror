@@ -28,6 +28,7 @@ import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Cost qualified as Cost
+import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.Distance
@@ -3987,7 +3988,9 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Msg.EnemyDamage eid source _ n | n > 0 -> do
+  Msg.EnemyDamage eid assignment@(damageAssignmentAmount -> n) | n > 0 -> do
+    let
+      source = damageAssignmentSource assignment
     miid <- getSourceController source
     leadId <- getLeadInvestigatorId
     -- TODO: This is wrong but history is the way we track if enemies were

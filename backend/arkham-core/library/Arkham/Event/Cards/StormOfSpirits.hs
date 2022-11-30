@@ -5,13 +5,13 @@ module Arkham.Event.Cards.StormOfSpirits
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.DamageEffect
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Matcher hiding (AttackDamageEffect)
+import Arkham.Matcher hiding ( AttackDamageEffect )
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -45,12 +45,8 @@ instance RunMessage StormOfSpirits where
       | isTarget attrs target -> do
         let
           toMsg eid' = if eid == eid'
-            then EnemyDamage eid' (toSource attrs) AttackDamageEffect 2
-            else DirectEnemyDamage
-              eid'
-              (toSource attrs)
-              AttackDamageEffect
-              2
+            then EnemyDamage eid' $ attack attrs 2
+            else EnemyDamage eid' $ directDamage $ attack attrs 2
         msgs <- selectListMap toMsg $ EnemyAt (locationWithInvestigator iid)
         e <$ pushAll msgs
     _ -> StormOfSpirits <$> runMessage msg attrs

@@ -57,7 +57,7 @@ instance RunMessage AgnesBaker where
       targets <- selectList $ EnemyAt YourLocation
       push $ chooseOne
         iid
-        [ targetLabel target [EnemyDamage target source NonAttackDamageEffect 1]
+        [ targetLabel target [EnemyDamage target $ nonAttack source 1]
         | target <- targets
         ]
       pure i

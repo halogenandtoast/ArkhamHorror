@@ -61,7 +61,7 @@ instance RunMessage DimStreetsMappingTheStreets where
           Nothing
           SkillIntellect
           3
-        , EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
+        , EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
         ]
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n

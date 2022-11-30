@@ -37,7 +37,10 @@ hasturTheKingInYellow = enemyWith
 instance HasAbilities HasturTheKingInYellow where
   getAbilities (HasturTheKingInYellow a) = withBaseAbilities
     a
-    [ restrictedAbility a 1 (EnemyCriteria $ EnemyExists $ EnemyWithId (toId a) <> ReadyEnemy)
+    [ restrictedAbility
+      a
+      1
+      (EnemyCriteria $ EnemyExists $ EnemyWithId (toId a) <> ReadyEnemy)
     $ ForcedAbility
     $ PhaseBegins Timing.When
     $ PhaseIs EnemyPhase
@@ -48,7 +51,8 @@ instance RunMessage HasturTheKingInYellow where
   runMessage msg e@(HasturTheKingInYellow attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- getInvestigatorIds
-      pushAll [InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids]
+      pushAll
+        [ InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids ]
       pure e
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       x <- field EnemyFight (toId attrs)
@@ -56,9 +60,13 @@ instance RunMessage HasturTheKingInYellow where
       pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-      push $ Exhaust (toTarget attrs)
-      pure e
-    Msg.EnemyDamage eid _ StoryCardDamageEffect _
-      | eid == toId attrs -> HasturTheKingInYellow <$> runMessage msg attrs
-    Msg.EnemyDamage eid _ _ _ | eid == toId attrs -> pure e
+        push $ Exhaust (toTarget attrs)
+        pure e
+    Msg.EnemyDamage eid assignment
+      | eid
+        == toId attrs
+        && damageAssignmentDamageEffect assignment
+        == StoryCardDamageEffect
+      -> HasturTheKingInYellow <$> runMessage msg attrs
+    Msg.EnemyDamage eid _ | eid == toId attrs -> pure e
     _ -> HasturTheKingInYellow <$> runMessage msg attrs

@@ -37,6 +37,6 @@ instance RunMessage Maniac where
   runMessage msg e@(Maniac attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 1 0
-      , Msg.EnemyDamage (toId attrs) (InvestigatorSource iid) NonAttackDamageEffect 1
+      , Msg.EnemyDamage (toId attrs) $ nonAttack (InvestigatorSource iid) 1
       ]
     _ -> Maniac <$> runMessage msg attrs

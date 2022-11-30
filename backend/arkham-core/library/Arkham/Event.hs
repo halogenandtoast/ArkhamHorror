@@ -165,6 +165,7 @@ allEvents = mapFrom
   , SomeEventCard bloodEclipse3
   , SomeEventCard coupDeGrace
   , SomeEventCard wingingIt
+  , SomeEventCard vantagePoint
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite
   , SomeEventCard astoundingRevelation

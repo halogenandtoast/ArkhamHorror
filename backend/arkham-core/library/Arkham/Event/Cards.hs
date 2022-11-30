@@ -239,6 +239,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , uncageTheSoul
   , unearthTheAncients
   , unearthTheAncients2
+  , vantagePoint
   , wardOfProtection
   , wardOfProtection2
   , wardOfProtection5
@@ -1496,6 +1497,17 @@ wingingIt = (event "04272" "Winging It" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdActions = [Action.Investigate]
   , cdPlayableFromDiscard = True
+  }
+
+vantagePoint :: CardDef
+vantagePoint = (event "04306" "Vantage Point" 1 Seeker)
+  { cdCardTraits = singleton Insight
+  , cdSkills = [#intellect, #agility]
+  , cdCriteria = Just $ Criteria.DuringTurn Anyone
+  , cdFastWindow = Just $ OrWindowMatcher
+    [ PutLocationIntoPlay Timing.After Anyone Anywhere
+    , RevealLocation Timing.After Anyone Anywhere
+    ]
   }
 
 trialByFire :: CardDef

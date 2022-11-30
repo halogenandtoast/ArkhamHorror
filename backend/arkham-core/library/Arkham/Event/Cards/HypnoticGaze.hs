@@ -35,7 +35,7 @@ instance RunMessage HypnoticGaze where
         _ -> error "unhandled"
       push (RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside)
       pure $ HypnoticGaze (attrs `with` Just enemyId)
-    RequestedTokens source (Just iid) faces | isSource attrs source -> do
+    RequestedTokens source _ faces | isSource attrs source -> do
       let
         enemyId = fromMaybe (error "missing enemy id") mEnemyId
         shouldDamageEnemy = any
@@ -47,7 +47,6 @@ instance RunMessage HypnoticGaze where
           e <$ pushAll
             [ EnemyDamage
               enemyId
-              iid
               (toSource attrs)
               NonAttackDamageEffect
               healthDamage'

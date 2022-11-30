@@ -18,6 +18,7 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Constants
+import Arkham.DamageEffect
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Id
@@ -588,8 +589,11 @@ instance RunMessage EnemyAttrs where
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
-    Msg.EnemyDamage eid source damageEffect amount | eid == enemyId -> do
-      canDamage <- sourceCanDamageEnemy eid source
+    Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
+      let
+        source = damageAssignmentSource damageAssignment
+        damageEffect = damageAssignmentDamageEffect damageAssignment
+      canDamage <- sourceCanDamageEnemy eid $ damageAssignmentSource source
       a <$ when
         canDamage
         do
@@ -617,55 +621,26 @@ instance RunMessage EnemyAttrs where
             [ dealtDamageWhenMsg
             , dealtDamageAfterMsg
             , takeDamageWhenMsg
-            , EnemyDamaged eid source damageEffect amount False
+            , EnemyDamaged eid damageAssignment
             , takeDamageAfterMsg
             ]
-    DirectEnemyDamage eid source damageEffect amount | eid == enemyId -> do
-      canDamage <- sourceCanDamageEnemy eid source
-      a <$ when
-        canDamage
-        do
-          dealtDamageWhenMsg <- checkWindows
-            [ Window
-                Timing.When
-                (Window.DealtDamage source damageEffect $ toTarget a)
-            ]
-          dealtDamageAfterMsg <- checkWindows
-            [ Window
-                Timing.After
-                (Window.DealtDamage source damageEffect $ toTarget a)
-            ]
-          takeDamageWhenMsg <- checkWindows
-            [ Window
-                Timing.When
-                (Window.TakeDamage source damageEffect $ toTarget a)
-            ]
-          takeDamageAfterMsg <- checkWindows
-            [ Window
-                Timing.After
-                (Window.TakeDamage source damageEffect $ toTarget a)
-            ]
-          pushAll
-            [ dealtDamageWhenMsg
-            , dealtDamageAfterMsg
-            , takeDamageWhenMsg
-            , EnemyDamaged eid source damageEffect amount True
-            , takeDamageAfterMsg
-            ]
-    EnemyDamaged eid source damageEffect amount direct | eid == enemyId -> do
+    EnemyDamaged eid damageAssignment direct | eid == enemyId -> do
+      let
+        direct = damageAssignmentDirect damageAssignment
+        source = damageAssignmentSource damageAssignment
+        amount = damageAssignmentAmount damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do
           amount' <- getModifiedDamageAmount a direct amount
           let
-            damageAssignment = DamageAssignment
+            damageAssignment' = damageAssignment
               { damageAssignmentAmount = amount'
-              , damageAssignmentDamageEffect = damageEffect
               }
             combine l r = if damageAssignmentDamageEffect l == damageAssignmentDamageEffect r
               then l { damageAssignmentAmount = damageAssignmentAmount l + damageAssignmentAmount r }
               else error $ "mismatched damage assignments\n\nassignment: " <> show l <> "\nnew assignment: " <> show r
-          pure $ a & assignedDamageL %~ insertWith combine source damageAssignment
+          pure $ a & assignedDamageL %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do
       do

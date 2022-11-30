@@ -52,7 +52,7 @@ instance RunMessage BrotherXavier1 where
       enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
       push $ chooseOrRunOne
         iid
-        [ targetLabel eid [EnemyDamage eid source NonAttackDamageEffect 2]
+        [ targetLabel eid [EnemyDamage eid $ nonAttack source 2]
         | eid <- enemies
         ]
       pure a

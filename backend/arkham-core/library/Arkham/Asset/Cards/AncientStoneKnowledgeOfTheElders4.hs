@@ -51,9 +51,7 @@ instance RunMessage AncientStoneKnowledgeOfTheElders4 where
       enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
       push
         $ chooseOrRunOne iid
-        $ [ targetLabel
-              enemy
-              [EnemyDamage enemy (toSource attrs) NonAttackDamageEffect damage]
+        $ [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damage]
           | enemy <- enemies
           ]
       pure a

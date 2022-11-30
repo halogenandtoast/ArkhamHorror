@@ -42,7 +42,7 @@ instance RunMessage BeatCop where
       enemies <- selectList (EnemyAt $ locationWithInvestigator iid)
       push $ chooseOrRunOne
         iid
-        [ targetLabel eid [EnemyDamage eid source NonAttackDamageEffect 1]
+        [ targetLabel eid [EnemyDamage eid $ nonAttack source 1]
         | eid <- enemies
         ]
       pure a

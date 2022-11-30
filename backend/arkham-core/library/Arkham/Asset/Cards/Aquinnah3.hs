@@ -57,7 +57,7 @@ instance RunMessage Aquinnah3 where
         iid
         [ targetLabel
             eid
-            [ EnemyDamage eid source NonAttackDamageEffect healthDamage'
+            [ EnemyDamage eid $ nonAttack source healthDamage'
             , InvestigatorAssignDamage
               iid
               (EnemySource enemyId)

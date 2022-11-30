@@ -53,7 +53,7 @@ instance RunMessage Chainsaw4 where
               [AddUses (toTarget attrs) Supply 1]
             , Label
               "Deal 1 damage to the attacked enemy"
-              [EnemyDamage eid source NonAttackDamageEffect 1]
+              [EnemyDamage eid $ nonAttack source 1]
             ]
           _ -> error "invalid call"
         pure a

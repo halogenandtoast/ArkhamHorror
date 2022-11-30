@@ -48,7 +48,6 @@ instance RunMessage HeroicRescue where
               [ EnemyAttack iid targetEnemy damageStrategy attackType
               , EnemyDamage
                 targetEnemy
-                iid
                 (toSource attrs)
                 NonAttackDamageEffect
                 1

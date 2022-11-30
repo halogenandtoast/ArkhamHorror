@@ -17,6 +17,7 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.DamageEffect
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
 import Arkham.GameValue

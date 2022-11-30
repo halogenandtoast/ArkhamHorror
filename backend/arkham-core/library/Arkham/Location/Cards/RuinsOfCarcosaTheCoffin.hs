@@ -15,6 +15,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 import Arkham.Timing qualified as Timing
 
@@ -50,6 +51,6 @@ instance RunMessage RuinsOfCarcosaTheCoffin where
     ResolveStory iid story' | story' == Story.theCoffin -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 1)
-      push $ EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect n
+      push $ EnemyDamage hastur (InvestigatorSource iid) StoryCardDamageEffect n
       pure l
     _ -> RuinsOfCarcosaTheCoffin <$> runMessage msg attrs

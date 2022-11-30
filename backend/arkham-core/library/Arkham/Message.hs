@@ -319,11 +319,9 @@ data Message
   | EnemyAttacks [Message]
   | CheckEnemyEngagement InvestigatorId
   | EnemyCheckEngagement EnemyId
-  | EnemyDamage EnemyId Source DamageEffect Int
+  | EnemyDamage EnemyId DamageAssignment
   | -- Bool is for direct damage
-    EnemyDamaged EnemyId Source DamageEffect Int Bool -- INTERNAL ONLY
-  | -- Used after modified amount has been determined
-    DirectEnemyDamage EnemyId Source DamageEffect Int
+    EnemyDamaged EnemyId DamageAssignment Bool -- INTERNAL ONLY
   | DefeatEnemy EnemyId InvestigatorId Source
   | EnemyDefeated EnemyId CardCode Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId

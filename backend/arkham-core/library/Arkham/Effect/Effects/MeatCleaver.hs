@@ -18,7 +18,7 @@ meatCleaver = MeatCleaver . uncurry4 (baseAttrs "05114")
 
 instance RunMessage MeatCleaver where
   runMessage msg e@(MeatCleaver attrs) = case msg of
-    EnemyDefeated _ _ _ source _ | effectSource attrs == source ->
+    EnemyDefeated _ _ source _ | effectSource attrs == source ->
       e <$ pushAll
         [HealHorror (effectTarget attrs) 1, DisableEffect $ toId attrs]
     SkillTestEnds _ -> e <$ push (DisableEffect $ toId attrs)

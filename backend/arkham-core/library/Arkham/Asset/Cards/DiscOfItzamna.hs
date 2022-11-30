@@ -32,9 +32,6 @@ instance RunMessage DiscOfItzamna where
   runMessage msg a@(DiscOfItzamna attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (map windowType -> [Window.EnemySpawns eid _]) _
       -> do
-        pushAll
-          [ EnemyEvaded iid eid
-          , EnemyDamage eid (toSource attrs) NonAttackDamageEffect 2
-          ]
+        pushAll [EnemyEvaded iid eid, EnemyDamage eid $ nonAttack attrs 2]
         pure a
     _ -> DiscOfItzamna <$> runMessage msg attrs

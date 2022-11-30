@@ -2994,10 +2994,16 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  EnemyDefeated eid iid _ _ _ -> do
+  EnemyDefeated eid _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
+    miid <- getSourceController source
+    leadId <- getLeadInvestigatorId
+    -- TODO: This is wrong but history is the way we track if enemies were
+    -- defeated for cards like Kerosene (1), we need a history independent of
+    -- the iid for cases where we aren't looking at a specific investigator
     let
+      iid = fromMaybe leadId miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid
       historyItem = mempty
         { historyEnemiesDefeated = [attrs { enemyPlacement = placement' }]
@@ -3981,8 +3987,14 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Msg.EnemyDamage eid iid _ _ n | n > 0 -> do
+  Msg.EnemyDamage eid source _ n | n > 0 -> do
+    miid <- getSourceController source
+    leadId <- getLeadInvestigatorId
+    -- TODO: This is wrong but history is the way we track if enemies were
+    -- defeated for cards like Kerosene (1), we need a history independent of
+    -- the iid for cases where we aren't looking at a specific investigator
     let
+      iid = fromMaybe leadId miid
       historyItem = mempty { historyDealtDamageTo = [EnemyTarget eid] }
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =

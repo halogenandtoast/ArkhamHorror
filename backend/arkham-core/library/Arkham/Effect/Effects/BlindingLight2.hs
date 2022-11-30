@@ -35,7 +35,7 @@ instance RunMessage BlindingLight2 where
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
       -> e <$ pushAll
-        [ EnemyDamage eid iid (InvestigatorSource iid) NonAttackDamageEffect 2
+        [ EnemyDamage eid (InvestigatorSource iid) NonAttackDamageEffect 2
         , DisableEffect effectId
         ]
     SkillTestEnds _ -> e <$ push (DisableEffect effectId)

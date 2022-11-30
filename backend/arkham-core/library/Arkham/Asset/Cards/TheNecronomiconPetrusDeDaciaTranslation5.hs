@@ -77,9 +77,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
           <> EnemyCanBeDamagedBySource (toSource attrs)
         push $ chooseOrRunOne
           iid
-          [ targetLabel
-              eid
-              [EnemyDamage eid (toSource attrs) NonAttackDamageEffect 3]
+          [ targetLabel eid [EnemyDamage eid $ nonAttack attrs 3]
           | eid <- eids
           ]
         pure a

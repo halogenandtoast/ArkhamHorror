@@ -66,6 +66,6 @@ instance RunMessage RecallTheFuture2 where
               $ SkillModifier skillType 2
             ]
       pure a
-    SkillTestEnds _ ->
+    SkillTestEnds _ _ ->
       pure . RecallTheFuture2 $ attrs `with` Metadata Nothing
     _ -> RecallTheFuture2 . (`with` metadata) <$> runMessage msg attrs

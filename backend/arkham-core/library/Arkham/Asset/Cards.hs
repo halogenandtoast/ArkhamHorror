@@ -309,6 +309,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , pickpocketing
   , pickpocketing2
   , plucky1
+  , pnakoticManuscripts5
   , policeBadge2
   , powderOfIbnGhazi
   , professorWarrenRice
@@ -2478,6 +2479,15 @@ flamethrower5 = (asset "04305" "Flamethrower" 4 Guardian)
   , cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdUses = Uses Ammo 4
   , cdSlots = [BodySlot, HandSlot, HandSlot]
+  , cdLevel = 5
+  }
+
+pnakoticManuscripts5 :: CardDef
+pnakoticManuscripts5 = (asset "04307" ("Pnakotic Manuscripts" <:> "Mind-Expanding Ideas") 5 Seeker)
+  { cdSkills = [#intellect, #wild]
+  , cdCardTraits = setFromList [Item, Relic, Tome]
+  , cdUses = Uses Secret 3
+  , cdSlots = [HandSlot]
   , cdLevel = 5
   }
 

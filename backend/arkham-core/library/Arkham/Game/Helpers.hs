@@ -1360,6 +1360,11 @@ windowMatches iid source window' = \case
       (matchWho iid who whoMatcher)
       (member aid <$> select assetMatcher)
     _ -> pure False
+  Matcher.WouldPerformRevelationSkillTest timing whoMatcher ->
+    case window' of
+      Window t (Window.WouldPerformRevelationSkillTest who) | t == timing ->
+        matchWho iid who whoMatcher
+      _ -> pure False
   Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
     case window' of
       Window t (Window.WouldDrawEncounterCard who p) | t == timing ->

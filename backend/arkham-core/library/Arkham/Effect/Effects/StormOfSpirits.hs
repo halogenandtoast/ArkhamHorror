@@ -31,5 +31,5 @@ instance RunMessage StormOfSpirits where
               | iid' <- iids
               ]
             <> [DisableEffect $ toId attrs]
-    SkillTestEnds _ -> e <$ push (DisableEffect $ toId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> StormOfSpirits <$> runMessage msg attrs

@@ -40,5 +40,5 @@ instance RunMessage WilliamYorick where
                 ]
           pure e
         _ -> pure e
-    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> WilliamYorick <$> runMessage msg attrs

@@ -508,6 +508,7 @@ data WindowMatcher
   | Discarded Timing Who CardMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
+  | WouldPerformRevelationSkillTest Timing Who
   | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher

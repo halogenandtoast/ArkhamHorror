@@ -35,5 +35,5 @@ instance RunMessage Shrivelling where
           , DisableEffect effectId
           ]
         )
-    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> Shrivelling <$> runMessage msg attrs

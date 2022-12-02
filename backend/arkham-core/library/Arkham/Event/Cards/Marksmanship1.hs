@@ -150,7 +150,7 @@ instance RunMessage Marksmanship1Effect where
               (DamageDealt 1)
           _ -> pure ()
         pure e
-    SkillTestEnds _ -> do
+    SkillTestEnds _ _ -> do
       push $ DisableEffect effectId
       pure e
     _ -> Marksmanship1Effect <$> runMessage msg attrs

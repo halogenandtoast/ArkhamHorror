@@ -46,7 +46,7 @@ instance RunMessage BindMonster2 where
         AnyEnemy
         False
       ]
-    SkillTestEnds _ ->
+    SkillTestEnds _ _ ->
       e <$ when (null eventAttachedTarget) (push (Discard $ toTarget attrs))
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       case eventAttachedTarget of

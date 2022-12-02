@@ -59,7 +59,7 @@ oneTwoPunchEffect = OneTwoPunchEffect . uncurry4 (baseAttrs "60117")
 
 instance RunMessage OneTwoPunchEffect where
   runMessage msg (OneTwoPunchEffect attrs@EffectAttrs {..}) = case msg of
-    SkillTestEnds _ | not effectFinished -> do
+    SkillTestEnds _ _ | not effectFinished -> do
       mSkillTest <- getSkillTest
       case (mSkillTest, effectTarget) of
         (Just skillTest, InvestigatorTarget iid) -> do

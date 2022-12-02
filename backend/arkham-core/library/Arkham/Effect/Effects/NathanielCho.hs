@@ -59,5 +59,5 @@ instance RunMessage NathanielCho where
             ]
     CheckWindow _ windows' | any (isTakeDamage attrs) windows' ->
       e <$ push (DisableEffect $ toId attrs)
-    SkillTestEnds _ -> e <$ push (DisableEffect $ toId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> NathanielCho <$> runMessage msg attrs

@@ -28,7 +28,7 @@ instance HasModifiersFor CursedShores where
 
 instance RunMessage CursedShores where
   runMessage msg e@(CursedShores attrs) = case msg of
-    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     EndTurn iid | InvestigatorTarget iid == effectTarget attrs ->
       e <$ push (DisableEffect $ effectId attrs)
     _ -> CursedShores <$> runMessage msg attrs

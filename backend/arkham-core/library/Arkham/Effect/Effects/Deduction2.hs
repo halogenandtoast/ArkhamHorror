@@ -26,5 +26,5 @@ instance RunMessage Deduction2 where
           e <$ push
             (InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate))
         _ -> pure e
-    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> Deduction2 <$> runMessage msg attrs

@@ -29,6 +29,7 @@ import Arkham.Asset.Assets
   , mistsOfRlyeh4Effect
   , mistsOfRlyeh2Effect
   , mistsOfRlyehEffect
+  , pnakoticManuscripts5Effect
   , yaotl1Effect
   )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect )
@@ -200,6 +201,7 @@ allEffects = mapFromList
   , ("04271", SomeEffect mistsOfRlyeh4Effect)
   , ("04283", SomeEffect theRedDepthsEffect)
   , ("04306", SomeEffect vantagePointEffect)
+  , ("04307", SomeEffect pnakoticManuscripts5Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

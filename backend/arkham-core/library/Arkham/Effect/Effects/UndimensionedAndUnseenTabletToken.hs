@@ -68,5 +68,5 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
             | enemyId <- broodOfYogSothothWithClues
             ]
           )
-    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> UndimensionedAndUnseenTabletToken <$> runMessage msg attrs

@@ -129,6 +129,7 @@ data WindowType
   | FlipLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
   | RevealTokenWithNegativeModifier InvestigatorId Token
+  | WouldPerformRevelationSkillTest InvestigatorId
   | SkillTest SkillType
   | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int

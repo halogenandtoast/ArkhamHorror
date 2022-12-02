@@ -68,5 +68,5 @@ instance RunMessage RexsCurse where
           (Deck.InvestigatorDeck iid)
           (toTarget attrs)
         pure $ RexsCurse (attrs `With` Metadata False)
-      SkillTestEnds _ -> pure $ RexsCurse (attrs `With` Metadata False)
+      SkillTestEnds _ _ -> pure $ RexsCurse (attrs `With` Metadata False)
       _ -> RexsCurse . (`with` metadata) <$> runMessage msg attrs

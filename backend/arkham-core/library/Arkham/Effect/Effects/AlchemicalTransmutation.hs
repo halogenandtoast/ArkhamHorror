@@ -31,5 +31,5 @@ instance RunMessage AlchemicalTransmutation where
             , DisableEffect effectId
             ]
           )
-      SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+      SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
       _ -> AlchemicalTransmutation <$> runMessage msg attrs

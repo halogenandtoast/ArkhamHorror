@@ -80,7 +80,7 @@ instance HasModifiersFor Yaotl1Effect where
 
 instance RunMessage Yaotl1Effect where
   runMessage msg e@(Yaotl1Effect attrs@EffectAttrs {..}) = case msg of
-    SkillTestEnds _ -> do
+    SkillTestEnds _ _ -> do
       push (DisableEffect effectId)
       pure e
     _ -> Yaotl1Effect <$> runMessage msg attrs

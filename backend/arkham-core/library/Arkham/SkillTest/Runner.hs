@@ -186,7 +186,7 @@ instance RunMessage SkillTest where
           max 0 (currentSkillValue + skillTestValueModifier + iconCount)
       pushAll
         [ chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
-        , SkillTestEnds skillTestSource
+        , SkillTestEnds skillTestInvestigator skillTestSource
         ]
       pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
@@ -213,7 +213,7 @@ instance RunMessage SkillTest where
                difficulty
              )
            , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
-           , SkillTestEnds skillTestSource
+           , SkillTestEnds skillTestInvestigator skillTestSource
            ]
       pure $ s & resultL .~ FailedBy True difficulty
     StartSkillTest _ -> do
@@ -241,7 +241,7 @@ instance RunMessage SkillTest where
         & (setAsideTokensL .~ mempty)
         & (revealedTokensL .~ mempty)
         & (resolvedTokensL .~ mempty)
-    SkillTestEnds _ -> do
+    SkillTestEnds _ _ -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
       let
@@ -330,7 +330,7 @@ instance RunMessage SkillTest where
       pure s
     SkillTestApplyResultsAfter -> do
       -- ST.7 -- apply results
-      push $ SkillTestEnds skillTestSource -- -> ST.8 -- Skill test ends
+      push $ SkillTestEnds skillTestInvestigator skillTestSource -- -> ST.8 -- Skill test ends
       modifiers' <- getModifiers (toTarget s)
       let
         modifiedSkillTestResult =

@@ -68,7 +68,7 @@ instance RunMessage MistsOfRlyeh4Effect where
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (push $ ChooseAndDiscardCard iid)
       _ -> pure e
-    SkillTestEnds _ -> do
+    SkillTestEnds _ _ -> do
       case effectTarget of
         InvestigatorTarget iid -> do
           mSkillTestResult <- fmap skillTestResult <$> getSkillTest

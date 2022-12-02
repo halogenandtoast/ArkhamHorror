@@ -31,7 +31,7 @@ instance RunMessage RiteOfSeeking4 where
           (InvestigatorTarget iid)
         )
       _ -> pure e
-    SkillTestEnds _ -> e <$ case effectTarget of
+    SkillTestEnds _ _ -> e <$ case effectTarget of
       InvestigatorTarget iid -> pushAll [DisableEffect effectId, EndTurn iid]
       _ -> push (DisableEffect effectId)
     Successful (Action.Investigate, _) iid source _ _

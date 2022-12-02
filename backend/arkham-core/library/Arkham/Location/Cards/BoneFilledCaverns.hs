@@ -89,5 +89,5 @@ instance RunMessage BoneFilledCaverns where
       placements <- mapMaybeM (toMaybePlacement attrs) [Below, RightOf]
       pushAll $ concat $ zipWith ($) placements cards
       pure l
-    SkillTestEnds _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
+    SkillTestEnds _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
     _ -> BoneFilledCaverns . (`with` metadata) <$> runMessage msg attrs

@@ -27,5 +27,5 @@ instance RunMessage BaseballBat where
           (tokenFace token `elem` [Skull, AutoFail])
           (pushAll [Discard (AssetTarget assetId), DisableEffect effectId])
         _ -> error "wrong source"
-    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> BaseballBat <$> runMessage msg attrs

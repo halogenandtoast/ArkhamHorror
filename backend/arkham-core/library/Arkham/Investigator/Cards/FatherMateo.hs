@@ -87,7 +87,7 @@ fatherMateoElderSignEffect =
 instance RunMessage FatherMateoElderSignEffect where
   runMessage msg e@(FatherMateoElderSignEffect attrs@EffectAttrs {..}) =
     case msg of
-      SkillTestEnds _ -> e <$ case effectTarget of
+      SkillTestEnds _ _ -> e <$ case effectTarget of
         InvestigatorTarget iid -> do
           isTurn <- iid <=~> TurnInvestigator
           pushAll

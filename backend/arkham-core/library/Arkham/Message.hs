@@ -576,7 +576,7 @@ data Message
   | SkillTestApplyResultsAfter
   | SkillTestAsk Message
   | SkillTestCommitCard InvestigatorId Card
-  | SkillTestEnds Source
+  | SkillTestEnds InvestigatorId Source
   | AfterSkillTestEnds Source Target Int
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData

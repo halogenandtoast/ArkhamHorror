@@ -38,5 +38,5 @@ instance RunMessage BlindingLight2 where
         [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 2
         , DisableEffect effectId
         ]
-    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> BlindingLight2 <$> runMessage msg attrs

@@ -36,7 +36,7 @@ instance RunMessage Daring where
           [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
         _ -> error "Target was invalid"
       pure s
-    SkillTestEnds _ -> do
+    SkillTestEnds _ _ -> do
       push $ DrawCards (skillOwner attrs) 1 False
       pure s
     _ -> Daring <$> runMessage msg attrs

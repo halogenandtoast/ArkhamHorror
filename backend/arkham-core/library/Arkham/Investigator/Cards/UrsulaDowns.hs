@@ -88,7 +88,7 @@ instance RunMessage UrsulaDowns where
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
-    SkillTestEnds _ | moveAfterTest metadata -> do
+    SkillTestEnds _ _ | moveAfterTest metadata -> do
       targets <- selectList $ accessibleFrom $ investigatorLocation attrs
       when (notNull targets) $ push $ chooseOne
         (toId attrs)

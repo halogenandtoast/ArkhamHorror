@@ -29,7 +29,7 @@ instance HasModifiersFor Lockpicks1 where
 
 instance RunMessage Lockpicks1 where
   runMessage msg e@(Lockpicks1 attrs) = case msg of
-    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
       case effectSource attrs of
         AssetSource aid -> e <$ pushAll

@@ -47,6 +47,6 @@ instance HasModifiersFor WillToSurviveEffect where
 
 instance RunMessage WillToSurviveEffect where
   runMessage msg e@(WillToSurviveEffect attrs) = case msg of
-    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     EndTurn _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> WillToSurviveEffect <$> runMessage msg attrs

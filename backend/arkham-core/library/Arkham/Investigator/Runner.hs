@@ -2555,7 +2555,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           updatedUsedAbilities =
             updated : deleteFirst current investigatorUsedAbilities
         pure $ a & usedAbilitiesL .~ updatedUsedAbilities
-  SkillTestEnds _ -> do
+  SkillTestEnds _ _ -> do
     pure
       $ a
       & (usedAbilitiesL %~ filter

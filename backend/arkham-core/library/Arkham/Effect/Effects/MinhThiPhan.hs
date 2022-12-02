@@ -32,10 +32,10 @@ instance HasModifiersFor MinhThiPhan where
 
 instance RunMessage MinhThiPhan where
   runMessage msg e@(MinhThiPhan attrs) = case msg of
-    SkillTestEnds _ | effectSource attrs == TokenEffectSource ElderSign ->
+    SkillTestEnds _ _ | effectSource attrs == TokenEffectSource ElderSign ->
       case effectMetadata attrs of
         Just (EffectMessages msgs) ->
           e <$ pushAll (DisableEffect (effectId attrs) : msgs)
         _ -> e <$ push (DisableEffect $ effectId attrs)
-    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> MinhThiPhan <$> runMessage msg attrs

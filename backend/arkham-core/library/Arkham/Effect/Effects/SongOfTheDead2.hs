@@ -26,5 +26,5 @@ instance RunMessage SongOfTheDead2 where
     RevealToken _ iid (Token _ Skull)
       | InvestigatorTarget iid == effectTarget -> e
       <$ push (skillTestModifier attrs effectTarget (DamageDealt 2))
-    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> SongOfTheDead2 <$> runMessage msg attrs

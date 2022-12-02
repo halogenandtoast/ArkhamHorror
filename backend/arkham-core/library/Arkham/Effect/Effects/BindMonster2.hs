@@ -35,5 +35,5 @@ instance RunMessage BindMonster2 where
               [AttachEvent evid (EnemyTarget eid), DisableEffect effectId]
             )
         _ -> pure e
-    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> BindMonster2 <$> runMessage msg attrs

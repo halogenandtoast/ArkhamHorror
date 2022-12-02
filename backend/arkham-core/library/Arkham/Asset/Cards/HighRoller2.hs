@@ -57,7 +57,7 @@ instance RunMessage HighRoller2Effect where
     PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _ | InvestigatorTarget iid == effectTarget -> do
       pushAll [TakeResources iid 3 False, DisableEffect effectId]
       pure e
-    SkillTestEnds _ -> do
+    SkillTestEnds _ _ -> do
       push (DisableEffect effectId)
       pure e
     _ -> HighRoller2Effect <$> runMessage msg attrs

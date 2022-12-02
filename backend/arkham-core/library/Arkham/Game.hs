@@ -1342,7 +1342,8 @@ getLocationsMatching lmatcher = do
     LocationWithoutClues -> pure $ filter (locationWithoutClues . toAttrs) ls
     LocationWithDefeatedEnemyThisRound -> do
       iids <- allInvestigatorIds
-      enemiesDefeated <- historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
+      enemiesDefeated <-
+        historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
       let
         validLids = flip mapMaybe enemiesDefeated $ \e ->
           case enemyPlacement e of
@@ -3173,7 +3174,7 @@ runGameMessage msg g = case msg of
         _ -> pure g
       _ -> pure g
   SkillTestResults resultsData -> pure $ g & skillTestResultsL ?~ resultsData
-  SkillTestEnds _ -> do
+  SkillTestEnds _ _ -> do
     skillPairs <-
       for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do
         modifiers' <- getModifiers (SkillTarget skillId)
@@ -3989,8 +3990,7 @@ runGameMessage msg g = case msg of
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   Msg.EnemyDamage eid assignment@(damageAssignmentAmount -> n) | n > 0 -> do
-    let
-      source = damageAssignmentSource assignment
+    let source = damageAssignmentSource assignment
     miid <- getSourceController source
     leadId <- getLeadInvestigatorId
     -- TODO: This is wrong but history is the way we track if enemies were
@@ -4031,13 +4031,19 @@ runGameMessage msg g = case msg of
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
     card <- field TreacheryCard tid
 
-    push $ BeginSkillTest
-      iid
-      (TreacherySource tid)
-      (InvestigatorTarget iid)
-      Nothing
-      skillType
-      difficulty
+    performRevelationSkillTestWindow <- checkWindows
+      [Window Timing.When (Window.WouldPerformRevelationSkillTest iid)]
+
+    pushAll
+      [ performRevelationSkillTestWindow
+      , BeginSkillTest
+        iid
+        (TreacherySource tid)
+        (InvestigatorTarget iid)
+        Nothing
+        skillType
+        difficulty
+      ]
     pure $ g & (activeCardL ?~ card)
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do

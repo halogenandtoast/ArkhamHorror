@@ -48,7 +48,7 @@ instance RunMessage EighteenDerringer2 where
       pure . EighteenDerringer2 $ attrs `with` Metadata False
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        pushAll [AddUses (toTarget attrs) Ammo 1]
+        pushAll [AddUses (toId attrs) Ammo 1]
         pure . EighteenDerringer2 $ attrs `with` Metadata True
     EndRound -> pure . EighteenDerringer2 $ attrs `with` Metadata False
     _ -> EighteenDerringer2 . (`with` metadata) <$> runMessage msg attrs

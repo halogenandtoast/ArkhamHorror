@@ -26,10 +26,8 @@ windowToAnotherTime = treachery WindowToAnotherTime Cards.windowToAnotherTime
 instance RunMessage WindowToAnotherTime where
   runMessage msg t@(WindowToAnotherTime attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      ancientLocations <- selectList $ LocationWithTrait Ancient
-      ancientLocationsWithCards <- traverse
-        (traverseToSnd (field LocationCard))
-        ancientLocations
+      ancientLocations <- selectWithField LocationCard
+        $ LocationWithTrait Ancient
       push
         $ chooseOrRunOne iid
         $ Label
@@ -40,7 +38,7 @@ instance RunMessage WindowToAnotherTime where
               [ RemoveLocation lid
               , ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
               ]
-          | (lid, card) <- ancientLocationsWithCards
+          | (lid, card) <- ancientLocations
           ]
       pure t
     _ -> WindowToAnotherTime <$> runMessage msg attrs

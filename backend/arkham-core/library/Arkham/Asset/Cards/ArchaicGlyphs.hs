@@ -44,7 +44,7 @@ instance HasAbilities ArchaicGlyphs where
 instance RunMessage ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs (attrs `With` meta)) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AddUses (toTarget attrs) Secret 1)
+      a <$ push (AddUses (toId attrs) Secret 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       case assetPlacement attrs of
         InPlayArea controllerId -> do

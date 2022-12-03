@@ -52,9 +52,9 @@ instance RunMessage Contraband where
       e <$ pushAll
         [ chooseOne
           iid
-          [ TargetLabel
-              (AssetTarget assetId)
-              [AddUses (AssetTarget assetId) useType' assetUseCount]
+          [ targetLabel
+              assetId
+              [AddUses assetId useType' assetUseCount]
           | (useType', assetUseCount, assetId) <-
             ammoAssetsWithUseCount <> supplyAssetsWithUseCount
           ]

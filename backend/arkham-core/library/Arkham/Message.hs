@@ -185,7 +185,7 @@ data Message
     AddToken TokenFace
   | RemoveAllTokens TokenFace
   | -- Asset Uses
-    AddUses Target UseType Int
+    AddUses AssetId UseType Int
   | -- Asks
     AskPlayer Message
   | Ask InvestigatorId (Question Message)

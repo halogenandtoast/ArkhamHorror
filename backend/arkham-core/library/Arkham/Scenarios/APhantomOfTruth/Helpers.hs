@@ -9,11 +9,11 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Distance
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types (Field (.. ))
-import Arkham.Enemy.Types (Field (.. ))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 import Arkham.Projection
@@ -21,12 +21,14 @@ import Arkham.Projection
 getTheOrganist :: (Monad m, HasGame m) => m EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
 
-investigatorsNearestToTheOrganist :: (Monad m, HasGame m) => m (Distance, [InvestigatorId])
+investigatorsNearestToTheOrganist
+  :: (Monad m, HasGame m) => m (Distance, [InvestigatorId])
 investigatorsNearestToTheOrganist = do
   theOrganist <- getTheOrganist
   investigatorsNearestToEnemy theOrganist
 
-investigatorsNearestToEnemy :: (Monad m, HasGame m) => EnemyId -> m (Distance, [InvestigatorId])
+investigatorsNearestToEnemy
+  :: (Monad m, HasGame m) => EnemyId -> m (Distance, [InvestigatorId])
 investigatorsNearestToEnemy eid = do
   enemyLocation <- fieldMap
     EnemyLocation
@@ -37,9 +39,11 @@ investigatorsNearestToEnemy eid = do
     . traverse (\i -> fmap (i, ) <$> field InvestigatorLocation i)
     =<< selectList UneliminatedInvestigator
 
-  mappings <- catMaybes <$> traverse
-    (\(i, l) -> fmap (i, ) <$> getDistance enemyLocation l)
-    investigatorIdWithLocationId
+  mappings <-
+    catMaybes
+      <$> traverse
+            (\(i, l) -> fmap (i, ) <$> getDistance enemyLocation l)
+            investigatorIdWithLocationId
 
   let
     minDistance :: Int =
@@ -58,8 +62,13 @@ moveOrganistAwayFromNearestInvestigator = do
   lids <- setFromList . concat <$> for
     iids
     (\iid -> do
-      currentLocation <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
-      rs <- traverse (traverseToSnd (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)) everywhere
+      currentLocation <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      rs <- forToSnd
+        everywhere
+        (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
       pure $ map fst $ filter ((> minDistance) . snd) rs
     )
   withNoInvestigators <- select LocationWithoutInvestigators
@@ -70,22 +79,18 @@ moveOrganistAwayFromNearestInvestigator = do
     leadInvestigatorId
     [ targetLabel lid [EnemyMove organist lid] | lid <- targets ]
 
-disengageEachEnemyAndMoveToConnectingLocation :: (Monad m, HasGame m) => m [Message]
+disengageEachEnemyAndMoveToConnectingLocation
+  :: (Monad m, HasGame m) => m [Message]
 disengageEachEnemyAndMoveToConnectingLocation = do
   leadInvestigatorId <- getLeadInvestigatorId
   iids <- getInvestigatorIds
-  enemyPairs <- traverse
-    (traverseToSnd (selectList . EnemyIsEngagedWith . InvestigatorWithId))
+  enemyPairs <- forToSnd
     iids
-  locationPairs <- traverse
-    (traverseToSnd
-      (selectList
-      . AccessibleFrom
-      . LocationWithInvestigator
-      . InvestigatorWithId
-      )
+    (selectList . EnemyIsEngagedWith . InvestigatorWithId)
+  locationPairs <- forToSnd
+    iids
+    (selectList . AccessibleFrom . LocationWithInvestigator . InvestigatorWithId
     )
-    iids
   pure
     $ [ DisengageEnemy iid enemy
       | (iid, enemies) <- enemyPairs

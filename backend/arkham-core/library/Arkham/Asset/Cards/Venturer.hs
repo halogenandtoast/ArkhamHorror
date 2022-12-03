@@ -48,10 +48,10 @@ instance RunMessage Venturer where
         (colocatedWith iid)
       push
         $ chooseOne iid
-        $ [ targetLabel aid [AddUses (AssetTarget aid) Supply 1]
+        $ [ targetLabel aid [AddUses aid Supply 1]
           | aid <- supplyAssets
           ]
-        <> [ targetLabel aid [AddUses (AssetTarget aid) Ammo 1]
+        <> [ targetLabel aid [AddUses aid Ammo 1]
            | aid <- ammoAssets
            ]
       pure a

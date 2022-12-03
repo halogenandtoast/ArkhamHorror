@@ -55,6 +55,9 @@ instance RunMessage AssetAttrs where
       _ -> a <$ push (Ready $ toTarget a)
     RemoveAllDoom target | isTarget a target  -> pure $ a & doomL .~ 0
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
+    PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
+    RemoveResources target n | isTarget a target ->
+      pure $ a & resourcesL %~ min 0 . subtract n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     RemoveDoom target n | isTarget a target ->
       pure $ a & doomL %~ min 0 . subtract n
@@ -104,7 +107,7 @@ instance RunMessage AssetAttrs where
           _ -> False
       when shouldDiscard $ push $ Discard (AssetTarget assetId)
       pure a
-    AddUses target useType' n | a `isTarget` target -> case assetUses of
+    AddUses aid useType' n | aid == assetId -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
       _ -> error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'

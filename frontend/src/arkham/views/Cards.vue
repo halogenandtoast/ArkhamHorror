@@ -260,7 +260,7 @@ const sets = [
   { name: "Heart of the Elders", min: 4192, max: 4228, playerCards: 13, code: "hote", cycle: 4 },
   { name: "The City of Archives", min: 4229, max: 4264, playerCards: 8, code: "tcoa", cycle: 4 },
   { name: "The Depths of Yoth", min: 4265, max: 4303, playerCards: 12, code: "tdoy", cycle: 4 },
-  { name: "Shattered Aeons", min: 4304, max: 4347, playerCards: 12, code: "sha", cycle: 4 },
+  { name: "Shattered Aeons", min: 4304, max: 4347, playerCards: 10, code: "sha", cycle: 4 },
 
   { name: "The Circle Undone", min: 5001, max: 5108, playerCards: 42, code: "tcu", cycle: 5 },
   { name: "The Secret Name", min: 5109, max: 5150, playerCards: 11, code: "tsn", cycle: 5 },

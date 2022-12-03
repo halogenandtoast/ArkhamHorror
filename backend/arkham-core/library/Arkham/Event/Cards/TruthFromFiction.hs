@@ -28,7 +28,7 @@ instance RunMessage TruthFromFiction where
       e <$ pushAll
         [ chooseOne
           iid
-          [ targetLabel aid [AddUses (AssetTarget aid) Uses.Secret 2]
+          [ targetLabel aid [AddUses aid Uses.Secret 2]
           | aid <- assets
           ]
         , Discard (toTarget attrs)

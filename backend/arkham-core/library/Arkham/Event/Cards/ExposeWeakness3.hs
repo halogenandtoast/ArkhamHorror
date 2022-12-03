@@ -16,7 +16,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers hiding ( EnemyFight )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
@@ -31,23 +30,22 @@ exposeWeakness3 = event ExposeWeakness3 Cards.exposeWeakness3
 instance RunMessage ExposeWeakness3 where
   runMessage msg e@(ExposeWeakness3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemyIds <-
-        selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
-      enemyIdsWithFight <- traverse (traverseToSnd (field EnemyFight)) enemyIds
+      enemies <- selectWithField EnemyFight
+        $ EnemyAt (locationWithInvestigator iid)
       pushAll
         [ chooseOne
           iid
-          [ TargetLabel
-              (EnemyTarget enemyId)
+          [ targetLabel
+              enemy
               [ BeginSkillTest
                   iid
                   (toSource attrs)
-                  (EnemyTarget enemyId)
+                  (EnemyTarget enemy)
                   Nothing
                   SkillIntellect
                   enemyFight
               ]
-          | (enemyId, enemyFight) <- enemyIdsWithFight
+          | (enemy, enemyFight) <- enemies
           ]
         , DrawCards iid 1 False
         , Discard (toTarget attrs)

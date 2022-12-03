@@ -659,9 +659,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       then selectList Matcher.AnyVoidEnemy
       else pure []
 
-    voidEnemiesWithCards <- traverse
-      (traverseToSnd (field VoidEnemyCard))
-      matchingVoidEnemies
+    voidEnemiesWithCards <- forToSnd matchingVoidEnemies (field VoidEnemyCard)
 
     when
         (notNull matchingDiscards

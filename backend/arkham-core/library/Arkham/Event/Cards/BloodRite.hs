@@ -47,7 +47,8 @@ instance RunMessage BloodRite where
             cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
             push
               $ (chooseOne iid
-                $ [ TargetLabel (CardIdTarget $ toCardId card)
+                $ [ TargetLabel
+                      (CardIdTarget $ toCardId card)
                       [ DiscardCard iid (toCardId card)
                       , PayForCardAbility
                         iid
@@ -81,7 +82,9 @@ instance RunMessage BloodRite where
                  [ SpendResources iid 1
                  , chooseOne
                    iid
-                   [ targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1]
+                   [ targetLabel
+                       enemyId
+                       [EnemyDamage enemyId $ nonAttack source 1]
                    | enemyId <- enemyIds
                    ]
                  ]

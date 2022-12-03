@@ -56,6 +56,6 @@ instance RunMessage OrnateBow3 where
         ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AddUses (toTarget attrs) Ammo 1
+      push $ AddUses (toId attrs) Ammo 1
       pure a
     _ -> OrnateBow3 <$> runMessage msg attrs

@@ -42,8 +42,7 @@ instance RunMessage RealmOfMadness where
         else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
       pure t
     RevelationChoice iid (isSource attrs -> True) n | n > 0 -> do
-      assets <- selectList assetMatcher
-      assetsWithCosts <- traverse (traverseToSnd (field AssetCost)) assets
+      assets <- selectWithField AssetCost assetMatcher
       handDiscardableCards <- fieldMap
         InvestigatorHand
         (filter (`cardMatch` NonWeakness))
@@ -63,7 +62,7 @@ instance RunMessage RealmOfMadness where
       unless (null assets && null handDiscardableCards)
         $ push
         $ chooseOne iid
-        $ map discardAsset assetsWithCosts
+        $ map discardAsset assets
         <> map discardHandCard handDiscardableCards
       pure t
     _ -> RealmOfMadness <$> runMessage msg attrs

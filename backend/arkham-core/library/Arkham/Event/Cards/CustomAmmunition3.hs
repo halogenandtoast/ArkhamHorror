@@ -42,8 +42,8 @@ instance HasModifiersFor CustomAmmunition3 where
 instance RunMessage CustomAmmunition3 where
   runMessage msg e@(CustomAmmunition3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <-
-        selectListMap AssetTarget
+      assets <-
+        selectList
         $ AssetControlledBy (colocatedWith iid)
         <> AssetWithTrait Firearm
         <> NotAsset
@@ -52,8 +52,8 @@ instance RunMessage CustomAmmunition3 where
              )
       push $ chooseOne
         iid
-        [ TargetLabel target [AttachEvent eid target, AddUses target Ammo 2]
-        | target <- targets
+        [ targetLabel asset [AttachEvent eid (AssetTarget asset), AddUses asset Ammo 2]
+        | asset <- assets
         ]
       pure e
     _ -> CustomAmmunition3 <$> runMessage msg attrs

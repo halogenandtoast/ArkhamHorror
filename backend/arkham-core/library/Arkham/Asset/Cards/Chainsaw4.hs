@@ -50,7 +50,7 @@ instance RunMessage Chainsaw4 where
             iid
             [ Label
               "Place 1 supply on Chainsaw"
-              [AddUses (toTarget attrs) Supply 1]
+              [AddUses (toId attrs) Supply 1]
             , Label
               "Deal 1 damage to the attacked enemy"
               [EnemyDamage eid $ nonAttack source 1]

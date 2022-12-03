@@ -43,7 +43,7 @@ instance RunMessage AstoundingRevelation where
         $ ComponentLabel
             (InvestigatorComponent iid ResourceToken)
             [TakeResources iid 2 False]
-        : [ targetLabel aid [AddUses (AssetTarget aid) Secret 1]
+        : [ targetLabel aid [AddUses aid Secret 1]
           | aid <- secretAssetIds
           ]
       pure e

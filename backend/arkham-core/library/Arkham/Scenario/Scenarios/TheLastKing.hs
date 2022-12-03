@@ -283,9 +283,7 @@ instance RunMessage TheLastKing where
       -- want to handle `getXp` in two phases. The first phase will essentially evenly
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
       investigatorIds <- allInvestigatorIds
-      investigatorIdsWithNames <- traverse
-        (traverseToSnd (field InvestigatorName))
-        investigatorIds
+      investigatorIdsWithNames <- forToSnd investigatorIds (field InvestigatorName)
       leadInvestigatorId <- getLeadInvestigatorId
       clueCounts <- traverse (field ActClues) =<< selectList AnyAct
       vipsSlain <-

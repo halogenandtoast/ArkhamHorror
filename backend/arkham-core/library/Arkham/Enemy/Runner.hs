@@ -104,8 +104,8 @@ instance RunMessage EnemyAttrs where
     UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- selectList enemyPrey
-      preyIdsWithLocation <- for preyIds
-        $ traverseToSnd (selectJust . locationWithInvestigator)
+      preyIdsWithLocation <- forToSnd preyIds
+        (selectJust . locationWithInvestigator)
       leadInvestigatorId <- getLeadInvestigatorId
       for_ (nonEmpty preyIdsWithLocation) $ \iids -> push $ chooseOrRunOne
         leadInvestigatorId

@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
@@ -26,7 +25,8 @@ shadowed = treachery Shadowed Cards.shadowed
 instance RunMessage Shadowed where
   runMessage msg t@(Shadowed attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      cultists <- selectList $ NearestEnemyTo iid $ EnemyWithTrait Cultist
+      cultists <-
+        selectWithField EnemyFight $ NearestEnemyTo iid $ EnemyWithTrait Cultist
       if null cultists
         then
           pushAll
@@ -34,9 +34,6 @@ instance RunMessage Shadowed where
             , Surge iid source
             ]
         else do
-          cultistsWithFight <- traverse
-            (traverseToSnd (field EnemyFight))
-            cultists
           push $ chooseOrRunOne
             iid
             [ targetLabel
@@ -44,7 +41,7 @@ instance RunMessage Shadowed where
                 [ PlaceDoom (EnemyTarget cultist) 1
                 , RevelationSkillTest iid source SkillWillpower x
                 ]
-            | (cultist, x) <- cultistsWithFight
+            | (cultist, x) <- cultists
             ]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

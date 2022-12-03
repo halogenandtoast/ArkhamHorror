@@ -140,6 +140,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , bloodPact3
   , bookOfShadows1
   , bookOfShadows3
+  , borrowedTime3
   , boxingGloves
   , boxingGloves3
   , brotherXavier1
@@ -2489,6 +2490,15 @@ pnakoticManuscripts5 = (asset "04307" ("Pnakotic Manuscripts" <:> "Mind-Expandin
   , cdUses = Uses Secret 3
   , cdSlots = [HandSlot]
   , cdLevel = 5
+  }
+
+borrowedTime3 :: CardDef
+borrowedTime3 = (asset "04308" "Borrowed Time" 1 Rogue)
+  { cdSkills = [#willpower, #agility]
+  , cdKeywords = singleton Keyword.Exceptional
+  , cdCardTraits = singleton Ritual
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 3
   }
 
 trackShoes :: CardDef

@@ -13,8 +13,8 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype TheCultsSearch = TheCultsSearch TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -26,16 +26,14 @@ theCultsSearch = treachery TheCultsSearch Cards.theCultsSearch
 instance RunMessage TheCultsSearch where
   runMessage msg t@(TheCultsSearch attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      cultists <- selectList $ EnemyWithTrait Cultist <> EnemyWithAnyDoom
-      cultistsWithDoomCount <- traverse
-        (traverseToSnd (field EnemyDoom))
-        cultists
+      cultists <-
+        selectWithField EnemyDoom $ EnemyWithTrait Cultist <> EnemyWithAnyDoom
       let
-        revelation = if null cultistsWithDoomCount
+        revelation = if null cultists
           then
-            [ FindAndDrawEncounterCard
-                iid
-                (CardWithType EnemyType <> CardWithTrait Cultist)
+            [ FindAndDrawEncounterCard iid
+              $ CardWithType EnemyType
+              <> CardWithTrait Cultist
             ]
           else
             concatMap
@@ -43,7 +41,7 @@ instance RunMessage TheCultsSearch where
                   RemoveDoom (EnemyTarget enemy) doom
                     : replicate doom PlaceDoomOnAgenda
                 )
-                cultistsWithDoomCount
+                cultists
               <> [AdvanceAgendaIfThresholdSatisfied]
       t <$ pushAll revelation
     _ -> TheCultsSearch <$> runMessage msg attrs

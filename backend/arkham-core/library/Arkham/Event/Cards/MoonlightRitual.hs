@@ -5,11 +5,11 @@ module Arkham.Event.Cards.MoonlightRitual
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
-import Arkham.Asset.Types ( Field(..) )
-import Arkham.Investigator.Types ( Field(..) )
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -26,21 +26,20 @@ instance RunMessage MoonlightRitual where
   runMessage msg e@(MoonlightRitual attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       -- we assume that the only cards that are relevant here are assets and investigators
-      assetIds <- selectList (AssetControlledBy You)
+      assets <-
+        selectWithField AssetDoom $ AssetControlledBy You <> AssetWithAnyDoom
       investigatorDoomCount <- field InvestigatorDoom iid
-      assetsWithDoomCount <-
-        filter ((> 0) . snd)
-          <$> traverse (traverseToSnd (field AssetDoom)) assetIds
-      e <$ pushAll
-        [ chooseOne
-          iid
-          ([ targetLabel iid [RemoveDoom (InvestigatorTarget iid) investigatorDoomCount]
-           | investigatorDoomCount > 0
+      pushAll
+        [ chooseOne iid
+        $ [ targetLabel
+              iid
+              [RemoveDoom (InvestigatorTarget iid) investigatorDoomCount]
+          | investigatorDoomCount > 0
+          ]
+        <> [ targetLabel aid [RemoveDoom (AssetTarget aid) assetDoomCount]
+           | (aid, assetDoomCount) <- assets
            ]
-          <> [ targetLabel aid [RemoveDoom (AssetTarget aid) assetDoomCount]
-             | (aid, assetDoomCount) <- assetsWithDoomCount
-             ]
-          )
         , Discard (toTarget attrs)
         ]
+      pure e
     _ -> MoonlightRitual <$> runMessage msg attrs

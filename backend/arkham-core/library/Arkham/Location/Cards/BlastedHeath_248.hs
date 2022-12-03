@@ -51,9 +51,10 @@ instance HasAbilities BlastedHeath_248 where
 instance RunMessage BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
-        (traverseToSnd (field InvestigatorClues))
-        (setToList $ locationInvestigators attrs)
+      investigatorWithCluePairs <-
+        selectWithField InvestigatorClues
+        $ investigatorAt (toId attrs)
+        <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
@@ -68,14 +69,14 @@ instance RunMessage BlastedHeath_248 where
           | target <- abominations
           ]
 
-      l <$ pushAll
-        ([placeClueOnAbomination]
-        <> [ chooseOne
-               iid
-               [ Label "Spend a second clue" [placeClueOnAbomination]
-               , Label "Do not spend a second clue" []
-               ]
-           | totalClues > 1
-           ]
-        )
+      pushAll
+        $ placeClueOnAbomination
+        : [ chooseOne
+              iid
+              [ Label "Spend a second clue" [placeClueOnAbomination]
+              , Label "Do not spend a second clue" []
+              ]
+          | totalClues > 1
+          ]
+      pure l
     _ -> BlastedHeath_248 <$> runMessage msg attrs

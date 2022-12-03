@@ -32,7 +32,7 @@ import Control.Lens as X
 import Control.Lens.TH as X
 import Control.Monad.Extra as X
   ( allM, andM, anyM, concatMapM, fromMaybeM, mapMaybeM, mconcatMapM )
-import Control.Monad.Random as X ( MonadRandom )
+import Control.Monad.Random as X ( MonadRandom, uniform )
 import Control.Monad.Random.Class as X ( getRandom, getRandomR, getRandoms )
 import Control.Monad.Random.Strict as X ( Random )
 import Data.Aeson as X hiding ( Result (..) )
@@ -46,7 +46,6 @@ import Data.Kind as X ( Type )
 import Data.List as X ( nub, (\\) )
 import Data.List qualified as L
 import Data.List.NonEmpty as X ( NonEmpty (..), nonEmpty )
-import Data.List.NonEmpty qualified as NE
 import Data.Semigroup as X ( Max (..), Min (..), Sum (..) )
 import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Builder
@@ -94,6 +93,9 @@ toSnd f a = (a, f a)
 traverseToSnd :: Functor m => (a -> m b) -> a -> m (a, b)
 traverseToSnd f a = (a, ) <$> f a
 
+forToSnd :: (Traversable t, Applicative m) => t a -> (a -> m b) -> m (t (a, b))
+forToSnd xs f = traverse (traverseToSnd f) xs
+
 maxes :: [(a, Int)] -> [a]
 maxes ps = case sortedPairs of
   [] -> []
@@ -127,9 +129,7 @@ notNull :: MonoFoldable mono => mono -> Bool
 notNull = not . null
 
 sample :: MonadRandom m => NonEmpty a -> m a
-sample xs = do
-  idx <- getRandomR (0, NE.length xs - 1)
-  pure $ xs NE.!! idx
+sample = uniform
 
 sampleWithRest :: (Eq a, MonadRandom m) => NonEmpty a -> m (a, [a])
 sampleWithRest xs = do

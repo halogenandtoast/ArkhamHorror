@@ -50,9 +50,7 @@ instance RunMessage WhateleyRuins_251 where
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         abominations <- getBroodOfYogSothoth
-        abominationsWithLocation <- traverse
-          (traverseToSnd (selectJust . LocationWithEnemy . EnemyWithId))
-          abominations
+        abominationsWithLocation <- forToSnd abominations (selectJust . LocationWithEnemy . EnemyWithId)
         abominationsWithLocationAndAccessibleLocations :: [ ( EnemyId
             , LocationId
             , [LocationId]

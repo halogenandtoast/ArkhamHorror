@@ -37,9 +37,7 @@ instance RunMessage PorteDeLAvancee where
   runMessage msg l@(PorteDeLAvancee attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectList AgendaWithAnyDoom
-      agendasWithOtherAgendas <- traverse
-        (traverseToSnd (selectJust . NotAgenda . AgendaWithId))
-        agendas
+      agendasWithOtherAgendas <- forToSnd agendas (selectJust . NotAgenda . AgendaWithId)
       push $ chooseOrRunOne
         iid
         [ targetLabel

@@ -171,6 +171,7 @@ data AssetAttrs = AssetAttrs
   , assetClues :: Int
   , assetDamage :: Int
   , assetHorror :: Int
+  , assetResources :: Int
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
@@ -189,6 +190,9 @@ canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans
 
 sealedTokensL :: Lens' AssetAttrs [Token]
 sealedTokensL = lens assetSealedTokens $ \m x -> m { assetSealedTokens = x }
+
+resourcesL :: Lens' AssetAttrs Int
+resourcesL = lens assetResources $ \m x -> m { assetResources = x }
 
 horrorL :: Lens' AssetAttrs Int
 horrorL = lens assetHorror $ \m x -> m { assetHorror = x }
@@ -312,6 +316,7 @@ assetWith f cardDef g = CardBuilder
     , assetClues = 0
     , assetDamage = 0
     , assetHorror = 0
+    , assetResources = 0
     , assetCanLeavePlayByNormalMeans = True
     , assetDiscardWhenNoUses = False
     , assetIsStory = False

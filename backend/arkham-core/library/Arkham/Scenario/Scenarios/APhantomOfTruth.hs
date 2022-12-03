@@ -103,9 +103,9 @@ cultistEffect :: GameT ()
 cultistEffect = do
   leadInvestigatorId <- getLeadInvestigatorId
   byakhee <- selectList (EnemyWithTrait Byakhee <> UnengagedEnemy)
-  byakheePairs :: [(EnemyId, (Distance, [InvestigatorId]))] <- traverse
-    (traverseToSnd investigatorsNearestToEnemy)
+  byakheePairs :: [(EnemyId, (Distance, [InvestigatorId]))] <- forToSnd
     byakhee
+    investigatorsNearestToEnemy
   let
     minDistance :: Int = fromJustNote "error" . minimumMay $ map
       (unDistance . fst . snd)
@@ -158,7 +158,9 @@ instance RunMessage APhantomOfTruth where
           [ Label "Conviction" [RecordCount Conviction 1]
           , Label "Doubt" [RecordCount Doubt 1]
           ]
-        , ShuffleCardsIntoDeck (InvestigatorDeck leadInvestigatorId) [theManInThePallidMask]
+        , ShuffleCardsIntoDeck
+          (InvestigatorDeck leadInvestigatorId)
+          [theManInThePallidMask]
         ]
       pure s
     Setup -> do

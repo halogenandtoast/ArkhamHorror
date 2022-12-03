@@ -39,5 +39,5 @@ instance HasAbilities LivingRoom where
 instance RunMessage LivingRoom where
   runMessage msg l@(LivingRoom attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (DrawCards iid 1 False)
+      l <$ push (drawCards iid attrs 1)
     _ -> LivingRoom <$> runMessage msg attrs

@@ -29,7 +29,7 @@ bloodRite = event BloodRite Cards.bloodRite
 instance RunMessage BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> e <$ pushAll
-      [ DrawCards iid 2 False
+      [ drawCards iid attrs 2
       , PayForCardAbility
         iid
         (EventSource eid)

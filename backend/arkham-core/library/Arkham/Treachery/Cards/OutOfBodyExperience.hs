@@ -31,7 +31,7 @@ instance RunMessage OutOfBodyExperience where
         cards <- field InvestigatorHand iid
         pushAll
           [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
-          , DrawCards iid (length cards) False
+          , drawCards iid attrs (length cards)
           , RemoveTreachery (toId attrs)
           , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard attrs]
           ]

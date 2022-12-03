@@ -44,7 +44,7 @@ instance RunMessage JewelOfAureolus3 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (chooseOne
         iid
-        [ Label "Draw 1 Card" [DrawCards iid 1 False]
+        [ Label "Draw 1 Card" [drawCards iid attrs 1]
         , Label "Take 2 Resources" [TakeResources iid 2 False]
         ]
       )

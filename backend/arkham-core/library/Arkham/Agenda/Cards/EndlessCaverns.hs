@@ -11,7 +11,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Message
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.SkillType

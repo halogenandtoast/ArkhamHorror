@@ -36,6 +36,6 @@ instance HasAbilities LuckyCigaretteCase where
 instance RunMessage LuckyCigaretteCase where
   runMessage msg a@(LuckyCigaretteCase attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ DrawCards iid 1 False
+      push $ drawCards iid attrs 1
       pure a
     _ -> LuckyCigaretteCase <$> runMessage msg attrs

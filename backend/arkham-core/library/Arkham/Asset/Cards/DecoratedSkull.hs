@@ -43,6 +43,6 @@ instance RunMessage DecoratedSkull where
       push $ AddUses (toId attrs) Charge 1
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      pushAll [DrawCards iid 1 False, TakeResources iid 1 False]
+      pushAll [drawCards iid attrs 1, TakeResources iid 1 False]
       pure a
     _ -> DecoratedSkull <$> runMessage msg attrs

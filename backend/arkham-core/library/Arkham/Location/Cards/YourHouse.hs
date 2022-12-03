@@ -52,5 +52,5 @@ instance RunMessage YourHouse where
     UseCardAbility _ source 1 [Window _ (Window.EnemySpawns _ _)] _
       | isSource attrs source -> pure l
     UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      l <$ pushAll [DrawCards iid 1 False, TakeResources iid 1 False]
+      l <$ pushAll [drawCards iid attrs 1, TakeResources iid 1 False]
     _ -> YourHouse <$> runMessage msg attrs

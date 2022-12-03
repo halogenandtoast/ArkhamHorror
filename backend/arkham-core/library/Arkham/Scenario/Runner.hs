@@ -6,6 +6,7 @@ module Arkham.Scenario.Runner
 import Arkham.Prelude
 
 import Arkham.Scenario.Types as X
+import Arkham.Helpers.Message as X
 
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types ( Field (..) )

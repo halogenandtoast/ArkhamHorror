@@ -11,6 +11,7 @@ import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
+import Arkham.Helpers.Message as X
 import Arkham.Spawn as X
 
 import Arkham.Action qualified as Action

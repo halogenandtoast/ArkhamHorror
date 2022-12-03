@@ -10,7 +10,6 @@ import Arkham.Agenda.Runner
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution

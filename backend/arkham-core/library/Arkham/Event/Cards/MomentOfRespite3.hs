@@ -23,7 +23,7 @@ instance RunMessage MomentOfRespite3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ HealHorror (InvestigatorTarget iid) 3
-        , DrawCards iid 1 False
+        , drawCards iid attrs 1
         , Discard (toTarget attrs)
         ]
     _ -> MomentOfRespite3 <$> runMessage msg attrs

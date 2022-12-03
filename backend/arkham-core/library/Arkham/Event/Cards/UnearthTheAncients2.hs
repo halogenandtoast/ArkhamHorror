@@ -74,7 +74,7 @@ instance RunMessage UnearthTheAncients2 where
           $ [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
             | card <- chosenCards metadata
             ]
-          <> [ DrawCards iid 1 False
+          <> [ drawCards iid attrs 1
              | card <- chosenCards metadata
              , Relic `member` cdCardTraits (toCardDef card)
              ]

@@ -59,7 +59,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
           (SkillModifier sv 2)
         pure a
       UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-        push $ DrawCards iid 2 False
+        push $ drawCards iid attrs 2
         pure a
       UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
         lids <-

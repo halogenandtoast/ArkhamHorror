@@ -57,7 +57,7 @@ instance RunMessage LostMemories where
       pushAll
         $ ShuffleEncounterDiscardBackIn
         : custodianMessages
-        <> [ DrawCards iid 2 False | iid <- hasPendant ]
+        <> [ drawCards iid attrs 2 | iid <- hasPendant ]
         <> [ createCardEffect
                Cards.lostMemories
                Nothing

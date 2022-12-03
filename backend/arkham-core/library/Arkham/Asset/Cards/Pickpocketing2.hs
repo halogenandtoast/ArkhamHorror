@@ -37,10 +37,10 @@ instance RunMessage Pickpocketing2 where
       mskillTest <- getSkillTest
       a <$ case skillTestResult <$> mskillTest of
         Just (SucceededBy _ n) | n >= 2 ->
-          pushAll [DrawCards iid 1 False, TakeResources iid 1 False]
+          pushAll [drawCards iid attrs 1, TakeResources iid 1 False]
         _ -> push $ chooseOne
           iid
-          [ Label "Draw 1 card" [DrawCards iid 1 False]
+          [ Label "Draw 1 card" [drawCards iid attrs 1]
           , Label "Gain 1 resource" [TakeResources iid 1 False]
           ]
     _ -> Pickpocketing2 <$> runMessage msg attrs

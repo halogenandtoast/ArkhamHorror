@@ -39,7 +39,7 @@ instance RunMessage StrangeSolution where
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ pushAll
         [ Discard (toTarget attrs)
-        , DrawCards iid 2 False
+        , drawCards iid attrs 2
         , Record YouHaveIdentifiedTheSolution
         ]
     _ -> StrangeSolution <$> runMessage msg attrs

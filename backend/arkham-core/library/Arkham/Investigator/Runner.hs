@@ -10,6 +10,7 @@ import Arkham.Classes as X
 import Arkham.ClassSymbol as X
 import Arkham.Helpers.Investigator as X
 import Arkham.Investigator.Types as X
+import Arkham.Helpers.Message as X
 import Arkham.Name as X
 import Arkham.Stats as X
 import Arkham.Token as X
@@ -1576,7 +1577,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (x : xs) -> do
         push (RequestedPlayerCard iid source (Just x))
         pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
-  DrawCards iid n True | iid == investigatorId -> do
+  DrawCards iid source n True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows
       [Window Timing.When (Window.PerformAction iid Action.Draw)]
     afterWindowMsg <- checkWindows
@@ -1586,7 +1587,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , beforeWindowMsg
       , TakeAction iid (Just Action.Draw) (ActionCost 1)
       , CheckAttackOfOpportunity iid False
-      , DrawCards iid n False
+      , DrawCards iid source n False
       , afterWindowMsg
       , FinishAction
       ]
@@ -1594,8 +1595,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == investigatorId -> do
       let (cards, deck) = splitAt n (unDeck investigatorDeck)
       pure $ a & deckL .~ Deck (deck <> cards)
-  -- DrawCards iid 0 False | iid == investigatorId -> pure a
-  DrawCards iid n False | iid == investigatorId -> do
+  DrawCards iid source n False | iid == investigatorId -> do
     -- RULES: When a player draws two or more cards as the result of a single
     -- ability or game step, those cards are drawn simultaneously. If a deck
     -- empties middraw, reset the deck and complete the draw.
@@ -1623,7 +1623,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
           $ pushAll
               [ EmptyDeck iid
-              , DrawCards iid n False
+              , DrawCards iid source n False
               , Msg.InvestigatorDamage iid EmptyDeckSource 0 1
               ]
         pure a
@@ -1631,7 +1631,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let deck = unDeck investigatorDeck
         if length deck < n
           then do
-            push $ DrawCards iid (n - length deck) False
+            push $ DrawCards iid source (n - length deck) False
             pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
           else do
             let
@@ -1712,7 +1712,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
-      $ push (DrawCards investigatorId 1 False)
+      $ push (DrawCards investigatorId ScenarioSource 1 False)
     mayChooseNotToTakeResources <- elem MayChooseNotToTakeUpkeepResources
       <$> getModifiers (InvestigatorTarget investigatorId)
     if mayChooseNotToTakeResources
@@ -2423,7 +2423,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         canAffordDrawCards <- getCanAfford a [Action.Draw]
         canAffordPlayCard <- getCanAfford a [Action.Play]
         playableCards <- getPlayableCards a UnpaidCost windows
-        let usesAction = not isAdditional
+        let
+          usesAction = not isAdditional
+          drawCardsF = if usesAction then drawCardsAction else drawCards
         push
           $ AskPlayer
           $ chooseOne iid
@@ -2435,7 +2437,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
           <> [ ComponentLabel
                  (InvestigatorDeckComponent iid)
-                 [DrawCards iid 1 usesAction]
+                 [drawCardsF iid a 1]
              | canAffordDrawCards && none
                (`elem` modifiers)
                [ CannotTakeAction (IsAction Action.Draw)

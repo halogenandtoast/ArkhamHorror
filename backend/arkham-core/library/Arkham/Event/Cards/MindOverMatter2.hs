@@ -32,7 +32,7 @@ instance RunMessage MindOverMatter2 where
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)
-        , DrawCards iid 1 False
+        , drawCards iid attrs 1
         , Discard (EventTarget eid)
         ]
       pure e

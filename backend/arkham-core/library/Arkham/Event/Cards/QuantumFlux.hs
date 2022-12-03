@@ -22,7 +22,7 @@ instance RunMessage QuantumFlux where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ ShuffleDiscardBackIn iid
-        , DrawCards iid 1 False
+        , drawCards iid attrs 1
         , RemoveFromGame (toTarget attrs)
         ]
     _ -> QuantumFlux <$> runMessage msg attrs

@@ -48,6 +48,6 @@ instance HasAbilities JakeWilliams where
 instance RunMessage JakeWilliams where
   runMessage msg a@(JakeWilliams attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ DrawCards iid 1 False
+      push $ drawCards iid attrs 1
       pure a
     _ -> JakeWilliams <$> runMessage msg attrs

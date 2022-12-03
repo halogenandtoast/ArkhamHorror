@@ -28,7 +28,7 @@ instance RunMessage Taunt2 where
           "Done engaging enemies"
           [ targetLabel
               enemyId
-              [EngageEnemy iid enemyId False, DrawCards iid 1 False]
+              [EngageEnemy iid enemyId False, drawCards iid attrs 1]
           | enemyId <- enemyIds
           ]
         )

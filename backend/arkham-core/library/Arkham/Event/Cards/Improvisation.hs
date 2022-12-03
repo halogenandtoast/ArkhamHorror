@@ -34,7 +34,7 @@ instance RunMessage Improvisation where
       e <$ pushAll
         [ switchRole iid
         , reductionEffect iid attrs
-        , DrawCards iid 1 False
+        , drawCards iid attrs 1
         , Discard (toTarget attrs)
         ]
     _ -> Improvisation <$> runMessage msg attrs

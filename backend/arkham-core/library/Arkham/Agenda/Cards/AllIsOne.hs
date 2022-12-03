@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card.CardType
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -34,8 +33,9 @@ instance HasAbilities AllIsOne where
 
 instance RunMessage AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ InvestigatorAssignDamage iid source DamageAny 0 1
+      pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       failedToSaveStudents <- getHasRecord
         TheInvestigatorsFailedToSaveTheStudents

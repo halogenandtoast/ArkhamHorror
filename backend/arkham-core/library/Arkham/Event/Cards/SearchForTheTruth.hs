@@ -21,5 +21,5 @@ instance RunMessage SearchForTheTruth where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       clueCount' <- field InvestigatorClues iid
       e <$ pushAll
-        [DrawCards iid (min 5 clueCount') False, Discard (toTarget attrs)]
+        [drawCards iid attrs (min 5 clueCount'), Discard (toTarget attrs)]
     _ -> SearchForTheTruth <$> runMessage msg attrs

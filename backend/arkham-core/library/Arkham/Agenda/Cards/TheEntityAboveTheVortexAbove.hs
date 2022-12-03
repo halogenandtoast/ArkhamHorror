@@ -55,6 +55,6 @@ instance RunMessage TheEntityAboveTheVortexAbove where
       investigatorIds <- getInvestigatorIds
       pushAll
         $ [PlaceDoom (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ DrawCards iid 1 False | iid <- investigatorIds ]
+        <> [ drawCards iid attrs 1 | iid <- investigatorIds ]
       pure a
     _ -> TheEntityAboveTheVortexAbove <$> runMessage msg attrs

@@ -63,7 +63,7 @@ instance RunMessage ScholarFromYith where
       pure e
     PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        pushAll [DrawCards iid 1 False, EnemyEvaded iid (toId attrs)]
+        pushAll [drawCards iid attrs 1, EnemyEvaded iid (toId attrs)]
         pure e
     FailedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
       -> do

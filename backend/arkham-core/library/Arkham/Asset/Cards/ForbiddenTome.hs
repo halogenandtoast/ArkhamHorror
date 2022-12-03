@@ -38,7 +38,7 @@ instance RunMessage ForbiddenTome where
   runMessage msg a@(ForbiddenTome attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payments -> do
       pushAll
-        [ DrawCards iid 1 False
+        [ drawCards iid attrs 1
         , UseCardAbilityChoice
           iid
           (toSource attrs)

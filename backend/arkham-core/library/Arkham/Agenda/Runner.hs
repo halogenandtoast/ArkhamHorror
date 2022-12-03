@@ -8,6 +8,8 @@ import Arkham.Prelude
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence as X
 import Arkham.Agenda.Types as X
+import Arkham.Agenda.Helpers as X
+import Arkham.Helpers.Message as X
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding ( PlaceUnderneath )

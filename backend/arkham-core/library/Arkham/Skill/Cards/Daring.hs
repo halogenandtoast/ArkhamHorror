@@ -37,6 +37,6 @@ instance RunMessage Daring where
         _ -> error "Target was invalid"
       pure s
     SkillTestEnds _ _ -> do
-      push $ DrawCards (skillOwner attrs) 1 False
+      push $ drawCards (skillOwner attrs) attrs 1
       pure s
     _ -> Daring <$> runMessage msg attrs

@@ -49,7 +49,7 @@ instance RunMessage GrandGuignol where
         : [ Label
               "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
               (map (DiscardCard iid) nonWeaknessCards
-              <> [DrawCards iid (length nonWeaknessCards) False]
+              <> [drawCards iid attrs (length nonWeaknessCards)]
               )
           | not (null nonWeaknessCards)
           ]

@@ -42,5 +42,5 @@ instance HasAbilities TheGuardian where
 instance RunMessage TheGuardian where
   runMessage msg l@(TheGuardian attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (DrawCards iid 1 False)
+      l <$ push (drawCards iid attrs 1)
     _ -> TheGuardian <$> runMessage msg attrs

@@ -30,6 +30,7 @@ instance HasAbilities Pickpocketing where
 
 instance RunMessage Pickpocketing where
   runMessage msg a@(Pickpocketing attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (DrawCards iid 1 False)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ drawCards iid attrs 1
+      pure a
     _ -> Pickpocketing <$> runMessage msg attrs

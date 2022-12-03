@@ -9,6 +9,7 @@ import Arkham.Asset.Helpers as X
 import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X
+import Arkham.Helpers.Message as X
 import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card

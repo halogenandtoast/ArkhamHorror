@@ -42,7 +42,7 @@ instance RunMessage DrawingThin where
       , chooseOne
         iid
         [ Label "Take 2 resources" [TakeResources iid 2 False]
-        , Label "Draw 1 card" [DrawCards iid 1 False]
+        , Label "Draw 1 card" [drawCards iid attrs 1]
         ]
       ]
     _ -> DrawingThin <$> runMessage msg attrs

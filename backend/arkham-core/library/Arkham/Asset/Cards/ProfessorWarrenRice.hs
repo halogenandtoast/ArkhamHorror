@@ -38,5 +38,5 @@ instance HasAbilities ProfessorWarrenRice where
 instance RunMessage ProfessorWarrenRice where
   runMessage msg a@(ProfessorWarrenRice attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (DrawCards iid 1 False)
+      a <$ push (drawCards iid attrs 1)
     _ -> ProfessorWarrenRice <$> runMessage msg attrs

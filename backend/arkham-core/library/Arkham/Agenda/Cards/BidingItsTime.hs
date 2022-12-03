@@ -13,7 +13,6 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Exception
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )

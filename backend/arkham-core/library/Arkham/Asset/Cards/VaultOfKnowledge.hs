@@ -42,6 +42,6 @@ instance RunMessage VaultOfKnowledge where
       iids <- selectList $ colocatedWith iid
       push $ chooseOrRunOne
         iid
-        [ targetLabel iid' [DrawCards iid' 1 False] | iid' <- iids ]
+        [ targetLabel iid' [drawCards iid' attrs 1] | iid' <- iids ]
       pure a
     _ -> VaultOfKnowledge <$> runMessage msg attrs

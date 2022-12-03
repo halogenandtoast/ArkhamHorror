@@ -60,5 +60,5 @@ instance RunMessage Lobby where
           ]
       l <$ pushAll msgs
     UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      l <$ push (DrawCards iid 3 False)
+      l <$ push (drawCards iid attrs 3)
     _ -> Lobby <$> runMessage msg attrs

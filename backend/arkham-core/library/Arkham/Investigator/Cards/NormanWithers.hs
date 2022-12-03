@@ -74,7 +74,7 @@ instance HasTokenValue NormanWithers where
 instance RunMessage NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of
     UseCardAbility iid source 1 _ _ | isSource a source ->
-      nw <$ push (DrawCards iid 1 False)
+      nw <$ push (drawCards iid a 1)
     When (RevealToken _ iid token)
       | iid == toId a && tokenFace token == ElderSign -> do
         nw <$ push
@@ -82,7 +82,7 @@ instance RunMessage NormanWithers where
           $ Label "Do not swap" []
           : [ TargetLabel
                 (CardIdTarget $ toCardId c)
-                [ DrawCards iid 1 False
+                [ drawCards iid a 1
                 , PutCardOnTopOfDeck
                   iid
                   (Deck.InvestigatorDeck iid)

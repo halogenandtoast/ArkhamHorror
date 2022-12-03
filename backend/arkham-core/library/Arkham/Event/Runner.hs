@@ -4,6 +4,7 @@ module Arkham.Event.Runner
   ) where
 
 import Arkham.Event.Types as X
+import Arkham.Helpers.Message as X
 
 import Arkham.Prelude
 

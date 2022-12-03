@@ -17,6 +17,7 @@ perception = skill Perception Cards.perception
 
 instance RunMessage Perception where
   runMessage msg s@(Perception attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ push (DrawCards skillOwner 1 False)
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      push $ drawCards skillOwner attrs 1
+      pure s
     _ -> Perception <$> runMessage msg attrs

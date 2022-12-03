@@ -30,7 +30,7 @@ instance RunMessage Lucky3 where
             skillType = skillTestSkillType skillTest
           pushAll
             [ Discard (toTarget attrs)
-            , DrawCards iid 1 False
+            , drawCards iid attrs 1
             , skillTestModifier
               (toSource attrs)
               (InvestigatorTarget iid')

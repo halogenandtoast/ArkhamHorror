@@ -22,7 +22,7 @@ instance RunMessage CrypticResearch4 where
       iids <- selectList $ colocatedWith iid
       pushAll
         [ chooseOne iid
-          $ [ targetLabel iid' [DrawCards iid' 3 False] | iid' <- iids ]
+          $ [ targetLabel iid' [drawCards iid' attrs 3] | iid' <- iids ]
         , Discard (EventTarget eid)
         ]
       pure e

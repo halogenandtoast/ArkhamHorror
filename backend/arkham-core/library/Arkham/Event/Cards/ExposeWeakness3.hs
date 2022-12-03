@@ -47,7 +47,7 @@ instance RunMessage ExposeWeakness3 where
               ]
           | (enemy, enemyFight) <- enemies
           ]
-        , DrawCards iid 1 False
+        , drawCards iid attrs 1
         , Discard (toTarget attrs)
         ]
       pure e

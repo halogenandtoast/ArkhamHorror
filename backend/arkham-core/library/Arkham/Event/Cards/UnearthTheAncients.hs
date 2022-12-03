@@ -73,7 +73,7 @@ instance RunMessage UnearthTheAncients where
           Just card ->
             pushAll
               $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
-              : [ DrawCards iid 1 False
+              : [ drawCards iid attrs 1
                 | Relic `member` cdCardTraits (toCardDef card)
                 ]
           Nothing -> error "this should not happen"

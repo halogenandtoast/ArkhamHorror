@@ -51,7 +51,7 @@ instance HasAbilities MetropolitanCathedral where
 instance RunMessage MetropolitanCathedral where
   runMessage msg l@(MetropolitanCathedral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ DrawCards iid 2 False
+      push $ drawCards iid attrs 2
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push

@@ -17,6 +17,7 @@ manualDexterity = skill ManualDexterity Cards.manualDexterity
 
 instance RunMessage ManualDexterity where
   runMessage msg s@(ManualDexterity attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ push (DrawCards skillOwner 1 False)
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      push $ drawCards skillOwner attrs 1
+      pure s
     _ -> ManualDexterity <$> runMessage msg attrs

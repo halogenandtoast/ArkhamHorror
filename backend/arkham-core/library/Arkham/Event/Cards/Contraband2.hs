@@ -50,7 +50,7 @@ instance RunMessage Contraband2 where
               iid
               [ targetLabel
                   assetId
-                  [AddUses assetId useType' 2, DrawCards iid 1 False]
+                  [AddUses assetId useType' 2, drawCards iid attrs 1]
               | (useType', _, assetId) <-
                 ammoAssetsWithUseCount <> supplyAssetsWithUseCount
               ]

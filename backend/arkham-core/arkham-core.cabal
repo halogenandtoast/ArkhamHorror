@@ -632,6 +632,7 @@ library
       Arkham.Difficulty
       Arkham.Direction
       Arkham.Distance
+      Arkham.Draw.Types
       Arkham.Effect
       Arkham.Effect.Effects
       Arkham.Effect.Effects.AChanceEncounter
@@ -1053,6 +1054,7 @@ library
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
       Arkham.Helpers.Log
+      Arkham.Helpers.Message
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Projection
       Arkham.Helpers.Query

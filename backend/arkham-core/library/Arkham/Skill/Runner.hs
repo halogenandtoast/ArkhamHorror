@@ -6,6 +6,7 @@ module Arkham.Skill.Runner
 import Arkham.Prelude
 
 import Arkham.Skill.Types as X
+import Arkham.Helpers.Message as X
 
 import Arkham.Classes.RunMessage
 import Arkham.Classes.Entity

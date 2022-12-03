@@ -31,7 +31,7 @@ instance RunMessage Taunt3 where
               (EnemyTarget enemyId)
               [ EngageEnemy iid enemyId False
               , InvestigatorDamageEnemy iid enemyId (toSource attrs)
-              , DrawCards iid 1 False
+              , drawCards iid attrs 1
               ]
           | enemyId <- enemyIds
           ]

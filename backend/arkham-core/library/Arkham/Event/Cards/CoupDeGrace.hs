@@ -40,6 +40,6 @@ instance RunMessage CoupDeGrace where
         <> [Discard (toTarget attrs)]
       pure e
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
-      push $ DrawCards (eventController attrs) 1 False
+      push $ drawCards (eventController attrs) attrs 1
       pure e
     _ -> CoupDeGrace <$> runMessage msg attrs

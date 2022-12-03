@@ -95,7 +95,7 @@ instance RunMessage FatherMateoElderSignEffect where
               iid
               ([ Label
                    "Draw 1 card and gain 1 resource"
-                   [DrawCards iid 1 False, TakeResources iid 1 False]
+                   [drawCards iid attrs 1, TakeResources iid 1 False]
                ]
               <> [ Label
                      "Take an additional action this turn"

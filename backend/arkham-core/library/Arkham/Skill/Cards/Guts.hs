@@ -17,6 +17,7 @@ guts = skill Guts Cards.guts
 
 instance RunMessage Guts where
   runMessage msg s@(Guts attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ push (DrawCards skillOwner 1 False)
+    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId -> do
+      push $ drawCards skillOwner attrs 1
+      pure s
     _ -> Guts <$> runMessage msg attrs

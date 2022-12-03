@@ -22,7 +22,7 @@ instance RunMessage OfferOfPower where
           iid
           [ Label
             "Draw 2 cards and place 2 doom on agenda"
-            [ DrawCards iid 2 False
+            [ drawCards iid attrs 2
             , PlaceDoomOnAgenda
             , PlaceDoomOnAgenda
             , AdvanceAgendaIfThresholdSatisfied

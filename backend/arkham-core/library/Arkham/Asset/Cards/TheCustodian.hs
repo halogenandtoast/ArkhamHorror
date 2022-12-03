@@ -46,7 +46,7 @@ instance RunMessage TheCustodian where
   runMessage msg a@(TheCustodian attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ InvestigatorAt $ locationWithAsset $ toId attrs
-      pushAll [ DrawCards iid 1 False | iid <- iids ]
+      pushAll [ drawCards iid attrs 1 | iid <- iids ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ BeginSkillTest

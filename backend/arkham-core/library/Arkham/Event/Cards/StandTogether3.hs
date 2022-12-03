@@ -29,8 +29,8 @@ instance RunMessage StandTogether3 where
         [x] -> e <$ pushAll
           [ TakeResources iid 2 False
           , TakeResources x 2 False
-          , DrawCards iid 2 False
-          , DrawCards x 2 False
+          , drawCards iid attrs 2
+          , drawCards x attrs 2
           , Discard (toTarget e)
           ]
         xs -> e <$ pushAll
@@ -40,8 +40,8 @@ instance RunMessage StandTogether3 where
                 (InvestigatorTarget x)
                 [ TakeResources iid 2 False
                 , TakeResources x 2 False
-                , DrawCards iid 2 False
-                , DrawCards x 2 False
+                , drawCards iid attrs 2
+                , drawCards x attrs 2
                 ]
             | x <- xs
             ]

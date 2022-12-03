@@ -55,7 +55,9 @@ instance RunMessage LivreDeibon where
         (chooseOne iid
         $ [ TargetLabel
               (CardIdTarget $ toCardId c)
-              [DrawCards iid 1 False, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
+              [ drawCards iid attrs 1
+              , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
+              ]
           | c <- mapMaybe (preview _PlayerCard) handCards
           ]
         )

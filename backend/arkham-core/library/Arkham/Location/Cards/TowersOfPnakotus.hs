@@ -55,6 +55,6 @@ instance RunMessage TowersOfPnakotus where
         cardAmount = findWithDefault 0 "Cards" choicesMap
       pushAll
         $ replicate cardAmount (ChooseAndDiscardCard iid)
-        <> [ShuffleDiscardBackIn iid, DrawCards iid (cardAmount + 1) False]
+        <> [ShuffleDiscardBackIn iid, drawCards iid attrs (cardAmount + 1)]
       pure l
     _ -> TowersOfPnakotus <$> runMessage msg attrs

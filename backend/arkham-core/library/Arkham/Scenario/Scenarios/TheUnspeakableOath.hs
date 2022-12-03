@@ -170,7 +170,7 @@ instance RunMessage TheUnspeakableOath where
                   courage = PlayerCard
                     (courageProxy { pcOriginalCardCode = toCardCode x })
                 pure
-                  [ DrawCards iid 1 False
+                  [ drawCards iid attrs 1
                   , InitiatePlayCardAs
                     iid
                     (toCardId x)

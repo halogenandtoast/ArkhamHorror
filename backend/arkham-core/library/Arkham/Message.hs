@@ -286,7 +286,7 @@ data Message
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherToken InvestigatorId
-  | DrawCards InvestigatorId Int Bool
+  | DrawCards InvestigatorId Source Int Bool
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrawToken InvestigatorId Token
   | DrewPlayerEnemy InvestigatorId Card

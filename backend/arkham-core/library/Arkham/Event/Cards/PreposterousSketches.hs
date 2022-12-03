@@ -20,5 +20,5 @@ preposterousSketches = event PreposterousSketches Cards.preposterousSketches
 instance RunMessage PreposterousSketches where
   runMessage msg e@(PreposterousSketches attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll [DrawCards iid 3 False, Discard (toTarget attrs)]
+      e <$ pushAll [drawCards iid attrs 3, Discard (toTarget attrs)]
     _ -> PreposterousSketches <$> runMessage msg attrs

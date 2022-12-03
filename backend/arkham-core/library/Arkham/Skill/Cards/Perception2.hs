@@ -24,6 +24,6 @@ instance RunMessage Perception2 where
   runMessage msg s@(Perception2 attrs) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ n | sid == skillId attrs -> do
       let amount = if n >= 2 then 2 else 1
-      push (DrawCards (skillOwner attrs) amount False)
+      push $ drawCards (skillOwner attrs) attrs amount
       pure s
     _ -> Perception2 <$> runMessage msg attrs

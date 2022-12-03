@@ -39,7 +39,7 @@ instance RunMessage ScrollOfProphecies where
           iid
           [ TargetLabel
               (InvestigatorTarget iid')
-              [DrawCards iid' 3 False, ChooseAndDiscardCard iid']
+              [drawCards iid' attrs 3, ChooseAndDiscardCard iid']
           | iid' <- investigatorIds
           ]
         )

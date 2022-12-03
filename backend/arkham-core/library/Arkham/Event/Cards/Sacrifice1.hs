@@ -47,7 +47,7 @@ instance RunMessage Sacrifice1 where
         drawAmount = findWithDefault 0 "Cards" choicesMap
         resourcesAmount = findWithDefault 0 "Resources" choicesMap
       pushAll
-        $ [ DrawCards iid drawAmount False | drawAmount > 0 ]
+        $ [ drawCards iid attrs drawAmount | drawAmount > 0 ]
         <> [ TakeResources iid resourcesAmount False | resourcesAmount > 0 ]
       pure e
     _ -> Sacrifice1 <$> runMessage msg attrs

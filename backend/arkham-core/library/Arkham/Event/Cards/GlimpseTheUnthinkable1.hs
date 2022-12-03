@@ -26,7 +26,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
   runMessage msg e@(GlimpseTheUnthinkable1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget windows' _ | eid == toId attrs -> do
       pushAll
-        [ DrawCards iid 1 False
+        [ drawCards iid attrs 1
         , ResolveEvent iid eid mtarget windows'
         , Discard (toTarget attrs)
         ]
@@ -60,7 +60,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
               [ShuffleCardsIntoDeck (InvestigatorDeck iid) [c]]
           | c <- cards
           ]
-        , DrawCards iid n False
+        , drawCards iid attrs n
         ]
 
       pure e

@@ -43,6 +43,6 @@ instance HasAbilities InterviewRoomArrivalChamber where
 instance RunMessage InterviewRoomArrivalChamber where
   runMessage msg l@(InterviewRoomArrivalChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ DrawCards iid 1 False
+      push $ drawCards iid attrs 1
       pure l
     _ -> InterviewRoomArrivalChamber <$> runMessage msg attrs

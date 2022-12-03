@@ -48,7 +48,7 @@ instance RunMessage EasttownArkhamPoliceStation where
         <$> selectList (AssetControlledBy You <> AssetWithUseType Supply)
       push $ chooseOne
         iid
-        [ targetLabel assetId [AddUses (AssetTarget assetId) useType' 2]
+        [ targetLabel assetId [AddUses assetId useType' 2]
         | (useType', assetId) <- ammoAssets <> supplyAssets
         ]
       pure l

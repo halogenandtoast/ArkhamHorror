@@ -414,6 +414,8 @@ allAssets = mapFrom
   , SomeAssetCard flamethrower5
   --- seeker [sha]
   , SomeAssetCard pnakoticManuscripts5
+  --- rogue [sha]
+  , SomeAssetCard borrowedTime3
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

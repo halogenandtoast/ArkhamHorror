@@ -39,7 +39,7 @@ instance RunMessage TheRougarouFeeds where
           targets <- setToList <$> nonBayouLocations
           nonBayouLocationsWithClueCounts <-
             sortOn snd
-              <$> traverse (traverseToSnd (field LocationClues)) targets
+              <$> forToSnd targets (field LocationClues)
           let
             moveMessage = case nonBayouLocationsWithClueCounts of
               [] -> error "there has to be such a location"

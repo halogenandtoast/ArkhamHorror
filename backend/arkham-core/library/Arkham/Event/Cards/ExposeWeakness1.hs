@@ -5,14 +5,13 @@ module Arkham.Event.Cards.ExposeWeakness1
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
@@ -27,26 +26,23 @@ exposeWeakness1 = event ExposeWeakness1 Cards.exposeWeakness1
 instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemyIds <- selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
-      enemyIdsWithFight <- traverse
-        (traverseToSnd (field EnemyFight))
-        enemyIds
-      e <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (EnemyTarget enemyId)
-              [ BeginSkillTest
-                  iid
-                  (toSource attrs)
-                  (EnemyTarget enemyId)
-                  Nothing
-                  SkillIntellect
-                  enemyFight
-              ]
-          | (enemyId, enemyFight) <- enemyIdsWithFight
-          ]
-        )
+      enemies <- selectWithField EnemyFight
+        $ EnemyAt (locationWithInvestigator iid)
+      push $ chooseOne
+        iid
+        [ targetLabel
+            enemy
+            [ BeginSkillTest
+                iid
+                (toSource attrs)
+                (EnemyTarget enemy)
+                Nothing
+                SkillIntellect
+                enemyFight
+            ]
+        | (enemy, enemyFight) <- enemies
+        ]
+      pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         mtarget <- getSkillTestTarget

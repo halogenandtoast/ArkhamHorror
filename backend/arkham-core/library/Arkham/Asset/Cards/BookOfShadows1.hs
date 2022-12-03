@@ -40,7 +40,7 @@ instance RunMessage BookOfShadows1 where
         (AssetControlledBy You <> AssetWithTrait Spell)
       unless (null spellAssetIds) $ push $ chooseOne
         iid
-        [ targetLabel aid' [AddUses (AssetTarget aid') Charge 1]
+        [ targetLabel aid' [AddUses aid' Charge 1]
         | aid' <- spellAssetIds
         ]
       pure a

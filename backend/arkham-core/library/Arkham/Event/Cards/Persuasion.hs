@@ -33,27 +33,24 @@ instance RunMessage Persuasion where
       case mlocation of
         Just location -> do
           enemies <-
-            selectList
+            selectWithField EnemySanityDamage
             $ enemyAt location
             <> EnemyWithTrait Humanoid
             <> NonWeaknessEnemy
-          enemiesWithHorror <- traverse
-            (traverseToSnd (field EnemySanityDamage))
-            enemies
           pushAll
             [ chooseOne
               iid
               [ targetLabel
-                  eid
+                  enemy
                   [ BeginSkillTest
                       iid
                       (toSource attrs)
-                      (EnemyTarget enemyId)
+                      (EnemyTarget enemy)
                       Nothing
                       SkillIntellect
                       (3 + horror)
                   ]
-              | (enemyId, horror) <- enemiesWithHorror
+              | (enemy, horror) <- enemies
               ]
             , Discard (toTarget attrs)
             ]

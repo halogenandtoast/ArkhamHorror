@@ -22,6 +22,18 @@ selectList
   :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m [QueryElement a]
 selectList = selectListMap id
 
+selectWithField
+  :: ( EntityId rec ~ QueryElement a
+     , Projection rec
+     , Monad m
+     , HasGame m
+     , Query a
+     )
+  => Field rec typ
+  -> a
+  -> m [(QueryElement a, typ)]
+selectWithField fld = traverse (traverseToSnd (field fld)) <=< selectList
+
 selectRandom
   :: (HasCallStack, Query a, HasGame m, MonadRandom m)
   => a

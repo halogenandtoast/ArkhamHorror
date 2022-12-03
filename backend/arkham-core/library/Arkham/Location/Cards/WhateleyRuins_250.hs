@@ -60,9 +60,10 @@ instance HasAbilities WhateleyRuins_250 where
 instance RunMessage WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
-        (traverseToSnd (field InvestigatorClues))
-        (setToList $ locationInvestigators attrs)
+      investigatorWithCluePairs <-
+        selectWithField InvestigatorClues
+        $ investigatorAt (toId attrs)
+        <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
@@ -77,32 +78,25 @@ instance RunMessage WhateleyRuins_250 where
           | target <- abominations
           ]
 
-      l <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (InvestigatorTarget iid')
-              ([placeClueOnAbomination iid']
-              <> [ chooseOne
-                     iid'
-                     [ Label
-                       "Spend a second clue"
-                       [placeClueOnAbomination iid']
-                     , Label "Do not spend a second clue" []
-                     ]
-                 | clueCount > 1
+      push $ chooseOne
+        iid
+        [ targetLabel iid'
+          $ placeClueOnAbomination iid'
+          : [ chooseOne
+                iid'
+                [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                , Label "Do not spend a second clue" []
+                ]
+            | clueCount > 1
+            ]
+          <> [ chooseOne
+                 iid'
+                 [ Label "Spend a third clue" [placeClueOnAbomination iid']
+                 , Label "Do not spend a third clue" []
                  ]
-              <> [ chooseOne
-                     iid'
-                     [ Label
-                       "Spend a third clue"
-                       [placeClueOnAbomination iid']
-                     , Label "Do not spend a third clue" []
-                     ]
-                 | clueCount > 2
-                 ]
-              )
-          | (iid', clueCount) <- investigatorWithCluePairs
-          ]
-        )
+             | clueCount > 2
+             ]
+        | (iid', clueCount) <- investigatorWithCluePairs
+        ]
+      pure l
     _ -> WhateleyRuins_250 <$> runMessage msg attrs

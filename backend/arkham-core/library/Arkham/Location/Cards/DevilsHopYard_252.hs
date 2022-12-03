@@ -50,9 +50,10 @@ instance HasAbilities DevilsHopYard_252 where
 instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
-        (traverseToSnd (field InvestigatorClues))
-        (setToList $ locationInvestigators attrs)
+      investigatorWithCluePairs <-
+        selectWithField InvestigatorClues
+        $ investigatorAt (toId attrs)
+        <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
@@ -67,23 +68,18 @@ instance RunMessage DevilsHopYard_252 where
           | target <- abominations
           ]
 
-      l <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (InvestigatorTarget iid')
-              ([placeClueOnAbomination iid']
-              <> [ chooseOne
-                     iid'
-                     [ Label
-                       "Spend a second clue"
-                       [placeClueOnAbomination iid']
-                     , Label "Do not spend a second clue" []
-                     ]
-                 | clueCount > 1
-                 ]
-              )
-          | (iid', clueCount) <- investigatorWithCluePairs
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ targetLabel iid'
+          $ placeClueOnAbomination iid'
+          : [ chooseOne
+                iid'
+                [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                , Label "Do not spend a second clue" []
+                ]
+            | clueCount > 1
+            ]
+        | (iid', clueCount) <- investigatorWithCluePairs
+        ]
+      pure l
     _ -> DevilsHopYard_252 <$> runMessage msg attrs

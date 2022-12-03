@@ -59,6 +59,6 @@ instance RunMessage Recharge2 where
               )
               tokens
             then push (Discard $ AssetTarget aid)
-            else push (AddUses (AssetTarget aid) Charge 3)
+            else push (AddUses aid Charge 3)
           pure e
     _ -> Recharge2 . (`with` meta) <$> runMessage msg attrs

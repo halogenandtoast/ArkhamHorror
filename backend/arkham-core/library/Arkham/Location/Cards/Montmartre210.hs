@@ -46,17 +46,13 @@ instance HasAbilities Montmartre210 where
 instance RunMessage Montmartre210 where
   runMessage msg a@(Montmartre210 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      ammoAssets <-
-        selectListMap AssetTarget $ AssetControlledBy You <> AssetWithUses Ammo
-      supplyAssets <-
-        selectListMap AssetTarget
-        $ AssetControlledBy You
-        <> AssetWithUses Supply
+      ammoAssets <- selectList $ AssetControlledBy You <> AssetWithUses Ammo
+      supplyAssets <- selectList $ AssetControlledBy You <> AssetWithUses Supply
       push
         $ chooseOne iid
-        $ [ TargetLabel target [AddUses target Ammo 1] | target <- ammoAssets ]
-        <> [ TargetLabel target [AddUses target Supply 1]
-           | target <- supplyAssets
+        $ [ targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets ]
+        <> [ targetLabel asset [AddUses asset Supply 1]
+           | asset <- supplyAssets
            ]
       pure a
     _ -> Montmartre210 <$> runMessage msg attrs

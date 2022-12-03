@@ -29,7 +29,7 @@ instance RunMessage ArrowsFromTheTrees where
           selectList
           $ NotInvestigator (InvestigatorWithId iid)
           <> InvestigatorAt (LocationWithTrait Ancient)
-        traverse (traverseToSnd countAllies) others
+        forToSnd others countAllies
       pushAll
         $ InvestigatorAssignDamage iid source DamageAny (allyCount + 1) 0
         : [ InvestigatorAssignDamage iid' source DamageAny (allyCount' + 1) 0

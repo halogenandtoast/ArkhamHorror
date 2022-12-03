@@ -55,9 +55,10 @@ instance HasAbilities ColdSpringGlen_244 where
 instance RunMessage ColdSpringGlen_244 where
   runMessage msg l@(ColdSpringGlen_244 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
-        (traverseToSnd (field InvestigatorClues))
-        (setToList $ locationInvestigators attrs)
+      investigatorWithCluePairs <-
+        selectWithField InvestigatorClues
+        $ investigatorAt (toId attrs)
+        <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
@@ -72,14 +73,14 @@ instance RunMessage ColdSpringGlen_244 where
           | target <- abominations
           ]
 
-      l <$ pushAll
-        ([placeClueOnAbomination]
-        <> [ chooseOne
-               iid
-               [ Label "Spend a second clue" [placeClueOnAbomination]
-               , Label "Do not spend a second clue" []
-               ]
-           | totalClues > 1
-           ]
-        )
+      pushAll
+        $ placeClueOnAbomination
+        : [ chooseOne
+              iid
+              [ Label "Spend a second clue" [placeClueOnAbomination]
+              , Label "Do not spend a second clue" []
+              ]
+          | totalClues > 1
+          ]
+      pure l
     _ -> ColdSpringGlen_244 <$> runMessage msg attrs

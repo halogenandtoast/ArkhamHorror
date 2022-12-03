@@ -40,7 +40,7 @@ instance HasAbilities DecoratedSkull where
 instance RunMessage DecoratedSkull where
   runMessage msg a@(DecoratedSkull attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AddUses (toTarget attrs) Charge 1
+      push $ AddUses (toId attrs) Charge 1
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       pushAll [DrawCards iid 1 False, TakeResources iid 1 False]

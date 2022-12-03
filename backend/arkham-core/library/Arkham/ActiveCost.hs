@@ -422,9 +422,9 @@ instance RunMessage ActiveCost where
               if null canHelpPay
                 then push (SpendResources iid x)
                 else do
-                  iidsWithResources <- traverse
-                    (traverseToSnd (field InvestigatorResources))
+                  iidsWithResources <- forToSnd
                     (iid : map fst canHelpPay)
+                    (field InvestigatorResources)
                   push
                     (Ask iid
                     $ ChoosePaymentAmounts
@@ -537,7 +537,7 @@ instance RunMessage ActiveCost where
             <> InvestigatorWithAnyClues
           iidsWithClues <-
             filter ((> 0) . snd)
-              <$> traverse (traverseToSnd (getSpendableClueCount . pure)) iids
+              <$> forToSnd iids (getSpendableClueCount . pure)
           case iidsWithClues of
             [(iid', _)] ->
               c <$ push (PayCost acId iid' True (ClueCost totalClues))

@@ -16,6 +16,7 @@ import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Control.Lens ( set )
 
 data Ability = Ability
   { abilitySource :: Source
@@ -84,6 +85,10 @@ abilityIsReactionAbility a = case abilityType a of
 
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
+
+doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
+doesNotProvokeAttacksOfOpportunity =
+  set abilityDoesNotProvokeAttacksOfOpportunityL True
 
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l

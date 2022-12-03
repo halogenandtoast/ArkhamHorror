@@ -8,12 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses
 import Arkham.Classes
-import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
+import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
-import Arkham.Target
 
 newtype Contraband2 = Contraband2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -31,51 +29,41 @@ instance RunMessage Contraband2 where
         $ LocationWithInvestigator
         $ InvestigatorWithId iid
 
-      ammoAssets <- selectList
-        (AssetWithUseType Ammo <> AssetOneOf
-          (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
-        )
+      ammoAssets <-
+        selectWithField AssetUses $ AssetWithUseType Ammo <> AssetOneOf
+          (map assetControlledBy investigatorIds)
 
-      ammoAssetsWithUseCount <- map (\(c, aid) -> (Ammo, c, aid)) <$> for
-        ammoAssets
-        (\aid -> (, aid) . useCount <$> field AssetUses aid)
+      supplyAssets <- selectWithField AssetUses $ AssetWithUseType Supply <> AssetOneOf
+        (map assetControlledBy investigatorIds)
 
-      supplyAssets <- selectList
-        (AssetWithUseType Supply <> AssetOneOf
-          (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
-        )
+      let
+        ammoAssetsWithUseCount =
+          map (\(aid, uses) -> (Ammo, useCount uses, aid)) ammoAssets
+        supplyAssetsWithUseCount =
+          map (\(aid, uses) -> (Supply, useCount uses, aid)) supplyAssets
 
-      supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid)) <$> for
-        supplyAssets
-        (\aid -> (, aid) . useCount <$> field AssetUses aid)
-
-      e <$ push
-        (chooseOne
-          iid
-          [ Label
-            "Place 2 ammo or supply tokens on that asset and draw 1 card."
-            [ chooseOne
-                iid
-                [ TargetLabel
-                    (AssetTarget assetId)
-                    [ AddUses (AssetTarget assetId) useType' 2
-                    , DrawCards iid 1 False
-                    ]
-                | (useType', _, assetId) <-
-                  ammoAssetsWithUseCount <> supplyAssetsWithUseCount
-                ]
-            ]
-          , Label
-            "Double the number of ammo or supply tokens on that asset."
-            [ chooseOne
-                iid
-                [ TargetLabel
-                    (AssetTarget assetId)
-                    [AddUses (AssetTarget assetId) useType' assetUseCount]
-                | (useType', assetUseCount, assetId) <-
-                  ammoAssetsWithUseCount <> supplyAssetsWithUseCount
-                ]
-            ]
+      push $ chooseOne
+        iid
+        [ Label
+          "Place 2 ammo or supply tokens on that asset and draw 1 card."
+          [ chooseOne
+              iid
+              [ targetLabel
+                  assetId
+                  [AddUses assetId useType' 2, DrawCards iid 1 False]
+              | (useType', _, assetId) <-
+                ammoAssetsWithUseCount <> supplyAssetsWithUseCount
+              ]
           ]
-        )
+        , Label
+          "Double the number of ammo or supply tokens on that asset."
+          [ chooseOne
+              iid
+              [ targetLabel assetId [AddUses assetId useType' assetUseCount]
+              | (useType', assetUseCount, assetId) <-
+                ammoAssetsWithUseCount <> supplyAssetsWithUseCount
+              ]
+          ]
+        ]
+      pure e
     _ -> Contraband2 <$> runMessage msg attrs

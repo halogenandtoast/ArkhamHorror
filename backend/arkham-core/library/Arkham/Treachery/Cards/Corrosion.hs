@@ -47,8 +47,7 @@ instance RunMessage Corrosion where
         else Surge iid source
       pure t
     RevelationChoice iid source n | n > 0 -> do
-      assets <- selectList assetMatcher
-      assetsWithCosts <- traverse (traverseToSnd (field AssetCost)) assets
+      assets <- selectWithField AssetCost assetMatcher
       handAssets <- fieldMap
         InvestigatorHand
         (filter (`cardMatch` handMatcher))
@@ -68,7 +67,7 @@ instance RunMessage Corrosion where
       unless (null assets && null handAssets)
         $ push
         $ chooseOne iid
-        $ map discardAsset assetsWithCosts
+        $ map discardAsset assets
         <> map discardHandAsset handAssets
       pure t
     _ -> Corrosion <$> runMessage msg attrs

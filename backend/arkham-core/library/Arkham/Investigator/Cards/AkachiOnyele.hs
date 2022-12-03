@@ -52,13 +52,13 @@ instance HasTokenValue AkachiOnyele where
 instance RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
-      targets <- map AssetTarget <$> filterM
+      assets <- filterM
         (fieldMap AssetUses (\u -> useType u == Just Charge && useCount u > 0))
         (setToList $ investigatorAssets attrs)
-      when (notNull targets)
+      when (notNull assets)
         $ push
         $ chooseOne iid
         $ Done "Do not use Elder Sign ability"
-        : [ TargetLabel target [AddUses target Charge 1] | target <- targets ]
+        : [ targetLabel asset [AddUses asset Charge 1] | asset <- assets ]
       pure i
     _ -> AkachiOnyele <$> runMessage msg attrs

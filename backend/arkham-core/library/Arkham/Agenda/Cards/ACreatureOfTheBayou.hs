@@ -37,9 +37,8 @@ instance RunMessage ACreatureOfTheBayou where
         Just eid -> do
           leadInvestigatorId <- getLeadInvestigatorId
           targets <- setToList <$> nonBayouLocations
-          nonBayouLocationsWithClueCounts <-
-            sortOn snd
-              <$> traverse (traverseToSnd (field LocationClues)) targets
+          nonBayouLocationsWithClueCounts <- sortOn snd
+            <$> forToSnd targets (field LocationClues)
           let
             moveMessage = case nonBayouLocationsWithClueCounts of
               [] -> error "there has to be such a location"
@@ -52,7 +51,9 @@ instance RunMessage ACreatureOfTheBayou where
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs -> chooseOne
                       leadInvestigatorId
-                      [ targetLabel x [MoveUntil x (EnemyTarget eid)] | (x, _) <- xs ]
+                      [ targetLabel x [MoveUntil x (EnemyTarget eid)]
+                      | (x, _) <- xs
+                      ]
           a <$ pushAll
             [ ShuffleEncounterDiscardBackIn
             , moveMessage

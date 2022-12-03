@@ -1165,8 +1165,7 @@ getLocationsMatching lmatcher = do
         ls
     LocationWithMostClues locationMatcher -> do
       matches' <- getLocationsMatching locationMatcher
-      maxes
-        <$> traverse (traverseToSnd (pure . locationClues . toAttrs)) matches'
+      maxes <$> forToSnd matches' (pure . locationClues . toAttrs)
     LocationWithoutTreachery matcher -> do
       treacheryIds <- select matcher
       pure $ filter
@@ -1459,7 +1458,7 @@ getAssetsMatching matcher = do
       as
     AssetWithFewestClues assetMatcher -> do
       matches' <- getAssetsMatching assetMatcher
-      mins <$> traverse (traverseToSnd (field AssetClues . toId)) matches'
+      mins <$> forToSnd matches' (field AssetClues . toId)
     AssetWithUses uType -> filterM
       (fmap (and . sequence [(> 0) . useCount, (== Just uType) . useType])
       . field AssetUses
@@ -1742,9 +1741,7 @@ enemyMatcherFilter = \case
     notMember iid <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
-    elem enemy
-      . maxes
-      <$> traverse (traverseToSnd (field EnemyRemainingHealth . toId)) matches'
+    elem enemy . maxes <$> forToSnd matches' (field EnemyRemainingHealth . toId)
   EnemyWithoutModifier modifier ->
     \enemy -> notElem modifier <$> getModifiers (toTarget enemy)
   EnemyWithModifier modifier ->

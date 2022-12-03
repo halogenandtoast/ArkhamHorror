@@ -36,10 +36,10 @@ instance RunMessage Enraptured where
         unless (null chargeAssets && null secretAssets)
           $ push
           $ chooseOne (skillOwner attrs)
-          $ [ targetLabel aid [AddUses (AssetTarget aid) Uses.Charge 1]
+          $ [ targetLabel aid [AddUses aid Uses.Charge 1]
             | aid <- chargeAssets
             ]
-          <> [ targetLabel aid [AddUses (AssetTarget aid) Uses.Secret 1]
+          <> [ targetLabel aid [AddUses aid Uses.Secret 1]
              | aid <- secretAssets
              ]
         pure s

@@ -40,6 +40,6 @@ instance RunMessage EighteenDerringer where
       ]
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        pushAll [AddUses (toTarget attrs) Ammo 1]
+        pushAll [AddUses (toId attrs) Ammo 1]
         pure a
     _ -> EighteenDerringer <$> runMessage msg attrs

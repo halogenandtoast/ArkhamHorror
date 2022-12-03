@@ -68,15 +68,12 @@ instance RunMessage UnearthTheAncients2 where
         , Discard (toTarget attrs)
         ]
       pure e
-    Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _
-      -> do
-        pushAll
-          $ [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
-            | card <- chosenCards metadata
-            ]
-          <> [ drawCards iid attrs 1
-             | card <- chosenCards metadata
-             , Relic `member` cdCardTraits (toCardDef card)
-             ]
-        pure e
+    Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do
+      chosen <- forToSnd (chosenCards metadata) $ \_ -> drawCards iid attrs 1
+      pushAll
+        $ [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
+          | card <- chosenCards metadata
+          ]
+        <> [ drawing | (card, drawing) <- chosen, Relic `member` toTraits card ]
+      pure e
     _ -> UnearthTheAncients2 . (`with` metadata) <$> runMessage msg attrs

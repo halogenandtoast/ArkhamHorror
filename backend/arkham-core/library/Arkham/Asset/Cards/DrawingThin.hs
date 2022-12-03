@@ -33,16 +33,19 @@ instance HasAbilities DrawingThin where
 
 instance RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [Difficulty 2])
-        source
-        SkillTestTarget
-      , chooseOne
-        iid
-        [ Label "Take 2 resources" [TakeResources iid 2 False]
-        , Label "Draw 1 card" [drawCards iid attrs 1]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      drawing <- drawCards iid attrs 1
+      pushAll
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
+          (EffectModifiers $ toModifiers attrs [Difficulty 2])
+          source
+          SkillTestTarget
+        , chooseOne
+          iid
+          [ Label "Take 2 resources" [TakeResources iid 2 False]
+          , Label "Draw 1 card" [drawing]
+          ]
         ]
-      ]
+      pure a
     _ -> DrawingThin <$> runMessage msg attrs

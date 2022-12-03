@@ -39,8 +39,10 @@ instance HasAbilities StudyAberrantGateway where
 
 instance RunMessage StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (drawCards iid attrs 3)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      drawing <- drawCards iid attrs 3
+      push drawing
+      pure l
     UseCardAbility _ source 2 [Window _ (Window.EnemyAttemptsToSpawnAt _ locationMatcher)] _
       | isSource attrs source
       -> do

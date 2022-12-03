@@ -59,6 +59,8 @@ instance RunMessage Lobby where
           <> tshow (idx + 1)
           ]
       l <$ pushAll msgs
-    UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      l <$ push (drawCards iid attrs 3)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      drawing <- drawCards iid attrs 3
+      push drawing
+      pure l
     _ -> Lobby <$> runMessage msg attrs

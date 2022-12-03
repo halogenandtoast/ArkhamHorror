@@ -169,8 +169,9 @@ instance RunMessage TheUnspeakableOath where
                 let
                   courage = PlayerCard
                     (courageProxy { pcOriginalCardCode = toCardCode x })
+                drawing <- drawCards iid attrs 1
                 pure
-                  [ drawCards iid attrs 1
+                  [ drawing
                   , InitiatePlayCardAs
                     iid
                     (toCardId x)

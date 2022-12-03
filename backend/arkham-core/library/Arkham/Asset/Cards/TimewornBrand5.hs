@@ -75,7 +75,8 @@ instance RunMessage TimewornBrand5 where
         ]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) traits -> do
-      when (Elite `elem` traits) $ for_ (assetController attrs) $ \iid ->
-        push $ drawCards iid attrs 3
+      when (Elite `elem` traits) $ for_ (assetController attrs) $ \iid -> do
+        drawing <- drawCards iid attrs 3
+        push drawing
       pure a
     _ -> TimewornBrand5 <$> runMessage msg attrs

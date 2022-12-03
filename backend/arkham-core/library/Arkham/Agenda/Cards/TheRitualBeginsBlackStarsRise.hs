@@ -58,8 +58,10 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
+      drawing <- for investigatorIds $ \iid -> drawCards iid attrs 1
       pushAll
-        $ [PlaceDoom (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ drawCards iid attrs 1 | iid <- investigatorIds ]
+        $ PlaceDoom (toTarget attrs) 1
+        : AdvanceAgendaIfThresholdSatisfied
+        : drawing
       pure a
     _ -> TheRitualBeginsBlackStarsRise <$> runMessage msg attrs

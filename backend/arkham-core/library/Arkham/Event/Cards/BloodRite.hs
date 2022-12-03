@@ -28,16 +28,19 @@ bloodRite = event BloodRite Cards.bloodRite
 
 instance RunMessage BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> e <$ pushAll
-      [ drawCards iid attrs 2
-      , PayForCardAbility
-        iid
-        (EventSource eid)
-        windows
-        1
-        (DiscardCardPayment [])
-      , Discard (toTarget attrs)
-      ]
+    InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> do
+      drawing <- drawCards iid attrs 2
+      pushAll
+        [ drawing
+        , PayForCardAbility
+          iid
+          (EventSource eid)
+          windows
+          1
+          (DiscardCardPayment [])
+        , Discard (toTarget attrs)
+        ]
+      pure e
     PayForCardAbility iid source windows 1 payment@(DiscardCardPayment discardedCards)
       | isSource attrs source
       -> do

@@ -56,9 +56,11 @@ instance RunMessage HarveyWalters where
   runMessage msg i@(HarveyWalters attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCard iid' _ _]) _
       -> do
-        push $ drawCards iid' attrs 1
+        drawing <- drawCards iid' attrs 1
+        push drawing
         pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ drawCards iid attrs 1
+      drawing <- drawCards iid attrs 1
+      push drawing
       pure i
     _ -> HarveyWalters <$> runMessage msg attrs

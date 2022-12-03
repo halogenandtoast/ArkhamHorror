@@ -25,8 +25,9 @@ glimpseTheUnthinkable1 =
 instance RunMessage GlimpseTheUnthinkable1 where
   runMessage msg e@(GlimpseTheUnthinkable1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget windows' _ | eid == toId attrs -> do
+      drawing <- drawCards iid attrs 1
       pushAll
-        [ drawCards iid attrs 1
+        [ drawing
         , ResolveEvent iid eid mtarget windows'
         , Discard (toTarget attrs)
         ]
@@ -51,6 +52,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
         selectList
         $ InHandOf (InvestigatorWithId iid)
         <> BasicCardMatch NonWeakness
+      drawing <- drawCards iid attrs n
       pushAll
         [ chooseN
           iid
@@ -60,7 +62,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
               [ShuffleCardsIntoDeck (InvestigatorDeck iid) [c]]
           | c <- cards
           ]
-        , drawCards iid attrs n
+        , drawing
         ]
 
       pure e

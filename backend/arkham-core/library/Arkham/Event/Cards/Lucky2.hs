@@ -26,9 +26,10 @@ instance RunMessage Lucky2 where
         Nothing -> error "invalid call"
         Just skillTest -> do
           let skillType = skillTestSkillType skillTest
+          drawing <- drawCards iid attrs 1
           pushAll
             [ Discard (EventTarget eid)
-            , drawCards iid attrs 1
+            , drawing
             , skillTestModifier
               (toSource attrs)
               (InvestigatorTarget iid)

@@ -40,8 +40,9 @@ instance RunMessage VaultOfKnowledge where
   runMessage msg a@(VaultOfKnowledge attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ colocatedWith iid
+      investigators <- forToSnd iids $ \iid' -> drawCards iid' attrs 1
       push $ chooseOrRunOne
         iid
-        [ targetLabel iid' [drawCards iid' attrs 1] | iid' <- iids ]
+        [ targetLabel iid' [drawing] | (iid', drawing) <- investigators ]
       pure a
     _ -> VaultOfKnowledge <$> runMessage msg attrs

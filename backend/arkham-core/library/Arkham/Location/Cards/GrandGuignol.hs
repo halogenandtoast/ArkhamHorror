@@ -41,6 +41,7 @@ instance RunMessage GrandGuignol where
       nonWeaknessCards <- selectListMap
         toCardId
         (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
+      drawing <- drawCards iid attrs (length nonWeaknessCards)
       push
         $ chooseOrRunOne iid
         $ Label
@@ -48,9 +49,7 @@ instance RunMessage GrandGuignol where
             [InvestigatorAssignDamage iid source DamageAny 0 2]
         : [ Label
               "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
-              (map (DiscardCard iid) nonWeaknessCards
-              <> [drawCards iid attrs (length nonWeaknessCards)]
-              )
+              (map (DiscardCard iid) nonWeaknessCards <> [drawing])
           | not (null nonWeaknessCards)
           ]
       pure a

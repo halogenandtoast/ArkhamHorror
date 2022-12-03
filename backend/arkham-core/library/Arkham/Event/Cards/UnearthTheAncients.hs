@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.ClassSymbol
 import Arkham.Classes
+import Arkham.ClassSymbol
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -70,12 +70,11 @@ instance RunMessage UnearthTheAncients where
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       do
         case chosenCard metadata of
-          Just card ->
+          Just card -> do
+            drawing <- drawCards iid attrs 1
             pushAll
               $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
-              : [ drawCards iid attrs 1
-                | Relic `member` cdCardTraits (toCardDef card)
-                ]
+              : [ drawing | Relic `member` toTraits card ]
           Nothing -> error "this should not happen"
         pure e
     _ -> UnearthTheAncients . (`with` metadata) <$> runMessage msg attrs

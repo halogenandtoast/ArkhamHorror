@@ -33,8 +33,9 @@ instance RunMessage Contraband2 where
         selectWithField AssetUses $ AssetWithUseType Ammo <> AssetOneOf
           (map assetControlledBy investigatorIds)
 
-      supplyAssets <- selectWithField AssetUses $ AssetWithUseType Supply <> AssetOneOf
-        (map assetControlledBy investigatorIds)
+      supplyAssets <-
+        selectWithField AssetUses $ AssetWithUseType Supply <> AssetOneOf
+          (map assetControlledBy investigatorIds)
 
       let
         ammoAssetsWithUseCount =
@@ -42,15 +43,15 @@ instance RunMessage Contraband2 where
         supplyAssetsWithUseCount =
           map (\(aid, uses) -> (Supply, useCount uses, aid)) supplyAssets
 
+      drawing <- drawCards iid attrs 1
+
       push $ chooseOne
         iid
         [ Label
           "Place 2 ammo or supply tokens on that asset and draw 1 card."
           [ chooseOne
               iid
-              [ targetLabel
-                  assetId
-                  [AddUses assetId useType' 2, drawCards iid attrs 1]
+              [ targetLabel assetId [AddUses assetId useType' 2, drawing]
               | (useType', _, assetId) <-
                 ammoAssetsWithUseCount <> supplyAssetsWithUseCount
               ]

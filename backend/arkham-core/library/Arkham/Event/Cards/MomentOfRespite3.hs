@@ -21,9 +21,11 @@ momentOfRespite3 = event MomentOfRespite3 Cards.momentOfRespite3
 instance RunMessage MomentOfRespite3 where
   runMessage msg e@(MomentOfRespite3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll
+      drawing <- drawCards iid attrs 1
+      pushAll
         [ HealHorror (InvestigatorTarget iid) 3
-        , drawCards iid attrs 1
+        , drawing
         , Discard (toTarget attrs)
         ]
+      pure e
     _ -> MomentOfRespite3 <$> runMessage msg attrs

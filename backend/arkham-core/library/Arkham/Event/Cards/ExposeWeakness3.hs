@@ -32,6 +32,7 @@ instance RunMessage ExposeWeakness3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectWithField EnemyFight
         $ EnemyAt (locationWithInvestigator iid)
+      drawing <- drawCards iid attrs 1
       pushAll
         [ chooseOne
           iid
@@ -47,7 +48,7 @@ instance RunMessage ExposeWeakness3 where
               ]
           | (enemy, enemyFight) <- enemies
           ]
-        , drawCards iid attrs 1
+        , drawing
         , Discard (toTarget attrs)
         ]
       pure e

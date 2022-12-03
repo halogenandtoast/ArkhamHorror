@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Message
-import Arkham.Target
 
 newtype Taunt3 = Taunt3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,17 +22,17 @@ instance RunMessage Taunt3 where
   runMessage msg e@(Taunt3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid
-      e <$ push
-        (chooseSome
-          iid
-          "Done engaging enemies"
-          [ TargetLabel
-              (EnemyTarget enemyId)
-              [ EngageEnemy iid enemyId False
-              , InvestigatorDamageEnemy iid enemyId (toSource attrs)
-              , drawCards iid attrs 1
-              ]
-          | enemyId <- enemyIds
-          ]
-        )
+      enemies <- forToSnd enemyIds $ \_ -> drawCards iid attrs 1
+      push $ chooseSome
+        iid
+        "Done engaging enemies"
+        [ targetLabel
+            enemyId
+            [ EngageEnemy iid enemyId False
+            , InvestigatorDamageEnemy iid enemyId (toSource attrs)
+            , drawing
+            ]
+        | (enemyId, drawing) <- enemies
+        ]
+      pure e
     _ -> Taunt3 <$> runMessage msg attrs

@@ -7,17 +7,17 @@ import Arkham.Id
 import Arkham.Message
 
 drawCards
-  :: SourceEntity source
+  :: (Monad m, SourceEntity source)
   => InvestigatorId
   -> source
   -> Int
-  -> Message
-drawCards i source n = DrawCards i (toSource source) n False
+  -> m Message
+drawCards i source n = pure $ DrawCards i (toSource source) n False
 
 drawCardsAction
-  :: SourceEntity source
+  :: (Monad m, SourceEntity source)
   => InvestigatorId
   -> source
   -> Int
-  -> Message
-drawCardsAction i source n = DrawCards i (toSource source) n True
+  -> m Message
+drawCardsAction i source n = pure $ DrawCards i (toSource source) n True

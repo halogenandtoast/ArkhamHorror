@@ -2426,6 +2426,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           usesAction = not isAdditional
           drawCardsF = if usesAction then drawCardsAction else drawCards
+        drawing <- drawCardsF iid a 1
         push
           $ AskPlayer
           $ chooseOne iid
@@ -2437,7 +2438,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
           <> [ ComponentLabel
                  (InvestigatorDeckComponent iid)
-                 [drawCardsF iid a 1]
+                 [drawing]
              | canAffordDrawCards && none
                (`elem` modifiers)
                [ CannotTakeAction (IsAction Action.Draw)

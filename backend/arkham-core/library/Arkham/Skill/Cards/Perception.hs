@@ -6,7 +6,6 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype Perception = Perception SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -18,6 +17,7 @@ perception = skill Perception Cards.perception
 instance RunMessage Perception where
   runMessage msg s@(Perception attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      push $ drawCards skillOwner attrs 1
+      drawing <- drawCards skillOwner attrs 1
+      push drawing
       pure s
     _ -> Perception <$> runMessage msg attrs

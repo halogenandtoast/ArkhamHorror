@@ -18,6 +18,7 @@ overpower = skill Overpower Cards.overpower
 instance RunMessage Overpower where
   runMessage msg s@(Overpower attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId -> do
-      push $ drawCards skillOwner attrs 1
+      drawing <- drawCards skillOwner attrs 1
+      push drawing
       pure s
     _ -> Overpower <$> runMessage msg attrs

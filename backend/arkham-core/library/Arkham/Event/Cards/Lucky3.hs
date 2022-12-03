@@ -28,9 +28,10 @@ instance RunMessage Lucky3 where
           let
             iid' = skillTestInvestigator skillTest
             skillType = skillTestSkillType skillTest
+          drawing <- drawCards iid attrs 1
           pushAll
             [ Discard (toTarget attrs)
-            , drawCards iid attrs 1
+            , drawing
             , skillTestModifier
               (toSource attrs)
               (InvestigatorTarget iid')

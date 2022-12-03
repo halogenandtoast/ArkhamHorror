@@ -31,10 +31,12 @@ reductionEffect iid attrs =
 instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll
+      drawing <- drawCards iid attrs 1
+      pushAll
         [ switchRole iid
         , reductionEffect iid attrs
-        , drawCards iid attrs 1
+        , drawing
         , Discard (toTarget attrs)
         ]
+      pure e
     _ -> Improvisation <$> runMessage msg attrs

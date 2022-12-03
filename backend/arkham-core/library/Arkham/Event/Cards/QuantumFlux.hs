@@ -20,9 +20,11 @@ quantumFlux = event QuantumFlux Cards.quantumFlux
 instance RunMessage QuantumFlux where
   runMessage msg e@(QuantumFlux attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll
+      drawing <- drawCards iid attrs 1
+      pushAll
         [ ShuffleDiscardBackIn iid
-        , drawCards iid attrs 1
+        , drawing
         , RemoveFromGame (toTarget attrs)
         ]
+      pure e
     _ -> QuantumFlux <$> runMessage msg attrs

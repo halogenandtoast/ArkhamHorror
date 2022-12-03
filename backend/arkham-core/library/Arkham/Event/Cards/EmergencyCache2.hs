@@ -20,9 +20,12 @@ emergencyCache2 = event EmergencyCache2 Cards.emergencyCache2
 
 instance RunMessage EmergencyCache2 where
   runMessage msg e@(EmergencyCache2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
-      [ TakeResources iid 3 False
-      , drawCards iid attrs 1
-      , Discard (EventTarget eid)
-      ]
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+      drawing <- drawCards iid attrs 1
+      pushAll
+        [ TakeResources iid 3 False
+        , drawing
+        , Discard (EventTarget eid)
+        ]
+      pure e
     _ -> EmergencyCache2 <$> runMessage msg attrs

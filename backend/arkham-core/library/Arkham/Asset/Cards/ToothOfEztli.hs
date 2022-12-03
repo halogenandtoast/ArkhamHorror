@@ -49,6 +49,8 @@ instance HasAbilities ToothOfEztli where
 
 instance RunMessage ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (drawCards iid attrs 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      drawing <- drawCards iid attrs 1
+      push drawing
+      pure a
     _ -> ToothOfEztli <$> runMessage msg attrs

@@ -6,13 +6,13 @@ module Arkham.Investigator.Cards.RexMurphy
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (PassSkillTest)
+import Arkham.Message hiding ( PassSkillTest )
 import Arkham.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
@@ -62,13 +62,12 @@ instance RunMessage RexMurphy where
         1
         Nothing
       )
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> i <$ push
-      (chooseOne
+    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+      drawing <- drawCards iid attrs 3
+      push $ chooseOne
         iid
-        [ Label
-          "Automatically fail to draw 3"
-          [FailSkillTest, drawCards iid attrs 3]
+        [ Label "Automatically fail to draw 3" [FailSkillTest, drawing]
         , Label "Resolve normally" []
         ]
-      )
+      pure i
     _ -> RexMurphy <$> runMessage msg attrs

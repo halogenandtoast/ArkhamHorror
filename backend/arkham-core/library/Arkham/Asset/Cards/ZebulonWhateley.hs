@@ -43,6 +43,7 @@ instance HasModifiersFor ZebulonWhateley where
 instance RunMessage ZebulonWhateley where
   runMessage msg a@(ZebulonWhateley attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ drawCards iid attrs 1
+      drawing <- drawCards iid attrs 1
+      push drawing
       pure a
     _ -> ZebulonWhateley <$> runMessage msg attrs

@@ -45,8 +45,9 @@ instance RunMessage FeedTheMind3 where
       pure a
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ n
       -> do
+        drawing <- drawCards iid attrs n
         pushAll
-          [ drawCards iid attrs n
+          [ drawing
           , HandleTargetChoice iid (toSource attrs) (toTarget attrs)
           ]
         pure a

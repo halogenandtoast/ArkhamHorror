@@ -44,7 +44,9 @@ instance RunMessage DaisyWalker where
             selectCount
             $ assetControlledBy investigatorId
             <> AssetWithTrait Tome
-          when (tomeCount > 0) (push $ drawCards iid attrs tomeCount)
+          when (tomeCount > 0) $ do
+            drawing <- drawCards iid attrs tomeCount
+            push drawing
         pure i
     Setup -> DaisyWalker <$> runMessage
       msg

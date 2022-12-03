@@ -22,14 +22,12 @@ instance RunMessage Taunt2 where
   runMessage msg e@(Taunt2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid
-      e <$ push
-        (chooseSome
-          iid
-          "Done engaging enemies"
-          [ targetLabel
-              enemyId
-              [EngageEnemy iid enemyId False, drawCards iid attrs 1]
-          | enemyId <- enemyIds
-          ]
-        )
+      enemies <- forToSnd enemyIds $ \_ -> drawCards iid attrs 1
+      push $ chooseSome
+        iid
+        "Done engaging enemies"
+        [ targetLabel enemyId [EngageEnemy iid enemyId False, drawing]
+        | (enemyId, drawing) <- enemies
+        ]
+      pure e
     _ -> Taunt2 <$> runMessage msg attrs

@@ -5,9 +5,9 @@ module Arkham.Skill.Cards.TakeHeart
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.Target
 
@@ -20,6 +20,8 @@ takeHeart = skill TakeHeart Cards.takeHeart
 
 instance RunMessage TakeHeart where
   runMessage msg s@(TakeHeart attrs) = case msg of
-    FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs ->
-      s <$ pushAll [drawCards iid attrs 2, TakeResources iid 2 False]
+    FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
+      drawing <- drawCards iid attrs 2
+      pushAll [drawing, TakeResources iid 2 False]
+      pure s
     _ -> TakeHeart <$> runMessage msg attrs

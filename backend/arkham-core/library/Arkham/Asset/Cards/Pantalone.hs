@@ -35,7 +35,8 @@ instance HasAbilities Pantalone where
 instance RunMessage Pantalone where
   runMessage msg a@(Pantalone attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ drawCards iid attrs 2
+      drawing <- drawCards iid attrs 2
+      push drawing
       pure a
     UseCardAbility _ source 2 _ _
       | isSource attrs source

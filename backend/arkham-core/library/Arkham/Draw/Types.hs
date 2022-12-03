@@ -11,11 +11,11 @@ data CardDrawState = UnresolvedCardDraw | ResolvedCardDraw [Card]
   deriving anyclass (ToJSON, FromJSON)
 
 data CardDraw = CardDraw
-  { cardDrawsId :: CardDrawId
-  , cardDrawsInvestigator :: InvestigatorId
-  , cardDrawsDeck :: DeckSignifier
-  , cardDrawsAmount :: Int
-  , cardDrawsState :: CardDrawState
+  { cardDrawInvestigator :: InvestigatorId
+  , cardDrawDeck :: DeckSignifier
+  , cardDrawAmount :: Int
+  , cardDrawState :: CardDrawState
+  , cardDrawsesAction :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -29,9 +29,10 @@ instance RunMessage OutOfBodyExperience where
       result <- withoutModifier (InvestigatorTarget iid) CannotManipulateDeck
       when result $ do
         cards <- field InvestigatorHand iid
+        drawing <- drawCards iid attrs (length cards)
         pushAll
           [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
-          , drawCards iid attrs (length cards)
+          , drawing
           , RemoveTreachery (toId attrs)
           , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard attrs]
           ]

@@ -15,8 +15,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
@@ -54,10 +52,11 @@ instance RunMessage LostMemories where
                   ]
               ]
         else pure []
+      drawing <- for hasPendant $ \iid -> drawCards iid attrs 2
       pushAll
         $ ShuffleEncounterDiscardBackIn
         : custodianMessages
-        <> [ drawCards iid attrs 2 | iid <- hasPendant ]
+        <> drawing
         <> [ createCardEffect
                Cards.lostMemories
                Nothing

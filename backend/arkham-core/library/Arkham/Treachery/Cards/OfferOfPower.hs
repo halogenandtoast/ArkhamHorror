@@ -2,9 +2,9 @@ module Arkham.Treachery.Cards.OfferOfPower where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype OfferOfPower = OfferOfPower TreacheryAttrs
@@ -17,19 +17,19 @@ offerOfPower = treachery OfferOfPower Cards.offerOfPower
 instance RunMessage OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ push
-        (chooseOne
-          iid
-          [ Label
-            "Draw 2 cards and place 2 doom on agenda"
-            [ drawCards iid attrs 2
-            , PlaceDoomOnAgenda
-            , PlaceDoomOnAgenda
-            , AdvanceAgendaIfThresholdSatisfied
-            ]
-          , Label
-            "Take 2 horror"
-            [InvestigatorAssignDamage iid source DamageAny 0 2]
+      drawing <- drawCards iid attrs 2
+      push $ chooseOne
+        iid
+        [ Label
+          "Draw 2 cards and place 2 doom on agenda"
+          [ drawing
+          , PlaceDoomOnAgenda
+          , PlaceDoomOnAgenda
+          , AdvanceAgendaIfThresholdSatisfied
           ]
-        )
+        , Label
+          "Take 2 horror"
+          [InvestigatorAssignDamage iid source DamageAny 0 2]
+        ]
+      pure t
     _ -> OfferOfPower <$> runMessage msg attrs

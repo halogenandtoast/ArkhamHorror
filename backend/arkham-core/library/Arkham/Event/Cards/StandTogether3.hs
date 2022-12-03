@@ -5,8 +5,8 @@ module Arkham.Event.Cards.StandTogether3
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -22,29 +22,25 @@ standTogether3 = event StandTogether3 Cards.standTogether3
 instance RunMessage StandTogether3 where
   runMessage msg e@(StandTogether3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
-      investigatorIds <- filter (/= iid)
-        <$> selectList (colocatedWith iid)
+      investigatorIds <- filter (/= iid) <$> selectList (colocatedWith iid)
+      drawing1 <- drawCards iid attrs 2
       case investigatorIds of
         [] -> error "should not have happened"
-        [x] -> e <$ pushAll
-          [ TakeResources iid 2 False
-          , TakeResources x 2 False
-          , drawCards iid attrs 2
-          , drawCards x attrs 2
-          , Discard (toTarget e)
-          ]
-        xs -> e <$ pushAll
-          [ chooseOne
-            iid
-            [ TargetLabel
-                (InvestigatorTarget x)
-                [ TakeResources iid 2 False
-                , TakeResources x 2 False
-                , drawCards iid attrs 2
-                , drawCards x attrs 2
-                ]
-            | x <- xs
+        xs -> do
+          investigators <- forToSnd xs $ \x -> drawCards x attrs 2
+          pushAll
+            [ chooseOrRunOne
+              iid
+              [ TargetLabel
+                  (InvestigatorTarget x)
+                  [ TakeResources iid 2 False
+                  , TakeResources x 2 False
+                  , drawing1
+                  , drawing2
+                  ]
+              | (x, drawing2) <- investigators
+              ]
+            , Discard (toTarget e)
             ]
-          , Discard (toTarget e)
-          ]
+      pure e
     _ -> StandTogether3 <$> runMessage msg attrs

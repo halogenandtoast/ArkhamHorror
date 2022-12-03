@@ -43,6 +43,7 @@ instance RunMessage FeedTheMind where
       pure a
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ (min 3 -> n)
       -> do
-        push $ drawCards iid attrs n
+        drawing <- drawCards iid attrs n
+        push drawing
         pure a
     _ -> FeedTheMind <$> runMessage msg attrs

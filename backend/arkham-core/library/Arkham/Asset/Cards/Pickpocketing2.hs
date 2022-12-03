@@ -35,12 +35,14 @@ instance RunMessage Pickpocketing2 where
   runMessage msg a@(Pickpocketing2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mskillTest <- getSkillTest
-      a <$ case skillTestResult <$> mskillTest of
-        Just (SucceededBy _ n) | n >= 2 ->
-          pushAll [drawCards iid attrs 1, TakeResources iid 1 False]
+      drawing <- drawCards iid attrs 1
+      case skillTestResult <$> mskillTest of
+        Just (SucceededBy _ n) | n >= 2 -> do
+          pushAll [drawing, TakeResources iid 1 False]
         _ -> push $ chooseOne
           iid
-          [ Label "Draw 1 card" [drawCards iid attrs 1]
+          [ Label "Draw 1 card" [drawing]
           , Label "Gain 1 resource" [TakeResources iid 1 False]
           ]
+      pure a
     _ -> Pickpocketing2 <$> runMessage msg attrs

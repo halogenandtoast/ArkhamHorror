@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Target
 
 newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,25 +21,19 @@ scrollOfProphecies = asset ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasAbilities ScrollOfProphecies where
   getAbilities (ScrollOfProphecies x) =
-    [ restrictedAbility
-        x
-        1
-        ControlsThis
-        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Secret 1]
-        )
+    [ restrictedAbility x 1 ControlsThis $ ActionAbility Nothing $ Costs
+        [ActionCost 1, UseCost (AssetWithId $ toId x) Secret 1]
     ]
 
 instance RunMessage ScrollOfProphecies where
   runMessage msg a@(ScrollOfProphecies attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorIds <- selectList $ colocatedWith iid
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (InvestigatorTarget iid')
-              [drawCards iid' attrs 3, ChooseAndDiscardCard iid']
-          | iid' <- investigatorIds
-          ]
-        )
+      investigators <- forToSnd investigatorIds $ \i -> drawCards i attrs 3
+      push $ chooseOne
+        iid
+        [ targetLabel iid' [drawing, ChooseAndDiscardCard iid']
+        | (iid', drawing) <- investigators
+        ]
+      pure a
     _ -> ScrollOfProphecies <$> runMessage msg attrs

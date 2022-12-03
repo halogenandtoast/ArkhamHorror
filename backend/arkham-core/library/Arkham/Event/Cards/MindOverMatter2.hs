@@ -26,13 +26,14 @@ mindOverMatter2 = event MindOverMatter2 Cards.mindOverMatter2
 instance RunMessage MindOverMatter2 where
   runMessage msg e@(MindOverMatter2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+      drawing <- drawCards iid attrs 1
       pushAll
         [ createCardEffect
           Cards.mindOverMatter2
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)
-        , drawCards iid attrs 1
+        , drawing
         , Discard (EventTarget eid)
         ]
       pure e

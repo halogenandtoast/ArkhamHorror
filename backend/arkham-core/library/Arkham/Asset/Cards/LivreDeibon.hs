@@ -51,16 +51,17 @@ instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       handCards <- field InvestigatorHand iid
-      a <$ push
-        (chooseOne iid
+      drawing <- drawCards iid attrs 1
+      push
+        $ chooseOne iid
         $ [ TargetLabel
               (CardIdTarget $ toCardId c)
-              [ drawCards iid attrs 1
+              [ drawing
               , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
               ]
           | c <- mapMaybe (preview _PlayerCard) handCards
           ]
-        )
+      pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       deckCards <- fieldMap InvestigatorDeck unDeck iid
       case deckCards of

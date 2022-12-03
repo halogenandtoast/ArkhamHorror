@@ -37,6 +37,7 @@ instance HasTokenValue BodyOfAYithian where
 instance RunMessage BodyOfAYithian where
   runMessage msg i@(BodyOfAYithian (attrs `With` meta)) = case msg of
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
-      push $ drawCards iid attrs 1
+      drawing <- drawCards iid attrs 1
+      push drawing
       pure i
     _ -> BodyOfAYithian . (`with` meta) <$> runMessage msg attrs

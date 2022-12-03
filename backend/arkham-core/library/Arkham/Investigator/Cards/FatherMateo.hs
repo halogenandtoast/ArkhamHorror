@@ -10,8 +10,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
@@ -20,7 +20,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype FatherMateo = FatherMateo InvestigatorAttrs
@@ -90,19 +90,17 @@ instance RunMessage FatherMateoElderSignEffect where
       SkillTestEnds _ _ -> e <$ case effectTarget of
         InvestigatorTarget iid -> do
           isTurn <- iid <=~> TurnInvestigator
+          drawing <- drawCards iid attrs 1
           pushAll
-            [ chooseOrRunOne
-              iid
-              ([ Label
-                   "Draw 1 card and gain 1 resource"
-                   [drawCards iid attrs 1, TakeResources iid 1 False]
-               ]
-              <> [ Label
-                     "Take an additional action this turn"
-                     [GainActions iid (toSource attrs) 1]
-                 | isTurn
-                 ]
-              )
+            [ chooseOrRunOne iid
+            $ Label
+                "Draw 1 card and gain 1 resource"
+                [drawing, TakeResources iid 1 False]
+            : [ Label
+                  "Take an additional action this turn"
+                  [GainActions iid (toSource attrs) 1]
+              | isTurn
+              ]
             , DisableEffect effectId
             ]
         _ -> push (DisableEffect effectId)

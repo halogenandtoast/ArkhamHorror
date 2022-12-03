@@ -48,8 +48,10 @@ instance HasAbilities MadameLabranche where
 
 instance RunMessage MadameLabranche where
   runMessage msg a@(MadameLabranche attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (drawCards iid attrs 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      drawing <- drawCards iid attrs 1
+      push drawing
+      pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source ->
       a <$ push (TakeResources iid 1 False)
     _ -> MadameLabranche <$> runMessage msg attrs

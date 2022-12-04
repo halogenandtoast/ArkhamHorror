@@ -30,6 +30,7 @@ import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
@@ -286,7 +287,7 @@ data Message
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherToken InvestigatorId
-  | DrawCards InvestigatorId Source Int Bool
+  | DrawCards CardDraw
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrawToken InvestigatorId Token
   | DrewPlayerEnemy InvestigatorId Card

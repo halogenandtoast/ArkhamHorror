@@ -1524,6 +1524,7 @@ library
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Skill
       Arkham.Skill.Cards
+      Arkham.Skill.Cards.AllIn5
       Arkham.Skill.Cards.Daring
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2

@@ -12,7 +12,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype Enraptured = Enraptured SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

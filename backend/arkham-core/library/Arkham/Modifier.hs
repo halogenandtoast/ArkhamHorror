@@ -108,6 +108,7 @@ data ModifierType
   | CannotReady
   | DoesNotReadyDuringUpkeep
   | CannotFight EnemyMatcher
+  | CannotEvade EnemyMatcher
   | CannotMove
   | CannotDisengageEnemies
   | CannotMoveMoreThanOnceEachTurn

@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message

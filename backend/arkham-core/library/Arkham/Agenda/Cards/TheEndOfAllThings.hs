@@ -11,7 +11,6 @@ import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)

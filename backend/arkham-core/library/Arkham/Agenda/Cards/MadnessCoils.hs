@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType

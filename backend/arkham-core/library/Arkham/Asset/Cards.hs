@@ -339,6 +339,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , scrollOfProphecies
   , scrying
   , scrying3
+  , sealOfTheSeventhSign5
   , shardsOfTheVoid3
   , shotgun4
   , shrewdAnalysis
@@ -2510,6 +2511,16 @@ shardsOfTheVoid3 = (asset "04310" "Shard of the Void" 3 Mystic)
   , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
   , cdLevel = 3
+  }
+
+sealOfTheSeventhSign5 :: CardDef
+sealOfTheSeventhSign5 = (asset "04311" ("Seal of the Seventh Sign" <:> "Over the Threshold and Beyond") 4 Mystic)
+  { cdSkills = [#willpower, #wild]
+  , cdKeywords = singleton $ Keyword.Seal $ TokenFaceIs Token.AutoFail
+  , cdCardTraits = setFromList [Spell, Ritual]
+  , cdUses = Uses Charge 7
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 5
   }
 
 trackShoes :: CardDef

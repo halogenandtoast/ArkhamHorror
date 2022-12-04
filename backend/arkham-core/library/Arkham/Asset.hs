@@ -418,6 +418,7 @@ allAssets = mapFrom
   , SomeAssetCard borrowedTime3
   --- mystic [sha]
   , SomeAssetCard shardsOfTheVoid3
+  , SomeAssetCard sealOfTheSeventhSign5
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

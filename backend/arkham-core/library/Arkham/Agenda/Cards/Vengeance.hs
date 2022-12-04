@@ -10,7 +10,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorDefeated )

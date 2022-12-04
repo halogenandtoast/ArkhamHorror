@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Trait
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs

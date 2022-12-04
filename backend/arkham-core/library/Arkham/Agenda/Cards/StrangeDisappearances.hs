@@ -10,8 +10,6 @@ import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Scenario
-import Arkham.Helpers.Query
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Target
@@ -30,7 +28,7 @@ instance RunMessage StrangeDisappearances where
       leadInvestigatorId <- getLeadInvestigatorId
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 3
-        then a <$ pushAll
+        then pushAll
           [ DrawRandomFromScenarioDeck
             leadInvestigatorId
             PotentialSacrifices
@@ -38,7 +36,8 @@ instance RunMessage StrangeDisappearances where
             1
           , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           ]
-        else a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
+        else push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
+      pure a
     DrewFromScenarioDeck _ PotentialSacrifices target cards
       | isTarget attrs target -> a
       <$ push (PlaceUnderneath AgendaDeckTarget cards)

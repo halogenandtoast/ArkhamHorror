@@ -18,7 +18,6 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck

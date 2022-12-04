@@ -13,8 +13,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Log
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target

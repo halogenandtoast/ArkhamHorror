@@ -44,10 +44,10 @@ instance RunMessage ACreatureOfTheBayou where
               [] -> error "there has to be such a location"
               ((_, c) : _) ->
                 let
-                  (matches, _) =
+                  (matches', _) =
                     span ((== c) . snd) nonBayouLocationsWithClueCounts
                 in
-                  case matches of
+                  case matches' of
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs -> chooseOne
                       leadInvestigatorId

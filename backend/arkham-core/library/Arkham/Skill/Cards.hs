@@ -65,7 +65,8 @@ skill cardCode name icons classSymbol = CardDef
 allPlayerSkillCards :: HashMap CardCode CardDef
 allPlayerSkillCards = mapFromList $ concatMap
   toCardCodePairs
-  [ daring
+  [ allIn5
+  , daring
   , deduction
   , deduction2
   , defiance
@@ -426,6 +427,13 @@ takeHeart = (skill "04201" "Take Heart" [] Survivor)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdAlternateCardCodes = ["60519"]
+  }
+
+allIn5 :: CardDef
+allIn5 = (skill "04309" "All In" [#wild, #wild] Rogue)
+  { cdCardTraits = singleton Fortune
+  , cdCommitRestrictions = [MaxOnePerTest]
+  , cdLevel = 5
   }
 
 daring :: CardDef

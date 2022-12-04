@@ -78,6 +78,7 @@ allSkills = mapFrom
   , SomeSkillCard intrepid
   , SomeSkillCard defiance2
   , SomeSkillCard takeHeart
+  , SomeSkillCard allIn5
   , SomeSkillCard daring
   , SomeSkillCard overpower2
   , SomeSkillCard perception2

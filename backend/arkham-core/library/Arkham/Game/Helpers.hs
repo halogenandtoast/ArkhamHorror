@@ -523,6 +523,14 @@ getCanAffordCost iid source mAction windows' = \case
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagTokens
     anyM (\token -> matchToken iid token tokenMatcher) tokens
   SealTokenCost _ -> pure True
+  ReleaseTokensCost n -> do
+    case source of
+      AssetSource aid -> fieldMap AssetSealedTokens ((>= n) . length) aid 
+      _ -> error "Unhandled release token cost source"
+  ReleaseTokenCost t -> do
+    case source of
+      AssetSource aid -> fieldMap AssetSealedTokens (elem t) aid
+      _ -> error "Unhandled release token cost source"
   FieldResourceCost (FieldCost mtchr fld) -> do
     n <- getSum <$> selectAgg Sum fld mtchr
     fieldP InvestigatorResources (>= n) iid

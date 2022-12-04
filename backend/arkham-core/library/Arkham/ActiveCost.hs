@@ -11,7 +11,8 @@ import Arkham.ActiveCost.Base as X
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Types ( Field (AssetCard, AssetController, AssetUses) )
+import Arkham.Asset.Types
+  ( Field (AssetCard, AssetController, AssetSealedTokens, AssetUses) )
 import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Card
 import Arkham.Card.Cost
@@ -318,6 +319,32 @@ instance RunMessage ActiveCost where
             <>~ SealTokenPayment token
             & costSealedTokensL
             %~ (token :)
+        ReleaseTokensCost n -> do
+          case source of
+            AssetSource aid -> do
+              tokens <- field AssetSealedTokens aid
+              pushAll
+                $ [ FocusTokens tokens
+                  , chooseN
+                    iid
+                    n
+                    [ TargetLabel
+                        (TokenTarget t)
+                        [ PayCost
+                            acId
+                            iid
+                            skipAdditionalCosts
+                            (ReleaseTokenCost t)
+                        ]
+                    | t <- tokens
+                    ]
+                  , UnfocusTokens
+                  ]
+            _ -> error "Unhandled source for releasing tokens cost"
+          pure c
+        ReleaseTokenCost t -> do
+          push $ UnsealToken t
+          pure $ c & (costPaymentsL <>~ ReleaseTokenPayment t)
         SupplyCost matcher supply -> do
           iid' <-
             selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
@@ -535,9 +562,8 @@ instance RunMessage ActiveCost where
             selectList
             $ InvestigatorAt locationMatcher
             <> InvestigatorWithAnyClues
-          iidsWithClues <-
-            filter ((> 0) . snd)
-              <$> forToSnd iids (getSpendableClueCount . pure)
+          iidsWithClues <- filter ((> 0) . snd)
+            <$> forToSnd iids (getSpendableClueCount . pure)
           case iidsWithClues of
             [(iid', _)] ->
               c <$ push (PayCost acId iid' True (ClueCost totalClues))

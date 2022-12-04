@@ -72,6 +72,7 @@ data Payment
   | SkillIconPayment [SkillIcon]
   | Payments [Payment]
   | SealTokenPayment Token
+  | ReleaseTokenPayment Token
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
@@ -117,6 +118,8 @@ data Cost
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
   | SealCost TokenMatcher
+  | ReleaseTokenCost Token
+  | ReleaseTokensCost Int
   | SealTokenCost Token -- internal to track sealed token
   | SupplyCost LocationMatcher Supply
   deriving stock (Show, Eq, Generic)
@@ -210,6 +213,9 @@ displayCostType = \case
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
   SealTokenCost _ -> "Seal token"
+  ReleaseTokenCost _ -> "Release a chaos token sealed here"
+  ReleaseTokensCost 1 -> "Release a chaos token sealed here"
+  ReleaseTokensCost _ -> "Release chaos tokens sealed here"
   FieldResourceCost{} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"

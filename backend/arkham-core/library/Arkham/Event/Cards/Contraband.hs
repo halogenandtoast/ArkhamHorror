@@ -13,7 +13,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype Contraband = Contraband EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

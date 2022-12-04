@@ -416,6 +416,8 @@ allAssets = mapFrom
   , SomeAssetCard pnakoticManuscripts5
   --- rogue [sha]
   , SomeAssetCard borrowedTime3
+  --- mystic [sha]
+  , SomeAssetCard shardsOfTheVoid3
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

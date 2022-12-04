@@ -167,6 +167,7 @@ allEvents = mapFrom
   , SomeEventCard wingingIt
   , SomeEventCard vantagePoint
   , SomeEventCard impromptuBarrier
+  , SomeEventCard alterFate3
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite
   , SomeEventCard astoundingRevelation

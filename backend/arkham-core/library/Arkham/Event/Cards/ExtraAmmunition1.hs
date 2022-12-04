@@ -8,7 +8,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs

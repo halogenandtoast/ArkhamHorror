@@ -208,7 +208,8 @@ const choose = (idx: number) => emit('choose', idx)
 }
 
 :deep(.token) {
-  width: 20px;
+  width: 30px;
+  height: 30px;
 }
 
 :deep(.event) {

@@ -36,7 +36,7 @@ instance RunMessage Premonition where
       push $ RequestTokens (toSource attrs) (Just iid) (Reveal 1) RemoveTokens
       pure e
     RequestedTokens (isSource attrs -> True) _ ts -> do
-      pushAll $ [SealedToken t (toCard attrs) | t <- ts ] <> [ResetTokens (toSource attrs)]
+      pushAll $ concatMap (\t -> [SealToken t, SealedToken t (toCard attrs)]) ts <> [ResetTokens (toSource attrs)]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let ts = eventSealedTokens attrs

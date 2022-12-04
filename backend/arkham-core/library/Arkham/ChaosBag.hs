@@ -411,6 +411,6 @@ instance RunMessage ChaosBag where
     AddToken tokenFace -> do
       token <- createToken tokenFace
       pure $ c & tokensL %~ (token :)
-    SealToken token -> pure $ c & tokensL %~ filter (/= token)
+    SealToken token -> pure $ c & tokensL %~ filter (/= token) & setAsideTokensL %~ filter (/= token) & revealedTokensL %~ filter (/= token)
     UnsealToken token -> pure $ c & tokensL %~ (token :)
     _ -> pure c

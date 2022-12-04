@@ -339,6 +339,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , scrollOfProphecies
   , scrying
   , scrying3
+  , shardsOfTheVoid3
   , shotgun4
   , shrewdAnalysis
   , shrivelling
@@ -2497,6 +2498,16 @@ borrowedTime3 = (asset "04308" "Borrowed Time" 1 Rogue)
   { cdSkills = [#willpower, #agility]
   , cdKeywords = singleton Keyword.Exceptional
   , cdCardTraits = singleton Ritual
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 3
+  }
+
+shardsOfTheVoid3 :: CardDef
+shardsOfTheVoid3 = (asset "04310" "Shard of the Void" 3 Mystic)
+  { cdSkills = [#willpower, #combat]
+  , cdKeywords = singleton $ Keyword.Seal $ TokenFaceIs Token.Zero
+  , cdCardTraits = singleton Spell
+  , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
   , cdLevel = 3
   }

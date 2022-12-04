@@ -87,6 +87,10 @@ story :: [InvestigatorId] -> FlavorText -> Message
 story iids flavor = AskMap
   (mapFromList [ (iid, Read flavor [Label "Continue" []]) | iid <- iids ])
 
+storyWithChooseOne :: InvestigatorId -> [InvestigatorId] -> FlavorText -> [UI Message] -> Message
+storyWithChooseOne lead iids flavor choices = AskMap
+  (mapFromList [ (iid, Read flavor $ if iid == lead then choices else []) | iid <- iids ])
+
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)

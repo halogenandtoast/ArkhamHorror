@@ -12,13 +12,15 @@ defineProps<Props>()
 </script>
 <template>
   <div class="intro-text">
-    <button v-for="(readButton, readIndex) in question.readChoices" @click="choose(readIndex)" :key="readIndex">{{readButton.label}}</button>
     <div class="entry">
       <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
       <p
         v-for="(paragraph, index) in question.flavorText.body"
         :key="index"
       >{{paragraph}}</p>
+    </div>
+    <div class="options">
+      <button v-for="(readButton, readIndex) in question.readChoices" @click="choose(readIndex)" :key="readIndex"><i class="option"></i>{{readButton.label}}</button>
     </div>
   </div>
 </template>
@@ -57,10 +59,11 @@ defineProps<Props>()
     font-style: italic;
   }
 }
+
 button {
-  font-size: 1.2em;
   width: 100%;
   border: 0;
+  text-align: left;
   padding: 10px;
   text-transform: uppercase;
   background-color: #532e61;
@@ -69,6 +72,14 @@ button {
   font: Arial, sans-serif;
   &:hover {
     background-color: #311b3e;
+  }
+}
+
+.option {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\E91A";
+    margin-right: 10px;
   }
 }
 </style>

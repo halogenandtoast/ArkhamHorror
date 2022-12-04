@@ -26,6 +26,11 @@ onMounted(async () => await store.loadUserFromStorage())
 }
 
 @font-face {
+  font-family: "ArkhamIcons";
+  src: url("../public/fonts/arkhamicons.ttf");
+}
+
+@font-face {
   font-family: "Teutonic";
   src: url("../public/fonts/teutonic.ttf");
 }

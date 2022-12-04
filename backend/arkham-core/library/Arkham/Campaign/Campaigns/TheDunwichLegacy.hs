@@ -39,9 +39,7 @@ instance RunMessage TheDunwichLegacy where
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       c <$ pushAll
-        [ story investigatorIds prologue
-        , chooseOne
-          leadInvestigatorId
+        [ storyWithChooseOne leadInvestigatorId investigatorIds prologue
           [ Label
             "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
             [NextCampaignStep (Just $ ScenarioStep "02041")]

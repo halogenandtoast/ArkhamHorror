@@ -738,13 +738,13 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
   where name = cdName cardDef
 
 hasFightActions
-  :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
-hasFightActions _ window = notNull <$> select
+  :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> Source -> [Window] -> m Bool
+hasFightActions iid window source windows' = anyM (\a -> anyM (\w -> getCanPerformAbility iid source w a) windows') =<< selectList
   (Matcher.AbilityIsAction Action.Fight <> Matcher.AbilityWindow window)
 
 hasEvadeActions
-  :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
-hasEvadeActions _ window = notNull <$> select
+  :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> Source -> [Window] -> m Bool
+hasEvadeActions iid window source windows' = anyM (\a -> anyM (\w -> getCanPerformAbility iid source w a) windows') =<< selectList
   (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
 getIsPlayable
@@ -820,8 +820,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       (pure False)
       (cardInFastWindows iid source c windows')
       (cdFastWindow pcDef <|> canBecomeFastWindow)
-    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
-    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
+    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You) source windows'
+    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You) source windows'
     passesLimits <- allM passesLimit (cdLimits pcDef)
     cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
     let

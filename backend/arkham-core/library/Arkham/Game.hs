@@ -1824,7 +1824,7 @@ enemyMatcherFilter = \case
     let
       enemyFilters = mapMaybe
         (\case
-          CannotFight m -> Just m
+          CannotEvade m -> Just m
           _ -> Nothing
         )
         modifiers'

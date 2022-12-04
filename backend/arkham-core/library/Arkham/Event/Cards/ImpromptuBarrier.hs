@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types qualified as Enemy ( Field (..) )
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -32,6 +33,10 @@ impromptuBarrier =
 instance RunMessage ImpromptuBarrier where
   runMessage msg e@(ImpromptuBarrier (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
+      let
+        afterMsg = case zone of
+          FromDiscard -> ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
+          _ -> Discard (toTarget attrs)
       pushAll
         [ ChooseEvadeEnemy
           iid
@@ -40,7 +45,7 @@ instance RunMessage ImpromptuBarrier where
           SkillCombat
           mempty
           False
-        , Discard (toTarget attrs)
+        , afterMsg
         ]
       pure . ImpromptuBarrier $ attrs `with` Metadata (zone == FromDiscard)
     ChosenEvadeEnemy (isSource attrs -> True) eid -> do

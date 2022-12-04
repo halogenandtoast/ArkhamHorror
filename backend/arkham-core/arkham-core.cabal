@@ -940,6 +940,7 @@ library
       Arkham.Event.Cards.IfItBleeds
       Arkham.Event.Cards.IllSeeYouInHell
       Arkham.Event.Cards.ImOuttaHere
+      Arkham.Event.Cards.ImpromptuBarrier
       Arkham.Event.Cards.Improvisation
       Arkham.Event.Cards.ImprovisedWeapon
       Arkham.Event.Cards.Infighting3

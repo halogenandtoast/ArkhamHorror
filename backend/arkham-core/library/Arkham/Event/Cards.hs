@@ -160,6 +160,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , ifItBleeds
   , illSeeYouInHell
   , imOuttaHere
+  , impromptuBarrier
   , improvisation
   , improvisedWeapon
   , infighting3
@@ -1508,6 +1509,13 @@ vantagePoint = (event "04306" "Vantage Point" 1 Seeker)
     [ PutLocationIntoPlay Timing.After Anyone Anywhere
     , RevealLocation Timing.After Anyone Anywhere
     ]
+  }
+
+impromptuBarrier :: CardDef
+impromptuBarrier = (event "04312" "Impromptu Barrier" 1 Survivor)
+  { cdCardTraits = setFromList [Tactic, Improvised]
+  , cdActions = [Action.Evade]
+  , cdPlayableFromDiscard = True
   }
 
 trialByFire :: CardDef

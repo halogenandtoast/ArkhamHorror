@@ -84,6 +84,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , anatomicalDiagrams
   , astoundingRevelation
   , astralTravel
+  , alterFate3
   , backstab
   , baitAndSwitch
   , barricade
@@ -1516,6 +1517,15 @@ impromptuBarrier = (event "04312" "Impromptu Barrier" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdActions = [Action.Evade]
   , cdPlayableFromDiscard = True
+  }
+
+alterFate3 :: CardDef
+alterFate3 = (event "04313" "Alter Fate" 1 Survivor)
+  { cdSkills = [#wild]
+  , cdCardTraits = setFromList [Spell, Blessed]
+  , cdFastWindow = Just FastPlayerWindow
+  , cdCriteria = Just $ Criteria.TreacheryExists $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+  , cdLevel = 3
   }
 
 trialByFire :: CardDef

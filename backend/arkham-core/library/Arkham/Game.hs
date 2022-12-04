@@ -952,6 +952,8 @@ getTreacheriesMatching matcher = do
  where
   matcherFilter = \case
     AnyTreachery -> pure . const True
+    NotTreachery m -> fmap not . matcherFilter m
+    TreacheryIsNonWeakness -> fieldMap TreacheryCard (`cardMatch` NonWeaknessTreachery) . toId
     TreacheryWithTitle title ->
       pure . (== title) . nameTitle . toName . toAttrs
     TreacheryWithFullTitle title subtitle ->

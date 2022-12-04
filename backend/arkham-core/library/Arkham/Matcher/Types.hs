@@ -375,10 +375,12 @@ data TreacheryMatcher
   | TreacheryIs CardCode
   | TreacheryAt LocationMatcher
   | TreacheryOnEnemy EnemyMatcher
+  | TreacheryIsNonWeakness
   | AnyTreachery
   | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]
   | TreacheryOneOf [TreacheryMatcher]
+  | NotTreachery TreacheryMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

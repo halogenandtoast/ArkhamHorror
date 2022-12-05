@@ -476,6 +476,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       PlayerCard pc ->
         pure $ a & handL %~ filter ((/= cardId) . toCardId) & discardL %~ (pc :)
       EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . toCardId) -- TODO: This should discard to the encounter discard
+      VengeanceCard _ -> error "vengeance card"
   RemoveCardFromHand iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   RemoveCardFromSearch iid cardId | iid == investigatorId ->
@@ -1889,6 +1890,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             pure
               $ CommittableTreachery
               `elem` (cdCommitRestrictions $ toCardDef card)
+          VengeanceCard _ -> error "vengeance card"
     if notNull committableCards || notNull committedCards || notNull actions
       then push
         (SkillTestAsk $ chooseOne
@@ -1995,6 +1997,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure
                     $ CommittableTreachery
                     `elem` (cdCommitRestrictions $ toCardDef card)
+                VengeanceCard _ -> error "vengeance card"
       when (notNull committableCards || notNull committedCards) $ push
         (SkillTestAsk $ chooseOne
           investigatorId
@@ -2092,6 +2095,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $ a & deckL %~ Deck . (pc :) . unDeck & handL %~ filter (/= card)
       EncounterCard _ ->
         error "Can not put encounter card on top of investigator deck"
+      VengeanceCard _ ->
+        error "Can not put vengrance card on top of investigator deck"
   PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') card
     | iid == investigatorId && iid == iid' -> case card of
       PlayerCard pc ->
@@ -2099,6 +2104,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (/= card)
       EncounterCard _ ->
         error "Can not put encounter card on bottom of investigator deck"
+      VengeanceCard _ ->
+        error "Can not put vengeance card on bottom of investigator deck"
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> do

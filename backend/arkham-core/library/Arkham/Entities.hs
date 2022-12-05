@@ -44,6 +44,7 @@ addEntity i e card = case card of
       let treachery = createTreachery card (toId i)
       pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled"
+  VengeanceCard _ -> error "vengeance card"
 
 type EntityMap a = HashMap (EntityId a) a
 

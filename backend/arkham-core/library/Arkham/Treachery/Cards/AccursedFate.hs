@@ -31,6 +31,7 @@ instance RunMessage AccursedFate where
           theBellTolls <- genPlayerCard Cards.theBellTolls
           case toCard attrs of
             EncounterCard _ -> error "not an encounter card"
+            VengeanceCard _ -> error "not a vengeance card"
             PlayerCard pc -> pushAll
               [ InvestigatorAssignDamage iid source DamageAny 0 2
               , RemoveCardFromDeckForCampaign iid pc

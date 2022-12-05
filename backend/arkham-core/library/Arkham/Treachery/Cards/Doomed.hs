@@ -30,6 +30,7 @@ instance RunMessage Doomed where
         then do
           accursedFate <- genPlayerCard Cards.accursedFate
           case toCard attrs of
+            VengeanceCard _ -> error "not a vengeance card"
             EncounterCard _ -> error "not an encounter card"
             PlayerCard pc -> pushAll
               [ InvestigatorAssignDamage iid source DamageAny 0 1

@@ -17,7 +17,6 @@ import Arkham.Location.Cards qualified as Cards ( devilsHopYard_252 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 

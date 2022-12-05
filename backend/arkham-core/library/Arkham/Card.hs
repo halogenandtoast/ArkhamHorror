@@ -55,9 +55,11 @@ instance IsCard Card where
   toCardId = \case
     PlayerCard pc -> toCardId pc
     EncounterCard ec -> toCardId ec
+    VengeanceCard c -> toCardId c
   toCardOwner = \case
     PlayerCard pc -> toCardOwner pc
     EncounterCard ec -> toCardOwner ec
+    VengeanceCard c -> toCardOwner c
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: a -> Card
@@ -115,6 +117,7 @@ instance IsCard EncounterCard where
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
+  | VengeanceCard Card
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -125,6 +128,7 @@ flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
   EncounterCard $ ec { ecIsFlipped = not <$> ecIsFlipped ec }
 flipCard (PlayerCard pc) = PlayerCard pc
+flipCard (VengeanceCard c) = VengeanceCard c
 
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
@@ -141,16 +145,19 @@ instance HasCardDef Card where
   toCardDef = \case
     PlayerCard pc -> toCardDef pc
     EncounterCard ec -> toCardDef ec
+    VengeanceCard c -> toCardDef c
 
 instance HasCardCode Card where
   toCardCode = \case
     PlayerCard pc -> toCardCode pc
     EncounterCard ec -> toCardCode ec
+    VengeanceCard c -> toCardCode c
 
 instance HasOriginalCardCode Card where
   toOriginalCardCode = \case
     PlayerCard pc -> toOriginalCardCode pc
     EncounterCard ec -> toOriginalCardCode ec
+    VengeanceCard c -> toOriginalCardCode c
 
 data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId
@@ -171,33 +178,40 @@ class HasCard env a where
 instance HasSkillIcons Card where
   getSkillIcons (PlayerCard card) = getSkillIcons card
   getSkillIcons (EncounterCard _) = []
+  getSkillIcons (VengeanceCard _) = []
 
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost (EncounterCard _) = 0
+  getCost (VengeanceCard _) = 0
 
 isDynamic :: Card -> Bool
 isDynamic (PlayerCard card) = case cdCost (toCardDef card) of
   Just DynamicCost -> True
   _ -> False
 isDynamic (EncounterCard _) = False
+isDynamic (VengeanceCard _) = False
 
 isFastCard :: Card -> Bool
 isFastCard (PlayerCard card) =
   let CardDef {..} = toCardDef card in isJust cdFastWindow
 isFastCard (EncounterCard _) = False
+isFastCard (VengeanceCard _) = False
 
 toPlayerCard :: Card -> Maybe PlayerCard
 toPlayerCard (PlayerCard pc) = Just pc
 toPlayerCard (EncounterCard _) = Nothing
+toPlayerCard (VengeanceCard c) = toPlayerCard c
 
 toEncounterCard :: Card -> Maybe EncounterCard
 toEncounterCard (EncounterCard ec) = Just ec
 toEncounterCard (PlayerCard _) = Nothing
+toEncounterCard (VengeanceCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = isJust $ cdCardSubType (toCardDef pc)
+cardIsWeakness (VengeanceCard _) = False
 
 filterCardType :: HasCardDef a => CardType -> [a] -> [a]
 filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)

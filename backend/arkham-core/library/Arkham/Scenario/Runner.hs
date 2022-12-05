@@ -345,6 +345,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         & (setAsideCardsL %~ deleteFirstMatch (== card))
         & (encounterDeckL .~ encounterDeck)
     PlayerCard _ -> error "can not place player card on top of encounter deck"
+    VengeanceCard _ -> error "vengeance card"
   PutCardOnBottomOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
       let encounterDeck = withDeck (<> [ec]) scenarioEncounterDeck
@@ -354,6 +355,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         & (encounterDeckL .~ encounterDeck)
     PlayerCard _ ->
       error "can not place player card on bottom of encounter deck"
+    VengeanceCard _ -> error "vengeance card"
   PutCardOnTopOfDeck _ (Deck.ScenarioDeckByKey deckKey) card -> do
     let
       deck = fromMaybe [] $ view (decksL . at deckKey) a
@@ -406,6 +408,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardL %~ (ec :)
+      VengeanceCard _ -> error "vengeance card"
   CreateAssetAt card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
   AttachStoryTreacheryTo card _ -> do
@@ -495,6 +498,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardL %~ (ec :)
+      VengeanceCard _ -> error "vengeance card"
   InvestigatorDoDrawEncounterCard iid -> case unDeck scenarioEncounterDeck of
     [] -> do
       when (notNull scenarioDiscard) $ pushAll

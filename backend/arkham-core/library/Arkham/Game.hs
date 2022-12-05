@@ -3387,6 +3387,7 @@ runGameMessage msg g = case msg of
           pure $ g & entitiesL . eventsL %~ insertMap eid event'
         _ -> pure g
       EncounterCard _ -> pure g
+      VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do
     let
       enemy = createEnemy card
@@ -3596,6 +3597,7 @@ runGameMessage msg g = case msg of
           -- The Man in the Pallid Mask has not bearer in Curtain Call
           Just iid' -> push (AddToDiscard iid' pc)
       EncounterCard _ -> pure ()
+      VengeanceCard _ -> error "Vengeance card"
     pure $ g & (entitiesL . enemiesL %~ deleteMap eid)
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
@@ -4253,6 +4255,7 @@ runGameMessage msg g = case msg of
                   $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
               else push $ AddToDiscard (eventOwner $ toAttrs event') pc
           EncounterCard _ -> error "Unhandled"
+          VengeanceCard _ -> error "Vengeance card"
         pure $ g & entitiesL . eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     treachery <- getTreachery tid
@@ -4264,6 +4267,7 @@ runGameMessage msg g = case msg of
             treachery
         push (AddToDiscard ownerId pc { pcOwner = Just ownerId })
       EncounterCard _ -> pure ()
+      VengeanceCard _ -> error "Vengeance card"
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid
   UpdateHistory iid historyItem -> do
     let

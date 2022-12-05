@@ -50,6 +50,7 @@ instance RunMessage DarkPact where
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
       | iid' == iid -> case toCard attrs of
           EncounterCard _ -> error "should be player card"
+          VengeanceCard _ -> error "should be player card"
           PlayerCard pc -> do
             thePriceOfFailure <- genPlayerCard Treacheries.thePriceOfFailure
             pushAll

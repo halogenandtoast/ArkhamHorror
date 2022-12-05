@@ -3053,11 +3053,11 @@ nexusOfNKai = location
   ShatteredAeons
 
 yuggoth :: CardDef
-yuggoth =
-  location "04327" "Yuggoth" [Otherworld] Droplet [Diamond] ShatteredAeons
+yuggoth = singleSided
+  $ location "04327" "Yuggoth" [Otherworld] Droplet [Diamond] ShatteredAeons
 
 shoresOfRlyeh :: CardDef
-shoresOfRlyeh = location
+shoresOfRlyeh = singleSided $ location
   "04328"
   "Shores of R'lyeh"
   [Otherworld]
@@ -3066,7 +3066,7 @@ shoresOfRlyeh = location
   ShatteredAeons
 
 cityOfTheUnseen :: CardDef
-cityOfTheUnseen = location
+cityOfTheUnseen = singleSided $ location
   "04329"
   "City of the Unseen"
   [Otherworld]
@@ -3075,7 +3075,7 @@ cityOfTheUnseen = location
   ShatteredAeons
 
 aPocketInTime :: CardDef
-aPocketInTime = victory 1 $ location
+aPocketInTime = victory 1 $ singleSided $ location
   "04330"
   "A Pocket in Time"
   [Extradimensional]
@@ -3084,7 +3084,7 @@ aPocketInTime = victory 1 $ location
   ShatteredAeons
 
 ruinsOfNewYork :: CardDef
-ruinsOfNewYork = location
+ruinsOfNewYork = singleSided $ location
   "04331"
   "Ruins of New York"
   [Shattered, Future, Ruins]
@@ -3093,15 +3093,25 @@ ruinsOfNewYork = location
   ShatteredAeons
 
 mu :: CardDef
-mu = victory 1
-  $ location "04332" "Mu" [Shattered, Ancient] Equals [Star] ShatteredAeons
+mu = victory 1 $ singleSided $ location
+  "04332"
+  "Mu"
+  [Shattered, Ancient]
+  Equals
+  [Star]
+  ShatteredAeons
 
 atlantis :: CardDef
-atlantis =
-  location "04333" "Atlantis" [Shattered, Ancient] Equals [Star] ShatteredAeons
+atlantis = singleSided $ location
+  "04333"
+  "Atlantis"
+  [Shattered, Ancient]
+  Equals
+  [Star]
+  ShatteredAeons
 
 pnakotus :: CardDef
-pnakotus = victory 1 $ location
+pnakotus = victory 1 $ singleSided $ location
   "04334"
   "Pnakotus"
   [Shattered, Ancient]
@@ -3110,7 +3120,7 @@ pnakotus = victory 1 $ location
   ShatteredAeons
 
 valusia :: CardDef
-valusia = victory 1 $ location
+valusia = victory 1 $ singleSided $ location
   "04335"
   "Valusia"
   [Shattered, Ancient]
@@ -3119,7 +3129,7 @@ valusia = victory 1 $ location
   ShatteredAeons
 
 plateauOfLeng :: CardDef
-plateauOfLeng = location
+plateauOfLeng = singleSided $ location
   "04336"
   "Plateau of Leng"
   [Shattered, PresentDay]

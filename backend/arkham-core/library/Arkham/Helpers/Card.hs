@@ -17,6 +17,7 @@ isDiscardable = not . isWeakness
   isWeakness = \case
     PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
     EncounterCard _ -> True -- maybe?
+    VengeanceCard _ -> False -- should be an error
 
 getCardPayments :: Card -> GameT (Maybe Payment)
 getCardPayments c = do

@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Cards ( easttownArkhamPoliceStation )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

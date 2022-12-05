@@ -24,6 +24,7 @@ instance RunMessage ThePriceOfFailure where
   runMessage msg t@(ThePriceOfFailure attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       case toCard attrs of
+        VengeanceCard _ -> error "not a vengeance card"
         EncounterCard _ -> error "not an encounter card"
         PlayerCard pc -> do
           darkPact <- genPlayerCard Events.darkPact

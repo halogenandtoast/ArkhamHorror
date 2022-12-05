@@ -6,12 +6,12 @@ module Arkham.Event.Cards.Persuasion
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Types
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest
-import Arkham.Investigator.Types
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.Projection

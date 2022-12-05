@@ -775,6 +775,7 @@ getIsPlayableWithResources
   -> [Window]
   -> Card
   -> m Bool
+getIsPlayableWithResources _ _ _ _ _ (VengeanceCard _) = pure False
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayableWithResources iid source availableResources costStatus windows' c@(PlayerCard _)
   = withDepthGuard 3 False $ do
@@ -1272,6 +1273,7 @@ getModifiedCardCost iid c@(EncounterCard _) = do
   applyModifier n (IncreaseCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then n + m else n
   applyModifier n _ = pure n
+getModifiedCardCost _ (VengeanceCard _) = error "should not happen for vengeance"
 
 getPotentiallyModifiedCardCost
   :: (Monad m, HasGame m) => InvestigatorId -> Card -> Int -> m Int
@@ -1293,6 +1295,7 @@ getPotentiallyModifiedCardCost iid c@(EncounterCard _) _ = do
   applyModifier n (CanReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
+getPotentiallyModifiedCardCost _ (VengeanceCard _) _ = error "should not check vengeance card"
 
 cardInFastWindows
   :: (Monad m, HasGame m)

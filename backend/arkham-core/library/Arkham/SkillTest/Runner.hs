@@ -250,6 +250,7 @@ instance RunMessage SkillTest where
             (iid, PlayerCard pc) ->
               (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
             (_, EncounterCard _) -> Nothing
+            (_, VengeanceCard _) -> Nothing
           )
           (s ^. committedCardsL . to toList)
         skillResultValue = case skillTestResult of

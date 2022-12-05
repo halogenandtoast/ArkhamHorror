@@ -97,7 +97,8 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
 allLocationCards :: HashMap CardCode CardDef
 allLocationCards = mapFromList $ map
   (toCardCode &&& id)
-  [ aTearInThePath
+  [ aPocketInTime
+  , aTearInThePath
   , abandonedSite
   , abbeyChurch
   , abbeyTowerSpiresForbidden
@@ -126,6 +127,7 @@ allLocationCards = mapFromList $ map
   , asylumHallsWesternPatientWing_169
   , asylumHallsEasternPatientWing_170
   , asylumHallsEasternPatientWing_171
+  , atlantis
   , attic
   , audubonPark
   , backAlley
@@ -174,6 +176,7 @@ allLocationCards = mapFromList $ map
   , choeurGothique_293
   , circuitousTrail
   , cityOfTheSerpents
+  , cityOfTheUnseen
   , cloister
   , cloverClubBar
   , cloverClubCardroom
@@ -301,9 +304,11 @@ allLocationCards = mapFromList $ map
   , montparnasse
   , mouthOfKnYanTheCavernsMaw
   , mouthOfKnYanTheDepthsBelow
+  , mu
   , museumEntrance
   , museumHalls
   , narrowShaft
+  , nexusOfNKai
   , northside
   , northsideTrainStation
   , northTower_287
@@ -333,6 +338,8 @@ allLocationCards = mapFromList $ map
   , patientConfinementFamiliarCell
   , pereLachaiseCemetery
   , perilousGulch
+  , plateauOfLeng
+  , pnakotus
   , porteDeLAvancee
   , prismaticCascade
   , quietHalls_131
@@ -351,6 +358,7 @@ allLocationCards = mapFromList $ map
   , ruinsOfCarcosaInhabitantOfCarcosa
   , ruinsOfCarcosaTheCoffin
   , ruinsOfEztli
+  , ruinsOfNewYork
   , sacredWoods_184
   , sacredWoods_185
   , sanMarcoBasilica
@@ -364,6 +372,7 @@ allLocationCards = mapFromList $ map
   , serpentsHaven
   , shiveringPools
   , shoresOfHali
+  , shoresOfRlyeh
   , slaughteredWoods
   , sleepingCar
   , southsideHistoricalSociety
@@ -402,6 +411,7 @@ allLocationCards = mapFromList $ map
   , twistedUnderbrush
   , undergroundRuins
   , uprootedWoods
+  , valusia
   , vastPassages
   , velmasDiner
   , venetianGarden
@@ -414,6 +424,7 @@ allLocationCards = mapFromList $ map
   , yard
   , yithianOrrery
   , yourHouse
+  , yuggoth
   , zocalo
   ]
 
@@ -3031,6 +3042,90 @@ brightCanyon = singleSided $ location
   Circle
   [Droplet, Squiggle, T, Heart, Triangle]
   TheDepthsOfYoth
+
+nexusOfNKai :: CardDef
+nexusOfNKai = location
+  "04324"
+  ("Nexus of N'kai" <:> "Unraveling the Threads")
+  [Ancient, Ruins]
+  Diamond
+  [Droplet, Star]
+  ShatteredAeons
+
+yuggoth :: CardDef
+yuggoth =
+  location "04327" "Yuggoth" [Otherworld] Droplet [Diamond] ShatteredAeons
+
+shoresOfRlyeh :: CardDef
+shoresOfRlyeh = location
+  "04328"
+  "Shores of R'lyeh"
+  [Otherworld]
+  Droplet
+  [Diamond]
+  ShatteredAeons
+
+cityOfTheUnseen :: CardDef
+cityOfTheUnseen = location
+  "04329"
+  "City of the Unseen"
+  [Otherworld]
+  Droplet
+  [Diamond]
+  ShatteredAeons
+
+aPocketInTime :: CardDef
+aPocketInTime = victory 1 $ location
+  "04330"
+  "A Pocket in Time"
+  [Extradimensional]
+  Star
+  [Diamond, Equals]
+  ShatteredAeons
+
+ruinsOfNewYork :: CardDef
+ruinsOfNewYork = location
+  "04331"
+  "Ruins of New York"
+  [Shattered, Future, Ruins]
+  Equals
+  [Star]
+  ShatteredAeons
+
+mu :: CardDef
+mu = victory 1
+  $ location "04332" "Mu" [Shattered, Ancient] Equals [Star] ShatteredAeons
+
+atlantis :: CardDef
+atlantis =
+  location "04333" "Atlantis" [Shattered, Ancient] Equals [Star] ShatteredAeons
+
+pnakotus :: CardDef
+pnakotus = victory 1 $ location
+  "04334"
+  "Pnakotus"
+  [Shattered, Ancient]
+  Equals
+  [Star]
+  ShatteredAeons
+
+valusia :: CardDef
+valusia = victory 1 $ location
+  "04335"
+  "Valusia"
+  [Shattered, Ancient]
+  Equals
+  [Star]
+  ShatteredAeons
+
+plateauOfLeng :: CardDef
+plateauOfLeng = location
+  "04336"
+  "Plateau of Leng"
+  [Shattered, PresentDay]
+  Equals
+  [Star]
+  ShatteredAeons
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

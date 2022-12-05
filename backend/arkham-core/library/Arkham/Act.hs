@@ -165,6 +165,18 @@ allActs = mapFrom
   , SomeActCard repossession
   -- The Depths of Yoth
   , SomeActCard journeyToTheNexus
+  -- Shattered Aeons
+  , SomeActCard worldsBeyond
+  , SomeActCard searchForTheBrotherhood
+  , SomeActCard theYithianRelic
+  , SomeActCard mendTheShatter
+  , SomeActCard paradiseLost
+  , SomeActCard timelock
+  --- Turn Back Time
+  , SomeActCard intoTheRuinsOnceAgain
+  , SomeActCard theChamberOfStillRemains
+  , SomeActCard momentOfDoom
+  --- Turn Back Time
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

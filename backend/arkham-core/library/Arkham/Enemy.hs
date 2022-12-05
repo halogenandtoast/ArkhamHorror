@@ -216,6 +216,11 @@ allEnemies = mapFrom
   , SomeEnemyCard yig
   , SomeEnemyCard pitWarden
   , SomeEnemyCard eaterOfTheDepths
+  -- Shattered Aeons
+  , SomeEnemyCard ichtacaScionOfYig
+  , SomeEnemyCard alejandroVela
+  , SomeEnemyCard formlessSpawn
+  , SomeEnemyCard temporalDevourer
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

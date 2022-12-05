@@ -74,6 +74,8 @@ data EncounterSet
   | KnYan
   | TheCityOfArchives
   | TheDepthsOfYoth
+  | ShatteredAeons
+  | TurnBackTime
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

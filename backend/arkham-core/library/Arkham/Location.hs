@@ -361,6 +361,18 @@ allLocations = mapFrom
   , SomeLocationCard brokenPassage
   , SomeLocationCard abandonedSite
   , SomeLocationCard brightCanyon
+  -- Shattered Aeons
+  , SomeLocationCard nexusOfNKai
+  , SomeLocationCard yuggoth
+  , SomeLocationCard shoresOfRlyeh
+  , SomeLocationCard cityOfTheUnseen
+  , SomeLocationCard aPocketInTime
+  , SomeLocationCard ruinsOfNewYork
+  , SomeLocationCard mu
+  , SomeLocationCard atlantis
+  , SomeLocationCard pnakotus
+  , SomeLocationCard valusia
+  , SomeLocationCard plateauOfLeng
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

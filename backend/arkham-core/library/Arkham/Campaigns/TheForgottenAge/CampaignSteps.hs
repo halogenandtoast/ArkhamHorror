@@ -12,7 +12,6 @@ nextStep a = case campaignStep a of
   Just (InterludeStep 1 _) -> Just (UpgradeDeckStep TheDoomOfEztli)
   Just TheDoomOfEztli -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
   Just (InterludeStep 2 _) -> Just ThreadsOfFate
-  -- resupply
   Just ThreadsOfFate -> Just ResupplyPoint
   Just ResupplyPoint -> Just (UpgradeDeckStep TheBoundaryBeyond)
   Just TheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)

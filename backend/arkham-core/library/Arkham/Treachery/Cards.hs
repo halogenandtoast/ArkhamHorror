@@ -147,6 +147,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , attractingAttention
   , bathophobia
   , beastOfTheBayou
+  , betweenWorlds
   , beyondTheVeil
   , blackStarsRise
   , brokenRails
@@ -159,6 +160,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , conspiracyOfBlood
   , corrosion
   , crashingFloods
+  , creepingDarkness
   , creepingPoison
   , cruelInterrogations
   , cryptChill
@@ -232,6 +234,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , serpentsIre
   , shadowSpawned
   , shadowed
+  , shatteredAges
   , slitheringBehindYou
   , snakeBite
   , snakescourge
@@ -280,6 +283,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , wordsOfPower
   , worldsMerge
   , wormhole
+  , wrackedByTime
   , yithianPresence
   ]
 
@@ -1159,6 +1163,26 @@ bathophobia = (treachery "04301" "Bathophobia" TheDepthsOfYoth 3)
 serpentsIre :: CardDef
 serpentsIre = (treachery "04302" "Serpent's Ire" TheDepthsOfYoth 2)
   { cdCardTraits = singleton Scheme
+  }
+
+shatteredAges :: CardDef
+shatteredAges = (treachery "04339" "Shattered Ages" ShatteredAeons 2)
+  { cdCardTraits = singleton Hex
+  }
+
+betweenWorlds :: CardDef
+betweenWorlds = (treachery "04340" "Between Worlds" ShatteredAeons 2)
+  { cdCardTraits = singleton Hex
+  }
+
+wrackedByTime :: CardDef
+wrackedByTime = (treachery "04341" "Wracked by Time" ShatteredAeons 3)
+  { cdCardTraits = singleton Hex
+  }
+
+creepingDarkness :: CardDef
+creepingDarkness = (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
+  { cdCardTraits = singleton Hex
   }
 
 theHarbinger :: CardDef

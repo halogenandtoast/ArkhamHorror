@@ -78,6 +78,7 @@ data Trait
   | Footwear
   | Forgotten
   | Fortune
+  | Future
   | Gambit
   | Geist
   | Ghoul
@@ -145,6 +146,7 @@ data Trait
   | Serpent
   | Service
   | Servitor
+  | Shattered
   | Shoggoth
   | SilverTwilight
   | Socialite

@@ -269,6 +269,11 @@ allTreacheries = mapFrom
   , SomeTreacheryCard lightlessShadow
   , SomeTreacheryCard bathophobia
   , SomeTreacheryCard serpentsIre
+  -- Shattered Aeons
+  , SomeTreacheryCard shatteredAges
+  , SomeTreacheryCard betweenWorlds
+  , SomeTreacheryCard wrackedByTime
+  , SomeTreacheryCard creepingDarkness
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

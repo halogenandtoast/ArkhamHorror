@@ -408,7 +408,7 @@ allAssets = mapFrom
   , SomeAssetCard timewornBrand5
   --- story [tdoy]
   , SomeAssetCard relicOfAgesRepossessThePast
-  --- Shattered Aesons
+  --- Shattered Aeons
   --- guardian [sha]
   , SomeAssetCard kerosene1
   , SomeAssetCard flamethrower5
@@ -419,6 +419,8 @@ allAssets = mapFrom
   --- mystic [sha]
   , SomeAssetCard shardsOfTheVoid3
   , SomeAssetCard sealOfTheSeventhSign5
+  --- story [sha]
+  , SomeAssetCard relicOfAgesUnleashTheTimestream
   -- The Circle Undone
   --- survivor [tcu]
   , SomeAssetCard trackShoes

@@ -98,6 +98,7 @@ allAgendaCards = mapFromList $ map
   , madnessDrowns
   , outOfTime
   , pastPresentAndFuture
+  , pendolousThreads
   , predatorOrPrey
   , quietHalls
   , rampagingCreatures
@@ -109,6 +110,7 @@ allAgendaCards = mapFromList $ map
   , secretsBetterLeftHidden
   , settingSun
   , shadowsDeepen
+  , snappedThreads
   , somethingStirs
   , strangeDisappearances
   , swallowedSky
@@ -142,6 +144,7 @@ allAgendaCards = mapFromList $ map
   , theTideRises
   , theTruthIsHidden
   , theyreGettingOut
+  , threadsOfTime
   , threeFates
   , timeCollapsing
   , timeIsRunningShort
@@ -410,6 +413,15 @@ theRedDepths = agenda "04283" "The Red Depths" 6 TheDepthsOfYoth
 
 vengeance :: CardDef
 vengeance = agenda "04284" "VENGEANCE" 7 TheDepthsOfYoth
+
+threadsOfTime :: CardDef
+threadsOfTime = agenda "04315" "Threads of Time" 1 ShatteredAeons
+
+pendolousThreads :: CardDef
+pendolousThreads = agenda "04316" "Pendolous Threads" 2 ShatteredAeons
+
+snappedThreads :: CardDef
+snappedThreads = agenda "04317" "Snapped Threads" 3 ShatteredAeons
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

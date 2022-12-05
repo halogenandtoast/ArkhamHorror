@@ -95,6 +95,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   [ acolyte
   , acolyteOfUmordhoth
   , agentOfTheKing
+  , alejandroVela
   , almaHill
   , apexStrangleweed
   , ashleighClarke
@@ -133,6 +134,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , fanatic
   , fangOfYig
   , fleshEater
+  , formlessSpawn
   , ghoulFromTheDepths
   , ghoulMinion
   , ghoulPriest
@@ -150,6 +152,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , huntingHorror
   , huntingNightgaunt
   , ichtaca
+  , ichtacaScionOfYig
   , icyGhoul
   , interstellarTraveler
   , ishimaruHaruko
@@ -197,6 +200,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , swampLeech
   , swarmOfRats
   , swiftByakhee
+  , temporalDevourer
   , theExperiment
   , theMaskedHunter
   , theOrganistDrapedInMystery
@@ -1046,6 +1050,43 @@ eaterOfTheDepths =
     { cdCardTraits = singleton Monster
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 2
+    }
+
+ichtacaScionOfYig :: CardDef
+ichtacaScionOfYig =
+  (enemy "04325" ("Ichtaca" <:> "Scion of Yig") ShatteredAeons 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Monster, Serpent, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
+
+alejandroVela :: CardDef
+alejandroVela =
+  (enemy "04326" ("Alejandro Vela" <:> "Or, Is He?") ShatteredAeons 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
+
+formlessSpawn :: CardDef
+formlessSpawn =
+  (enemy "04337" "Formless Spawn" ShatteredAeons 1
+    )
+    { cdCardTraits = setFromList [Monster, Abomination, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdVictoryPoints = Just 2
+    }
+
+temporalDevourer :: CardDef
+temporalDevourer =
+  (enemy "04338" "Temporal Devourer" ShatteredAeons 2
+    )
+    { cdCardTraits = setFromList [Monster, Extradimensional]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 corpseHungryGhoul :: CardDef

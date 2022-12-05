@@ -326,6 +326,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , relicOfAgesADeviceOfSomeSort
   , relicOfAgesForestallingTheFuture
   , relicOfAgesRepossessThePast
+  , relicOfAgesUnleashTheTimestream
   , researchLibrarian
   , riteOfSeeking
   , riteOfSeeking4
@@ -2521,6 +2522,13 @@ sealOfTheSeventhSign5 = (asset "04311" ("Seal of the Seventh Sign" <:> "Over the
   , cdUses = Uses Charge 7
   , cdSlots = [ArcaneSlot]
   , cdLevel = 5
+  }
+
+relicOfAgesUnleashTheTimestream :: CardDef
+relicOfAgesUnleashTheTimestream = (storyAsset "04343" ("Relic of Ages" <:> "Unleash the Timestream") 2 ShatteredAeons)
+  { cdSkills = [#wild, #wild, #wild]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdUnique = True
   }
 
 trackShoes :: CardDef

@@ -12,7 +12,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

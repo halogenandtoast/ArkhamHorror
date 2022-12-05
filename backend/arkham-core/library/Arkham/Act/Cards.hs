@@ -102,13 +102,16 @@ allActCards = mapFromList $ map
   , intoTheBeyond
   , intoTheDarkness
   , intoTheRuins
+  , intoTheRuinsOnceAgain
   , inLostCarcosa
   , investigatingTheTrail
   , journeyToTheNexus
   , leadingTheWay
   , magicAndScience
+  , mendTheShatter
   , missingPersons
   , mistakesOfThePast
+  , momentOfDoom
   , mysteriousGateway
   , nightAtTheMuseum
   , noAsylum
@@ -116,6 +119,7 @@ allActCards = mapFromList $ map
   , openThePathAbove
   , openThePathBelow
   , outOfThisWorld
+  , paradiseLost
   , pastAndPresent
   , planningTheEscape
   , pursuingShadows
@@ -128,6 +132,7 @@ allActCards = mapFromList $ map
   , run
   , saracenicScript
   , searchForAlejandro
+  , searchForTheBrotherhood
   , searchForThePattern
   , searchForTheRuins
   , searchForTheStrangerV1
@@ -145,6 +150,7 @@ allActCards = mapFromList $ map
   , theCarnevaleConspiracy
   , theCaveOfDarknessEmbroiledInBattle
   , theCaveOfDarknessTunnelsInTheDark
+  , theChamberOfStillRemains
   , theChamberOfTheBeast
   , theGateOpens
   , theGuardedRuins
@@ -163,12 +169,15 @@ allActCards = mapFromList $ map
   , theStrangerThePathIsMine
   , theStrangerTheShoresOfHali
   , theWayOut
+  , theYithianRelic
   , theyMustBeDestroyed
   , throughTheCatacombs
+  , timelock
   , trapped
   , trialOfTheHuntress
   , uncoveringTheConspiracy
   , whatHaveYouDone
+  , worldsBeyond
   ]
 
 trapped :: CardDef
@@ -498,6 +507,33 @@ repossession = act "04243" "Repossession" 3 TheCityOfArchives
 
 journeyToTheNexus :: CardDef
 journeyToTheNexus = act "04285" "Journey to the Nexus" 1 TheDepthsOfYoth
+
+worldsBeyond :: CardDef
+worldsBeyond = act "04318" "Worlds Beyond" 1 ShatteredAeons
+
+searchForTheBrotherhood :: CardDef
+searchForTheBrotherhood = act "04319" "Search for the Brotherhood" 2 ShatteredAeons
+
+theYithianRelic :: CardDef
+theYithianRelic = act "04320" "The Yithian Relic" 3 ShatteredAeons
+
+mendTheShatter :: CardDef
+mendTheShatter = act "04321" "Mend the Shatter" 4 ShatteredAeons
+
+paradiseLost :: CardDef
+paradiseLost = act "04322" "Paradise Lost" 4 ShatteredAeons
+
+timelock :: CardDef
+timelock = act "04323" "Timelock" 4 ShatteredAeons
+
+intoTheRuinsOnceAgain :: CardDef
+intoTheRuinsOnceAgain = act "04345" "Into the Ruins Once Again" 1 TurnBackTime
+
+theChamberOfStillRemains :: CardDef
+theChamberOfStillRemains = act "04346" "The Chamber of Still Remains" 2 TurnBackTime
+
+momentOfDoom :: CardDef
+momentOfDoom = act "04347" "Moment of Doom" 3 TurnBackTime
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

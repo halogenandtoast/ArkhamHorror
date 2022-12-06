@@ -5,8 +5,8 @@ module Arkham.Scenario.Runner
 
 import Arkham.Prelude
 
-import Arkham.Scenario.Types as X
 import Arkham.Helpers.Message as X
+import Arkham.Scenario.Types as X
 
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types ( Field (..) )
@@ -50,8 +50,8 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
-import Data.IntMap.Strict qualified as IntMap
 import Data.HashMap.Strict qualified as HashMap
+import Data.IntMap.Strict qualified as IntMap
 
 instance HasTokenValue ScenarioAttrs where
   getTokenValue iid tokenFace _ = case tokenFace of
@@ -221,9 +221,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           toAgendaId = AgendaId (toCardCode agenda)
         when (newAgendaSide == Agenda.B) $ push $ AdvanceAgenda toAgendaId
         push (ReplaceAgenda fromAgendaId toAgendaId)
+        -- filter the stack so only agendas with higher stages are left
         pure $ filter
           (\c ->
-            (cdStage c /= cdStage agenda)
+            (fromMaybe
+                False
+                (liftA2 (>) (cdStage c) (cdStage agenda))
+              )
               || (cdCardCode c `cardCodeExactEq` cdCardCode agenda)
           )
           ys
@@ -264,7 +268,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ScenarioCountIncrementBy logKey n ->
     pure $ a & countsL %~ HashMap.alter (Just . maybe n (+ n)) logKey
   ScenarioCountDecrementBy logKey n ->
-    pure $ a & countsL %~ HashMap.alter (Just . max 0 . maybe 0 (subtract n)) logKey
+    pure
+      $ a
+      & countsL
+      %~ HashMap.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveToken _drawnToken token _iid | token == AutoFail ->
     a <$ push FailSkillTest
   EndOfScenario mNextCampaignStep -> do

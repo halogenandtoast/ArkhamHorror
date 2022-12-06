@@ -10,8 +10,10 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
@@ -23,12 +25,15 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ShatteredAeons.Story
+import Arkham.Target
 import Arkham.Token
+import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs
@@ -51,10 +56,20 @@ shatteredAeons difficulty = scenario
 
 instance HasTokenValue ShatteredAeons where
   getTokenValue iid tokenFace (ShatteredAeons attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 3 5
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
+    Skull -> do
+      atRelicsLocation <-
+        selectAny $ assetIs Assets.relicOfAgesUnleashTheTimestream <> AssetAt
+          (locationWithInvestigator iid)
+      pure $ if atRelicsLocation
+        then toTokenValue attrs Skull 4 5
+        else toTokenValue attrs Skull 2 3
+    Cultist -> pure $ toTokenValue attrs Cultist 2 3
+    Tablet -> do
+      poisoned <- getIsPoisoned iid
+      pure $ if poisoned
+        then TokenValue Tablet AutoFailModifier
+        else toTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
     otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
@@ -211,6 +226,8 @@ instance RunMessage ShatteredAeons where
         <> [ story investigators intro4 | showIntro4 ]
         <> [ story investigators intro5 | showIntro5 ]
         <> [ SetEncounterDeck encounterDeck'
+           , SetAgendaDeck
+           , SetActDeck
            , PlaceLocation nexusOfNKai
            , MoveAllTo (toSource attrs) (toLocationId nexusOfNKai)
            ]
@@ -240,4 +257,62 @@ instance RunMessage ShatteredAeons where
         & (setAsideCardsL .~ setAsideCards)
         & (victoryDisplayL .~ map VengeanceCard cardsToAddToVictory)
         )
+    PassedSkillTest iid _ _ (TokenTarget token) _ n | n < 1 -> do
+      when (tokenFace token == Cultist) $ do
+        if isEasyStandard attrs
+          then do
+            cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+            unless (null cultists) $ push $ chooseOne
+              iid
+              [ targetLabel cultist [PlaceDoom (EnemyTarget cultist) 1]
+              | cultist <- cultists
+              ]
+          else do
+            cultists <- selectList $ EnemyWithTrait Trait.Cultist
+            pushAll
+              $ [ PlaceDoom (EnemyTarget cultist) 1 | cultist <- cultists ]
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      when (tokenFace token == Cultist) $ do
+        if isEasyStandard attrs
+          then do
+            cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+            unless (null cultists) $ push $ chooseOne
+              iid
+              [ targetLabel cultist [PlaceDoom (EnemyTarget cultist) 1]
+              | cultist <- cultists
+              ]
+          else do
+            cultists <- selectList $ EnemyWithTrait Trait.Cultist
+            pushAll
+              $ [ PlaceDoom (EnemyTarget cultist) 1 | cultist <- cultists ]
+      when (tokenFace token == Tablet && isHardExpert attrs) $ do
+        isPoisoned <- getIsPoisoned iid
+        unless isPoisoned $ do
+          poisoned <- getSetAsidePoisoned
+          push $ CreateWeaknessInThreatArea poisoned iid
+      when (tokenFace token == ElderThing) $ do
+        let
+          mHex =
+            find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
+        for_ mHex $ \hex -> do
+          pushAll
+            [ RemoveFromEncounterDiscard hex
+            , ShuffleCardsIntoDeck
+              (Deck.ScenarioDeckByKey ExplorationDeck)
+              [EncounterCard hex]
+            ]
+      pure s
+    ResolveToken _ ElderThing _ | isHardExpert attrs -> do
+      let
+        mHex =
+          find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
+      for_ mHex $ \hex -> do
+        pushAll
+          [ RemoveFromEncounterDiscard hex
+          , ShuffleCardsIntoDeck
+            (Deck.ScenarioDeckByKey ExplorationDeck)
+            [EncounterCard hex]
+          ]
+      pure s
     _ -> ShatteredAeons <$> runMessage msg attrs

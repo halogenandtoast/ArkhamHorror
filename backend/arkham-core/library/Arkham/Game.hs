@@ -827,6 +827,12 @@ getInvestigatorsMatching matcher = do
         . map PlayerCard
         . investigatorDiscard
         . toAttrs
+    DeckWith cardListMatcher ->
+      (`cardListMatches` cardListMatcher)
+        . map PlayerCard
+        . unDeck
+        . investigatorDeck
+        . toAttrs
     InvestigatorWithoutModifier modifierType -> \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'

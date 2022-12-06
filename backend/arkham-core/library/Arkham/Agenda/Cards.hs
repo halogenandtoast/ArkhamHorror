@@ -415,7 +415,7 @@ vengeance :: CardDef
 vengeance = agenda "04284" "VENGEANCE" 7 TheDepthsOfYoth
 
 threadsOfTime :: CardDef
-threadsOfTime = agenda "04315" "Threads of Time" 1 ShatteredAeons
+threadsOfTime = (agenda "04315" "Threads of Time" 1 ShatteredAeons) { cdVengeancePoints = Just 1 }
 
 pendolousThreads :: CardDef
 pendolousThreads = agenda "04316" "Pendolous Threads" 2 ShatteredAeons

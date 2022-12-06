@@ -56,6 +56,7 @@ data InvestigatorMatcher
   | ResignedInvestigator
   | DefeatedInvestigator
   | ContributedMatchingIcons ValueMatcher
+  | DeckWith CardListMatcher
   | HandWith CardListMatcher
   | DiscardWith CardListMatcher
   | InvestigatorWithoutModifier ModifierType

@@ -38,14 +38,14 @@ export const useUserStore = defineStore("user", {
     },
 
     async logout() {
-      localStorage.removeItem('token')
+      localStorage.removeItem('arkham-token')
       delete api.defaults.headers.common.Authorization
       this.signOut()
     },
 
     async setCurrentUser() {
       if (this.token) {
-        localStorage.setItem('token', this.token);
+        localStorage.setItem('arkham-token', this.token);
         api.defaults.headers.common.Authorization = `Token ${this.token}`;
         try {
           const whoami = await api.get<User>('whoami')
@@ -57,7 +57,7 @@ export const useUserStore = defineStore("user", {
     },
 
     async loadUserFromStorage() {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('arkham-token');
       if (token !== null && token !== undefined) {
         this.token = token
         this.setCurrentUser()

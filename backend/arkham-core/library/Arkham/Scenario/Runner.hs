@@ -224,10 +224,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         -- filter the stack so only agendas with higher stages are left
         pure $ filter
           (\c ->
-            (fromMaybe
-                False
-                (liftA2 (>) (cdStage c) (cdStage agenda))
-              )
+            (fromMaybe False (liftA2 (>) (cdStage c) (cdStage agenda)))
               || (cdCardCode c `cardCodeExactEq` cdCardCode agenda)
           )
           ys
@@ -239,11 +236,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   -- is that the act deck has been replaced.
   CheckForRemainingInvestigators -> do
     investigatorIds <- selectList Matcher.UneliminatedInvestigator
-    a <$ when
-      (null investigatorIds && not scenarioInResolution)
-      (push $ HandleNoRemainingInvestigators
-        scenarioNoRemainingInvestigatorsHandler
-      )
+    when (null investigatorIds && not scenarioInResolution)
+      $ push
+      $ HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
+    pure a
   AllInvestigatorsResigned -> a <$ push
     (HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler)
   SetNoRemainingInvestigatorsHandler target -> do

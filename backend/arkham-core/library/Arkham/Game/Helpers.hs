@@ -616,13 +616,15 @@ getActionsWith iid window f = do
         then pure Nothing
         else pure $ Just $ applyAbilityModifiers ability modifiers'
 
-  actions''' <- filterM
-    (\action -> liftA2
-      (&&)
-      (getCanPerformAbility iid (abilitySource action) window action)
-      (getCanAffordAbility iid action window)
-    )
-    actions''
+  actions''' <-
+    filterM
+      (\action ->
+        liftA2
+          (&&)
+          (getCanPerformAbility iid (abilitySource action) window action)
+          (getCanAffordAbility iid action window)
+      )
+      actions''
   let forcedActions = filter isForcedAbility actions'''
   pure $ if null forcedActions then actions''' else forcedActions
 
@@ -1502,7 +1504,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.InvestigatorEliminated timingMatcher whoMatcher -> case window' of
     Window t (Window.InvestigatorEliminated who) | t == timingMatcher ->
-      matchWho iid who whoMatcher
+      matchWho iid who (Matcher.IncludeEliminated $ whoMatcher)
     _ -> pure False
   Matcher.PutLocationIntoPlay timingMatcher whoMatcher locationMatcher ->
     case window' of

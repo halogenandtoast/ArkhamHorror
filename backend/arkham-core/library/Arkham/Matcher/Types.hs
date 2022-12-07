@@ -86,6 +86,7 @@ data InvestigatorMatcher
   | InvestigatorCanDiscoverCluesAtOneOf LocationMatcher -- NOTE: Use matcher above
   | DeckIsEmpty
   | AliveInvestigator
+  | IncludeEliminated InvestigatorMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

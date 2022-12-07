@@ -13,7 +13,11 @@ import Arkham.Classes.Query
 checkWindows :: (Monad m, HasGame m) => [Window] -> m Message
 checkWindows windows' = do
   iids <- selectList UneliminatedInvestigator
-  pure $ CheckWindow iids windows'
+  if null iids
+    then do
+      iids' <- selectList Anyone
+      pure $ CheckWindow iids' windows'
+    else pure $ CheckWindow iids windows'
 
 windows :: (Monad m, HasGame m) => [WindowType] -> m [Message]
 windows windows' = do

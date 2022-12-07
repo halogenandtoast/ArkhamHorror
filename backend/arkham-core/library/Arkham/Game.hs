@@ -637,8 +637,10 @@ getInvestigatorsMatching matcher = do
   includeEliminated AliveInvestigator = True
   includeEliminated (InvestigatorMatches xs) = any includeEliminated xs
   includeEliminated (AnyInvestigator xs) = any includeEliminated xs
+  includeEliminated (IncludeEliminated _) = True
   includeEliminated _ = False
   go = \case
+    IncludeEliminated m -> go m
     NoOne -> pure . const False
     DeckIsEmpty -> fieldP InvestigatorDeck (null . unDeck) . toId
     InvestigatorCanDiscoverCluesAtOneOf matcher' -> \i -> do

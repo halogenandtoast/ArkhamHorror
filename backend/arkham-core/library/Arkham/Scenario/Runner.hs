@@ -441,6 +441,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (cardsNextToActDeckL %~ filterCards)
       & (cardsUnderScenarioReferenceL %~ filterCards)
       & (setAsideCardsL %~ filterCards)
+      & (victoryDisplayL %~ filterCards)
       & (encounterDeckL .~ deck')
   RequestSetAsideCard target cardCode -> do
     let

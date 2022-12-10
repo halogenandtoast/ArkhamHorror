@@ -26,4 +26,12 @@ fieldMap
   -> (typ -> b)
   -> EntityId a
   -> m b
-fieldMap f g eid = g <$> field f eid
+fieldMap f g = fieldMapM f (pure . g)
+
+fieldMapM
+  :: (HasCallStack, Monad m, HasGame m, Projection a)
+  => (Field a typ)
+  -> (typ -> m b)
+  -> EntityId a
+  -> m b
+fieldMapM f g eid = g =<< field f eid

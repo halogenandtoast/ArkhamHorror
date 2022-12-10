@@ -137,7 +137,7 @@ instance RunMessage AssetAttrs where
     RemoveFromPlay source | isSource a source -> do
       windowMsg <- checkWindows
         ((`Window` Window.LeavePlay (toTarget a))
-        <$> [Timing.When, Timing.After]
+        <$> [Timing.When, Timing.AtIf, Timing.After]
         )
       pushAll
         $ windowMsg
@@ -181,6 +181,8 @@ instance RunMessage AssetAttrs where
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]
       pure $ a & placementL .~ Unplaced
+    ShuffleCardsIntoDeck _ cards ->
+      pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetPlacement of
       InPlayArea iid -> do

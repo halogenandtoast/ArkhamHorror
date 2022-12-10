@@ -92,6 +92,7 @@ data instance Field Asset :: Type -> Type where
   AssetSlots :: Field Asset [SlotType]
   AssetSealedTokens :: Field Asset [Token]
   AssetPlacement :: Field Asset Placement
+  AssetCardsUnderneath :: Field Asset [Card]
   -- virtual
   AssetClasses :: Field Asset (HashSet ClassSymbol)
   AssetTraits :: Field Asset (HashSet Trait)
@@ -104,7 +105,7 @@ deriving stock instance Show (Field Asset typ)
 instance ToJSON (Field Asset typ) where
   toJSON = toJSON . show
 
-instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability]) => FieldDict c Asset where
+instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability], c [Card]) => FieldDict c Asset where
   getDict = \case
     AssetName -> Dict
     AssetCost -> Dict
@@ -128,6 +129,7 @@ instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId)
     AssetCardDef -> Dict
     AssetCard -> Dict
     AssetAbilities -> Dict
+    AssetCardsUnderneath -> Dict
 
 instance FromJSON (SomeField Asset) where
   parseJSON = withText "Field Asset" $ \case
@@ -153,6 +155,7 @@ instance FromJSON (SomeField Asset) where
     "AssetCardDef" -> pure $ SomeField AssetCardDef
     "AssetCard" -> pure $ SomeField AssetCard
     "AssetAbilities" -> pure $ SomeField AssetAbilities
+    "AssetCardsUnderneath" -> pure $ SomeField AssetCardsUnderneath
     _ -> error "no such field"
 
 data AssetAttrs = AssetAttrs

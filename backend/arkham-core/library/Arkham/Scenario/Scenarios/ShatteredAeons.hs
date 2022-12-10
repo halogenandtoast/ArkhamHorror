@@ -32,9 +32,12 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ShatteredAeons.Story
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window qualified as Window
+import Arkham.Window (Window(..))
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -46,8 +49,8 @@ shatteredAeons difficulty = scenario
   "04314"
   "Shattered Aeons"
   difficulty
-  [ "shoresOfRLyeh   atlantis    ruinsOfNewYork ."
-  , "shoresOfRLyeh   atlantis    ruinsOfNewYork valusia"
+  [ "shoresOfRlyeh   atlantis    ruinsOfNewYork ."
+  , "shoresOfRlyeh   atlantis    ruinsOfNewYork valusia"
   , "cityOfTheUnseen nexusOfNKai aPocketInTime  valusia"
   , "cityOfTheUnseen nexusOfNKai aPocketInTime  pnakotus"
   , "yuggoth         mu          plateauOfLeng  pnakotus"
@@ -217,6 +220,8 @@ instance RunMessage ShatteredAeons where
         , Locations.pnakotus
         , Locations.valusia
         , Locations.plateauOfLeng
+        , Acts.paradiseLost
+        , Acts.timelock
         ]
 
       pushAll
@@ -250,8 +255,6 @@ instance RunMessage ShatteredAeons where
              , Acts.searchForTheBrotherhood
              , Acts.theYithianRelic
              , Acts.mendTheShatter
-             , Acts.paradiseLost
-             , Acts.timelock
              ]
           )
         & (setAsideCardsL .~ setAsideCards)
@@ -314,5 +317,12 @@ instance RunMessage ShatteredAeons where
             (Deck.ScenarioDeckByKey ExplorationDeck)
             [EncounterCard hex]
           ]
+      pure s
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored 1
       pure s
     _ -> ShatteredAeons <$> runMessage msg attrs

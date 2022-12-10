@@ -110,7 +110,7 @@ data WindowType
   | MovedButBeforeEnemyEngagement InvestigatorId LocationId
   | MovedBy Source LocationId InvestigatorId
   | MovedFromHunter EnemyId
-  | Moves InvestigatorId (Maybe LocationId) LocationId
+  | Moves InvestigatorId Source (Maybe LocationId) LocationId
   | NonFast
   | PassInvestigationSkillTest InvestigatorId LocationId Int
   | PassSkillTest (Maybe Action) Source InvestigatorId Int

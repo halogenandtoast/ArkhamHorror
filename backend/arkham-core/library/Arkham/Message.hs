@@ -133,6 +133,7 @@ data Message
   | NextAdvanceActStep ActId Int
   | ReplaceAct ActId ActId
   | RevertAct ActId
+  | ResetActDeckToStage Int
   | AdvanceActDeck Int Source
   | AdvanceToAct Int CardDef ActSide Source
   | SetCurrentActDeck Int [Card]

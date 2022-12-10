@@ -46,6 +46,7 @@ instance HasAbilities NarrowShaft where
         [ mkAbility attrs 1 $ ForcedAbility $ Moves
           Timing.When
           You
+          AnySource
           (LocationWithId $ toId attrs)
           UnrevealedLocation
         , restrictedAbility

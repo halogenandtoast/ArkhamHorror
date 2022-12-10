@@ -46,6 +46,9 @@ assetIs = AssetIs . toCardCode
 assetControlledBy :: InvestigatorId -> AssetMatcher
 assetControlledBy = AssetControlledBy . InvestigatorWithId
 
+assetAt :: LocationId -> AssetMatcher
+assetAt = AssetAt . LocationWithId
+
 -- ** Enemy Helpers **
 
 enemyIs :: HasCardCode a => a -> EnemyMatcher
@@ -96,11 +99,19 @@ accessibleFrom = AccessibleFrom . LocationWithId
 treacheryIs :: HasCardCode a => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
+treacheryAt :: LocationId -> TreacheryMatcher
+treacheryAt = TreacheryAt . LocationWithId
+{-# INLINE treacheryAt #-}
+
 treacheryInHandOf :: InvestigatorId -> TreacheryMatcher
 treacheryInHandOf = TreacheryInHandOf . InvestigatorWithId
 
 treacheryInThreatAreaOf :: InvestigatorId -> TreacheryMatcher
 treacheryInThreatAreaOf = TreacheryInThreatAreaOf . InvestigatorWithId
+
+-- ** Event Helpers **
+eventAt :: LocationId -> EventMatcher
+eventAt = EventAt . LocationWithId
 
 -- ** Card Helpers **
 

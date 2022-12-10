@@ -1556,9 +1556,10 @@ windowMatches iid source window' = \case
       (matchWho iid iid' whoMatcher)
       (locationMatches iid source window' lid whereMatcher)
     _ -> pure False
-  Matcher.Moves whenMatcher whoMatcher fromMatcher toMatcher -> case window' of
-    Window t (Window.Moves iid' mFromLid toLid) | whenMatcher == t -> andM
+  Matcher.Moves whenMatcher whoMatcher sourceMatcher fromMatcher toMatcher -> case window' of
+    Window t (Window.Moves iid' source' mFromLid toLid) | whenMatcher == t -> andM
       [ matchWho iid iid' whoMatcher
+      , sourceMatches source' sourceMatcher
       , case (fromMatcher, mFromLid) of
         (Matcher.Anywhere, _) -> pure True
         (_, Just fromLid) ->
@@ -2131,6 +2132,8 @@ sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
     CardCostSource _ -> pure False
     _ -> sourceMatches s sm
+  Matcher.SourceIs s' -> pure $ s == s'
+  Matcher.NotSource matcher -> not <$> sourceMatches s matcher
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of

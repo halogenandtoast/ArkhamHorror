@@ -46,7 +46,7 @@ instance HasAbilities UrsulaDowns where
   getAbilities (UrsulaDowns (attrs `With` _)) =
     [ limitedAbility (PlayerLimit PerRound 1)
         $ restrictedAbility attrs 1 Self
-        $ ReactionAbility (Moves Timing.After You Anywhere Anywhere) Free
+        $ ReactionAbility (Moves Timing.After You AnySource Anywhere Anywhere) Free
     ]
 
 instance HasTokenValue UrsulaDowns where

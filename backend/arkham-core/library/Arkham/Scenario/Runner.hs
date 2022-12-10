@@ -213,6 +213,26 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           ys
       _ -> error "Can not advance act deck"
     pure $ a & actStackL . at n ?~ actStack'
+  ResetActDeckToStage n -> do
+    case lookup n scenarioCompletedActStack of
+      Just xs -> do
+        let
+          go [] as = (as, [])
+          go (y : ys) as =
+            if cdStage y /= Just n then go ys (y : as) else (y : as, ys)
+          (prepend, remaining) = go xs []
+        case (prepend, lookup n scenarioActStack) of
+          (toAct : _, Just (fromAct : _)) -> do
+            let
+              fromActId = ActId (toCardCode fromAct)
+              toActId = ActId (toCardCode toAct)
+            push (ReplaceAct fromActId toActId)
+          _ -> error "Could not reset act deck to stage"
+        pure
+          $ a
+          & (actStackL . ix n %~ (prepend <>))
+          & (completedActStackL . at n ?~ remaining)
+      _ -> error "Invalid act deck to reset"
   AdvanceToAgenda n agenda newAgendaSide _ -> do
     agendaStack' <- case lookup n scenarioAgendaStack of
       Just (x : ys) -> do

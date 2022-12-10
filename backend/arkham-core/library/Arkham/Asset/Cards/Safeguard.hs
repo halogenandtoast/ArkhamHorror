@@ -27,14 +27,14 @@ instance HasAbilities Safeguard where
   getAbilities (Safeguard a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (Moves Timing.After NotYou YourLocation (ConnectedFrom YourLocation))
+            (Moves Timing.After NotYou AnySource YourLocation (ConnectedFrom YourLocation))
         $ ExhaustCost
         $ toTarget a
     ]
 
 getMovedToLocation :: [Window] -> LocationId
 getMovedToLocation [] = error "invalid call"
-getMovedToLocation (Window _ (Window.Moves _ _ lid) : _) = lid
+getMovedToLocation (Window _ (Window.Moves _ _ _ lid) : _) = lid
 getMovedToLocation (_ : xs) = getMovedToLocation xs
 
 instance RunMessage Safeguard where

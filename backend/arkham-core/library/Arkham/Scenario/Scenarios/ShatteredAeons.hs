@@ -51,8 +51,8 @@ shatteredAeons difficulty = scenario
   difficulty
   [ "shoresOfRlyeh   atlantis    ruinsOfNewYork ."
   , "shoresOfRlyeh   atlantis    ruinsOfNewYork valusia"
-  , "cityOfTheUnseen nexusOfNKai aPocketInTime  valusia"
-  , "cityOfTheUnseen nexusOfNKai aPocketInTime  pnakotus"
+  , "cityOfTheUnseen nexusOfNkai aPocketInTime  valusia"
+  , "cityOfTheUnseen nexusOfNlai aPocketInTime  pnakotus"
   , "yuggoth         mu          plateauOfLeng  pnakotus"
   , "yuggoth         mu          plateauOfLeng  ."
   ]

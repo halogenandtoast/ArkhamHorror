@@ -961,7 +961,8 @@ getTreacheriesMatching matcher = do
   matcherFilter = \case
     AnyTreachery -> pure . const True
     NotTreachery m -> fmap not . matcherFilter m
-    TreacheryIsNonWeakness -> fieldMap TreacheryCard (`cardMatch` NonWeaknessTreachery) . toId
+    TreacheryIsNonWeakness ->
+      fieldMap TreacheryCard (`cardMatch` NonWeaknessTreachery) . toId
     TreacheryWithTitle title ->
       pure . (== title) . nameTitle . toName . toAttrs
     TreacheryWithFullTitle title subtitle ->
@@ -1541,6 +1542,7 @@ getAssetsMatching matcher = do
               let minDistance = getMin $ foldMap Min distances
               pure $ mdistance == Just minDistance
         else pure False
+    AssetWithCardsUnderneath cardListMatcher -> flip filterM as $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher) . toId
 
 getEventsMatching :: (Monad m, HasGame m) => EventMatcher -> m [Event]
 getEventsMatching matcher = do
@@ -2039,6 +2041,7 @@ instance Projection Asset where
       AssetCardCode -> pure assetCardCode
       AssetSlots -> pure assetSlots
       AssetSealedTokens -> pure assetSealedTokens
+      AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
       AssetTraits -> pure . cdCardTraits $ toCardDef attrs

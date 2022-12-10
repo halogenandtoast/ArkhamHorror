@@ -20,6 +20,7 @@ import Arkham.Token
 import Arkham.Window ( Window )
 
 -- start importing directly
+import Arkham.Act.Acts ( theYithianRelicEffect )
 import Arkham.Agenda.Agendas ( lostMemoriesEffect, theRedDepthsEffect )
 import Arkham.Asset.Assets
   ( fence1Effect
@@ -202,6 +203,7 @@ allEffects = mapFromList
   , ("04283", SomeEffect theRedDepthsEffect)
   , ("04306", SomeEffect vantagePointEffect)
   , ("04307", SomeEffect pnakoticManuscripts5Effect)
+  , ("04321", SomeEffect theYithianRelicEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

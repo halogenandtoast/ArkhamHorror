@@ -705,7 +705,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Move source iid destinationLocationId | iid == investigatorId -> do
     mFromLocation <- field InvestigatorLocation iid
     windowMsgs <- Helpers.windows
-      [Window.Moves iid mFromLocation destinationLocationId]
+      [Window.Moves iid source mFromLocation destinationLocationId]
     pushAll
       $ [ Will (MoveFrom source iid fromLocationId)
         | fromLocationId <- maybeToList mFromLocation

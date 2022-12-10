@@ -140,6 +140,7 @@ data AssetMatcher
   | AssetWithFewestClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
+  | AssetWithCardsUnderneath CardListMatcher
   | ClosestAsset LocationId AssetMatcher
   | NonWeaknessAsset
   | AssetWithMatchingSkillTestIcon
@@ -530,7 +531,7 @@ data WindowMatcher
   | DuringTurn Who
   | Enters Timing Who Where
   | Leaves Timing Who Where
-  | Moves Timing Who Where Where
+  | Moves Timing Who SourceMatcher Where Where
   --                 ^ from ^ to
   | MoveAction Timing Who Where Where
   --                      ^ from ^ to
@@ -607,6 +608,8 @@ data SourceMatcher
   | AnySource
   | SourceIsCancelable SourceMatcher
   | SourceMatches [SourceMatcher]
+  | NotSource SourceMatcher
+  | SourceIs Source
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

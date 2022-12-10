@@ -38,7 +38,7 @@ data LocationAttrs = LocationAttrs
   , locationCanBeFlipped :: Bool
   -- We need to track if a location has no clues because timings will interact
   -- with the location being revealed and claim there are no clues before they
-  -- are placed.
+  -- are placed. TODO: this could be a hasBeenRevealed bool
   , locationWithoutClues :: Bool
   }
   deriving stock (Show, Eq, Generic)

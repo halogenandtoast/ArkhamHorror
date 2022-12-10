@@ -859,9 +859,12 @@ instance RunMessage EnemyAttrs where
       pure $ a & damageL +~ amount
     PlaceDoom target amount | isTarget a target -> do
       modifiers' <- getModifiers (toTarget a)
-      pure $ if CannotPlaceDoomOnThis `elem` modifiers'
-        then a
-        else a & doomL +~ amount
+      if CannotPlaceDoomOnThis `elem` modifiers'
+        then pure a
+        else  do
+          windows' <- windows [Window.PlacedDoom (toTarget a) amount]
+          pushAll windows'
+          pure $ a & doomL +~ amount
     RemoveDoom target amount | isTarget a target ->
       pure $ a & doomL %~ max 0 . subtract amount
     PlaceClues target n | isTarget a target -> do

@@ -37,6 +37,7 @@ instance RunMessage Persuasion where
             $ enemyAt location
             <> EnemyWithTrait Humanoid
             <> NonWeaknessEnemy
+            <> CanParleyEnemy iid
           pushAll
             [ chooseOne
               iid

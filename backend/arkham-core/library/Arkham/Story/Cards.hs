@@ -82,6 +82,7 @@ allStoryCards = mapFromList $ map
   , stepsOfThePalace
   , theFall
   , hastursEnd
+  , yigsMercy
   ]
 
 sickeningReality_65 :: CardDef
@@ -153,3 +154,6 @@ theFall = story "03330c" "The Fall" DimCarcosa
 
 hastursEnd :: CardDef
 hastursEnd = story "03331c" "Hastur's End" DimCarcosa
+
+yigsMercy :: CardDef
+yigsMercy = story "04325b" "Yig's Mercy" ShatteredAeons

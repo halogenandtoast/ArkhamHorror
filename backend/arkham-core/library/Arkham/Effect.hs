@@ -33,7 +33,7 @@ import Arkham.Asset.Assets
   , pnakoticManuscripts5Effect
   , yaotl1Effect
   )
-import Arkham.Enemy.Enemies ( boaConstrictorEffect )
+import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect )
 import Arkham.Event.Events
   ( exposeWeakness3Effect
   , marksmanship1Effect
@@ -204,6 +204,8 @@ allEffects = mapFromList
   , ("04306", SomeEffect vantagePointEffect)
   , ("04307", SomeEffect pnakoticManuscripts5Effect)
   , ("04321", SomeEffect theYithianRelicEffect)
+  , ("04325", SomeEffect ichtacaScionOfYigEffect)
+  , ("04326", SomeEffect alejandroVelaEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

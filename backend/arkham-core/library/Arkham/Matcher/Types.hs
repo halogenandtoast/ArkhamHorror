@@ -187,6 +187,7 @@ data EnemyMatcher
   | ReadyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
+  | CanParleyEnemy InvestigatorId
   | EnemyMatchAll [EnemyMatcher]
   | EnemyOneOf [EnemyMatcher]
   | EnemyEngagedWithYou

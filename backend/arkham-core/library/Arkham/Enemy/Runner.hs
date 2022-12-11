@@ -105,7 +105,8 @@ instance RunMessage EnemyAttrs where
     UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- selectList enemyPrey
-      preyIdsWithLocation <- forToSnd preyIds
+      preyIdsWithLocation <- forToSnd
+        preyIds
         (selectJust . locationWithInvestigator)
       leadInvestigatorId <- getLeadInvestigatorId
       for_ (nonEmpty preyIdsWithLocation) $ \iids -> push $ chooseOrRunOne
@@ -294,35 +295,41 @@ instance RunMessage EnemyAttrs where
       keywords <- getModifiedKeywords a
       modifiers' <- getModifiers (EnemyTarget eid)
       let
-        modifiedFilter = if Keyword.Massive `elem` keywords
-          then const True
-          else (`notElem` modifiers') . EnemyCannotEngage
-      investigatorIds <- filter modifiedFilter
-        <$> getInvestigatorsAtSameLocation a
+        modifiedFilter iid = do
+          if Keyword.Massive `elem` keywords
+            then pure True
+            else do
+              investigatorModifiers <- getModifiers (InvestigatorTarget iid)
+              canEngage <- flip allM investigatorModifiers $ \case
+                CannotBeEngagedBy matcher -> notElem eid <$> select matcher
+                _ -> pure True
+              pure $ canEngage && EnemyCannotEngage iid `notElem` modifiers'
+      investigatorIds <- filterM modifiedFilter
+        =<< getInvestigatorsAtSameLocation a
       leadInvestigatorId <- getLeadInvestigatorId
       unengaged <- selectNone $ investigatorEngagedWith enemyId
-      a <$ when
-        (Keyword.Aloof
-        `notElem` keywords
-        && (unengaged || Keyword.Massive `elem` keywords)
-        && not enemyExhausted
-        )
-        (if Keyword.Massive `elem` keywords
-          then pushAll
-            [ EnemyEngageInvestigator eid investigatorId
-            | investigatorId <- investigatorIds
-            ]
-          else case investigatorIds of
-            [] -> pure ()
-            [x] -> push $ EnemyEngageInvestigator eid x
-            xs -> push $ chooseOne
-              leadInvestigatorId
-              [ targetLabel
-                  investigatorId
-                  [EnemyEngageInvestigator eid investigatorId]
-              | investigatorId <- xs
+      when
+          (Keyword.Aloof
+          `notElem` keywords
+          && (unengaged || Keyword.Massive `elem` keywords)
+          && not enemyExhausted
+          )
+        $ if Keyword.Massive `elem` keywords
+            then pushAll
+              [ EnemyEngageInvestigator eid investigatorId
+              | investigatorId <- investigatorIds
               ]
-        )
+            else case investigatorIds of
+              [] -> pure ()
+              [x] -> push $ EnemyEngageInvestigator eid x
+              xs -> push $ chooseOne
+                leadInvestigatorId
+                [ targetLabel
+                    investigatorId
+                    [EnemyEngageInvestigator eid investigatorId]
+                | investigatorId <- xs
+                ]
+      pure a
     HuntersMove | not enemyExhausted -> do
       unengaged <- selectNone $ investigatorEngagedWith enemyId
       when unengaged $ do
@@ -595,34 +602,36 @@ instance RunMessage EnemyAttrs where
         source = damageAssignmentSource damageAssignment
         damageEffect = damageAssignmentDamageEffect damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
-      when canDamage do
-        dealtDamageWhenMsg <- checkWindows
-          [ Window
-              Timing.When
-              (Window.DealtDamage source damageEffect $ toTarget a)
-          ]
-        dealtDamageAfterMsg <- checkWindows
-          [ Window
-              Timing.After
-              (Window.DealtDamage source damageEffect $ toTarget a)
-          ]
-        takeDamageWhenMsg <- checkWindows
-          [ Window
-              Timing.When
-              (Window.TakeDamage source damageEffect $ toTarget a)
-          ]
-        takeDamageAfterMsg <- checkWindows
-          [ Window
-              Timing.After
-              (Window.TakeDamage source damageEffect $ toTarget a)
-          ]
-        pushAll
-          [ dealtDamageWhenMsg
-          , dealtDamageAfterMsg
-          , takeDamageWhenMsg
-          , EnemyDamaged eid damageAssignment
-          , takeDamageAfterMsg
-          ]
+      when
+        canDamage
+        do
+          dealtDamageWhenMsg <- checkWindows
+            [ Window
+                Timing.When
+                (Window.DealtDamage source damageEffect $ toTarget a)
+            ]
+          dealtDamageAfterMsg <- checkWindows
+            [ Window
+                Timing.After
+                (Window.DealtDamage source damageEffect $ toTarget a)
+            ]
+          takeDamageWhenMsg <- checkWindows
+            [ Window
+                Timing.When
+                (Window.TakeDamage source damageEffect $ toTarget a)
+            ]
+          takeDamageAfterMsg <- checkWindows
+            [ Window
+                Timing.After
+                (Window.TakeDamage source damageEffect $ toTarget a)
+            ]
+          pushAll
+            [ dealtDamageWhenMsg
+            , dealtDamageAfterMsg
+            , takeDamageWhenMsg
+            , EnemyDamaged eid damageAssignment
+            , takeDamageAfterMsg
+            ]
       pure a
     EnemyDamaged eid damageAssignment | eid == enemyId -> do
       let
@@ -634,15 +643,29 @@ instance RunMessage EnemyAttrs where
         then do
           amount' <- getModifiedDamageAmount a direct amount
           let
-            damageAssignment' = damageAssignment
-              { damageAssignmentAmount = amount'
-              }
-            combine l r = if damageAssignmentDamageEffect l == damageAssignmentDamageEffect r
-              then l { damageAssignmentAmount = damageAssignmentAmount l + damageAssignmentAmount r }
-              else error $ "mismatched damage assignments\n\nassignment: " <> show l <> "\nnew assignment: " <> show r
-          unless (damageAssignmentDelayed damageAssignment') $
-            push $ CheckDefeated source
-          pure $ a & assignedDamageL %~ insertWith combine source damageAssignment'
+            damageAssignment' =
+              damageAssignment { damageAssignmentAmount = amount' }
+            combine l r =
+              if damageAssignmentDamageEffect l
+                == damageAssignmentDamageEffect r
+              then
+                l
+                  { damageAssignmentAmount = damageAssignmentAmount l
+                    + damageAssignmentAmount r
+                  }
+              else
+                error
+                $ "mismatched damage assignments\n\nassignment: "
+                <> show l
+                <> "\nnew assignment: "
+                <> show r
+          unless (damageAssignmentDelayed damageAssignment')
+            $ push
+            $ CheckDefeated source
+          pure
+            $ a
+            & assignedDamageL
+            %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do
       do
@@ -662,7 +685,8 @@ instance RunMessage EnemyAttrs where
               mOnlyBeDefeatedByModifier =
                 getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
               validDefeat =
-                canBeDefeated && maybe True (== source) mOnlyBeDefeatedByModifier
+                canBeDefeated
+                  && maybe True (== source) mOnlyBeDefeatedByModifier
             when validDefeat $ do
               modifiedHealth <- getModifiedHealth a
               when (a ^. damageL + amount' >= modifiedHealth) $ do
@@ -861,7 +885,7 @@ instance RunMessage EnemyAttrs where
       modifiers' <- getModifiers (toTarget a)
       if CannotPlaceDoomOnThis `elem` modifiers'
         then pure a
-        else  do
+        else do
           windows' <- windows [Window.PlacedDoom (toTarget a) amount]
           pushAll windows'
           pure $ a & doomL +~ amount

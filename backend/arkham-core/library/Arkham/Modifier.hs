@@ -77,9 +77,9 @@ data ModifierType
   | CanPlayTopOfDeck CardMatcher
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelSkills
+  | CannotParleyWith EnemyMatcher
   | CannotAttack
   | CannotBeAttacked
-  | CannotBeAttackedByNonElite
   | CannotBeFlipped
   | CannotBeDefeated
   | CanOnlyBeDefeatedBy Source
@@ -97,6 +97,8 @@ data ModifierType
   | CannotDiscoverClues
   | CannotDrawCards
   | CannotEngage InvestigatorId
+  | CannotBeEngagedBy EnemyMatcher
+  | CannotBeAttackedBy EnemyMatcher
   | CannotGainResources
   | CannotHealHorror
   | CannotExplore

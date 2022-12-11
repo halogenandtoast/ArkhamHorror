@@ -9,6 +9,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Event
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 
@@ -34,7 +35,7 @@ onTheLamEffect = cardEffect OnTheLamEffect Cards.onTheLam
 
 instance HasModifiersFor OnTheLamEffect where
   getModifiersFor target (OnTheLamEffect a@EffectAttrs {..}) =
-    pure $ toModifiers a [ CannotBeAttackedByNonElite | target == effectTarget ]
+    pure $ toModifiers a [ CannotBeAttackedBy NonEliteEnemy | target == effectTarget ]
 
 instance RunMessage OnTheLamEffect where
   runMessage msg e@(OnTheLamEffect attrs) = case msg of

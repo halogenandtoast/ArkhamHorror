@@ -253,6 +253,9 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
           Action.Engage -> case abilitySource of
             EnemySource _ -> pure True
             _ -> notNull <$> select Matcher.CanEngageEnemy
+          Action.Parley -> case abilitySource of
+            EnemySource _ -> pure True
+            _ -> notNull <$> select (Matcher.CanParleyEnemy iid)
           Action.Investigate -> case abilitySource of
             LocationSource _ -> pure True
             _ -> notNull <$> select Matcher.InvestigatableLocation
@@ -260,7 +263,6 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
           Action.Ability -> pure True
           Action.Draw -> pure True
           Action.Move -> pure True
-          Action.Parley -> pure True
           Action.Play -> pure True
           Action.Resign -> pure True
           Action.Resource -> pure True

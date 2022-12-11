@@ -1864,6 +1864,11 @@ enemyMatcherFilter = \case
         ]
       )
       (getAbilities enemy)
+  CanParleyEnemy iid -> \enemy -> do
+    modifiers' <- getModifiers (InvestigatorTarget iid)
+    flip allM modifiers' $ \case
+      CannotParleyWith matcher -> notElem (toId enemy) <$> select matcher
+      _ -> pure True
   NearestEnemy matcher' -> \enemy -> do
     matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
     matches' <- guardYourLocation $ \start -> do
@@ -3474,13 +3479,10 @@ runGameMessage msg g = case msg of
     pure g
   EnemyWillAttack iid eid damageStrategy attackType -> do
     modifiers' <- getModifiers (InvestigatorTarget iid)
-    traits <- field EnemyTraits eid
-    let
-      cannotBeAttackedByNonElites = flip any modifiers' $ \case
-        CannotBeAttackedByNonElite{} -> True
-        _ -> False
-      canAttack = not cannotBeAttackedByNonElites || (Elite `elem` traits)
-    if canAttack
+    cannotBeAttacked <- flip anyM modifiers' $ \case
+      CannotBeAttackedBy matcher -> member eid <$> select matcher
+      _ -> pure False
+    if not cannotBeAttacked
       then do
         mNextMessage <- peekMessage
         case mNextMessage of
@@ -3494,14 +3496,10 @@ runGameMessage msg g = case msg of
           Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
             _ <- popMessage
             modifiers2' <- getModifiers (InvestigatorTarget iid2)
-            traits2 <- field EnemyTraits eid2
-            let
-              cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
-                CannotBeAttackedByNonElite{} -> True
-                _ -> False
-              canAttack2 =
-                not cannotBeAttackedByNonElites2 || (Elite `elem` traits2)
-            if canAttack2
+            cannotBeAttacked2 <- flip anyM modifiers2' $ \case
+              CannotBeAttackedBy matcher -> member eid2 <$> select matcher
+              _ -> pure False
+            if not cannotBeAttacked2
               then push $ EnemyAttacks
                 [ EnemyAttack iid eid damageStrategy attackType
                 , EnemyAttack iid2 eid2 damageStrategy2 attackType2

@@ -225,6 +225,10 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , youngPsychopath
   ]
 
+allSpecialEnemyCards :: HashMap CardCode CardDef
+allSpecialEnemyCards =
+  mapFromList $ map (toCardCode &&& id) [flyingPolyp]
+
 mobEnforcer :: CardDef
 mobEnforcer = (basicWeakness "01101" "Mob Enforcer")
   { cdCardTraits = setFromList [Humanoid, Criminal]
@@ -1288,4 +1292,9 @@ writhingAppendage :: CardDef
 writhingAppendage = (enemy "82030" "Writhing Appendage" CarnevaleOfHorrors 3)
   { cdCardTraits = setFromList [Monster, Tentacle]
   , cdKeywords = setFromList [Keyword.Retaliate]
+  }
+
+flyingPolyp :: CardDef
+flyingPolyp = (enemy "xpolyp" "Flying Polyp" ShatteredAeons 0)
+  { cdCardTraits = singleton Monster
   }

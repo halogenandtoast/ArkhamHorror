@@ -82,7 +82,7 @@ data TokenFace
   | ElderThing
   | AutoFail
   | ElderSign
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Bounded, Enum, Show, Eq, Generic)
   deriving anyclass (Hashable, ToJSON, FromJSON)
 
 isNumberToken :: TokenFace -> Bool

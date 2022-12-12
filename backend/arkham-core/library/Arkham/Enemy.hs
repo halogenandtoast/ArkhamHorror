@@ -221,6 +221,7 @@ allEnemies = mapFrom
   , SomeEnemyCard alejandroVela
   , SomeEnemyCard formlessSpawn
   , SomeEnemyCard temporalDevourer
+  , SomeEnemyCard flyingPolyp
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

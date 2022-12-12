@@ -25,7 +25,7 @@ import Arkham.SkillType
 import Arkham.Trait
 import Data.Text qualified as T
 
-lookupCard :: CardCode -> CardId -> Card
+lookupCard :: HasCallStack => CardCode -> CardId -> Card
 lookupCard cardCode cardId =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
     (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
@@ -62,7 +62,7 @@ instance IsCard Card where
     VengeanceCard c -> toCardOwner c
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
-  toCard :: a -> Card
+  toCard :: HasCallStack => a -> Card
   toCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
     PlayerCard pc -> PlayerCard $ pc { pcOwner = toCardOwner a }
     ec -> ec

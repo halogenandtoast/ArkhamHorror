@@ -623,6 +623,7 @@ data Message
   | UnsealToken Token
   | UnsetActiveCard
   | UseCardAbility InvestigatorId Source Int [Window] Payment
+  | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
   | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target
@@ -654,6 +655,12 @@ data Message
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)
+
+stepMessage :: Int -> Message -> Message
+stepMessage n = \case
+  UseCardAbility iid source idx ws payment ->
+    UseCardAbilityStep iid source idx ws payment n
+  other -> other
 
 uiToRun :: UI Message -> Message
 uiToRun = \case

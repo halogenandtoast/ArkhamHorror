@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Enemy.Types ( Field (..) )
-import Arkham.Event.Types ( Field (..) )
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers

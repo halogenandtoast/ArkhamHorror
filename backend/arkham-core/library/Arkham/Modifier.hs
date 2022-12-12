@@ -200,6 +200,7 @@ data ModifierType
   | IgnoreRevelation
   | InVictoryDisplayForCountingVengeance
   | EnemyFightActionCriteria CriteriaOverride
+  | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, is a player card affects this, all scenarios have to be updated
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

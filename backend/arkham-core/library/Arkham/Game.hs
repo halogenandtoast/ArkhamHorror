@@ -2121,7 +2121,9 @@ getEnemyField f e = do
     EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
     EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
     EnemyAbilities -> pure $ getAbilities e
-    EnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId $ toId e)
+    EnemyCard -> pure $ case lookupCard enemyOriginalCardCode (unEnemyId $ toId e) of
+      PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer }
+      ec -> ec
     EnemyCardCode -> pure enemyCardCode
     EnemyLocation -> case enemyPlacement of
       AtLocation lid -> pure $ Just lid
@@ -3947,16 +3949,26 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & entitiesL . enemiesL . at eid ?~ enemy
   CreateEnemy card -> do
-    let
-      enemy = createEnemy card
-      enemyId = toId enemy
-    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+    push $ CreateEnemyWithPlacement card Unplaced
+    pure g
   CreateEnemyWithPlacement card placement -> do
     let
-      enemy = createEnemy card
-      enemyId = toId enemy
+      originalCardCode = \case
+        EncounterCard ec -> ecOriginalCardCode ec
+        PlayerCard pc -> pcOriginalCardCode pc
+        VengeanceCard vc -> originalCardCode vc
+      getBearer = \case
+        EncounterCard _ -> Nothing
+        PlayerCard pc -> pcOwner pc
+        VengeanceCard vc -> getBearer vc
+    enemy <- runMessage (SetOriginalCardCode $ originalCardCode card) (createEnemy card)
+    enemy' <-
+      case getBearer card of
+        Nothing -> pure enemy
+        Just iid -> runMessage (SetBearer (toTarget enemy) iid) enemy
+    let enemyId = toId enemy'
     push $ PlaceEnemy enemyId placement
-    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy'
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     matches' <- selectList locationMatcher
     when (null matches') (error "No matching locations")
@@ -4336,6 +4348,7 @@ preloadModifiers g = case gameMode g of
       (`toTargetModifiers` (entities <> inHandEntities))
       (SkillTestTarget
       : map TokenTarget tokens
+      <> map TokenFaceTarget [minBound .. maxBound]
       <> map toTarget entities
       <> map CardTarget cards
       <> map (CardIdTarget . toCardId) cards

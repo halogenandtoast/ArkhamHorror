@@ -67,6 +67,9 @@ data instance Field Enemy :: Type -> Type where
 data instance Field (SetAsideEntity Enemy) :: Type -> Type where
   SetAsideEnemyField :: Field Enemy typ -> Field (SetAsideEntity Enemy) typ
 
+originalCardCodeL :: Lens' EnemyAttrs CardCode
+originalCardCodeL = lens enemyOriginalCardCode $ \m x -> m { enemyOriginalCardCode = x }
+
 sealedTokensL :: Lens' EnemyAttrs [Token]
 sealedTokensL = lens enemySealedTokens $ \m x -> m { enemySealedTokens = x }
 
@@ -132,10 +135,13 @@ resourcesL :: Lens' EnemyAttrs Int
 resourcesL = lens enemyResources $ \m x -> m { enemyResources = x }
 
 allEnemyCards :: HashMap CardCode CardDef
-allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
+allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards
 
 instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId
+  toCard e = case lookupCard (enemyOriginalCardCode e) (toCardId e) of
+    PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer e }
+    ec -> ec
   toCardOwner = enemyBearer
 
 instance HasCardDef EnemyAttrs where
@@ -164,6 +170,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
     , cbCardBuilder = \eid -> f . g $ EnemyAttrs
       { enemyId = eid
       , enemyCardCode = toCardCode cardDef
+      , enemyOriginalCardCode = toCardCode cardDef
       , enemyPlacement = Unplaced
       , enemyFight = fight
       , enemyHealth = health

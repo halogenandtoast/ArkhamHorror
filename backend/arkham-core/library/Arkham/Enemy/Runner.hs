@@ -99,6 +99,7 @@ getInvestigatorsAtSameLocation attrs = do
 
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
+    SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     SealedToken token card | toCardId card == toCardId a ->
       pure $ a & sealedTokensL %~ (token :)
@@ -912,6 +913,7 @@ instance RunMessage EnemyAttrs where
         & (doomL .~ 0)
         & (cluesL .~ 0)
     PlaceEnemy eid placement | eid == enemyId -> do
+      push $ EnemyCheckEngagement eid
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

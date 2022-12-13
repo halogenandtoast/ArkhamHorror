@@ -8,9 +8,11 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types ( Field (AssetCardsUnderneath) )
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -28,6 +30,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ShatteredAeons.Story
@@ -36,8 +39,8 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Arkham.Window (Window(..))
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -49,12 +52,12 @@ shatteredAeons difficulty = scenario
   "04314"
   "Shattered Aeons"
   difficulty
-  [ "shoresOfRlyeh   atlantis    ruinsOfNewYork ."
-  , "shoresOfRlyeh   atlantis    ruinsOfNewYork valusia"
-  , "cityOfTheUnseen nexusOfNkai aPocketInTime  valusia"
-  , "cityOfTheUnseen nexusOfNlai aPocketInTime  pnakotus"
-  , "yuggoth         mu          plateauOfLeng  pnakotus"
-  , "yuggoth         mu          plateauOfLeng  ."
+  [ "shoresOfRlyeh   betweenWorlds1 atlantis    ruinsOfNewYork ."
+  , "shoresOfRlyeh   betweenWorlds1 atlantis    ruinsOfNewYork valusia"
+  , "cityOfTheUnseen nexusOfNkai    .           aPocketInTime  valusia"
+  , "cityOfTheUnseen nexusOfNlai    .           aPocketInTime  pnakotus"
+  , "yuggoth         betweenWorlds2 mu          plateauOfLeng  pnakotus"
+  , "yuggoth         betweenWorlds2 mu          plateauOfLeng  ."
   ]
 
 instance HasTokenValue ShatteredAeons where
@@ -323,7 +326,7 @@ instance RunMessage ShatteredAeons where
     ResolveToken _ face iid -> do
       modifiers <- getModifiers (TokenFaceTarget face)
       when (RevealAnotherToken `elem` modifiers) $ push $ DrawAnotherToken iid
-      pure s
+      ShatteredAeons <$> runMessage msg attrs
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
@@ -331,4 +334,61 @@ instance RunMessage ShatteredAeons where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
+    ScenarioResolution resolution -> do
+      iids <- allInvestigatorIds
+      case resolution of
+        NoResolution -> do
+          push $ ScenarioResolution $ Resolution 4
+          pure s
+        Resolution 1 -> do
+          mrelic <- selectOne $ AssetWithTitle "Relic of Ages"
+          locations <- case mrelic of
+            Nothing -> pure []
+            Just relic -> fieldMap
+              AssetCardsUnderneath
+              (filter (isJust . cdVictoryPoints . toCardDef))
+              relic
+          xp <- map (uncurry GainXP) <$> getXpWithBonus
+            (5 + sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations)
+            )
+          pushAll
+            $ Record TheInvestigatorsMendedTheTearInTheFabricOfTime
+            : [ SufferTrauma iid 2 2 | iid <- iids ]
+            <> xp
+            <> [EndOfGame Nothing]
+          pure . ShatteredAeons $ attrs & victoryDisplayL %~ (locations <>)
+        Resolution 2 -> do
+          pushAll
+            [ Record TheInvestigatorsSavedTheCivilizationOfTheSerpents
+            , EndOfGame Nothing
+            ]
+          pure s
+        Resolution 3 -> do
+          pushAll
+            [ Record TheInvestigatorsSavedTheCivilizationOfTheYithians
+            , EndOfGame Nothing
+            ]
+          pure s
+        Resolution 4 -> do
+          pushAll
+            $ Record TheFabricOfTimeIsUnwoven
+            : map DrivenInsane iids
+            <> [GameOver]
+          pure s
+        Resolution 5 -> do
+          mrelic <- selectOne $ AssetWithTitle "Relic of Ages"
+          locations <- case mrelic of
+            Nothing -> pure []
+            Just relic -> fieldMap
+              AssetCardsUnderneath
+              (filter (isJust . cdVictoryPoints . toCardDef))
+              relic
+          xp <- map (uncurry GainXP) <$> getXpWithBonus
+            (sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations))
+          pushAll
+            $ Record TheInvestigatorsTurnedBackTime
+            : xp
+            <> [EndOfGame $ Just EpilogueStep]
+          pure s
+        _ -> error "invalid resolution"
     _ -> ShatteredAeons <$> runMessage msg attrs

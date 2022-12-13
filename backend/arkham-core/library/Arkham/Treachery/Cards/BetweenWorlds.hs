@@ -5,7 +5,12 @@ module Arkham.Treachery.Cards.BetweenWorlds
 
 import Arkham.Prelude
 
+import Arkham.Card
+import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.Label
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( Discarded )
 import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -19,5 +24,23 @@ betweenWorlds = treachery BetweenWorlds Cards.betweenWorlds
 
 instance RunMessage BetweenWorlds where
   runMessage msg t@(BetweenWorlds attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid source | isSource attrs source -> do
+      let
+        asLocation =
+          lookupEncounterCard Locations.betweenWorlds (toCardId attrs)
+      nexus <- selectJust $ locationIs Locations.nexusOfNKai
+      useLabel2 <- selectAny $ LocationWithLabel $ mkLabel "betweenWorlds1"
+      pushAll
+        [ PlaceLocation (EncounterCard asLocation)
+        , SetLocationLabel
+          (toLocationId asLocation)
+          (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
+        , AddDirectConnection (toLocationId asLocation) nexus
+        , AddDirectConnection nexus (toLocationId asLocation)
+        , MoveTo (toSource attrs) iid (toLocationId asLocation)
+        ]
+      pure t
+    After (Revelation _ source) | isSource attrs source -> do
+      push (Discarded (toTarget attrs) (toCard attrs)) -- Using discarded to remove existence)
+      pure t
     _ -> BetweenWorlds <$> runMessage msg attrs

@@ -31,10 +31,10 @@ instance HasAbilities PathOfThorns where
       You
       (WhileInvestigating $ LocationWithId $ toId a)
       (FailureResult AnyValue)
-    , restrictedAbility a 2 Here $ ForcedAbility $ Explored
-      Timing.After
-      You
-      FailedExplore
+    , restrictedAbility a 2 Here
+    $ ForcedAbility
+    $ Explored Timing.After You
+    $ FailedExplore AnyCard
     ]
 
 instance RunMessage PathOfThorns where

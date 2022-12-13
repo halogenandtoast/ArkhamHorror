@@ -146,6 +146,9 @@ instance FieldDict Typeable Location where
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
 
+shroudL :: Lens' LocationAttrs Int
+shroudL = lens locationShroud $ \m x -> m { locationShroud = x }
+
 canBeFlippedL :: Lens' LocationAttrs Bool
 canBeFlippedL =
   lens locationCanBeFlipped $ \m x -> m { locationCanBeFlipped = x }
@@ -241,7 +244,7 @@ instance HasCardCode LocationAttrs where
   toCardCode = locationCardCode
 
 instance HasCardDef LocationAttrs where
-  toCardDef a = case lookup (locationCardCode a) allLocationCards of
+  toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards) of
     Just def -> def
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)

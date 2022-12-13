@@ -428,6 +428,10 @@ allLocationCards = mapFromList $ map
   , zocalo
   ]
 
+allSpecialLocationCards :: HashMap CardCode CardDef
+allSpecialLocationCards =
+  mapFromList $ map (toCardCode &&& id) [betweenWorlds]
+
 vengeance :: Int -> CardDef -> CardDef
 vengeance n def = def { cdVengeancePoints = Just n }
 
@@ -3524,3 +3528,7 @@ accademiaBridge = location
 theGuardian :: CardDef
 theGuardian =
   location "82016" "The Guardian" [Venice] NoSymbol [] CarnevaleOfHorrors
+
+betweenWorlds :: CardDef
+betweenWorlds =
+  location "xbetween" "Between Worlds" [Hex] NoSymbol [] ShatteredAeons

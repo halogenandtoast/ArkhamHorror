@@ -4,6 +4,7 @@ import Arkham.Id
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Card
+import Arkham.Token
 
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
@@ -25,4 +26,5 @@ type family QueryElement a where
   QueryElement CampaignMatcher = CampaignId
   QueryElement RemainingActMatcher = CardCode
   QueryElement CardMatcher = Card
+  QueryElement TokenMatcher = Token
   QueryElement (SetAsideMatcher a) = QueryElement a

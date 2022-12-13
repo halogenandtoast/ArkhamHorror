@@ -87,6 +87,7 @@ data instance Field Asset :: Type -> Type where
   AssetUses :: Field Asset Uses
   AssetStartingUses :: Field Asset Uses
   AssetController :: Field Asset (Maybe InvestigatorId)
+  AssetOwner :: Field Asset (Maybe InvestigatorId)
   AssetLocation :: Field Asset (Maybe LocationId)
   AssetCardCode :: Field Asset CardCode
   AssetSlots :: Field Asset [SlotType]
@@ -119,6 +120,7 @@ instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId)
     AssetUses -> Dict
     AssetStartingUses -> Dict
     AssetController -> Dict
+    AssetOwner -> Dict
     AssetLocation -> Dict
     AssetCardCode -> Dict
     AssetSlots -> Dict
@@ -145,6 +147,7 @@ instance FromJSON (SomeField Asset) where
     "AssetUses" -> pure $ SomeField AssetUses
     "AssetStartingUses" -> pure $ SomeField AssetStartingUses
     "AssetController" -> pure $ SomeField AssetController
+    "AssetOwner" -> pure $ SomeField AssetOwner
     "AssetLocation" -> pure $ SomeField AssetLocation
     "AssetCardCode" -> pure $ SomeField AssetCardCode
     "AssetSlots" -> pure $ SomeField AssetSlots

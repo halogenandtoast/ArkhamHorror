@@ -6,7 +6,11 @@ module Arkham.Treachery.Cards.ShatteredAges
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.SkillType
+import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -19,5 +23,13 @@ shatteredAges = treachery ShatteredAges Cards.shatteredAges
 
 instance RunMessage ShatteredAges where
   runMessage msg t@(ShatteredAges attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation iid source | isSource attrs source -> do
+      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 4
+      pure t
+    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        locations <- selectList $ NotLocation $ locationIs Locations.nexusOfNKai
+        pushAll
+          [ PlaceClues (LocationTarget location) 1 | location <- locations ]
+        pure t
     _ -> ShatteredAges <$> runMessage msg attrs

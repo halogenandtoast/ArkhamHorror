@@ -144,7 +144,7 @@ explore iid source cardMatcher exploreRule matchCount = do
                ]
         else do
           windowMsg <- checkWindows
-            [Window Timing.After $ Window.Explored iid Failure]
+            [Window Timing.After $ Window.Explored iid (Failure x)]
           pure
             [ DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x
             , windowMsg

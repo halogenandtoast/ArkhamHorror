@@ -44,6 +44,7 @@ import Arkham.Game.Helpers hiding
   ( EnemyEvade, EnemyFight, getSpendableClueCount )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
@@ -2030,6 +2031,7 @@ instance Projection Asset where
             AsIfUnderControlOf iid -> Just iid
             _ -> Nothing
         pure $ mcontroller <|> assetController
+      AssetOwner -> pure assetController
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid
         AttachedToLocation lid -> pure $ Just lid
@@ -2189,6 +2191,30 @@ instance Projection Investigator where
       InvestigatorResigned -> pure investigatorResigned
       InvestigatorXp -> pure investigatorXp
       InvestigatorSupplies -> pure investigatorSupplies
+
+instance Query TokenMatcher where
+  select matcher = do
+    tokens <- if includeSealed then getAllTokens else getTokensInBag
+    setFromList <$> filterM (go matcher) tokens
+   where
+     includeSealed =
+       case matcher of
+         IncludeSealed _ -> True
+         _ -> False
+     go = \case
+       WithNegativeModifier -> \t -> do
+         iid' <- toId <$> getActiveInvestigator
+         tv <- getTokenValue iid' (tokenFace t) ()
+         pure $ case tv of
+           TokenValue _ (NegativeModifier _) -> True
+           TokenValue _ (DoubleNegativeModifier _) -> True
+           _ -> False
+       TokenFaceIs face -> pure . (== face) . tokenFace
+       TokenFaceIsNot face -> fmap not . go (TokenFaceIs face)
+       AnyToken -> pure . const True
+       TokenMatchesAny ms -> \t -> anyM (`go` t) ms
+       TokenMatches ms -> \t -> allM (`go` t) ms
+       IncludeSealed m -> go m
 
 instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching

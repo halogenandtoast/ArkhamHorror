@@ -21,7 +21,7 @@ import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token (Token)
 
-data Result a = Success a | Failure
+data Result b a = Success a | Failure b
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -148,7 +148,7 @@ data WindowType
   | WouldTakeDamage Source Target
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target
-  | Explored InvestigatorId (Result LocationId)
+  | Explored InvestigatorId (Result Card LocationId)
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep
   | AddingToCurrentDepth

@@ -21,6 +21,7 @@ allEncounterCards :: HashMap CardCode CardDef
 allEncounterCards =
   allEncounterEnemyCards
     <> allLocationCards
+    <> allSpecialLocationCards
     <> allEncounterTreacheryCards
     <> allEncounterAssetCards
     <> allStoryCards

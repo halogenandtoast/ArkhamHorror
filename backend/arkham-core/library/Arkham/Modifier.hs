@@ -112,6 +112,7 @@ data ModifierType
   | CannotFight EnemyMatcher
   | CannotEvade EnemyMatcher
   | CannotMove
+  | CannotBeMoved
   | CannotDisengageEnemies
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan

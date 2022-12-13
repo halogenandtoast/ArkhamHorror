@@ -115,6 +115,7 @@ data Criterion
   | RememberedAtLeast GameValue [ScenarioLogKey]
   | ActionCanBeUndone
   | DuringPhase PhaseMatcher
+  | TokenCountIs TokenMatcher ValueMatcher
   -- Special Criterion
   | AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

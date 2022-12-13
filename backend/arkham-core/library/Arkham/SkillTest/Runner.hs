@@ -150,12 +150,9 @@ instance RunMessage SkillTest where
       -> do
         push (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do
-          pushAll $ resolve
-            (RevealToken
-              (SkillTestSource siid skillType source maction)
-              iid
-              tokenFace
-            )
+          let
+            revealMsg = RevealToken (SkillTestSource siid skillType source maction) iid tokenFace
+          pushAll [When revealMsg, CheckWindow [iid] [Window Timing.AtIf (Window.RevealToken iid tokenFace)], revealMsg, After revealMsg]
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
     RevealToken SkillTestSource{} iid token -> do
       push

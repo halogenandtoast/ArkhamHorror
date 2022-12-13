@@ -143,6 +143,11 @@ data CampaignLogKey
   | TheNexusIsNear
   | TheBraziersAreLit
   | TheBraziersRemainUnlit
+  | TheInvestigatorsMendedTheTearInTheFabricOfTime
+  | TheInvestigatorsSavedTheCivilizationOfTheSerpents
+  | TheInvestigatorsSavedTheCivilizationOfTheYithians
+  | TheFabricOfTimeIsUnwoven
+  | TheInvestigatorsTurnedBackTime
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

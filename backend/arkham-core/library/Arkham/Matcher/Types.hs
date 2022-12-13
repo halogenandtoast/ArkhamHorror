@@ -568,7 +568,7 @@ data PhaseStepMatcher = EnemiesAttackStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore
+data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -679,12 +679,13 @@ data SkillTestValueMatcher
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data TokenMatcher
-  = WithNegativeModifier
+  =  WithNegativeModifier
   | TokenFaceIs TokenFace
   | TokenFaceIsNot TokenFace
   | TokenMatchesAny [TokenMatcher]
   | AnyToken
   | TokenMatches [TokenMatcher]
+  | IncludeSealed TokenMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

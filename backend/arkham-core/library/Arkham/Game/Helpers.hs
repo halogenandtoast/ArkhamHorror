@@ -933,6 +933,9 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid source windows' = \case
+  Criteria.TokenCountIs tokenMatcher valueMatcher -> do
+    n <- selectCount tokenMatcher
+    gameValueMatches n valueMatcher
   Criteria.DuringPhase phaseMatcher -> do
     p <- getPhase
     matchPhase p phaseMatcher
@@ -1976,8 +1979,10 @@ windowMatches iid source window' = \case
       , case resultMatcher of
         Matcher.SuccessfulExplore locationMatcher -> case result of
           Window.Success lid -> lid <=~> locationMatcher
-          Window.Failure -> pure False
-        Matcher.FailedExplore -> pure $ result == Window.Failure
+          Window.Failure _ -> pure False
+        Matcher.FailedExplore cardMatcher -> case result of
+          Window.Success _ -> pure False
+          Window.Failure card -> pure $ cardMatch card cardMatcher
       ]
     _ -> pure False
   Matcher.AttemptExplore timingMatcher whoMatcher -> case window' of
@@ -2407,18 +2412,7 @@ matchToken
   -> Token
   -> Matcher.TokenMatcher
   -> m Bool
-matchToken iid' t = \case
-  Matcher.WithNegativeModifier -> do
-    tv <- getTokenValue iid' (tokenFace t) ()
-    case tv of
-      TokenValue _ (NegativeModifier _) -> pure True
-      TokenValue _ (DoubleNegativeModifier _) -> pure True
-      _ -> pure False
-  Matcher.TokenFaceIs face -> pure $ face == tokenFace t
-  Matcher.TokenFaceIsNot face -> pure $ face /= tokenFace t
-  Matcher.AnyToken -> pure True
-  Matcher.TokenMatchesAny ms -> anyM (matchToken iid' t) ms
-  Matcher.TokenMatches ms -> allM (matchToken iid' t) ms
+matchToken _ = (<=~>)
 
 matchPhase :: Monad m => Phase -> Matcher.PhaseMatcher -> m Bool
 matchPhase p = \case

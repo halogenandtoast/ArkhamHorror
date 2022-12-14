@@ -128,7 +128,7 @@ data EnemyDamageMismatch = EnemyDamageMismatch
 data ClassMismatch = ClassMismatch CardCode Name String (HashSet ClassSymbol)
   deriving stock Show
 
-data SkillsMismatch = SkillsMismatch CardCode Name [SkillType] [SkillType]
+data SkillsMismatch = SkillsMismatch CardCode Name [SkillIcon] [SkillIcon]
   deriving stock Show
 
 data TraitsMismatch = TraitsMismatch
@@ -204,13 +204,13 @@ normalizeCost _ Nothing = Nothing
 allCards :: HashMap CardCode CardDef
 allCards = allPlayerCards <> allEncounterCards
 
-getSkills :: CardJson -> [SkillType]
+getSkills :: CardJson -> [SkillIcon]
 getSkills CardJson {..} =
-  getSkill SkillWillpower skill_willpower
-    <> getSkill SkillIntellect skill_intellect
-    <> getSkill SkillCombat skill_combat
-    <> getSkill SkillAgility skill_agility
-    <> getSkill SkillWild skill_wild
+  getSkill (SkillIcon SkillWillpower) skill_willpower
+    <> getSkill (SkillIcon SkillIntellect) skill_intellect
+    <> getSkill (SkillIcon SkillCombat) skill_combat
+    <> getSkill (SkillIcon SkillAgility) skill_agility
+    <> getSkill WildIcon skill_wild
  where
   getSkill _ Nothing = []
   getSkill skillType (Just n) = replicate n skillType
@@ -547,8 +547,8 @@ normalizeImageCardCode :: CardCode -> Text
 normalizeImageCardCode "02214" = "02214b"
 normalizeImageCardCode other = unCardCode other
 
-normalizeSkills :: CardCode -> [SkillType] -> [SkillType]
-normalizeSkills "02230" _ = [SkillWillpower, SkillAgility]
+normalizeSkills :: CardCode -> [SkillIcon] -> [SkillIcon]
+normalizeSkills "02230" _ = [SkillIcon SkillWillpower, SkillIcon SkillAgility]
 normalizeSkills _ skills = skills
 
 normalizeTraits :: CardCode -> HashSet Trait -> HashSet Trait

@@ -175,6 +175,8 @@ const choose = (idx: number) => emit('choose', idx)
   width: $card-width;
   max-width: $card-width;
   border-radius: 5px;
+  transform: rotate(0deg);
+  transition: transform 0.2s linear;
 }
 
 .asset {
@@ -183,6 +185,7 @@ const choose = (idx: number) => emit('choose', idx)
 }
 
 .exhausted {
+  transition: transform 0.2s linear;
   transform: rotate(90deg);
   padding: 0 30px;
 }

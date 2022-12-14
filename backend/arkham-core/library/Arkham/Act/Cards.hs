@@ -527,10 +527,10 @@ timelock :: CardDef
 timelock = act "04323" "Timelock" 4 ShatteredAeons
 
 intoTheRuinsOnceAgain :: CardDef
-intoTheRuinsOnceAgain = act "04345" "Into the Ruins Once Again" 1 TurnBackTime
+intoTheRuinsOnceAgain = (act "04345" "Into the Ruins Once Again" 1 TurnBackTime) { cdVengeancePoints = Just 2 }
 
 theChamberOfStillRemains :: CardDef
-theChamberOfStillRemains = act "04346" "The Chamber of Still Remains" 2 TurnBackTime
+theChamberOfStillRemains = (act "04346" "The Chamber of Still Remains" 2 TurnBackTime) { cdVengeancePoints = Just 2 }
 
 momentOfDoom :: CardDef
 momentOfDoom = act "04347" "Moment of Doom" 3 TurnBackTime

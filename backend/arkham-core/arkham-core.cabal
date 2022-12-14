@@ -1556,6 +1556,7 @@ library
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ThreadsOfFate.Story
+      Arkham.Scenarios.TurnBackTime.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Story
       Arkham.Scenarios.WhereDoomAwaits.Story

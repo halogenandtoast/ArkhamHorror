@@ -96,6 +96,8 @@ instance RunMessage CampaignAttrs where
       let
         crossedOutModifier =
           if key `member` view (logL . recorded) a then insertSet key else id
+        removeOrderedKey =
+          if key `member` view (logL . recorded) a then filter (/= key) else id
 
       pure
         $ a
@@ -103,7 +105,8 @@ instance RunMessage CampaignAttrs where
         & (logL . crossedOut %~ crossedOutModifier)
         & (logL . recordedSets %~ deleteMap key)
         & (logL . recordedCounts %~ deleteMap key)
-    Record key -> pure $ a & logL . recorded %~ insertSet key
+        & (logL . orderedKeys %~ removeOrderedKey)
+    Record key -> pure $ a & logL . recorded %~ insertSet key & logL . orderedKeys %~ (<> [key])
     RecordSet key cardCodes ->
       pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
     RecordSetInsert key cardCodes ->

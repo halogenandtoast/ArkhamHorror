@@ -320,7 +320,7 @@ button {
 .question-label {
   display: flex;
   flex-direction: column;
-  width: 75vw;
+  width: 75%;
 
   p {
     font-size: 2em;

@@ -62,6 +62,7 @@ async function logout() {
   display: flex;
   align-items: center;
   padding-right: 10px;
+  flex-shrink: 0;
 
   a {
     font-weight: bold;

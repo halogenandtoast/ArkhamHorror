@@ -501,3 +501,16 @@ readingSigns = FlavorText
     \ farther south than you could have possibly guessed. Could it be these caverns\
     \ extend all the way to the coastline? Do the caverns never end?"
   ]
+
+epilogue :: FlavorText
+epilogue = FlavorText
+  (Just "Epilogue")
+  [ "There is only one way to stop all of this from ever happening. Before you\
+    \ arrived and set all of these events into motion, the Eztli ruins were asleep,\
+    \ and the relic was relatively safe in its prison of obscurity. Had it not been\
+    \ for Alejandro’s desire to find it, it might have remained undiscovered for\
+    \ centuries. With your new understanding of the relic’s capabilities, you can\
+    \ return to the past and set things right. You can seal it away forever and\
+    \ prevent your past selves from having ever found it... even if it costs you your\
+    \ own life."
+  ]

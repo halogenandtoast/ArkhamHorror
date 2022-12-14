@@ -21,7 +21,9 @@ nextStep a = case campaignStep a of
   Just (InterludeStep 4 _) -> Just TheDepthsOfYoth
   Just TheDepthsOfYoth -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
   Just (InterludeStep 5 _) -> Just ShatteredAeons
-  Just ShatteredAeons -> Just EpilogueStep
+  Just ShatteredAeons -> Nothing
+  Just EpilogueStep -> Just (UpgradeDeckStep TurnBackTime)
+  Just TurnBackTime -> Nothing
   Just (UpgradeDeckStep nextStep') -> Just nextStep'
   _ -> Nothing
 
@@ -56,3 +58,7 @@ pattern TheDepthsOfYoth <- ScenarioStep "04277" where
 pattern ShatteredAeons :: CampaignStep
 pattern ShatteredAeons <- ScenarioStep "04314" where
   ShatteredAeons = ScenarioStep "04314"
+
+pattern TurnBackTime :: CampaignStep
+pattern TurnBackTime <- ScenarioStep "04344" where
+  TurnBackTime = ScenarioStep "04344"

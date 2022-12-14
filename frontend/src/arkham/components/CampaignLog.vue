@@ -89,7 +89,7 @@ h1 {
 
 .campaign-log {
   padding: 20px;
-  width: 80vw;
+  width: 80%;
   margin: 0 auto;
   margin-top: 20px;
   background-color: rgba(255,255,255, 0.5);

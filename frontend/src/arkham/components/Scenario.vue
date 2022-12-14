@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import throttle from 'lodash/throttle'
-import { computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive, inject } from 'vue';
+import { computed, ref, ComputedRef, reactive, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Scenario } from '@/arkham/types/Scenario';
 import type { Card } from '@/arkham/types/Card';
@@ -26,6 +26,15 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
+
+function beforeLeave(el) {
+  const {marginLeft, marginTop, width, height} = window.getComputedStyle(el)
+
+  el.style.left = `${el.offsetLeft - parseFloat(marginLeft, 10)}px`
+  el.style.top = `${el.offsetTop - parseFloat(marginTop, 10)}px`
+  el.style.width = width
+  el.style.height = height
+}
 
 async function choose(idx: number) {
   emit('choose', idx)
@@ -92,24 +101,14 @@ interface RefWrapper<T> {
 const baseUrl = inject('baseUrl')
 const locationMap = ref<Element | null>(null)
 
-const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 10)
+const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 20)
 
-onMounted(async () => {
-  window.addEventListener("resize", drawHandler)
-  await nextTick()
-  locationMap.value?.addEventListener("scroll", drawHandler)
-  handleConnections(props.investigatorId, props.game)
-})
+async function step() {
+  drawHandler()
+  window.requestAnimationFrame(step);
+}
 
-onUnmounted(() => {
-  window.removeEventListener("resize", drawHandler)
-  locationMap.value?.removeEventListener("scroll", drawHandler)
-})
-
-onUpdated(async () => {
-  await nextTick()
-  handleConnections(props.investigatorId, props.game)
-})
+window.requestAnimationFrame(step)
 
 const scenarioGuide = computed(() => {
   const { id, difficulty } = props.scenario;
@@ -334,7 +333,7 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
         <line id="line" class="line original" stroke-dasharray="5, 5"/>
       </svg>
 
-      <div ref="locationMap" class="location-cards" :style="locationStyles">
+      <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
         <Location
           v-for="(location, key) in game.locations"
           class="location"
@@ -354,7 +353,7 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
           :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
           @choose="choose"
         />
-      </div>
+      </transition-group>
 
       <PlayerTabs
         :game="game"
@@ -586,5 +585,17 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
     bottom: 0;
     right: 0;
   }
+}
+
+.map-move {
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.map-leave-to {
+  opacity: 0;
+}
+
+.map-leave-active {
+  position: absolute;
 }
 </style>

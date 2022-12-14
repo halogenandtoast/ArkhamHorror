@@ -33,7 +33,8 @@ defineProps<Props>()
 }
 
 .intro-text {
-  font-size: 1.8em;
+  font-size: 1.5em;
+  overflow: auto;
   height: 100%;
   background: #001721;
   padding: 20px;
@@ -73,7 +74,12 @@ button {
   &:hover {
     background-color: #311b3e;
   }
+
+  i {
+    font-style: normal;
+  }
 }
+
 
 .option {
   &:before {

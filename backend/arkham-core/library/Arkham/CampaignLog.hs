@@ -11,6 +11,7 @@ data CampaignLog = CampaignLog
   , campaignLogCrossedOut :: HashSet CampaignLogKey
   , campaignLogRecordedCounts :: HashMap CampaignLogKey Int
   , campaignLogRecordedSets :: HashMap CampaignLogKey [Recorded CardCode]
+  , campaignLogOrderedKeys :: [CampaignLogKey]
   }
   deriving stock (Show, Generic, Eq)
 
@@ -29,6 +30,10 @@ recordedCounts :: Lens' CampaignLog (HashMap CampaignLogKey Int)
 recordedCounts =
   lens campaignLogRecordedCounts $ \m x -> m { campaignLogRecordedCounts = x }
 
+orderedKeys :: Lens' CampaignLog [CampaignLogKey]
+orderedKeys =
+  lens campaignLogOrderedKeys $ \m x -> m { campaignLogOrderedKeys = x }
+
 instance ToJSON CampaignLog where
   toJSON = genericToJSON $ aesonOptions $ Just "campaignLog"
   toEncoding = genericToEncoding $ aesonOptions $ Just "campaignLog"
@@ -42,4 +47,5 @@ mkCampaignLog = CampaignLog
   , campaignLogCrossedOut = mempty
   , campaignLogRecordedCounts = mempty
   , campaignLogRecordedSets = mempty
+  , campaignLogOrderedKeys = mempty
   }

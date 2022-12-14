@@ -5,15 +5,36 @@ module Arkham.Act.Cards.TheChamberOfStillRemains
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
+import Arkham.Helpers.Query
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message
+import Arkham.Scenario.Deck
 
 newtype TheChamberOfStillRemains = TheChamberOfStillRemains ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasAbilities TheChamberOfStillRemains where
+  getAbilities (TheChamberOfStillRemains a) = withBaseAbilities
+    a
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+      $ ActionAbility (Just Action.Explore)
+      $ ActionCost 1
+    ]
 
 theChamberOfStillRemains :: ActCard TheChamberOfStillRemains
 theChamberOfStillRemains = act
@@ -23,5 +44,29 @@ theChamberOfStillRemains = act
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Chamber of Time"))
 
 instance RunMessage TheChamberOfStillRemains where
-  runMessage msg (TheChamberOfStillRemains attrs) =
-    TheChamberOfStillRemains <$> runMessage msg attrs
+  runMessage msg a@(TheChamberOfStillRemains attrs) = case msg of
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      locationSymbols <- toConnections =<< getJustLocation iid
+      push $ Explore
+        iid
+        source
+        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      pure a
+    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
+      relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+      investigators <- selectList $ investigatorAt chamberOfTime
+      yig <- genCard Enemies.yig
+      pushAll
+        $ [ chooseOrRunOne
+            leadInvestigatorId
+            [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
+            | iid <- investigators
+            ]
+          , CreateEnemyAt yig chamberOfTime Nothing
+          , AddToVictory (toTarget attrs)
+          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+          ]
+      pure a
+    _ -> TheChamberOfStillRemains <$> runMessage msg attrs

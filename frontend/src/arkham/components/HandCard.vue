@@ -103,6 +103,7 @@ const image = computed(() => {
   border-radius: 6px;
   margin: 2px;
   display: flex;
+  border: 2px solid rgba(0, 0, 0, 0);
 
   &--can-interact {
     border: 2px solid $select;

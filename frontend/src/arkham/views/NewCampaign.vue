@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue';
+import { watch, ref, computed, inject } from 'vue';
 import { useUserStore } from '@/stores/user';
 import type { User } from '@/types';
 import { useRouter } from 'vue-router';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newGame } from '@/arkham/api';
 import type { Difficulty } from '@/arkham/types/Difficulty';
+import NewDeck from '@/arkham/components/NewDeck';
 
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
@@ -13,7 +14,6 @@ const baseUrl = inject('baseUrl')
 
 const scenarios = computed(() => {
   return [
-
     { id: '02041', name: 'Extracurricular Activity', campaign: "02", },
     { id: '02062', name: 'The House Always Wins', campaign: "02", },
     { id: '02118', name: 'The Miskatonic Museum', campaign: "02", },
@@ -50,8 +50,8 @@ const scenarios = computed(() => {
 
 const sideStories = computed(() => {
   return [
-    { id: '81001', name: 'Curse of the Rougarou', },
-    { id: '82001', name: 'Carnevale of Horrors', },
+    { id: '81001', name: 'Curse of the Rougarou', standaloneDifficulties: ['Standard', 'Hard'] },
+    { id: '82001', name: 'Carnevale of Horrors', standaloneDifficulties: ['Standard', 'Hard'] },
   ].filter((s) => {
     if (s.beta) {
       return currentUser.value && currentUser.value.beta
@@ -74,7 +74,16 @@ const campaigns = computed(() => {
   })
 })
 
-const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
+const difficulties: Difficulty[] = computed(() => {
+  if(sideStory.value) {
+    const sideStoryScenario = sideStories.value.find((c) => c.id === selectedScenario.value)
+    if (sideStoryScenario.standaloneDifficulties) {
+      return sideStoryScenario.standaloneDifficulties
+    }
+  }
+
+  return['Easy', 'Standard', 'Hard', 'Expert']
+})
 
 const router = useRouter()
 const decks = ref<Arkham.Deck[]>([])
@@ -106,11 +115,17 @@ const selectCampaign = (campaignId) => {
   }
 }
 
+watch(difficulties, async (newDifficulties) => selectedDifficulty.value = newDifficulties[0])
 
 fetchDecks().then((result) => {
   decks.value = result;
   ready.value = true;
 })
+
+async function addDeck(d) {
+  decks.value = [d]
+  deckIds.value[0] = d.id
+}
 
 const selectedCampaignReturnToId = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
@@ -203,107 +218,117 @@ async function start() {
 
 <template>
   <div v-if="ready" class="container">
-    <div v-if="decks.length == 0">
-      No decks, please add one first here <router-link to="/decks">here</router-link>
-    </div>
-    <div v-else>
-      <header>
-        <router-link to="/" class="back-link">‹</router-link>
-        <h2>New Game</h2>
-      </header>
-      <form id="new-campaign" @submit.prevent="start">
-        <p>Number of Players</p>
-        <div class="options">
-          <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
-          <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
-          <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
-          <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
-        </div>
-        <div v-if="playerCount > 1" class="options">
-          <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">With Friends</label>
-          <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">Multi-handed Solo</label>
-        </div>
+    <transition-group name="slide">
+      <div v-if="decks.length == 0">
+        <header>
+          <h2>No decks, please add one first:</h2>
+        </header>
+        <NewDeck @new-deck="addDeck" />
+      </div>
+      <div v-else>
+        <header>
+          <h2>New Game</h2>
+        </header>
+        <form id="new-campaign" @submit.prevent="start">
+          <div class="options">
+            <input type="radio" v-model="sideStory" :value="false" id="campaign"> <label for="campaign">Campaign</label>
+            <input type="radio" v-model="sideStory" :value="true" id="sideStory"> <label for="sideStory">Side Story</label>
+          </div>
+
+          <div v-if="sideStory">
+            <div class="scenarios">
+              <div v-for="scenario in sideStories" :key="scenario.id">
+                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <!-- <select v-model="selectedCampaign"> -->
+              <div class="campaigns">
+                <div v-for="campaign in campaigns" :key="campaign.id">
+                  <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="`${baseUrl}/img/arkham/boxes/${campaign.id}.jpg`" @click="selectCampaign(campaign.id)">
+                </div>
+              </div>
+            <!-- </select> -->
+          </div>
+
+          <div v-if="!sideStory && selectedCampaign && selectedCampaignReturnToId" class="options">
+            <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
+            <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
+          </div>
+
+          <div v-if="!sideStory && selectedCampaign && campaignScenarios.length > 0" class="options">
+            <input type="radio" v-model="standalone" :value="false" id="fullCampaign"> <label for="fullCampaign">Full Campaign</label>
+            <input type="radio" v-model="standalone" :value="true" id="standalone"> <label for="standalone">Standalone</label>
+          </div>
+
+          <div v-if="!sideStory && standalone && selectedCampaign">
+            <div class="scenarios">
+              <div v-for="scenario in campaignScenarios" :key="scenario.id">
+                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+              </div>
+            </div>
+          </div>
+
+          <p>Difficulty</p>
+          <div class="options">
+            <template v-for="difficulty in difficulties" :key="difficulty">
+              <input
+                type="radio"
+                v-model="selectedDifficulty"
+                :value="difficulty"
+                :checked="difficulty === selectedDifficulty"
+                :id="`difficulty${difficulty}`"
+              />
+              <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
+            </template>
+          </div>
+
+          <div>
+            <p>Game Name</p>
+            <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
+          </div>
+
+          <p>Number of Players</p>
+          <div class="options">
+            <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
+            <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
+            <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
+            <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
+          </div>
+          <transition name="slide">
+            <div v-if="playerCount > 1" class="options">
+              <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">With Friends</label>
+              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">Multi-handed Solo</label>
+            </div>
+          </transition>
 
 
-        <p>Difficulty</p>
-        <div class="options">
-          <template v-for="difficulty in difficulties" :key="difficulty">
-            <input
-              type="radio"
-              v-model="selectedDifficulty"
-              :value="difficulty"
-              :checked="difficulty === selectedDifficulty"
-              :id="`difficulty${difficulty}`"
-            />
-            <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
-          </template>
-        </div>
-
-        <div v-if="playerCount == 1 || multiplayerVariant == 'WithFriends'">
-          <p>Deck</p>
-          <select v-model="deckIds[0]">
-            <option disabled :value="null">-- Select a Deck--</option>
-            <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-          </select>
-        </div>
-        <div v-else>
-          <template v-for="idx in playerCount" :key="idx">
-            <p>Deck {{idx}}</p>
-            <select v-model="deckIds[idx - 1]">
+          <div v-if="playerCount == 1 || multiplayerVariant == 'WithFriends'">
+            <p>Deck</p>
+            <select v-model="deckIds[0]">
               <option disabled :value="null">-- Select a Deck--</option>
               <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
             </select>
-          </template>
-        </div>
-
-        <div class="options">
-          <input type="radio" v-model="sideStory" :value="false" id="campaign"> <label for="campaign">Campaign</label>
-          <input type="radio" v-model="sideStory" :value="true" id="sideStory"> <label for="sideStory">Side Story</label>
-        </div>
-
-        <div v-if="sideStory">
-          <div class="scenarios">
-            <div v-for="scenario in sideStories" :key="scenario.id">
-              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
-            </div>
           </div>
-        </div>
-        <div v-else>
-          <!-- <select v-model="selectedCampaign"> -->
-            <div class="campaigns">
-              <div v-for="campaign in campaigns" :key="campaign.id">
-                <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="`${baseUrl}/img/arkham/boxes/${campaign.id}.jpg`" @click="selectCampaign(campaign.id)">
-              </div>
-            </div>
-          <!-- </select> -->
-        </div>
+          <div v-else>
 
-        <div v-if="!sideStory && selectedCampaign && selectedCampaignReturnToId" class="options">
-          <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
-          <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
-        </div>
-
-        <div v-if="!sideStory && selectedCampaign && campaignScenarios.length > 0" class="options">
-          <input type="radio" v-model="standalone" :value="false" id="fullCampaign"> <label for="fullCampaign">Full Campaign</label>
-          <input type="radio" v-model="standalone" :value="true" id="standalone"> <label for="standalone">Standalone</label>
-        </div>
-
-        <div v-if="!sideStory && standalone && selectedCampaign">
-          <div class="scenarios">
-            <div v-for="scenario in campaignScenarios" :key="scenario.id">
-              <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
-            </div>
+            <transition-group name="slide">
+              <template v-for="idx in playerCount" :key="idx">
+                <p>Deck {{idx}}</p>
+                <select v-model="deckIds[idx - 1]">
+                  <option disabled :value="null">-- Select a Deck--</option>
+                  <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+                </select>
+              </template>
+            </transition-group>
           </div>
-        </div>
 
-        <div>
-          <p>Game Name</p>
-          <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
-        </div>
 
-        <button type="submit" :disabled="disabled">Create</button>
-      </form>
-    </div>
+          <button type="submit" :disabled="disabled">Create</button>
+        </form>
+      </div>
+    </transition-group>
   </div>
 </template>
 
@@ -316,6 +341,7 @@ async function start() {
 }
 
 #new-campaign {
+  box-sizing: border-box;
   width: 100%;
   color: #FFF;
   background-color: #15192C;
@@ -473,5 +499,24 @@ header {
     filter: grayscale(100%) sepia(1);
     transition: filter 1s linear;
   }
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  overflow: hidden;
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
 }
 </style>

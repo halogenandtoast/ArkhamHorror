@@ -6,6 +6,7 @@ import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import Supplies from '@/arkham/components/Supplies.vue';
 
 export interface Props {
   choices: Message[]
@@ -211,11 +212,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       >End turn</button>
     </div>
 
-    <div v-if="player.supplies.length > 0" class="supplies">
-      <ul>
-        <li v-for="(supply, index) in player.supplies" :key="index">{{supply}}</li>
-      </ul>
-    </div>
+    <Supplies :player="player" />
   </div>
 </template>
 

@@ -60,7 +60,7 @@ async function undo() {
   width: calc(100% - 20px);
   border-radius: 5px;
   margin: 10px;
-  height: 100%;
+  height: calc(100vh - 60px);
   padding: 10px 10px;
   box-sizing: border-box;
   flex: 1 1 50%;

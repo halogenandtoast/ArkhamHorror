@@ -148,6 +148,7 @@ data CampaignLogKey
   | TheInvestigatorsSavedTheCivilizationOfTheYithians
   | TheFabricOfTimeIsUnwoven
   | TheInvestigatorsTurnedBackTime
+  | TheInvestigatorsSealedTheRelicOfAgesForever
   -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

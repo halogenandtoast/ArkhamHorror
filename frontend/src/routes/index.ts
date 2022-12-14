@@ -11,6 +11,12 @@ export default [
     meta: { requiresAuth: true, title: "Arkham Horror" },
   },
   {
+    path: '/new-game',
+    name: 'NewGame',
+    component: Home,
+    meta: { requiresAuth: true, title: "Arkham Horror" },
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: Settings,

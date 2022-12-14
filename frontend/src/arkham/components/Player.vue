@@ -88,11 +88,20 @@ const hideCards = () => showCards.ref = noCards
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
+
+function beforeLeaveHand(el) {
+  const {marginLeft, marginTop, width, height} = window.getComputedStyle(el)
+
+  el.style.left = `${el.offsetLeft - parseFloat(marginLeft, 10)}px`
+  el.style.top = `${el.offsetTop - parseFloat(marginTop, 10)}px`
+  el.style.width = width
+  el.style.height = height
+}
 </script>
 
 <template>
   <div class="player-cards">
-    <section class="in-play">
+    <transition-group name="in-play" tag="section" class="in-play" @before-leave="beforeLeaveHand">
       <Event
         v-for="event in events"
         :event="event"
@@ -129,7 +138,7 @@ const events = computed(() => props.player.events.map((e) => props.game.events[e
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
-    </section>
+    </transition-group>
 
     <ChoiceModal
       :game="game"
@@ -168,13 +177,13 @@ const events = computed(() => props.player.events.map((e) => props.game.events[e
           <button @click="debugChoose({tag: 'Search', contents: [investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'AnyCard', contents: []}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
         </template>
       </div>
-      <section class="hand">
+      <transition-group name="hand" tag="section" class="hand" @before-leave="beforeLeaveHand">
         <HandCard
-          v-for="(card, index) in player.hand"
+          v-for="card in player.hand"
           :card="card"
           :game="game"
           :investigatorId="investigatorId"
-          :key="index"
+          :key="card.contents.id"
           @choose="$emit('choose', $event)"
         />
 
@@ -186,7 +195,8 @@ const events = computed(() => props.player.events.map((e) => props.game.events[e
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
         />
-      </section>
+
+      </transition-group>
     </div>
 
     <CardRow
@@ -283,8 +293,11 @@ const events = computed(() => props.player.events.map((e) => props.game.events[e
 .hand {
   overflow-x: overlay;
   height: 100%;
+  flex-grow: 1;
   display: flex;
   padding-top: 10px;
+  box-sizing: border-box;
+  isolation: isolate;
 }
 
 .view-discard-button {
@@ -314,5 +327,37 @@ const events = computed(() => props.player.events.map((e) => props.game.events[e
   padding: 10px;
   border-radius: 20px;
   transform: translateX(-50%) translateY(-50%);
+}
+
+.hand-move,
+.hand-enter-active,
+.hand-leave-active {
+  transition: all 0.3s ease;
+}
+
+.hand-enter-from,
+.hand-leave-to {
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
+.hand-leave-active {
+  position: absolute;
+}
+
+.in-play-move,
+.in-play-enter-active,
+.in-play-leave-active {
+  transition: all 0.3s ease;
+}
+
+.in-play-enter-from,
+.in-play-leave-to {
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
+.in-play-leave-active {
+  position: absolute;
 }
 </style>

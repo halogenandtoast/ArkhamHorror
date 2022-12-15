@@ -47,6 +47,7 @@ import Arkham.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
+import Arkham.Helpers.Message
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator ( becomeYithian, returnToBody )
@@ -3709,12 +3710,10 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
   ChooseEndTurn iid -> do
-    push =<< checkWindows
-      [ Window Timing.When (Window.TurnEnds iid)
-      , Window Timing.After (Window.TurnEnds iid)
-      ]
-    g <$ pushAll (resolve $ EndTurn iid)
-  EndTurn _ ->
+    msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
+    pushAll msgs
+    pure g
+  After (EndTurn _) ->
     pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
   EndPhase -> do
     clearQueue

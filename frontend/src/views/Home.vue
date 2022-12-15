@@ -57,8 +57,7 @@ const toggleNewGame = () => {
 <template>
   <div class="home">
     <div v-if="currentUser" class="new-game">
-      <button v-if="!newGame" @click="toggleNewGame" class="new-game-button">+ New Game</button>
-      <button v-else @click="toggleNewGame" class="cancel-new-game-button">Cancel</button>
+      <button @click="toggleNewGame" :class="{ 'new-game-button': !newGame, 'cancel-new-game-button': newGame }">{{ newGame ? 'Cancel' : '+ New Game' }}</button>
 
       <transition name="slide">
         <NewGame v-if="newGame"/>
@@ -143,6 +142,10 @@ h2 {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
+}
+
+button {
+  transition: background-color 0.3s linear;
 }
 
 button.cancel-new-game-button {

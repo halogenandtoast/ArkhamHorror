@@ -33,7 +33,7 @@ instance HasAbilities VoiceOfTheJungle where
         <> InvestigatorExists (You <> NoSuccessfulExploreThisTurn)
         )
       $ ForcedAbility
-      $ TurnEnds Timing.When You
+      $ TurnEnds Timing.AtIf You
     , restrictedAbility x 2 (InThreatAreaOf You)
       $ ActionAbility Nothing
       $ ActionCost 1

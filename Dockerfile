@@ -93,12 +93,13 @@ RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j
 
 FROM base as api
 
+COPY --from=dependencies /root/.stack /root/.stack
+
 RUN mkdir -p \
   /opt/arkham/src/backend \
   /opt/arkham/bin
 
 COPY ./backend /opt/arkham/src/backend
-COPY --from=dependencies /root/.stack /root/.stack
 
 WORKDIR /opt/arkham/src/backend/cards-discover
 RUN stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover

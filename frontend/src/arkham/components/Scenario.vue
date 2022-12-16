@@ -42,35 +42,73 @@ async function choose(idx: number) {
 
 function handleConnections(investigatorId: string, game: Game) {
   const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
-    const { id: div1Id } = div1.dataset
-    const { id: div2Id } = div2.dataset
-    const investigator = game.investigators[investigatorId]
-    const { connectedLocations } = investigator
-    if(div1Id && div2Id) {
-      const [left, right] = [div1Id, div2Id].sort()
-      const activeLine = (div1Id == investigator.location && connectedLocations.includes(div2Id)) || (div2Id == investigator.location && connectedLocations.includes(div1Id))
-      const connection = left + ":" + right
+    const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
+      const { id: div1Id } = a.dataset
+      const { id: div2Id } = b.dataset
+
+      if (div1Id < div2Id) {
+        return -1;
+      }
+      if (div1Id > div2Id) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    })
+
+    const closeEnough = (a, b) => {
+      return diff(a, b) < 0.5
+    }
+
+    const diff = (a, b) => {
+      const x = parseFloat(a)
+      const y = parseFloat(b)
+
+      return Math.abs(x - y)
+    }
+
+    const { id: leftDivId } = leftDiv.dataset
+    const { id: rightDivId } = rightDiv.dataset
+
+    if (leftDivId && rightDivId) {
       const line = document.querySelector<HTMLElement>(".line")
       const parentNode = line?.parentNode
-      if(line && parentNode && !document.querySelector(`[data-connection="${connection}"]`)) {
+
+      if(line && parentNode) {
+        const connection = leftDivId + ":" + rightDivId
+        const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
+        const {left: leftDivLeft, top: leftDivTop, right: leftDivRight, bottom: leftDivBottom } = leftDiv.getBoundingClientRect();
+        const {left: rightDivLeft, top: rightDivTop, right: rightDivRight, bottom: rightDivBottom } = rightDiv.getBoundingClientRect();
+        const leftDivWidth = leftDivRight - leftDivLeft;
+        const rightDivWidth = rightDivRight - rightDivLeft;
+        const leftDivHeight = leftDivBottom - leftDivTop;
+        const rightDivHeight = rightDivBottom - rightDivTop;
+        const x1 = (leftDivLeft - bodyLeft) + (leftDivWidth/2)
+        const y1 = (leftDivTop - bodyTop) + (leftDivHeight/2)
+        const x2 = (rightDivLeft - bodyLeft) + (rightDivWidth/2)
+        const y2 = (rightDivTop - bodyTop) + (rightDivHeight/2)
+        const existingNode = document.querySelector(`[data-connection="${connection}"]`)
+
+        if (existingNode) {
+          if (closeEnough(existingNode.getAttribute("x1"), x1) && closeEnough(existingNode.getAttribute("y1"), y1) && closeEnough(existingNode.getAttribute("x2"), x2) && closeEnough(existingNode.getAttribute("y2"), y2)) {
+            return
+          } else {
+            parentNode.removeChild(existingNode);
+          }
+        }
+
         const node = line.cloneNode(true) as HTMLElement
         node.dataset.connection = connection
         node.classList.remove("original")
+
+        const investigator = game.investigators[investigatorId]
+        const { connectedLocations } = investigator
+        const activeLine = (leftDivId == investigator.location && connectedLocations.includes(rightDivId)) || (rightDivId == investigator.location && connectedLocations.includes(leftDivId))
         if (activeLine) {
           node.classList.add("active")
         }
         parentNode.insertBefore(node, line.nextSibling)
-        const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
-        const {left: div1Left, top: div1Top, right: div1Right, bottom: div1Bottom } = div1.getBoundingClientRect();
-        const {left: div2Left, top: div2Top, right: div2Right, bottom: div2Bottom } = div2.getBoundingClientRect();
-        const div1Width = div1Right - div1Left;
-        const div2Width = div2Right - div2Left;
-        const div1Height = div1Bottom - div1Top;
-        const div2Height = div2Bottom - div2Top;
-        const x1 = (div1Left - bodyLeft) + (div1Width/2)
-        const y1 = (div1Top - bodyTop) + (div1Height/2)
-        const x2 = (div2Left - bodyLeft) + (div2Width/2)
-        const y2 = (div2Top - bodyTop) + (div2Height/2)
 
         node.setAttribute('x1',x1.toString())
         node.setAttribute('y1',y1.toString())
@@ -80,7 +118,7 @@ function handleConnections(investigatorId: string, game: Game) {
     }
   }
 
-  document.querySelectorAll(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
+  // document.querySelectorAll(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
 
   for(const [id,location] of Object.entries(game.locations)) {
     const connections = location.connectedLocations

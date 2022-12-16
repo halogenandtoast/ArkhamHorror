@@ -41,6 +41,29 @@ async function choose(idx: number) {
 }
 
 function handleConnections(investigatorId: string, game: Game) {
+  const toConnection = (div1: HTMLElement, div2: HTMLElement) => {
+    const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
+      const { id: div1Id } = a.dataset
+      const { id: div2Id } = b.dataset
+
+      if (div1Id < div2Id) {
+        return -1;
+      }
+      if (div1Id > div2Id) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    })
+
+    const { id: leftDivId } = leftDiv.dataset
+    const { id: rightDivId } = rightDiv.dataset
+
+    if (leftDivId && rightDivId) {
+      return leftDivId + ":" + rightDivId
+    }
+  }
   const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
     const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
       const { id: div1Id } = a.dataset
@@ -118,18 +141,27 @@ function handleConnections(investigatorId: string, game: Game) {
     }
   }
 
-  // document.querySelectorAll(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
-
+  const allConnections = []
   for(const [id,location] of Object.entries(game.locations)) {
     const connections = location.connectedLocations
     connections.forEach((connection) => {
       const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
       const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
       if(start && end) {
+        allConnections.push(toConnection(start, end))
         makeLine(start, end)
       }
     });
   }
+
+  document.querySelectorAll(".line:not(.original").forEach((node) => {
+    const con = node.dataset.connection
+    if(con) {
+      if(!allConnections.some((c) => c === con)) {
+        node.parentNode?.removeChild(node)
+      }
+    }
+  })
 }
 
 interface RefWrapper<T> {

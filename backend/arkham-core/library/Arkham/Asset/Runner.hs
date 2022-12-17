@@ -174,7 +174,7 @@ instance RunMessage AssetAttrs where
         ((`Window` Window.TookControlOfAsset iid aid)
         <$> [Timing.When, Timing.After]
         )
-      pure $ a & placementL .~ InPlayArea iid
+      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     ReplacedInvestigatorAsset iid aid | aid == assetId ->
       pure $ a & placementL .~ InPlayArea iid
     AddToScenarioDeck key target | isTarget a target -> do

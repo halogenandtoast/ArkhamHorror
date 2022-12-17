@@ -107,7 +107,7 @@ data Criterion
   | SetAsideCardExists CardMatcher
   | SetAsideEnemyExists EnemyMatcher
   | TreacheryExists TreacheryMatcher
-  | Unowned
+  | Uncontrolled
   | SelfHasModifier ModifierType
   | ValueIs Int ValueMatcher
   | UnderneathCardCount ValueMatcher UnderZone CardMatcher

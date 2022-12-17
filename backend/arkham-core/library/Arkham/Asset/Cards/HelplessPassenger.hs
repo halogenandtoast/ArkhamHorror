@@ -34,7 +34,7 @@ instance HasAbilities HelplessPassenger where
     [ restrictedAbility
       x
       1
-      (Unowned <> OnSameLocation)
+      (Uncontrolled <> OnSameLocation)
       (ActionAbility (Just Parley) $ ActionCost 1)
     , mkAbility x 2
       $ ForcedAbility

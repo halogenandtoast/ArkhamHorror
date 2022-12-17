@@ -2746,7 +2746,7 @@ runMessages mLogger = do
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
               _ -> pure ()
-            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers)
+            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers >>= handleTraitRestrictedModifiers >>= handleBlanked)
               >>= putGame
             runMessages mLogger
 
@@ -4435,6 +4435,42 @@ preloadModifiers g = case gameMode g of
       <> investigatorCards
       <> locationCards
       <> scenarioCards
+
+handleTraitRestrictedModifiers :: Monad m => Game -> m Game
+handleTraitRestrictedModifiers g = do
+  modifiers' <- flip execStateT (gameModifiers g) $ do
+    modifiers'' <- get
+    for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
+      for_ targetModifiers $ \case
+        Modifier source (TraitRestrictedModifier t mt) -> do
+          traits <- runReaderT (targetTraits target) g
+          when (t `member` traits) $ do
+            current <- get
+            put $ insertWith (<>) target [Modifier source mt] current
+        _ -> pure ()
+  pure $ g { gameModifiers = modifiers' }
+
+handleBlanked :: Monad m => Game -> m Game
+handleBlanked g = do
+  modifiers' <- flip execStateT (gameModifiers g) $ do
+    modifiers'' <- get
+    for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
+      for_ targetModifiers $ \case
+        Modifier _ Blank -> applyBlank (targetToSource target)
+        _ -> pure ()
+  pure $ g { gameModifiers = modifiers' }
+
+applyBlank :: Monad m => Source -> StateT (HashMap Target [Modifier]) m ()
+applyBlank s = do
+  current <- get
+  for_ (mapToList current) $ \(target, targetModifiers) -> do
+    let
+      modifiers' =
+        flip mapMaybe targetModifiers $ \case
+          Modifier s' _ | s == s' -> Nothing
+          other -> Just other
+    current' <- get
+    put $ insertMap target modifiers' current'
 
 instance RunMessage Game where
   runMessage msg g = do

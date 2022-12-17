@@ -35,7 +35,7 @@ instance HasAbilities TheCustodian where
     , restrictedAbility
         a
         2
-        (Unowned <> OnSameLocation <> InvestigatorExists
+        (Uncontrolled <> OnSameLocation <> InvestigatorExists
           (You <> InvestigatorWithAnyClues)
         )
       $ ActionAbility (Just Action.Parley)

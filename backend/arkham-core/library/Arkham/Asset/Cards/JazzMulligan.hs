@@ -32,7 +32,7 @@ jazzMulligan = allyWith
 
 instance HasAbilities JazzMulligan where
   getAbilities (JazzMulligan x) =
-    [ restrictedAbility x 1 (Unowned <> OnSameLocation)
+    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation)
         $ ActionAbility (Just Parley)
         $ ActionCost 1
     ]

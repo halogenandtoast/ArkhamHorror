@@ -4444,9 +4444,7 @@ handleTraitRestrictedModifiers g = do
       for_ targetModifiers $ \case
         Modifier source (TraitRestrictedModifier t mt) -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `member` traits) $ do
-            current <- get
-            put $ insertWith (<>) target [Modifier source mt] current
+          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt]
         _ -> pure ()
   pure $ g { gameModifiers = modifiers' }
 
@@ -4469,8 +4467,7 @@ applyBlank s = do
         flip mapMaybe targetModifiers $ \case
           Modifier s' _ | s == s' -> Nothing
           other -> Just other
-    current' <- get
-    put $ insertMap target modifiers' current'
+    modify $ insertMap target modifiers'
 
 instance RunMessage Game where
   runMessage msg g = do

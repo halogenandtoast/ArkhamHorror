@@ -39,7 +39,7 @@ instance HasAbilities Parlor where
           (toSource attrs)
         )
         1
-        (Unowned <> OnSameLocation)
+        (Uncontrolled <> OnSameLocation)
       $ ActionAbility (Just Action.Parley)
       $ ActionCost 1
     | locationRevealed attrs

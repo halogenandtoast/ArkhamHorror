@@ -255,6 +255,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
             _ -> notNull <$> select Matcher.CanEngageEnemy
           Action.Parley -> case abilitySource of
             EnemySource _ -> pure True
+            AssetSource _ -> pure True
             _ -> notNull <$> select (Matcher.CanParleyEnemy iid)
           Action.Investigate -> case abilitySource of
             LocationSource _ -> pure True
@@ -1033,7 +1034,7 @@ passesCriteria iid source windows' = \case
       (`gameValueMatches` valueMatcher) =<< field AssetDamage aid
     _ -> error $ "missing DamageOnThis check for " <> show source
   Criteria.ScenarioDeckWithCard key -> notNull <$> getScenarioDeck key
-  Criteria.Unowned -> case source of
+  Criteria.Uncontrolled -> case source of
     AssetSource aid -> fieldP AssetController isNothing aid
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
@@ -2029,7 +2030,7 @@ skillTestValueMatches iid n maction skillType = \case
     baseSkill <- baseSkillValueFor skillType maction [] iid
     pure $ n > baseSkill
 
-targetTraits :: (Monad m, HasGame m) => Target -> m (HashSet Trait)
+targetTraits :: (HasCallStack, Monad m, HasGame m) => Target -> m (HashSet Trait)
 targetTraits = \case
   ActDeckTarget -> pure mempty
   ActTarget _ -> pure mempty

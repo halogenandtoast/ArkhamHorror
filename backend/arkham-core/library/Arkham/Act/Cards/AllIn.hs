@@ -41,7 +41,7 @@ instance HasAbilities AllIn where
           (toSource x)
         )
         1
-        (Unowned <> OnSameLocation)
+        (Uncontrolled <> OnSameLocation)
         (ActionAbility (Just Parley) $ ActionCost 1)
       , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
       $ Objective

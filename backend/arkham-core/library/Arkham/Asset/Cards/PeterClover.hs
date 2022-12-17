@@ -28,7 +28,7 @@ peterClover =
 
 instance HasAbilities PeterClover where
   getAbilities (PeterClover x) =
-    [ restrictedAbility x 1 Unowned
+    [ restrictedAbility x 1 Uncontrolled
       $ ForcedAbility
       $ PhaseBegins Timing.When
       $ PhaseIs EnemyPhase

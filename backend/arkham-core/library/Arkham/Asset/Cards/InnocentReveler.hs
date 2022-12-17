@@ -31,7 +31,7 @@ innocentReveler = allyWith
 
 instance HasAbilities InnocentReveler where
   getAbilities (InnocentReveler x) =
-    [ restrictedAbility x 1 (Unowned <> OnSameLocation)
+    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation)
       $ ActionAbility (Just Parley) (ActionCost 1)
     , mkAbility x 2
       $ ForcedAbility

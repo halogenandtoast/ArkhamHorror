@@ -19,7 +19,7 @@ import Arkham.Asset.Types ( Asset, AssetAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
-import Arkham.Campaign.Types hiding ( campaign )
+import Arkham.Campaign.Types hiding ( campaign, modifiersL )
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.Id
@@ -600,12 +600,21 @@ getInvestigator iid =
     <$> getGame
   where missingInvestigator = "Unknown investigator: " <> show iid
 
+data MissingLocation = MissingLocation Text CallStack
+
+instance Show MissingLocation where
+  show (MissingLocation t cs) = show t <> "\n" <> prettyCallStack cs
+
+instance Exception MissingLocation
+
 getLocation :: (HasCallStack, Monad m, HasGame m) => LocationId -> m Location
 getLocation lid =
-  fromJustNote missingLocation
+  fromMaybe missingLocation
     . preview (entitiesL . locationsL . ix lid)
     <$> getGame
-  where missingLocation = "Unknown location: " <> show lid
+ where
+  missingLocation =
+    throw $ MissingLocation ("Unknown location: " <> tshow lid) callStack
 
 getEffectsMatching :: (HasGame m, Monad m) => EffectMatcher -> m [Effect]
 getEffectsMatching matcher = do
@@ -1544,7 +1553,10 @@ getAssetsMatching matcher = do
               let minDistance = getMin $ foldMap Min distances
               pure $ mdistance == Just minDistance
         else pure False
-    AssetWithCardsUnderneath cardListMatcher -> flip filterM as $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher) . toId
+    AssetWithCardsUnderneath cardListMatcher ->
+      flip filterM as
+        $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher)
+        . toId
 
 getEventsMatching :: (Monad m, HasGame m) => EventMatcher -> m [Event]
 getEventsMatching matcher = do
@@ -2124,9 +2136,10 @@ getEnemyField f e = do
     EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
     EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
     EnemyAbilities -> pure $ getAbilities e
-    EnemyCard -> pure $ case lookupCard enemyOriginalCardCode (unEnemyId $ toId e) of
-      PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer }
-      ec -> ec
+    EnemyCard ->
+      pure $ case lookupCard enemyOriginalCardCode (unEnemyId $ toId e) of
+        PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer }
+        ec -> ec
     EnemyCardCode -> pure enemyCardCode
     EnemyLocation -> case enemyPlacement of
       AtLocation lid -> pure $ Just lid
@@ -2198,24 +2211,23 @@ instance Query TokenMatcher where
     tokens <- if includeSealed then getAllTokens else getTokensInBag
     setFromList <$> filterM (go matcher) tokens
    where
-     includeSealed =
-       case matcher of
-         IncludeSealed _ -> True
-         _ -> False
-     go = \case
-       WithNegativeModifier -> \t -> do
-         iid' <- toId <$> getActiveInvestigator
-         tv <- getTokenValue iid' (tokenFace t) ()
-         pure $ case tv of
-           TokenValue _ (NegativeModifier _) -> True
-           TokenValue _ (DoubleNegativeModifier _) -> True
-           _ -> False
-       TokenFaceIs face -> pure . (== face) . tokenFace
-       TokenFaceIsNot face -> fmap not . go (TokenFaceIs face)
-       AnyToken -> pure . const True
-       TokenMatchesAny ms -> \t -> anyM (`go` t) ms
-       TokenMatches ms -> \t -> allM (`go` t) ms
-       IncludeSealed m -> go m
+    includeSealed = case matcher of
+      IncludeSealed _ -> True
+      _ -> False
+    go = \case
+      WithNegativeModifier -> \t -> do
+        iid' <- toId <$> getActiveInvestigator
+        tv <- getTokenValue iid' (tokenFace t) ()
+        pure $ case tv of
+          TokenValue _ (NegativeModifier _) -> True
+          TokenValue _ (DoubleNegativeModifier _) -> True
+          _ -> False
+      TokenFaceIs face -> pure . (== face) . tokenFace
+      TokenFaceIsNot face -> fmap not . go (TokenFaceIs face)
+      AnyToken -> pure . const True
+      TokenMatchesAny ms -> \t -> anyM (`go` t) ms
+      TokenMatches ms -> \t -> allM (`go` t) ms
+      IncludeSealed m -> go m
 
 instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching
@@ -2746,7 +2758,13 @@ runMessages mLogger = do
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
               _ -> pure ()
-            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers >>= handleTraitRestrictedModifiers >>= handleBlanked)
+            runWithEnv
+                (getGame
+                >>= runMessage msg
+                >>= preloadModifiers
+                >>= handleTraitRestrictedModifiers
+                >>= handleBlanked
+                )
               >>= putGame
             runMessages mLogger
 
@@ -2760,7 +2778,7 @@ runPreGameMessage msg g = case msg of
   ScenarioResolution _ -> do
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
-  ResetGame -> pure $ g & entitiesL . investigatorsL %~ map returnToBody
+  ResetGame -> pure $ g & modifiersL .~ mempty & entitiesL . investigatorsL %~ map returnToBody
   _ -> pure g
 
 getActiveInvestigator :: (Monad m, HasGame m) => m Investigator
@@ -3986,11 +4004,12 @@ runGameMessage msg g = case msg of
         EncounterCard _ -> Nothing
         PlayerCard pc -> pcOwner pc
         VengeanceCard vc -> getBearer vc
-    enemy <- runMessage (SetOriginalCardCode $ originalCardCode card) (createEnemy card)
-    enemy' <-
-      case getBearer card of
-        Nothing -> pure enemy
-        Just iid -> runMessage (SetBearer (toTarget enemy) iid) enemy
+    enemy <- runMessage
+      (SetOriginalCardCode $ originalCardCode card)
+      (createEnemy card)
+    enemy' <- case getBearer card of
+      Nothing -> pure enemy
+      Just iid -> runMessage (SetBearer (toTarget enemy) iid) enemy
     let enemyId = toId enemy'
     push $ PlaceEnemy enemyId placement
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy'
@@ -4436,7 +4455,7 @@ preloadModifiers g = case gameMode g of
       <> locationCards
       <> scenarioCards
 
-handleTraitRestrictedModifiers :: Monad m => Game -> m Game
+handleTraitRestrictedModifiers :: MonadUnliftIO m => Game -> m Game
 handleTraitRestrictedModifiers g = do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
@@ -4444,7 +4463,10 @@ handleTraitRestrictedModifiers g = do
       for_ targetModifiers $ \case
         Modifier source (TraitRestrictedModifier t mt) -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt]
+          when (t `member` traits) $ modify $ insertWith
+            (<>)
+            target
+            [Modifier source mt]
         _ -> pure ()
   pure $ g { gameModifiers = modifiers' }
 
@@ -4463,10 +4485,9 @@ applyBlank s = do
   current <- get
   for_ (mapToList current) $ \(target, targetModifiers) -> do
     let
-      modifiers' =
-        flip mapMaybe targetModifiers $ \case
-          Modifier s' _ | s == s' -> Nothing
-          other -> Just other
+      modifiers' = flip mapMaybe targetModifiers $ \case
+        Modifier s' _ | s == s' -> Nothing
+        other -> Just other
     modify $ insertMap target modifiers'
 
 instance RunMessage Game where

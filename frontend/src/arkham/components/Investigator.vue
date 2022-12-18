@@ -6,7 +6,6 @@ import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
-import Supplies from '@/arkham/components/Supplies.vue';
 
 export interface Props {
   choices: Message[]
@@ -211,8 +210,6 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
         @click="$emit('choose', endTurnAction)"
       >End turn</button>
     </div>
-
-    <Supplies :player="player" />
   </div>
 </template>
 

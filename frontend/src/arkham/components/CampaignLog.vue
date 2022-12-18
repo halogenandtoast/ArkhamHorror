@@ -3,6 +3,7 @@ import * as Arkham from '@/arkham/types/Game'
 import { computed } from 'vue'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
+import Supplies from '@/arkham/components/Supplies.vue';
 
 export interface Props {
   game: Arkham.Game
@@ -57,12 +58,11 @@ const fullName = (name: Name): string => {
     <h1>Campaign Log: {{game.name}}</h1>
     <div v-if="hasSupplies">
       <h2>Supplies</h2>
-      <div v-for="i in game.investigators" :key="i.id">
-        <h3>{{i.name.title}}</h3>
-        <ul>
-          <li v-for="(supply, index) in i.supplies" :key="index">{{supply}}</li>
-        </ul>
-      </div>
+      <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
+        <template #heading>
+          <h3>{{i.name.title}}</h3>
+        </template>
+      </Supplies>
     </div>
     <ul>
       <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>

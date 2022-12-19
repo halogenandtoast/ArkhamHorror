@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import throttle from 'lodash/throttle'
-import { computed, ref, ComputedRef, reactive, inject } from 'vue';
+import { onMounted, onBeforeUnmount, computed, ref, ComputedRef, reactive, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Scenario } from '@/arkham/types/Scenario';
 import type { Card } from '@/arkham/types/Card';
@@ -26,11 +25,6 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
-const shouldRender = ref(true)
-
-window.onbeforeunload = function () {
-  shouldRender.value = false
-}
 
 function beforeLeave(el) {
   const {marginLeft, marginTop, width, height} = window.getComputedStyle(el)
@@ -45,7 +39,7 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-function handleConnections(investigatorId: string, game: Game) {
+function handleConnections() {
   const toConnection = (div1: HTMLElement, div2: HTMLElement) => {
     const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
       const { id: div1Id } = a.dataset
@@ -130,7 +124,7 @@ function handleConnections(investigatorId: string, game: Game) {
         node.dataset.connection = connection
         node.classList.remove("original")
 
-        const investigator = game.investigators[investigatorId]
+        const investigator = props.game.investigators[props.investigatorId]
         const { connectedLocations } = investigator
         const activeLine = (leftDivId == investigator.location && connectedLocations.includes(rightDivId)) || (rightDivId == investigator.location && connectedLocations.includes(leftDivId))
         if (activeLine) {
@@ -147,7 +141,7 @@ function handleConnections(investigatorId: string, game: Game) {
   }
 
   const allConnections = []
-  for(const [id,location] of Object.entries(game.locations)) {
+  for(const [id,location] of Object.entries(props.game.locations)) {
     const connections = typeof location.connectedLocations == "object" ? Object.values(location.connectedLocations) : location.connectedLocations
     connections.forEach((connection) => {
       const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
@@ -167,6 +161,7 @@ function handleConnections(investigatorId: string, game: Game) {
       }
     }
   })
+
 }
 
 interface RefWrapper<T> {
@@ -176,12 +171,16 @@ interface RefWrapper<T> {
 const baseUrl = inject('baseUrl')
 const locationMap = ref<Element | null>(null)
 
-const drawHandler = throttle(() => {
-  handleConnections(props.investigatorId, props.game)
-  window.requestAnimationFrame(drawHandler);
-}, 20)
+const requestId = ref(undefined)
+const drawHandler = () => {
+  requestId.value = undefined
+  handleConnections()
+  requestId.value = window.requestAnimationFrame(drawHandler);
+}
 
-window.requestAnimationFrame(drawHandler)
+onBeforeUnmount(() => window.cancelAnimationFrame(requestId.value))
+
+onMounted(() => requestId.value = window.requestAnimationFrame(drawHandler))
 
 const scenarioGuide = computed(() => {
   const { id, difficulty } = props.scenario;

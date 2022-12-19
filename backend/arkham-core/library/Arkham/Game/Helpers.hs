@@ -946,8 +946,10 @@ passesCriteria iid source windows' = \case
     gameValueMatches doomCount valueMatcher
   Criteria.Negate restriction ->
     not <$> passesCriteria iid source windows' restriction
-  Criteria.AllUndefeatedInvestigatorsResigned ->
-    selectNone Matcher.UneliminatedInvestigator
+  Criteria.AllUndefeatedInvestigatorsResigned -> andM
+    [ selectNone Matcher.UneliminatedInvestigator
+    , selectAny Matcher.ResignedInvestigator -- at least one investigator should have resigned
+    ]
   Criteria.EachUndefeatedInvestigator investigatorMatcher -> do
     liftA2
       (==)

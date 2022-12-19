@@ -26,6 +26,11 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
+const shouldRender = ref(true)
+
+window.onbeforeunload = function () {
+  shouldRender.value = false
+}
 
 function beforeLeave(el) {
   const {marginLeft, marginTop, width, height} = window.getComputedStyle(el)
@@ -143,7 +148,7 @@ function handleConnections(investigatorId: string, game: Game) {
 
   const allConnections = []
   for(const [id,location] of Object.entries(game.locations)) {
-    const connections = location.connectedLocations
+    const connections = typeof location.connectedLocations == "object" ? Object.values(location.connectedLocations) : location.connectedLocations
     connections.forEach((connection) => {
       const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
       const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
@@ -171,14 +176,12 @@ interface RefWrapper<T> {
 const baseUrl = inject('baseUrl')
 const locationMap = ref<Element | null>(null)
 
-const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 20)
+const drawHandler = throttle(() => {
+  handleConnections(props.investigatorId, props.game)
+  window.requestAnimationFrame(drawHandler);
+}, 20)
 
-async function step() {
-  drawHandler()
-  window.requestAnimationFrame(step);
-}
-
-window.requestAnimationFrame(step)
+window.requestAnimationFrame(drawHandler)
 
 const scenarioGuide = computed(() => {
   const { id, difficulty } = props.scenario;

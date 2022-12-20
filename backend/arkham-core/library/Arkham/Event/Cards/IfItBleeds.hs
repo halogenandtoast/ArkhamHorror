@@ -40,7 +40,7 @@ instance RunMessage IfItBleeds where
           iid
           [ targetLabel
               enemyId
-              [ HealHorror (InvestigatorTarget iid') horrorValue
+              [ HealHorror (InvestigatorTarget iid') (toSource attrs) horrorValue
               | iid' <- investigatorIds
               ]
           | (enemyId, horrorValue) <- enemyIdsWithHorrorValue

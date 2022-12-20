@@ -31,7 +31,7 @@ instance RunMessage LogicalReasoning where
             (InvestigatorWithId iid')
         pure
           ( iid'
-          , [ Label "Heal 2 Horror" [HealHorror (InvestigatorTarget iid') 2]
+          , [ Label "Heal 2 Horror" [HealHorror (InvestigatorTarget iid') (toSource attrs) 2]
             | hasHorror
             ]
           <> [ Label

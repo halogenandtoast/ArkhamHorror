@@ -36,9 +36,10 @@ instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget (InvestigatorAt YourLocation)
-      a <$ push
-        (chooseOrRunOne
-          iid
-          [ TargetLabel target [HealHorror target 1] | target <- targets ]
-        )
+      push $ chooseOrRunOne
+        iid
+        [ TargetLabel target [HealHorror target (toSource attrs) 1]
+        | target <- targets
+        ]
+      pure a
     _ -> ClarityOfMind <$> runMessage msg attrs

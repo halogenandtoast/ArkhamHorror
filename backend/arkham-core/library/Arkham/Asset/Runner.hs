@@ -13,6 +13,7 @@ import Arkham.Helpers.Message as X
 import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card
+import Arkham.Damage
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher ( AssetMatcher (AnyAsset) )
@@ -86,9 +87,13 @@ instance RunMessage AssetAttrs where
       pure a
     PlaceDamage target n | isTarget a target -> pure $ a & damageL +~ n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
-    HealDamage (isTarget a -> True) n ->
+    HealDamage (isTarget a -> True) source n -> do
+      afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
+      push afterWindow
       pure $ a & damageL %~ max 0 . subtract n
-    HealHorror (isTarget a -> True) n ->
+    HealHorror (isTarget a -> True) source n -> do
+      afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source n)]
+      push afterWindow
       pure $ a & horrorL %~ max 0 . subtract n
     When (InvestigatorResigned iid) -> do
       let

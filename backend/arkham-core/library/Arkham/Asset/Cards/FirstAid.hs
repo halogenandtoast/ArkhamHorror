@@ -72,10 +72,16 @@ instance RunMessage FirstAid where
         [ TargetLabel
             target
             [ chooseOne iid
-              $ [ componentLabel DamageToken target [HealDamage target 1]
+              $ [ componentLabel
+                    DamageToken
+                    target
+                    [HealDamage target (toSource attrs) 1]
                 | target `elem` damageTargets
                 ]
-              <> [ componentLabel HorrorToken target [HealHorror target 1]
+              <> [ componentLabel
+                     HorrorToken
+                     target
+                     [HealHorror target (toSource attrs) 1]
                  | target `elem` horrorTargets
                  ]
             ]

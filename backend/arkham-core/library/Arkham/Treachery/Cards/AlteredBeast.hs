@@ -40,7 +40,7 @@ instance RunMessage AlteredBeast where
         [] -> Surge iid source
         xs -> chooseOrRunOne
           iid
-          [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x]
+          [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x (toSource attrs)]
           | x <- xs
           ]
       pure t

@@ -29,7 +29,7 @@ instance RunMessage SecondWind where
           if null (historyTreacheriesDrawn roundHistory) then 1 else 2
       drawing <- drawCards iid attrs 1
       pushAll
-        [ HealDamage (InvestigatorTarget iid) damageToHeal
+        [ HealDamage (InvestigatorTarget iid) (toSource attrs) damageToHeal
         , drawing
         , Discard (toTarget attrs)
         ]

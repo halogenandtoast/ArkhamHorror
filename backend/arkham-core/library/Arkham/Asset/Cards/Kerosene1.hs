@@ -81,7 +81,7 @@ instance RunMessage Kerosene1 where
         <> AssetWithHorror
       push $ chooseOne
         iid
-        [ TargetLabel target [HealHorror target 1]
+        [ TargetLabel target [HealHorror target (toSource attrs) 1]
         | target <- investigators <> assets
         ]
       pure a

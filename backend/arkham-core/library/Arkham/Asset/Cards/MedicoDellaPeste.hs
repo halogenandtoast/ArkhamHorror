@@ -54,10 +54,14 @@ instance RunMessage MedicoDellaPeste where
       hasHorror <- fieldP InvestigatorHorror (> 0) iid
       push
         $ chooseOrRunOne iid
-        $ [ Label "Heal 1 damage" [HealDamage (InvestigatorTarget iid) 1]
+        $ [ Label
+              "Heal 1 damage"
+              [HealDamage (InvestigatorTarget iid) (toSource attrs) 1]
           | hasDamage
           ]
-        <> [ Label "Heal 1 horror" [HealHorror (InvestigatorTarget iid) 1]
+        <> [ Label
+               "Heal 1 horror"
+               [HealHorror (InvestigatorTarget iid) (toSource attrs) 1]
            | hasHorror
            ]
       pure a

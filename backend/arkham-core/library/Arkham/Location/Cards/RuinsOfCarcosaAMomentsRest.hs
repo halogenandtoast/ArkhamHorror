@@ -64,7 +64,7 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
               [chooseOne iid $ map handleEnemy enemies]
           | notNull enemies
           ]
-          <> [ Label "You heal 5 horror" [HealHorror (InvestigatorTarget iid) 5]
+          <> [ Label "You heal 5 horror" [HealHorror (InvestigatorTarget iid) (toSource attrs) 5]
              | hasHorror
              ]
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching

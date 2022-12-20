@@ -39,5 +39,5 @@ instance HasAbilities SmokingPipe where
 instance RunMessage SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (HealHorror (InvestigatorTarget iid) 1)
+      a <$ push (HealHorror (InvestigatorTarget iid) (toSource attrs) 1)
     _ -> SmokingPipe <$> runMessage msg attrs

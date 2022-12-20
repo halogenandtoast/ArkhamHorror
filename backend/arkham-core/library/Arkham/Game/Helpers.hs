@@ -1381,6 +1381,16 @@ windowMatches iid source window' = \case
       (matchWho iid who whoMatcher)
       (member aid <$> select assetMatcher)
     _ -> pure False
+  Matcher.AssetHealed timing damageType assetMatcher sourceMatcher ->
+    case window' of
+      Window t (Window.Healed damageType' (AssetTarget assetId) source' _) | t == timing && damageType == damageType' ->
+        andM [member assetId <$> select assetMatcher, sourceMatches source' sourceMatcher]
+      _ -> pure False
+  Matcher.InvestigatorHealed timing damageType whoMatcher sourceMatcher ->
+    case window' of
+      Window t (Window.Healed damageType' (InvestigatorTarget who) source' _) | t == timing && damageType == damageType' ->
+        andM [matchWho iid who whoMatcher, sourceMatches source' sourceMatcher]
+      _ -> pure False
   Matcher.WouldPerformRevelationSkillTest timing whoMatcher ->
     case window' of
       Window t (Window.WouldPerformRevelationSkillTest who) | t == timing ->

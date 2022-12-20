@@ -61,7 +61,7 @@ instance RunMessage JimsTrumpet where
           let choices = map fst $ filter ((> 0) . snd) pairings
           push $ chooseOne
             controllerId
-            [ targetLabel iid [HealHorror (InvestigatorTarget iid) 1]
+            [ targetLabel iid [HealHorror (InvestigatorTarget iid) (toSource attrs) 1]
             | iid <- choices
             ]
           pure a

@@ -36,5 +36,5 @@ instance HasAbilities OvergrownCairns where
 instance RunMessage OvergrownCairns where
   runMessage msg l@(OvergrownCairns attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ pushAll [HealHorror (InvestigatorTarget iid) 2]
+      l <$ pushAll [HealHorror (InvestigatorTarget iid) (toSource attrs) 2]
     _ -> OvergrownCairns <$> runMessage msg attrs

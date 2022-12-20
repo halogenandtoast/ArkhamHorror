@@ -364,12 +364,12 @@ data Message
   | SpendXP InvestigatorId Int
   | GameOver
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
-  | HealAllDamage Target
-  | HealDamage Target Int
-  | HealHorror Target Int
+  | HealAllDamage Target Source
+  | HealDamage Target Source Int
+  | HealHorror Target Source Int
   | MovedHorror Source Target Int
-  | HealHorrorWithAdditional Target Int
-  | AdditionalHealHorror Target Int
+  | HealHorrorWithAdditional Target Source Int
+  | AdditionalHealHorror Target Source Int
   | HuntersMove
   | HunterMove EnemyId
   | InDiscard InvestigatorId Message

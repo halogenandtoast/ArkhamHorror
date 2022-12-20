@@ -39,19 +39,24 @@ instance RunMessage FirstAid3 where
             ComponentLabel (InvestigatorComponent iid' component)
           AssetTarget aid -> ComponentLabel (AssetComponent aid component)
           _ -> error "unhandled target"
-      push
-        (chooseOne
-          iid
-          [ TargetLabel
-              target
-              [ chooseOne
-                  iid
-                  [ componentLabel DamageToken target [HealDamage target 1]
-                  , componentLabel HorrorToken target [HealHorror target 1]
-                  ]
-              ]
-          | target <- targets
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ TargetLabel
+            target
+            [ chooseOne
+                iid
+                [ componentLabel
+                  DamageToken
+                  target
+                  [HealDamage target (toSource attrs) 1]
+                , componentLabel
+                  HorrorToken
+                  target
+                  [HealHorror target (toSource attrs) 1]
+                ]
+            ]
+        | target <- targets
+        ]
+
       pure a
     _ -> FirstAid3 <$> runMessage msg attrs

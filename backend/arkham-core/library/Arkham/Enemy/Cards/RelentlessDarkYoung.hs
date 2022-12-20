@@ -34,5 +34,5 @@ instance HasAbilities RelentlessDarkYoung where
 instance RunMessage RelentlessDarkYoung where
   runMessage msg e@(RelentlessDarkYoung attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      e <$ push (HealDamage (toTarget attrs) 2)
+      e <$ push (HealDamage (toTarget attrs) (toSource attrs) 2)
     _ -> RelentlessDarkYoung <$> runMessage msg attrs

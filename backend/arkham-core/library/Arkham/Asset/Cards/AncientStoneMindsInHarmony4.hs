@@ -61,7 +61,7 @@ instance RunMessage AncientStoneMindsInHarmony4 where
         <> AssetWithHorror
       push
         $ chooseOrRunOne iid
-        $ [ TargetLabel target [HealHorror target amount]
+        $ [ TargetLabel target [HealHorror target (toSource attrs) amount]
           | target <- investigators <> assets
           ]
       pure a

@@ -48,7 +48,7 @@ instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
       pushAll
-        $ [ HealHorror target 5 | target <- targets ]
+        $ [ HealHorror target (toSource attrs) 5 | target <- targets ]
         <> [ReplaceLocation (toId attrs) otherDepthsOfDemhe]
       pure l
     _ -> DepthsOfDemheTheHeightOfTheDepths <$> runMessage msg attrs

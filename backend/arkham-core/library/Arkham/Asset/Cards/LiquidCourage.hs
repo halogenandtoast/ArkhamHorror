@@ -41,7 +41,7 @@ instance RunMessage LiquidCourage where
         iid
         [ targetLabel
             iid'
-            [ HealHorrorWithAdditional (idToTarget iid') 1
+            [ HealHorrorWithAdditional (idToTarget iid') (toSource attrs) 1
             , BeginSkillTest
               iid'
               source
@@ -55,8 +55,8 @@ instance RunMessage LiquidCourage where
       pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a
-      <$ push (AdditionalHealHorror (InvestigatorTarget iid) 1)
+      <$ push (AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 1)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ pushAll
-        [AdditionalHealHorror (InvestigatorTarget iid) 0, RandomDiscard iid]
+        [AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 0, RandomDiscard iid]
     _ -> LiquidCourage <$> runMessage msg attrs

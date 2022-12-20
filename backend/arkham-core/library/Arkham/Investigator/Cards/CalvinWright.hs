@@ -56,10 +56,10 @@ instance RunMessage CalvinWright where
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       push
         $ chooseOne iid
-        $ [ Label "Heal 1 Damage" [HealDamage (toTarget attrs) 1]
+        $ [ Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1]
           | investigatorHealthDamage attrs > 0
           ]
-        <> [ Label "Heal 1 Horror" [HealHorror (toTarget attrs) 1]
+        <> [ Label "Heal 1 Horror" [HealHorror (toTarget attrs) (toSource attrs) 1]
            | investigatorHealthDamage attrs > 0
            ]
         <> [ Label

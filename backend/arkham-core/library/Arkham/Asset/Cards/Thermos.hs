@@ -75,6 +75,7 @@ instance RunMessage Thermos where
         trauma <- field InvestigatorPhysicalTrauma iid'
         push $ HealDamage
           (InvestigatorTarget iid')
+          (toSource attrs)
           (if trauma >= 2 then 2 else 1)
         pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' payment -> do
@@ -102,6 +103,7 @@ instance RunMessage Thermos where
         trauma <- field InvestigatorMentalTrauma iid'
         push $ HealHorror
           (InvestigatorTarget iid')
+          (toSource attrs)
           (if trauma >= 2 then 2 else 1)
         pure a
     _ -> Thermos <$> runMessage msg attrs

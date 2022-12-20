@@ -36,7 +36,7 @@ instance RunMessage TheHomeFront where
             (canDamage && damageCount > 0)
             do
               pushAll
-                [ HealDamage (InvestigatorTarget skillOwner) 1
+                [ HealDamage (InvestigatorTarget skillOwner) (toSource attrs) 1
                 , EnemyDamage eid $ nonAttack attrs 1
                 ]
         _ -> pure ()

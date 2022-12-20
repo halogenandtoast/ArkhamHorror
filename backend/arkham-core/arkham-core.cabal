@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -390,6 +390,7 @@ library
       Arkham.Asset.Cards.HolyRosary
       Arkham.Asset.Cards.Hyperawareness
       Arkham.Asset.Cards.Hyperawareness2
+      Arkham.Asset.Cards.HypnoticTherapy
       Arkham.Asset.Cards.IchtacaTheForgottenGuardian
       Arkham.Asset.Cards.InnocentReveler
       Arkham.Asset.Cards.InTheKnow1
@@ -640,6 +641,7 @@ library
       Arkham.Cost.FieldCost
       Arkham.Criteria
       Arkham.Criteria.Override
+      Arkham.Damage
       Arkham.DamageEffect
       Arkham.Deck
       Arkham.Decks
@@ -1094,6 +1096,7 @@ library
       Arkham.Investigator.Cards.AshcanPete
       Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright
+      Arkham.Investigator.Cards.CarolynFern
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
       Arkham.Investigator.Cards.FatherMateo

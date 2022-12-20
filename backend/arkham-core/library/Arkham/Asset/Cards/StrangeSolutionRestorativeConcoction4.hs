@@ -41,6 +41,8 @@ instance RunMessage StrangeSolutionRestorativeConcoction4 where
       targets <- selectListMap InvestigatorTarget $ colocatedWith iid
       push $ chooseOne
         iid
-        [ TargetLabel target [HealDamage target 2] | target <- targets ]
+        [ TargetLabel target [HealDamage target (toSource attrs) 2]
+        | target <- targets
+        ]
       pure a
     _ -> StrangeSolutionRestorativeConcoction4 <$> runMessage msg attrs

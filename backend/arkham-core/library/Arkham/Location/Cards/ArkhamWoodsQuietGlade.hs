@@ -39,7 +39,7 @@ instance RunMessage ArkhamWoodsQuietGlade where
     case msg of
       UseCardAbility iid (LocationSource lid) 1 _ _ | lid == locationId ->
         l <$ pushAll
-          [ HealDamage (InvestigatorTarget iid) 1
-          , HealHorror (InvestigatorTarget iid) 1
+          [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+          , HealHorror (InvestigatorTarget iid) (toSource attrs) 1
           ]
       _ -> ArkhamWoodsQuietGlade <$> runMessage msg attrs

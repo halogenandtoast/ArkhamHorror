@@ -32,8 +32,8 @@ instance RunMessage InspiringPresence where
         <> AllyAsset
       choices <- flip mapMaybeM assets $ \a -> do
         let target = AssetTarget a
-            healDamage = HealDamage target 1
-            healHorror = HealHorror target 1
+            healDamage = HealDamage target (toSource attrs) 1
+            healHorror = HealHorror target (toSource attrs) 1
         hasDamage <- fieldP AssetDamage (> 0) a
         hasHorror <- fieldP AssetHorror (> 0) a
         exhausted <- field AssetExhausted a

@@ -50,6 +50,6 @@ instance RunMessage GrimmsFairyTales where
   runMessage msg a@(GrimmsFairyTales attrs) = case msg of
     UseCardAbility _ source 1 windows' _ | isSource attrs source -> do
       let iid' = toInvestigator windows'
-      push $ HealHorror (InvestigatorTarget iid') 1
+      push $ HealHorror (InvestigatorTarget iid') (toSource attrs) 1
       pure a
     _ -> GrimmsFairyTales <$> runMessage msg attrs

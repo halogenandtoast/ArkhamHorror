@@ -29,5 +29,5 @@ instance RunMessage UmordhothsHunger where
           then InvestigatorKilled source iid
           else RandomDiscard iid
       targets <- selectListMap EnemyTarget AnyEnemy
-      t <$ pushAll (msgs <> [ HealDamage target 1 | target <- targets ])
+      t <$ pushAll (msgs <> [ HealDamage target (toSource attrs) 1 | target <- targets ])
     _ -> UmordhothsHunger <$> runMessage msg attrs

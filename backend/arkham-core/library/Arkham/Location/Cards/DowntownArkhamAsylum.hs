@@ -41,5 +41,5 @@ instance HasAbilities DowntownArkhamAsylum where
 instance RunMessage DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (HealHorror (InvestigatorTarget iid) 3)
+      l <$ push (HealHorror (InvestigatorTarget iid) (toSource attrs) 3)
     _ -> DowntownArkhamAsylum <$> runMessage msg attrs

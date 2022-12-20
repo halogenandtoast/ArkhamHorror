@@ -65,7 +65,7 @@ instance RunMessage ForbiddenTomeDarkKnowledge3 where
         iid
         [ TargetLabel
             target
-            [ HealDamage target 1
+            [ HealDamage target (toSource attrs) 1
             , chooseOne
               iid
               [ TargetLabel enemy [Damage enemy (toSource attrs) 1]

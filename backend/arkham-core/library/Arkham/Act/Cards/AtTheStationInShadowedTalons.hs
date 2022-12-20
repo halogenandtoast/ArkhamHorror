@@ -54,7 +54,7 @@ instance RunMessage AtTheStationInShadowedTalons where
       deckCount <- getActDecksInPlayCount
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       pushAll
-        $ map (HealAllDamage . EnemyTarget) huntingNightgaunts
+        $ map ((`HealAllDamage` (toSource attrs)) . EnemyTarget) huntingNightgaunts
         <> [ chooseOrRunOne
                leadInvestigatorId
                [ targetLabel huntingNightgaunt

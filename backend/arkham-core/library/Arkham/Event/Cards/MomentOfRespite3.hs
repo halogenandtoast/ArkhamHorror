@@ -23,7 +23,7 @@ instance RunMessage MomentOfRespite3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       drawing <- drawCards iid attrs 1
       pushAll
-        [ HealHorror (InvestigatorTarget iid) 3
+        [ HealHorror (InvestigatorTarget iid) (toSource attrs) 3
         , drawing
         , Discard (toTarget attrs)
         ]

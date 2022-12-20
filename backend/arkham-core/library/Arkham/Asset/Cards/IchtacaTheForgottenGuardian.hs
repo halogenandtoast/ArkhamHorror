@@ -81,7 +81,7 @@ instance RunMessage IchtacaTheForgottenGuardian where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       anyHorror <- iid <=~> InvestigatorWithAnyHorror
       pushAll
-        $ [ HealHorror (InvestigatorTarget iid) 1 | anyHorror ]
-        <> [ HealHorror (toTarget attrs) 1 | assetHorror attrs > 0 ]
+        $ [ HealHorror (InvestigatorTarget iid) (toSource attrs) 1 | anyHorror ]
+        <> [ HealHorror (toTarget attrs) (toSource attrs) 1 | assetHorror attrs > 0 ]
       pure a
     _ -> IchtacaTheForgottenGuardian <$> runMessage msg attrs

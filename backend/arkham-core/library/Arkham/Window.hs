@@ -9,6 +9,7 @@ import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.SkillTest.Base
 import Arkham.SkillType (SkillType)
 import Arkham.Card (Card)
+import Arkham.Damage
 import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
 import Arkham.DefeatedBy
@@ -97,6 +98,7 @@ data WindowType
   | FailSkillTestAtOrLess InvestigatorId Int
   | FastPlayerWindow
   | GainsClues InvestigatorId Int
+  | Healed DamageType Target Source Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
   | InitiatedSkillTest InvestigatorId (Maybe Action) SkillType Int

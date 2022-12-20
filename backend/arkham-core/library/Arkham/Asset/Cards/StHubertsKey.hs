@@ -54,7 +54,7 @@ instance RunMessage StHubertsKey where
           Just (Msg.InvestigatorDefeated x _) -> x
           _ -> error "missing defeated message"
       pushAll
-        [ HealHorror (InvestigatorTarget iid) 2
+        [ HealHorror (InvestigatorTarget iid) (toSource attrs) 2
         , CancelNext InvestigatorDefeatedMessage
         , CheckDefeated defeatedSource
         ]

@@ -19,6 +19,7 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Constants
+import Arkham.Damage
 import Arkham.DamageEffect
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
@@ -595,9 +596,14 @@ instance RunMessage EnemyAttrs where
           ]
         <> [After (EnemyAttack iid enemyId damageStrategy attackType)]
       pure a
-    HealDamage (EnemyTarget eid) n | eid == enemyId ->
+    HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
+      afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
+      push afterWindow
       pure $ a & damageL %~ max 0 . subtract n
-    HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
+    HealAllDamage (EnemyTarget eid) source | eid == enemyId -> do
+      afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source (a ^. damageL))]
+      push afterWindow
+      pure $ a & damageL .~ 0
     Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
       let
         source = damageAssignmentSource damageAssignment

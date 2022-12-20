@@ -13,6 +13,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.ClassSymbol
 import Arkham.Criteria.Override
+import Arkham.Damage
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
@@ -512,6 +513,8 @@ data WindowMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing Who CardMatcher
+  | AssetHealed Timing DamageType AssetMatcher SourceMatcher
+  | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
   | WouldPerformRevelationSkillTest Timing Who

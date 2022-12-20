@@ -38,12 +38,12 @@ instance RunMessage Infirmary where
         iid
         [ Label
           "Heal 1 damage and take 1 direct horror"
-          [ HealDamage (toTarget attrs) 1
+          [ HealDamage (toTarget attrs) (toSource attrs) 1
           , InvestigatorDirectDamage iid (toSource attrs) 0 1
           ]
         , Label
           "Heal 1 horror and take 1 direct damage"
-          [ HealHorror (toTarget attrs) 1
+          [ HealHorror (toTarget attrs) (toSource attrs) 1
           , InvestigatorDirectDamage iid (toSource attrs) 1 0
           ]
         ]

@@ -235,6 +235,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , holyRosary
   , hyperawareness
   , hyperawareness2
+  , hypnoticTherapy
   , ichtacaTheForgottenGuardian
   , innocentReveler
   , inTheKnow1
@@ -2529,6 +2530,12 @@ relicOfAgesUnleashTheTimestream = (storyAsset "04343" ("Relic of Ages" <:> "Unle
   { cdSkills = [#wild, #wild, #wild]
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
+  }
+
+hypnoticTherapy :: CardDef
+hypnoticTherapy = (asset "05007" "Hypnotic Therapy" 2 Neutral)
+  { cdCardTraits = singleton Talent
+  , cdSkills = [#willpower, #intellect, #wild]
   }
 
 trackShoes :: CardDef

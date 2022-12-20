@@ -53,7 +53,7 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
       pushAll
-        $ [ HealHorror (InvestigatorTarget iid') 3 | iid' <- iids ]
+        $ [ HealHorror (InvestigatorTarget iid') (toSource attrs) 3 | iid' <- iids ]
         <> [ chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies ]
         <> [ReplaceLocation (toId attrs) otherBleakPlain]
       pure l

@@ -43,8 +43,8 @@ instance RunMessage Valusia where
   runMessage msg (Valusia attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        [ HealDamage (InvestigatorTarget iid) 2
-        , HealHorror (InvestigatorTarget iid) 2
+        [ HealDamage (InvestigatorTarget iid) (toSource attrs) 2
+        , HealHorror (InvestigatorTarget iid) (toSource attrs) 2
         ]
       pure $ Valusia $ attrs & shroudL .~ 0
     _ -> Valusia <$> runMessage msg attrs

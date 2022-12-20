@@ -422,6 +422,8 @@ allAssets = mapFrom
   --- story [sha]
   , SomeAssetCard relicOfAgesUnleashTheTimestream
   -- The Circle Undone
+  --- signature [tcu]
+  , SomeAssetCard hypnoticTherapy
   --- survivor [tcu]
   , SomeAssetCard trackShoes
   -- The Secret Name

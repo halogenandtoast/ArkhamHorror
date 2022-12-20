@@ -53,7 +53,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       pushAll
-        $ map (HealAllDamage . EnemyTarget) brotherhoodCultists
+        $ map ((`HealAllDamage` (toSource attrs)) . EnemyTarget) brotherhoodCultists
         <> [ chooseOrRunOne
                leadInvestigatorId
                [ targetLabel cultist

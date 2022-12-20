@@ -81,6 +81,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , finnEdwards
   , fatherMateo
   , calvinWright
+  , carolynFern
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -210,6 +211,13 @@ bodyOfAYithian = investigator
   ("Body of a Yithian" <:> "Captive in Another Form")
   Neutral
   [Monster, Yithian]
+
+carolynFern :: CardDef
+carolynFern = investigator
+  "05001"
+  ("Carolyn Fern" <:> "The Psychologist")
+  Guardian
+  [Miskatonic]
 
 normanWithers :: CardDef
 normanWithers = investigator

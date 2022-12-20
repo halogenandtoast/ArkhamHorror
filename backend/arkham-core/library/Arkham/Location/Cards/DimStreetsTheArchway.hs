@@ -67,6 +67,6 @@ instance RunMessage DimStreetsTheArchway where
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
-        push $ HealHorror (InvestigatorTarget iid) n
+        push $ HealHorror (InvestigatorTarget iid) (toSource attrs) n
         pure l
     _ -> DimStreetsTheArchway <$> runMessage msg attrs

@@ -32,7 +32,7 @@ instance RunMessage EmergencyAid where
       e <$ pushAll
         (chooseOne
             iid
-            [ TargetLabel target [HealDamage target 2]
+            [ TargetLabel target [HealDamage target (toSource attrs) 2]
             | target <- investigatorTargets <> allyTargets
             ]
         : [Discard (toTarget attrs)]

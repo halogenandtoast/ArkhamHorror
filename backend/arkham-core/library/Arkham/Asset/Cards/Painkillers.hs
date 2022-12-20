@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Target
 
 newtype Painkillers = Painkillers AssetAttrs
@@ -38,6 +38,7 @@ instance HasAbilities Painkillers where
 
 instance RunMessage Painkillers where
   runMessage msg a@(Painkillers attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (HealDamage (InvestigatorTarget iid) 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push (HealDamage (InvestigatorTarget iid) (toSource attrs) 1)
+      pure a
     _ -> Painkillers <$> runMessage msg attrs

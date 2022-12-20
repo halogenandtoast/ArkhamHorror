@@ -40,7 +40,7 @@ instance RunMessage LadyEsprit where
         iid
         [ ComponentLabel
           (InvestigatorComponent iid DamageToken)
-          [HealDamage (InvestigatorTarget iid) 2]
+          [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
         , ComponentLabel
           (InvestigatorComponent iid ResourceToken)
           [TakeResources iid 2 False]

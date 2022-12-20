@@ -57,7 +57,7 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
       pushAll
-        $ [ HealHorror target 3 | target <- targets ]
+        $ [ HealHorror target (toSource attrs) 3 | target <- targets ]
         <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa]
       pure l
     _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs

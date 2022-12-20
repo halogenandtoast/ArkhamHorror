@@ -43,7 +43,7 @@ instance RunMessage StudentUnion where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")
     UseCardAbility iid source 2 _ _ | isSource attrs source -> l <$ pushAll
-      [ HealDamage (InvestigatorTarget iid) 1
-      , HealHorror (InvestigatorTarget iid) 1
+      [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+      , HealHorror (InvestigatorTarget iid) (toSource attrs) 1
       ]
     _ -> StudentUnion <$> runMessage msg attrs

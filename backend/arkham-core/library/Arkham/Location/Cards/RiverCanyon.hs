@@ -42,6 +42,6 @@ instance RunMessage RiverCanyon where
   runMessage msg l@(RiverCanyon attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasCanteen <- getHasSupply iid Canteen
-      push $ HealDamage (InvestigatorTarget iid) (if hasCanteen then 3 else 1)
+      push $ HealDamage (InvestigatorTarget iid) (toSource attrs) (if hasCanteen then 3 else 1)
       pure l
     _ -> RiverCanyon <$> runMessage msg attrs

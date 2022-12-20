@@ -49,7 +49,7 @@ instance RunMessage MedicalTexts where
       MedicalTexts <$> runMessage msg attrs
     PassedSkillTest _ _ source (SkillTestInitiatorTarget target@(InvestigatorTarget _)) _ _
       | isSource attrs source
-      -> a <$ push (HealDamage target 1)
+      -> a <$ push (HealDamage target (toSource attrs) 1)
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
       | isSource attrs source
       -> a <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)

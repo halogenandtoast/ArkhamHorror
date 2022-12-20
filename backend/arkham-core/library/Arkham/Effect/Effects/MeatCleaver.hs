@@ -20,6 +20,6 @@ instance RunMessage MeatCleaver where
   runMessage msg e@(MeatCleaver attrs) = case msg of
     EnemyDefeated _ _ source _ | effectSource attrs == source ->
       e <$ pushAll
-        [HealHorror (effectTarget attrs) 1, DisableEffect $ toId attrs]
+        [HealHorror (effectTarget attrs) (effectSource attrs) 1, DisableEffect $ toId attrs]
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> MeatCleaver <$> runMessage msg attrs

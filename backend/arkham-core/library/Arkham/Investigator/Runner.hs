@@ -24,6 +24,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.CommitRestriction
 import Arkham.Cost
+import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
@@ -1423,34 +1424,40 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
       & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
-  HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
+  HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+    afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source amount)]
+    push afterWindow
     pure $ a & healthDamageL %~ max 0 . subtract amount
-  HealHorrorWithAdditional (InvestigatorTarget iid) amount
+  HealHorrorWithAdditional (InvestigatorTarget iid) source amount
     | iid == investigatorId -> do
     -- exists to have no callbacks
       cannotHealHorror <- hasModifier a CannotHealHorror
-      pure $ if cannotHealHorror
-        then a
-        else
-          a
-          & sanityDamageL
-          %~ max 0
-          . subtract amount
-          & horrorHealedL
-          .~ (min amount investigatorSanityDamage)
-  AdditionalHealHorror (InvestigatorTarget iid) additional
+      if cannotHealHorror
+        then pure a
+        else do
+          afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source amount)]
+          push afterWindow
+          pure $ a
+            & (sanityDamageL %~ max 0 . subtract amount)
+            & (horrorHealedL .~ (min amount investigatorSanityDamage))
+  AdditionalHealHorror (InvestigatorTarget iid) source additional
     | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
       cannotHealHorror <- hasModifier a CannotHealHorror
-      pure $ if cannotHealHorror
-        then a & horrorHealedL .~ 0
-        else
-          a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
-  HealHorror (InvestigatorTarget iid) amount | iid == investigatorId -> do
+      if cannotHealHorror
+        then pure $ a & horrorHealedL .~ 0
+        else do
+          afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source additional)]
+          push afterWindow
+          pure $ a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
+  HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
-    pure $ if cannotHealHorror
-      then a
-      else a & sanityDamageL %~ max 0 . subtract amount
+    if cannotHealHorror
+      then pure a
+      else do
+        afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source amount)]
+        push afterWindow
+        pure $ a & sanityDamageL %~ max 0 . subtract amount
   MovedHorror _ (InvestigatorTarget iid) amount | iid == investigatorId -> do
     pure $ a & sanityDamageL %~ max 0 . subtract amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do

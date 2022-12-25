@@ -1428,15 +1428,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source amount)]
     push afterWindow
     pure $ a & healthDamageL %~ max 0 . subtract amount
-  HealHorrorWithAdditional (InvestigatorTarget iid) source amount
+  HealHorrorWithAdditional (InvestigatorTarget iid) _ amount
     | iid == investigatorId -> do
-    -- exists to have no callbacks
+      -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
       cannotHealHorror <- hasModifier a CannotHealHorror
       if cannotHealHorror
         then pure a
         else do
-          afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source amount)]
-          push afterWindow
           pure $ a
             & (sanityDamageL %~ max 0 . subtract amount)
             & (horrorHealedL .~ (min amount investigatorSanityDamage))
@@ -1447,7 +1445,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       if cannotHealHorror
         then pure $ a & horrorHealedL .~ 0
         else do
-          afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source additional)]
+          afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source (investigatorHorrorHealed + additional))]
           push afterWindow
           pure $ a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
@@ -1459,6 +1457,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         push afterWindow
         pure $ a & sanityDamageL %~ max 0 . subtract amount
   MovedHorror _ (InvestigatorTarget iid) amount | iid == investigatorId -> do
+    pure $ a & sanityDamageL %~ max 0 . subtract amount
+  HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+    -- USE ONLY WHEN NO CALLBACKS
     pure $ a & sanityDamageL %~ max 0 . subtract amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- getModifiedHealth a

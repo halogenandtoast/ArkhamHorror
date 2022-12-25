@@ -6,6 +6,7 @@ module Arkham.Location.Cards.DepthsOfDemheTheHeightOfTheDepths
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Damage
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
@@ -22,8 +23,7 @@ newtype DepthsOfDemheTheHeightOfTheDepths = DepthsOfDemheTheHeightOfTheDepths Lo
 
 instance HasModifiersFor DepthsOfDemheTheHeightOfTheDepths where
   getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheTheHeightOfTheDepths a)
-    | iid `on` a
-    = pure $ toModifiers a [CannotPlay FastCard]
+    | iid `on` a = pure $ toModifiers a [CannotPlay FastCard]
   getModifiersFor _ _ = pure []
 
 depthsOfDemheTheHeightOfTheDepths
@@ -41,7 +41,8 @@ instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
       readStory iid (toId attrs) Story.theHeightOfTheDepths
       pure . DepthsOfDemheTheHeightOfTheDepths $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.theHeightOfTheDepths -> do
-      targets <- map InvestigatorTarget <$> getInvestigatorIds
+      targets <- selectListMap InvestigatorTarget
+        $ HealableInvestigator HorrorType Anyone
       setAsideDepthsOfDemhe <- getSetAsideCardsMatching
         $ CardWithTitle "Depths of Demhe"
       otherDepthsOfDemhe <- case setAsideDepthsOfDemhe of

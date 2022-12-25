@@ -424,6 +424,8 @@ allAssets = mapFrom
   -- The Circle Undone
   --- signature [tcu]
   , SomeAssetCard hypnoticTherapy
+  --- seeker [tcu]
+  , SomeAssetCard fingerprintKit
   --- survivor [tcu]
   , SomeAssetCard trackShoes
   -- The Secret Name

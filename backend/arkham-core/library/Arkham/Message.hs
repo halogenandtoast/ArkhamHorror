@@ -370,6 +370,7 @@ data Message
   | MovedHorror Source Target Int
   | HealHorrorWithAdditional Target Source Int
   | AdditionalHealHorror Target Source Int
+  | HealHorrorDirectly Target Source Int
   | HuntersMove
   | HunterMove EnemyId
   | InDiscard InvestigatorId Message

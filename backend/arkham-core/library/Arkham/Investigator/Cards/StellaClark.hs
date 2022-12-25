@@ -53,8 +53,8 @@ instance RunMessage StellaClark where
       i <$ push (GainActions iid source 1)
     When (RevealToken _ iid token)
       | iid == toId attrs && tokenFace token == ElderSign -> do
-        i <$ push
-          (chooseOne
+        push
+          $ chooseOne
             iid
             [ Label "Resolve as Elder Sign" []
             , Label
@@ -64,5 +64,5 @@ instance RunMessage StellaClark where
               , HealHorror (toTarget attrs) (toSource attrs) 1
               ]
             ]
-          )
+        pure i
     _ -> StellaClark <$> runMessage msg attrs

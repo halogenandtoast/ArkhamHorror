@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
@@ -27,7 +28,7 @@ instance HasAbilities LiquidCourage where
           x
           1
           (ControlsThis <> InvestigatorExists
-            (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+            (HealableInvestigator HorrorType $ InvestigatorAt YourLocation)
           )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
@@ -36,7 +37,7 @@ instance HasAbilities LiquidCourage where
 instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iids <- selectList $ colocatedWith iid
+      iids <- selectList $ HealableInvestigator HorrorType $ colocatedWith iid
       when (notNull iids) $ push $ chooseOrRunOne
         iid
         [ targetLabel

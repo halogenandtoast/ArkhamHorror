@@ -274,6 +274,9 @@ allTreacheries = mapFrom
   , SomeTreacheryCard betweenWorlds
   , SomeTreacheryCard wrackedByTime
   , SomeTreacheryCard creepingDarkness
+  -- The Circle Undone
+  -- signature
+  , SomeTreacheryCard rationalThought
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

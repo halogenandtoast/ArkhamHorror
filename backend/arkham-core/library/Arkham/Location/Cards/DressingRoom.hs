@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -30,7 +31,7 @@ instance HasAbilities DressingRoom where
     [ restrictedAbility
         attrs
         1
-        (Here <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
+        (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
       $ ActionAbility Nothing
       $ ActionCost 3
     | locationRevealed attrs

@@ -1161,7 +1161,9 @@ passesCriteria iid source windows' = \case
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
   Criteria.AgendaExists matcher -> selectAny matcher
-  Criteria.AssetExists matcher -> selectAny matcher
+  Criteria.AssetExists matcher -> do
+    mlid <- field InvestigatorLocation iid
+    selectAny (Matcher.resolveAssetMatcher iid mlid matcher)
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
@@ -2011,11 +2013,20 @@ matchWho
   -> m Bool
 matchWho iid who Matcher.You = pure $ iid == who
 matchWho iid who Matcher.NotYou = pure $ iid /= who
+matchWho _ _ Matcher.Anyone = pure True
 matchWho iid who (Matcher.InvestigatorAt matcher) = do
   mlid <- field InvestigatorLocation iid
   member who <$> select
     (Matcher.InvestigatorAt $ Matcher.replaceYourLocation iid mlid matcher)
-matchWho _ who matcher = member who <$> select matcher
+matchWho iid who matcher = member who <$> (select =<< replaceMatchWhoLocations iid matcher)
+  where
+    replaceMatchWhoLocations iid' = \case
+      Matcher.InvestigatorAt matcher' -> do
+        mlid <- field InvestigatorLocation iid'
+        pure $ Matcher.InvestigatorAt $ Matcher.replaceYourLocation iid mlid matcher'
+      Matcher.HealableInvestigator damageType inner -> do
+        Matcher.HealableInvestigator damageType <$> replaceMatchWhoLocations iid' inner
+      other -> pure other
 
 gameValueMatches
   :: (Monad m, HasGame m) => Int -> Matcher.ValueMatcher -> m Bool

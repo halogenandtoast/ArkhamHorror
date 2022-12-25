@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
@@ -31,7 +32,7 @@ instance HasAbilities GrimmsFairyTales where
         $ ReactionAbility
             (SkillTestResult
                 Timing.After
-                (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+                (HealableInvestigator HorrorType (InvestigatorAt YourLocation))
                 AnySkillTest
             $ FailureResult
             $ AtLeast

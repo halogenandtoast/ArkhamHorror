@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher
 import Arkham.Target
 
@@ -35,7 +36,10 @@ instance HasAbilities ClarityOfMind where
 instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <- selectListMap InvestigatorTarget (InvestigatorAt YourLocation)
+      targets <-
+        selectListMap InvestigatorTarget
+        $ HealableInvestigator HorrorType
+        $ colocatedWith iid
       push $ chooseOrRunOne
         iid
         [ TargetLabel target [HealHorror target (toSource attrs) 1]

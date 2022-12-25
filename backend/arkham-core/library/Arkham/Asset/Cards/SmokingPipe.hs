@@ -10,7 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Damage
+import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Target
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
@@ -25,7 +26,9 @@ instance HasAbilities SmokingPipe where
     [ restrictedAbility
         a
         1
-        (ControlsThis <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
+        (ControlsThis
+        <> InvestigatorExists (HealableInvestigator HorrorType You)
+        )
         (FastAbility
           (Costs
             [ UseCost (AssetWithId $ toId a) Supply 1

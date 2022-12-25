@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher
 import Arkham.Target
 
@@ -28,14 +29,12 @@ instance HasAbilities FirstAid where
     [ restrictedAbility
           x
           1
-          (ControlsThis <> AnyCriterion
-            [ InvestigatorExists (You <> InvestigatorCanHealHorror)
-              <> InvestigatorExists
-                   (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-            , InvestigatorExists (You <> InvestigatorCanHealDamage)
-              <> InvestigatorExists
-                   (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
-            ]
+          (ControlsThis <> InvestigatorExists
+            (AnyInvestigator
+              [ HealableInvestigator HorrorType $ InvestigatorAt YourLocation
+              , HealableInvestigator DamageType $ InvestigatorAt YourLocation
+              ]
+            )
           )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
@@ -51,14 +50,14 @@ instance RunMessage FirstAid where
       horrorTargets <- if canHealHorror
         then
           selectListMap InvestigatorTarget
+          $ HealableInvestigator HorrorType
           $ colocatedWith iid
-          <> InvestigatorWithAnyHorror
         else pure []
       damageTargets <- if canHealDamage
         then
           selectListMap InvestigatorTarget
+          $ HealableInvestigator DamageType
           $ colocatedWith iid
-          <> InvestigatorWithAnyDamage
         else pure []
       let
         targets = nub $ horrorTargets <> damageTargets

@@ -101,6 +101,7 @@ data ModifierType
   | CannotBeAttackedBy EnemyMatcher
   | CannotGainResources
   | CannotHealHorror
+  | CannotHealHorrorOnOtherCards Target
   | CannotExplore
   | CannotInvestigate
   | CannotInvestigateLocation LocationId
@@ -155,6 +156,7 @@ data ModifierType
   | IgnoreHandSizeReduction
   | HandSizeCardCount Int
   | HealthModifier Int
+  | HealHorrorOnThisAsIfInvestigator InvestigatorId
   | HorrorDealt Int
   | HunterConnectedTo LocationId
   | CanRetaliateWhileExhausted

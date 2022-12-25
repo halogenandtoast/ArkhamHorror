@@ -9,10 +9,12 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( overgrownCairns )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 
@@ -27,7 +29,10 @@ instance HasAbilities OvergrownCairns where
   getAbilities (OvergrownCairns attrs) =
     withBaseAbilities attrs
       $ [ limitedAbility (PlayerLimit PerGame 1)
-          $ restrictedAbility attrs 1 Here
+          $ restrictedAbility
+              attrs
+              1
+              (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
           $ ActionAbility Nothing
           $ Costs [ActionCost 1, ResourceCost 2]
         | locationRevealed attrs

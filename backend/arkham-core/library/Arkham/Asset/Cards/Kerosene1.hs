@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 
@@ -30,8 +31,10 @@ instance HasAbilities Kerosene1 where
                (LocationOfThis <> LocationWithDefeatedEnemyThisRound)
           <> AnyCriterion
                [ InvestigatorExists
-                 (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-               , AssetExists (AssetAt YourLocation <> AssetWithHorror)
+                 (HealableInvestigator HorrorType
+                 $ InvestigatorAt YourLocation
+                 )
+               , AssetExists (HealableAsset HorrorType $ AssetAt YourLocation)
                ]
           )
         $ ActionAbility Nothing
@@ -74,11 +77,9 @@ instance RunMessage Kerosene1 where
 
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
       investigators <-
-        selectTargets $ colocatedWith iid <> InvestigatorWithAnyHorror
-      assets <-
-        selectTargets
-        $ AssetAt (locationWithInvestigator iid)
-        <> AssetWithHorror
+        selectTargets $ HealableInvestigator HorrorType $ colocatedWith iid
+      assets <- selectTargets $ HealableAsset HorrorType $ AssetAt
+        (locationWithInvestigator iid)
       push $ chooseOne
         iid
         [ TargetLabel target [HealHorror target (toSource attrs) 1]

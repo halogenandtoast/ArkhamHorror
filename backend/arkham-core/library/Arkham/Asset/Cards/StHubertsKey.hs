@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( InvestigatorDefeated )
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.SkillType
@@ -38,7 +39,7 @@ instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (InvestigatorDefeated Timing.When AnySource ByHorror You)
+            (InvestigatorDefeated Timing.When AnySource ByHorror $ HealableInvestigator HorrorType You)
         $ DiscardCost
         $ toTarget a
     ]

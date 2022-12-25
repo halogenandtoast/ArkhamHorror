@@ -95,6 +95,9 @@ instance RunMessage AssetAttrs where
       afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source n)]
       push afterWindow
       pure $ a & horrorL %~ max 0 . subtract n
+    HealHorrorDirectly target _ amount | isTarget a target -> do
+      -- USE ONLY WHEN NO CALLBACKS
+      pure $ a & horrorL %~ max 0 . subtract amount
     When (InvestigatorResigned iid) -> do
       let
         shouldResignWith = case assetPlacement of

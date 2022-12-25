@@ -117,6 +117,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , paranoia
   , poisoned
   , psychosis
+  , rationalThought
   , rexsCurse
   , searchingForIzzie
   , selfDestructive
@@ -1183,6 +1184,11 @@ wrackedByTime = (treachery "04341" "Wracked by Time" ShatteredAeons 3)
 creepingDarkness :: CardDef
 creepingDarkness = (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
   { cdCardTraits = singleton Hex
+  }
+
+rationalThought :: CardDef
+rationalThought = (weakness "05008" "Rational Thought")
+  { cdCardTraits = singleton Flaw
   }
 
 theHarbinger :: CardDef

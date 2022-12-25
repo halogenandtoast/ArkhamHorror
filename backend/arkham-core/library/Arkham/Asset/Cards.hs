@@ -195,6 +195,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fence1
   , fieldwork
   , fineClothes
+  , fingerprintKit
   , finnsTrustyThirtyEight
   , fireAxe
   , fireExtinguisher1
@@ -2536,6 +2537,14 @@ hypnoticTherapy :: CardDef
 hypnoticTherapy = (asset "05007" "Hypnotic Therapy" 2 Neutral)
   { cdCardTraits = singleton Talent
   , cdSkills = [#willpower, #intellect, #wild]
+  }
+
+fingerprintKit :: CardDef
+fingerprintKit = (asset "05024" "Fingerprint Kit" 4 Seeker)
+  { cdCardTraits = setFromList [Item, Tool]
+  , cdSkills = [#intellect]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Supply 3
   }
 
 trackShoes :: CardDef

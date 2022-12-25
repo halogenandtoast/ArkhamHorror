@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -346,6 +346,7 @@ library
       Arkham.Asset.Cards.Fence1
       Arkham.Asset.Cards.Fieldwork
       Arkham.Asset.Cards.FineClothes
+      Arkham.Asset.Cards.FingerprintKit
       Arkham.Asset.Cards.FinnsTrustyThirtyEight
       Arkham.Asset.Cards.FireAxe
       Arkham.Asset.Cards.FireExtinguisher1
@@ -1757,6 +1758,7 @@ library
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.Psychosis
       Arkham.Treachery.Cards.PushedIntoTheBeyond
+      Arkham.Treachery.Cards.RationalThought
       Arkham.Treachery.Cards.RealmOfMadness
       Arkham.Treachery.Cards.RexsCurse
       Arkham.Treachery.Cards.RipplesOnTheSurface

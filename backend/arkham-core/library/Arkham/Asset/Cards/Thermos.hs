@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
@@ -30,7 +31,7 @@ instance HasAbilities Thermos where
           a
           1
           (ControlsThis <> InvestigatorExists
-            (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
+            (HealableInvestigator DamageType $ InvestigatorAt YourLocation)
           )
       $ ActionAbility Nothing
       $ ActionCost 1
@@ -41,7 +42,7 @@ instance HasAbilities Thermos where
           a
           2
           (ControlsThis <> InvestigatorExists
-            (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+            (HealableInvestigator HorrorType $ InvestigatorAt YourLocation)
           )
       $ ActionAbility Nothing
       $ ActionCost 1
@@ -53,8 +54,8 @@ instance RunMessage Thermos where
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
       targets <-
         selectListMap InvestigatorTarget
+        $ HealableInvestigator DamageType
         $ colocatedWith iid
-        <> InvestigatorWithAnyDamage
       push $ chooseOrRunOne
         iid
         [ TargetLabel
@@ -81,8 +82,8 @@ instance RunMessage Thermos where
     UseCardAbility iid (isSource attrs -> True) 2 windows' payment -> do
       targets <-
         selectListMap InvestigatorTarget
+        $ HealableInvestigator HorrorType
         $ colocatedWith iid
-        <> InvestigatorWithAnyHorror
       push $ chooseOrRunOne
         iid
         [ TargetLabel

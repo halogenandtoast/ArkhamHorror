@@ -84,8 +84,7 @@ pattern InvestigatorCanHealHorror <-
 
 -- Placeholder
 pattern InvestigatorCanHealDamage :: InvestigatorMatcher
-pattern InvestigatorCanHealDamage <-
-  InvestigatorWithoutModifier CannotHealHorror where
+pattern InvestigatorCanHealDamage <- Anyone where
   InvestigatorCanHealDamage = Anyone
 
 -- ** Asset Patterns **

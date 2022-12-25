@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( studentUnion )
 import Arkham.Location.Helpers
@@ -34,7 +35,18 @@ instance HasAbilities StudentUnion where
         $ RevealLocation Timing.After Anyone
         $ LocationWithId
         $ toId attrs
-        , restrictedAbility attrs 2 Here $ ActionAbility Nothing $ ActionCost 2
+        , restrictedAbility
+          attrs
+          2
+          (Here <> InvestigatorExists
+            (AnyInvestigator
+              [ HealableInvestigator HorrorType You
+              , HealableInvestigator DamageType You
+              ]
+            )
+          )
+        $ ActionAbility Nothing
+        $ ActionCost 2
         ]
       else []
 

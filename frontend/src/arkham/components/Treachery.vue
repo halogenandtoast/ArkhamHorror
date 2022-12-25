@@ -26,7 +26,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 
 function canInteract(c: Message): boolean {
   if (c.tag === "TargetLabel") {
-    return c.target.contents === id.value
+    return c.target.contents === id.value || `c${id.value}` === c.target.contents
   }
 
   return false
@@ -78,6 +78,11 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       @click="$emit('choose', ability)"
       />
     <div class="pool">
+      <PoolItem
+        v-if="treachery.horror && treachery.horror > 0"
+        type="horror"
+        :amount="treachery.horror"
+      />
       <PoolItem
         v-if="treachery.clues && treachery.clues > 0"
         type="clue"

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
@@ -50,7 +51,7 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
       readStory iid (toId attrs) Story.inhabitantOfCarcosa
       pure . RuinsOfCarcosaInhabitantOfCarcosa $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.inhabitantOfCarcosa -> do
-      targets <- map InvestigatorTarget <$> getInvestigatorIds
+      targets <- selectListMap InvestigatorTarget $ HealableInvestigator HorrorType Anyone
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching
         $ CardWithTitle "Ruins of Carcosa"
       otherRuinsOfCarcosa <- case setAsideRuinsOfCarcosa of

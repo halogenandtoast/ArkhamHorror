@@ -28,6 +28,7 @@ import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Cost qualified as Cost
+import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
@@ -53,6 +54,7 @@ import Arkham.Id
 import Arkham.Investigator ( becomeYithian, returnToBody )
 import Arkham.Investigator.Types
   ( Field (..), Investigator, InvestigatorAttrs (..) )
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.Types
@@ -141,6 +143,7 @@ import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
 import Data.UUID ( nil )
+import Data.UUID qualified as UUID
 import Safe ( headNote )
 import System.Environment
 import Text.Pretty.Simple
@@ -639,7 +642,36 @@ getInvestigatorsMatching matcher = do
   investigators' <- if includeEliminated matcher
     then pure investigators
     else filterM (fmap not . isEliminated . toId) investigators
-  filterM (go matcher) investigators'
+  results <- filterM (go matcher) investigators'
+  -- We now need to handle the odd iteraction for Rational Thought, which we will treat like an investigator
+  case matcher of
+    HealableInvestigator HorrorType _ -> do
+      -- first let's look for the modifier for the active investigator
+      let
+        isCannotHealHorrorOnOtherCardsModifiers = \case
+          CannotHealHorrorOnOtherCards _ -> True
+          _ -> False
+      you <- getActiveInvestigator
+      mModifier <- find isCannotHealHorrorOnOtherCardsModifiers <$> getModifiers (toTarget you)
+      case mModifier of
+        Nothing -> pure results
+        Just (CannotHealHorrorOnOtherCards target) -> case target of
+          TreacheryTarget tid -> do
+            let
+              asIfInvestigator = \case
+                HealHorrorOnThisAsIfInvestigator ii -> First (Just ii)
+                _ -> First Nothing
+            mAsIfInverstigator <- getFirst . foldMap asIfInvestigator <$> getModifiers target
+            case mAsIfInverstigator of
+              Just iid' ->
+                case find ((== iid') . toId) results of
+                  Just targetInvestigator -> pure [overAttrs (\a -> a { Investigator.investigatorId = InvestigatorId (CardCode $ UUID.toText $ unCardId $ unTreacheryId tid) }) targetInvestigator]
+                  _ -> pure []
+              _ -> pure []
+            -- we know rational thought is in effect
+          _ -> error "Only handled for Rational Thought"
+        Just _ -> error "Not possible"
+    _ -> pure results
  where
   includeEliminated Anyone = True
   includeEliminated TurnInvestigator = True
@@ -898,6 +930,16 @@ getInvestigatorsMatching matcher = do
                     (fmap (map CommittedSkillIcon) . iconsForCard . snd)
                     cards
           gameValueMatches skillTestCount valueMatcher
+    HealableInvestigator damageType matcher' -> \i -> do
+      you <- getActiveInvestigator
+      case damageType of
+        DamageType -> do
+          member (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
+        HorrorType -> do
+          canHealDamage <- notElem CannotHealHorror <$> getModifiers (toTarget you)
+          if canHealDamage
+             then member (toId i) <$> select (matcher' <> InvestigatorWithAnyHorror)
+             else pure False
 
 getAgendasMatching :: (Monad m, HasGame m) => AgendaMatcher -> m [Agenda]
 getAgendasMatching matcher = do
@@ -1557,6 +1599,20 @@ getAssetsMatching matcher = do
       flip filterM as
         $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher)
         . toId
+    HealableAsset damageType matcher' -> case damageType of
+      DamageType -> filterMatcher as (matcher' <> AssetWithDamage)
+      HorrorType ->  do
+        let
+          isCannotHealHorrorOnOtherCardsModifiers = \case
+            CannotHealHorrorOnOtherCards _ -> True
+            _ -> False
+        you <- getActiveInvestigator
+        mModifier <- find isCannotHealHorrorOnOtherCardsModifiers <$> getModifiers (toTarget you)
+        case mModifier of
+          Just (CannotHealHorrorOnOtherCards target) -> case target of
+            AssetTarget aid -> filterMatcher as (matcher' <> AssetWithHorror <> AssetWithId aid)
+            _-> pure []
+          _ -> filterMatcher as (matcher' <> AssetWithHorror)
 
 getEventsMatching :: (Monad m, HasGame m) => EventMatcher -> m [Event]
 getEventsMatching matcher = do

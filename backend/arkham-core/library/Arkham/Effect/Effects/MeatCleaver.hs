@@ -7,7 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Message
+import Arkham.Target
 
 newtype MeatCleaver = MeatCleaver EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -18,8 +20,16 @@ meatCleaver = MeatCleaver . uncurry4 (baseAttrs "05114")
 
 instance RunMessage MeatCleaver where
   runMessage msg e@(MeatCleaver attrs) = case msg of
-    EnemyDefeated _ _ source _ | effectSource attrs == source ->
-      e <$ pushAll
-        [HealHorror (effectTarget attrs) (effectSource attrs) 1, DisableEffect $ toId attrs]
+    EnemyDefeated _ _ source _ | effectSource attrs == source -> do
+      case effectTarget attrs of
+        InvestigatorTarget iid -> do
+          canHeal <- canHaveHorrorHealed iid
+          pushAll
+            $ [ HealHorror (effectTarget attrs) (effectSource attrs) 1
+              | canHeal
+              ]
+            <> [DisableEffect $ toId attrs]
+          pure e
+        _ -> error "Invalid target"
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> MeatCleaver <$> runMessage msg attrs

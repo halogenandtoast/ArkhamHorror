@@ -9,13 +9,12 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
@@ -53,7 +52,7 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
     ResolveStory iid story' | story' == Story.aMomentsRest -> do
       enemies <- selectList
         $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
-      hasHorror <- fieldP InvestigatorHorror (> 0) iid
+      canHeal <- canHaveHorrorHealed iid
       let
         handleEnemy enemy = targetLabel
           enemy
@@ -64,8 +63,10 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
               [chooseOne iid $ map handleEnemy enemies]
           | notNull enemies
           ]
-          <> [ Label "You heal 5 horror" [HealHorror (InvestigatorTarget iid) (toSource attrs) 5]
-             | hasHorror
+          <> [ Label
+                 "You heal 5 horror"
+                 [HealHorror (InvestigatorTarget iid) (toSource attrs) 5]
+             | canHeal
              ]
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching
         $ CardWithTitle "Ruins of Carcosa"

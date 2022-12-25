@@ -88,6 +88,7 @@ data InvestigatorMatcher
   | DeckIsEmpty
   | AliveInvestigator
   | IncludeEliminated InvestigatorMatcher
+  | HealableInvestigator Source DamageType InvestigatorMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -147,6 +148,7 @@ data AssetMatcher
   | AssetWithMatchingSkillTestIcon
   | UniqueAsset
   | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher CardMatcher AssetMatcher
+  | HealableAsset Source DamageType AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

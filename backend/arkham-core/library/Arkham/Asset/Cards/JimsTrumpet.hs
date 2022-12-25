@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Placement
@@ -31,9 +32,8 @@ instance HasAbilities JimsTrumpet where
         x
         1
         (ControlsThis <> InvestigatorExists
-          (AnyInvestigator
-              [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
-          <> InvestigatorWithAnyHorror
+          (HealableInvestigator HorrorType $ AnyInvestigator
+            [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
           )
         )
         (ReactionAbility
@@ -51,18 +51,17 @@ instance RunMessage JimsTrumpet where
             InvestigatorLocation
             (fromJustNote "must be at a location")
             controllerId
-          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
-            locationId
-          investigatorIds <- concat <$> for
-            (locationId : connectedLocationIds)
-            (selectList . InvestigatorAt . LocationWithId)
-          pairings <- for investigatorIds
-            $ \targetId -> (targetId, ) <$> field InvestigatorHorror targetId
-          let choices = map fst $ filter ((> 0) . snd) pairings
+          investigatorIds <-
+            selectList $ HealableInvestigator HorrorType $ AnyInvestigator
+              [ colocatedWith controllerId
+              , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
+              ]
           push $ chooseOne
             controllerId
-            [ targetLabel iid [HealHorror (InvestigatorTarget iid) (toSource attrs) 1]
-            | iid <- choices
+            [ targetLabel
+                iid
+                [HealHorror (InvestigatorTarget iid) (toSource attrs) 1]
+            | iid <- investigatorIds
             ]
           pure a
         _ -> error "Invalid call"

@@ -59,6 +59,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDoom :: Int
   , treacheryPlacement :: TreacheryPlacement
   , treacheryClues :: Int
+  , treacheryHorror :: Int
   , treacheryResources :: Int
   , treacheryCanBeCommitted :: Bool
   , treacheryDrawnBy :: InvestigatorId
@@ -89,6 +90,9 @@ placementL = lens treacheryPlacement $ \m x -> m { treacheryPlacement = x }
 
 cluesL :: Lens' TreacheryAttrs Int
 cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
+
+horrorL :: Lens' TreacheryAttrs Int
+horrorL = lens treacheryHorror $ \m x -> m { treacheryHorror = x }
 
 resourcesL :: Lens' TreacheryAttrs Int
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
@@ -205,6 +209,7 @@ treacheryWith f cardDef g = CardBuilder
     , treacheryDrawnBy = iid
     , treacheryDoom = 0
     , treacheryClues = 0
+    , treacheryHorror = 0
     , treacheryResources = 0
     , treacheryCanBeCommitted = False
     , treacheryDrawnFrom = Nothing

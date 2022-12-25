@@ -10,6 +10,7 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -33,7 +34,7 @@ instance HasAbilities DiningRoom where
     [ restrictedAbility
         attrs
         1
-        (Here <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
+        (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
       $ ActionAbility Nothing
       $ ActionCost 1
     | locationRevealed attrs

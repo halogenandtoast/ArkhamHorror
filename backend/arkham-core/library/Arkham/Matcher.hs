@@ -29,6 +29,8 @@ replaceYouMatcher iid (InvestigatorMatches matchers) =
   InvestigatorMatches $ map (replaceYouMatcher iid) matchers
 replaceYouMatcher iid (AnyInvestigator matchers) =
   AnyInvestigator $ map (replaceYouMatcher iid) matchers
+replaceYouMatcher iid (HealableInvestigator source damageType inner) =
+  HealableInvestigator source damageType $ replaceYouMatcher iid inner
 replaceYouMatcher _ m = m
 
 -- ** Prey Helpers **
@@ -79,7 +81,8 @@ locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
 
 locationWithDiscoverableCluesBy :: InvestigatorId -> LocationMatcher
-locationWithDiscoverableCluesBy = LocationWithDiscoverableCluesBy . InvestigatorWithId
+locationWithDiscoverableCluesBy =
+  LocationWithDiscoverableCluesBy . InvestigatorWithId
 {-# INLINE locationWithDiscoverableCluesBy #-}
 
 locationWithTreachery :: TreacheryId -> LocationMatcher
@@ -119,6 +122,31 @@ cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
 
 -- ** Replacements
+
+resolveAssetMatcher
+  :: InvestigatorId -> (Maybe LocationId) -> AssetMatcher -> AssetMatcher
+resolveAssetMatcher _ Nothing = id
+resolveAssetMatcher iid (Just lid) = go
+ where
+  go matcher = case matcher of
+    AssetAt locationMatcher ->
+      AssetAt (replaceYourLocation iid (Just lid) locationMatcher)
+    AssetAttachedToAsset assetMatcher -> AssetAttachedToAsset $ go assetMatcher
+    AssetControlledBy investigatorMatcher ->
+      AssetControlledBy $ replaceYouMatcher iid investigatorMatcher
+    AssetMatches as -> AssetMatches $ map go as
+    AssetOneOf as -> AssetOneOf $ map go as
+    NotAsset assetMatcher -> NotAsset (go assetMatcher)
+    AssetWithFewestClues assetMatcher -> AssetWithFewestClues (go assetMatcher)
+    ClosestAsset lid' assetMatcher -> ClosestAsset lid' (go assetMatcher)
+    AssetWithDifferentTitleFromAtLeastOneCardInHand investigatorMatcher cardMatcher assetMatcher
+      -> AssetWithDifferentTitleFromAtLeastOneCardInHand
+        (replaceYouMatcher iid investigatorMatcher)
+        cardMatcher
+        (go assetMatcher)
+    HealableAsset source damageType assetMatcher ->
+      HealableAsset source damageType (go assetMatcher)
+    other -> other
 
 replaceYourLocation
   :: InvestigatorId -> (Maybe LocationId) -> LocationMatcher -> LocationMatcher

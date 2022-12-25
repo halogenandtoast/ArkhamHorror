@@ -10,6 +10,7 @@ import Arkham.Agenda.Sequence ( AgendaSide (C) )
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -33,7 +34,7 @@ instance HasAbilities ChoeurGothique_293 where
       $ restrictedAbility
           a
           1
-          (Here <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
+          (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
       $ ActionAbility Nothing
       $ ActionCost 1
       <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide C) 1

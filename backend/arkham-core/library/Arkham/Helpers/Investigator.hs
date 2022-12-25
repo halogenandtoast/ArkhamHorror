@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Classes.Entity
 import Arkham.Classes.Query
+import Arkham.Damage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
@@ -378,3 +379,9 @@ isEliminated iid =
 
 getHandCount :: (Monad m, HasGame m) => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
+
+canHaveHorrorHealed :: (Monad m, HasGame m) => Source -> InvestigatorId -> m Bool
+canHaveHorrorHealed source = selectAny . HealableInvestigator source HorrorType . InvestigatorWithId
+
+canHaveDamageHealed :: (Monad m, HasGame m) => Source -> InvestigatorId -> m Bool
+canHaveDamageHealed source = selectAny . HealableInvestigator source HorrorType . InvestigatorWithId

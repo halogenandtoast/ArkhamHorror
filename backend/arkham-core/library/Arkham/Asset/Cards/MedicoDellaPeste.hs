@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
@@ -30,8 +31,10 @@ instance HasAbilities MedicoDellaPeste where
         a
         1
         (ControlsThis <> InvestigatorExists
-          (You <> AnyInvestigator
-            [InvestigatorWithAnyDamage, InvestigatorWithAnyHorror]
+          (AnyInvestigator
+            [ HealableInvestigator DamageType You
+            , HealableInvestigator HorrorType You
+            ]
           )
         )
       $ ReactionAbility
@@ -50,8 +53,10 @@ instance HasAbilities MedicoDellaPeste where
 instance RunMessage MedicoDellaPeste where
   runMessage msg a@(MedicoDellaPeste attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      hasDamage <- fieldP InvestigatorDamage (> 0) iid
-      hasHorror <- fieldP InvestigatorHorror (> 0) iid
+      hasDamage <-
+        selectAny $ HealableInvestigator DamageType $ InvestigatorWithId iid
+      hasHorror <-
+        selectAny $ HealableInvestigator HorrorType $ InvestigatorWithId iid
       push
         $ chooseOrRunOne iid
         $ [ Label

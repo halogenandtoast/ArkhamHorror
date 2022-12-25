@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -53,12 +54,10 @@ instance RunMessage AncientStoneMindsInHarmony4 where
     UseCardAbility iid (isSource attrs -> True) 1 _ (getAmount -> amount) -> do
       investigators <-
         selectListMap InvestigatorTarget
+        $ HealableInvestigator HorrorType
         $ colocatedWith iid
-        <> InvestigatorWithAnyHorror
-      assets <-
-        selectListMap AssetTarget
-        $ AssetAt (locationWithInvestigator iid)
-        <> AssetWithHorror
+      assets <- selectListMap AssetTarget $ HealableAsset HorrorType $ AssetAt
+        (locationWithInvestigator iid)
       push
         $ chooseOrRunOne iid
         $ [ TargetLabel target [HealHorror target (toSource attrs) amount]

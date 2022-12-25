@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Damage
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
@@ -67,6 +68,11 @@ instance RunMessage DimStreetsTheArchway where
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
-        push $ HealHorror (InvestigatorTarget iid) (toSource attrs) n
+        healable <- selectAny
+          $ HealableInvestigator HorrorType (InvestigatorWithId iid)
+        when healable $ push $ HealHorror
+          (InvestigatorTarget iid)
+          (toSource attrs)
+          n
         pure l
     _ -> DimStreetsTheArchway <$> runMessage msg attrs

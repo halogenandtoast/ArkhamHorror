@@ -18,6 +18,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -40,21 +41,27 @@ carolynFern = investigator
 
 instance HasAbilities CarolynFern where
   getAbilities (CarolynFern a) =
-    [ restrictedAbility a 1 Self $ ReactionAbility
-        (OrWindowMatcher
-          [ AssetHealed
-            Timing.After
-            HorrorType
-            (AllyAsset <> AssetControlledBy Anyone)
-            (SourceOwnedBy You)
-          , InvestigatorHealed
-            Timing.After
-            HorrorType
-            Anyone
-            (SourceOwnedBy You)
-          ]
-        )
-        Free
+    [ restrictedAbility
+          a
+          1
+          (Self <> Negate
+            (TreacheryExists $ treacheryIs Treacheries.rationalThought)
+          )
+        $ ReactionAbility
+            (OrWindowMatcher
+              [ AssetHealed
+                Timing.After
+                HorrorType
+                (AllyAsset <> AssetControlledBy Anyone)
+                (SourceOwnedBy You)
+              , InvestigatorHealed
+                Timing.After
+                HorrorType
+                Anyone
+                (SourceOwnedBy You)
+              ]
+            )
+            Free
     ]
 
 data HealedThing = HealedAsset AssetId | HealedInvestigator InvestigatorId
@@ -80,17 +87,18 @@ instance RunMessage CarolynFern where
           HealedInvestigator iid' -> pure iid'
           HealedAsset aid ->
             fieldMap AssetController (fromJustNote "must be controlled") aid
-        push $ TakeResources healedController 1 False
+        canGainResources <- selectNone $ treacheryIs Treacheries.rationalThought
+        when (healedController /= toId attrs || canGainResources) $ do
+          push $ TakeResources healedController 1 False
         pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       investigatorsWithHorror <-
         selectListMap InvestigatorTarget
+        $ HealableInvestigator HorrorType
         $ colocatedWith iid
-        <> InvestigatorWithAnyHorror
       assetsWithHorror <-
-        selectListMap AssetTarget
-        $ AssetAt (locationWithInvestigator iid)
-        <> AssetWithHorror
+        selectListMap AssetTarget $ HealableAsset HorrorType $ AssetAt
+          (locationWithInvestigator iid)
       push
         $ chooseOrRunOne iid
         $ Label "Do not heal anything" []

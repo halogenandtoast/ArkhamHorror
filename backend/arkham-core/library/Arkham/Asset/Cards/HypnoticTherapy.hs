@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
@@ -53,25 +54,25 @@ instance RunMessage HypnoticTherapy where
       pure a
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        targetsWithCardDraw <- do
-          targets <-
-            selectList
-            $ HealableInvestigator (toSource attrs) HorrorType
+        targetsWithCardDrawAndHeal <- do
+          iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1
             $ colocatedWith iid
-          forToSnd targets $ \i -> drawCards i (toSource attrs) 1
-        when (notNull targetsWithCardDraw) $ do
+          for iidsWithHeal $ \(i, healHorror) -> do
+            draw <- drawCards i (toSource attrs) 1
+            pure (i, draw, healHorror)
+        when (notNull targetsWithCardDrawAndHeal) $ do
           push $ chooseOrRunOne
             iid
             [ targetLabel
                 target
-                [ HealHorror (InvestigatorTarget target) (toSource attrs) 1
+                [ heal
                 , chooseOne
                   target
                   [ Label "Do Not Draw" []
                   , ComponentLabel (InvestigatorDeckComponent target) [drawing]
                   ]
                 ]
-            | (target, drawing) <- targetsWithCardDraw
+            | (target, drawing, heal) <- targetsWithCardDrawAndHeal
             ]
         pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws' _ -> do

@@ -35,10 +35,9 @@ instance HasAbilities ClarityOfMind where
 instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iids <- selectList $ colocatedWith iid
-      iidsWithHeal <- mapMaybeM
-        (\iid' -> (iid', ) <$$> getHealHorrorMessage attrs 1 iid')
-        iids
-      push $ chooseOrRunOne iid $ map (uncurry targetLabel . second pure) iidsWithHeal
+      iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
+      push $ chooseOrRunOne iid $ map
+        (uncurry targetLabel . second pure)
+        iidsWithHeal
       pure a
     _ -> ClarityOfMind <$> runMessage msg attrs

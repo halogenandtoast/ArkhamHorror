@@ -11,12 +11,12 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype DressingRoom = DressingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,7 +31,9 @@ instance HasAbilities DressingRoom where
     [ restrictedAbility
         attrs
         1
-        (Here <> InvestigatorExists (HealableInvestigator (toSource attrs) HorrorType You))
+        (Here <> InvestigatorExists
+          (HealableInvestigator (toSource attrs) HorrorType You)
+        )
       $ ActionAbility Nothing
       $ ActionCost 3
     | locationRevealed attrs
@@ -39,6 +41,8 @@ instance HasAbilities DressingRoom where
 
 instance RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (HealHorror (InvestigatorTarget iid) (toSource attrs) 3)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      mHealHorror <- getHealHorrorMessage attrs 3 iid
+      for_ mHealHorror push
+      pure l
     _ -> DressingRoom <$> runMessage msg attrs

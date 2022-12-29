@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -44,6 +45,8 @@ instance HasAbilities ChoeurGothique_293 where
 
 instance RunMessage ChoeurGothique_293 where
   runMessage msg l@(ChoeurGothique_293 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (HealHorror (InvestigatorTarget iid) (toSource attrs) 2)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      mHealHorror <- getHealHorrorMessage attrs 2 iid
+      for_ mHealHorror push
+      pure l
     _ -> ChoeurGothique_293 <$> runMessage msg attrs

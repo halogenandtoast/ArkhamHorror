@@ -92,9 +92,7 @@ instance RunMessage CarolynFern where
           push $ TakeResources healedController 1 False
         pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      investigatorsWithHorror <-
-        selectListMap InvestigatorTarget
-        $ HealableInvestigator (toSource attrs) HorrorType
+      investigatorsWithHealHorror <- getInvestigatorsWithHealHorror attrs 1
         $ colocatedWith iid
       assetsWithHorror <-
         selectListMap AssetTarget
@@ -104,7 +102,8 @@ instance RunMessage CarolynFern where
         $ chooseOrRunOne iid
         $ Label "Do not heal anything" []
         : [ TargetLabel target [HealHorror target (toSource attrs) 1]
-          | target <- investigatorsWithHorror <> assetsWithHorror
+          | target <- assetsWithHorror
           ]
+        <> map (uncurry targetLabel . second pure) investigatorsWithHealHorror
       pure i
     _ -> CarolynFern <$> runMessage msg attrs

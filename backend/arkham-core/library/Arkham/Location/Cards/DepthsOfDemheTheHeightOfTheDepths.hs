@@ -6,9 +6,9 @@ module Arkham.Location.Cards.DepthsOfDemheTheHeightOfTheDepths
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Damage
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
@@ -41,15 +41,15 @@ instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
       readStory iid (toId attrs) Story.theHeightOfTheDepths
       pure . DepthsOfDemheTheHeightOfTheDepths $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.theHeightOfTheDepths -> do
-      targets <- selectListMap InvestigatorTarget
-        $ HealableInvestigator (toSource attrs) HorrorType Anyone
+      healHorrorMessages <-
+        map snd <$> getInvestigatorsWithHealHorror attrs 5 Anyone
       setAsideDepthsOfDemhe <- getSetAsideCardsMatching
         $ CardWithTitle "Depths of Demhe"
       otherDepthsOfDemhe <- case setAsideDepthsOfDemhe of
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
       pushAll
-        $ [ HealHorror target (toSource attrs) 5 | target <- targets ]
+        $ healHorrorMessages
         <> [ReplaceLocation (toId attrs) otherDepthsOfDemhe]
       pure l
     _ -> DepthsOfDemheTheHeightOfTheDepths <$> runMessage msg attrs

@@ -10,6 +10,7 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
@@ -42,8 +43,7 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       readStory iid (toId attrs) Story.starsOfAldebaran
       pure . BleakPlainsStarsOfAldebaran $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.starsOfAldebaran -> do
-      iids <- selectList
-        $ HealableInvestigator (toSource attrs) HorrorType Anyone
+      healMessages <- map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
       enemies <- selectList $ NotEnemy $ EnemyWithTitle "Hastur"
       let
         damageEnemy enemy = targetLabel
@@ -54,10 +54,8 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       otherBleakPlain <- case setAsideBleakPlains of
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
-      pushAll
-        $ [ HealHorror (InvestigatorTarget iid') (toSource attrs) 3
-          | iid' <- iids
-          ]
+      pushAll $
+        healMessages
         <> [ chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies ]
         <> [ReplaceLocation (toId attrs) otherBleakPlain]
       pure l

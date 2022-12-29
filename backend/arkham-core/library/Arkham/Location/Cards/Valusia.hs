@@ -11,6 +11,7 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( DiscoverClues )
@@ -43,10 +44,7 @@ instance HasAbilities Valusia where
 instance RunMessage Valusia where
   runMessage msg (Valusia attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      canHealHorror <-
-        selectAny
-        $ HealableInvestigator (toSource attrs) HorrorType
-        $ InvestigatorWithId iid
+      mHealHorror <- getHealHorrorMessage attrs 2 iid
       canHealDamage <-
         selectAny
         $ HealableInvestigator (toSource attrs) DamageType
@@ -55,8 +53,6 @@ instance RunMessage Valusia where
         $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 2
           | canHealDamage
           ]
-        <> [ HealHorror (InvestigatorTarget iid) (toSource attrs) 2
-           | canHealHorror
-           ]
+        <> maybeToList mHealHorror
       pure $ Valusia $ attrs & shroudL .~ 0
     _ -> Valusia <$> runMessage msg attrs

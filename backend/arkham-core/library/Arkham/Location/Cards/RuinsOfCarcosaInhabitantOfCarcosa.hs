@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -17,7 +17,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaInhabitantOfCarcosa = RuinsOfCarcosaInhabitantOfCarcosa LocationAttrs
@@ -51,15 +50,15 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
       readStory iid (toId attrs) Story.inhabitantOfCarcosa
       pure . RuinsOfCarcosaInhabitantOfCarcosa $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.inhabitantOfCarcosa -> do
-      targets <- selectListMap InvestigatorTarget
-        $ HealableInvestigator (toSource attrs) HorrorType Anyone
+      healHorrorMessages <-
+        map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching
         $ CardWithTitle "Ruins of Carcosa"
       otherRuinsOfCarcosa <- case setAsideRuinsOfCarcosa of
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
       pushAll
-        $ [ HealHorror target (toSource attrs) 3 | target <- targets ]
+        $ healHorrorMessages
         <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa]
       pure l
     _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs

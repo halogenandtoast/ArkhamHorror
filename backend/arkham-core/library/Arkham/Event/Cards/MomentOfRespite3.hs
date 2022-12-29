@@ -5,11 +5,11 @@ module Arkham.Event.Cards.MomentOfRespite3
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Message
-import Arkham.Target
 
 newtype MomentOfRespite3 = MomentOfRespite3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,10 +22,7 @@ instance RunMessage MomentOfRespite3 where
   runMessage msg e@(MomentOfRespite3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       drawing <- drawCards iid attrs 1
-      pushAll
-        [ HealHorror (InvestigatorTarget iid) (toSource attrs) 3
-        , drawing
-        , Discard (toTarget attrs)
-        ]
+      mHealHorror <- getHealHorrorMessage attrs 3 iid
+      pushAll $ maybeToList mHealHorror <> [drawing, Discard (toTarget attrs)]
       pure e
     _ -> MomentOfRespite3 <$> runMessage msg attrs

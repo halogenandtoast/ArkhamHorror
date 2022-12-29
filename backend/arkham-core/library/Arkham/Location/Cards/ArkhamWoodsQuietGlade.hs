@@ -11,6 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards ( arkhamWoodsQuietGlade )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -50,10 +51,7 @@ instance RunMessage ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@LocationAttrs {..}) =
     case msg of
       UseCardAbility iid (LocationSource lid) 1 _ _ | lid == locationId -> do
-        canHealHorror <-
-          selectAny
-          $ HealableInvestigator (toSource attrs) HorrorType
-          $ InvestigatorWithId iid
+        mHealHorror <- getHealHorrorMessage attrs 1 iid
         canHealDamage <-
           selectAny
           $ HealableInvestigator (toSource attrs) DamageType
@@ -62,8 +60,6 @@ instance RunMessage ArkhamWoodsQuietGlade where
           $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
             | canHealDamage
             ]
-          <> [ HealHorror (InvestigatorTarget iid) (toSource attrs) 1
-             | canHealHorror
-             ]
+          <> maybeToList mHealHorror
         pure l
       _ -> ArkhamWoodsQuietGlade <$> runMessage msg attrs

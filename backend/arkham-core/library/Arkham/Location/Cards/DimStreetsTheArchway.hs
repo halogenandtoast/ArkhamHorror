@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Damage
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
@@ -68,13 +68,7 @@ instance RunMessage DimStreetsTheArchway where
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
-        healable <- selectAny $ HealableInvestigator
-          (toSource attrs)
-          HorrorType
-          (InvestigatorWithId iid)
-        when healable $ push $ HealHorror
-          (InvestigatorTarget iid)
-          (toSource attrs)
-          n
+        mHealHorror <- getHealHorrorMessage attrs n iid
+        for_ mHealHorror push
         pure l
     _ -> DimStreetsTheArchway <$> runMessage msg attrs

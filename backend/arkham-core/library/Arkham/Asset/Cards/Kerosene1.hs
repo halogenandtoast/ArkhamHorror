@@ -79,14 +79,8 @@ instance RunMessage Kerosene1 where
         pure a
 
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
-      investigators <- selectList $ colocatedWith iid
-        -- selectTargets
-        -- $ HealableInvestigator (toSource attrs) HorrorType
-        -- $ colocatedWith iid
-
-      investigatorsWithHeal <- mapMaybeM
-        (traverseToSndM (getHealHorrorMessage attrs 1))
-        investigators
+      investigatorsWithHeal <- getInvestigatorsWithHealHorror attrs 1
+        $ colocatedWith iid
 
       assets <-
         selectTargets $ HealableAsset (toSource attrs) HorrorType $ AssetAt

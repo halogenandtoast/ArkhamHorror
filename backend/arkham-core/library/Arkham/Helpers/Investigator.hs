@@ -420,11 +420,11 @@ canHaveHorrorHealed a iid =  do
 canHaveDamageHealed :: (HasGame m, SourceEntity a) => a -> InvestigatorId -> m Bool
 canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
 
-getInvestigatorsWithHeal
+getInvestigatorsWithHealHorror
   :: (HasGame m, SourceEntity a)
   => a
   -> Int
   -> InvestigatorMatcher
   -> m [(InvestigatorId, Message)]
-getInvestigatorsWithHeal a n =
+getInvestigatorsWithHealHorror a n =
   selectList >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))

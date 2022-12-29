@@ -5,9 +5,11 @@ module Arkham.Investigator.Cards.CalvinWright
 
 import Arkham.Prelude
 
-import Arkham.Helpers.Modifiers
+import Arkham.Game.Helpers
+import Arkham.Helpers.Investigator
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -30,17 +32,16 @@ calvinWright = investigator
     }
 
 instance HasModifiersFor CalvinWright where
-  getModifiersFor (InvestigatorTarget iid) (CalvinWright a) | iid == toId a =
-    do
-      let
-        horror = investigatorSanityDamage a
-        damage = investigatorHealthDamage a
-      pure
-        $ toModifiers a
-        $ [ SkillModifier SkillWillpower horror | horror > 0 ]
-        <> [ SkillModifier SkillIntellect horror | horror > 0 ]
-        <> [ SkillModifier SkillCombat damage | damage > 0 ]
-        <> [ SkillModifier SkillAgility damage | damage > 0 ]
+  getModifiersFor (InvestigatorTarget iid) (CalvinWright a) | iid == toId a = do
+    let
+      horror = investigatorSanityDamage a
+      damage = investigatorHealthDamage a
+    pure
+      $ toModifiers a
+      $ [ SkillModifier SkillWillpower horror | horror > 0 ]
+      <> [ SkillModifier SkillIntellect horror | horror > 0 ]
+      <> [ SkillModifier SkillCombat damage | damage > 0 ]
+      <> [ SkillModifier SkillAgility damage | damage > 0 ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CalvinWright where
@@ -54,13 +55,17 @@ instance HasTokenValue CalvinWright where
 instance RunMessage CalvinWright where
   runMessage msg i@(CalvinWright attrs) = case msg of
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
+      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      canHealDamage <- canHaveDamageHealed attrs iid
       push
         $ chooseOne iid
-        $ [ Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1]
-          | investigatorHealthDamage attrs > 0
+        $ [ Label
+              "Heal 1 Damage"
+              [HealDamage (toTarget attrs) (toSource attrs) 1]
+          | canHealDamage
           ]
-        <> [ Label "Heal 1 Horror" [HealHorror (toTarget attrs) (toSource attrs) 1]
-           | investigatorHealthDamage attrs > 0
+        <> [ Label "Heal 1 Horror" [healHorror]
+           | healHorror <- maybeToList mHealHorror
            ]
         <> [ Label
              "Take 1 Direct Damage"

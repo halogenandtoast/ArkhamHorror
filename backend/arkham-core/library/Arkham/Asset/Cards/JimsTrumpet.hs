@@ -11,11 +11,11 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 
@@ -51,19 +51,16 @@ instance RunMessage JimsTrumpet where
             InvestigatorLocation
             (fromJustNote "must be at a location")
             controllerId
-          investigatorIds <-
-            selectList
-            $ HealableInvestigator (toSource attrs) HorrorType
-            $ AnyInvestigator
-                [ colocatedWith controllerId
-                , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
-                ]
+          investigatorIdsWithHeal <-
+            getInvestigatorsWithHealHorror attrs 1 $ AnyInvestigator
+              [ colocatedWith controllerId
+              , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
+              ]
+
           push $ chooseOne
             controllerId
-            [ targetLabel
-                iid
-                [HealHorror (InvestigatorTarget iid) (toSource attrs) 1]
-            | iid <- investigatorIds
+            [ targetLabel iid [healHorror]
+            | (iid, healHorror) <- investigatorIdsWithHeal
             ]
           pure a
         _ -> error "Invalid call"

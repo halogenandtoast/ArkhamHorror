@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -44,10 +45,12 @@ instance HasAbilities DiningRoom where
 
 instance RunMessage DiningRoom where
   runMessage msg l@(DiningRoom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ pushAll
-      [ HealHorror (InvestigatorTarget iid) (toSource attrs) 1
-      , RequestTokens source (Just iid) (Reveal 1) SetAside
-      ]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      pushAll
+        $ maybeToList mHealHorror
+        <> [RequestTokens source (Just iid) (Reveal 1) SetAside]
+      pure l
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces tokens
       let

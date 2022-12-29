@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -25,7 +26,9 @@ instance RunMessage CheatDeath5 where
       enemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
       treacheries <- selectList $ TreacheryInThreatAreaOf $ InvestigatorWithId
         iid
-      locations <- selectList $ RevealedLocation <> LocationWithoutEnemies <> NotLocation (locationWithInvestigator iid)
+      locations <-
+        selectList $ RevealedLocation <> LocationWithoutEnemies <> NotLocation
+          (locationWithInvestigator iid)
       yourTurn <- member iid <$> select TurnInvestigator
 
       replaceMessageMatching
@@ -38,12 +41,13 @@ instance RunMessage CheatDeath5 where
           _ -> error "invalid match"
         )
 
+      mHealHorror <- getHealHorrorMessage attrs 2 iid
+
       pushAll
         $ map (DisengageEnemy iid) enemies
         <> map (Discard . TreacheryTarget) treacheries
-        <> [ HealHorror (InvestigatorTarget iid) (toSource attrs) 2
-           , HealDamage (InvestigatorTarget iid) (toSource attrs) 2
-           ]
+        <> maybeToList mHealHorror
+        <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
         <> [ chooseOrRunOne iid $ map
                (\lid -> targetLabel lid [MoveTo (toSource attrs) iid lid])
                locations

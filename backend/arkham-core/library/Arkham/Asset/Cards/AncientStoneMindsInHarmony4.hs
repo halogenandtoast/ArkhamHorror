@@ -13,11 +13,9 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Control.Monad.Trans.Maybe
 
 newtype AncientStoneMindsInHarmony4 = AncientStoneMindsInHarmony4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -55,12 +53,8 @@ instance RunMessage AncientStoneMindsInHarmony4 where
       AncientStoneMindsInHarmony4
         <$> runMessage msg (attrs { assetUses = Uses Secret n })
     UseCardAbility iid (isSource attrs -> True) 1 _ (getAmount -> amount) -> do
-      investigators <- selectList $ colocatedWith iid
-      investigatorsWithHealMessage :: [(InvestigatorId, Message)] <-
-        flip mapMaybeM investigators $ \iid' -> runMaybeT $ do
-          horrorId <- MaybeT $ canHaveHorrorHealed attrs iid'
-          healHorror <- MaybeT $ getHealHorrorMessage attrs amount iid'
-          pure (horrorId, healHorror)
+      investigatorsWithHealMessage <-
+        getInvestigatorsWithHealHorror attrs amount $ colocatedWith iid
 
       assets <-
         selectListMap AssetTarget

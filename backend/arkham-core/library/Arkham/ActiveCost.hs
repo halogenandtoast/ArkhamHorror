@@ -75,7 +75,7 @@ matchTarget takenActions (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCostModifier :: (Monad m, HasGame m) => ActiveCost -> m Int
+getActionCostModifier :: HasGame m => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = activeCostInvestigator ac
   takenActions <- field InvestigatorActionsTaken iid

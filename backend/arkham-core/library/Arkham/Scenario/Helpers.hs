@@ -15,7 +15,7 @@ import Arkham.Game.Helpers as X
 import Arkham.Helpers
 
 getHasRecordOrStandalone
-  :: (Monad m, HasGame m) => CampaignLogKey
+  :: HasGame m => CampaignLogKey
   -> Bool
   -> m Bool
 getHasRecordOrStandalone key def = do

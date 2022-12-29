@@ -3,9 +3,9 @@ module Arkham.Investigator.Cards.StellaClark where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -53,16 +53,16 @@ instance RunMessage StellaClark where
       i <$ push (GainActions iid source 1)
     When (RevealToken _ iid token)
       | iid == toId attrs && tokenFace token == ElderSign -> do
-        push
-          $ chooseOne
-            iid
-            [ Label "Resolve as Elder Sign" []
-            , Label
-              "Automatically fail this skill test to heal 1 damage and 1 horror"
-              [ FailSkillTest
-              , HealDamage (toTarget attrs) (toSource attrs) 1
-              , HealHorror (toTarget attrs) (toSource attrs) 1
-              ]
-            ]
+        healDamage <- canHaveDamageHealed attrs iid
+        mHealHorror <- getHealHorrorMessage attrs 1 iid
+        push $ chooseOne
+          iid
+          [ Label "Resolve as Elder Sign" []
+          , Label
+            "Automatically fail this skill test to heal 1 damage and 1 horror"
+          $ FailSkillTest
+          : [ HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage ]
+          <> maybeToList mHealHorror
+          ]
         pure i
     _ -> StellaClark <$> runMessage msg attrs

@@ -88,7 +88,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-getRemoveNecronomicon :: (Monad m, HasGame m) => m [Message]
+getRemoveNecronomicon :: HasGame m => m [Message]
 getRemoveNecronomicon = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation

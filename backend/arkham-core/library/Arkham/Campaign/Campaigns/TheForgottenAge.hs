@@ -55,10 +55,10 @@ theForgottenAge difficulty = campaign
   difficulty
   (chaosBagContents difficulty)
 
-initialSupplyPoints :: (Monad m, HasGame m) => m Int
+initialSupplyPoints :: HasGame m => m Int
 initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
 
-initialResupplyPoints :: (Monad m, HasGame m) => m Int
+initialResupplyPoints :: HasGame m => m Int
 initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 supplyCost :: Supply -> Int

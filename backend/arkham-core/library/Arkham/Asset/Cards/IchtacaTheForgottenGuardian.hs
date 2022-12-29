@@ -15,6 +15,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Enemy.Types
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Placement
@@ -80,10 +81,14 @@ instance HasAbilities IchtacaTheForgottenGuardian where
 instance RunMessage IchtacaTheForgottenGuardian where
   runMessage msg a@(IchtacaTheForgottenGuardian attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      canHealHorror <- selectAny $ HealableInvestigator HorrorType $ InvestigatorWithId iid
-      ichtacaCanHealHorror <- selectAny $ HealableAsset HorrorType $ AssetWithId (toId attrs)
+      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      ichtacaCanHealHorror <-
+        selectAny $ HealableAsset (toSource attrs) HorrorType $ AssetWithId
+          (toId attrs)
       pushAll
-        $ [ HealHorror (InvestigatorTarget iid) (toSource attrs) 1 | canHealHorror ]
-        <> [ HealHorror (toTarget attrs) (toSource attrs) 1 | ichtacaCanHealHorror ]
+        $ maybeToList mHealHorror
+        <> [ HealHorror (toTarget attrs) (toSource attrs) 1
+           | ichtacaCanHealHorror
+           ]
       pure a
     _ -> IchtacaTheForgottenGuardian <$> runMessage msg attrs

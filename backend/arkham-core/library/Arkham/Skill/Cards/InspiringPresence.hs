@@ -36,8 +36,8 @@ instance RunMessage InspiringPresence where
           target = AssetTarget a
           healDamage = HealDamage target (toSource attrs) 1
           healHorror = HealHorror target (toSource attrs) 1
-        canHealDamage <- a <=~> HealableAsset DamageType (AssetWithId a)
-        canHealHorror <- a <=~> HealableAsset HorrorType (AssetWithId a)
+        canHealDamage <- a <=~> HealableAsset (toSource attrs) DamageType (AssetWithId a)
+        canHealHorror <- a <=~> HealableAsset (toSource attrs) HorrorType (AssetWithId a)
         exhausted <- field AssetExhausted a
         let
           andChoices = if canHealDamage || canHealHorror

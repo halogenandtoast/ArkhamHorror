@@ -1,9 +1,10 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Game where
+module Arkham.Game
+  ( module Arkham.Game
+  , module X
+  ) where
 
-import Arkham.Ability
 import Arkham.Act.Types
-import Arkham.ActiveCost.Base
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
@@ -15,23 +16,17 @@ import Arkham.Classes.Query
 import Arkham.Effect.Types
 import Arkham.Enemy.Types
 import Arkham.Event.Types
-import Arkham.History
+import Arkham.Game.Base as X
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
-import Arkham.SkillTest.Base
-import Arkham.Target
 import Arkham.Treachery.Types
 import Control.Monad.Random
-
-data Game
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -79,20 +74,7 @@ instance Projection Treachery
 instance HasTokenValue InvestigatorId
 instance HasTokenValue ()
 
-gameActiveAbilities :: Game -> [Ability]
-gamePhase :: Game -> Phase
-gameSkillTest :: Game -> Maybe SkillTest
-gameActiveCost :: Game -> HashMap ActiveCostId ActiveCost
-gameModifiers :: Game -> HashMap Target [Modifier]
-gameWindowDepth :: Game -> Int
-gameDepthLock :: Game -> Int
-gamePhaseHistory :: Game -> HashMap InvestigatorId History
-gameTurnHistory :: Game -> HashMap InvestigatorId History
-gameRoundHistory :: Game -> HashMap InvestigatorId History
 delve :: Game -> Game
-
--- Time Warp
-gameActionCanBeUndone :: Game -> Bool
 
 instance HasDistance Game
 instance HasAbilities Game

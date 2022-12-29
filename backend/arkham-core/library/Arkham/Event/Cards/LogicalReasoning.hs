@@ -8,6 +8,7 @@ import Arkham.Prelude hiding ( terror )
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -25,14 +26,14 @@ instance RunMessage LogicalReasoning where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <- selectList $ InvestigatorAt YourLocation
       options <- for iids $ \iid' -> do
-        hasHorror <- member iid' <$> select InvestigatorWithAnyHorror
+        mHealHorror <- getHealHorrorMessage attrs 2 iid'
         terrors <-
           selectList $ TreacheryWithTrait Terror <> TreacheryInThreatAreaOf
             (InvestigatorWithId iid')
         pure
           ( iid'
-          , [ Label "Heal 2 Horror" [HealHorror (InvestigatorTarget iid') (toSource attrs) 2]
-            | hasHorror
+          , [ Label "Heal 2 Horror" [healHorror]
+            | healHorror <- maybeToList mHealHorror
             ]
           <> [ Label
                  "Discard a Terror"

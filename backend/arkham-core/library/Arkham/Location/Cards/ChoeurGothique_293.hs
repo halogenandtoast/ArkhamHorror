@@ -34,7 +34,9 @@ instance HasAbilities ChoeurGothique_293 where
       $ restrictedAbility
           a
           1
-          (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
+          (Here <> InvestigatorExists
+            (HealableInvestigator (toSource a) HorrorType You)
+          )
       $ ActionAbility Nothing
       $ ActionCost 1
       <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide C) 1

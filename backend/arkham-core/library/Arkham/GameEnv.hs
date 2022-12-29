@@ -22,7 +22,7 @@ import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
-class HasGame m where
+class Monad m => HasGame m where
   getGame :: m Game
 
 instance Monad m => HasGame (ReaderT Game m) where
@@ -95,16 +95,16 @@ instance MonadRandom GameT where
     gen <- atomicModifyIORef' ref split
     pure $ randoms gen
 
-getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
+getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 
-getActiveCosts :: (Monad m, HasGame m) => m [ActiveCost]
+getActiveCosts :: HasGame m => m [ActiveCost]
 getActiveCosts = toList . gameActiveCost <$> getGame
 
-getJustSkillTest :: (Monad m, HasGame m, HasCallStack) => m SkillTest
+getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 getJustSkillTest = fromJustNote "must be called during a skill test" . gameSkillTest <$> getGame
 
-getHistory :: (Monad m, HasGame m) => HistoryType -> InvestigatorId -> m History
+getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 getHistory TurnHistory iid =
   findWithDefault mempty iid . gameTurnHistory <$> getGame
 getHistory PhaseHistory iid =
@@ -114,28 +114,28 @@ getHistory RoundHistory iid = do
   phaseH <- getHistory PhaseHistory iid
   pure $ roundH <> phaseH
 
-getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
+getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame
   getDistance' game l1 l2
 
-getPhase :: (Monad m, HasGame m) => m Phase
+getPhase :: HasGame m => m Phase
 getPhase = gamePhase <$> getGame
 
-getWindowDepth :: (Monad m, HasGame m) => m Int
+getWindowDepth :: HasGame m => m Int
 getWindowDepth = gameWindowDepth <$> getGame
 
-getDepthLock :: (Monad m, HasGame m) => m Int
+getDepthLock :: HasGame m => m Int
 getDepthLock = gameDepthLock <$> getGame
 
-getAllAbilities :: (Monad m, HasGame m) => m [Ability]
+getAllAbilities :: HasGame m => m [Ability]
 getAllAbilities = getAbilities <$> getGame
 
-getAllModifiers :: (Monad m, HasGame m) => m (HashMap Target [Modifier])
+getAllModifiers :: HasGame m => m (HashMap Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame
 
-getActiveAbilities :: (Monad m, HasGame m) => m [Ability]
+getActiveAbilities :: HasGame m => m [Ability]
 getActiveAbilities = gameActiveAbilities <$> getGame
 
-getActionCanBeUndone :: (Monad m, HasGame m) => m Bool
+getActionCanBeUndone :: HasGame m => m Bool
 getActionCanBeUndone = gameActionCanBeUndone <$> getGame

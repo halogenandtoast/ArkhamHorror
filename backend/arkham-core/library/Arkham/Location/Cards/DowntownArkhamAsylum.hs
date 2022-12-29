@@ -33,7 +33,9 @@ instance HasAbilities DowntownArkhamAsylum where
           $ restrictedAbility
               x
               1
-              (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
+              (Here <> InvestigatorExists
+                (HealableInvestigator (toSource x) HorrorType You)
+              )
           $ ActionAbility Nothing
           $ ActionCost 1
         ]

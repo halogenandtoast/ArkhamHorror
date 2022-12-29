@@ -20,7 +20,7 @@ newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
-findOwner :: (Monad m, HasGame m) => CardCode -> m (Maybe InvestigatorId)
+findOwner :: HasGame m => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards

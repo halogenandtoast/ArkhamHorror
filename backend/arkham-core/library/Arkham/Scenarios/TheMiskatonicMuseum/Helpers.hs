@@ -8,14 +8,14 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 
-getHuntingHorror :: (Monad m, HasGame m) => m (Maybe EnemyId)
+getHuntingHorror :: HasGame m => m (Maybe EnemyId)
 getHuntingHorror = getHuntingHorrorWith AnyEnemy
 
 getHuntingHorrorWith
-  :: (Monad m, HasGame m) => EnemyMatcher -> m (Maybe EnemyId)
+  :: HasGame m => EnemyMatcher -> m (Maybe EnemyId)
 getHuntingHorrorWith matcher =
   selectOne $ enemyIs Cards.huntingHorror <> matcher
 
-getRestrictedHall :: (Monad m, HasGame m) => m LocationId
+getRestrictedHall :: HasGame m => m LocationId
 getRestrictedHall =
   selectJust $ LocationWithFullTitle "Exhibit Hall" "Restricted Hall"

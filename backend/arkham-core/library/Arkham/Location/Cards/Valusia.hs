@@ -44,9 +44,13 @@ instance RunMessage Valusia where
   runMessage msg (Valusia attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       canHealHorror <-
-        selectAny $ HealableInvestigator HorrorType $ InvestigatorWithId iid
+        selectAny
+        $ HealableInvestigator (toSource attrs) HorrorType
+        $ InvestigatorWithId iid
       canHealDamage <-
-        selectAny $ HealableInvestigator DamageType $ InvestigatorWithId iid
+        selectAny
+        $ HealableInvestigator (toSource attrs) DamageType
+        $ InvestigatorWithId iid
       pushAll
         $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 2
           | canHealDamage

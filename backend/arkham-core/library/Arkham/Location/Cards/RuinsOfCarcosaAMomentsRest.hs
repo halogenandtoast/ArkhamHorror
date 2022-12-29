@@ -52,7 +52,7 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
     ResolveStory iid story' | story' == Story.aMomentsRest -> do
       enemies <- selectList
         $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
-      canHeal <- canHaveHorrorHealed iid
+      mHealHorror <- getHealHorrorMessage (toSource attrs) 5 iid
       let
         handleEnemy enemy = targetLabel
           enemy
@@ -63,10 +63,8 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
               [chooseOne iid $ map handleEnemy enemies]
           | notNull enemies
           ]
-          <> [ Label
-                 "You heal 5 horror"
-                 [HealHorror (InvestigatorTarget iid) (toSource attrs) 5]
-             | canHeal
+          <> [ Label "You heal 5 horror" [healHorror]
+             | healHorror <- maybeToList mHealHorror
              ]
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching
         $ CardWithTitle "Ruins of Carcosa"

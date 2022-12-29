@@ -48,7 +48,7 @@ pattern UseResign iid source <- UseCardAbility iid source 99 _ _
 pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source 100 _ _
 
-cluesToDiscover :: (Monad m, HasGame m) => InvestigatorId -> Int -> m Int
+cluesToDiscover :: HasGame m => InvestigatorId -> Int -> m Int
 cluesToDiscover investigatorId startValue = do
   msource <- getSkillTestSource
   case msource of

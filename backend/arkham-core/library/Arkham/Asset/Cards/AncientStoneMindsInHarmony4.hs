@@ -12,9 +12,12 @@ import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
+import Arkham.Id
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Control.Monad.Trans.Maybe
 
 newtype AncientStoneMindsInHarmony4 = AncientStoneMindsInHarmony4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -52,16 +55,25 @@ instance RunMessage AncientStoneMindsInHarmony4 where
       AncientStoneMindsInHarmony4
         <$> runMessage msg (attrs { assetUses = Uses Secret n })
     UseCardAbility iid (isSource attrs -> True) 1 _ (getAmount -> amount) -> do
-      investigators <-
-        selectListMap InvestigatorTarget
-        $ HealableInvestigator HorrorType
-        $ colocatedWith iid
-      assets <- selectListMap AssetTarget $ HealableAsset HorrorType $ AssetAt
-        (locationWithInvestigator iid)
+      investigators <- selectList $ colocatedWith iid
+      investigatorsWithHealMessage :: [(InvestigatorId, Message)] <-
+        flip mapMaybeM investigators $ \iid' -> runMaybeT $ do
+          horrorId <- MaybeT $ canHaveHorrorHealed attrs iid'
+          healHorror <- MaybeT $ getHealHorrorMessage attrs amount iid'
+          pure (horrorId, healHorror)
+
+      assets <-
+        selectListMap AssetTarget
+        $ HealableAsset (toSource attrs) HorrorType
+        $ AssetAt (locationWithInvestigator iid)
+
       push
         $ chooseOrRunOne iid
         $ [ TargetLabel target [HealHorror target (toSource attrs) amount]
-          | target <- investigators <> assets
+          | target <- assets
           ]
+        <> [ targetLabel target [healHorror]
+           | (target, healHorror) <- investigatorsWithHealMessage
+           ]
       pure a
     _ -> AncientStoneMindsInHarmony4 <$> runMessage msg attrs

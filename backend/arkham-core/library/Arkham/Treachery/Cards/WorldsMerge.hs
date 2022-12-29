@@ -25,7 +25,7 @@ newtype WorldsMerge = WorldsMerge TreacheryAttrs
 worldsMerge :: TreacheryCard WorldsMerge
 worldsMerge = treachery WorldsMerge Cards.worldsMerge
 
-getStep :: (Monad m, HasGame m) => Maybe AgendaId -> m Int
+getStep :: HasGame m => Maybe AgendaId -> m Int
 getStep Nothing = pure 3 -- if no agenda than act is 3
 getStep (Just agenda) = do
   side <- fieldMap AgendaSequence AS.agendaStep agenda

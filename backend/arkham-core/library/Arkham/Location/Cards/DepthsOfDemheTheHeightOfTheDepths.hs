@@ -42,7 +42,7 @@ instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
       pure . DepthsOfDemheTheHeightOfTheDepths $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.theHeightOfTheDepths -> do
       targets <- selectListMap InvestigatorTarget
-        $ HealableInvestigator HorrorType Anyone
+        $ HealableInvestigator (toSource attrs) HorrorType Anyone
       setAsideDepthsOfDemhe <- getSetAsideCardsMatching
         $ CardWithTitle "Depths of Demhe"
       otherDepthsOfDemhe <- case setAsideDepthsOfDemhe of

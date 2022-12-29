@@ -3,8 +3,7 @@ module Arkham.Skill.Cards.Fearless where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Damage
-import Arkham.Matcher
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
@@ -20,11 +19,7 @@ fearless = skill Fearless Cards.fearless
 instance RunMessage Fearless where
   runMessage msg s@(Fearless attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId -> do
-      isHealable <-
-        selectAny
-        $ HealableInvestigator (toSource attrs) HorrorType
-        $ InvestigatorWithId skillOwner
-      when isHealable
-        $ push (HealHorror (InvestigatorTarget skillOwner) (toSource attrs) 1)
+      mHealHorror <- getHealHorrorMessage attrs 1 skillOwner
+      for_ mHealHorror push
       pure s
     _ -> Fearless <$> runMessage msg attrs

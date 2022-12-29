@@ -11,9 +11,8 @@ import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -32,8 +31,8 @@ instance HasAbilities MedicoDellaPeste where
         1
         (ControlsThis <> InvestigatorExists
           (AnyInvestigator
-            [ HealableInvestigator DamageType You
-            , HealableInvestigator HorrorType You
+            [ HealableInvestigator (toSource a) DamageType You
+            , HealableInvestigator (toSource a) HorrorType You
             ]
           )
         )
@@ -54,9 +53,10 @@ instance RunMessage MedicoDellaPeste where
   runMessage msg a@(MedicoDellaPeste attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasDamage <-
-        selectAny $ HealableInvestigator DamageType $ InvestigatorWithId iid
-      hasHorror <-
-        selectAny $ HealableInvestigator HorrorType $ InvestigatorWithId iid
+        selectAny
+        $ HealableInvestigator (toSource attrs) DamageType
+        $ InvestigatorWithId iid
+      mHealHorror <- getHealHorrorMessage attrs 1 iid
       push
         $ chooseOrRunOne iid
         $ [ Label
@@ -64,10 +64,8 @@ instance RunMessage MedicoDellaPeste where
               [HealDamage (InvestigatorTarget iid) (toSource attrs) 1]
           | hasDamage
           ]
-        <> [ Label
-               "Heal 1 horror"
-               [HealHorror (InvestigatorTarget iid) (toSource attrs) 1]
-           | hasHorror
+        <> [ Label "Heal 1 horror" [healHorror]
+           | healHorror <- maybeToList mHealHorror
            ]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do

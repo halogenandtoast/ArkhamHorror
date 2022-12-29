@@ -12,28 +12,28 @@ import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
 
-getCampaignLog :: (Monad m, HasGame m) => m CampaignLog
+getCampaignLog :: HasGame m => m CampaignLog
 getCampaignLog = withStandalone
   (field CampaignCampaignLog)
   (field ScenarioStandaloneCampaignLog)
 
-getHasRecord :: (Monad m, HasGame m) => CampaignLogKey -> m Bool
+getHasRecord :: HasGame m => CampaignLogKey -> m Bool
 getHasRecord k = do
   campaignLog <- getCampaignLog
   pure $ k `member` (campaignLogRecorded campaignLog) || k `member` (campaignLogRecordedCounts campaignLog)
 
-getRecordCount :: (Monad m, HasGame m) => CampaignLogKey -> m Int
+getRecordCount :: HasGame m => CampaignLogKey -> m Int
 getRecordCount k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault 0 k (campaignLogRecordedCounts campaignLog)
 
-getRecordSet :: (Monad m, HasGame m) => CampaignLogKey -> m [Recorded CardCode]
+getRecordSet :: HasGame m => CampaignLogKey -> m [Recorded CardCode]
 getRecordSet k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
-remembered :: (Monad m, HasGame m) => ScenarioLogKey -> m Bool
+remembered :: HasGame m => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 
-scenarioCount :: (Monad m, HasGame m) => ScenarioCountKey -> m Int
+scenarioCount :: HasGame m => ScenarioCountKey -> m Int
 scenarioCount k = fromMaybe 0 . lookup k <$> scenarioField ScenarioCounts

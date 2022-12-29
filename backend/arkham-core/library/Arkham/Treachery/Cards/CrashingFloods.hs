@@ -25,7 +25,7 @@ newtype CrashingFloods = CrashingFloods TreacheryAttrs
 crashingFloods :: TreacheryCard CrashingFloods
 crashingFloods = treachery CrashingFloods Cards.crashingFloods
 
-getStep :: (Monad m, HasGame m) => Maybe AgendaId -> m Int
+getStep :: HasGame m => Maybe AgendaId -> m Int
 getStep Nothing = pure 3 -- if no agenda than act is 3
 getStep (Just agenda) = do
   side <- fieldMap AgendaSequence AS.agendaStep agenda

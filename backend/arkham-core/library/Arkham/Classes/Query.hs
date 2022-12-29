@@ -9,23 +9,22 @@ import Arkham.Query
 import Arkham.Target
 import Data.HashSet qualified as HashSet
 
-selectCount :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Int
+selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
 selectCount = fmap HashSet.size . select
 
-selectAny :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Bool
+selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectAny = fmap notNull . selectListMap id
 
-selectNone :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Bool
+selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectNone = fmap not . selectAny
 
 selectList
-  :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m [QueryElement a]
+  :: (HasCallStack, Query a, HasGame m) => a -> m [QueryElement a]
 selectList = selectListMap id
 
 selectWithField
   :: ( EntityId rec ~ QueryElement a
      , Projection rec
-     , Monad m
      , HasGame m
      , Query a
      )
@@ -43,27 +42,27 @@ selectRandom matcher = do
   maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
 
 selectListMap
-  :: (HasCallStack, Query a, HasGame m, Monad m)
+  :: (HasCallStack, Query a, HasGame m)
   => (QueryElement a -> b)
   -> a
   -> m [b]
 selectListMap f = selectListMapM (pure . f)
 
 selectTargets
-  :: (HasCallStack, Query a, HasGame m, Monad m, IdToTarget (QueryElement a))
+  :: (HasCallStack, Query a, HasGame m, IdToTarget (QueryElement a))
   => a
   -> m [Target]
 selectTargets = selectListMap idToTarget
 
 selectListMapM
-  :: (HasCallStack, Query a, HasGame m, Monad m)
+  :: (HasCallStack, Query a, HasGame m)
   => (QueryElement a -> m b)
   -> a
   -> m [b]
 selectListMapM f = (traverse f . setToList =<<) . select
 
 selectJust
-  :: (HasCallStack, Show a, Query a, HasGame m, Monad m)
+  :: (HasCallStack, Show a, Query a, HasGame m)
   => a
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
@@ -75,7 +74,6 @@ selectAgg
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
-     , Monad m
      )
   => (typ -> monoid)
   -> Field attrs typ
@@ -87,7 +85,7 @@ selectAgg f p matcher = do
   pure $ fold values
 
 selectOne
-  :: (HasCallStack, Query a, HasGame m, Monad m)
+  :: (HasCallStack, Query a, HasGame m)
   => a
   -> m (Maybe (QueryElement a))
 selectOne matcher = do
@@ -97,11 +95,11 @@ selectOne matcher = do
     x : _ -> Just x
 
 isMatch
-  :: (HasCallStack, Query matcher, HasGame m, Monad m)
+  :: (HasCallStack, Query matcher, HasGame m)
   => QueryElement matcher
   -> matcher
   -> m Bool
 isMatch a m = member a <$> select m
 
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a where
-  select :: (HasCallStack, HasGame m, Monad m) => a -> m (HashSet (QueryElement a))
+  select :: (HasCallStack, HasGame m) => a -> m (HashSet (QueryElement a))

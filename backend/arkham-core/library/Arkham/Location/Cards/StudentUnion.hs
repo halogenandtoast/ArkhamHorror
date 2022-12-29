@@ -11,6 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards ( studentUnion )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -40,8 +41,8 @@ instance HasAbilities StudentUnion where
           2
           (Here <> InvestigatorExists
             (AnyInvestigator
-              [ HealableInvestigator HorrorType You
-              , HealableInvestigator DamageType You
+              [ HealableInvestigator (toSource attrs) HorrorType You
+              , HealableInvestigator (toSource attrs) DamageType You
               ]
             )
           )
@@ -54,8 +55,13 @@ instance RunMessage StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> l <$ pushAll
-      [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
-      , HealHorror (InvestigatorTarget iid) (toSource attrs) 1
-      ]
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      healDamage <- canHaveDamageHealed source iid
+      mHealHorror <- getHealHorrorMessage source 1 iid
+      pushAll
+        $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+          | healDamage
+          ]
+        <> maybeToList mHealHorror
+      pure l
     _ -> StudentUnion <$> runMessage msg attrs

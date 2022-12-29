@@ -7,4 +7,4 @@ import Arkham.Distance
 import Arkham.Id
 
 class HasDistance a where
-  getDistance' :: (Monad m, HasGame m) => a -> LocationId -> LocationId -> m (Maybe Distance)
+  getDistance' :: HasGame m => a -> LocationId -> LocationId -> m (Maybe Distance)

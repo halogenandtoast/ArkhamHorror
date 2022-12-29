@@ -14,19 +14,19 @@ import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Target
 
-getModifiers :: (Monad m, HasGame m) => Target -> m [ModifierType]
+getModifiers :: HasGame m => Target -> m [ModifierType]
 getModifiers target = map modifierType <$> getModifiers' target
 
-getModifiers' :: (Monad m, HasGame m) => Target -> m [Modifier]
+getModifiers' :: HasGame m => Target -> m [Modifier]
 getModifiers' target =
   findWithDefault [] target <$> getAllModifiers
 
 hasModifier
-  :: (Monad m, HasGame m, TargetEntity a) => a -> ModifierType -> m Bool
+  :: (HasGame m, TargetEntity a) => a -> ModifierType -> m Bool
 hasModifier a m = (m `elem`) <$> getModifiers (toTarget a)
 
 withoutModifier
-  :: (Monad m, HasGame m, TargetEntity a) => a -> ModifierType -> m Bool
+  :: (HasGame m, TargetEntity a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
 toModifier :: SourceEntity a => a -> ModifierType -> Modifier

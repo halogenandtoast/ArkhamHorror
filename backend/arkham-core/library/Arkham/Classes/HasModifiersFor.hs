@@ -7,7 +7,7 @@ import Arkham.Target
 import {-# SOURCE #-} Arkham.GameEnv
 
 class HasModifiersFor a where
-  getModifiersFor :: (HasCallStack, Monad m, HasGame m) => Target -> a -> m [Modifier]
+  getModifiersFor :: (HasCallStack, HasGame m) => Target -> a -> m [Modifier]
   getModifiersFor _ _ = pure []
 
 instance HasModifiersFor a => HasModifiersFor (With a b) where

@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Target
 
@@ -26,8 +27,8 @@ instance HasAbilities SmokingPipe where
     [ restrictedAbility
         a
         1
-        (ControlsThis
-        <> InvestigatorExists (HealableInvestigator HorrorType You)
+        (ControlsThis <> InvestigatorExists
+          (HealableInvestigator (toSource a) HorrorType You)
         )
         (FastAbility
           (Costs
@@ -41,6 +42,8 @@ instance HasAbilities SmokingPipe where
 
 instance RunMessage SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (HealHorror (InvestigatorTarget iid) (toSource attrs) 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      for_ mHealHorror push
+      pure a
     _ -> SmokingPipe <$> runMessage msg attrs

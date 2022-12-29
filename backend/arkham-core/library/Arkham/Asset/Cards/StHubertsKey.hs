@@ -6,12 +6,12 @@ module Arkham.Asset.Cards.StHubertsKey
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( InvestigatorDefeated )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.SkillType
@@ -39,7 +39,9 @@ instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (InvestigatorDefeated Timing.When AnySource ByHorror $ HealableInvestigator HorrorType You)
+            (InvestigatorDefeated Timing.When AnySource ByHorror
+            $ HealableInvestigator (toSource a) HorrorType You
+            )
         $ DiscardCost
         $ toTarget a
     ]
@@ -54,10 +56,11 @@ instance RunMessage StHubertsKey where
         defeatedSource = case mDefeatedMessage of
           Just (Msg.InvestigatorDefeated x _) -> x
           _ -> error "missing defeated message"
+      mHealHorror <- getHealHorrorMessage attrs 2 iid
       pushAll
-        [ HealHorror (InvestigatorTarget iid) (toSource attrs) 2
-        , CancelNext InvestigatorDefeatedMessage
-        , CheckDefeated defeatedSource
-        ]
+        $ maybeToList mHealHorror
+        <> [ CancelNext InvestigatorDefeatedMessage
+           , CheckDefeated defeatedSource
+           ]
       pure a
     _ -> StHubertsKey <$> runMessage msg attrs

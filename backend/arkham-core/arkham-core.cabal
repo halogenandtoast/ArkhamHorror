@@ -1061,6 +1061,7 @@ library
       Arkham.Field
       Arkham.Field.Matchers
       Arkham.Game
+      Arkham.Game.Base
       Arkham.Game.Helpers
       Arkham.GameEnv
       Arkham.GameValue
@@ -1885,6 +1886,7 @@ library
     , text
     , these
     , these-lens
+    , transformers
     , unordered-containers
     , uuid
   default-language: GHC2021

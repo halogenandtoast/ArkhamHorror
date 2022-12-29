@@ -10,10 +10,10 @@ import Arkham.Field as X
 import {-# SOURCE #-} Arkham.GameEnv
 
 class Projection a where
-  field :: (HasCallStack, Monad m, HasGame m) => Field a typ -> EntityId a -> m typ
+  field :: (HasCallStack, HasGame m) => Field a typ -> EntityId a -> m typ
 
 fieldP
-  :: (HasCallStack, Monad m, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a)
   => Field a typ
   -> (typ -> Bool)
   -> EntityId a
@@ -21,7 +21,7 @@ fieldP
 fieldP = fieldMap
 
 fieldMap
-  :: (HasCallStack, Monad m, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a)
   => (Field a typ)
   -> (typ -> b)
   -> EntityId a
@@ -29,7 +29,7 @@ fieldMap
 fieldMap f g = fieldMapM f (pure . g)
 
 fieldMapM
-  :: (HasCallStack, Monad m, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a)
   => (Field a typ)
   -> (typ -> m b)
   -> EntityId a

@@ -11,8 +11,8 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Matcher
 import Arkham.Projection
 
-getCurrentActStep :: (Monad m, HasGame m) => m Int
+getCurrentActStep :: HasGame m => m Int
 getCurrentActStep = selectJust AnyAct >>= getActStep
 
-getActStep :: (Monad m, HasGame m) => ActId -> m Int
+getActStep :: HasGame m => ActId -> m Int
 getActStep = fieldMap ActSequence (AS.unActStep . AS.actStep)

@@ -12,13 +12,13 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait
 
-bayouLocations :: (Monad m, HasGame m) => m (HashSet LocationId)
+bayouLocations :: HasGame m => m (HashSet LocationId)
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: (Monad m, HasGame m) => m (HashSet LocationId)
+nonBayouLocations :: HasGame m => m (HashSet LocationId)
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
-getTheRougarou :: (Monad m, HasGame m) => m (Maybe EnemyId)
+getTheRougarou :: HasGame m => m (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
 locationsWithLabels :: MonadRandom m => Trait -> [Card] -> m [(Text, Card)]

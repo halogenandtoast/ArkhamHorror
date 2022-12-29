@@ -36,8 +36,8 @@ instance HasAbilities ArkhamWoodsQuietGlade where
               1
               (Here <> InvestigatorExists
                 (AnyInvestigator
-                  [ HealableInvestigator HorrorType You
-                  , HealableInvestigator DamageType You
+                  [ HealableInvestigator (toSource attrs) HorrorType You
+                  , HealableInvestigator (toSource attrs) DamageType You
                   ]
                 )
               )
@@ -51,9 +51,13 @@ instance RunMessage ArkhamWoodsQuietGlade where
     case msg of
       UseCardAbility iid (LocationSource lid) 1 _ _ | lid == locationId -> do
         canHealHorror <-
-          selectAny $ HealableInvestigator HorrorType $ InvestigatorWithId iid
+          selectAny
+          $ HealableInvestigator (toSource attrs) HorrorType
+          $ InvestigatorWithId iid
         canHealDamage <-
-          selectAny $ HealableInvestigator DamageType $ InvestigatorWithId iid
+          selectAny
+          $ HealableInvestigator (toSource attrs) DamageType
+          $ InvestigatorWithId iid
         pushAll
           $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
             | canHealDamage

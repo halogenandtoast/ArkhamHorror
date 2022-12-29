@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Target
 
@@ -21,7 +22,6 @@ newtype FirstAid = FirstAid AssetAttrs
 firstAid :: AssetCard FirstAid
 firstAid = assetWith FirstAid Cards.firstAid (discardWhenNoUsesL .~ True)
 
-
 -- validity here is a little complex, you have to be able to heal horror and an investigator exists at your location that has any horror, or the same for damage
 
 instance HasAbilities FirstAid where
@@ -31,8 +31,10 @@ instance HasAbilities FirstAid where
           1
           (ControlsThis <> InvestigatorExists
             (AnyInvestigator
-              [ HealableInvestigator HorrorType $ InvestigatorAt YourLocation
-              , HealableInvestigator DamageType $ InvestigatorAt YourLocation
+              [ HealableInvestigator (toSource x) HorrorType
+                $ InvestigatorAt YourLocation
+              , HealableInvestigator (toSource x) DamageType
+                $ InvestigatorAt YourLocation
               ]
             )
           )
@@ -45,46 +47,36 @@ instance RunMessage FirstAid where
     InDiscard _ msg'@(UseCardAbility _ source 1 _ _) | isSource attrs source ->
       runMessage msg' a
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      canHealHorror <- iid <=~> InvestigatorCanHealHorror
-      canHealDamage <- iid <=~> InvestigatorCanHealDamage
-      horrorTargets <- if canHealHorror
-        then
-          selectListMap InvestigatorTarget
-          $ HealableInvestigator HorrorType
-          $ colocatedWith iid
-        else pure []
-      damageTargets <- if canHealDamage
-        then
-          selectListMap InvestigatorTarget
-          $ HealableInvestigator DamageType
-          $ colocatedWith iid
-        else pure []
+      horrorInvestigators <-
+        select
+        $ HealableInvestigator (toSource attrs) HorrorType
+        $ colocatedWith iid
+      damageInvestigators <-
+        select
+        $ HealableInvestigator (toSource attrs) DamageType
+        $ colocatedWith iid
       let
-        targets = nub $ horrorTargets <> damageTargets
-        componentLabel component target = case target of
-          InvestigatorTarget iid' ->
-            ComponentLabel (InvestigatorComponent iid' component)
-          AssetTarget aid -> ComponentLabel (AssetComponent aid component)
-          _ -> error "unhandled target"
-      push $ chooseOne
-        iid
-        [ TargetLabel
-            target
-            [ chooseOne iid
-              $ [ componentLabel
-                    DamageToken
-                    target
-                    [HealDamage target (toSource attrs) 1]
-                | target `elem` damageTargets
-                ]
-              <> [ componentLabel
-                     HorrorToken
-                     target
-                     [HealHorror target (toSource attrs) 1]
-                 | target `elem` horrorTargets
-                 ]
-            ]
-        | target <- targets
-        ]
+        allInvestigators =
+          setToList $ horrorInvestigators <> damageInvestigators
+        componentLabel component iid' =
+          ComponentLabel (InvestigatorComponent iid' component)
+      choices <- for allInvestigators $ \i -> do
+        mHealHorror <- if i `member` horrorInvestigators
+          then getHealHorrorMessage attrs 1 i
+          else pure Nothing
+        pure $ targetLabel
+          i
+          [ chooseOrRunOne iid
+            $ [ componentLabel
+                  DamageToken
+                  i
+                  [HealDamage (InvestigatorTarget i) (toSource attrs) 1]
+              | i `member` damageInvestigators
+              ]
+            <> [ componentLabel HorrorToken i [healHorror]
+               | healHorror <- maybeToList mHealHorror
+               ]
+          ]
+      push $ chooseOne iid choices
       pure a
     _ -> FirstAid <$> runMessage msg attrs

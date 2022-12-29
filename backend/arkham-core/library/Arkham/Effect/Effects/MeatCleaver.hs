@@ -23,11 +23,9 @@ instance RunMessage MeatCleaver where
     EnemyDefeated _ _ source _ | effectSource attrs == source -> do
       case effectTarget attrs of
         InvestigatorTarget iid -> do
-          canHeal <- canHaveHorrorHealed iid
+          mHealHorror <- getHealHorrorMessage source 1 iid
           pushAll
-            $ [ HealHorror (effectTarget attrs) (effectSource attrs) 1
-              | canHeal
-              ]
+            $ maybeToList mHealHorror
             <> [DisableEffect $ toId attrs]
           pure e
         _ -> error "Invalid target"

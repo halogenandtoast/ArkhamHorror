@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
@@ -31,7 +32,9 @@ instance HasAbilities Thermos where
           a
           1
           (ControlsThis <> InvestigatorExists
-            (HealableInvestigator DamageType $ InvestigatorAt YourLocation)
+            (HealableInvestigator (toSource a) DamageType
+            $ InvestigatorAt YourLocation
+            )
           )
       $ ActionAbility Nothing
       $ ActionCost 1
@@ -42,7 +45,9 @@ instance HasAbilities Thermos where
           a
           2
           (ControlsThis <> InvestigatorExists
-            (HealableInvestigator HorrorType $ InvestigatorAt YourLocation)
+            (HealableInvestigator (toSource a) HorrorType
+            $ InvestigatorAt YourLocation
+            )
           )
       $ ActionAbility Nothing
       $ ActionCost 1
@@ -54,7 +59,7 @@ instance RunMessage Thermos where
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
       targets <-
         selectListMap InvestigatorTarget
-        $ HealableInvestigator DamageType
+        $ HealableInvestigator (toSource attrs) DamageType
         $ colocatedWith iid
       push $ chooseOrRunOne
         iid
@@ -82,7 +87,7 @@ instance RunMessage Thermos where
     UseCardAbility iid (isSource attrs -> True) 2 windows' payment -> do
       targets <-
         selectListMap InvestigatorTarget
-        $ HealableInvestigator HorrorType
+        $ HealableInvestigator (toSource attrs) HorrorType
         $ colocatedWith iid
       push $ chooseOrRunOne
         iid
@@ -102,9 +107,10 @@ instance RunMessage Thermos where
     UseCardAbilityChoiceTarget _ (isSource attrs -> True) 2 (InvestigatorTarget iid') _ _
       -> do
         trauma <- field InvestigatorMentalTrauma iid'
-        push $ HealHorror
-          (InvestigatorTarget iid')
-          (toSource attrs)
+        mHealHorror <- getHealHorrorMessage
+          attrs
           (if trauma >= 2 then 2 else 1)
+          iid'
+        for_ mHealHorror push
         pure a
     _ -> Thermos <$> runMessage msg attrs

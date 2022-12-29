@@ -13,15 +13,15 @@ import Arkham.Matcher
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Token
 
-getTokensInBag :: (Monad m, HasGame m) => m [Token]
+getTokensInBag :: HasGame m => m [Token]
 getTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagTokens
 
-getSealedTokens :: (Monad m, HasGame m) => m [Token]
+getSealedTokens :: HasGame m => m [Token]
 getSealedTokens = concat <$> sequence
   [ selectAgg id AssetSealedTokens AnyAsset
   , selectAgg id EnemySealedTokens AnyEnemy
   , selectAgg id EventSealedTokens AnyEvent
   ]
 
-getAllTokens :: (Monad m, HasGame m) => m [Token]
+getAllTokens :: HasGame m => m [Token]
 getAllTokens = concat <$> sequence [getTokensInBag, getSealedTokens]

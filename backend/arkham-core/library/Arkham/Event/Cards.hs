@@ -11,6 +11,7 @@ import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Modifier ( ModifierType (..) )
@@ -1026,7 +1027,7 @@ logicalReasoning = (event "03191" "Logical Reasoning" 2 Seeker)
     (Criteria.InvestigatorExists (You <> InvestigatorWithAnyClues)
     <> Criteria.AnyCriterion
          [ Criteria.InvestigatorExists
-           (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+           (HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation)
          , Criteria.TreacheryExists
            (TreacheryWithTrait Terror
            <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)

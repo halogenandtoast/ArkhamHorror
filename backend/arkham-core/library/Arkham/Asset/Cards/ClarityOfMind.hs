@@ -10,9 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Target
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,14 +35,10 @@ instance HasAbilities ClarityOfMind where
 instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <-
-        selectListMap InvestigatorTarget
-        $ HealableInvestigator HorrorType
-        $ colocatedWith iid
-      push $ chooseOrRunOne
-        iid
-        [ TargetLabel target [HealHorror target (toSource attrs) 1]
-        | target <- targets
-        ]
+      iids <- selectList $ colocatedWith iid
+      iidsWithHeal <- mapMaybeM
+        (\iid' -> (iid', ) <$$> getHealHorrorMessage attrs 1 iid')
+        iids
+      push $ chooseOrRunOne iid $ map (uncurry targetLabel . second pure) iidsWithHeal
       pure a
     _ -> ClarityOfMind <$> runMessage msg attrs

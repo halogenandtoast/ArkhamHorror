@@ -15,10 +15,10 @@ import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Target
 
-getXp :: (Monad m, HasGame m) => m [(InvestigatorId, Int)]
+getXp :: HasGame m => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXpWithBonus :: (HasCallStack, Monad m, HasGame m) => Int -> m [(InvestigatorId, Int)]
+getXpWithBonus :: (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
   investigatorIds <- allInvestigatorIds
   for

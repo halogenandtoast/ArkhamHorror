@@ -25,27 +25,27 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Result (..), Window (..) )
 import Arkham.Window qualified as Window
 
-getHasSupply :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Bool
+getHasSupply :: HasGame m => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 
-getSupplyCount :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Int
+getSupplyCount :: HasGame m => InvestigatorId -> Supply -> m Int
 getSupplyCount iid s =
   fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
-getAnyHasSupply :: (HasGame m, Monad m) => Supply -> m Bool
+getAnyHasSupply :: HasGame m => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
 getInvestigatorsWithSupply
-  :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+  :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s =
   getInvestigatorIds >>= filterM (`getHasSupply` s)
 
 getInvestigatorsWithoutSupply
-  :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+  :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s =
   getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
 
-getVengeanceInVictoryDisplay :: (HasCallStack, HasGame m, Monad m) => m Int
+getVengeanceInVictoryDisplay :: (HasCallStack, HasGame m) => m Int
 getVengeanceInVictoryDisplay = do
   victoryDisplay <- scenarioField ScenarioVictoryDisplay
   let
@@ -60,22 +60,22 @@ getVengeanceInVictoryDisplay = do
     (LocationWithModifier InVictoryDisplayForCountingVengeance)
   pure $ inVictoryDisplay + locationsWithModifier + vengeanceCards
 
-getExplorationDeck :: (HasGame m, Monad m) => m [Card]
+getExplorationDeck :: HasGame m => m [Card]
 getExplorationDeck = scenarioFieldMap
   ScenarioDecks
   (findWithDefault (error "missing deck") ExplorationDeck)
 
-getSetAsidePoisonedCount :: (HasGame m, Monad m) => m Int
+getSetAsidePoisonedCount :: HasGame m => m Int
 getSetAsidePoisonedCount = do
   n <- selectCount $ InDeckOf Anyone <> BasicCardMatch
     (cardIs Treacheries.poisoned)
   pure $ 4 - n
 
-getIsPoisoned :: (HasGame m, Monad m) => InvestigatorId -> m Bool
+getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
 getIsPoisoned iid =
   selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
 
-getSetAsidePoisoned :: (HasGame m, Monad m) => m Card
+getSetAsidePoisoned :: HasGame m => m Card
 getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
     . find ((== Treacheries.poisoned) . toCardDef)

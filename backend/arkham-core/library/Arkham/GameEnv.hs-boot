@@ -3,6 +3,7 @@ module Arkham.GameEnv where
 import Arkham.Prelude
 
 import Arkham.Ability
+import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.ActiveCost.Base
 import Arkham.Classes.HasQueue
 import Arkham.Distance
@@ -27,18 +28,21 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue Message GameT
 
-getAllModifiers :: (Monad m, HasGame m) => m (HashMap Target [Modifier])
-getActiveAbilities :: (Monad m, HasGame m) => m [Ability]
-getPhase :: (Monad m, HasGame m) => m Phase
-getWindowDepth :: (Monad m, HasGame m) => m Int
-getDepthLock :: (Monad m, HasGame m) => m Int
-getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
-getActiveCosts :: (Monad m, HasGame m) => m [ActiveCost]
-getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
-getAllAbilities :: (Monad m, HasGame m) => m [Ability]
-getActionCanBeUndone :: (Monad m, HasGame m) => m Bool
-getHistory :: (Monad m, HasGame m) => HistoryType -> InvestigatorId -> m History
+getAllModifiers :: HasGame m => m (HashMap Target [Modifier])
+getActiveAbilities :: HasGame m => m [Ability]
+getPhase :: HasGame m => m Phase
+getWindowDepth :: HasGame m => m Int
+getDepthLock :: HasGame m => m Int
+getSkillTest :: HasGame m => m (Maybe SkillTest)
+getActiveCosts :: HasGame m => m [ActiveCost]
+getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
+getAllAbilities :: HasGame m => m [Ability]
+getActionCanBeUndone :: HasGame m => m Bool
+getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 
-class HasGame (m :: Type -> Type)
+class Monad m => HasGame m where
+  getGame :: m Game
 
 instance HasGame GameT
+
+instance Monad m => HasGame (ReaderT Game m)

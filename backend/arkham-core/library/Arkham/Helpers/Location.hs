@@ -13,11 +13,11 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Target
 
-toConnections :: (HasGame m, Monad m) => LocationId -> m [LocationSymbol]
+toConnections :: HasGame m => LocationId -> m [LocationSymbol]
 toConnections lid =
   fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
 
-getConnectedMatcher :: (Monad m, HasGame m) => LocationId -> m LocationMatcher
+getConnectedMatcher :: HasGame m => LocationId -> m LocationMatcher
 getConnectedMatcher l = do
   isRevealed <- field LocationRevealed l
   directionalMatchers <- fieldMap

@@ -42,7 +42,8 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       readStory iid (toId attrs) Story.starsOfAldebaran
       pure . BleakPlainsStarsOfAldebaran $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.starsOfAldebaran -> do
-      iids <- selectList $ HealableInvestigator HorrorType Anyone
+      iids <- selectList
+        $ HealableInvestigator (toSource attrs) HorrorType Anyone
       enemies <- selectList $ NotEnemy $ EnemyWithTitle "Hastur"
       let
         damageEnemy enemy = targetLabel

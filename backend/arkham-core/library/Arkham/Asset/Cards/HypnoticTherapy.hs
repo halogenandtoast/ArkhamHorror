@@ -55,7 +55,9 @@ instance RunMessage HypnoticTherapy where
       -> do
         targetsWithCardDraw <- do
           targets <-
-            selectList $ HealableInvestigator HorrorType $ colocatedWith iid
+            selectList
+            $ HealableInvestigator (toSource attrs) HorrorType
+            $ colocatedWith iid
           forToSnd targets $ \i -> drawCards i (toSource attrs) 1
         when (notNull targetsWithCardDraw) $ do
           push $ chooseOrRunOne

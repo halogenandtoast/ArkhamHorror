@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 
@@ -31,10 +32,12 @@ instance HasAbilities Kerosene1 where
                (LocationOfThis <> LocationWithDefeatedEnemyThisRound)
           <> AnyCriterion
                [ InvestigatorExists
-                 (HealableInvestigator HorrorType
+                 (HealableInvestigator (toSource a) HorrorType
                  $ InvestigatorAt YourLocation
                  )
-               , AssetExists (HealableAsset HorrorType $ AssetAt YourLocation)
+               , AssetExists
+                 (HealableAsset (toSource a) HorrorType $ AssetAt YourLocation
+                 )
                ]
           )
         $ ActionAbility Nothing
@@ -76,14 +79,24 @@ instance RunMessage Kerosene1 where
         pure a
 
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
-      investigators <-
-        selectTargets $ HealableInvestigator HorrorType $ colocatedWith iid
-      assets <- selectTargets $ HealableAsset HorrorType $ AssetAt
-        (locationWithInvestigator iid)
-      push $ chooseOne
-        iid
-        [ TargetLabel target [HealHorror target (toSource attrs) 1]
-        | target <- investigators <> assets
-        ]
+      investigators <- selectList $ colocatedWith iid
+        -- selectTargets
+        -- $ HealableInvestigator (toSource attrs) HorrorType
+        -- $ colocatedWith iid
+
+      investigatorsWithHeal <- mapMaybeM
+        (traverseToSndM (getHealHorrorMessage attrs 1))
+        investigators
+
+      assets <-
+        selectTargets $ HealableAsset (toSource attrs) HorrorType $ AssetAt
+          (locationWithInvestigator iid)
+
+      push
+        $ chooseOne iid
+        $ [ TargetLabel target [HealHorror target (toSource attrs) 1]
+          | target <- assets
+          ]
+        <> map (uncurry targetLabel . second pure) investigatorsWithHeal
       pure a
     _ -> Kerosene1 <$> runMessage msg attrs

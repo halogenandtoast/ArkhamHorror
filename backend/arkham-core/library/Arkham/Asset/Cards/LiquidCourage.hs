@@ -28,7 +28,9 @@ instance HasAbilities LiquidCourage where
           x
           1
           (ControlsThis <> InvestigatorExists
-            (HealableInvestigator HorrorType $ InvestigatorAt YourLocation)
+            (HealableInvestigator (toSource x) HorrorType
+            $ InvestigatorAt YourLocation
+            )
           )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
@@ -37,7 +39,10 @@ instance HasAbilities LiquidCourage where
 instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iids <- selectList $ HealableInvestigator HorrorType $ colocatedWith iid
+      iids <-
+        selectList
+        $ HealableInvestigator (toSource attrs) HorrorType
+        $ colocatedWith iid
       when (notNull iids) $ push $ chooseOrRunOne
         iid
         [ targetLabel
@@ -55,9 +60,12 @@ instance RunMessage LiquidCourage where
         ]
       pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> a
-      <$ push (AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 1)
+      | isSource attrs source
+      -> a <$ push
+        (AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 1)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ pushAll
-        [AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 0, RandomDiscard iid]
+        [ AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 0
+        , RandomDiscard iid
+        ]
     _ -> LiquidCourage <$> runMessage msg attrs

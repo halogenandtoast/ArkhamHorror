@@ -34,7 +34,9 @@ instance HasAbilities DiningRoom where
     [ restrictedAbility
         attrs
         1
-        (Here <> InvestigatorExists (HealableInvestigator HorrorType You))
+        (Here <> InvestigatorExists
+          (HealableInvestigator (toSource attrs) HorrorType You)
+        )
       $ ActionAbility Nothing
       $ ActionCost 1
     | locationRevealed attrs

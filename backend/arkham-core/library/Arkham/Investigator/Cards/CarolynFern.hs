@@ -94,11 +94,12 @@ instance RunMessage CarolynFern where
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       investigatorsWithHorror <-
         selectListMap InvestigatorTarget
-        $ HealableInvestigator HorrorType
+        $ HealableInvestigator (toSource attrs) HorrorType
         $ colocatedWith iid
       assetsWithHorror <-
-        selectListMap AssetTarget $ HealableAsset HorrorType $ AssetAt
-          (locationWithInvestigator iid)
+        selectListMap AssetTarget
+        $ HealableAsset (toSource attrs) HorrorType
+        $ AssetAt (locationWithInvestigator iid)
       push
         $ chooseOrRunOne iid
         $ Label "Do not heal anything" []

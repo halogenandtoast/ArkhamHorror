@@ -51,7 +51,8 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
       readStory iid (toId attrs) Story.inhabitantOfCarcosa
       pure . RuinsOfCarcosaInhabitantOfCarcosa $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.inhabitantOfCarcosa -> do
-      targets <- selectListMap InvestigatorTarget $ HealableInvestigator HorrorType Anyone
+      targets <- selectListMap InvestigatorTarget
+        $ HealableInvestigator (toSource attrs) HorrorType Anyone
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching
         $ CardWithTitle "Ruins of Carcosa"
       otherRuinsOfCarcosa <- case setAsideRuinsOfCarcosa of

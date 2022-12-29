@@ -32,7 +32,7 @@ instance HasAbilities JimsTrumpet where
         x
         1
         (ControlsThis <> InvestigatorExists
-          (HealableInvestigator HorrorType $ AnyInvestigator
+          (HealableInvestigator (toSource x) HorrorType $ AnyInvestigator
             [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
           )
         )
@@ -52,10 +52,12 @@ instance RunMessage JimsTrumpet where
             (fromJustNote "must be at a location")
             controllerId
           investigatorIds <-
-            selectList $ HealableInvestigator HorrorType $ AnyInvestigator
-              [ colocatedWith controllerId
-              , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
-              ]
+            selectList
+            $ HealableInvestigator (toSource attrs) HorrorType
+            $ AnyInvestigator
+                [ colocatedWith controllerId
+                , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
+                ]
           push $ chooseOne
             controllerId
             [ targetLabel

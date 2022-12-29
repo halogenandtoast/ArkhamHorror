@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Target
 
@@ -28,12 +29,14 @@ instance HasAbilities FirstAid3 where
           1
           (ControlsThis <> AnyCriterion
             [ InvestigatorExists $ AnyInvestigator
-              [ HealableInvestigator HorrorType $ InvestigatorAt YourLocation
-              , HealableInvestigator DamageType $ InvestigatorAt YourLocation
+              [ HealableInvestigator (toSource x) HorrorType
+                $ InvestigatorAt YourLocation
+              , HealableInvestigator (toSource x) DamageType
+                $ InvestigatorAt YourLocation
               ]
             , AssetExists $ AssetOneOf
-              [ HealableAsset HorrorType $ AssetAt YourLocation
-              , HealableAsset DamageType $ AssetAt YourLocation
+              [ HealableAsset (toSource x) HorrorType $ AssetAt YourLocation
+              , HealableAsset (toSource x) DamageType $ AssetAt YourLocation
               ]
             ]
           )
@@ -44,60 +47,76 @@ instance HasAbilities FirstAid3 where
 instance RunMessage FirstAid3 where
   runMessage msg a@(FirstAid3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-
-      horrorInvestigators <-
-        selectList $ HealableInvestigator HorrorType $ colocatedWith iid
-      damageInvestigators <-
-        selectList $ HealableInvestigator DamageType $ colocatedWith iid
-
-      horrorAssets <-
-        selectList
-        $ HealableAsset HorrorType
-        $ AssetAt
-        $ locationWithInvestigator iid
-      damageAssets <-
-        selectList
-        $ HealableAsset DamageType
-        $ AssetAt
-        $ locationWithInvestigator iid
-
-      let
-        horrorTargets =
-          setFromList
-            $ map InvestigatorTarget horrorInvestigators
-            <> map AssetTarget horrorAssets
-        damageTargets =
-          setFromList
-            $ map InvestigatorTarget damageInvestigators
-            <> map AssetTarget damageAssets
-        allTargets :: HashSet Target = horrorTargets <> damageTargets
-
       let
         componentLabel component target = case target of
           InvestigatorTarget iid' ->
             ComponentLabel (InvestigatorComponent iid' component)
           AssetTarget aid -> ComponentLabel (AssetComponent aid component)
           _ -> error "unhandled target"
-      push $ chooseOne
-        iid
-        [ TargetLabel
-            target
-            [ chooseOne iid
+
+      assetChoices <- do
+        horrorAssets <-
+          select
+          $ HealableAsset (toSource attrs) HorrorType
+          $ AssetAt
+          $ locationWithInvestigator iid
+        damageAssets <-
+          select
+          $ HealableAsset (toSource attrs) DamageType
+          $ AssetAt
+          $ locationWithInvestigator iid
+        let allAssets = setToList $ horrorAssets <> damageAssets
+        pure $ flip map allAssets $ \asset' ->
+          let target = AssetTarget asset'
+          in
+            targetLabel
+              asset'
+              [ chooseOneAtATime iid
+                $ [ componentLabel
+                      DamageToken
+                      target
+                      [HealDamage target (toSource attrs) 1]
+                  | asset' `member` damageAssets
+                  ]
+                <> [ componentLabel
+                       HorrorToken
+                       target
+                       [HealHorror target (toSource attrs) 1]
+                   | asset' `member` horrorAssets
+                   ]
+              ]
+
+      investigatorChoices <- do
+        horrorInvestigators <-
+          select
+          $ HealableInvestigator (toSource attrs) HorrorType
+          $ colocatedWith iid
+        damageInvestigators <-
+          select
+          $ HealableInvestigator (toSource attrs) DamageType
+          $ colocatedWith iid
+        let
+          allInvestigators =
+            setToList $ horrorInvestigators <> damageInvestigators
+        for allInvestigators $ \i -> do
+          let target = InvestigatorTarget i
+          mHealHorror <- if i `member` horrorInvestigators
+            then getHealHorrorMessage attrs 1 i
+            else pure Nothing
+          pure $ targetLabel
+            i
+            [ chooseOneAtATime iid
               $ [ componentLabel
                     DamageToken
                     target
                     [HealDamage target (toSource attrs) 1]
-                | target `member` damageTargets
+                | i `member` damageInvestigators
                 ]
-              <> [ componentLabel
-                     HorrorToken
-                     target
-                     [HealHorror target (toSource attrs) 1]
-                 | target `member` horrorTargets
+              <> [ componentLabel HorrorToken target [healHorror]
+                 | healHorror <- maybeToList mHealHorror
                  ]
             ]
-        | target <- setToList allTargets
-        ]
 
+      push $ chooseOne iid $ assetChoices <> investigatorChoices
       pure a
     _ -> FirstAid3 <$> runMessage msg attrs

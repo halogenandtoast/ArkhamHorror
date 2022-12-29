@@ -25,7 +25,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
-defeated :: (Monad m, HasGame m) => AssetAttrs -> m (Maybe DefeatedBy)
+defeated :: HasGame m => AssetAttrs -> m (Maybe DefeatedBy)
 defeated AssetAttrs { assetId } = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId

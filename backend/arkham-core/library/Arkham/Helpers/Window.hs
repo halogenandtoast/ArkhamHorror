@@ -10,7 +10,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Timing qualified as Timing
 import Arkham.Classes.Query
 
-checkWindows :: (Monad m, HasGame m) => [Window] -> m Message
+checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   iids <- selectList UneliminatedInvestigator
   if null iids
@@ -19,14 +19,14 @@ checkWindows windows' = do
       pure $ CheckWindow iids' windows'
     else pure $ CheckWindow iids windows'
 
-windows :: (Monad m, HasGame m) => [WindowType] -> m [Message]
+windows :: HasGame m => [WindowType] -> m [Message]
 windows windows' = do
   iids <- selectList UneliminatedInvestigator
   pure $ do
     timing <- [Timing.When, Timing.After]
     [CheckWindow iids $ map (Window timing) windows']
 
-splitWithWindows :: (Monad m, HasGame m) => Message -> [WindowType] -> m [Message]
+splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
   iids <- selectList UneliminatedInvestigator
   pure

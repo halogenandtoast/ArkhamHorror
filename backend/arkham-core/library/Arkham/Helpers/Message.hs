@@ -32,7 +32,7 @@ drawCardsAction i source n = do
   pure $ DrawCards $ asDrawAction drawing
 
 resolveWithWindow
-  :: (Monad m, HasGame m) => Message -> WindowType -> m [Message]
+  :: HasGame m => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do
   whenWindow <- checkWindows [Window Timing.When window']
   atIfWindow <- checkWindows [Window Timing.AtIf window']

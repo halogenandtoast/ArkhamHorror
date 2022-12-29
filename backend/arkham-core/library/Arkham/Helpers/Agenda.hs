@@ -11,8 +11,8 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Matcher
 import Arkham.Projection
 
-getCurrentAgendaStep :: (Monad m, HasGame m) => m Int
+getCurrentAgendaStep :: HasGame m => m Int
 getCurrentAgendaStep = selectJust AnyAgenda >>= getAgendaStep
 
-getAgendaStep :: (Monad m, HasGame m) => AgendaId -> m Int
+getAgendaStep :: HasGame m => AgendaId -> m Int
 getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)

@@ -12,9 +12,9 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -32,7 +32,11 @@ instance HasAbilities GrimmsFairyTales where
         $ ReactionAbility
             (SkillTestResult
                 Timing.After
-                (HealableInvestigator HorrorType (InvestigatorAt YourLocation))
+                (HealableInvestigator
+                  (toSource a)
+                  HorrorType
+                  (InvestigatorAt YourLocation)
+                )
                 AnySkillTest
             $ FailureResult
             $ AtLeast
@@ -50,7 +54,7 @@ toInvestigator (_ : xs) = toInvestigator xs
 instance RunMessage GrimmsFairyTales where
   runMessage msg a@(GrimmsFairyTales attrs) = case msg of
     UseCardAbility _ source 1 windows' _ | isSource attrs source -> do
-      let iid' = toInvestigator windows'
-      push $ HealHorror (InvestigatorTarget iid') (toSource attrs) 1
+      mHealHorror <- getHealHorrorMessage attrs 1 (toInvestigator windows')
+      for_ mHealHorror push
       pure a
     _ -> GrimmsFairyTales <$> runMessage msg attrs

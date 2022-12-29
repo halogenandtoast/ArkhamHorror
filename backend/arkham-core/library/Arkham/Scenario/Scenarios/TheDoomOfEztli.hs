@@ -107,7 +107,7 @@ standaloneCampaignLog = mkCampaignLog
     [TheInvestigatorsClearedAPathToTheEztliRuins]
   }
 
-investigatorDefeat :: (Monad m, HasGame m) => ScenarioAttrs -> m [Message]
+investigatorDefeat :: HasGame m => ScenarioAttrs -> m [Message]
 investigatorDefeat attrs = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds

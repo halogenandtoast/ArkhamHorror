@@ -68,8 +68,10 @@ instance RunMessage DimStreetsTheArchway where
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
-        healable <- selectAny
-          $ HealableInvestigator HorrorType (InvestigatorWithId iid)
+        healable <- selectAny $ HealableInvestigator
+          (toSource attrs)
+          HorrorType
+          (InvestigatorWithId iid)
         when healable $ push $ HealHorror
           (InvestigatorTarget iid)
           (toSource attrs)

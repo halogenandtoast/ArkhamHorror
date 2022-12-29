@@ -42,7 +42,7 @@ instance HasAbilities TheBeastUnleashed where
       (enemyIs Cards.theExperiment)
     ]
 
-getTheExperiment :: (Monad m, HasGame m) => m EnemyId
+getTheExperiment :: HasGame m => m EnemyId
 getTheExperiment =
   fromJustNote "must be in play" <$> selectOne (enemyIs Cards.theExperiment)
 

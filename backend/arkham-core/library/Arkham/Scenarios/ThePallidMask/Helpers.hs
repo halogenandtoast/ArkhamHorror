@@ -33,7 +33,7 @@ posLabelToPosition lbl = case drop 3 (unpack . unLabel $ lbl) of
 startPosition :: (Int, Int)
 startPosition = (2, 6)
 
-getStartingLocation :: (Monad m, HasGame m) => m LocationId
+getStartingLocation :: HasGame m => m LocationId
 getStartingLocation = selectJust $ LocationWithLabel $ positionToLabel startPosition
 
 positionToLabel :: (Int, Int) -> Label
@@ -44,7 +44,7 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | otherwise = show n
 
 
-placeAtDirection :: (Monad m, HasGame m) => Direction -> LocationAttrs -> m (Card -> [Message])
+placeAtDirection :: HasGame m => Direction -> LocationAttrs -> m (Card -> [Message])
 placeAtDirection direction attrs = do
   -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
   let placedPosition = newPos direction (posLabelToPosition . mkLabel $ locationLabel attrs)
@@ -79,10 +79,10 @@ placeAtDirection direction attrs = do
               LeftOf -> (x - 1, y)
               RightOf -> (x + 1, y)
 
-directionEmpty :: (Monad m, HasGame m) => LocationAttrs -> Direction -> m Bool
+directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
 directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)
 
-toMaybePlacement :: (Monad m, HasGame m) => LocationAttrs -> Direction -> m (Maybe (Card -> [Message]))
+toMaybePlacement :: HasGame m => LocationAttrs -> Direction -> m (Maybe (Card -> [Message]))
 toMaybePlacement attrs dir = do
   isEmpty <- directionEmpty attrs dir
   if isEmpty

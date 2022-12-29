@@ -93,6 +93,9 @@ toSnd f a = (a, f a)
 traverseToSnd :: Functor m => (a -> m b) -> a -> m (a, b)
 traverseToSnd f a = (a, ) <$> f a
 
+traverseToSndM :: (Functor f, Functor m) => (a -> m (f b)) -> a -> m (f (a, b))
+traverseToSndM f a = (a, ) <$$> f a
+
 forToSnd :: (Traversable t, Applicative m) => t a -> (a -> m b) -> m (t (a, b))
 forToSnd xs f = traverse (traverseToSnd f) xs
 
@@ -236,3 +239,7 @@ breakM p xs@(x : xs') = do
     else do
       (ys, zs) <- breakM p xs'
       pure (x : ys, zs)
+
+(<$$>) :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
+(<$$>) = fmap . fmap
+infixl 4 <$$>

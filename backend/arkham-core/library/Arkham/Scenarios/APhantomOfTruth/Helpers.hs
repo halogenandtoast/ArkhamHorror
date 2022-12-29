@@ -18,17 +18,17 @@ import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 import Arkham.Projection
 
-getTheOrganist :: (Monad m, HasGame m) => m EnemyId
+getTheOrganist :: HasGame m => m EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
 
 investigatorsNearestToTheOrganist
-  :: (Monad m, HasGame m) => m (Distance, [InvestigatorId])
+  :: HasGame m => m (Distance, [InvestigatorId])
 investigatorsNearestToTheOrganist = do
   theOrganist <- getTheOrganist
   investigatorsNearestToEnemy theOrganist
 
 investigatorsNearestToEnemy
-  :: (Monad m, HasGame m) => EnemyId -> m (Distance, [InvestigatorId])
+  :: HasGame m => EnemyId -> m (Distance, [InvestigatorId])
 investigatorsNearestToEnemy eid = do
   enemyLocation <- fieldMap
     EnemyLocation
@@ -52,7 +52,7 @@ investigatorsNearestToEnemy eid = do
     ((== minDistance) . unDistance . snd)
     mappings
 
-moveOrganistAwayFromNearestInvestigator :: (Monad m, HasGame m) => m Message
+moveOrganistAwayFromNearestInvestigator :: HasGame m => m Message
 moveOrganistAwayFromNearestInvestigator = do
   organist <- getTheOrganist
   leadInvestigatorId <- getLeadInvestigatorId
@@ -80,7 +80,7 @@ moveOrganistAwayFromNearestInvestigator = do
     [ targetLabel lid [EnemyMove organist lid] | lid <- targets ]
 
 disengageEachEnemyAndMoveToConnectingLocation
-  :: (Monad m, HasGame m) => m [Message]
+  :: HasGame m => m [Message]
 disengageEachEnemyAndMoveToConnectingLocation = do
   leadInvestigatorId <- getLeadInvestigatorId
   iids <- getInvestigatorIds

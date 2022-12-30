@@ -52,6 +52,10 @@ pattern InvestigatorWithAnyResources <-
   InvestigatorWithAnyResources =
     InvestigatorWithResources (GreaterThan (Static 0))
 
+pattern InvestigatorCanGainResources :: InvestigatorMatcher
+pattern InvestigatorCanGainResources <- InvestigatorWithoutModifier CannotGainResources where
+  InvestigatorCanGainResources = InvestigatorWithoutModifier CannotGainResources
+
 -- placeholder in case a modifier prevents spending resources
 pattern InvestigatorCanSpendResources :: GameValue -> InvestigatorMatcher
 pattern InvestigatorCanSpendResources value <-

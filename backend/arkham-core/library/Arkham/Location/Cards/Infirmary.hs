@@ -11,7 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Location.Cards qualified as Cards
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Message
@@ -37,16 +37,14 @@ instance RunMessage Infirmary where
       mHealHorror <- getHealHorrorMessage attrs 1 iid
       healDamage <- canHaveDamageHealed attrs iid
 
-      push
-        $ chooseOne iid
-        $ [ Label "Heal 1 damage and take 1 direct horror"
-            $ [HealDamage (toTarget attrs) (toSource attrs) 1]
-            <> [InvestigatorDirectDamage iid (toSource attrs) 0 1]
-          | healDamage
-          ]
-        <> [ Label "Heal 1 horror and take 1 direct damage"
-               $ [healHorror, InvestigatorDirectDamage iid (toSource attrs) 1 0]
-           | healHorror <- maybeToList mHealHorror
-           ]
+      push $ chooseOne
+        iid
+        [ Label "Heal 1 damage and take 1 direct horror"
+        $ [ HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage ]
+        <> [InvestigatorDirectDamage iid (toSource attrs) 0 1]
+        , Label "Heal 1 horror and take 1 direct damage"
+        $ maybeToList mHealHorror
+        <> [InvestigatorDirectDamage iid (toSource attrs) 1 0]
+        ]
       pure l
     _ -> Infirmary <$> runMessage msg attrs

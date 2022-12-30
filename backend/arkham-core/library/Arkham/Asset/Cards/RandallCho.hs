@@ -11,9 +11,8 @@ import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -37,12 +36,12 @@ instance HasAbilities RandallCho where
 instance RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      damage <- field InvestigatorDamage iid
+      damage <- canHaveDamageHealed attrs iid
       push $ chooseOrRunOne iid $ catMaybes
         [ Label
             "Heal 3 damage"
             [HealDamage (InvestigatorTarget iid) (toSource attrs) 3]
-          <$ guard (damage > 0)
+          <$ guard damage
         , Just $ Label
           "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
           [ Search

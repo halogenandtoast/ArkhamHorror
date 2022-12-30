@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
@@ -30,27 +31,32 @@ instance RunMessage MedicalTexts where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let controllerId = getController attrs
       locationInvestigatorIds <- selectList $ colocatedWith controllerId
-      push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (InvestigatorTarget iid')
-              [ BeginSkillTest
-                  iid
-                  source
-                  (InvestigatorTarget iid')
-                  Nothing
-                  SkillIntellect
-                  2
-              ]
-          | iid' <- locationInvestigatorIds
-          ]
-        )
-      MedicalTexts <$> runMessage msg attrs
-    PassedSkillTest _ _ source (SkillTestInitiatorTarget target@(InvestigatorTarget _)) _ _
+      push $ chooseOne
+        iid
+        [ TargetLabel
+            (InvestigatorTarget iid')
+            [ BeginSkillTest
+                iid
+                source
+                (InvestigatorTarget iid')
+                Nothing
+                SkillIntellect
+                2
+            ]
+        | iid' <- locationInvestigatorIds
+        ]
+      pure a
+    PassedSkillTest _ _ source (SkillTestInitiatorTarget target@(InvestigatorTarget iid)) _ _
       | isSource attrs source
-      -> a <$ push (HealDamage target (toSource attrs) 1)
+      -> do
+        whenM (canHaveDamageHealed attrs iid) $ push $ HealDamage
+          target
+          (toSource attrs)
+          1
+        pure a
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
       | isSource attrs source
-      -> a <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
+      -> do
+        push (InvestigatorAssignDamage iid source DamageAny 1 0)
+        pure a
     _ -> MedicalTexts <$> runMessage msg attrs

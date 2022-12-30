@@ -52,10 +52,7 @@ instance RunMessage ArkhamWoodsQuietGlade where
     case msg of
       UseCardAbility iid (LocationSource lid) 1 _ _ | lid == locationId -> do
         mHealHorror <- getHealHorrorMessage attrs 1 iid
-        canHealDamage <-
-          selectAny
-          $ HealableInvestigator (toSource attrs) DamageType
-          $ InvestigatorWithId iid
+        canHealDamage <- canHaveDamageHealed attrs iid
         pushAll
           $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
             | canHealDamage

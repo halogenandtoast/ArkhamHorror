@@ -52,10 +52,7 @@ instance HasAbilities MedicoDellaPeste where
 instance RunMessage MedicoDellaPeste where
   runMessage msg a@(MedicoDellaPeste attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      hasDamage <-
-        selectAny
-        $ HealableInvestigator (toSource attrs) DamageType
-        $ InvestigatorWithId iid
+      hasDamage <- canHaveDamageHealed attrs iid
       mHealHorror <- getHealHorrorMessage attrs 1 iid
       push
         $ chooseOrRunOne iid

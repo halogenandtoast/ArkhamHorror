@@ -609,12 +609,11 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   , cdCardTraits = setFromList [Insight, Science]
   , cdCriteria = Just $ Criteria.AnyCriterion
     [ Criteria.AssetExists
-      (AssetControlledBy (InvestigatorAt YourLocation)
-      <> AssetWithDamage
+      (HealableAsset ThisCard DamageType $ AssetControlledBy (InvestigatorAt YourLocation)
       <> AllyAsset
       )
     , Criteria.InvestigatorExists
-      (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
+      (HealableInvestigator ThisCard DamageType $ InvestigatorAt YourLocation)
     ]
   }
 
@@ -1389,7 +1388,7 @@ secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Spirit, Bold]
-  , cdCriteria = Just Criteria.FirstAction
+  , cdCriteria = Just $ Criteria.FirstAction <> Criteria.InvestigatorExists (HealableInvestigator ThisCard DamageType You)
   }
 
 truthFromFiction :: CardDef

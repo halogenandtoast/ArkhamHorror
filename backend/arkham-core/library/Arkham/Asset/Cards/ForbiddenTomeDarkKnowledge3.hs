@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Target
@@ -39,8 +40,12 @@ instance HasAbilities ForbiddenTomeDarkKnowledge3 where
           <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation)
           <> AnyCriterion
                [ InvestigatorExists
-                 (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
-               , AssetExists (AssetAt YourLocation <> AssetWithDamage)
+                 (HealableInvestigator (toSource a) DamageType
+                 $ InvestigatorAt YourLocation
+                 )
+               , AssetExists
+                 (HealableAsset (toSource a) DamageType $ AssetAt YourLocation
+                 )
                ]
           )
         $ ActionAbility Nothing
@@ -53,12 +58,10 @@ instance RunMessage ForbiddenTomeDarkKnowledge3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigators <-
         selectListMap InvestigatorTarget
-        $ colocatedWith iid
-        <> InvestigatorWithAnyDamage
+        $ HealableInvestigator (toSource attrs) DamageType $ colocatedWith iid
       assets <-
         selectListMap AssetTarget
-        $ AssetAt (locationWithInvestigator iid)
-        <> AssetWithDamage
+        $ HealableAsset (toSource attrs) DamageType $ AssetAt (locationWithInvestigator iid)
       enemies <- selectListMap EnemyTarget $ EnemyAt $ locationWithInvestigator
         iid
       push $ chooseOne

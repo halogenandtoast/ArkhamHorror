@@ -5,9 +5,11 @@ module Arkham.Event.Cards.EmergencyAid
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Damage
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -22,19 +24,29 @@ emergencyAid = event EmergencyAid Cards.emergencyAid
 instance RunMessage EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <- selectList
-        (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
-      let investigatorTargets = map InvestigatorTarget investigatorIds
-      allyTargets <- selectListMap AssetTarget
-        (AssetWithDamage <> AllyAsset <> AssetOneOf
-          (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
-        )
-      e <$ pushAll
-        (chooseOne
-            iid
-            [ TargetLabel target [HealDamage target (toSource attrs) 2]
-            | target <- investigatorTargets <> allyTargets
+      iids <- selectList $ colocatedWith iid
+
+      choices <- flip mapMaybeM iids $ \iid' -> do
+        healableAllies <-
+          selectList
+          $ HealableAsset (toSource attrs) DamageType
+          $ AllyAsset
+          <> assetControlledBy iid'
+        healable <- canHaveDamageHealed attrs iid'
+
+        pure $ if healable || notNull healableAllies
+          then Just $ targetLabel
+            iid'
+            [ chooseOrRunOne iid
+              $ [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
+                | healable
+                ]
+              <> [ targetLabel asset [HealDamage (AssetTarget asset) (toSource attrs) 2]
+                 | asset <- healableAllies
+                 ]
             ]
-        : [Discard (toTarget attrs)]
-        )
+          else Nothing
+
+      pushAll [chooseOne iid choices , Discard (toTarget attrs)]
+      pure e
     _ -> EmergencyAid <$> runMessage msg attrs

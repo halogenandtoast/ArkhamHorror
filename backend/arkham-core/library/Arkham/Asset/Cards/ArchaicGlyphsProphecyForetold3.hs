@@ -12,9 +12,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 
 newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAttrs
@@ -38,16 +38,18 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       mlid <- field InvestigatorLocation iid
       case mlid of
         Nothing -> push $ Discard (toTarget attrs)
-        Just lid -> pushAll
-          [ Investigate
-            iid
-            lid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            SkillIntellect
-            False
-          , Discard (toTarget attrs)
-          ]
+        Just lid -> do
+          skillType <- field LocationInvestigateSkill lid
+          pushAll
+            [ Investigate
+              iid
+              lid
+              (toSource attrs)
+              (Just $ toTarget attrs)
+              skillType
+              False
+            , Discard (toTarget attrs)
+            ]
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target _
       | isTarget attrs target -> do

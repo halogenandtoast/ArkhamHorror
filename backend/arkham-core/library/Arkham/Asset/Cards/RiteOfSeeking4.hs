@@ -6,12 +6,13 @@ module Arkham.Asset.Cards.RiteOfSeeking4
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
@@ -34,13 +35,18 @@ instance HasAbilities RiteOfSeeking4 where
 instance RunMessage RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
-      a <$ pushAll
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      skillType <- field LocationInvestigateSkill lid
+      pushAll
         [ CreateEffect "02233" Nothing source (InvestigationTarget iid lid) -- same effect as base
         , skillTestModifier
           source
           (InvestigatorTarget iid)
           (SkillModifier SkillWillpower 2)
-        , Investigate iid lid source Nothing SkillWillpower False
+        , Investigate iid lid source Nothing skillType False
         ]
+      pure a
     _ -> RiteOfSeeking4 <$> runMessage msg attrs

@@ -6,15 +6,15 @@ module Arkham.Asset.Cards.Lantern
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 
 newtype Lantern = Lantern AssetAttrs
@@ -41,11 +41,16 @@ instance HasAbilities Lantern where
 instance RunMessage Lantern where
   runMessage msg a@(Lantern attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
-      a <$ pushAll
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      skillType <- field LocationInvestigateSkill lid
+      pushAll
         [ skillTestModifier source (LocationTarget lid) (ShroudModifier (-1))
-        , Investigate iid lid source Nothing SkillIntellect False
+        , Investigate iid lid source Nothing skillType False
         ]
+      pure a
     InDiscard _ (UseCardAbility iid source 2 _ _) | isSource attrs source -> do
       targets <- selectListMap EnemyTarget $ EnemyAt YourLocation
       a <$ push

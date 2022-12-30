@@ -12,8 +12,8 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype Burglary = Burglary AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,13 +36,8 @@ instance RunMessage Burglary where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      push $ Investigate
-        iid
-        lid
-        source
-        (Just $ toTarget attrs)
-        SkillIntellect
-        False
+      skillType <- field LocationInvestigateSkill lid
+      push $ Investigate iid lid source (Just $ toTarget attrs) skillType False
       pure a
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       a <$ pushAll [TakeResources iid 3 False]

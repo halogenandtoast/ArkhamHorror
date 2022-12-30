@@ -12,9 +12,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 
 newtype Flashlight = Flashlight AssetAttrs
@@ -26,9 +26,9 @@ flashlight = asset Flashlight Cards.flashlight
 
 instance HasAbilities Flashlight where
   getAbilities (Flashlight x) =
-    [ restrictedAbility x 1 ControlsThis $ ActionAbility
-        (Just Action.Investigate)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1])
+    [ restrictedAbility x 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
 instance RunMessage Flashlight where
@@ -38,8 +38,10 @@ instance RunMessage Flashlight where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      a <$ pushAll
+      skillType <- field LocationInvestigateSkill lid
+      pushAll
         [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))
-        , Investigate iid lid source Nothing SkillIntellect False
+        , Investigate iid lid source Nothing skillType False
         ]
+      pure a
     _ -> Flashlight <$> runMessage msg attrs

@@ -12,11 +12,12 @@ spec = describe "Final Rhapsody" $ do
   it "does 1 damage per skull and autofail revealed" $ do
     investigator <- testJenny id
     finalRhapsody <- genPlayerCard Cards.finalRhapsody
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ SetTokens [Skull, Skull, AutoFail, Zero, Cultist]
         , loadDeck investigator [finalRhapsody]
-        , drawCards investigator 1
+        , drawing
         ]
         id
       $ do

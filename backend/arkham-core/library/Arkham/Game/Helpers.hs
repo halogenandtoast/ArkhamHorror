@@ -1804,10 +1804,10 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.RevealToken who token) | whenMatcher == t -> liftA2
-        (&&)
-        (matchWho iid who whoMatcher)
-        (matchToken who token tokenMatcher)
+      Window t (Window.RevealToken who token) | whenMatcher == t -> andM
+        [ matchWho iid who whoMatcher
+        , matchToken who token tokenMatcher
+        ]
       _ -> pure False
   Matcher.AddedToVictory timingMatcher cardMatcher -> case window' of
     Window t (Window.AddedToVictory card) | timingMatcher == t ->
@@ -1823,10 +1823,10 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyDefeated (Just who) enemyId) | timingMatcher == t -> liftA2
-        (&&)
-        (enemyMatches enemyId enemyMatcher)
-        (matchWho iid who whoMatcher)
+      Window t (Window.EnemyDefeated (Just who) enemyId) | timingMatcher == t -> andM
+        [ enemyMatches enemyId enemyMatcher
+        , matchWho iid who whoMatcher
+        ]
       _ -> pure False
   Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
     case window' of

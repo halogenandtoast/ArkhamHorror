@@ -6,7 +6,6 @@ module Arkham.Location.Cards.BleakPlainsStarsOfAldebaran
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
 import Arkham.GameValue

@@ -20,6 +20,7 @@ spec = describe "Smite the Wicked" $ do
     enemy <- genEncounterCard Cards.swarmOfRats
     treachery <- genEncounterCard Cards.ancientEvils
     (location1, location2) <- testConnectedLocations id id
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ placedLocation location1
@@ -27,7 +28,7 @@ spec = describe "Smite the Wicked" $ do
         , SetEncounterDeck (Deck [treachery, enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location1
-        , drawCards investigator 1
+        , drawing
         ]
         ((entitiesL . locationsL %~ insertEntity location1)
         . (entitiesL . locationsL %~ insertEntity location2)
@@ -45,12 +46,13 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ SetEncounterDeck (Deck [enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
-        , drawCards investigator 1
+        , drawing
         , EndOfGame Nothing
         ]
         (entitiesL . locationsL %~ insertEntity location)
@@ -65,13 +67,14 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ placedLocation location
         , SetEncounterDeck (Deck [enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
-        , drawCards investigator 1
+        , drawing
         ]
         (entitiesL . locationsL %~ insertEntity location)
       $ do
@@ -81,7 +84,6 @@ spec = describe "Smite the Wicked" $ do
           pushAll
             [ Msg.EnemyDefeated
               enemyId
-              (toId investigator)
               (toCardCode enemy)
               (toSource investigator)
               []
@@ -96,13 +98,14 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ placedLocation location
         , SetEncounterDeck (Deck [enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
-        , drawCards investigator 1
+        , drawing
         , Resign (toId investigator)
         ]
         (entitiesL . locationsL %~ insertEntity location)

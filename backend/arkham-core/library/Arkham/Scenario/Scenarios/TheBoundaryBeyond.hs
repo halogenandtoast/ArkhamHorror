@@ -107,7 +107,7 @@ instance RunMessage TheBoundaryBeyond where
       withGasoline <- headMay <$> getInvestigatorsWithSupply Gasoline
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
-      tokens <- getTokensInBag
+      tokens <- getBagTokens
       let
         cultistCount = count ((== Cultist) . tokenFace) tokens
         tabletCount = count ((== Tablet) . tokenFace) tokens

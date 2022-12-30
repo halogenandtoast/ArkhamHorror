@@ -14,6 +14,7 @@ import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Message
 import Arkham.Name
+import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -49,7 +50,7 @@ enemyAttack i e = EnemyAttack (toId i) (toId e) DamageAny RegularAttack
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
-  FightEnemy (toId i) (toId e) (TestSource mempty) Nothing SkillCombat False
+  FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (toId i) (toId e) False
@@ -58,16 +59,13 @@ disengageEnemy :: Investigator -> Enemy -> Message
 disengageEnemy i e = DisengageEnemy (toId i) (toId e)
 
 playAsset :: Investigator -> Asset -> Message
-playAsset i a = InvestigatorPlayAsset (toId i) (toId a)
+playAsset i a = PlaceAsset (toId a) (InPlayArea $ toId i)
 
 placedLocation :: Location -> Message
 placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
 
 playCard :: Investigator -> Card -> Message
 playCard i c = PlayCard (toId i) c Nothing (defaultWindows $ toId i) True
-
-drawCards :: Investigator -> Int -> Message
-drawCards i n = DrawCards (toId i) n False
 
 investigate :: Investigator -> Location -> Message
 investigate i l =

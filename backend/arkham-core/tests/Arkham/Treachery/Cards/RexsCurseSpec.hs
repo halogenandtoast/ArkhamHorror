@@ -13,9 +13,10 @@ spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ do
     investigator <- testJenny id
     rexsCurse <- genPlayerCard Cards.rexsCurse
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
-        [loadDeck investigator [rexsCurse], drawCards investigator 1]
+        [loadDeck investigator [rexsCurse], drawing]
         id
       $ do
           runMessages
@@ -28,6 +29,7 @@ spec = describe "Rex's Curse" $ do
   it "causes you to reveal another token" $ do
     investigator <- testJenny (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
+    drawing <- drawCards (toId investigator) investigator 1
 
     (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
 
@@ -36,7 +38,7 @@ spec = describe "Rex's Curse" $ do
         investigator
         [ SetTokens [PlusOne]
         , loadDeck investigator [rexsCurse]
-        , drawCards investigator 1
+        , drawing
         , BeginSkillTest
           (toId investigator)
           (TestSource mempty)
@@ -62,11 +64,12 @@ spec = describe "Rex's Curse" $ do
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testJenny (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ SetTokens [MinusOne]
         , loadDeck investigator [rexsCurse]
-        , drawCards investigator 1
+        , drawing
         , beginSkillTest investigator SkillIntellect 4
         ]
         id

@@ -13,7 +13,7 @@ spec = do
   describe "Dark Memory" $ do
     it "places 1 doom and can advance current agenda" $ do
       investigator <- testJenny id
-      agenda <- testAgenda "01105" (Agenda.doomThresholdL .~ Static 1)
+      agenda <- testAgenda "01105" (Agenda.doomThresholdL ?~ Static 1)
       darkMemory <- buildEvent Events.darkMemory investigator
 
       (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "01105")

@@ -23,10 +23,11 @@ spec = describe "Wracked by Nightmares" $ do
       . (Asset.placementL .~ InPlayArea (toId investigator))
       )
       investigator
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ loadDeck investigator [wrackedByNightmares]
-        , drawCards investigator 1
+        , drawing
         , ReadyExhausted
         ]
         (entitiesL . assetsL %~ insertEntity asset)
@@ -45,9 +46,10 @@ spec = describe "Wracked by Nightmares" $ do
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.ownerL ?~ toId investigator))
       investigator
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
-        [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]
+        [loadDeck investigator [wrackedByNightmares], drawing]
         (entitiesL . assetsL %~ insertEntity asset)
       $ do
           runMessages

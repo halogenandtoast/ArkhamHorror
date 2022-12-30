@@ -29,10 +29,11 @@ spec = describe "\"Ashcan\" Pete" $ do
       let ashcanPete = lookupInvestigator "02005"
       asset <- testAsset id ashcanPete
       card <- testPlayerCard id
+      drawing <- drawCards (toId ashcanPete) ashcanPete 1
       gameTest
           ashcanPete
           [ loadDeck ashcanPete [card]
-          , drawCards ashcanPete 1
+          , drawing
           , playAsset ashcanPete asset
           , Exhaust (toTarget asset)
           , CheckWindow [toId ashcanPete] [fastPlayerWindow]

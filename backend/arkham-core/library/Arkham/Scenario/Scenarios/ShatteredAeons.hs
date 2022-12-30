@@ -153,7 +153,7 @@ instance RunMessage ShatteredAeons where
 
       lead <- getLeadInvestigatorId
       investigators <- allInvestigatorIds
-      tokens <- getTokensInBag
+      tokens <- getBagTokens
 
       leadDeck <- fieldMap InvestigatorDeck unDeck lead
 

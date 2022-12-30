@@ -176,6 +176,7 @@ instance RunMessage AssetAttrs where
       pure
         $ a
         & (placementL .~ InPlayArea iid)
+        & (controllerL ?~ iid)
         & (usesL .~ if assetUses == NoUses
             then foldl' applyModifier startingUses modifiers
             else assetUses
@@ -187,7 +188,7 @@ instance RunMessage AssetAttrs where
         )
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     ReplacedInvestigatorAsset iid aid | aid == assetId ->
-      pure $ a & placementL .~ InPlayArea iid
+      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]

@@ -49,7 +49,7 @@ instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
     UseCardAbility iid source 1 [Window Timing.When (RevealToken _ token)] _
       | isSource attrs source -> do
-        tokensInBag <- getTokensInBag
+        tokensInBag <- getOnlyTokensInBag
         pushAll
           [ FocusTokens tokensInBag
           , chooseOne

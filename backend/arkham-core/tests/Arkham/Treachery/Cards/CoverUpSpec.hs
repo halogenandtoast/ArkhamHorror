@@ -17,9 +17,10 @@ spec = describe "Cover Up" $ do
   it "starts with 3 clues on it" $ do
     investigator <- testJenny id
     coverUp <- genPlayerCard Cards.coverUp
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
-        [loadDeck investigator [coverUp], drawCards investigator 1]
+        [loadDeck investigator [coverUp], drawing]
         id
       $ do
           runMessages
@@ -30,10 +31,11 @@ spec = describe "Cover Up" $ do
     investigator <- testJenny id
     coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 1
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ loadDeck investigator [coverUp]
-        , drawCards investigator 1
+        , drawing
         , moveTo investigator location
         , InvestigatorDiscoverClues (toId investigator) (toId location) 1 Nothing
         ]
@@ -54,10 +56,11 @@ spec = describe "Cover Up" $ do
     $ do
         investigator <- testJenny id
         coverUp <- genPlayerCard Cards.coverUp
+        drawing <- drawCards (toId investigator) investigator 1
         gameTest
             investigator
             [ loadDeck investigator [coverUp]
-            , drawCards investigator 1
+            , drawing
             , EndOfGame Nothing
             ]
             id
@@ -70,10 +73,11 @@ spec = describe "Cover Up" $ do
     investigator <- testJenny id
     coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 3
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ loadDeck investigator [coverUp]
-        , drawCards investigator 1
+        , drawing
         , moveTo investigator location
         , InvestigatorDiscoverClues (toId investigator) (toId location) 3 Nothing
         , EndOfGame Nothing

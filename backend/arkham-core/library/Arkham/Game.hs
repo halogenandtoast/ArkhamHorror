@@ -2216,7 +2216,7 @@ instance Projection Investigator where
 
 instance Query TokenMatcher where
   select matcher = do
-    tokens <- if includeSealed then getAllTokens else getTokensInBag
+    tokens <- if includeSealed then getAllTokens else getBagTokens
     setFromList <$> filterM (go matcher) tokens
    where
     includeSealed = case matcher of

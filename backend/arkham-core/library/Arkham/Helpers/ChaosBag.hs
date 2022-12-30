@@ -13,8 +13,11 @@ import Arkham.Matcher
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Token
 
-getTokensInBag :: HasGame m => m [Token]
-getTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagTokens
+getOnlyTokensInBag :: HasGame m => m [Token]
+getOnlyTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagTokens
+
+getBagTokens :: HasGame m => m [Token]
+getBagTokens = scenarioFieldMap ScenarioChaosBag allChaosBagTokens
 
 getSealedTokens :: HasGame m => m [Token]
 getSealedTokens = concat <$> sequence
@@ -24,4 +27,4 @@ getSealedTokens = concat <$> sequence
   ]
 
 getAllTokens :: HasGame m => m [Token]
-getAllTokens = concat <$> sequence [getTokensInBag, getSealedTokens]
+getAllTokens = concat <$> sequence [getBagTokens, getSealedTokens]

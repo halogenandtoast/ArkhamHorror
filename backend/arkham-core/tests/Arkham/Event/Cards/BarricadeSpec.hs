@@ -41,7 +41,7 @@ spec = do
           investigator
           [ moveAllTo location1
           , playEvent investigator barricade
-          , Move (toSource investigator2) (toId investigator2) (toId location1) (toId location2)
+          , Move (toSource investigator2) (toId investigator2) (toId location2)
           ]
           ((entitiesL . eventsL %~ insertEntity barricade)
           . (entitiesL . locationsL %~ insertEntity location1)

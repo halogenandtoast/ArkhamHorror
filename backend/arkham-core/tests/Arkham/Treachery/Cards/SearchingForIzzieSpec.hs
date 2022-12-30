@@ -15,6 +15,7 @@ spec = describe "Searching for Izzie" $ do
   it "attaches to the location farthest away from you" $ do
     investigator <- testJenny id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
+    drawing <- drawCards (toId investigator) investigator 1
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator
@@ -22,7 +23,7 @@ spec = describe "Searching for Izzie" $ do
         , placedLocation location2
         , loadDeck investigator [searchingForIzzie]
         , moveTo investigator location1
-        , drawCards investigator 1
+        , drawing
         ]
         ((entitiesL . locationsL %~ insertEntity location1)
         . (entitiesL . locationsL %~ insertEntity location2)
@@ -39,12 +40,13 @@ spec = describe "Searching for Izzie" $ do
     investigator <- testJenny id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ SetTokens [Zero]
         , loadDeck investigator [searchingForIzzie]
         , moveTo investigator location
-        , drawCards investigator 1
+        , drawing
         , moveTo investigator location
         ]
         (entitiesL . locationsL %~ insertEntity location)
@@ -72,11 +74,12 @@ spec = describe "Searching for Izzie" $ do
     investigator <- testJenny id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
+    drawing <- drawCards (toId investigator) investigator 1
     gameTest
         investigator
         [ loadDeck investigator [searchingForIzzie]
         , moveTo investigator location
-        , drawCards investigator 1
+        , drawing
         , EndOfGame Nothing
         ]
         (entitiesL . locationsL %~ insertEntity location)

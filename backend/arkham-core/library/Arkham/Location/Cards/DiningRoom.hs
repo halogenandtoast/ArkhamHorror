@@ -19,7 +19,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
-import Arkham.Target
 import Arkham.Token
 
 newtype DiningRoom = DiningRoom LocationAttrs

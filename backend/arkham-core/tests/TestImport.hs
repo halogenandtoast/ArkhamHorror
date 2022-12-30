@@ -37,6 +37,7 @@ import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
 import Arkham.GameValue as X
 import Arkham.Helpers as X
+import Arkham.Helpers.Message as X
 import Arkham.Id as X
 import Arkham.Investigator as X
 import Arkham.Investigator.Cards qualified as Investigators
@@ -426,7 +427,6 @@ newGame investigator = do
     , gameGameState = IsActive
     , gameFoundCards = mempty
     , gameFocusedCards = mempty
-    , gameFocusedTargets = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = [investigatorId]

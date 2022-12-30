@@ -242,6 +242,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , uncageTheSoul
   , unearthTheAncients
   , unearthTheAncients2
+  , unsolvedCase
   , vantagePoint
   , wardOfProtection
   , wardOfProtection2
@@ -1526,6 +1527,12 @@ alterFate3 = (event "04313" "Alter Fate" 1 Survivor)
   , cdFastWindow = Just FastPlayerWindow
   , cdCriteria = Just $ Criteria.TreacheryExists $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
   , cdLevel = 3
+  }
+
+unsolvedCase :: CardDef
+unsolvedCase = (event "05010" "Unsolved Case" 4 Neutral)
+  { cdCardTraits = setFromList [Insight, Mystery]
+  , cdCardSubType = Just Weakness
   }
 
 trialByFire :: CardDef

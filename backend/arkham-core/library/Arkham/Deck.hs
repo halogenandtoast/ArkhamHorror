@@ -11,5 +11,6 @@ data DeckSignifier
   | EncounterDeck
   | EncounterDiscard
   | ScenarioDeckByKey ScenarioDeckKey
+  | HunchDeck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

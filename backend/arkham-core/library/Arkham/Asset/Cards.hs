@@ -169,6 +169,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , davidRenfield
   , decoratedSkull
   , dejaVu5
+  , detectivesColt1911s
   , digDeep
   , digDeep2
   , discOfItzamna
@@ -2537,6 +2538,12 @@ hypnoticTherapy :: CardDef
 hypnoticTherapy = (asset "05007" "Hypnotic Therapy" 2 Neutral)
   { cdCardTraits = singleton Talent
   , cdSkills = [#willpower, #intellect, #wild]
+  }
+
+detectivesColt1911s :: CardDef
+detectivesColt1911s = (asset "05009" "Detective's Colt 1911s" 4 Neutral)
+  { cdCardTraits = setFromList [Item, Weapon, Firearm]
+  , cdSkills = [#intellect, #combat, #wild]
   }
 
 fingerprintKit :: CardDef

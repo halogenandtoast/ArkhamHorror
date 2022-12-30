@@ -41,10 +41,8 @@ spec = describe "First Aid" $ do
                 TargetLabel (InvestigatorTarget iid) _ ->
                   iid == toId investigator
                 _ -> False
-              chooseOnlyOption "heal self"
               pushAndRun $ UseAbility (toId investigator) useFirstAid []
               chooseOnlyOption "choose investigator at same location"
-              chooseOnlyOption "heal other investigator"
               fieldAssert InvestigatorDamage (== 0) investigator
               fieldAssert InvestigatorHorror (== 0) investigator2
               fieldAssert InvestigatorHorror (== 1) investigator3

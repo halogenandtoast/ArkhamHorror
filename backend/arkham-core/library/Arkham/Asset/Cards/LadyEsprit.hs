@@ -10,6 +10,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
+import Arkham.Helpers.Investigator
+import Arkham.Matcher
 import Arkham.Target
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
@@ -24,7 +27,13 @@ instance HasAbilities LadyEsprit where
     [ restrictedAbility
         x
         1
-        OnSameLocation
+        (OnSameLocation <> InvestigatorExists
+          (AnyInvestigator
+            [ HealableInvestigator (toSource x) DamageType You
+            , You <> InvestigatorCanGainResources
+            ]
+          )
+        )
         (ActionAbility Nothing $ Costs
           [ ActionCost 1
           , ExhaustCost (toTarget x)
@@ -36,14 +45,19 @@ instance HasAbilities LadyEsprit where
 instance RunMessage LadyEsprit where
   runMessage msg a@(LadyEsprit attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ chooseOne
-        iid
-        [ ComponentLabel
-          (InvestigatorComponent iid DamageToken)
-          [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
-        , ComponentLabel
-          (InvestigatorComponent iid ResourceToken)
-          [TakeResources iid 2 False]
-        ]
+      canHeal <- canHaveDamageHealed attrs iid
+      canGainResources <- withoutModifier (InvestigatorTarget iid) CannotGainResources
+      push
+        $ chooseOne iid
+        $ [ ComponentLabel
+              (InvestigatorComponent iid DamageToken)
+              [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
+          | canHeal
+          ]
+        <> [ ComponentLabel
+               (InvestigatorComponent iid ResourceToken)
+               [TakeResources iid 2 False]
+           | canGainResources
+           ]
       pure a
     _ -> LadyEsprit <$> runMessage msg attrs

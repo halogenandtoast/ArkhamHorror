@@ -29,15 +29,16 @@ instance RunMessage TheHomeFront where
     PassedSkillTest _ (Just Fight) _ target _ _ | isTarget attrs target -> do
       mSkillTestTarget <- getSkillTestTarget
       damageCount <- field InvestigatorDamage skillOwner
-      s <$ case mSkillTestTarget of
+      case mSkillTestTarget of
         Just (EnemyTarget eid) -> do
           canDamage <- sourceCanDamageEnemy eid (toSource attrs)
           when
             (canDamage && damageCount > 0)
             do
               pushAll
-                [ HealDamage (InvestigatorTarget skillOwner) (toSource attrs) 1
+                [ HealDamageDirectly (InvestigatorTarget skillOwner) (toSource attrs) 1
                 , EnemyDamage eid $ nonAttack attrs 1
                 ]
         _ -> pure ()
+      pure s
     _ -> TheHomeFront <$> runMessage msg attrs

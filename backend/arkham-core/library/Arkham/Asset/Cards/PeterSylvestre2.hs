@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
@@ -34,12 +35,15 @@ instance HasAbilities PeterSylvestre2 where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> AssetExists (AssetWithId (toId x) <> AssetWithHorror))
+        (ControlsThis <> AssetExists
+          (HealableAsset (toSource x) HorrorType $ AssetWithId (toId x))
+        )
         (ReactionAbility (TurnEnds Timing.After You) Free)
     ]
 
 instance RunMessage PeterSylvestre2 where
-  runMessage msg (PeterSylvestre2 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      pure $ PeterSylvestre2 $ attrs & horrorL -~ 1
+  runMessage msg a@(PeterSylvestre2 attrs) = case msg of
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ HealHorror (toTarget attrs) (toSource attrs) 1
+      pure a
     _ -> PeterSylvestre2 <$> runMessage msg attrs

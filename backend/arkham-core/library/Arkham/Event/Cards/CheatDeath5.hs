@@ -42,12 +42,13 @@ instance RunMessage CheatDeath5 where
         )
 
       mHealHorror <- getHealHorrorMessage attrs 2 iid
+      healable <- canHaveDamageHealed attrs iid
 
       pushAll
         $ map (DisengageEnemy iid) enemies
         <> map (Discard . TreacheryTarget) treacheries
         <> maybeToList mHealHorror
-        <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
+        <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
         <> [ chooseOrRunOne iid $ map
                (\lid -> targetLabel lid [MoveTo (toSource attrs) iid lid])
                locations

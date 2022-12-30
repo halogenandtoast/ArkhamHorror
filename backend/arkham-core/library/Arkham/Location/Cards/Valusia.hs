@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
@@ -45,10 +44,7 @@ instance RunMessage Valusia where
   runMessage msg (Valusia attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mHealHorror <- getHealHorrorMessage attrs 2 iid
-      canHealDamage <-
-        selectAny
-        $ HealableInvestigator (toSource attrs) DamageType
-        $ InvestigatorWithId iid
+      canHealDamage <- canHaveDamageHealed attrs iid
       pushAll
         $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 2
           | canHealDamage

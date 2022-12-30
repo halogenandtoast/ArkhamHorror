@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Target
 
@@ -25,7 +26,7 @@ instance HasAbilities Painkillers where
     [ restrictedAbility
         a
         1
-        (ControlsThis <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
+        (ControlsThis <> InvestigatorExists (HealableInvestigator (toSource a) DamageType You))
         (FastAbility
           (Costs
             [ UseCost (AssetWithId $ toId a) Supply 1
@@ -39,6 +40,6 @@ instance HasAbilities Painkillers where
 instance RunMessage Painkillers where
   runMessage msg a@(Painkillers attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push (HealDamage (InvestigatorTarget iid) (toSource attrs) 1)
+      push $ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
       pure a
     _ -> Painkillers <$> runMessage msg attrs

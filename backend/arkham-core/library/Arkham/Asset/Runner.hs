@@ -98,6 +98,9 @@ instance RunMessage AssetAttrs where
     HealHorrorDirectly target _ amount | isTarget a target -> do
       -- USE ONLY WHEN NO CALLBACKS
       pure $ a & horrorL %~ max 0 . subtract amount
+    HealDamageDirectly target _ amount | isTarget a target -> do
+      -- USE ONLY WHEN NO CALLBACKS
+      pure $ a & damageL %~ max 0 . subtract amount
     When (InvestigatorResigned iid) -> do
       let
         shouldResignWith = case assetPlacement of

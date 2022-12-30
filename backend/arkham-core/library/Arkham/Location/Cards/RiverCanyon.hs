@@ -11,6 +11,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -33,7 +34,7 @@ instance HasAbilities RiverCanyon where
       $ restrictedAbility
           attrs
           1
-          (Here <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
+          (Here <> InvestigatorExists (HealableInvestigator (toSource attrs) DamageType You))
       $ ActionAbility Nothing
       $ ActionCost 1
     ]

@@ -1461,6 +1461,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
     pure $ a & sanityDamageL %~ max 0 . subtract amount
+  HealDamageDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+    -- USE ONLY WHEN NO CALLBACKS
+    pure $ a & healthDamageL %~ max 0 . subtract amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a

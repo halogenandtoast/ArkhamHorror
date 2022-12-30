@@ -30,7 +30,6 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillTest
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -338,15 +337,21 @@ instance RunMessage LocationAttrs where
         triggerSource = case source of
           ProxySource _ s -> s
           _ -> InvestigatorSource iid
-      a <$ push
-        (Investigate iid (toId a) triggerSource Nothing SkillIntellect False)
-    UseCardAbility iid source 102 _ _ | isSource a source -> a <$ push
-      (MoveAction
+      push $ Investigate
+        iid
+        (toId a)
+        triggerSource
+        Nothing
+        locationInvestigateSkill
+        False
+      pure a
+    UseCardAbility iid source 102 _ _ | isSource a source -> do
+      push $ MoveAction
         iid
         locationId
         Free -- already paid by using ability
         True
-      )
+      pure a
     _ -> pure a
 
 locationEnemiesWithTrait :: LocationAttrs -> Trait -> GameT [EnemyId]

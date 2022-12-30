@@ -12,8 +12,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Projection
 import Arkham.Target
 
 newtype OtherwordlyCompass2 = OtherwordlyCompass2 AssetAttrs
@@ -37,12 +38,13 @@ instance RunMessage OtherwordlyCompass2 where
       lid <- getJustLocation iid
       revealedLocations <- selectCount $ RevealedLocation <> ConnectedTo
         (locationWithInvestigator iid)
+      skillType <- field LocationInvestigateSkill lid
       pushAll
         [ skillTestModifier
           attrs
           (LocationTarget lid)
           (ShroudModifier (-revealedLocations))
-        , Investigate iid lid (toSource attrs) Nothing SkillIntellect False
+        , Investigate iid lid (toSource attrs) Nothing skillType False
         ]
       pure a
     _ -> OtherwordlyCompass2 <$> runMessage msg attrs

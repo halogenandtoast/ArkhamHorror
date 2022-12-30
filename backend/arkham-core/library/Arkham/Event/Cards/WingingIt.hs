@@ -11,9 +11,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 import Arkham.Zone qualified as Zone
 
@@ -31,9 +31,11 @@ instance RunMessage WingingIt where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
+      skillType <- field LocationInvestigateSkill lid
       let
-        eventResolution =
-          if zone == Zone.FromDiscard then ShuffleIntoDeck (Deck.InvestigatorDeck iid) else Discard
+        eventResolution = if zone == Zone.FromDiscard
+          then ShuffleIntoDeck (Deck.InvestigatorDeck iid)
+          else Discard
         modifiers =
           [ skillTestModifier attrs (InvestigatorTarget iid) (DiscoveredClues 1)
           | zone == Zone.FromDiscard
@@ -41,7 +43,7 @@ instance RunMessage WingingIt where
       e <$ pushAll
         (skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-1))
         : modifiers
-        <> [ Investigate iid lid (toSource attrs) Nothing SkillIntellect False
+        <> [ Investigate iid lid (toSource attrs) Nothing skillType False
            , eventResolution (toTarget attrs)
            ]
         )

@@ -6,18 +6,17 @@ module Arkham.Asset.Cards.AncientStone1
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Action as Action
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Location.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Projection
 import Arkham.SkillTest.Base
-import Arkham.SkillType
 import Arkham.Target
 
 newtype AncientStone1 = AncientStone1 AssetAttrs
@@ -40,15 +39,10 @@ instance RunMessage AncientStone1 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
+      skillType <- field LocationInvestigateSkill lid
       pushAll
         [ skillTestModifiers attrs (LocationTarget lid) [ShroudModifier 3]
-        , Investigate
-          iid
-          lid
-          source
-          (Just $ toTarget attrs)
-          SkillIntellect
-          False
+        , Investigate iid lid source (Just $ toTarget attrs) skillType False
         ]
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target _

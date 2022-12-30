@@ -10,9 +10,10 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
+import Arkham.Projection
 
 newtype SeekingAnswers2 = SeekingAnswers2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,13 +26,14 @@ instance RunMessage SeekingAnswers2 where
   runMessage msg e@(SeekingAnswers2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getJustLocation iid
+      skillType <- field LocationInvestigateSkill lid
       pushAll
         [ Investigate
           iid
           lid
           (toSource attrs)
           (Just $ toTarget attrs)
-          SkillIntellect
+          skillType
           False
         , Discard (toTarget attrs)
         ]

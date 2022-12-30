@@ -5,17 +5,16 @@ module Arkham.Event.Cards.DecipheredReality5
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Event.Runner
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Location.Types (Field(..))
+import Arkham.Event.Runner
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
@@ -28,21 +27,26 @@ decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
 instance RunMessage DecipheredReality5 where
   runMessage msg e@(DecipheredReality5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       locationIds <- selectList RevealedLocation
       maxShroud <-
         maximum . ncons 0 <$> traverse (field LocationShroud) locationIds
-      e <$ pushAll
+      skillType <- field LocationInvestigateSkill lid
+      pushAll
         [ skillTestModifier attrs SkillTestTarget (SetDifficulty maxShroud)
         , Investigate
           iid
           lid
           (toSource attrs)
           (Just $ toTarget attrs)
-          SkillIntellect
+          skillType
           False
         , Discard (toTarget attrs)
         ]
+      pure e
     Successful (Action.Investigate, actionTarget) iid source target n
       | isTarget attrs target -> do
       -- Deciphered Reality is not a replacement effect; its effect doesn’t use

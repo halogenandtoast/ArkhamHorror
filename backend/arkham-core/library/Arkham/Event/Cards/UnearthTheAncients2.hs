@@ -7,15 +7,16 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.Classes
 import Arkham.ClassSymbol
+import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window ( defaultWindows )
@@ -59,12 +60,13 @@ instance RunMessage UnearthTheAncients2 where
         (card : chosenCards metadata)
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
+      skillType <- field LocationInvestigateSkill lid
       pushAll
         [ skillTestModifier
           (toSource attrs)
           SkillTestTarget
           (SetDifficulty $ sum $ map getCost $ chosenCards metadata)
-        , Investigate iid lid (toSource attrs) Nothing SkillIntellect False
+        , Investigate iid lid (toSource attrs) Nothing skillType False
         , Discard (toTarget attrs)
         ]
       pure e

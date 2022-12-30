@@ -12,9 +12,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 
 newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
@@ -26,9 +26,9 @@ riteOfSeeking = asset RiteOfSeeking Cards.riteOfSeeking
 
 instance HasAbilities RiteOfSeeking where
   getAbilities (RiteOfSeeking a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Investigate)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 instance RunMessage RiteOfSeeking where
@@ -38,8 +38,10 @@ instance RunMessage RiteOfSeeking where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      a <$ pushAll
+      skillType <- field LocationInvestigateSkill lid
+      pushAll
         [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid)
-        , Investigate iid lid source Nothing SkillWillpower False
+        , Investigate iid lid source Nothing skillType False
         ]
+      pure a
     _ -> RiteOfSeeking <$> runMessage msg attrs

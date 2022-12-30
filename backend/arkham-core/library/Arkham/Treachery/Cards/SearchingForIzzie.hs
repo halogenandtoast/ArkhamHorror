@@ -10,9 +10,10 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorEliminated )
-import Arkham.SkillType
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
@@ -52,15 +53,16 @@ instance RunMessage SearchingForIzzie where
           ]
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      withTreacheryLocation attrs $ \locationId -> t <$ push
-        (Investigate
+      withTreacheryLocation attrs $ \locationId -> do
+        skillType <- field LocationInvestigateSkill locationId
+        push $ Investigate
           iid
           locationId
           source
           (Just $ toTarget attrs)
-          SkillIntellect
+          skillType
           False
-        )
+        pure t
     Successful (Action.Investigate, _) _ _ target _ | isTarget attrs target ->
       t <$ push (Discard target)
     UseCardAbility _ source 2 _ _ | isSource attrs source ->

@@ -1967,6 +1967,7 @@ instance Projection Location where
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
     case f of
+      LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationClues -> pure locationClues
       LocationResources -> pure locationResources
       LocationHorror -> pure locationHorror

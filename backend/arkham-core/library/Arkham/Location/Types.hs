@@ -27,6 +27,7 @@ import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher ( LocationMatcher (..) )
 import Arkham.Name
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait ( Trait )
@@ -73,6 +74,7 @@ data instance Field Location :: Type -> Type where
   LocationAssets :: Field Location (HashSet AssetId)
   LocationEvents :: Field Location (HashSet EventId)
   LocationTreacheries :: Field Location (HashSet TreacheryId)
+  LocationInvestigateSkill :: Field Location SkillType
   -- virtual
   LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card
@@ -87,6 +89,7 @@ instance ToJSON (Field Location typ) where
 
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case
+    "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
     "LocationClues" -> pure $ SomeField LocationClues
     "LocationResources" -> pure $ SomeField LocationResources
     "LocationHorror" -> pure $ SomeField LocationHorror
@@ -117,6 +120,7 @@ instance FromJSON (SomeField Location) where
 
 instance FieldDict Typeable Location where
   getDict = \case
+    LocationInvestigateSkill -> Dict
     LocationClues -> Dict
     LocationResources -> Dict
     LocationHorror -> Dict
@@ -142,6 +146,9 @@ instance FieldDict Typeable Location where
     LocationAbilities -> Dict
     LocationPrintedSymbol -> Dict
     LocationVengeance -> Dict
+
+investigateSkillL :: Lens' LocationAttrs SkillType
+investigateSkillL = lens locationInvestigateSkill $ \m x -> m { locationInvestigateSkill = x }
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
@@ -313,6 +320,7 @@ locationWith f def shroud' revealClues g = CardBuilder
     , locationConnectsTo = mempty
     , locationCardsUnderneath = mempty
     , locationCostToEnterUnrevealed = ActionCost 1
+    , locationInvestigateSkill = SkillIntellect
     , locationCanBeFlipped = False
     , locationWithoutClues = False
     }

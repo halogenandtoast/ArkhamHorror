@@ -15,7 +15,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Target
 
 newtype ArchaicGlyphsGuidingStones3 = ArchaicGlyphsGuidingStones3 AssetAttrs
@@ -39,16 +38,18 @@ instance RunMessage ArchaicGlyphsGuidingStones3 where
       mlid <- field InvestigatorLocation iid
       case mlid of
         Nothing -> push $ Discard (toTarget attrs)
-        Just lid -> pushAll
-          [ Investigate
-            iid
-            lid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            SkillIntellect
-            False
-          , Discard (toTarget attrs)
-          ]
+        Just lid -> do
+          skillType <- field LocationInvestigateSkill lid
+          pushAll
+            [ Investigate
+              iid
+              lid
+              (toSource attrs)
+              (Just $ toTarget attrs)
+              skillType
+              False
+            , Discard (toTarget attrs)
+            ]
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target n
       | isTarget attrs target -> do

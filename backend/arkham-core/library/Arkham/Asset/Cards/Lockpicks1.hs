@@ -6,8 +6,8 @@ module Arkham.Asset.Cards.Lockpicks1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card.CardDef
 import Arkham.Cost
@@ -15,6 +15,7 @@ import Arkham.Criteria
 import Arkham.EffectMetadata
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
@@ -30,7 +31,8 @@ instance HasAbilities Lockpicks1 where
   getAbilities (Lockpicks1 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1 <> ExhaustCost (toTarget a)
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage Lockpicks1 where
@@ -41,12 +43,13 @@ instance RunMessage Lockpicks1 where
         (fromJustNote "must be at a location")
         iid
       agility <- getSkillValue SkillAgility iid
+      skillType <- field LocationInvestigateSkill lid
       a <$ pushAll
         [ CreateEffect
           (cdCardCode $ toCardDef attrs)
           (Just $ EffectInt agility)
           (toSource attrs)
           (InvestigatorTarget iid)
-        , Investigate iid lid source Nothing SkillIntellect False
+        , Investigate iid lid source Nothing skillType False
         ]
     _ -> Lockpicks1 <$> runMessage msg attrs

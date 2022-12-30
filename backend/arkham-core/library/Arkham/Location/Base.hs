@@ -10,6 +10,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.LocationSymbol
 import Arkham.Matcher ( LocationMatcher (..) )
+import Arkham.SkillType
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
@@ -36,6 +37,7 @@ data LocationAttrs = LocationAttrs
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
   , locationCanBeFlipped :: Bool
+  , locationInvestigateSkill :: SkillType
   -- We need to track if a location has no clues because timings will interact
   -- with the location being revealed and claim there are no clues before they
   -- are placed. TODO: this could be a hasBeenRevealed bool

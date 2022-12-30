@@ -82,6 +82,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , fatherMateo
   , calvinWright
   , carolynFern
+  , joeDiamond
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -218,6 +219,13 @@ carolynFern = investigator
   ("Carolyn Fern" <:> "The Psychologist")
   Guardian
   [Miskatonic]
+
+joeDiamond :: CardDef
+joeDiamond = investigator
+  "05002"
+  ("Joe Diamond" <:> "The Private Investigator")
+  Seeker
+  [Detective]
 
 normanWithers :: CardDef
 normanWithers = investigator

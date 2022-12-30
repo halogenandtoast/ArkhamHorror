@@ -168,6 +168,7 @@ allEvents = mapFrom
   , SomeEventCard vantagePoint
   , SomeEventCard impromptuBarrier
   , SomeEventCard alterFate3
+  , SomeEventCard unsolvedCase
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite
   , SomeEventCard astoundingRevelation

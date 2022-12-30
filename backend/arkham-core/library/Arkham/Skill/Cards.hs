@@ -100,6 +100,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , runForYourLife
   , sayYourPrayers
   , sealOfTheElderSign5
+  , steadfast
   , strokeOfLuck2
   , stunningBlow
   , survivalInstinct
@@ -434,6 +435,11 @@ allIn5 = (skill "04309" "All In" [#wild, #wild] Rogue)
   { cdCardTraits = singleton Fortune
   , cdCommitRestrictions = [MaxOnePerTest]
   , cdLevel = 5
+  }
+
+steadfast :: CardDef
+steadfast = (skill "05022" "Steadfast" [#willpower, #combat] Guardian)
+  { cdCardTraits = singleton Innate
   }
 
 daring :: CardDef

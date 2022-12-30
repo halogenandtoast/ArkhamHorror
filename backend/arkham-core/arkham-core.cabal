@@ -320,6 +320,7 @@ library
       Arkham.Asset.Cards.DavidRenfield
       Arkham.Asset.Cards.DecoratedSkull
       Arkham.Asset.Cards.DejaVu5
+      Arkham.Asset.Cards.DetectivesColt1911s
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
       Arkham.Asset.Cards.DiscOfItzamna
@@ -1042,6 +1043,7 @@ library
       Arkham.Event.Cards.UncageTheSoul
       Arkham.Event.Cards.UnearthTheAncients
       Arkham.Event.Cards.UnearthTheAncients2
+      Arkham.Event.Cards.UnsolvedCase
       Arkham.Event.Cards.VantagePoint
       Arkham.Event.Cards.WardOfProtection
       Arkham.Event.Cards.WardOfProtection2
@@ -1106,6 +1108,7 @@ library
       Arkham.Investigator.Cards.HarveyWalters
       Arkham.Investigator.Cards.JennyBarnes
       Arkham.Investigator.Cards.JimCulver
+      Arkham.Investigator.Cards.JoeDiamond
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LolaHayes
       Arkham.Investigator.Cards.MarkHarrigan
@@ -1602,6 +1605,7 @@ library
       Arkham.Skill.Cards.RunForYourLife
       Arkham.Skill.Cards.SayYourPrayers
       Arkham.Skill.Cards.SealOfTheElderSign5
+      Arkham.Skill.Cards.Steadfast
       Arkham.Skill.Cards.StrokeOfLuck2
       Arkham.Skill.Cards.StunningBlow
       Arkham.Skill.Cards.SurvivalInstinct

@@ -42,7 +42,7 @@ instance RunMessage ThePaintedWorld where
         candidates
       push $ InitiatePlayCardAsChoose
         iid
-        (toCardId attrs)
+        (toCard attrs)
         playableCards
         [ CreateEffect
             "03012"

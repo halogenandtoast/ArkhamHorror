@@ -205,6 +205,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         playerCount
         investigatorsList
         difficulty
+      , gameCards = mapFromList $ concatMap (map (toFst toCardId . PlayerCard) . snd) investigatorsList
       , gameWindowDepth = 0
       , gameDepthLock = 0
       , gameRoundHistory = mempty
@@ -1097,6 +1098,13 @@ getLocationsMatching
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
+    HighestShroud matcher' -> do
+      ls' <- filter (`elem` ls) <$> getLocationsMatching matcher'
+      if null ls'
+        then pure []
+        else do
+          highestShroud <- getMax0 <$> foldMapM (fmap Max . field LocationShroud . toId) ls'
+          filterM (fmap (== highestShroud) . field LocationShroud . toId) ls'
     IsIchtacasDestination ->
       filterM (remembered . IchtacasDestination . toId) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
@@ -1415,8 +1423,8 @@ getAssetsMatching matcher = do
     AssetWithAttachedEvent eventMatcher -> do
       events <- selectList eventMatcher
       aids <- flip mapMaybeM events $ \eid -> do
-        attachedTarget <- field EventAttachedTarget eid
-        pure $ case attachedTarget of
+        placement <- field EventPlacement eid
+        pure $ case placementToAttached placement of
           Just (AssetTarget aid) -> Just aid
           _ -> Nothing
       pure $ filter ((`elem` aids) . toId) as
@@ -2570,7 +2578,7 @@ instance Projection Event where
       cdef = toCardDef attrs
     case fld of
       EventSealedTokens -> pure eventSealedTokens
-      EventAttachedTarget -> pure eventAttachedTarget
+      EventPlacement -> pure eventPlacement
       EventTraits -> pure $ cdCardTraits cdef
       EventAbilities -> pure $ getAbilities e
       EventOwner -> pure eventOwner

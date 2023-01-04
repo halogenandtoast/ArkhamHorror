@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Placement

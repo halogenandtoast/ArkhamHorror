@@ -12,7 +12,6 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue

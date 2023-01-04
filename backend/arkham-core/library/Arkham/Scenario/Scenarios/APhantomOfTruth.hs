@@ -10,7 +10,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Difficulty
@@ -87,7 +86,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-gatherTheMidnightMasks :: MonadRandom m => Int -> Int -> m [EncounterCard]
+gatherTheMidnightMasks :: CardGen m => Int -> Int -> m [EncounterCard]
 gatherTheMidnightMasks conviction doubt = traverse
   genEncounterCard
   (if conviction > doubt

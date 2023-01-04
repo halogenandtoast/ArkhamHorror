@@ -10,7 +10,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Effect.Window
@@ -65,7 +64,7 @@ instance HasTokenValue EchoesOfThePast where
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
     otherFace -> getTokenValue iid otherFace attrs
 
-gatherTheMidnightMasks :: MonadRandom m => m [EncounterCard]
+gatherTheMidnightMasks :: CardGen m => m [EncounterCard]
 gatherTheMidnightMasks = traverse
   genEncounterCard
   [ Cards.falseLead

@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.ThePriceOfFailure
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Events
 import Arkham.Message

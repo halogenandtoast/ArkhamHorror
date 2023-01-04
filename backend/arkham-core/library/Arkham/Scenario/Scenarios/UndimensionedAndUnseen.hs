@@ -13,7 +13,6 @@ import Arkham.Attack
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty

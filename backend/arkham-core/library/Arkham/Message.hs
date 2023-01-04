@@ -208,7 +208,6 @@ data Message
   | AssetDefeated AssetId
   | -- Attach
     AttachAsset AssetId Target
-  | AttachEvent EventId Target
   | AttachStoryTreacheryTo Card Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealTokens
@@ -267,6 +266,7 @@ data Message
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateAssetAt Card Placement
   | PlaceAsset AssetId Placement
+  | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId TreacheryPlacement
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
@@ -382,9 +382,9 @@ data Message
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card
-  | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] ChosenCardStrategy [Window] Bool
-  | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy [Window] Bool
-  | InitiatePlayCard InvestigatorId CardId (Maybe Target) [Window] Bool
+  | InitiatePlayCardAsChoose InvestigatorId Card [Card] [Message] ChosenCardStrategy [Window] Bool
+  | InitiatePlayCardAs InvestigatorId Card Card [Message] ChosenCardStrategy [Window] Bool
+  | InitiatePlayCard InvestigatorId Card (Maybe Target) [Window] Bool
   -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | -- Maybe Target is handler for success

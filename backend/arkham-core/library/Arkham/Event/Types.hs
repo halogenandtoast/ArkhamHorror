@@ -13,6 +13,7 @@ import Arkham.Card
 import Arkham.Id
 import Arkham.Name
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -25,7 +26,7 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
 data instance Field Event :: Type -> Type where
-  EventAttachedTarget :: Field Event (Maybe Target)
+  EventPlacement :: Field Event Placement
   EventTraits :: Field Event (HashSet Trait)
   EventAbilities :: Field Event [Ability]
   EventOwner :: Field Event InvestigatorId
@@ -36,23 +37,25 @@ data instance Field Event :: Type -> Type where
 eventController :: EventAttrs -> InvestigatorId
 eventController = eventOwner
 
+eventAttachedTarget :: EventAttrs -> Maybe Target
+eventAttachedTarget = placementToAttached . eventPlacement
+
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode
   , eventOriginalCardCode :: CardCode
   , eventId :: EventId
-  , eventAttachedTarget :: Maybe Target
   , eventOwner :: InvestigatorId
   , eventDoom :: Int
   , eventExhausted :: Bool
   , eventBeingPaidFor :: Bool
   , eventPaymentMessages :: [Message]
   , eventSealedTokens :: [Token]
+  , eventPlacement :: Placement
   }
   deriving stock (Show, Eq, Generic)
 
-attachedTargetL :: Lens' EventAttrs (Maybe Target)
-attachedTargetL =
-  lens eventAttachedTarget $ \m x -> m {eventAttachedTarget = x}
+placementL :: Lens' EventAttrs Placement
+placementL = lens eventPlacement $ \m x -> m { eventPlacement = x }
 
 exhaustedL :: Lens' EventAttrs Bool
 exhaustedL =
@@ -106,7 +109,6 @@ event f cardDef =
             { eventCardCode = toCardCode cardDef
             , eventOriginalCardCode = toCardCode cardDef
             , eventId = eid
-            , eventAttachedTarget = Nothing
             , eventOwner = iid
             , eventDoom = 0
             , eventExhausted = False
@@ -114,6 +116,7 @@ event f cardDef =
             , eventBeingPaidFor = False
             , eventPaymentMessages = []
             , eventSealedTokens = []
+            , eventPlacement = Unplaced
             }
     }
 

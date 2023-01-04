@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Log

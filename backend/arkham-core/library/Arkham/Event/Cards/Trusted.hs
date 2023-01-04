@@ -11,6 +11,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Target
 
 newtype Trusted = Trusted EventAttrs
@@ -30,9 +31,11 @@ instance HasModifiersFor Trusted where
 instance RunMessage Trusted where
   runMessage msg e@(Trusted attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <- selectListMap AssetTarget $ assetControlledBy iid <> AllyAsset
+      assets <- selectList $ assetControlledBy iid <> AllyAsset
       push $ chooseOne
         iid
-        [ TargetLabel target [AttachEvent eid target] | target <- targets ]
+        [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
+        | asset <- assets
+        ]
       pure e
     _ -> Trusted <$> runMessage msg attrs

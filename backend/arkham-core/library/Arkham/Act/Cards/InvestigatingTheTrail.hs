@@ -8,7 +8,6 @@ import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.EncounterCard
 import Arkham.GameValue

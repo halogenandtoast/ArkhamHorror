@@ -41,6 +41,29 @@ const topOfDeck = computed(() => {
   return `${baseUrl}/img/arkham/player_back.jpg`
 })
 
+const topOfHunchDeck = computed(() => {
+  const { hunchDeck, revealedHunchCard } = props.player
+  if (hunchDeck) {
+    const topCard = hunchDeck[0]
+    if (topCard && topCard.id === revealedHunchCard) {
+      return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
+    }
+  }
+
+  return `${baseUrl}/img/arkham/player_back.jpg`
+})
+
+const playTopOfHunchDeckAction = computed(() => {
+  const { hunchDeck } = props.player
+  if (hunchDeck) {
+    const topOfHunchDeck = hunchDeck[0]
+    if (topOfHunchDeck) {
+      return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === topOfHunchDeck.id)
+    }
+  }
+  return -1
+})
+
 const playTopOfDeckAction = computed(() => {
   const topOfDeck = props.player.deck[0]
   if (topOfDeck !== undefined && topOfDeck !== null) {
@@ -147,6 +170,17 @@ function beforeLeaveHand(el) {
     />
 
     <div class="player">
+      <div v-if="player.hunchDeck" class="top-of-deck">
+        <img
+          :class="{ 'deck--can-draw': playTopOfHunchDeckAction !== -1 }"
+          class="deck card"
+          :src="topOfHunchDeck"
+          width="150px"
+          @click="$emit('choose', playTopOfHunchDeckAction)"
+        />
+        <span class="deck-size">{{player.hunchDeck.length}}</span>
+      </div>
+
       <Investigator
         :game="game"
         :player="player"
@@ -359,5 +393,12 @@ function beforeLeaveHand(el) {
 
 .in-play-leave-active {
   position: absolute;
+}
+
+.deck-label {
+  text-transform: uppercase;
+  width: 80px;
+  font-size: 12px;
+  background: hsla(255 100% 100% / 0.5)
 }
 </style>

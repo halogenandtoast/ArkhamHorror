@@ -46,6 +46,6 @@ instance RunMessage CrypticWritings2 where
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _)
       | iid' == iid -> do
-        push $ InitiatePlayCard iid (toCardId attrs) Nothing windows' False
+        push $ InitiatePlayCard iid (toCard attrs) Nothing windows' False
         pure e
     _ -> CrypticWritings2 <$> runMessage msg attrs

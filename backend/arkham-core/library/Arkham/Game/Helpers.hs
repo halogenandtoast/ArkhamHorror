@@ -1235,7 +1235,7 @@ passesEnemyCriteria _iid source windows' criterion = selectAny
     Criteria.EnemyExists m -> pure m
     Criteria.EnemyExistsAtAttachedLocation m -> case source of
       EventSource e -> do
-        field EventAttachedTarget e >>= \case
+        fieldMap EventPlacement placementToAttached e >>= \case
           Just (LocationTarget lid) ->
             pure $ m <> Matcher.EnemyAt (Matcher.LocationWithId lid)
           Just _ -> error "Event must be attached to a location"
@@ -1330,6 +1330,12 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case window' of
+    Window _ (Window.WouldBeShuffledIntoDeck deck card) -> andM
+      [ deckMatch iid deck deckMatcher
+      , pure $ cardMatch card cardMatcher
+      ]
+    _ -> pure False
   Matcher.AddingToCurrentDepth -> case window' of
     Window _ Window.AddingToCurrentDepth -> pure True
     _ -> pure False
@@ -2337,6 +2343,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationInDirection _ _ -> locationId <=~> matcher
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
     Matcher.LocationWithoutClues -> locationId <=~> matcher
+    Matcher.HighestShroud _ -> locationId <=~> matcher
 
     Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
@@ -2481,6 +2488,7 @@ deckMatch iid deckSignifier = \case
   Matcher.EncounterDeck -> pure $ deckSignifier == EncounterDeck
   Matcher.DeckOf investigatorMatcher -> matchWho iid iid investigatorMatcher
   Matcher.AnyDeck -> pure True
+  Matcher.DeckIs deckSignifier' -> pure $ deckSignifier == deckSignifier'
 
 agendaMatches
   :: HasGame m => AgendaId -> Matcher.AgendaMatcher -> m Bool

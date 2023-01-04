@@ -30,16 +30,14 @@ instance HasModifiersFor Steadfast where
       let total = remainingHealth + remainingSanity
       pure $ toModifiers
         attrs
-        [ AddSkillIcons
-            (if total >= 10
-              then
-                [ SkillIcon SkillWillpower
-                , SkillIcon SkillWillpower
-                , SkillIcon SkillCombat
-                , SkillIcon SkillCombat
-                ]
-              else [SkillIcon SkillWillpower, SkillIcon SkillCombat]
-            )
+        [ AddSkillIcons $ if total >= 10
+            then
+              [ SkillIcon SkillWillpower
+              , SkillIcon SkillWillpower
+              , SkillIcon SkillCombat
+              , SkillIcon SkillCombat
+              ]
+            else [SkillIcon SkillWillpower, SkillIcon SkillCombat]
         | total >= 5
         ]
   getModifiersFor _ _ = pure []

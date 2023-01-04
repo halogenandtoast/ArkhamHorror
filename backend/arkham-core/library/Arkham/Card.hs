@@ -72,7 +72,15 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
 toLocationId :: IsCard a => a -> LocationId
 toLocationId = LocationId . toCardId
 
-genCard :: (MonadRandom m, HasCardDef a) => a -> m Card
+class MonadRandom m => CardGen m where
+  genEncounterCard :: HasCardDef a => a -> m EncounterCard
+  genPlayerCard :: HasCardDef a => a -> m PlayerCard
+
+instance CardGen IO where
+  genEncounterCard a = lookupEncounterCard (toCardDef a) <$> getRandom
+  genPlayerCard a = lookupPlayerCard (toCardDef a) <$> getRandom
+
+genCard :: (HasCardDef a, CardGen m) => a -> m Card
 genCard a = if cdCardType def `elem` encounterCardTypes
   then EncounterCard <$> genEncounterCard def
   else PlayerCard <$> genPlayerCard def

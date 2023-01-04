@@ -7,6 +7,7 @@ import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import Arkham.Campaign.Types ( Campaign )
 import {-# SOURCE #-} Arkham.Card
+import Arkham.Card.Id
 import Arkham.Difficulty
 import Arkham.Id
 import Arkham.Investigator.Types ( Investigator )
@@ -82,6 +83,7 @@ data Game = Game
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]
   , gameInAction :: Bool
+  , gameCards :: HashMap CardId Card
   , -- handling costs
     gameActiveCost :: HashMap ActiveCostId ActiveCost
   }

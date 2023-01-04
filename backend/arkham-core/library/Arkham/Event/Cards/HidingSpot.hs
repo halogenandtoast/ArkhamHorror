@@ -6,15 +6,16 @@ module Arkham.Event.Cards.HidingSpot
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Event.Runner
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
+import Arkham.Event.Runner
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -48,12 +49,13 @@ instance HasAbilities HidingSpot where
 instance RunMessage HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <- selectListMap LocationTarget Anywhere
-      e <$ push
-        (chooseOne
-          iid
-          [ TargetLabel target [AttachEvent eid target] | target <- targets ]
-        )
+      locations <- selectList Anywhere
+      push $ chooseOne
+        iid
+        [ targetLabel location [PlaceEvent eid (AttachedToLocation location)]
+        | location <- locations
+        ]
+      pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     _ -> HidingSpot <$> runMessage msg attrs

@@ -10,7 +10,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.Card.EncounterCard
+import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message

@@ -188,6 +188,8 @@ replaceYourLocation iid (Just lid) = go
     SingleSidedLocation{} -> matcher
     LocationWithInvestigator m ->
       LocationWithInvestigator (replaceYouMatcher iid m)
+    HighestShroud m ->
+      HighestShroud (go m)
     RevealedLocation -> matcher
     UnrevealedLocation -> matcher
     InvestigatableLocation -> matcher

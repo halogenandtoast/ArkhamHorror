@@ -14,6 +14,7 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -52,7 +53,11 @@ instance RunMessage CustomAmmunition3 where
              )
       push $ chooseOne
         iid
-        [ targetLabel asset [AttachEvent eid (AssetTarget asset), AddUses asset Ammo 2]
+        [ targetLabel
+            asset
+            [ PlaceEvent eid (AttachedToAsset asset Nothing)
+            , AddUses asset Ammo 2
+            ]
         | asset <- assets
         ]
       pure e

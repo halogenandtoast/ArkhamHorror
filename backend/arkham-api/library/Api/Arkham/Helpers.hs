@@ -5,7 +5,6 @@ module Api.Arkham.Helpers where
 import Import hiding ( appLogger )
 
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes hiding ( Entity (..) )
 import Arkham.Game
 import Arkham.Id
@@ -86,13 +85,11 @@ newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 
-loadDecklistCards :: ArkhamDBDecklist -> IO [PlayerCard]
-loadDecklistCards decklist =
-  flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' -> replicateM
-    count'
-    (applyCustomizations decklist
-    <$> genPlayerCard (lookupPlayerCardDef cardCode)
-    )
+loadDecklistCards :: (CardGen m) => ArkhamDBDecklist -> m [PlayerCard]
+loadDecklistCards decklist = do
+  results <- forM (HashMap.toList $ slots decklist) $ \(cardCode, count') ->
+    replicateM count' (applyCustomizations decklist <$> genPlayerCard (lookupPlayerCardDef cardCode))
+  pure $ fold results
 
 applyCustomizations :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
 applyCustomizations deckList pCard = case meta deckList of
@@ -111,7 +108,7 @@ applyCustomizations deckList pCard = case meta deckList of
     let parseInt = read <$> many1 digit
     IntMap.fromList <$> sepBy ((,) <$> parseInt <*> (char '|' *> parseInt)) (char ',')
 
-loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
+loadDecklist :: CardGen m => ArkhamDeck -> m (InvestigatorId, [PlayerCard])
 loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
  where
   decklist = arkhamDeckList arkhamDeck

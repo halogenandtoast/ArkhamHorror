@@ -27,11 +27,9 @@ runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   InvestigatorEliminated iid
-    | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
+    | eventAttachedTarget a == Just (InvestigatorTarget iid) -> a
     <$ push (Discard (EventTarget eventId))
-  AttachEvent eid target | eid == eventId ->
-    pure $ a & attachedTargetL ?~ target
-  Discard target | eventAttachedTarget == Just target -> do
+  Discard target | eventAttachedTarget a == Just target -> do
     pushAll
       $ [ UnsealToken token | token <- eventSealedTokens ]
       <> [Discard $ toTarget a]
@@ -45,4 +43,6 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   SealedToken token card | toCardId card == toCardId a ->
     pure $ a & sealedTokensL %~ (token :)
   UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
+  PlaceEvent eid placement | eid == eventId ->
+    pure $ a & placementL .~ placement
   _ -> pure a

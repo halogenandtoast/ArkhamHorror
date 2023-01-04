@@ -74,17 +74,11 @@ instance RunMessage StickToThePlan3 where
         | card <- tacticsAndSupplies
         ]
       pure a
-    InitiatePlayCard iid cardId _ _ _
-      | controlledBy attrs iid && cardId `elem` map
-        toCardId
-        (assetCardsUnderneath attrs)
+    InitiatePlayCard iid card _ _ _
+      | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs
       -> do
         let
-          card =
-            fromJustNote "card missing" $ find matcher $ assetCardsUnderneath
-              attrs
-          remaining = deleteFirstMatch matcher $ assetCardsUnderneath attrs
-          matcher = (== cardId) . toCardId
+          remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
         pushAll
           [ CreateWindowModifierEffect
             EffectTurnWindow

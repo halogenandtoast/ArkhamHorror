@@ -62,6 +62,8 @@ export interface Investigator {
   foundCards: Record<string, Card[]>;
   xp: number;
   supplies: string[];
+  hunchDeck?: PlayerCardContents[];
+  revealedHunchCard?: string | null;
   isYithian: boolean;
 }
 
@@ -91,6 +93,8 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   discard: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   deck: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
+  hunchDeck: JsonDecoder.optional(JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]')),
+  revealedHunchCard: JsonDecoder.optional(JsonDecoder.nullable(JsonDecoder.string)),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,

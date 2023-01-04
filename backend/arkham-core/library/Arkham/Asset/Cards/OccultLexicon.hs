@@ -6,7 +6,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Events
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Deck
 
 newtype OccultLexicon = OccultLexicon AssetAttrs

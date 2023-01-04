@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Card.EncounterCard
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Location.Cards qualified as Locations

@@ -34,8 +34,7 @@ instance RunMessage Montmartre209 where
     CreatedEffect eid _ source (InvestigatorTarget iid)
       | eid == effectId attrs -> do
         cards <-
-          fmap (fmap toCardId)
-          . filterM
+          filterM
               (getIsPlayable
                 iid
                 source
@@ -47,7 +46,7 @@ instance RunMessage Montmartre209 where
           [ chooseOne iid
           $ Label "Play no cards" []
           : [ TargetLabel
-                (CardIdTarget card)
+                (CardIdTarget $ toCardId card)
                 [ InitiatePlayCard
                     iid
                     card

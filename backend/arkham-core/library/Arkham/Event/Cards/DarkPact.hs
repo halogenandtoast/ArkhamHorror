@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Event.Cards qualified as Cards

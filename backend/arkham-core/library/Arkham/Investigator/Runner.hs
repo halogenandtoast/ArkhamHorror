@@ -210,12 +210,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       applyModifier _ n = n
     let (discard, hand, deck) = drawOpeningHand a startingHandAmount
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
-  ReturnToHand iid (CardIdTarget cid) | iid == investigatorId -> do
+  ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
     -- Card is assumed to be in your discard
     -- but since find card can also return cards in your hand
     -- we filter again just in case
     let
-      card = findCard cid a
       discardFilter = case preview _PlayerCard card of
         Just pc -> filter (/= pc)
         Nothing -> id
@@ -1248,7 +1247,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllCluesTo target | not (isTarget a target) -> do
     when (investigatorClues > 0) (push $ PlaceClues target investigatorClues)
     pure $ a & cluesL .~ 0
-  InitiatePlayCardAsChoose iid cardId choices msgs chosenCardStrategy windows' asAction
+  InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy windows' asAction
     | iid == investigatorId
     -> do
       a <$ push
@@ -1256,10 +1255,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId choice)
-              [ ReturnToHand iid (EventTarget $ EventId cardId)
+              [ ReturnToHand iid (EventTarget $ EventId $ toCardId card)
               , InitiatePlayCardAs
                 iid
-                cardId
+                card
                 choice
                 msgs
                 chosenCardStrategy
@@ -1269,12 +1268,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           | choice <- choices
           ]
         )
-  InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy windows' asAction
+  InitiatePlayCardAs iid card choice msgs chosenCardStrategy windows' asAction
     | iid == investigatorId -> do
       let
-        card = findCard cardId a
         choiceDef = toCardDef choice
-        choiceAsCard = (lookupPlayerCard choiceDef cardId)
+        choiceAsCard = (lookupPlayerCard choiceDef $ toCardId card)
           { pcOriginalCardCode = toCardCode card
           }
         chosenCardMsgs = case chosenCardStrategy of
@@ -1284,19 +1282,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         $ chosenCardMsgs
         <> msgs
-        <> [InitiatePlayCard iid cardId Nothing windows' asAction]
-      pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
-        ((/= cardId) . toCardId)
-  InitiatePlayCard iid cardId mtarget windows' asAction
-    | iid == investigatorId -> do
+        <> [InitiatePlayCard iid card Nothing windows' asAction]
+      pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter (/= card)
+  InitiatePlayCard iid card mtarget windows' asAction | iid == investigatorId ->
+    do
     -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
       modifiers' <- getModifiers (toTarget a)
       let
         shouldSkip = flip any modifiers' $ \case
-          AsIfInHand card -> toCardId card == cardId
+          AsIfInHand card' -> card == card'
           _ -> False
       unless shouldSkip $ do
-        let card = findCard cardId a
         afterPlayCard <- checkWindows
           [Window Timing.After (Window.PlayCard iid card)]
 
@@ -1424,10 +1420,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
       & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
-  HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
-    afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source amount)]
-    push afterWindow
-    pure $ a & healthDamageL %~ max 0 . subtract amount
+  HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId ->
+    do
+      afterWindow <- checkWindows
+        [ Window
+            Timing.After
+            (Window.Healed DamageType (toTarget a) source amount)
+        ]
+      push afterWindow
+      pure $ a & healthDamageL %~ max 0 . subtract amount
   HealHorrorWithAdditional (InvestigatorTarget iid) _ amount
     | iid == investigatorId -> do
       -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
@@ -1435,7 +1436,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       if cannotHealHorror
         then pure a
         else do
-          pure $ a
+          pure
+            $ a
             & (sanityDamageL %~ max 0 . subtract amount)
             & (horrorHealedL .~ (min amount investigatorSanityDamage))
   AdditionalHealHorror (InvestigatorTarget iid) source additional
@@ -1445,25 +1447,47 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       if cannotHealHorror
         then pure $ a & horrorHealedL .~ 0
         else do
-          afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source (investigatorHorrorHealed + additional))]
+          afterWindow <- checkWindows
+            [ Window
+                Timing.After
+                (Window.Healed
+                  HorrorType
+                  (toTarget a)
+                  source
+                  (investigatorHorrorHealed + additional)
+                )
+            ]
           push afterWindow
-          pure $ a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
-  HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    if cannotHealHorror
-      then pure a
-      else do
-        afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source amount)]
-        push afterWindow
-        pure $ a & sanityDamageL %~ max 0 . subtract amount
+          pure
+            $ a
+            & sanityDamageL
+            %~ max 0
+            . subtract additional
+            & horrorHealedL
+            .~ 0
+  HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId ->
+    do
+      cannotHealHorror <- hasModifier a CannotHealHorror
+      if cannotHealHorror
+        then pure a
+        else do
+          afterWindow <- checkWindows
+            [ Window
+                Timing.After
+                (Window.Healed HorrorType (toTarget a) source amount)
+            ]
+          push afterWindow
+          pure $ a & sanityDamageL %~ max 0 . subtract amount
   MovedHorror _ (InvestigatorTarget iid) amount | iid == investigatorId -> do
     pure $ a & sanityDamageL %~ max 0 . subtract amount
-  HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+  HealHorrorDirectly (InvestigatorTarget iid) _ amount
+    | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
-    pure $ a & sanityDamageL %~ max 0 . subtract amount
-  HealDamageDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+      pure $ a & sanityDamageL %~ max 0 . subtract amount
+  HealDamageDirectly (InvestigatorTarget iid) _ amount
+    | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
-    pure $ a & healthDamageL %~ max 0 . subtract amount
+      pure $ a & healthDamageL %~ max 0 . subtract amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a
@@ -2103,20 +2127,47 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid') card
     | iid == investigatorId && iid == iid' -> case card of
       PlayerCard pc ->
-        pure $ a & deckL %~ Deck . (pc :) . unDeck & handL %~ filter (/= card)
+        pure
+          $ a
+          & (deckL %~ Deck . (pc :) . unDeck)
+          & (handL %~ filter (/= card))
+          & (discardL %~ filter (/= pc))
       EncounterCard _ ->
         error "Can not put encounter card on top of investigator deck"
       VengeanceCard _ ->
         error "Can not put vengrance card on top of investigator deck"
+  PutCardOnTopOfDeck _ _ card -> case card of
+    PlayerCard pc ->
+      pure
+        $ a
+        & (deckL %~ Deck . filter (/= pc) . unDeck)
+        & (handL %~ filter (/= card))
+        & (discardL %~ filter (/= pc))
+    EncounterCard _ ->
+      error "Can not put encounter card on top of investigator deck"
+    VengeanceCard _ ->
+      error "Can not put vengrance card on top of investigator deck"
   PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') card
     | iid == investigatorId && iid == iid' -> case card of
       PlayerCard pc ->
-        pure $ a & deckL %~ Deck . (<> [pc]) . unDeck & handL %~ filter
-          (/= card)
+        pure
+          $ a
+          & (deckL %~ Deck . (<> [pc]) . unDeck)
+          & (handL %~ filter (/= card))
+          & (discardL %~ filter (/= pc))
       EncounterCard _ ->
         error "Can not put encounter card on bottom of investigator deck"
       VengeanceCard _ ->
         error "Can not put vengeance card on bottom of investigator deck"
+  PutCardOnBottomOfDeck _ _ card -> case card of
+    PlayerCard pc ->
+      pure
+        $ a
+        & (deckL %~ Deck . filter (/= pc) . unDeck)
+        & (handL %~ filter (/= card))
+        & (discardL %~ filter (/= pc))
+    EncounterCard _ -> pure a
+    VengeanceCard _ -> pure a
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> do
@@ -2518,7 +2569,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
           <> [ TargetLabel
                  (CardIdTarget $ toCardId c)
-                 [InitiatePlayCard iid (toCardId c) Nothing windows usesAction]
+                 [InitiatePlayCard iid c Nothing windows usesAction]
              | c <- playableCards
              , canAffordPlayCard || isFastCard c
              ]
@@ -2542,7 +2593,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                    (CardIdTarget $ toCardId c)
                    [ InitiatePlayCard
                        investigatorId
-                       (toCardId c)
+                       c
                        Nothing
                        windows
                        usesAction

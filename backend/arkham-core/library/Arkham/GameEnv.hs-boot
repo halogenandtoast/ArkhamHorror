@@ -3,17 +3,19 @@ module Arkham.GameEnv where
 import Arkham.Prelude
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.ActiveCost.Base
+import {-# SOURCE #-} Arkham.Card
+import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Distance
+import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.History
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
-import Arkham.Target
 import Arkham.SkillTest.Base
+import Arkham.Target
 
 data GameEnv
 
@@ -39,6 +41,7 @@ getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: HasGame m => m [Ability]
 getActionCanBeUndone :: HasGame m => m Bool
 getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
+getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 
 class Monad m => HasGame m where
   getGame :: m Game
@@ -46,3 +49,6 @@ class Monad m => HasGame m where
 instance HasGame GameT
 
 instance Monad m => HasGame (ReaderT Game m)
+
+instance CardGen GameT
+instance HasGameLogger GameEnv

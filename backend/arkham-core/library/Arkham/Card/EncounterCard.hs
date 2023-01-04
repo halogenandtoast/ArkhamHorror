@@ -38,9 +38,6 @@ instance ToJSON EncounterCard where
 instance FromJSON EncounterCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
 
-genEncounterCard :: MonadRandom m => CardDef -> m EncounterCard
-genEncounterCard cardDef = lookupEncounterCard cardDef <$> getRandom
-
 lookupEncounterCard :: CardDef -> CardId -> EncounterCard
 lookupEncounterCard cardDef cardId = MkEncounterCard
   { ecId = cardId

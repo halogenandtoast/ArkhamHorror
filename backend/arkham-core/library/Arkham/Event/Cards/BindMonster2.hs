@@ -47,14 +47,14 @@ instance RunMessage BindMonster2 where
         False
       ]
     SkillTestEnds _ _ ->
-      e <$ when (null eventAttachedTarget) (push (Discard $ toTarget attrs))
+      e <$ when (isNothing $ eventAttachedTarget attrs) (push (Discard $ toTarget attrs))
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      case eventAttachedTarget of
+      case eventAttachedTarget attrs of
         Just target ->
           e <$ push (BeginSkillTest iid source target Nothing SkillWillpower 3)
         Nothing -> throwIO $ InvalidState "must be attached"
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> case eventAttachedTarget of
+      | isSource attrs source -> case eventAttachedTarget attrs of
         Just target@(EnemyTarget _) ->
           e <$ withQueue_ (filter (/= Ready target))
         _ -> error "invalid target"

@@ -13,6 +13,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Target
 
@@ -38,7 +39,7 @@ instance RunMessage Shortcut2 where
   runMessage msg e@(Shortcut2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid
-      e <$ push (AttachEvent eid (LocationTarget lid))
+      e <$ push (PlaceEvent eid (AttachedToLocation lid))
     UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
       connectingLocations <- selectList $ AccessibleLocation
       push $ chooseOne

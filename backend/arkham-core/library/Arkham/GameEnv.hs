@@ -2,10 +2,13 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
+import Arkham.Card.PlayerCard
+import Arkham.Card.EncounterCard
 import Arkham.ActiveCost.Base
 import Arkham.Ability
 import Arkham.Classes.HasAbilities
 import Arkham.Phase
+import {-# SOURCE #-} Arkham.Card
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasDistance
@@ -21,6 +24,10 @@ import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+
+instance CardGen GameT where
+  genEncounterCard a = lookupEncounterCard (toCardDef a) <$> getRandom
+  genPlayerCard a = lookupPlayerCard (toCardDef a) <$> getRandom
 
 class Monad m => HasGame m where
   getGame :: m Game

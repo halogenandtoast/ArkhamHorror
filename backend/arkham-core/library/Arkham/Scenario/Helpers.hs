@@ -22,11 +22,11 @@ getHasRecordOrStandalone key def = do
   standalone <- selectNone TheCampaign
   if standalone then pure def else getHasRecord key
 
-buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m (Deck EncounterCard)
+buildEncounterDeck :: CardGen m => [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckExcluding
-  :: MonadRandom m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
+  :: CardGen m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeckExcluding defs =
   buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
 
@@ -37,7 +37,7 @@ excludeBSides :: [EncounterCard] -> [EncounterCard]
 excludeBSides = filter (not . isSuffixOf "b" . unCardCode . toCardCode)
 
 buildEncounterDeckWith
-  :: MonadRandom m => ([EncounterCard] -> [EncounterCard])
+  :: CardGen m => ([EncounterCard] -> [EncounterCard])
   -> [EncounterSet]
   -> m (Deck EncounterCard)
 buildEncounterDeckWith f encounterSets =

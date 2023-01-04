@@ -10,7 +10,6 @@ import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Card.PlayerCard ( genPlayerCard )
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations

@@ -46,17 +46,18 @@ instance RunMessage NathanielCho where
         discardedCards <- field InvestigatorDiscard iid
         let events = filter ((== EventType) . toCardType) discardedCards
         if null events
-          then e <$ push (DisableEffect $ toId attrs)
-          else e <$ pushAll
+          then push (DisableEffect $ toId attrs)
+          else pushAll
             [ chooseOne
               iid
               [ TargetLabel
                   (CardIdTarget $ toCardId event)
-                  [ReturnToHand iid (CardIdTarget $ toCardId event)]
+                  [ReturnToHand iid (CardTarget $ PlayerCard event)]
               | event <- events
               ]
             , DisableEffect $ toId attrs
             ]
+        pure e
     CheckWindow _ windows' | any (isTakeDamage attrs) windows' ->
       e <$ push (DisableEffect $ toId attrs)
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)

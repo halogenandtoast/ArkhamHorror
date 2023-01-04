@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -49,10 +50,11 @@ instance HasModifiersFor Reliable1 where
 instance RunMessage Reliable1 where
   runMessage msg e@(Reliable1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <-
-        selectListMap AssetTarget $ assetControlledBy iid <> AssetWithTrait Item
+      assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
       push $ chooseOne
         iid
-        [ TargetLabel target [AttachEvent eid target] | target <- targets ]
+        [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
+        | asset <- assets
+        ]
       pure e
     _ -> Reliable1 <$> runMessage msg attrs

@@ -136,8 +136,12 @@ instance RunMessage LocationAttrs where
       pure $ a & (directionsL %~ insertMap reversedDirection lid2)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheriesL %~ insertSet tid
-    AttachEvent eid (LocationTarget lid) | lid == locationId ->
-      pure $ a & eventsL %~ insertSet eid
+    PlaceEvent eid placement -> case placement of
+      AttachedToLocation lid | lid == locationId ->
+        pure $ a & eventsL %~ insertSet eid
+      AtLocation lid | lid == locationId ->
+        pure $ a & eventsL %~ insertSet eid
+      _ -> pure $ a & eventsL %~ deleteSet eid
     Discarded (AssetTarget aid) _ -> pure $ a & assetsL %~ deleteSet aid
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid

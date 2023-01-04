@@ -12,6 +12,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -44,15 +45,15 @@ instance RunMessage SnareTrap2 where
   runMessage msg e@(SnareTrap2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
-      e <$ push (AttachEvent eid (LocationTarget lid))
+      e <$ push (PlaceEvent eid (AttachedToLocation lid))
     UseCardAbility _ source 1 [Window _ (Window.EnemyEnters enemyId _)] _
       | isSource attrs source -> do
         iids <- selectList $ InvestigatorEngagedWith (EnemyWithId enemyId)
-        e <$ pushAll
-          (Exhaust (EnemyTarget enemyId)
+        pushAll
+          $ Exhaust (EnemyTarget enemyId)
           : map (`DisengageEnemy` enemyId) iids
-          <> [AttachEvent (toId attrs) (EnemyTarget enemyId)]
-          )
+          <> [PlaceEvent (toId attrs) (AttachedToEnemy enemyId)]
+        pure e
     UseCardAbility _ source 2 [Window _ (Window.WouldReady target)] _
       | isSource attrs source -> e <$ replaceMessageMatching
         (\case

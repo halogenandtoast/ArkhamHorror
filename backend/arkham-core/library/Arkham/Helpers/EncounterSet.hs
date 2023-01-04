@@ -2,12 +2,11 @@ module Arkham.Helpers.EncounterSet where
 
 import Arkham.Prelude
 
-import Arkham.Card.CardDef
-import Arkham.Card.EncounterCard
+import Arkham.Card
 import Arkham.EncounterCard
 import Arkham.EncounterSet
 
-gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
+gatherEncounterSet :: CardGen m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet = concat <$> for
   defs
   \def -> traverse genEncounterCard

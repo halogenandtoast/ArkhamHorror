@@ -14,6 +14,7 @@ import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -45,7 +46,8 @@ instance RunMessage Lure1 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      e <$ push (AttachEvent eid (LocationTarget lid))
+      push $ PlaceEvent eid $ AttachedToLocation lid
+      pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       e <$ push (Discard (toTarget attrs))
     _ -> Lure1 <$> runMessage msg attrs

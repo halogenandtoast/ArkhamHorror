@@ -9,6 +9,7 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Message
 import Arkham.Source
@@ -29,11 +30,11 @@ instance RunMessage BindMonster2 where
       -> case effectSource of
         (EventSource evid) -> do
           nonElite <- notMember Elite <$> field EnemyTraits eid
-          e <$ when
+          when
             nonElite
-            (pushAll
-              [AttachEvent evid (EnemyTarget eid), DisableEffect effectId]
-            )
+            $ pushAll
+              [PlaceEvent evid (AttachedToEnemy eid), DisableEffect effectId]
+          pure e
         _ -> pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> BindMonster2 <$> runMessage msg attrs

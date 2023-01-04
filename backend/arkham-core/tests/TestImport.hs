@@ -436,6 +436,7 @@ newGame investigator = do
     , gameActionCanBeUndone = False
     , gameActionDiff = []
     , gameInAction = False
+    , gameCards = mempty
     , gameActiveCost = mempty
     , gameActiveAbilities = mempty
     }

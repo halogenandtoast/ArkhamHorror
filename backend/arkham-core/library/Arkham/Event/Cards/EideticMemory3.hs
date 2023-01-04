@@ -45,7 +45,7 @@ instance RunMessage EideticMemory3 where
         candidates
       push $ InitiatePlayCardAsChoose
         iid
-        (toCardId attrs)
+        (toCard attrs)
         playableCards
         [ CreateEffect
             "03306"

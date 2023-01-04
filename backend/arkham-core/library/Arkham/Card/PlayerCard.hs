@@ -62,6 +62,3 @@ lookupPlayerCard cardDef cardId = MkPlayerCard
   , pcOwner = Nothing
   , pcCustomizations = mempty
   }
-
-genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard
-genPlayerCard cardDef = lookupPlayerCard cardDef <$> getRandom

@@ -10,7 +10,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Criteria
 import {-# SOURCE #-} Arkham.GameEnv

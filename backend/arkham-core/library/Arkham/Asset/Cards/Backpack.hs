@@ -65,17 +65,10 @@ instance RunMessage Backpack where
     SearchNoneFound iid target | isTarget attrs target -> do
       push $ chooseOne iid [Label "No Cards Found" []]
       pure a
-    InitiatePlayCard iid cardId _ _ _
-      | controlledBy attrs iid && cardId `elem` map
-        toCardId
-        (assetCardsUnderneath attrs)
+    InitiatePlayCard iid card _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs
       -> do
         let
-          card =
-            fromJustNote "card missing" $ find matcher $ assetCardsUnderneath
-              attrs
-          remaining = deleteFirstMatch matcher $ assetCardsUnderneath attrs
-          matcher = (== cardId) . toCardId
+          remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
         pushAll
           $ [ Discard (toTarget attrs) | null remaining ]
           <> [AddToHand iid card, msg]

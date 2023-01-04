@@ -14,6 +14,7 @@ import Arkham.Card.Id
 import Arkham.ClassSymbol
 import Arkham.Criteria.Override
 import Arkham.Damage
+import Arkham.Deck
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
@@ -315,6 +316,7 @@ data LocationMatcher
   | SingleSidedLocation
   | ClosestPathLocation LocationId LocationId
   | LocationWithDefeatedEnemyThisRound
+  | HighestShroud LocationMatcher
   -- ^ start destination / end destination
   | BlockedLocation
   | ThisLocation
@@ -473,6 +475,7 @@ data DiscardedPlayerCardMatcher = DiscardedCardMatcher
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
   | AddedToVictory Timing CardMatcher
   | PerformAction Timing Who ActionMatcher
   | DrawingStartingHand Timing Who
@@ -747,7 +750,11 @@ data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data DeckMatcher = EncounterDeck | DeckOf InvestigatorMatcher | AnyDeck
+data DeckMatcher
+  = EncounterDeck
+  | DeckOf InvestigatorMatcher
+  | AnyDeck
+  | DeckIs DeckSignifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

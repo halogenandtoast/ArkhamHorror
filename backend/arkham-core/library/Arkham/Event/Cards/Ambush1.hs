@@ -14,6 +14,7 @@ import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -49,7 +50,7 @@ instance RunMessage Ambush1 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      e <$ push (AttachEvent eid (LocationTarget lid))
+      e <$ push (PlaceEvent eid (AttachedToLocation lid))
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     UseCardAbility _ source 2 [Window _ (Window.EnemySpawns enemyId _)] _

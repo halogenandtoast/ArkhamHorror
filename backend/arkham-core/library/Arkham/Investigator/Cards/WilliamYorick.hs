@@ -66,7 +66,7 @@ instance RunMessage WilliamYorick where
         targets =
           filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
         playCardMsgs c = [AddToHand iid c] <> if isFastCard c
-          then [InitiatePlayCard iid (toCardId c) Nothing windows'' False]
+          then [InitiatePlayCard iid c Nothing windows'' False]
           else [PayCardCost iid c windows'']
       playableTargets <- filterM
         (getIsPlayable iid source UnpaidCost windows'' . PlayerCard)

@@ -12,7 +12,6 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -174,7 +173,7 @@ instance RunMessage TheUnspeakableOath where
                   [ drawing
                   , InitiatePlayCardAs
                     iid
-                    (toCardId x)
+                    (PlayerCard x)
                     courage
                     []
                     LeaveChosenCard

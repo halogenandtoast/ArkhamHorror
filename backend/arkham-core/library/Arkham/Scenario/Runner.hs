@@ -14,7 +14,6 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.ChaosBag ()
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue

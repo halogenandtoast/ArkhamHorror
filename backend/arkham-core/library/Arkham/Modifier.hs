@@ -135,6 +135,7 @@ data ModifierType
   | Difficulty Int
   | DiscoveredClues Int
   | DoNotRemoveDoom
+  | DoNotTakeUpSlot SlotType
   | CannotPlaceDoomOnThis
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator

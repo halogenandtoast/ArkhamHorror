@@ -1316,7 +1316,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing []
     pure a
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
-    slotTypes <- field AssetSlots aid
+    slotTypes <- do
+      baseSlots <- field AssetSlots aid
+      modifiers <- getModifiers (AssetTarget aid)
+      pure $ filter ((`notElem` modifiers) . DoNotTakeUpSlot) baseSlots
+
     assetCard <- field AssetCard aid
     a <$ if fitsAvailableSlots slotTypes assetCard a
       then push (InvestigatorPlayedAsset iid aid)
@@ -1554,9 +1558,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       slots = handleSlotModifiers modifiers'
         $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
-    assetsWithCards <- for assetIds $ \assetId -> do
+    assetsWithCards <- flip mapMaybeM assetIds $ \assetId -> do
       assetCard <- field AssetCard assetId
-      pure (assetId, assetCard)
+      exclude <- hasModifier (AssetTarget assetId) (DoNotTakeUpSlot slotType)
+      pure $ if exclude then Nothing else Just (assetId, assetCard)
     let
       updatedSlots = foldl'
         (\s (aid, card) -> if any (canPutIntoSlot card) s

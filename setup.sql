@@ -155,7 +155,8 @@ CREATE TABLE public.users (
     id bigint NOT NULL,
     username character varying NOT NULL,
     email character varying NOT NULL,
-    password_digest character varying NOT NULL
+    password_digest character varying NOT NULL,
+    beta boolean NOT NULL DEFAULT FALSE
 );
 
 

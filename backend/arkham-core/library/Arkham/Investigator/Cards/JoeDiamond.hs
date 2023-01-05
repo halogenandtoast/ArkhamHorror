@@ -86,6 +86,7 @@ instance RunMessage JoeDiamond where
           }
         _ -> pure i
     SetupInvestigator iid | iid == toId attrs -> do
+      attrs' <- runMessage msg attrs
       let
         insights = filter
           (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
@@ -96,7 +97,7 @@ instance RunMessage JoeDiamond where
           pure
             $ JoeDiamond
             . (`with` Metadata hunchDeck (revealedHunchCard meta))
-            $ attrs
+            $ attrs'
             & deckL
             %~ withDeck (filter (`notElem` insights))
         else do
@@ -117,8 +118,7 @@ instance RunMessage JoeDiamond where
                 ]
             , UnfocusCards
             ]
-          pure i
-
+          pure $ JoeDiamond (attrs' `with` meta)
     ShuffleCardsIntoDeck HunchDeck [PlayerCard insight] -> do
       hunchDeck <- shuffleM (insight : hunchDeck meta)
       pure

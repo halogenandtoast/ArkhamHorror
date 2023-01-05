@@ -2544,6 +2544,8 @@ detectivesColt1911s :: CardDef
 detectivesColt1911s = (asset "05009" "Detective's Colt 1911s" 4 Neutral)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdSkills = [#intellect, #combat, #wild]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 4
   }
 
 fingerprintKit :: CardDef

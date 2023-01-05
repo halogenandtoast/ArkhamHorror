@@ -170,7 +170,7 @@ function beforeLeaveHand(el) {
     />
 
     <div class="player">
-      <div v-if="player.hunchDeck" class="top-of-deck">
+      <div v-if="player.hunchDeck" class="top-of-deck hunch-deck">
         <img
           :class="{ 'deck--can-draw': playTopOfHunchDeckAction !== -1 }"
           class="deck card"
@@ -400,5 +400,11 @@ function beforeLeaveHand(el) {
   width: 80px;
   font-size: 12px;
   background: hsla(255 100% 100% / 0.5)
+}
+
+.hunch-deck {
+  display: flex;
+  justify-self: self-start;
+  align-self: start;
 }
 </style>

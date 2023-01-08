@@ -1322,7 +1322,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ filter ((`notElem` modifiers) . DoNotTakeUpSlot) baseSlots
 
     assetCard <- field AssetCard aid
-    a <$ if fitsAvailableSlots slotTypes assetCard a
+    if fitsAvailableSlots slotTypes assetCard a
       then push (InvestigatorPlayedAsset iid aid)
       else do
         let
@@ -1334,17 +1334,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ AssetControlledBy (InvestigatorWithId iid)
           <> DiscardableAsset
           <> AssetOneOf (map AssetInSlot missingSlotTypes)
-        if null assetsThatCanProvideSlots
-          then push $ InvestigatorPlayedAsset iid aid
-          else push
-            (chooseOne
+        push $ if null assetsThatCanProvideSlots
+          then InvestigatorPlayedAsset iid aid
+          else chooseOne
               iid
               [ targetLabel
                   aid'
                   [Discard (AssetTarget aid'), InvestigatorPlayAsset iid aid]
               | aid' <- assetsThatCanProvideSlots
               ]
-            )
+    pure a
   InvestigatorPlayEvent iid eid _ _ _ | iid == investigatorId -> do
     pure $ a & eventsL %~ insertSet eid
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do

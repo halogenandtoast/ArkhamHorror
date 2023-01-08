@@ -49,7 +49,7 @@ instance FromJSON Investigator where
 withInvestigatorCardCode
   :: CardCode -> (SomeInvestigator -> r) -> r
 withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
-  Nothing -> if cCode == "04244" then f (SomeInvestigator (Proxy @BodyOfAYithian)) else error "invalid investigators"
+  Nothing -> if cCode == "04244" then f (SomeInvestigator (Proxy @BodyOfAYithian)) else error ("invalid investigators: " <> show cCode)
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator (Proxy @a))
 
 data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)

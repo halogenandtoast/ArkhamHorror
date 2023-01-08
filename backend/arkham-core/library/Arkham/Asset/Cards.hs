@@ -1052,6 +1052,7 @@ peterClover = (storyAsset
               )
   { cdCardTraits = setFromList [Humanoid, Criminal]
   , cdUnique = True
+  , cdCardType = EncounterAssetType
   }
 
 drFrancisMorgan :: CardDef
@@ -1139,6 +1140,7 @@ adamLynch =
     )
     { cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
+    , cdCardType = EncounterAssetType
     }
 
 theNecronomiconOlausWormiusTranslation :: CardDef
@@ -1212,6 +1214,7 @@ helplessPassenger =
     { cdCardTraits = setFromList [Ally, Bystander]
     , cdKeywords = singleton Keyword.Surge
     , cdEncounterSetQuantity = Just 3
+    , cdCardType = EncounterAssetType
     }
 
 keenEye3 :: CardDef

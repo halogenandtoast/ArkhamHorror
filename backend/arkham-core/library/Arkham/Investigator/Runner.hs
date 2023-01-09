@@ -2091,7 +2091,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 $ chooseOne iid
                 $ [ TargetLabel
                       (CardIdTarget $ toCardId c)
-                      [PayCardCost iid c windows, RunWindow iid windows]
+                      [InitiatePlayCard iid c Nothing windows False, RunWindow iid windows]
                   | c <- playableCards
                   ]
                 <> map

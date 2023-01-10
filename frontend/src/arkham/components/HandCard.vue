@@ -74,7 +74,7 @@ const image = computed(() => {
 </script>
 
 <template>
-  <div class="card-container">
+  <div class="card-container" :data-index="card.contents.id">
     <img
       :class="classObject"
       class="card"

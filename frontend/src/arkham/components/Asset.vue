@@ -108,7 +108,7 @@ const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
-  <div class="asset">
+  <div class="asset" :data-index="asset.id">
     <img
       :src="image"
       :class="{ 'asset--can-interact': cardAction !== -1, exhausted}"

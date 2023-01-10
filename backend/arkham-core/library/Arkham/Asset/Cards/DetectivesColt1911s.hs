@@ -7,13 +7,19 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher
+import Arkham.Deck qualified as Deck
+import Arkham.Investigator.Types (Field(..))
+import Arkham.Matcher hiding ( EnemyDefeated )
+import Arkham.SkillType
+import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (Trait(Tool))
+import Arkham.Projection
+import Arkham.Trait ( Trait (Tool, Insight) )
 
 newtype DetectivesColt1911s = DetectivesColt1911s AssetAttrs
   deriving anyclass IsAsset
@@ -27,7 +33,8 @@ instance HasModifiersFor DetectivesColt1911s where
     case assetController a of
       Nothing -> pure []
       Just iid -> do
-        toolAssetsWithHands <- selectList
+        toolAssetsWithHands <-
+          selectList
           $ assetControlledBy iid
           <> AssetWithTrait Tool
           <> AssetInSlot HandSlot
@@ -45,5 +52,27 @@ instance HasAbilities DetectivesColt1911s where
     ]
 
 instance RunMessage DetectivesColt1911s where
-  runMessage msg (DetectivesColt1911s attrs) =
-    DetectivesColt1911s <$> runMessage msg attrs
+  runMessage msg a@(DetectivesColt1911s attrs) = case msg of
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
+      [ skillTestModifiers
+        attrs
+        (InvestigatorTarget iid)
+        [DamageDealt 1, SkillModifier SkillCombat 1]
+      , ChooseFightEnemy iid (AbilitySource source 1) Nothing SkillCombat mempty False
+      ]
+    EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) _ -> do
+      for_ (assetController attrs) $ \iid -> do
+        insights <-
+          filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
+            <$> field InvestigatorDiscard iid
+        unless (null insights) $ do
+          push
+            $ chooseOne iid
+            $ Label "Do not move an insight" []
+            : [ TargetLabel
+                  (CardIdTarget $ toCardId insight)
+                  [PutCardOnBottomOfDeck iid Deck.HunchDeck $ PlayerCard insight]
+              | insight <- insights
+              ]
+      pure a
+    _ -> DetectivesColt1911s <$> runMessage msg attrs

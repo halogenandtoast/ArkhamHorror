@@ -1316,6 +1316,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing []
     pure a
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
+    pushAll [InvestigatorClearUnusedAssetSlots iid, Do (InvestigatorPlayAsset iid aid)]
+    pure a
+  InvestigatorClearUnusedAssetSlots iid | iid == investigatorId -> do
+    updatedSlots <- for (mapToList investigatorSlots) $ \(slotType, slots) -> do
+      slots' <- for slots $ \slot -> do
+        case slotItem slot of
+          Nothing -> pure slot
+          Just aid -> do
+            ignored <- hasModifier (AssetTarget aid) (DoNotTakeUpSlot slotType)
+            pure $ if ignored then emptySlot slot else slot
+      pure (slotType, slots')
+    pure $ a & slotsL .~ mapFromList updatedSlots 
+  Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> do
     slotTypes <- do
       baseSlots <- field AssetSlots aid
       modifiers <- getModifiers (AssetTarget aid)

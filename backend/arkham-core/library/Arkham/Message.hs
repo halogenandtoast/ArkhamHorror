@@ -417,6 +417,7 @@ data Message
     InvestigatorPlaceAllCluesOnLocation InvestigatorId
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlayAsset InvestigatorId AssetId
+  | InvestigatorClearUnusedAssetSlots InvestigatorId
   | InvestigatorPlayedAsset InvestigatorId AssetId
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
   | InvestigatorResigned InvestigatorId

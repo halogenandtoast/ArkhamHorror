@@ -52,7 +52,7 @@ instance RunMessage HidingSpot where
       locations <- selectList Anywhere
       push $ chooseOne
         iid
-        [ targetLabel location [PlaceEvent eid (AttachedToLocation location)]
+        [ targetLabel location [PlaceEvent iid eid (AttachedToLocation location)]
         | location <- locations
         ]
       pure e

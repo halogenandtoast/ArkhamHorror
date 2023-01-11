@@ -53,7 +53,7 @@ instance RunMessage Reliable1 where
       assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
       push $ chooseOne
         iid
-        [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
+        [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
         | asset <- assets
         ]
       pure e

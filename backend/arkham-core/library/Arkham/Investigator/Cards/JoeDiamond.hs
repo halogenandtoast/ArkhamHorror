@@ -154,6 +154,11 @@ instance RunMessage JoeDiamond where
         pure
           $ JoeDiamond . (`with` Metadata Nothing)
           $ attrs & decksL . at HunchDeck ?~ hunchDeck'
+    CreateEventAt _ card _ -> do
+      let hunchDeck' = filter (/= card) (hunchDeck attrs)
+      pure
+        $ JoeDiamond . (`with` Metadata Nothing)
+        $ attrs & decksL . at HunchDeck ?~ hunchDeck'
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       insights <-
         filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))

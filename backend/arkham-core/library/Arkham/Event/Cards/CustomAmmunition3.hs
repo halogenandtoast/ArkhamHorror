@@ -55,7 +55,7 @@ instance RunMessage CustomAmmunition3 where
         iid
         [ targetLabel
             asset
-            [ PlaceEvent eid (AttachedToAsset asset Nothing)
+            [ PlaceEvent iid eid (AttachedToAsset asset Nothing)
             , AddUses asset Ammo 2
             ]
         | asset <- assets

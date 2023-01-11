@@ -3955,6 +3955,21 @@ runGameMessage msg g = case msg of
           $ g
           & (entitiesL . assetsL . at assetId ?~ asset)
           & (activeCostL %~ insertMap (activeCostId cost) cost)
+  CreateEventAt iid card placement -> do
+    let
+      event' = createEvent card iid
+      eventId = toId event'
+    mCost <- createActiveCostForAdditionalCardCosts iid card
+    case mCost of
+      Nothing -> do
+        push $ PlaceEvent iid eventId placement
+        pure $ g & entitiesL . eventsL . at eventId ?~ event'
+      Just cost -> do
+        pushAll [CreatedCost (activeCostId cost), PlaceEvent iid eventId placement]
+        pure
+          $ g
+          & (entitiesL . eventsL . at eventId ?~ event')
+          & (activeCostL %~ insertMap (activeCostId cost) cost)
 
   CreateWeaknessInThreatArea card iid -> do
     let

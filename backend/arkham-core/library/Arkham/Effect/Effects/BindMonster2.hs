@@ -25,7 +25,7 @@ bindMonster2 = BindMonster2 . uncurry4 (baseAttrs "02031")
 
 instance RunMessage BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EffectAttrs {..}) = case msg of
-    PassedSkillTest _ (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
       -> case effectSource of
         (EventSource evid) -> do
@@ -33,7 +33,7 @@ instance RunMessage BindMonster2 where
           when
             nonElite
             $ pushAll
-              [PlaceEvent evid (AttachedToEnemy eid), DisableEffect effectId]
+              [PlaceEvent iid evid (AttachedToEnemy eid), DisableEffect effectId]
           pure e
         _ -> pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)

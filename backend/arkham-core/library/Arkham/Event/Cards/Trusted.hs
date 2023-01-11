@@ -34,7 +34,7 @@ instance RunMessage Trusted where
       assets <- selectList $ assetControlledBy iid <> AllyAsset
       push $ chooseOne
         iid
-        [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
+        [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
         | asset <- assets
         ]
       pure e

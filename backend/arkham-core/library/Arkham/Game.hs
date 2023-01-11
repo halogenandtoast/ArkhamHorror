@@ -1099,7 +1099,7 @@ getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
     HighestShroud matcher' -> do
-      ls' <- filter (`elem` ls) <$> getLocationsMatching matcher'
+      ls' <- filter (`elem` ls) <$> getLocationsMatching (RevealedLocation <> matcher')
       if null ls'
         then pure []
         else do
@@ -2202,6 +2202,7 @@ instance Projection Investigator where
       InvestigatorHandSize -> getHandSize (toAttrs i)
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck
+      InvestigatorDecks -> pure investigatorDecks
       InvestigatorDiscard -> pure investigatorDiscard
       InvestigatorClass -> pure investigatorClass
       InvestigatorActionsTaken -> pure investigatorActionsTaken
@@ -4366,10 +4367,10 @@ preloadEntities g = do
   let
     investigators = view (entitiesL . investigatorsL) g
     preloadHandEntities entities investigator' = do
+      asIfInHandCards <- getAsIfInHandCards (toId investigator')
       let
         handEffectCards =
-          filter (cdCardInHandEffects . toCardDef) . investigatorHand $ toAttrs
-            investigator'
+          (filter (cdCardInHandEffects . toCardDef) . investigatorHand $ toAttrs investigator') <> (filter (cdCardInHandEffects . toCardDef) asIfInHandCards)
       if null handEffectCards
         then pure entities
         else do
@@ -4438,6 +4439,7 @@ preloadModifiers g = case gameMode g of
         . sequence
             [ map PlayerCard . unDeck . investigatorDeck
             , map PlayerCard . investigatorDiscard
+            , concat . toList . investigatorDecks
             , investigatorHand
             , investigatorCardsUnderneath
             ]

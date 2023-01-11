@@ -13,6 +13,7 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Deck qualified as Deck
+import Arkham.Investigator.Deck
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher hiding ( EnemyDefeated )
 import Arkham.SkillType
@@ -60,7 +61,7 @@ instance RunMessage DetectivesColt1911s where
         [DamageDealt 1, SkillModifier SkillCombat 1]
       , ChooseFightEnemy iid (AbilitySource source 1) Nothing SkillCombat mempty False
       ]
-    EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) _ -> do
+    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ (assetController attrs) $ \iid -> do
         insights <-
           filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
@@ -71,7 +72,7 @@ instance RunMessage DetectivesColt1911s where
             $ Label "Do not move an insight" []
             : [ TargetLabel
                   (CardIdTarget $ toCardId insight)
-                  [PutCardOnBottomOfDeck iid Deck.HunchDeck $ PlayerCard insight]
+                  [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeckByKey iid HunchDeck) $ PlayerCard insight]
               | insight <- insights
               ]
       pure a

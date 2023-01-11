@@ -18,6 +18,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards
+import Arkham.Investigator.Deck
 import Arkham.Json
 import Arkham.Name
 import Arkham.Projection
@@ -56,6 +57,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]
   InvestigatorDeck :: Field Investigator (Deck PlayerCard)
+  InvestigatorDecks :: Field Investigator (HashMap InvestigatorDeckKey [Card])
   InvestigatorDiscard :: Field Investigator [PlayerCard]
   InvestigatorClass :: Field Investigator ClassSymbol
   InvestigatorActionsTaken :: Field Investigator [Action]
@@ -98,6 +100,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorAssets :: HashSet AssetId
   , investigatorEvents :: HashSet EventId
   , investigatorDeck :: Deck PlayerCard
+  , investigatorDecks :: HashMap InvestigatorDeckKey [Card]
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
   , investigatorTraits :: HashSet Trait
@@ -177,6 +180,9 @@ instance SourceEntity InvestigatorAttrs where
 
 deckL :: Lens' InvestigatorAttrs (Deck PlayerCard)
 deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
+
+decksL :: Lens' InvestigatorAttrs (HashMap InvestigatorDeckKey [Card])
+decksL = lens investigatorDecks $ \m x -> m { investigatorDecks = x }
 
 discardL :: Lens' InvestigatorAttrs [PlayerCard]
 discardL = lens investigatorDiscard $ \m x -> m { investigatorDiscard = x }

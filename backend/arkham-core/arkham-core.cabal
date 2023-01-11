@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -1125,6 +1125,7 @@ library
       Arkham.Investigator.Cards.WilliamYorick
       Arkham.Investigator.Cards.ZoeySamaras
       Arkham.Investigator.DamageAssignment
+      Arkham.Investigator.Deck
       Arkham.Investigator.Investigators
       Arkham.Investigator.Runner
       Arkham.Investigator.Types

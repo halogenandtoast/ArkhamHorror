@@ -240,6 +240,7 @@ investigator f cardDef Stats {..} =
         , investigatorAssets = mempty
         , investigatorEvents = mempty
         , investigatorDeck = mempty
+        , investigatorDecks = mempty
         , investigatorDiscard = mempty
         , investigatorHand = mempty
         , investigatorTraits = cdCardTraits cardDef

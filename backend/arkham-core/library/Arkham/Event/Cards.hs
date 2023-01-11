@@ -1533,6 +1533,7 @@ unsolvedCase :: CardDef
 unsolvedCase = (event "05010" "Unsolved Case" 4 Neutral)
   { cdCardTraits = setFromList [Insight, Mystery]
   , cdCardSubType = Just Weakness
+  , cdCardInHandEffects = True
   }
 
 trialByFire :: CardDef

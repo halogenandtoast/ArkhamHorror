@@ -12,6 +12,7 @@ import Arkham.Criteria
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Investigator.Deck
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
@@ -29,15 +30,15 @@ unsolvedCase = event UnsolvedCase Cards.unsolvedCase
 instance HasAbilities UnsolvedCase where
   getAbilities (UnsolvedCase a) =
     [ restrictedAbility a 1 InYourHand $ ForcedAbility $ WouldBeShuffledIntoDeck
-        (DeckIs HunchDeck)
+        (DeckIs (InvestigatorDeckByKey (eventOwner a) HunchDeck))
         (CardWithId $ toCardId a)
     ]
 
 instance RunMessage UnsolvedCase where
   runMessage msg e@(UnsolvedCase attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid == iid' -> do
       popMessageMatching_ $ \case
-        ShuffleCardsIntoDeck HunchDeck [card] -> card == toCard attrs
+        ShuffleCardsIntoDeck (InvestigatorDeckByKey _ HunchDeck) [card] -> card == toCard attrs
         _ -> False
       push $ PlaceEvent (toId e) (InThreatArea iid)
       pure e

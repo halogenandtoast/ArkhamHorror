@@ -35,7 +35,7 @@ import Arkham.Cost.FieldCost
 import Arkham.Criteria ( Criterion )
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
-import Arkham.Deck hiding ( InvestigatorDiscard )
+import Arkham.Deck hiding ( InvestigatorDiscard, InvestigatorDeck )
 import Arkham.DefeatedBy
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
@@ -98,7 +98,7 @@ getPlayableCards
   -> [Window]
   -> m [Card]
 getPlayableCards a@InvestigatorAttrs {..} costStatus windows' = do
-  asIfInHandCards <- getAsIfInHandCards a
+  asIfInHandCards <- getAsIfInHandCards (toId a)
   playableDiscards <- getPlayableDiscards a costStatus windows'
   playableHandCards <- filterM
     (getIsPlayable (toId a) (toSource a) costStatus windows')
@@ -131,9 +131,9 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
          )
   allowsPlayFromDiscard _ _ _ = False
 
-getAsIfInHandCards :: HasGame m => InvestigatorAttrs -> m [Card]
-getAsIfInHandCards attrs = do
-  modifiers <- getModifiers (toTarget attrs)
+getAsIfInHandCards :: HasGame m => InvestigatorId -> m [Card]
+getAsIfInHandCards iid = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
   let
     modifiersPermitPlayOfDiscard c =
       any (modifierPermitsPlayOfDiscard c) modifiers
@@ -151,18 +151,20 @@ getAsIfInHandCards attrs = do
     cardsAddedViaModifiers = flip mapMaybe modifiers $ \case
       AsIfInHand c -> Just c
       _ -> Nothing
+  discard <- field InvestigatorDiscard iid
+  deck <- fieldMap InvestigatorDeck unDeck iid
   pure
     $ map
         (PlayerCard . fst)
         (filter
           modifiersPermitPlayOfDiscard
-          (zip (investigatorDiscard attrs) [0 :: Int ..])
+          (zip discard [0 :: Int ..])
         )
     <> map
          (PlayerCard . fst)
          (filter
            modifiersPermitPlayOfDeck
-           (zip (unDeck $ investigatorDeck attrs) [0 :: Int ..])
+           (zip deck [0 :: Int ..])
          )
     <> cardsAddedViaModifiers
 
@@ -186,18 +188,22 @@ getCanPerformAbility !iid !source !window !ability = do
       AdditionalCost x -> Just x
       _ -> Nothing
     cost = abilityCost ability
+    debug :: forall a. Show a => a -> a
+    debug = case abilitySource ability of
+      EventSource _ -> traceShowId
+      _ -> id
   andM
-    [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
-    , meetsActionRestrictions iid window ability
-    , windowMatches iid source window (abilityWindow ability)
-    , maybe
+    [ debug <$> getCanAffordCost iid (abilitySource ability) mAction [window] cost
+    , debug <$> meetsActionRestrictions iid window ability
+    , debug <$> windowMatches iid source window (abilityWindow ability)
+    , debug <$> maybe
       (pure True)
       (passesCriteria iid (abilitySource ability) [window])
       (abilityCriteria ability)
-    , allM
+    , debug <$> allM
       (getCanAffordCost iid (abilitySource ability) mAction [window])
       additionalCosts
-    , not <$> preventedByInvestigatorModifiers iid ability
+    , debug . not <$> preventedByInvestigatorModifiers iid ability
     ]
 
 preventedByInvestigatorModifiers
@@ -619,13 +625,14 @@ getActionsWith iid window f = do
         then pure Nothing
         else pure $ Just $ applyAbilityModifiers ability modifiers'
 
+    
+
   actions''' <-
     filterM
-      (\action ->
-        liftA2
-          (&&)
-          (getCanPerformAbility iid (abilitySource action) window action)
-          (getCanAffordAbility iid action window)
+      (\action -> liftA2
+        (&&)
+        (getCanPerformAbility iid (abilitySource action) window action)
+        (getCanAffordAbility iid action window)
       )
       actions''
   let forcedActions = filter isForcedAbility actions'''
@@ -957,7 +964,7 @@ passesCriteria iid source windows' = \case
       (select investigatorMatcher)
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
-    hand <- fieldMap InvestigatorHand (map toCardId) iid
+    hand <- liftA2 (<>) (fieldMap InvestigatorHand (map toCardId) iid) (map toCardId <$> getAsIfInHandCards iid)
     case source of
       EventSource eid -> pure $ unEventId eid `elem` hand
       TreacherySource tid -> do

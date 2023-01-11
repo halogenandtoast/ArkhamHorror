@@ -41,27 +41,30 @@ const topOfDeck = computed(() => {
   return `${baseUrl}/img/arkham/player_back.jpg`
 })
 
-const topOfHunchDeck = computed(() => {
-  const { hunchDeck, revealedHunchCard } = props.player
-  if (hunchDeck) {
-    const topCard = hunchDeck[0]
-    if (topCard && topCard.id === revealedHunchCard) {
-      return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
-    }
+const hunchDeck = computed(() => {
+  const match = props.player.decks.find(([k,]) => k === "HunchDeck")
+  if (match) {
+    return match[1]
   }
 
-  return `${baseUrl}/img/arkham/player_back.jpg`
+  return null
 })
 
-const playTopOfHunchDeckAction = computed(() => {
-  const { hunchDeck } = props.player
-  if (hunchDeck) {
-    const topOfHunchDeck = hunchDeck[0]
-    if (topOfHunchDeck) {
-      return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === topOfHunchDeck.id)
-    }
+const topOfHunchDeckRevealed = computed(() => {
+  const { revealedHunchCard } = props.player
+  if (topOfHunchDeck.value) {
+    return topOfHunchDeck.value.contents.id === revealedHunchCard
   }
-  return -1
+
+  return false
+})
+
+const topOfHunchDeck = computed(() => {
+  if (hunchDeck.value) {
+    return hunchDeck.value[0]
+  }
+
+  return null
 })
 
 const playTopOfDeckAction = computed(() => {
@@ -170,15 +173,21 @@ function beforeLeaveHand(el) {
     />
 
     <div class="player">
-      <div v-if="player.hunchDeck" class="top-of-deck hunch-deck">
-        <img
-          :class="{ 'deck--can-draw': playTopOfHunchDeckAction !== -1 }"
-          class="deck card"
-          :src="topOfHunchDeck"
-          width="150px"
-          @click="$emit('choose', playTopOfHunchDeckAction)"
+      <div v-if="hunchDeck" class="top-of-deck hunch-deck">
+        <HandCard
+          v-if="topOfHunchDeckRevealed"
+          :card="topOfHunchDeck"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
         />
-        <span class="deck-size">{{player.hunchDeck.length}}</span>
+        <img
+          v-else
+          class="deck card"
+          :src="`${baseUrl}/img/arkham/player_back.jpg`"
+          width="150px"
+        />
+        <span class="deck-size">{{hunchDeck.length}}</span>
       </div>
 
       <Investigator

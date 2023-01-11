@@ -265,9 +265,9 @@ data Message
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateAssetAt Card Placement
-  | CreateEventAt Card Placement
+  | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement
-  | PlaceEvent EventId Placement
+  | PlaceEvent InvestigatorId EventId Placement
   | PlaceTreachery TreacheryId TreacheryPlacement
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target

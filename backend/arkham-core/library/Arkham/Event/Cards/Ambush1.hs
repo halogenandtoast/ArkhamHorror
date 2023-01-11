@@ -50,7 +50,7 @@ instance RunMessage Ambush1 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      e <$ push (PlaceEvent eid (AttachedToLocation lid))
+      e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     UseCardAbility _ source 2 [Window _ (Window.EnemySpawns enemyId _)] _

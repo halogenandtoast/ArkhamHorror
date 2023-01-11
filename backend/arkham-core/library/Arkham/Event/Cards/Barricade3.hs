@@ -38,7 +38,7 @@ instance RunMessage Barricade3 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      e <$ push (PlaceEvent eid (AttachedToLocation lid))
+      e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
     MoveFrom _ _ lid | LocationTarget lid `elem` eventAttachedTarget attrs ->
       e <$ push (Discard (EventTarget eventId))
     _ -> Barricade3 <$> runMessage msg attrs

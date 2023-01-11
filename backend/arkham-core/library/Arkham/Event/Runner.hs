@@ -43,6 +43,6 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   SealedToken token card | toCardId card == toCardId a ->
     pure $ a & sealedTokensL %~ (token :)
   UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
-  PlaceEvent eid placement | eid == eventId ->
+  PlaceEvent _ eid placement | eid == eventId ->
     pure $ a & placementL .~ placement
   _ -> pure a

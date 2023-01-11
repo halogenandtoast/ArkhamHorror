@@ -431,6 +431,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         push $ InvestigatorPlayAsset iid aid
       _ -> pure ()
     pure a
+  PlaceEvent _ eid placement | eid `member` investigatorEvents ->
+    case placement of
+      InPlayArea iid | iid == investigatorId -> pure a
+      InThreatArea iid | iid == investigatorId -> pure a
+      _ -> pure $ a & (eventsL %~ deleteSet eid)
+  PlaceEvent _ eid placement | eid `notMember` investigatorEvents -> do
+    case placement of
+      InPlayArea iid | iid == investigatorId ->
+        pure $ a & (eventsL %~ insertSet eid)
+      InThreatArea iid | iid == investigatorId ->
+        pure $ a & (eventsL %~ insertSet eid)
+      _ -> pure a
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ insertSet tid
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do

@@ -46,7 +46,7 @@ instance RunMessage Lure1 where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      push $ PlaceEvent eid $ AttachedToLocation lid
+      push $ PlaceEvent iid eid $ AttachedToLocation lid
       pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       e <$ push (Discard (toTarget attrs))

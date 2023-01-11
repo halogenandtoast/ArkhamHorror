@@ -188,22 +188,18 @@ getCanPerformAbility !iid !source !window !ability = do
       AdditionalCost x -> Just x
       _ -> Nothing
     cost = abilityCost ability
-    debug :: forall a. Show a => a -> a
-    debug = case abilitySource ability of
-      EventSource _ -> traceShowId
-      _ -> id
   andM
-    [ debug <$> getCanAffordCost iid (abilitySource ability) mAction [window] cost
-    , debug <$> meetsActionRestrictions iid window ability
-    , debug <$> windowMatches iid source window (abilityWindow ability)
-    , debug <$> maybe
+    [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
+    , meetsActionRestrictions iid window ability
+    , windowMatches iid source window (abilityWindow ability)
+    , maybe
       (pure True)
       (passesCriteria iid (abilitySource ability) [window])
       (abilityCriteria ability)
-    , debug <$> allM
+    , allM
       (getCanAffordCost iid (abilitySource ability) mAction [window])
       additionalCosts
-    , debug . not <$> preventedByInvestigatorModifiers iid ability
+    , not <$> preventedByInvestigatorModifiers iid ability
     ]
 
 preventedByInvestigatorModifiers

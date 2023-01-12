@@ -29,9 +29,10 @@ const hasPool = computed(() => {
     uses,
     doom,
     clues,
+    resources,
     sealedTokens,
   } = props.asset;
-  return sanity || health || damage || horror || uses || doom > 0 || clues > 0 || sealedTokens.length > 0;
+  return sanity || health || damage || horror || uses || doom > 0 || clues > 0 || resources > 0 || sealedTokens.length > 0;
 })
 
 const exhausted = computed(() => props.asset.exhausted)
@@ -157,6 +158,7 @@ const choose = (idx: number) => emit('choose', idx)
       />
       <PoolItem v-if="asset.doom > 0" type="doom" :amount="asset.doom" />
       <PoolItem v-if="asset.clues > 0" type="clue" :amount="asset.clues" />
+      <PoolItem v-if="asset.resources > 0" type="resource" :amount="asset.resources" />
       <Token v-for="(sealedToken, index) in asset.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
     <Asset

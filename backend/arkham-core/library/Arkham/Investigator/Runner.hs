@@ -1798,7 +1798,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
     a <$ push windowMsg
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
-  SpendResources iid n | iid == investigatorId ->
+  SpendResources iid n | iid == investigatorId -> do
+    push $ Do msg
+    pure a
+  Do (SpendResources iid n) | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n
   LoseResources iid n | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n

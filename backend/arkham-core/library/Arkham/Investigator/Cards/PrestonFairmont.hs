@@ -72,8 +72,13 @@ instance RunMessage PrestonFairmont where
       familyInheritanceResources <- field AssetResources familyInheritance
       if familyInheritanceResources > 0
         then do
-          let remaining = max 0 (n - familyInheritanceResources)
-          push $ RemoveResources (AssetTarget familyInheritance) (min n familyInheritanceResources)
-          PrestonFairmont <$> runMessage (SpendResources iid remaining) attrs
+          if investigatorResources attrs > 0
+            then
+              push
+                $ chooseOrRunN iid n
+                $ replicate (familyInheritanceResources) (TargetLabel (AssetTarget familyInheritance) [RemoveResources (AssetTarget familyInheritance) 1])
+                <> replicate (investigatorResources attrs) (ComponentLabel (InvestigatorComponent iid ResourceToken) [Do (SpendResources iid 1)])
+            else push $ RemoveResources (AssetTarget familyInheritance) n
+          pure i
         else PrestonFairmont <$> runMessage msg attrs
     _ -> PrestonFairmont <$> runMessage msg attrs

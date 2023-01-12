@@ -712,6 +712,11 @@ chooseN :: InvestigatorId -> Int -> [UI Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
+chooseOrRunN :: InvestigatorId -> Int -> [UI Message] -> Message
+chooseOrRunN _ _ [] = throw $ InvalidState "No messages for chooseN"
+chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
+chooseOrRunN iid n msgs = Ask iid (ChooseN n msgs)
+
 chooseAmounts
   :: InvestigatorId -> Text -> AmountTarget -> [(Text, (Int, Int))] -> Target -> Message
 chooseAmounts iid label total choiceMap target = Ask

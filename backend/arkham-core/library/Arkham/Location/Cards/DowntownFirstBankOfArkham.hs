@@ -39,5 +39,5 @@ instance HasAbilities DowntownFirstBankOfArkham where
 instance RunMessage DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (TakeResources iid 3 False)
+      l <$ push (TakeResources iid 3 (toAbilitySource attrs 1) False)
     _ -> DowntownFirstBankOfArkham <$> runMessage msg attrs

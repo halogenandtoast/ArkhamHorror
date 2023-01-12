@@ -45,6 +45,7 @@ instance HasAbilities DarioElAmin where
 
 instance RunMessage DarioElAmin where
   runMessage msg a@(DarioElAmin attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (TakeResources iid 2 False)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ TakeResources iid 2 (toAbilitySource attrs 1) False
+      pure a
     _ -> DarioElAmin <$> runMessage msg attrs

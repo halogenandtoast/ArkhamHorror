@@ -24,7 +24,7 @@ instance RunMessage CleanThemOut where
   runMessage msg e@(CleanThemOut attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
-        [ TakeResources iid 2 False
+        [ TakeResources iid 2 (toSource attrs) False
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         , Discard (toTarget attrs)
         ]

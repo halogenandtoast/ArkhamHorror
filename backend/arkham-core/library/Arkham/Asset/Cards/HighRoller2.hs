@@ -16,6 +16,7 @@ import Arkham.Effect.Types
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.SkillTest
+import Arkham.Source
 import Arkham.Target
 
 newtype HighRoller2 = HighRoller2 AssetAttrs
@@ -55,7 +56,7 @@ highRoller2Effect = cardEffect HighRoller2Effect Cards.highRoller2
 instance RunMessage HighRoller2Effect where
   runMessage msg e@(HighRoller2Effect attrs@EffectAttrs {..}) = case msg of
     PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _ | InvestigatorTarget iid == effectTarget -> do
-      pushAll [TakeResources iid 3 False, DisableEffect effectId]
+      pushAll [TakeResources iid 3 (AbilitySource effectSource 1) False, DisableEffect effectId]
       pure e
     SkillTestEnds _ _ -> do
       push (DisableEffect effectId)

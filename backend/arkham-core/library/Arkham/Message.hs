@@ -217,7 +217,7 @@ data Message
   | BeginRound
   | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
   | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int
-  | BeginTrade InvestigatorId Target [InvestigatorId]
+  | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
   | Blanked Message
   | CampaignStep (Maybe CampaignStep)
@@ -612,7 +612,7 @@ data Message
   | ReplaceInvestigatorAsset InvestigatorId Card
   | ReplacedInvestigatorAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId Card
-  | TakeResources InvestigatorId Int Bool
+  | TakeResources InvestigatorId Int Source Bool
   | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
   | TakenAction InvestigatorId Action

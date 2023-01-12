@@ -12,6 +12,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Message
+import Arkham.Source
 import Arkham.Target
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
@@ -50,6 +51,7 @@ instance RunMessage SkidsOToole where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       i <$ push (GainActions (toId attrs) source 1)
     PassedSkillTest iid _ _ (TokenTarget token) _ _
-      | iid == toId attrs && tokenFace token == ElderSign -> i
-      <$ push (TakeResources iid 2 False)
+      | iid == toId attrs && tokenFace token == ElderSign -> do
+      push $ TakeResources iid 2 (TokenEffectSource ElderSign) False
+      pure i
     _ -> SkidsOToole <$> runMessage msg attrs

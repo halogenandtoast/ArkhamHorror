@@ -44,7 +44,7 @@ instance RunMessage CloverClubCardroom where
       let
         msgs = concatMap
           (\case
-            ElderSign -> [GainClues iid 2, TakeResources iid 2 False]
+            ElderSign -> [GainClues iid 2, TakeResources iid 2 (toAbilitySource attrs 1) False]
             PlusOne -> []
             Zero -> [GainClues iid 2]
             MinusOne -> []

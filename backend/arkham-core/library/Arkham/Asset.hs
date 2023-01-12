@@ -425,6 +425,7 @@ allAssets = mapFrom
   --- signature [tcu]
   , SomeAssetCard hypnoticTherapy
   , SomeAssetCard detectivesColt1911s
+  , SomeAssetCard familyInheritance
   --- seeker [tcu]
   , SomeAssetCard fingerprintKit
   --- survivor [tcu]

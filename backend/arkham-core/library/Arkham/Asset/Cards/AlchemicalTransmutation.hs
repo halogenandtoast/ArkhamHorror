@@ -34,7 +34,7 @@ instance RunMessage AlchemicalTransmutation where
       [ CreateEffect "03032" Nothing source (InvestigatorTarget iid)
       , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 1
       ]
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> do
-        a <$ push (TakeResources iid (min n 3) False)
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n -> do
+      push $ TakeResources iid (min n 3) (toAbilitySource attrs 1) False
+      pure a
     _ -> AlchemicalTransmutation <$> runMessage msg attrs

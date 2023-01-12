@@ -50,7 +50,7 @@ instance RunMessage ArchaicGlyphs where
         InPlayArea controllerId -> do
           pushAll
             [ Discard (toTarget attrs)
-            , TakeResources controllerId 5 False
+            , TakeResources controllerId 5 (toAbilitySource attrs 2) False
             , Record YouHaveTranslatedTheGlyphs
             ]
         _ -> error "must be controlled"

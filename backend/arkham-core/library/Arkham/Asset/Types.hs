@@ -78,6 +78,7 @@ data instance Field Asset :: Type -> Type where
   AssetName :: Field Asset Name
   AssetCost :: Field Asset Int
   AssetClues :: Field Asset Int
+  AssetResources :: Field Asset Int
   AssetHorror :: Field Asset Int
   AssetDamage :: Field Asset Int
   AssetRemainingHealth :: Field Asset (Maybe Int)
@@ -111,6 +112,7 @@ instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId)
     AssetName -> Dict
     AssetCost -> Dict
     AssetClues -> Dict
+    AssetResources -> Dict
     AssetHorror -> Dict
     AssetDamage -> Dict
     AssetRemainingHealth -> Dict
@@ -138,6 +140,7 @@ instance FromJSON (SomeField Asset) where
     "AssetName" -> pure $ SomeField AssetName
     "AssetCost" -> pure $ SomeField AssetCost
     "AssetClues" -> pure $ SomeField AssetClues
+    "AssetResources" -> pure $ SomeField AssetResources
     "AssetHorror" -> pure $ SomeField AssetHorror
     "AssetDamage" -> pure $ SomeField AssetDamage
     "AssetRemainingHealth" -> pure $ SomeField AssetRemainingHealth

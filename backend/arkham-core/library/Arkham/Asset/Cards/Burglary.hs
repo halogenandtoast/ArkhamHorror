@@ -39,6 +39,7 @@ instance RunMessage Burglary where
       skillType <- field LocationInvestigateSkill lid
       push $ Investigate iid lid source (Just $ toTarget attrs) skillType False
       pure a
-    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
-      a <$ pushAll [TakeResources iid 3 False]
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
+      pushAll [TakeResources iid 3 (toAbilitySource attrs 1) False]
+      pure a
     _ -> Burglary <$> runMessage msg attrs

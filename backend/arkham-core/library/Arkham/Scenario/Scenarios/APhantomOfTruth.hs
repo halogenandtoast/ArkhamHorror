@@ -292,7 +292,7 @@ instance RunMessage APhantomOfTruth where
         <> [ RecordCount Doubt (doubt + 1) | n == 12 ]
         <> [story investigatorIds dream13, story investigatorIds awakening]
         <> [ story investigatorIds jordansInformation | jordanInterviewed ]
-        <> [ TakeResources iid 3 False
+        <> [ CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingResources 3]) (toSource attrs) (InvestigatorTarget iid)
            | jordanInterviewed
            , iid <- investigatorIds
            ]

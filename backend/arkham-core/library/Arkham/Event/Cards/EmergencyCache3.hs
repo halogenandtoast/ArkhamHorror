@@ -27,11 +27,11 @@ instance RunMessage EmergencyCache3 where
         $ AssetControlledBy (InvestigatorWithId iid)
         <> AssetWithUses Supply
       if null supplyAssets
-        then pushAll [TakeResources iid 4 False, Discard (toTarget attrs)]
+        then pushAll [TakeResources iid 4 (toSource attrs) False, Discard (toTarget attrs)]
         else do
           pushAll $ replicate 4 $ chooseOne
             iid
-            [ Label "Take Resource" [TakeResources iid 1 False]
+            [ Label "Take Resource" [TakeResources iid 1 (toSource attrs) False]
             , Label
               "Add Supply"
               [ chooseOrRunOne

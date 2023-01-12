@@ -89,7 +89,7 @@ instance RunMessage CarolynFern where
             fieldMap AssetController (fromJustNote "must be controlled") aid
         canGainResources <- selectNone $ treacheryIs Treacheries.rationalThought
         when (healedController /= toId attrs || canGainResources) $ do
-          push $ TakeResources healedController 1 False
+          push $ TakeResources healedController 1 (toAbilitySource attrs 1) False
         pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       investigatorsWithHealHorror <- getInvestigatorsWithHealHorror attrs 1

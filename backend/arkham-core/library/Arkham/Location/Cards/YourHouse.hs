@@ -53,6 +53,6 @@ instance RunMessage YourHouse where
       | isSource attrs source -> pure l
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       drawing <- drawCards iid attrs 1
-      pushAll [drawing, TakeResources iid 1 False]
+      pushAll [drawing, TakeResources iid 1 (toAbilitySource attrs 2) False]
       pure l
     _ -> YourHouse <$> runMessage msg attrs

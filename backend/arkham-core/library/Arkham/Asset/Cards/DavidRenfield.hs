@@ -47,6 +47,7 @@ instance RunMessage DavidRenfield where
         , Label "Do not place doom on David Renfield" [resolveAbility]
         ]
       pure a
-    UseCardAbilityChoice iid source 1 _ _ _ | isSource attrs source ->
-      a <$ push (TakeResources iid (assetDoom attrs) False)
+    UseCardAbilityChoice iid source 1 _ _ _ | isSource attrs source -> do
+      push $ TakeResources iid (assetDoom attrs) (toAbilitySource attrs 1) False
+      pure a
     _ -> DavidRenfield <$> runMessage msg attrs

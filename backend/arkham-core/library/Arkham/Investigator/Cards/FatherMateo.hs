@@ -18,6 +18,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -95,7 +96,7 @@ instance RunMessage FatherMateoElderSignEffect where
             [ chooseOrRunOne iid
             $ Label
                 "Draw 1 card and gain 1 resource"
-                [drawing, TakeResources iid 1 False]
+                [drawing, TakeResources iid 1 (TokenEffectSource ElderSign) False]
             : [ Label
                   "Take an additional action this turn"
                   [GainActions iid (toSource attrs) 1]

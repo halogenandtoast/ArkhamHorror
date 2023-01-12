@@ -31,6 +31,7 @@ instance HasAbilities LoneWolf where
 
 instance RunMessage LoneWolf where
   runMessage msg a@(LoneWolf attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (TakeResources iid 1 False)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ TakeResources iid 1 (toAbilitySource attrs 1) False
+      pure a
     _ -> LoneWolf <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance RunMessage DrawingThin where
           SkillTestTarget
         , chooseOne
           iid
-          [ Label "Take 2 resources" [TakeResources iid 2 False]
+          [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
           , Label "Draw 1 card" [drawing]
           ]
         ]

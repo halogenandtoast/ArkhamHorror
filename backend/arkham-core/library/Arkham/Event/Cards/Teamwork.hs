@@ -49,6 +49,7 @@ instance RunMessage Teamwork where
                 (AssetTarget aid)
                 [ BeginTrade
                   iid'
+                  (toSource attrs)
                   (AssetTarget aid)
                   (investigatorIds \\ [iid'])
                 , ResolveEvent iid eid mtarget windows'
@@ -57,7 +58,7 @@ instance RunMessage Teamwork where
             ]
           <> [ TargetLabel
                  (InvestigatorTarget iid')
-                 [ BeginTrade iid' ResourceTarget (investigatorIds \\ [iid'])
+                 [ BeginTrade iid' (toSource attrs) ResourceTarget (investigatorIds \\ [iid'])
                  , ResolveEvent iid eid mtarget windows'
                  ]
              | iid' <- investigatorIds

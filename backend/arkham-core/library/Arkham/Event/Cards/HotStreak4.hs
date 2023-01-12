@@ -18,5 +18,5 @@ hotStreak4 = event HotStreak4 Cards.hotStreak4
 instance RunMessage HotStreak4 where
   runMessage msg e@(HotStreak4 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
-      e <$ pushAll [TakeResources iid 10 False, Discard (EventTarget eid)]
+      e <$ pushAll [TakeResources iid 10 (toSource attrs) False, Discard (EventTarget eid)]
     _ -> HotStreak4 <$> runMessage msg attrs

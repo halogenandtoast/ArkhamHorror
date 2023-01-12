@@ -42,7 +42,7 @@ instance RunMessage AstoundingRevelation where
         $ chooseOne iid
         $ ComponentLabel
             (InvestigatorComponent iid ResourceToken)
-            [TakeResources iid 2 False]
+            [TakeResources iid 2 (toAbilitySource attrs 1) False]
         : [ targetLabel aid [AddUses aid Secret 1]
           | aid <- secretAssetIds
           ]

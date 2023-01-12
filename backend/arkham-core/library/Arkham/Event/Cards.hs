@@ -172,6 +172,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , lessonLearned2
   , letMeHandleThis
   , liveAndLearn
+  , lodgeDebts
   , logicalReasoning
   , lookWhatIFound
   , lookWhatIFound2
@@ -1532,6 +1533,13 @@ alterFate3 = (event "04313" "Alter Fate" 1 Survivor)
 unsolvedCase :: CardDef
 unsolvedCase = (event "05010" "Unsolved Case" 4 Neutral)
   { cdCardTraits = setFromList [Insight, Mystery]
+  , cdCardSubType = Just Weakness
+  , cdCardInHandEffects = True
+  }
+
+lodgeDebts :: CardDef
+lodgeDebts = (event "05012" "\"Lodge\" Debts" 10 Neutral)
+  { cdCardTraits = singleton Pact
   , cdCardSubType = Just Weakness
   , cdCardInHandEffects = True
   }

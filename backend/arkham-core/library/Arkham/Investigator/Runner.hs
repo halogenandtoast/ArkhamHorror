@@ -277,19 +277,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           | card <- investigatorHand
           ]
     pure a
-  BeginTrade iid (AssetTarget aid) iids | iid == investigatorId -> a <$ push
+  BeginTrade iid source (AssetTarget aid) iids | iid == investigatorId -> a <$ push
     (chooseOne
       iid
       [ TargetLabel (InvestigatorTarget iid') [TakeControlOfAsset iid' aid]
       | iid' <- iids
       ]
     )
-  BeginTrade iid ResourceTarget iids | iid == investigatorId -> a <$ push
+  BeginTrade iid source ResourceTarget iids | iid == investigatorId -> a <$ push
     (chooseOne
       iid
       [ TargetLabel
           (InvestigatorTarget iid')
-          [TakeResources iid' 1 False, SpendResources iid 1]
+          [TakeResources iid' 1 source False, SpendResources iid 1]
       | iid' <- iids
       ]
     )
@@ -1803,7 +1803,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   LoseResources iid n | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n
   LoseAllResources iid | iid == investigatorId -> pure $ a & resourcesL .~ 0
-  TakeResources iid n True | iid == investigatorId -> do
+  TakeResources iid n source True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows
       [Window Timing.When (Window.PerformAction iid Action.Resource)]
     afterWindowMsg <- checkWindows
@@ -1813,12 +1813,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , beforeWindowMsg
       , TakeAction iid (Just Action.Resource) (ActionCost 1)
       , CheckAttackOfOpportunity iid False
-      , TakeResources iid n False
+      , TakeResources iid n source False
       , afterWindowMsg
       , FinishAction
       ]
     pure a
-  TakeResources iid n False | iid == investigatorId -> do
+  TakeResources iid n _ False | iid == investigatorId -> do
     cannotGainResources <- hasModifier a CannotGainResources
     pure $ if cannotGainResources then a else a & resourcesL +~ n
   EmptyDeck iid | iid == investigatorId -> do
@@ -1838,7 +1838,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (chooseOne
           investigatorId
           [ Label "Do not take resource(s)" []
-          , Label "Take resource(s)" [TakeResources investigatorId 1 False]
+          , Label "Take resource(s)" [TakeResources investigatorId 1 (toSource a) False]
           ]
         )
       else pure $ a & resourcesL +~ 1
@@ -2585,7 +2585,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ additionalActions
           <> [ ComponentLabel
                  (InvestigatorComponent iid ResourceToken)
-                 [TakeResources iid 1 usesAction]
+                 [TakeResources iid 1 (toSource a) usesAction]
              | canAffordTakeResources && CannotGainResources `notElem` modifiers
              ]
           <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]

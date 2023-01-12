@@ -341,6 +341,7 @@ library
       Arkham.Asset.Cards.EsotericAtlas2
       Arkham.Asset.Cards.EsotericFormula
       Arkham.Asset.Cards.ExpeditionJournal
+      Arkham.Asset.Cards.FamilyInheritance
       Arkham.Asset.Cards.Farsight4
       Arkham.Asset.Cards.FeedTheMind
       Arkham.Asset.Cards.FeedTheMind3
@@ -973,6 +974,7 @@ library
       Arkham.Event.Cards.LessonLearned2
       Arkham.Event.Cards.LetMeHandleThis
       Arkham.Event.Cards.LiveAndLearn
+      Arkham.Event.Cards.LodgeDebts
       Arkham.Event.Cards.LogicalReasoning
       Arkham.Event.Cards.LookWhatIFound
       Arkham.Event.Cards.LookWhatIFound2
@@ -1115,6 +1117,7 @@ library
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.NathanielCho
       Arkham.Investigator.Cards.NormanWithers
+      Arkham.Investigator.Cards.PrestonFairmont
       Arkham.Investigator.Cards.RexMurphy
       Arkham.Investigator.Cards.RolandBanks
       Arkham.Investigator.Cards.SefinaRousseau

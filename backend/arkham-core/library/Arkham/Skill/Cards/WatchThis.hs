@@ -30,6 +30,6 @@ instance RunMessage WatchThis where
   runMessage msg s@(WatchThis attrs) = case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 1 -> do
       let resources = 2 * maybe 0 paymentAmount (skillAdditionalPayment attrs)
-      push $ TakeResources iid resources False
+      push $ TakeResources iid resources (toSource attrs) False
       pure s
     _ -> WatchThis <$> runMessage msg attrs

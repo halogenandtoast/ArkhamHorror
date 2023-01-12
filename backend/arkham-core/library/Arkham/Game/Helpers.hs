@@ -1020,7 +1020,9 @@ passesCriteria iid source windows' = \case
   Criteria.ResourcesOnThis valueMatcher -> case source of
     TreacherySource tid ->
       (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid
-    _ -> error "missing ChargesOnThis check"
+    AssetSource aid ->
+      (`gameValueMatches` valueMatcher) =<< field AssetResources aid
+    _ -> error "missing ResourcesOnThis check"
   Criteria.ResourcesOnLocation locationMatcher valueMatcher -> do
     total <- getSum <$> selectAgg Sum LocationResources locationMatcher
     gameValueMatches total valueMatcher

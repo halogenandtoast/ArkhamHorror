@@ -26,7 +26,7 @@ instance RunMessage BurningTheMidnightOil where
       lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
-        [ TakeResources iid 2 False
+        [ TakeResources iid 2 (toSource attrs) False
         , Investigate iid lid (toSource attrs) Nothing skillType False
         , Discard (toTarget attrs)
         ]

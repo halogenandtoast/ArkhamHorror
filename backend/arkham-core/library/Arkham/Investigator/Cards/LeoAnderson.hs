@@ -68,11 +68,12 @@ instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` metadata)) = case msg of
     UseCardAbility iid source 1 windows' payment | isSource attrs source -> do
       results <- selectList (InHandOf You <> BasicCardMatch IsAlly)
+      spendableResources <- getSpendableResources iid
       cards <- filterM
         (getIsPlayableWithResources
           iid
           source
-          (investigatorResources attrs + 1)
+          (spendableResources + 1)
           UnpaidCost
           [Window Timing.When (Window.DuringTurn iid)]
         )

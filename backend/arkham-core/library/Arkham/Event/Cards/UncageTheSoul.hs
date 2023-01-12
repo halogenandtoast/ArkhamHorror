@@ -11,10 +11,8 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -36,7 +34,7 @@ instance RunMessage UncageTheSoul where
         windows'' = nub $ windows' <> map
           (Window Timing.When)
           [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
-      availableResources <- field InvestigatorResources iid
+      availableResources <- getSpendableResources iid
       results <- selectList
         (InHandOf You <> BasicCardMatch
           (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])

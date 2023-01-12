@@ -14,10 +14,8 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -119,7 +117,7 @@ instance RunMessage TheHouseAlwaysWins where
     ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
-      resourceCount <- field InvestigatorResources iid
+      resourceCount <- getSpendableResources iid
       if resourceCount >= requiredResources
         then push $ chooseOne
           iid

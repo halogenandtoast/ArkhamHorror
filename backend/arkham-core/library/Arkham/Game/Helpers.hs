@@ -22,6 +22,7 @@ import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Types ( Field (..) )
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Attack
@@ -471,7 +472,9 @@ getCanAffordCost iid source mAction windows' = \case
     iids <- selectList $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- getSpendableClueCount iids
     pure $ totalSpendableClues >= cost
-  ResourceCost n -> fieldP InvestigatorResources (>= n) iid
+  ResourceCost n -> do
+    resources <- getSpendableResources iid
+    pure $ resources >= n
   DiscardFromCost n zone cardMatcher -> do
     -- We need to check that n valid candidates exist across all zones
     -- the logic is that we'll grab all card defs from each zone and then
@@ -538,7 +541,8 @@ getCanAffordCost iid source mAction windows' = \case
       _ -> error "Unhandled release token cost source"
   FieldResourceCost (FieldCost mtchr fld) -> do
     n <- getSum <$> selectAgg Sum fld mtchr
-    fieldP InvestigatorResources (>= n) iid
+    resources <- getSpendableResources iid
+    pure $ resources >= n
   SupplyCost locationMatcher supply ->
     iid
       <=~> (Matcher.InvestigatorWithSupply supply
@@ -762,7 +766,7 @@ getIsPlayable
   -> Card
   -> m Bool
 getIsPlayable iid source costStatus windows' c = do
-  availableResources <- field InvestigatorResources iid
+  availableResources <- getSpendableResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 withDepthGuard :: HasGame m => Int -> a -> ReaderT Game m a -> m a
@@ -927,6 +931,11 @@ onSameLocation iid = \case
   TheVoid -> pure False
   Pursuit -> pure False
 
+getSpendableResources :: HasGame m => InvestigatorId -> m Int
+getSpendableResources iid = do
+  familyInheritanceResources <- getSum <$> selectAgg Sum AssetResources (Matcher.assetIs Assets.familyInheritance)
+  fieldMap InvestigatorResources (+ familyInheritanceResources) iid
+
 passesCriteria
   :: (HasCallStack, HasGame m)
   => InvestigatorId
@@ -1080,7 +1089,7 @@ passesCriteria iid source windows' = \case
         Nothing -> windows'
         Just tIid ->
           nub $ Window Timing.When (Window.DuringTurn tIid) : windows'
-    availableResources <- field InvestigatorResources iid
+    availableResources <- getSpendableResources iid
     results <- selectList cardMatcher
     anyM
       (getIsPlayableWithResources

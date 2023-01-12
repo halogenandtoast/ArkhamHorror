@@ -621,8 +621,6 @@ getActionsWith iid window f = do
         then pure Nothing
         else pure $ Just $ applyAbilityModifiers ability modifiers'
 
-    
-
   actions''' <-
     filterM
       (\action -> liftA2
@@ -971,6 +969,11 @@ passesCriteria iid source windows' = \case
     case source of
       TreacherySource tid ->
         member tid <$> select (Matcher.TreacheryInThreatAreaOf who)
+      EventSource eid -> do
+        placement <- field EventPlacement eid
+        case placement of
+          InThreatArea iid' -> member iid' <$> select who
+          _ -> pure False
       _ ->
         error
           $ "Can not check if "
@@ -1836,6 +1839,8 @@ windowMatches iid source window' = \case
         [ enemyMatches enemyId enemyMatcher
         , matchWho iid who whoMatcher
         ]
+      Window t (Window.EnemyDefeated Nothing enemyId) | timingMatcher == t && whoMatcher == Matcher.Anyone ->
+        enemyMatches enemyId enemyMatcher
       _ -> pure False
   Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
     case window' of

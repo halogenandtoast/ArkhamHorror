@@ -133,9 +133,9 @@ instance RunMessage TheGathering where
     ScenarioResolution resolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       iids <- allInvestigatorIds
-      xp <- getXp
+      xp <- getXpWithBonus 2
       let
-        xpGain = [ GainXP iid (n + 2) | (iid, n) <- xp ]
+        xpGain = [ GainXP iid n | (iid, n) <- xp ]
         chooseToAddLita = chooseOne
           leadInvestigatorId
           [ Label

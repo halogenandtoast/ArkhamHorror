@@ -3047,6 +3047,7 @@ runGameMessage msg g = case msg of
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   PutCardOnTopOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
   PutCardOnBottomOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
+  ShuffleCardsIntoDeck _ cards -> pure $ g & focusedCardsL %~ filter (`notElem` cards)
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> do

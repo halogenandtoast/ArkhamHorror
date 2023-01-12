@@ -277,7 +277,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           | card <- investigatorHand
           ]
     pure a
-  BeginTrade iid source (AssetTarget aid) iids | iid == investigatorId -> a <$ push
+  BeginTrade iid _source (AssetTarget aid) iids | iid == investigatorId -> a <$ push
     (chooseOne
       iid
       [ TargetLabel (InvestigatorTarget iid') [TakeControlOfAsset iid' aid]
@@ -1798,7 +1798,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
     a <$ push windowMsg
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
-  SpendResources iid n | iid == investigatorId -> do
+  SpendResources iid _ | iid == investigatorId -> do
     push $ Do msg
     pure a
   Do (SpendResources iid n) | iid == investigatorId ->
@@ -1876,7 +1876,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             . (slotsL %~ removeFromSlots (AssetId $ toCardId card))
         )
         cards
-    pure $ a & update
+    pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     skillTest <- fromJustNote "missing skill test" <$> getSkillTest

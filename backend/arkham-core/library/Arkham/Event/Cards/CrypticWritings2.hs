@@ -42,7 +42,7 @@ instance RunMessage CrypticWritings2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       hasTenOrMoreCards <- fieldMap InvestigatorHand ((>= 10) . length) iid
       let n = if hasTenOrMoreCards then 4 else 3
-      pushAll [TakeResources iid n False, Discard (toTarget attrs)]
+      pushAll [TakeResources iid n (toSource attrs) False, Discard (toTarget attrs)]
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _)
       | iid' == iid -> do

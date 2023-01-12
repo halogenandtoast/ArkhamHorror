@@ -79,7 +79,7 @@ instance RunMessage BloodRite where
         pushAll $ replicate
           (length xs)
           (chooseOne iid
-          $ [Label "Gain Resource" [TakeResources iid 1 False]]
+          $ [Label "Gain Resource" [TakeResources iid 1 (toAbilitySource attrs 1) False]]
           <> [ Label
                  "Spend Resource and Deal 1 Damage To Enemy At Your Location"
                  [ SpendResources iid 1

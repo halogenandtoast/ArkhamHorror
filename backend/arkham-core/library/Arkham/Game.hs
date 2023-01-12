@@ -2029,6 +2029,7 @@ instance Projection Asset where
       AssetName -> pure $ toName attrs
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
       AssetClues -> pure assetClues
+      AssetResources -> pure assetResources
       AssetHorror -> pure assetHorror
       AssetDamage -> pure assetDamage
       AssetRemainingHealth -> case assetHealth of

@@ -49,6 +49,6 @@ instance RunMessage Sacrifice1 where
       drawing <- drawCards iid attrs drawAmount
       pushAll
         $ [ drawing | drawAmount > 0 ]
-        <> [ TakeResources iid resourcesAmount False | resourcesAmount > 0 ]
+        <> [ TakeResources iid resourcesAmount (toSource attrs) False | resourcesAmount > 0 ]
       pure e
     _ -> Sacrifice1 <$> runMessage msg attrs

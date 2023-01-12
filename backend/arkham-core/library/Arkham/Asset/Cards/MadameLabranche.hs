@@ -52,6 +52,7 @@ instance RunMessage MadameLabranche where
       drawing <- drawCards iid attrs 1
       push drawing
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      a <$ push (TakeResources iid 1 False)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      push $ TakeResources iid 1 (toAbilitySource attrs 2) False
+      pure a
     _ -> MadameLabranche <$> runMessage msg attrs

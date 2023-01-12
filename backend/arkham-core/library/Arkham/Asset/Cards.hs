@@ -190,6 +190,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , esotericAtlas2
   , esotericFormula
   , expeditionJournal
+  , familyInheritance
   , farsight4
   , feedTheMind
   , feedTheMind3
@@ -2549,6 +2550,11 @@ detectivesColt1911s = (asset "05009" "Detective's Colt 1911s" 4 Neutral)
   , cdSkills = [#intellect, #combat, #wild]
   , cdSlots = [HandSlot, HandSlot]
   , cdUses = Uses Ammo 4
+  }
+
+familyInheritance :: CardDef
+familyInheritance = permanent (asset "05011" ("Family Inheritance" <:> "A Windfall? Or a Burden?") 0 Neutral)
+  { cdCardTraits = singleton Boon
   }
 
 fingerprintKit :: CardDef

@@ -46,7 +46,7 @@ instance RunMessage JewelOfAureolus3 where
       push $ chooseOne
         iid
         [ Label "Draw 1 Card" [drawing]
-        , Label "Take 2 Resources" [TakeResources iid 2 False]
+        , Label "Take 2 Resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
         ]
       pure a
     _ -> JewelOfAureolus3 <$> runMessage msg attrs

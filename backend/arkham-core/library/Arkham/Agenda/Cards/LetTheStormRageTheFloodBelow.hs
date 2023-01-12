@@ -54,6 +54,6 @@ instance RunMessage LetTheStormRageTheFloodBelow where
       investigatorIds <- getInvestigatorIds
       pushAll
         $ [PlaceDoom (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ TakeResources iid 2 False | iid <- investigatorIds ]
+        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False | iid <- investigatorIds ]
       pure a
     _ -> LetTheStormRageTheFloodBelow <$> runMessage msg attrs

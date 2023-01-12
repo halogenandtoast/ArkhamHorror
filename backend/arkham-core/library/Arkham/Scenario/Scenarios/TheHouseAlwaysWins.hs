@@ -140,7 +140,7 @@ instance RunMessage TheHouseAlwaysWins where
       pure s
     PassedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
-        Cultist | isEasyStandard attrs -> push $ TakeResources iid 3 False
+        Cultist | isEasyStandard attrs -> push $ TakeResources iid 3 (TokenEffectSource Cultist) False
         _ -> pure ()
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of

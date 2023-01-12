@@ -30,8 +30,8 @@ instance RunMessage StandTogether where
               iid
               [ targetLabel
                   iid'
-                  [ TakeResources iid' 2 False
-                  , TakeResources iid 2 False
+                  [ TakeResources iid' 2 (toSource attrs) False
+                  , TakeResources iid 2 (toSource attrs) False
                   , Discard (toTarget attrs)
                   ]
               ]

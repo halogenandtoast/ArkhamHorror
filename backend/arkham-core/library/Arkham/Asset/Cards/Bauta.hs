@@ -40,7 +40,7 @@ instance HasAbilities Bauta where
 instance RunMessage Bauta where
   runMessage msg a@(Bauta attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ TakeResources iid 2 False
+      push $ TakeResources iid 2 (toAbilitySource attrs 1) False
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       replaceMessageMatching

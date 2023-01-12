@@ -23,7 +23,7 @@ instance RunMessage EmergencyCache2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       drawing <- drawCards iid attrs 1
       pushAll
-        [ TakeResources iid 3 False
+        [ TakeResources iid 3 (toSource attrs) False
         , drawing
         , Discard (EventTarget eid)
         ]

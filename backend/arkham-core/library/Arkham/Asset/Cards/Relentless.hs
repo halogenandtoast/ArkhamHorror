@@ -48,6 +48,6 @@ instance RunMessage Relentless where
       push $ PlaceDamage (toTarget attrs) excessDamage
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ TakeResources iid (assetDamage attrs) False
+      push $ TakeResources iid (assetDamage attrs) (toAbilitySource attrs 2) False
       pure a
     _ -> Relentless <$> runMessage msg attrs

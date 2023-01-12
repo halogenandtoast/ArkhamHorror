@@ -56,7 +56,7 @@ instance RunMessage LadyEsprit where
           ]
         <> [ ComponentLabel
                (InvestigatorComponent iid ResourceToken)
-               [TakeResources iid 2 False]
+               [TakeResources iid 2 (toAbilitySource attrs 1) False]
            | canGainResources
            ]
       pure a

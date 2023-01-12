@@ -53,5 +53,5 @@ instance RunMessage SleepingCar where
   runMessage msg l@(SleepingCar attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ pushAll
-        [TakeResources iid 3 False, Remember StolenAPassengersLuggage]
+        [TakeResources iid 3 (toAbilitySource attrs 1) False, Remember StolenAPassengersLuggage]
     _ -> SleepingCar <$> runMessage msg attrs

@@ -83,6 +83,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , calvinWright
   , carolynFern
   , joeDiamond
+  , prestonFairmont
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -226,6 +227,13 @@ joeDiamond = investigator
   ("Joe Diamond" <:> "The Private Investigator")
   Seeker
   [Detective]
+
+prestonFairmont :: CardDef
+prestonFairmont = investigator
+  "05003"
+  ("Preston Fairmont" <:> "The Millionaire")
+  Rogue
+  [SilverTwilight, Socialite]
 
 normanWithers :: CardDef
 normanWithers = investigator

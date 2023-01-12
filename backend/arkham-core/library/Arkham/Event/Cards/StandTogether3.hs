@@ -33,8 +33,8 @@ instance RunMessage StandTogether3 where
               iid
               [ TargetLabel
                   (InvestigatorTarget x)
-                  [ TakeResources iid 2 False
-                  , TakeResources x 2 False
+                  [ TakeResources iid 2 (toSource attrs) False
+                  , TakeResources x 2 (toSource attrs) False
                   , drawing1
                   , drawing2
                   ]

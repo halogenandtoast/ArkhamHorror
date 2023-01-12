@@ -10,8 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Deck
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
@@ -25,11 +23,17 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype UnsolvedCase = UnsolvedCase EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unsolvedCase :: EventCard UnsolvedCase
 unsolvedCase = event UnsolvedCase Cards.unsolvedCase
+
+instance HasModifiersFor UnsolvedCase where
+  getModifiersFor (InvestigatorTarget iid) (UnsolvedCase attrs) = case eventPlacement attrs of
+    InThreatArea iid' | iid == iid' -> pure $ toModifiers attrs [ XPModifier (-2) ]
+    _ -> pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities UnsolvedCase where
   getAbilities (UnsolvedCase a) =
@@ -72,10 +76,6 @@ instance RunMessage UnsolvedCase where
         <> [RemoveFromGame (toTarget attrs)]
       pure e
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ CreateWindowModifierEffect
-        EffectGameWindow
-        (EffectModifiers $ toModifiers attrs [XPModifier (-2)])
-        source
-        (InvestigatorTarget iid)
+      -- no-op, handled in HasModifiersFor
       pure e
     _ -> UnsolvedCase <$> runMessage msg attrs

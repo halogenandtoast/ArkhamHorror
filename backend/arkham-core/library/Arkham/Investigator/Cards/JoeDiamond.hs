@@ -108,17 +108,18 @@ instance RunMessage JoeDiamond where
           let
             unsolvedCase = fromJustNote "Deck missing unsolved case"
               $ find (`cardMatch` (cardIs Events.unsolvedCase)) insights
+            remainingInsights = filter (/= unsolvedCase) insights
           pushAll
-            [ FocusCards $ map PlayerCard insights
+            [ FocusCards $ map PlayerCard remainingInsights
             , ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard unsolvedCase]
             , Ask (toId attrs)
-            $ QuestionLabel "Choose 11 cards for hunch deck"
+            $ QuestionLabel "Choose 10 more cards for hunch deck"
             $ ChooseN
                 10
                 [ TargetLabel
                     (CardIdTarget $ toCardId insight)
                     [ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard insight]]
-                | insight <- filter (/= unsolvedCase) insights
+                | insight <- remainingInsights
                 ]
             , UnfocusCards
             ]
@@ -134,7 +135,7 @@ instance RunMessage JoeDiamond where
     RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase)]
       | iid == toId attrs -> do
         case hunchDeck attrs of
-          x : xs | Just (toCardId x) == revealedHunchCard meta -> do
+          x : _ | Just (toCardId x) == revealedHunchCard meta -> do
             wouldBeWindow <- checkWindows
               [ Window
                   Timing.When

@@ -59,10 +59,10 @@ instance RunMessage AssetAttrs where
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
     RemoveResources target n | isTarget a target ->
-      pure $ a & resourcesL %~ min 0 . subtract n
+      pure $ a & resourcesL %~ max 0 . subtract n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     RemoveDoom target n | isTarget a target ->
-      pure $ a & doomL %~ min 0 . subtract n
+      pure $ a & doomL %~ max 0 . subtract n
     RemoveClues target n | isTarget a target -> do
       when (assetClues - n <= 0) $ pushAll =<< windows
         [Window.LastClueRemovedFromAsset (toId a)]

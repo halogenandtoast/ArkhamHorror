@@ -260,10 +260,9 @@ instance RunMessage ActiveCost where
             (\a -> getCanAffordCost iid source (Just a) [] cost')
             actions
           maxUpTo <- case cost' of
-            ResourceCost resources -> fieldMap
-              InvestigatorResources
-              (\x -> min n (x `div` resources))
-              iid
+            ResourceCost resources -> do
+              availableResources <- getSpendableResources iid
+              pure $ min n (availableResources `div` resources)
             _ -> pure n
           c <$ when
             canAfford
@@ -451,7 +450,7 @@ instance RunMessage ActiveCost where
                 else do
                   iidsWithResources <- forToSnd
                     (iid : map fst canHelpPay)
-                    (field InvestigatorResources)
+                    (getSpendableResources)
                   push
                     (Ask iid
                     $ ChoosePaymentAmounts

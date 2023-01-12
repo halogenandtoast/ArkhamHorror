@@ -6,16 +6,16 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Runner
 import Arkham.Asset.Types (Field(..))
-import Arkham.Projection
-import Arkham.Message
+import Arkham.Game.Helpers
+import Arkham.Investigator.Cards qualified as Cards
+import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Message
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Helpers.Modifiers
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
@@ -61,7 +61,7 @@ instance RunMessage PrestonFairmont where
             push $ PlaceResources (AssetTarget familyInheritance) n
           pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      hasResources <- fieldMap InvestigatorResources (> 0) iid
+      hasResources <- (> 0) <$> getSpendableResources iid
       push $ chooseOrRunOne
         iid
         $ Label "Resolve normally" []

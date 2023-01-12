@@ -9,9 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Criteria
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype ProtectiveIncantation1 = ProtectiveIncantation1 AssetAttrs
@@ -35,7 +33,7 @@ instance HasAbilities ProtectiveIncantation1 where
 instance RunMessage ProtectiveIncantation1 where
   runMessage msg a@(ProtectiveIncantation1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      hasResources <- fieldP InvestigatorResources (> 0) iid
+      hasResources <- (> 0) <$> getSpendableResources iid
       push
         $ chooseOrRunOne iid
         $ Label "Discard Protective Incantation" [Discard (toTarget attrs)]

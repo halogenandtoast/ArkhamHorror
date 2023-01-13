@@ -20,5 +20,5 @@ aTestOfWill1 = event ATestOfWill1 Cards.aTestOfWill1
 instance RunMessage ATestOfWill1 where
   runMessage msg e@(ATestOfWill1 attrs) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs ->
-      e <$ pushAll [CancelNext RevelationMessage, Exile $ toTarget attrs]
+      e <$ pushAll [CancelNext (toSource attrs) RevelationMessage, Exile $ toTarget attrs]
     _ -> ATestOfWill1 <$> runMessage msg attrs

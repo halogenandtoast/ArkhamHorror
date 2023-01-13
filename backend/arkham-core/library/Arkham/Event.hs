@@ -170,6 +170,9 @@ allEvents = mapFrom
   , SomeEventCard alterFate3
   , SomeEventCard unsolvedCase
   , SomeEventCard lodgeDebts
+  , SomeEventCard darkInsight
+  , SomeEventCard delayTheInevitable
+  , SomeEventCard denyExistence
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite
   , SomeEventCard astoundingRevelation

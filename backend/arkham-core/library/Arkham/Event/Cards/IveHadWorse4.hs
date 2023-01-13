@@ -5,11 +5,14 @@ module Arkham.Event.Cards.IveHadWorse4
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Cost
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Window
 import Arkham.Message
+import Arkham.Timing qualified as Timing
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
 
 newtype IveHadWorse4 = IveHadWorse4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,11 +26,7 @@ dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
 
 instance RunMessage IveHadWorse4 where
   runMessage msg e@(IveHadWorse4 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
-      e <$ push (UseCardAbility iid (toSource attrs) 0 windows NoPayment)
-    UseCardAbility _ source 5 _ _ | isSource attrs source ->
-      e <$ push (Discard $ toTarget attrs)
-    UseCardAbility iid source n windows pay | isSource attrs source -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       (damage, horror) <- fromQueue $ \queue -> case dropUntilDamage queue of
         dmsg : _ ->
           case dmsg of
@@ -37,25 +36,28 @@ instance RunMessage IveHadWorse4 where
               if iid' == iid then (damage', horror') else error "mismatch"
             _ -> error "mismatch"
         _ -> error "unhandled"
-      let
-        reuse = UseCardAbility iid source (n + 1) windows pay
-        damageMsg = Label
-          ("Cancel 1 damage out of " <> tshow damage)
-          [CancelDamage iid 1, reuse]
-        horrorMsg = Label
-          ("Cancel 1 horror out of " <> tshow horror)
-          [CancelHorror iid 1, reuse]
-        doneMsg = Label
-          ("Done (Take "
-          <> tshow damage
-          <> " damage and "
-          <> tshow horror
-          <> " horror)"
+      pushAll
+        [ chooseAmounts
+          iid
+          "Amount of Damage/Horror to cancel"
+          (MaxAmountTarget 5)
+          ([ ("Damage", (0, damage)) | damage > 0 ]
+          <> [ ("Horror", (0, horror)) | horror > 0 ]
           )
-          [Discard (toTarget attrs)]
-      case (damage, horror) of
-        (0, 0) -> e <$ push (Discard $ toTarget attrs)
-        (_, 0) -> e <$ push (chooseOne iid [damageMsg, doneMsg])
-        (0, _) -> e <$ push (chooseOne iid [horrorMsg, doneMsg])
-        (_, _) -> e <$ push (chooseOne iid [damageMsg, horrorMsg, doneMsg])
+          (toTarget attrs)
+        , Discard (toTarget attrs)
+        ]
+      pure e
+    ResolveAmounts iid choices target | isTarget attrs target -> do
+      let
+        choicesMap = mapFromList @(HashMap Text Int) choices
+        damageAmount = findWithDefault 0 "Damage" choicesMap
+        horrorAmount = findWithDefault 0 "Horror" choicesMap
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+      pushAll
+        $ [ CancelDamage iid damageAmount | damageAmount > 0 ]
+        <> [ CancelHorror iid horrorAmount | horrorAmount > 0 ]
+        <> [ TakeResources iid (damageAmount + horrorAmount) (toSource attrs) False ]
+        <> [ ignoreWindow | damageAmount + horrorAmount > 0 ]
+      pure e
     _ -> IveHadWorse4 <$> runMessage msg attrs

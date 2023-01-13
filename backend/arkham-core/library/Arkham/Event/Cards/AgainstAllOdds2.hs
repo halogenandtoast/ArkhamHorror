@@ -13,8 +13,10 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Message
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -32,7 +34,8 @@ instance RunMessage AgainstAllOdds2 where
       -> do
         base <- baseSkillValueFor skillType maction [] iid
         let n = difficulty - base
-        pushAll
+        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        pushAll $
           [ CreateWindowModifierEffect
             EffectSkillTestWindow
             (EffectModifiers
@@ -40,7 +43,8 @@ instance RunMessage AgainstAllOdds2 where
             )
             (toSource attrs)
             (InvestigatorTarget iid)
-          , Discard (toTarget attrs)
           ]
+          <> [ ignoreWindow | n > 1 ]
+          <> [ Discard (toTarget attrs) ]
         pure e
     _ -> AgainstAllOdds2 <$> runMessage msg attrs

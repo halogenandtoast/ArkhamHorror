@@ -1347,6 +1347,9 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher -> case window' of
+    Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source') -> sourceMatches source' sourceMatcher
+    _ -> pure False
   Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case window' of
     Window _ (Window.WouldBeShuffledIntoDeck deck card) -> andM
       [ deckMatch iid deck deckMatcher
@@ -2202,22 +2205,28 @@ sourceMatches s = \case
     _ -> pure False
   Matcher.AnySource -> pure True
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
-  Matcher.SourceOwnedBy whoMatcher -> case s of
-    AssetSource aid -> do
-      mControllerId <- selectAssetController aid
-      case mControllerId of
-        Just iid' -> member iid' <$> select whoMatcher
+  Matcher.SourceOwnedBy whoMatcher ->
+    let
+      checkSource = \case
+        AbilitySource source' _ -> checkSource source'
+        AssetSource aid -> do
+          mControllerId <- selectAssetController aid
+          case mControllerId of
+            Just iid' -> member iid' <$> select whoMatcher
+            _ -> pure False
+        EventSource eid -> do
+          mControllerId <- selectEventController eid
+          case mControllerId of
+            Just controllerId -> member controllerId <$> select whoMatcher
+            Nothing -> pure False
+        SkillSource sid -> do
+          mControllerId <- selectSkillController sid
+          case mControllerId of
+            Just controllerId -> member controllerId <$> select whoMatcher
+            Nothing -> pure False
+        InvestigatorSource iid -> member iid <$> select whoMatcher
         _ -> pure False
-    EventSource eid -> do
-      mControllerId <- fromJustNote "must have a controller"
-        <$> selectEventController eid
-      member mControllerId <$> select whoMatcher
-    SkillSource sid -> do
-      mControllerId <- fromJustNote "must have a controller"
-        <$> selectSkillController sid
-      member mControllerId <$> select whoMatcher
-    InvestigatorSource iid -> member iid <$> select whoMatcher
-    _ -> pure False
+    in checkSource s
   Matcher.SourceIsType t -> pure $ case t of
     AssetType -> case s of
       AssetSource _ -> True

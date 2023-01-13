@@ -268,6 +268,7 @@ investigator f cardDef Stats {..} =
         , investigatorPhysicalTrauma = 0
         , investigatorMentalTrauma = 0
         , investigatorStartsWith = []
+        , investigatorStartsWithInHand = []
         , investigatorCardsUnderneath = []
         , investigatorFoundCards = mempty
         , investigatorUsedAbilities = mempty

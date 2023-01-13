@@ -22,7 +22,7 @@ instance RunMessage Forewarned1 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ InvestigatorPlaceCluesOnLocation iid 1
-        , CancelNext RevelationMessage
+        , CancelNext (toSource attrs) RevelationMessage
         , Discard (toTarget attrs)
         ]
     _ -> Forewarned1 <$> runMessage msg attrs

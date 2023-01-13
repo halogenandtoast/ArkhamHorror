@@ -9,9 +9,13 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types
+import Arkham.Helpers.Window
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Timing qualified as Timing
+import Arkham.Window qualified as Window
+import Arkham.Window (Window(..))
 
 newtype Perseverance = Perseverance EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -51,9 +55,10 @@ instance RunMessage Perseverance where
         choicesMap = mapFromList @(HashMap Text Int) choices
         damageAmount = findWithDefault 0 "Damage" choicesMap
         horrorAmount = findWithDefault 0 "Horror" choicesMap
-      push $ CancelAssignedDamage
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+      pushAll $ CancelAssignedDamage
         (InvestigatorTarget iid)
         damageAmount
-        horrorAmount
+        horrorAmount : [ignoreWindow | damageAmount + horrorAmount > 0 ]
       pure e
     _ -> Perseverance <$> runMessage msg attrs

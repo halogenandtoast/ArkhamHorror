@@ -9,6 +9,7 @@ import Arkham.ChaosBagStepState
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -28,7 +29,8 @@ instance RunMessage DarkProphecy where
     InvestigatorPlayEvent iid eid _ [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] _
       | eid == toId attrs
       -> do
-        e <$ pushAll
+        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        pushAll
           [ ReplaceCurrentDraw drawSource iid $ ChooseMatch
             1
             (replicate 5 $ Undecided Draw)
@@ -36,6 +38,8 @@ instance RunMessage DarkProphecy where
             (TokenMatchesAny
             $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
             )
+          , ignoreWindow
           , Discard (toTarget attrs)
           ]
+        pure e
     _ -> DarkProphecy <$> runMessage msg attrs

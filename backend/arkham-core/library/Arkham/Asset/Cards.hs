@@ -397,6 +397,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , trueGrit
   , tryAndTryAgain1
   , tryAndTryAgain3
+  , twilightBlade
   , untilTheEndOfTime
   , vaultOfKnowledge
   , venturer
@@ -2555,6 +2556,13 @@ detectivesColt1911s = (asset "05009" "Detective's Colt 1911s" 4 Neutral)
 familyInheritance :: CardDef
 familyInheritance = permanent (asset "05011" ("Family Inheritance" <:> "A Windfall? Or a Burden?") 0 Neutral)
   { cdCardTraits = singleton Boon
+  }
+
+twilightBlade :: CardDef
+twilightBlade = (asset "05013" ("Twilight Blade" <:> "Sanctum's Reward") 3 Neutral)
+  { cdCardTraits = setFromList [Item, Relic, Weapon]
+  , cdSkills = [#willpower, #combat, #wild]
+  , cdSlots = [HandSlot]
   }
 
 fingerprintKit :: CardDef

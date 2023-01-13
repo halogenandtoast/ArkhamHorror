@@ -115,11 +115,14 @@ allPlayerEventCards = mapFromList $ concatMap
   , cunningDistraction
   , customAmmunition3
   , daringManeuver
+  , darkInsight
   , darkMemory
   , darkPact
   , darkProphecy
   , decipheredReality5
+  , delayTheInevitable
   , delveTooDeep
+  , denyExistence
   , devilsLuck
   , dodge
   , drawnToTheFlame
@@ -989,11 +992,18 @@ aTestOfWill1 :: CardDef
 aTestOfWill1 = (event "03156" "A Test of Will" 1 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just $ DrawCard
-    Timing.When
-    (InvestigatorAt YourLocation)
-    (BasicCardMatch NonWeaknessTreachery)
-    EncounterDeck
+  , cdFastWindow = Just $ OrWindowMatcher
+    [ DrawCard
+      Timing.When
+      (InvestigatorAt YourLocation)
+      (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+      EncounterDeck
+    , DrawCard
+      Timing.When
+      You
+      (BasicCardMatch NonWeaknessTreachery)
+      EncounterDeck
+    ]
   , cdLevel = 1
   }
 
@@ -1155,7 +1165,7 @@ wardOfProtection2 = (event "03270" "Ward of Protection" 1 Mystic)
   , cdFastWindow = Just $ DrawCard
     Timing.When
     Anyone
-    (BasicCardMatch NonWeaknessTreachery)
+    (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
     EncounterDeck
   , cdLevel = 2
   }
@@ -1544,6 +1554,37 @@ lodgeDebts = (event "05012" "\"Lodge\" Debts" 10 Neutral)
   , cdCardInHandEffects = True
   }
 
+darkInsight :: CardDef
+darkInsight = (event "05014" "Dark Insight" 2 Neutral)
+  { cdCardTraits = singleton Insight
+  , cdFastWindow = Just $ OrWindowMatcher
+    [ DrawCard
+      Timing.When
+      (InvestigatorAt YourLocation)
+      (BasicCardMatch $ NonPeril <> CardWithOneOf [IsEncounterCard, WeaknessCard])
+      AnyDeck
+    , DrawCard
+      Timing.When
+      You
+      (BasicCardMatch $ CardWithOneOf [IsEncounterCard, WeaknessCard])
+      AnyDeck
+    ]
+  }
+
+delayTheInevitable :: CardDef
+delayTheInevitable = (event "05021" "Delay the Inevitable" 2 Guardian)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = setFromList [Insight, Spirit, Tactic]
+  , cdFastWindow = Just $ DuringTurn You
+  }
+
+denyExistence :: CardDef
+denyExistence = (event "05032" "Deny Existence" 0 Mystic)
+  { cdSkills = [#wild]
+  , cdCardTraits = setFromList [Spell, Paradox]
+  , cdFastWindow = Nothing -- TODO: big window
+  }
+
 trialByFire :: CardDef
 trialByFire = (event "05281" "Trial By Fire" 3 Survivor)
   { cdSkills = [#wild]
@@ -1904,11 +1945,18 @@ aTestOfWill :: CardDef
 aTestOfWill = (event "60513" "A Test of Will" 1 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just $ DrawCard
-    Timing.When
-    (InvestigatorAt YourLocation)
-    (BasicCardMatch NonWeaknessTreachery)
-    EncounterDeck
+  , cdFastWindow = Just $ OrWindowMatcher
+    [ DrawCard
+      Timing.When
+      (InvestigatorAt YourLocation)
+      (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+      EncounterDeck
+    , DrawCard
+      Timing.When
+      You
+      (BasicCardMatch NonWeaknessTreachery)
+      EncounterDeck
+    ]
   }
 
 gritYourTeeth :: CardDef
@@ -1924,11 +1972,18 @@ aTestOfWill2 :: CardDef
 aTestOfWill2 = (event "60523" "A Test of Will" 0 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just $ DrawCard
-    Timing.When
-    (InvestigatorAt YourLocation)
-    (BasicCardMatch NonWeaknessTreachery)
-    EncounterDeck
+  , cdFastWindow = Just $ OrWindowMatcher
+    [ DrawCard
+      Timing.When
+      (InvestigatorAt YourLocation)
+      (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+      EncounterDeck
+    , DrawCard
+      Timing.When
+      You
+      (BasicCardMatch NonWeaknessTreachery)
+      EncounterDeck
+    ]
   , cdLevel = 2
   }
 

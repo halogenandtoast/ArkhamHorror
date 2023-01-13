@@ -124,6 +124,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , shellShock
   , smiteTheWicked
   , starsOfHyades
+  , terribleSecret
   , theBellTolls
   , theHarbinger
   , thePriceOfFailure
@@ -1189,6 +1190,11 @@ creepingDarkness = (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
 rationalThought :: CardDef
 rationalThought = (weakness "05008" "Rational Thought")
   { cdCardTraits = singleton Flaw
+  }
+
+terribleSecret :: CardDef
+terribleSecret = (weakness "05015" "Terrible Secret")
+  { cdCardTraits = singleton Madness
   }
 
 theHarbinger :: CardDef

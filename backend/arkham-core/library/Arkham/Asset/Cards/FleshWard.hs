@@ -44,12 +44,13 @@ dealtHorror (_ : xs) = dealtDamage xs
 instance RunMessage FleshWard where
   runMessage msg a@(FleshWard attrs) = case msg of
     UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
       push
         $ chooseOrRunOne iid
-        $ [ Label "Cancel 1 damage" [CancelDamage iid 1]
+        $ [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]
           | dealtDamage windows'
           ]
-        <> [ Label "Cancel 1 horror" [CancelHorror iid 1]
+        <> [ Label "Cancel 1 horror" [CancelHorror iid 1, ignoreWindow]
            | dealtHorror windows'
            ]
       pure a

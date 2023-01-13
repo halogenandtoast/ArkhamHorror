@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype FamilyInheritance = FamilyInheritance AssetAttrs

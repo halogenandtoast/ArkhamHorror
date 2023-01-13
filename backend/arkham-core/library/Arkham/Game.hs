@@ -3363,6 +3363,13 @@ runGameMessage msg g = case msg of
             ?~ (dEntities & assetsL . at assetId ?~ asset)
     pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
     -- pure $ g & entitiesL . assetsL %~ deleteMap assetId
+  RemovedFromPlay (EventSource eventId) -> do
+    event' <- getEvent eventId
+    let
+      iid = eventOwner (toAttrs event')
+      dEntities =
+        fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+    pure $ g & entitiesL . eventsL %~ deleteMap eventId & inDiscardEntitiesL . at iid ?~ (dEntities & eventsL . at eventId ?~ event')
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ AddToHand iid card
@@ -3478,14 +3485,17 @@ runGameMessage msg g = case msg of
       , InvestigatorDrawEnemy iid eid
       ]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
-  CancelNext msgType -> do
-    withQueue_ $ \queue ->
-      let
-        (before, after) = break ((== Just msgType) . messageType) queue
-        remaining = case after of
-          [] -> []
-          (_ : xs) -> xs
-      in before <> remaining
+  CancelEachNext source msgTypes -> do
+    for_ msgTypes $ \msgType ->
+      withQueue_ $ \queue ->
+        let
+          (before, after) = break ((== Just msgType) . messageType) queue
+          remaining = case after of
+            [] -> []
+            (_ : xs) -> xs
+        in before <> remaining
+
+    push =<< checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
     pure g
   EngageEnemy iid eid False -> do
     push =<< checkWindows [Window Timing.After (Window.EnemyEngaged iid eid)]

@@ -156,6 +156,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , investigatorSanityDamage = investigatorMentalTrauma
       , investigatorHealthDamage = investigatorPhysicalTrauma
       , investigatorStartsWith = investigatorStartsWith
+      , investigatorStartsWithInHand = investigatorStartsWithInHand
       , investigatorSupplies = investigatorSupplies
       }
   SetupInvestigator iid | iid == investigatorId -> do
@@ -188,6 +189,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         partition (cdPermanent . toCardDef) (unDeck deck')
     beforeDrawingStartingHand <- checkWindows
       [Window Timing.When (Window.DrawingStartingHand investigatorId)]
+    let deck''' = filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
     pushAll
       $ startsWithMsgs
       <> [ PutCardIntoPlay
@@ -201,7 +203,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          , DrawStartingHand investigatorId
          , TakeStartingResources investigatorId
          ]
-    pure $ a & (deckL .~ Deck deck'')
+    pure $ a & (deckL .~ Deck deck''')
   DrawStartingHand iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     let
@@ -323,12 +325,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows
       [Window Timing.After (Window.DrawingStartingHand iid)]
+    additionalHandCards <- traverse genCard (traceShowId investigatorStartsWithInHand)
     pushAll [ShuffleDiscardBackIn iid, window]
     pure
       $ a
       & (resourcesL .~ startingResources)
       & (discardL .~ discard)
-      & (handL .~ hand)
+      & (handL .~ hand <> additionalHandCards)
       & (deckL .~ Deck deck)
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)

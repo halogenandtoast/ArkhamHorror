@@ -95,6 +95,9 @@ data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
 
+pattern CancelNext :: Source -> MessageType -> Message
+pattern CancelNext source msgType = CancelEachNext source [msgType]
+
 pattern AttachTreachery :: TreacheryId -> Target -> Message
 pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)
@@ -221,7 +224,7 @@ data Message
   | BeginTurn InvestigatorId
   | Blanked Message
   | CampaignStep (Maybe CampaignStep)
-  | CancelNext MessageType
+  | CancelEachNext Source [MessageType]
   | CancelSkillEffects
   | CancelHorror InvestigatorId Int
   | CancelDamage InvestigatorId Int

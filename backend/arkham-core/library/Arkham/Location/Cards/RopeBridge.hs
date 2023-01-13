@@ -50,7 +50,7 @@ instance RunMessage RopeBridge where
           fromMaybe (toLocationId $ fromJustNote "no river canyon" mRiverCanyon)
             <$> (selectOne $ LocationWithTitle "River Canyon")
         pushAll
-          $ [ CancelNext ExploreMessage
+          $ [ CancelNext (toSource attrs) ExploreMessage
             , InvestigatorAssignDamage iid source DamageAny 2 0
             , SetActions iid source 0
             , ChooseEndTurn iid

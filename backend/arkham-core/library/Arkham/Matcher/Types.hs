@@ -569,6 +569,7 @@ data WindowMatcher
   | AttemptExplore Timing Who
   | PhaseStep Timing PhaseStepMatcher
   | AddingToCurrentDepth
+  | CancelledOrIgnoredCardOrGameEffect SourceMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

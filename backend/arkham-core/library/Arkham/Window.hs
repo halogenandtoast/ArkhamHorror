@@ -155,6 +155,7 @@ data WindowType
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep
   | AddingToCurrentDepth
+  | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
   -- used to avoid checking a window
   | DoNotCheckWindow
   deriving stock (Show, Generic, Eq)

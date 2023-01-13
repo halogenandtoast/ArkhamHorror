@@ -162,6 +162,7 @@ data ModifierType
   | HunterConnectedTo LocationId
   | CanRetaliateWhileExhausted
   | IgnoreRetaliate
+  | IgnoreAloof
   | IgnoreText
   | IgnoreToken
   | IgnoreTokenEffects

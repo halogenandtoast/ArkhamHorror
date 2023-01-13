@@ -114,6 +114,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
   , investigatorStartsWith :: [CardDef]
+  , investigatorStartsWithInHand :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
   , investigatorFoundCards :: HashMap Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
@@ -319,6 +320,10 @@ drawnCardsL = lens investigatorDrawnCards $ \m x -> m { investigatorDrawnCards =
 startsWithL :: Lens' InvestigatorAttrs [CardDef]
 startsWithL =
   lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }
+
+startsWithInHandL :: Lens' InvestigatorAttrs [CardDef]
+startsWithInHandL =
+  lens investigatorStartsWithInHand $ \m x -> m { investigatorStartsWithInHand = x }
 
 additionalActionsL :: Lens' InvestigatorAttrs [AdditionalAction]
 additionalActionsL = lens investigatorAdditionalActions

@@ -47,7 +47,7 @@ import Arkham.Event.Events
   , vantagePointEffect
   )
 import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect )
-import Arkham.Skill.Skills ( hatchetManEffect )
+import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect )
 
 createEffect
   :: MonadRandom m
@@ -154,6 +154,7 @@ allEffects = mapFromList
   , ("02112", SomeEffect songOfTheDead2)
   , ("02114", SomeEffect fireExtinguisher1)
   , ("02150", SomeEffect deduction2)
+  , ("02190", SomeEffect defianceEffect)
   , ("02228", SomeEffect exposeWeakness1)
   , ("02229", SomeEffect quickThinking)
   , ("02230", SomeEffect luckyDice2)
@@ -197,6 +198,7 @@ allEffects = mapFromList
   , ("04155", SomeEffect hatchetManEffect)
   , ("04156", SomeEffect highRoller2Effect)
   , ("04195", SomeEffect exposeWeakness3Effect)
+  , ("04198", SomeEffect defiance2Effect)
   , ("04232", SomeEffect slipAwayEffect)
   , ("04239", SomeEffect lostMemoriesEffect)
   , ("04271", SomeEffect mistsOfRlyeh4Effect)

@@ -84,6 +84,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , carolynFern
   , joeDiamond
   , prestonFairmont
+  , dianaStanley
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -234,6 +235,13 @@ prestonFairmont = investigator
   ("Preston Fairmont" <:> "The Millionaire")
   Rogue
   [SilverTwilight, Socialite]
+
+dianaStanley :: CardDef
+dianaStanley = investigator
+  "05004"
+  ("Diana Stanley" <:> "The Redeemed Cultist")
+  Mystic
+  [Cultist, SilverTwilight]
 
 normanWithers :: CardDef
 normanWithers = investigator

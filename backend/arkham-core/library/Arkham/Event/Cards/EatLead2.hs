@@ -17,9 +17,11 @@ import Arkham.EffectMetadata
 import Arkham.Effect.Window
 import Arkham.Message
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -58,16 +60,19 @@ instance RunMessage EatLead2 where
         aid = fromJustNote "asset must be set" (asset metadata)
         choicesMap = mapFromList @(HashMap Text Int) choices
         ammo = findWithDefault 0 "Ammo" choicesMap
-      when (ammo > 0) $ pushAll
-        [ SpendUses (AssetTarget aid) Ammo ammo
-        , CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers
-            attrs
-            [ChangeRevealStrategy $ RevealAndChoose ammo 1]
-          )
-          (toSource attrs)
-          (InvestigatorTarget iid)
-        ]
+      when (ammo > 0) $ do
+        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        pushAll
+          [ SpendUses (AssetTarget aid) Ammo ammo
+          , CreateWindowModifierEffect
+            EffectSkillTestWindow
+            (EffectModifiers $ toModifiers
+              attrs
+              [ChangeRevealStrategy $ RevealAndChoose ammo 1]
+            )
+            (toSource attrs)
+            (InvestigatorTarget iid)
+          , ignoreWindow
+          ]
       pure e
     _ -> EatLead2 . (`with` metadata) <$> runMessage msg attrs

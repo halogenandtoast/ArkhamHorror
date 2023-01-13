@@ -277,6 +277,7 @@ allTreacheries = mapFrom
   -- The Circle Undone
   -- signature
   , SomeTreacheryCard rationalThought
+  , SomeTreacheryCard terribleSecret
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

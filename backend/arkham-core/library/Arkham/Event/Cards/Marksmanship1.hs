@@ -18,6 +18,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest
+import Arkham.Keyword (Keyword(Retaliate, Aloof))
 import Arkham.Matcher hiding ( EventCard )
 import Arkham.Message
 import Arkham.Source
@@ -25,6 +26,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window
+import Arkham.Window qualified as Window
 
 -- This card is a bit complicated since it changes targetting rules, we have to
 -- allow the player to use an ability on an asset when they normally couldn't
@@ -133,10 +135,14 @@ instance HasModifiersFor Marksmanship1Effect where
 instance RunMessage Marksmanship1Effect where
   runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of
     FightEnemy iid eid _ _ _ _ -> do
-      push $ skillTestModifiers
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        [IgnoreRetaliate]
+      ignored <- selectAny $ EnemyWithId eid <> EnemyOneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect effectSource)]
+      pushAll
+        $ skillTestModifiers
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          [IgnoreRetaliate, IgnoreAloof]
+        : [ ignoreWindow | ignored ]
       pure . Marksmanship1Effect $ attrs & targetL .~ EnemyTarget eid
     PassedSkillTest iid (Just Action.Fight) _ SkillTestInitiatorTarget{} _ _ ->
       do

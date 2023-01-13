@@ -25,7 +25,7 @@ instance RunMessage NarrowEscape where
   runMessage msg e@(NarrowEscape attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
-        [ CancelNext AttackMessage
+        [ CancelNext (toSource attrs) AttackMessage
         , CreateWindowModifierEffect
           (FirstEffectWindow [EffectSkillTestWindow, EffectTurnWindow])
           (EffectModifiers $ toModifiers attrs [AnySkillValue 2])

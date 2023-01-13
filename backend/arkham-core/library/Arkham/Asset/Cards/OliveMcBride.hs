@@ -34,9 +34,14 @@ instance RunMessage OliveMcBride where
   runMessage msg a@(OliveMcBride attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] _
       -> do
-        push $ ReplaceCurrentDraw drawSource iid $ Choose
-          2
-          [Undecided Draw, Undecided Draw, Undecided Draw]
-          []
+        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
+        pushAll
+          [ ReplaceCurrentDraw drawSource iid
+            $ Choose
+            2
+            [Undecided Draw, Undecided Draw, Undecided Draw]
+            []
+          , ignoreWindow
+          ]
         pure a
     _ -> OliveMcBride <$> runMessage msg attrs

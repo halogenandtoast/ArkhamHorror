@@ -75,7 +75,7 @@ instance RunMessage UnsolvedCase where
           ]
         <> [RemoveFromGame (toTarget attrs)]
       pure e
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       -- no-op, handled in HasModifiersFor
       pure e
     _ -> UnsolvedCase <$> runMessage msg attrs

@@ -12,6 +12,8 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
+import Arkham.Window qualified as Window
+import Arkham.Window (Window(..))
 
 newtype ArmorOfArdennes5 = ArmorOfArdennes5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -31,5 +33,7 @@ instance HasAbilities ArmorOfArdennes5 where
 instance RunMessage ArmorOfArdennes5 where
   runMessage msg (ArmorOfArdennes5 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+      push ignoreWindow
       pure . ArmorOfArdennes5 $ attrs & damageL -~ 1
     _ -> ArmorOfArdennes5 <$> runMessage msg attrs

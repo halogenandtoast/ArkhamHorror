@@ -34,6 +34,6 @@ instance RunMessage ATestOfWill where
         ]
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        push $ CancelNext RevelationMessage
+        push $ CancelNext (toSource attrs) RevelationMessage
         pure e
     _ -> ATestOfWill <$> runMessage msg attrs

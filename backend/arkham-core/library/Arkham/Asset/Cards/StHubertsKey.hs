@@ -59,7 +59,7 @@ instance RunMessage StHubertsKey where
       mHealHorror <- getHealHorrorMessage attrs 2 iid
       pushAll
         $ maybeToList mHealHorror
-        <> [ CancelNext InvestigatorDefeatedMessage
+        <> [ CancelNext (toSource attrs) InvestigatorDefeatedMessage
            , CheckDefeated defeatedSource
            ]
       pure a

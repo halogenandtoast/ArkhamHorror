@@ -11,11 +11,15 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Types hiding ( EnemyDamage )
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Message
 import Arkham.Projection
 import Arkham.RequestedTokenStrategy
+import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
 
 newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Maybe EnemyId)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -33,7 +37,8 @@ instance RunMessage HypnoticGaze where
       enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
         PerformEnemyAttack _ eid _ _ : queue' -> (queue', eid)
         _ -> error "unhandled"
-      push (RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside)
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+      pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside, ignoreWindow, Discard (toTarget attrs)]
       pure $ HypnoticGaze (attrs `with` Just enemyId)
     RequestedTokens source _ faces | isSource attrs source -> do
       let
@@ -41,12 +46,8 @@ instance RunMessage HypnoticGaze where
         shouldDamageEnemy = any
           ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . tokenFace)
           faces
-      if shouldDamageEnemy
-        then do
-          healthDamage' <- field EnemyHealthDamage enemyId
-          e <$ pushAll
-            [ EnemyDamage enemyId $ nonAttack attrs healthDamage'
-            , Discard $ toTarget attrs
-            ]
-        else e <$ push (Discard $ toTarget attrs)
+      when shouldDamageEnemy $ do
+        healthDamage' <- field EnemyHealthDamage enemyId
+        push $ EnemyDamage enemyId $ nonAttack attrs healthDamage'
+      pure e
     _ -> HypnoticGaze . (`with` mEnemyId) <$> runMessage msg attrs

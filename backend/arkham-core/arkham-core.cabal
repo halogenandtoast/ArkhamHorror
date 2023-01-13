@@ -564,6 +564,7 @@ library
       Arkham.Asset.Cards.TrueGrit
       Arkham.Asset.Cards.TryAndTryAgain1
       Arkham.Asset.Cards.TryAndTryAgain3
+      Arkham.Asset.Cards.TwilightBlade
       Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.VaultOfKnowledge
       Arkham.Asset.Cards.Venturer
@@ -917,11 +918,14 @@ library
       Arkham.Event.Cards.CunningDistraction
       Arkham.Event.Cards.CustomAmmunition3
       Arkham.Event.Cards.DaringManeuver
+      Arkham.Event.Cards.DarkInsight
       Arkham.Event.Cards.DarkMemory
       Arkham.Event.Cards.DarkPact
       Arkham.Event.Cards.DarkProphecy
       Arkham.Event.Cards.DecipheredReality5
+      Arkham.Event.Cards.DelayTheInevitable
       Arkham.Event.Cards.DelveTooDeep
+      Arkham.Event.Cards.DenyExistence
       Arkham.Event.Cards.DevilsLuck
       Arkham.Event.Cards.Dodge
       Arkham.Event.Cards.DrawnToTheFlame
@@ -1105,6 +1109,7 @@ library
       Arkham.Investigator.Cards.CarolynFern
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
+      Arkham.Investigator.Cards.DianaStanley
       Arkham.Investigator.Cards.FatherMateo
       Arkham.Investigator.Cards.FinnEdwards
       Arkham.Investigator.Cards.HarveyWalters
@@ -1797,6 +1802,7 @@ library
       Arkham.Treachery.Cards.StarsOfHyades
       Arkham.Treachery.Cards.Straitjacket
       Arkham.Treachery.Cards.StrangeSigns
+      Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks

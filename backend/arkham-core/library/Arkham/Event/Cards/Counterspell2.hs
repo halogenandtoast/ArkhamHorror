@@ -8,7 +8,10 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Game.Helpers
 import Arkham.Message
+import Arkham.Window qualified as Window
+import Arkham.Window (Window(..))
 
 newtype Counterspell2 = Counterspell2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,6 +22,11 @@ counterspell2 = event Counterspell2 Cards.counterspell2
 
 instance RunMessage Counterspell2 where
   runMessage msg e@(Counterspell2 attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll [Discard (toTarget attrs)]
+    InvestigatorPlayEvent _ eid _ [Window _ (Window.RevealToken _ token)] _ | eid == toId attrs -> do
+      cancelToken token
+      pushAll
+        [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawTokenMessage, RevealTokenMessage]
+        , Discard (toTarget attrs)
+        ]
+      pure e
     _ -> Counterspell2 <$> runMessage msg attrs

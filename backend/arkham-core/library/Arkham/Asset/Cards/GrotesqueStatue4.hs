@@ -36,9 +36,11 @@ instance RunMessage GrotesqueStatue4 where
     UseCardAbility iid source 1 [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] _
       | isSource attrs source
       -> do
-        push $ ReplaceCurrentDraw drawSource iid $ Choose
-          1
-          [Undecided Draw, Undecided Draw]
-          []
+        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
+        pushAll
+          [ ReplaceCurrentDraw drawSource iid
+            $ Choose 1 [Undecided Draw, Undecided Draw] []
+          , ignoreWindow
+          ]
         pure a
     _ -> GrotesqueStatue4 <$> runMessage msg attrs

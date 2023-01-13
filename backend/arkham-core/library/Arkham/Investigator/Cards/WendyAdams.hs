@@ -54,9 +54,7 @@ instance RunMessage WendyAdams where
       -> do
         cancelToken token
         i <$ pushAll
-          [ CancelNext RunWindowMessage
-          , CancelNext DrawTokenMessage
-          , CancelNext RevealTokenMessage
+          [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawTokenMessage, RevealTokenMessage]
           , ReturnTokens [token]
           , UnfocusTokens
           , DrawAnotherToken (toId attrs)

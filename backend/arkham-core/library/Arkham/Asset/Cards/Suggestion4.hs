@@ -50,5 +50,5 @@ instance RunMessage Suggestion4 where
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ push (SpendUses (toTarget attrs) Charge 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      a <$ push (CancelNext AttackMessage)
+      a <$ push (CancelNext (toAbilitySource attrs 2) AttackMessage)
     _ -> Suggestion4 <$> runMessage msg attrs

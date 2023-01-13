@@ -5,15 +5,20 @@ module Arkham.Asset.Cards.FortyFiveAutomatic2
 
 import Arkham.Prelude
 
+import Arkham.DamageEffect
+import Arkham.Keyword (Keyword(Retaliate))
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
+import Arkham.Timing qualified as Timing
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype FortyFiveAutomatic2 = FortyFiveAutomatic2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -31,11 +36,18 @@ instance HasAbilities FortyFiveAutomatic2 where
 
 instance RunMessage FortyFiveAutomatic2 where
   runMessage msg a@(FortyFiveAutomatic2 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
-      [ skillTestModifiers
-        attrs
-        (InvestigatorTarget iid)
-        [DamageDealt 1, SkillModifier SkillCombat 2, IgnoreRetaliate]
-      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-      ]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ skillTestModifiers
+          attrs
+          (InvestigatorTarget iid)
+          [DamageDealt 1, SkillModifier SkillCombat 2, IgnoreRetaliate]
+        , ChooseFightEnemy iid source (Just $ toTarget attrs) SkillCombat mempty False
+        ]
+      pure a
+    Successful (Action.Fight, EnemyTarget eid) _ _ (isTarget attrs -> True) _ -> do
+      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+      ignored <- member eid <$> select (EnemyWithKeyword Retaliate)
+      pushAll $ EnemyDamage eid (attack attrs 1) : [ignoreWindow | ignored]
+      pure a
     _ -> FortyFiveAutomatic2 <$> runMessage msg attrs

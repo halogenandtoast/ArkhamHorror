@@ -22,7 +22,7 @@ wardOfProtection5 = event WardOfProtection5 Cards.wardOfProtection5
 instance RunMessage WardOfProtection5 where
   runMessage msg e@(WardOfProtection5 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
-      [ CancelNext DrawEncounterCardMessage
+      [ CancelNext (toSource attrs) DrawEncounterCardMessage
       , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1
       , Discard (EventTarget eid)
       ]

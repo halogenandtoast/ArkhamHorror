@@ -41,7 +41,7 @@ instance RunMessage Premonition where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let ts = eventSealedTokens attrs
       pushAll $
-        CancelNext RunWindowMessage
+        CancelNext (toSource attrs) RunWindowMessage
         : map UnsealToken ts
         <> [ ReplaceCurrentDraw (toSource attrs) iid
                $ Choose 1 [Resolved ts] []

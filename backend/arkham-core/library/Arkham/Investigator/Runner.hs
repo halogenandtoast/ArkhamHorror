@@ -325,7 +325,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows
       [Window Timing.After (Window.DrawingStartingHand iid)]
-    additionalHandCards <- traverse genCard (traceShowId investigatorStartsWithInHand)
+    additionalHandCards <- traverse genCard investigatorStartsWithInHand
     pushAll [ShuffleDiscardBackIn iid, window]
     pure
       $ a

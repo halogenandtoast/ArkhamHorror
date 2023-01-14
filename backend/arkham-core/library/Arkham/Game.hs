@@ -1,6 +1,7 @@
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game (module Arkham.Game, module X) where
 
 import Arkham.Prelude
@@ -1955,13 +1956,14 @@ getInDiscardEntity lensFunc entityId game = asum $ map
   (toList $ view inDiscardEntitiesL game)
 
 getEvent :: (HasCallStack, HasGame m) => EventId -> m Event
-getEvent eid = do
-  g <- getGame
-  pure
-    $ fromJustNote missingEvent
-    $ preview (entitiesL . eventsL . ix eid) g
-    <|> getInDiscardEntity eventsL eid g
+getEvent eid = fromJustNote missingEvent <$> getEventMaybe eid
   where missingEvent = "Unknown event: " <> show eid
+
+getEventMaybe :: HasGame m => EventId -> m (Maybe Event)
+getEventMaybe eid = do
+  g <- getGame
+  pure $ preview (entitiesL . eventsL . ix eid) g
+    <|> getInDiscardEntity eventsL eid g
 
 getEffect :: HasGame m => EffectId -> m Effect
 getEffect eid =
@@ -3147,6 +3149,12 @@ runGameMessage msg g = case msg of
     -- todo: should we just run this in place?
     push $ PlacedLocation (toName card) (toCardCode card) lid
     pure $ g & entitiesL . locationsL . at lid ?~ location'
+  RemoveAsset aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+  RemoveEvent eid -> do
+    popMessageMatching_ $ \case
+      Discard (EventTarget eid') -> eid == eid'
+      _ -> False
+    pure $ g & entitiesL . eventsL %~ deleteMap eid
   RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
   RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
   When (RemoveEnemy eid) -> do
@@ -3363,13 +3371,6 @@ runGameMessage msg g = case msg of
             ?~ (dEntities & assetsL . at assetId ?~ asset)
     pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
     -- pure $ g & entitiesL . assetsL %~ deleteMap assetId
-  RemovedFromPlay (EventSource eventId) -> do
-    event' <- getEvent eventId
-    let
-      iid = eventOwner (toAttrs event')
-      dEntities =
-        fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
-    pure $ g & entitiesL . eventsL %~ deleteMap eventId & inDiscardEntitiesL . at iid ?~ (dEntities & eventsL . at eventId ?~ event')
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ AddToHand iid card
@@ -3486,14 +3487,29 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelEachNext source msgTypes -> do
-    for_ msgTypes $ \msgType ->
-      withQueue_ $ \queue ->
+    for_ msgTypes $ \msgType -> do
+      mRemovedMsg <- withQueue $ \queue ->
         let
           (before, after) = break ((== Just msgType) . messageType) queue
-          remaining = case after of
-            [] -> []
-            (_ : xs) -> xs
-        in before <> remaining
+          (remaining, removed) = case after of
+            [] -> ([], Nothing)
+            (x : xs) -> (xs, Just x)
+        in (before <> remaining, removed)
+
+      for mRemovedMsg $ \removedMsg -> do
+        case removedMsg of
+          Revelation iid' source' -> do
+            removeAllMessagesMatching $ \case
+              When whenMsg -> removedMsg == whenMsg
+              AfterRevelation iid'' tid -> iid' == iid'' && TreacherySource tid == source'
+              _ -> False
+            case source' of
+              TreacherySource tid ->
+                replaceMessage
+                  (After removedMsg)
+                  [Discard (TreacheryTarget tid), UnsetActiveCard]
+              _ -> pure ()
+          _ -> pure ()
 
     push =<< checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
     pure g
@@ -4347,23 +4363,26 @@ runGameMessage msg g = case msg of
     pure g
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
-    event' <- getEvent eid
-    modifiers' <- getModifiers (EventTarget eid)
-    if RemoveFromGameInsteadOfDiscard `elem` modifiers'
-      then g <$ push (RemoveFromGame (EventTarget eid))
-      else do
-        card <- field EventCard eid
-        case card of
-          PlayerCard pc ->
-            if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
-              then do
-                let iid = eventOwner $ toAttrs event'
-                push
-                  $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
-              else push $ AddToDiscard (eventOwner $ toAttrs event') pc
-          EncounterCard _ -> error "Unhandled"
-          VengeanceCard _ -> error "Vengeance card"
-        pure $ g & entitiesL . eventsL %~ deleteMap eid
+    mEvent <- getEventMaybe eid
+    case mEvent of
+      Nothing -> pure g
+      Just event' -> do
+        modifiers' <- getModifiers (EventTarget eid)
+        if RemoveFromGameInsteadOfDiscard `elem` modifiers'
+          then g <$ push (RemoveFromGame (EventTarget eid))
+          else do
+            card <- field EventCard eid
+            case card of
+              PlayerCard pc ->
+                if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
+                  then do
+                    let iid = eventOwner $ toAttrs event'
+                    push
+                      $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
+                  else push $ AddToDiscard (eventOwner $ toAttrs event') pc
+              EncounterCard _ -> error "Unhandled"
+              VengeanceCard _ -> error "Vengeance card"
+            pure $ g & entitiesL . eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     treachery <- getTreachery tid
     let card = lookupCard (toCardCode treachery) (unTreacheryId tid)

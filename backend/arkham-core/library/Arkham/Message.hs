@@ -512,7 +512,9 @@ data Message
   | RemoveClues Target Int
   | RemoveDiscardFromGame InvestigatorId
   | RemoveDoom Target Int
+  | RemoveAsset AssetId
   | RemoveEnemy EnemyId
+  | RemoveEvent EventId
   | RemoveSkill SkillId
   | RemoveTreachery TreacheryId
   | RemoveFromDiscard InvestigatorId CardId

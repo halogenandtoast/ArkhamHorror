@@ -64,7 +64,7 @@ RUN \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGNone
 
-ARG GHC=9.4.3
+ARG GHC=9.4.4
 ARG CABAL=latest
 ARG STACK=latest
 

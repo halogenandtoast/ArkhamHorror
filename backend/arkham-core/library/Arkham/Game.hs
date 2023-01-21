@@ -3487,17 +3487,20 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelEachNext source msgTypes -> do
-    for_ msgTypes $ \msgType -> do
+    push =<< checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    for_ (traceShowId msgTypes) $ \msgType -> do
       mRemovedMsg <- withQueue $ \queue ->
         let
           (before, after) = break ((== Just msgType) . messageType) queue
           (remaining, removed) = case after of
             [] -> ([], Nothing)
             (x : xs) -> (xs, Just x)
-        in (before <> remaining, removed)
+        in (before <> remaining, traceShowId removed)
 
       for mRemovedMsg $ \removedMsg -> do
-        case removedMsg of
+        case traceShowId removedMsg of
+          InvestigatorDrawEnemy _ eid -> do
+            pushAll [Discard (EnemyTarget eid), UnsetActiveCard]
           Revelation iid' source' -> do
             removeAllMessagesMatching $ \case
               When whenMsg -> removedMsg == whenMsg
@@ -3511,7 +3514,6 @@ runGameMessage msg g = case msg of
               _ -> pure ()
           _ -> pure ()
 
-    push =<< checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
     pure g
   EngageEnemy iid eid False -> do
     push =<< checkWindows [Window Timing.After (Window.EnemyEngaged iid eid)]

@@ -10,6 +10,7 @@ data MessageType
     | ResolveTokenMessage
     | RunWindowMessage
     | EnemySpawnMessage
+    | DrawEnemyMessage
     | EnemyDefeatedMessage
     | InvestigatorDefeatedMessage
     | DamageMessage

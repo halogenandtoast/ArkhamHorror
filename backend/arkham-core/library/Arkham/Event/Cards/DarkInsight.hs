@@ -28,6 +28,7 @@ instance RunMessage DarkInsight where
       let
         cancelMsg = case toCardType card of
           TreacheryType -> CancelNext (toSource attrs) RevelationMessage
+          EnemyType -> CancelNext (toSource attrs) DrawEnemyMessage
           _ -> error "Not handled yet"
       -- TODO: Figure out what exactly we should cancel (RevelationMessage for treachery, Enemy, Event, Skill, etc.)
       e <$ pushAll [cancelMsg, Discard (toTarget attrs)]

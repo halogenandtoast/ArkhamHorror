@@ -65,6 +65,7 @@ messageType Revelation{} = Just RevelationMessage
 messageType DrawToken{} = Just DrawTokenMessage
 messageType ResolveToken{} = Just ResolveTokenMessage
 messageType EnemySpawn{} = Just EnemySpawnMessage
+messageType InvestigatorDrawEnemy{} = Just DrawEnemyMessage
 messageType EnemyDefeated{} = Just EnemyDefeatedMessage
 messageType RevealToken{} = Just RevealTokenMessage
 messageType InvestigatorDamage{} = Just DamageMessage

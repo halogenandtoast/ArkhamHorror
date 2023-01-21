@@ -29,6 +29,7 @@ instance HasAbilities DiscOfItzamna2 where
 instance RunMessage DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      -- this does not cancel so we must remove manually
       menemySpawnMessage <- fromQueue
         $ find ((== Just EnemySpawnMessage) . messageType)
       a <$ case menemySpawnMessage of

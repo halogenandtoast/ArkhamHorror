@@ -19,7 +19,7 @@ spec = describe "Jenny Barnes" $ do
   context "elder sign token" $ do
     it "modifier is number of resources" $ do
       let jennyBarnes = lookupInvestigator "02003"
-      gameTest jennyBarnes [TakeResources (toId jennyBarnes) 5 False] id $ do
+      gameTest jennyBarnes [TakeResources (toId jennyBarnes) 5 (toSource jennyBarnes) False] id $ do
         runMessages
         token <- getTokenValue (toId jennyBarnes) ElderSign (toId jennyBarnes)
         tokenValue token `shouldBe` Just 5

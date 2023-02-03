@@ -15,7 +15,7 @@ spec = describe "\"Skids\" O'Toole" $ do
       let skidsOToole = lookupInvestigator "01003"
       gameTest
           skidsOToole
-          [ TakeResources (toId skidsOToole) 2 False
+          [ TakeResources (toId skidsOToole) 2 (toSource skidsOToole) False
           , LoseActions (toId skidsOToole) (TestSource mempty) 3
           ]
           id

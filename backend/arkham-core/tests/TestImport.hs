@@ -160,10 +160,10 @@ buildAsset :: MonadRandom m => CardDef -> Maybe Investigator -> m Asset
 buildAsset cardDef mOwner =
   lookupAsset (toCardCode cardDef) . (, toId <$> mOwner) <$> getRandom
 
-testPlayerCards :: MonadRandom m => Int -> m [PlayerCard]
+testPlayerCards :: CardGen m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
-testPlayerCard :: MonadRandom m => (CardDef -> CardDef) -> m PlayerCard
+testPlayerCard :: CardGen m => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
 
 testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy

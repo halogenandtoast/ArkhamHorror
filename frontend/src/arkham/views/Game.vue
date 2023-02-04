@@ -208,6 +208,7 @@ const { copy } = useClipboard({ source })
   display: flex;
   flex-direction: column;
   flex: 1;
+  position: relative;
 }
 
 .game-main {

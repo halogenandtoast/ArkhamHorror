@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
 </script>
 
 <template>
-  <div class="card-row">
+  <div class="card-row" draggable="true">
     <header>
       <h2>{{props.title}}</h2>
     </header>
@@ -38,11 +38,15 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
 
   header {
     padding: 10px;
+    background: rgba(0 0 0 / 50%);
+    border-bottom: 1px solid rgba(255 255 255 / 20%);
+    text-transform: uppercase;
+    font-size: 0.8em;
   }
 
   h2 {
     font-size: 1.8em;
-    color: rgba(255,255,255,0.5);
+    color: white;
     padding: 0;
     margin: 0;
   }
@@ -52,28 +56,16 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 10px;
+  padding: 10px;
+  gap: 2px;
 }
 
 .card-row-card {
-  margin-left: 10px;
   position: relative;
 }
 
 .discard {
-  &::after {
-    pointer-events: none;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #FFF;
-    /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
-    opacity: .85;
-    mix-blend-mode: saturation;
-  }
+  filter: grayscale(0.85);
 }
 
 .card {
@@ -95,5 +87,22 @@ button {
     background-color: #4d2b61;
   }
   margin-bottom: 10px;
+}
+
+.card-row {
+  position: absolute;
+  width: 80%;
+  top: 50%;
+  left: 50%;
+  background: hsl(150.9 13.6% 52.4% / 80%);
+  transform: translateX(-50%) translateY(-50%);
+
+  background: rgba(94,123,115,0.5);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 1000000;
 }
 </style>

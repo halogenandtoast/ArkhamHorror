@@ -33,11 +33,12 @@ document.addEventListener('mouseover', (event) => {
 <style lang="scss">
 .card-overlay {
   width: 100%;
-  flex: 1 1 50%;
   padding: 10px;
   box-sizing: border-box;
   display: flex;
-  height: 450px;
+  height: 50%;
+  max-height: 50%;
+  min-height: 50%;
   align-items: center;
   justify-items: center;
   justify-content: center;
@@ -48,7 +49,7 @@ document.addEventListener('mouseover', (event) => {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: 450px;
+    max-height: 100%;
   }
 }
 </style>

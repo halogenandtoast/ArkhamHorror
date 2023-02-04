@@ -6,9 +6,11 @@
       Loading...
     </template>
   </Suspense>
+  <ModalsContainer />
 </template>
 
 <script lang="ts" setup>
+import { ModalsContainer } from 'vue-final-modal'
 import { onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import NavBar from '@/components/NavBar.vue'

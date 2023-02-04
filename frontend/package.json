@@ -24,6 +24,7 @@
     "ts.data.json": "^2.1.1",
     "v-jsoneditor": "^1.4.5",
     "vue": "^3.2.37",
+    "vue-final-modal": "^4.0.0",
     "vue-router": "^4.0.16",
     "vue-toastification": "^2.0.0-rc.5"
   },

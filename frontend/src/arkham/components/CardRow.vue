@@ -3,6 +3,7 @@ import { withDefaults } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
+import Draggable from '@/components/Draggable';
 
 export interface Props {
   game: Game
@@ -16,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
 </script>
 
 <template>
-  <div class="card-row" draggable="true">
+  <Draggable class="card-row">
     <header>
       <h2>{{props.title}}</h2>
     </header>
@@ -26,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
       </div>
     </div>
     <button class="close" @click="$emit('close')">Close</button>
-  </div>
+  </Draggable>
 </template>
 
 <style scoped lang="scss">
@@ -105,4 +106,9 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 1000000;
 }
+
+.card-row > header {
+  pointer-events: none;
+}
+
 </style>

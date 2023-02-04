@@ -5,6 +5,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
+import Draggable from '@/components/Draggable';
 
 export interface Props {
   game: Game
@@ -51,102 +52,107 @@ const testResult = computed(() => {
     return null
   }
 })
+
+const showChoices = computed(() => choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL }) || (applyResultsAction.value !== -1))
+
 </script>
 
 <template>
-  <section class="status-bar">
-    <div v-if="skillTestResults" class="skill-test-results">
-      <dl>
-        <dt>Modified Skill Value (skill value + icon value - tokens):</dt>
-        <dd>
-          {{skillTestResults.skillTestResultsSkillValue}}
-          + {{skillTestResults.skillTestResultsIconValue}}
-          {{tokenOperator}}
-          {{Math.abs(skillTestResults.skillTestResultsTokensValue)}}
-        </dd>
-        <dt>Modified Difficulty:</dt>
-        <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>
-        <dt>Result:</dt>
-        <dd v-if="testResult >= 0">
-          Succeed by {{testResult}}
-        </dd>
-        <dd v-else>
-          Fail by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
-        </dd>
-      </dl>
-    </div>
+  <Draggable>
+    <section class="status-bar">
+      <div v-if="skillTestResults" class="skill-test-results">
+        <dl>
+          <dt>Modified Skill Value (skill value + icon value - tokens):</dt>
+          <dd>
+            {{skillTestResults.skillTestResultsSkillValue}}
+            + {{skillTestResults.skillTestResultsIconValue}}
+            {{tokenOperator}}
+            {{Math.abs(skillTestResults.skillTestResultsTokensValue)}}
+          </dd>
+          <dt>Modified Difficulty:</dt>
+          <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>
+          <dt>Result:</dt>
+          <dd v-if="testResult >= 0">
+            Succeed by {{testResult}}
+          </dd>
+          <dd v-else>
+            Fail by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          </dd>
+        </dl>
+      </div>
 
-    <div v-if="skillTestResults" class="skill-test-results-break"></div>
+      <div v-if="skillTestResults" class="skill-test-results-break"></div>
 
-    <div v-if="cardLabels.length > 0">
-      <template v-for="[choice, index] in cardLabels" :key="index">
-        <a href='#' @click.prevent="choose(index)">
-          <img class="card" :src="cardLabelImage(choice.cardCode)"/>
-        </a>
-      </template>
-    </div>
-
-    <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">
-      <p>{{question.label}}</p>
-      <div class="label-choices">
-        <template v-for="(choice, index) in question.question.choices" :key="index">
-          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-            <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
-          </template>
-          <template v-if="choice.tag === 'PortraitLabel'">
-            <a href='#' @click.prevent="choose(index)">
-              <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
-            </a>
-          </template>
+      <div v-if="cardLabels.length > 0">
+        <template v-for="[choice, index] in cardLabels" :key="index">
+          <a href='#' @click.prevent="choose(index)">
+            <img class="card" :src="cardLabelImage(choice.cardCode)"/>
+          </a>
         </template>
       </div>
-    </div>
 
-    <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-      <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
-      <p
-        v-for="(paragraph, index) in question.flavorText.body"
-        :key="index"
-      >{{paragraph}}</p>
-    </div>
-
-
-    <div class="choices">
-      <template v-for="(choice, index) in choices" :key="index">
-        <div v-if="choice.tag === MessageType.DONE">
-          <button @click="choose(index)">{{choice.label}}</button>
+      <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">
+        <p>{{question.label}}</p>
+        <div class="label-choices">
+          <template v-for="(choice, index) in question.question.choices" :key="index">
+            <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+              <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
+            </template>
+            <template v-if="choice.tag === 'PortraitLabel'">
+              <a href='#' @click.prevent="choose(index)">
+                <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
+              </a>
+            </template>
+          </template>
         </div>
-        <div v-if="choice.tag === MessageType.LABEL">
-          <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
-            Choose <i class="iconSkull"></i>
-          </button>
-          <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
-            Choose <i class="iconCultist"></i>
-          </button>
-          <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
-            Choose <i class="iconTablet"></i>
-          </button>
-          <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
-            Choose <i class="iconElderThing"></i>
-          </button>
-          <button v-else @click="choose(index)">{{choice.label}}</button>
-        </div>
+      </div>
 
-        <a
-          v-if="choice.tag === MessageType.SKILL_LABEL"
-          class="button"
-          @click="choose(index)"
-        >
-          Use <i :class="`icon${choice.skillType}`"></i>
-        </a>
+      <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
+        <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
+        <p
+          v-for="(paragraph, index) in question.flavorText.body"
+          :key="index"
+        >{{paragraph}}</p>
+      </div>
 
-        <button
-          v-if="applyResultsAction !== -1"
-          @click="choose(applyResultsAction)"
-        >Apply Results</button>
-      </template>
-    </div>
-  </section>
+
+      <div v-if="showChoices" class="choices">
+        <template v-for="(choice, index) in choices" :key="index">
+          <div v-if="choice.tag === MessageType.DONE">
+            <button @click="choose(index)">{{choice.label}}</button>
+          </div>
+          <div v-if="choice.tag === MessageType.LABEL">
+            <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
+              Choose <i class="iconSkull"></i>
+            </button>
+            <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
+              Choose <i class="iconCultist"></i>
+            </button>
+            <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
+              Choose <i class="iconTablet"></i>
+            </button>
+            <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
+              Choose <i class="iconElderThing"></i>
+            </button>
+            <button v-else @click="choose(index)">{{choice.label}}</button>
+          </div>
+
+          <a
+            v-if="choice.tag === MessageType.SKILL_LABEL"
+            class="button"
+            @click="choose(index)"
+          >
+            Use <i :class="`icon${choice.skillType}`"></i>
+          </a>
+
+          <button
+            v-if="applyResultsAction !== -1"
+            @click="choose(applyResultsAction)"
+          >Apply Results</button>
+        </template>
+      </div>
+    </section>
+  </Draggable>
 </template>
 
 <style scoped lang="scss">
@@ -345,6 +351,27 @@ button {
     border: 1px solid $select;
     cursor:pointer;
   }
+}
+
+.status-bar:empty {
+  display: none;
+}
+
+.status-bar {
+  position: absolute;
+  width: 80%;
+  top: 50%;
+  left: 50%;
+  background: hsl(150.9 13.6% 52.4% / 80%);
+  transform: translateX(-50%) translateY(-50%);
+
+  background: rgba(94,123,115,0.5);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 1000000;
 }
 
 </style>

@@ -466,6 +466,7 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
   padding-bottom: 10px;
   position: relative;
   width: 100%;
+  gap: 2px;
 }
 
 .clue--can-investigate {
@@ -670,5 +671,9 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
 .map-leave-active {
   position: absolute;
+}
+
+.scenario-decks {
+  gap: 2px;
 }
 </style>

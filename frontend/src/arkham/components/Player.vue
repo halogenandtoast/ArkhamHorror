@@ -109,7 +109,10 @@ const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title:
 }
 
 const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
-const hideCards = () => showCards.ref = noCards
+const hideCards = () => {
+  showCards.ref = noCards
+  viewingDiscard.value = false
+}
 
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
@@ -292,7 +295,6 @@ function beforeLeaveHand(el) {
       width: 100%;
       height: 100%;
       background-color: #FFF;
-      /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
       opacity: .85;
       mix-blend-mode: saturation;
     }
@@ -307,7 +309,6 @@ function beforeLeaveHand(el) {
 }
 
 .deck {
-  margin-top: 10px;
   width: auto;
 }
 
@@ -335,12 +336,12 @@ function beforeLeaveHand(el) {
 
 .hand {
   overflow-x: overlay;
-  height: 100%;
   flex-grow: 1;
   display: flex;
-  padding-top: 10px;
   box-sizing: border-box;
-  isolation: isolate;
+  gap: 2px;
+  margin-left: 2px;
+  align-self: center;
 }
 
 .view-discard-button {
@@ -350,6 +351,7 @@ function beforeLeaveHand(el) {
 .deck-container {
   display: flex;
   flex-direction: column;
+  align-self: center;
 }
 
 .top-of-deck {

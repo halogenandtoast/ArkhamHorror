@@ -54,7 +54,6 @@ const fullName = (name: Name): string => {
 
 <template>
   <div class="campaign-log">
-    <router-link :to="`/games/${game.id}`">Back</router-link>
     <h1>Campaign Log: {{game.name}}</h1>
     <div v-if="hasSupplies">
       <h2>Supplies</h2>

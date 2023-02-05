@@ -280,11 +280,18 @@ section {
 }
 
 .intro-text {
+  text-align: justify;
   background-color: #DFDAD8;
   padding: 10px;
   margin: 10px;
   border-radius: 2px;
   box-sizing: border-box;
+  font-size: 1.1em;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-font-smoothing: antialiased !important;
+  text-rendering: optimizelegibility !important;
+  letter-spacing: .03em;
   h1 {
     font-family: "Teutonic";
     font-weight: 500;

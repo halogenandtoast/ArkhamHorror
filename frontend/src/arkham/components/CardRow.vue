@@ -18,9 +18,9 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
 
 <template>
   <Draggable class="card-row">
-    <header>
+    <template #handle>
       <h2>{{props.title}}</h2>
-    </header>
+    </template>
     <div class="card-row-cards">
       <div v-for="card in props.cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
         <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
@@ -36,21 +36,6 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
   width: 100%;
   overflow-x: auto;
   text-align: center;
-
-  header {
-    padding: 10px;
-    background: rgba(0 0 0 / 50%);
-    border-bottom: 1px solid rgba(255 255 255 / 20%);
-    text-transform: uppercase;
-    font-size: 0.8em;
-  }
-
-  h2 {
-    font-size: 1.8em;
-    color: white;
-    padding: 0;
-    margin: 0;
-  }
 }
 
 .card-row-cards {
@@ -106,9 +91,4 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 1000000;
 }
-
-.card-row > header {
-  pointer-events: none;
-}
-
 </style>

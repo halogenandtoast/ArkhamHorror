@@ -98,7 +98,7 @@ const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
-  <div>
+  <div class="chaos-bag-contents">
     <img
       v-if="investigatorPortrait"
       class="portrait"
@@ -162,5 +162,11 @@ const choose = (idx: number) => emit('choose', idx)
     border-radius: 25px;
     width: 50px;
   }
+}
+
+.chaos-bag-contents {
+  display: flex;
+  align-items: flex-start;
+  height: 113px;
 }
 </style>

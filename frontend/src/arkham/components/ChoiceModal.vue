@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
+import Draggable from '@/components/Draggable.vue';
 
 export interface Props {
   game: Game
@@ -160,59 +161,61 @@ const submitAmounts = async () => {
 </script>
 
 <template>
-  <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
-    <div class="modal-contents focused-cards">
-      <Card
-        v-for="(card, index) in focusedCards"
-        :card="card"
-        :game="game"
-        :investigatorId="investigatorId"
-        :key="index"
-        @choose="$emit('choose', $event)"
-      />
+  <Draggable v-if="focusedCards.length > 0 || paymentAmountsLabel || amountsLabel">
+    <template #handle><h1>Choose</h1></template>
+    <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
+      <div class="modal-contents focused-cards">
+        <Card
+          v-for="(card, index) in focusedCards"
+          :card="card"
+          :game="game"
+          :investigatorId="investigatorId"
+          :key="index"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
     </div>
-  </div>
-  <div v-else-if="paymentAmountsLabel" class="modal amount-modal">
-    <div class="modal-contents amount-contents">
-      <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
-        <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="amountChoice in amountsChoices" :key="amountChoice.investigatorId">
-          <div v-if="amountChoice.maxBound !== 0">
-            {{investigatorName(amountChoice.investigatorId)}}
-            <input
-              type="number"
-              :min="amountChoice.minBound"
-              :max="amountChoice.maxBound"
-              v-model.number="amountSelections[amountChoice.investigatorId]"
-              onclick="this.select()"
-            />
-          </div>
-        </template>
-        <button :disabled="unmetAmountRequirements">Submit</button>
-      </form>
+    <div v-else-if="paymentAmountsLabel" class="modal amount-modal">
+      <div class="modal-contents amount-contents">
+        <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
+          <legend>{{paymentAmountsLabel}}</legend>
+          <template v-for="amountChoice in amountsChoices" :key="amountChoice.investigatorId">
+            <div v-if="amountChoice.maxBound !== 0">
+              {{investigatorName(amountChoice.investigatorId)}}
+              <input
+                type="number"
+                :min="amountChoice.minBound"
+                :max="amountChoice.maxBound"
+                v-model.number="amountSelections[amountChoice.investigatorId]"
+                onclick="this.select()"
+              />
+            </div>
+          </template>
+          <button :disabled="unmetAmountRequirements">Submit</button>
+        </form>
+      </div>
     </div>
-  </div>
-  <div v-else-if="amountsLabel" class="modal amount-modal">
-    <div class="modal-contents amount-contents">
-      <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-        <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="paymentChoice in amountsChoices" :key="paymentChoice.label">
-          <div v-if="paymentChoice.maxBound !== 0">
-            {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.label]" onclick="this.select()" />
-          </div>
-        </template>
-        <button :disabled="unmetAmountRequirements">Submit</button>
-      </form>
+    <div v-else-if="amountsLabel" class="modal amount-modal">
+      <div class="modal-contents amount-contents">
+        <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
+          <legend>{{paymentAmountsLabel}}</legend>
+          <template v-for="paymentChoice in amountsChoices" :key="paymentChoice.label">
+            <div v-if="paymentChoice.maxBound !== 0">
+              {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.label]" onclick="this.select()" />
+            </div>
+          </template>
+          <button :disabled="unmetAmountRequirements">Submit</button>
+        </form>
+      </div>
     </div>
-  </div>
+  </Draggable>
 </template>
 
 <style scoped lang="scss">
 .modal-contents {
-  background: white;
   display: flex;
   align-items: center;
-  padding: 10px 0;
+  padding: 10px;
 }
 
 .focused-cards {

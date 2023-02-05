@@ -55,10 +55,39 @@ const testResult = computed(() => {
 
 const showChoices = computed(() => choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL }) || (applyResultsAction.value !== -1))
 
+const title = computed(() => {
+  if (skillTestResults.value) {
+    return "Results"
+  }
+
+  if (cardLabels.value.length > 0) {
+    return "Choose"
+  }
+
+  if (question.value && question.value.tag === 'QuestionLabel') {
+    return question.value.label
+  }
+
+  if (question.value && question.value.tag === QuestionType.READ) {
+    if (question.value.flavorText.title) {
+      return question.value.flavorText.title
+    }
+
+    return "Story"
+  }
+
+  if (showChoices.value) {
+    return "Choose"
+  }
+
+  return null
+})
+
 </script>
 
 <template>
-  <Draggable>
+  <Draggable v-if="title">
+    <template #handle><h2>{{title}}</h2></template>
     <section class="status-bar">
       <div v-if="skillTestResults" class="skill-test-results">
         <dl>
@@ -92,7 +121,6 @@ const showChoices = computed(() => choices.value.some((c) => { return c.tag === 
       </div>
 
       <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">
-        <p>{{question.label}}</p>
         <div class="label-choices">
           <template v-for="(choice, index) in question.question.choices" :key="index">
             <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
@@ -108,7 +136,6 @@ const showChoices = computed(() => choices.value.some((c) => { return c.tag === 
       </div>
 
       <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-        <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
         <p
           v-for="(paragraph, index) in question.flavorText.body"
           :key="index"
@@ -231,7 +258,6 @@ section {
   align-items: center;
   justify-content: center;
   padding: 5px;
-  background: #2D6153;
 }
 
 .button {
@@ -356,22 +382,4 @@ button {
 .status-bar:empty {
   display: none;
 }
-
-.status-bar {
-  position: absolute;
-  width: 80%;
-  top: 50%;
-  left: 50%;
-  background: hsl(150.9 13.6% 52.4% / 80%);
-  transform: translateX(-50%) translateY(-50%);
-
-  background: rgba(94,123,115,0.5);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 1000000;
-}
-
 </style>

@@ -508,6 +508,7 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
   z-index: 1;
   width: 100%;
+  height: calc(100vh - 40px);
   flex: 1;
 }
 

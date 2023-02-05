@@ -13,14 +13,9 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <div class="card-row">
-    <header>
-      <h2>Committed Cards</h2>
-    </header>
-    <div class="card-row-cards">
-      <div v-for="card in props.cards" :key="card.id" class="card-row-card">
-        <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
-      </div>
+  <div class="card-row-cards">
+    <div v-for="card in props.cards" :key="card.id" class="card-row-card">
+      <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>

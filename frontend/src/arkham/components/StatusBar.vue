@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { ref, computed, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable';
+import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 
 export interface Props {
   game: Game
@@ -17,6 +18,7 @@ const emit = defineEmits(['choose'])
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const question = computed(() => props.game.question[props.investigatorId])
+const hide = ref(false)
 
 const choose = (idx: number) => emit('choose', idx)
 
@@ -86,10 +88,17 @@ const title = computed(() => {
 </script>
 
 <template>
-  <Draggable v-if="title">
+  <Draggable v-if="title" class="modal" :class="{ hide }">
     <template #handle><h2>{{title}}</h2></template>
     <section class="status-bar">
       <div v-if="skillTestResults" class="skill-test-results">
+        <CommittedSkills
+          v-if="(game.skillTest?.committedCards?.length || 0) > 0"
+          :game="game"
+          :cards="game.skillTest.committedCards"
+          :investigatorId="investigatorId"
+          @choose="choose"
+        />
         <dl>
           <dt>Modified Skill Value (skill value + icon value - tokens):</dt>
           <dd>
@@ -338,6 +347,7 @@ section {
 }
 
 button {
+  transition: all 0.3s ease-in;
   border: 0;
   padding: 10px;
   text-transform: uppercase;
@@ -388,5 +398,13 @@ button {
 
 .status-bar:empty {
   display: none;
+}
+
+.hide {
+  opacity: 0;
+}
+
+.modal {
+  transition: opacity 0.3s linear;
 }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useWebSocket, useClipboard } from '@vueuse/core'
-import { withDefaults, ref, provide, onUnmounted, watch } from 'vue'
+import { withDefaults, ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
@@ -9,6 +9,8 @@ import api from '@/api';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
+import CampaignLog from '@/arkham/components/CampaignLog.vue'
+import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export interface Props {
@@ -17,6 +19,10 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { spectate: false })
+
+const store = useCardStore()
+store.fetchCards()
+const cards = computed(() => store.cards)
 
 const debug = ref(false)
 provide('debug', debug)
@@ -180,16 +186,9 @@ const { copy } = useClipboard({ source })
           <button @click="toggleDebug">Toggle Debug</button>
           <button @click="debugExport">Debug Export</button>
         </div>
-        <div v-if="game.gameOver">
+        <div class="game-over" v-if="game.gameState === 'IsOver'">
           <p>Game over</p>
-
-          <div v-for="entry in game.campaign.log.recorded" :key="entry">
-            {{entry}}
-          </div>
-
-          <div v-for="(entry, idx) in game.campaign.log.recordedSets" :key="idx">
-            {{entry[0]}}: {{entry[1].join(", ")}}
-          </div>
+          <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
         </div>
         <div v-if="!game.scenario">
           <GameLog :game="game" :gameLog="gameLog" />
@@ -361,5 +360,21 @@ header {
   font-family: Teutonic;
   font-size: 2em;
   text-align: center;
+}
+
+.game-over {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  p {
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.5);
+    width: 80%;
+    padding: 10px 20px;
+    color: white;
+    text-align: center;
+  }
 }
 </style>

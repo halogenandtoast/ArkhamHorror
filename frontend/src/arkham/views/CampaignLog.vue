@@ -11,6 +11,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 const store = useCardStore()
+store.fetchCards()
 const game = ref<Arkham.Game | null>(null)
 
 const cards = computed(() => store.cards)
@@ -22,6 +23,7 @@ fetchGame(props.gameId, false).then(({ game: newGame }) => {
 
 <template>
   <div>
+    <router-link :to="`/games/${game.id}`">Back</router-link>
     <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
   </div>
 </template>

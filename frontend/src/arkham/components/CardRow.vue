@@ -44,6 +44,7 @@ const props = withDefaults(defineProps<Props>(), { isDiscards: false })
   justify-content: center;
   padding: 10px;
   gap: 2px;
+  flex-wrap: wrap;
 }
 
 .card-row-card {

@@ -68,7 +68,7 @@ function elementDrag(el) {
   z-index: 1000000;
 }
 
-header {
+.draggable header {
   background: rgba(0 0 0 / 50%);
   border-bottom: 1px solid rgba(255 255 255 / 40%);
   text-transform: uppercase;

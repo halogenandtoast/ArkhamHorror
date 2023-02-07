@@ -171,6 +171,7 @@ allEvents = mapFrom
   , SomeEventCard unsolvedCase
   , SomeEventCard lodgeDebts
   , SomeEventCard darkInsight
+  , SomeEventCard imDoneRunnin
   , SomeEventCard delayTheInevitable
   , SomeEventCard denyExistence
   , SomeEventCard trialByFire

@@ -164,6 +164,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , hypnoticGaze
   , ifItBleeds
   , illSeeYouInHell
+  , imDoneRunnin
   , imOuttaHere
   , impromptuBarrier
   , improvisation
@@ -1569,6 +1570,12 @@ darkInsight = (event "05014" "Dark Insight" 2 Neutral)
       (BasicCardMatch $ CardWithOneOf [IsEncounterCard, WeaknessCard])
       AnyDeck
     ]
+  }
+
+imDoneRunnin :: CardDef
+imDoneRunnin = (event "05016" "\"I'm done runnin'!\"" 0 Neutral)
+  { cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ DuringTurn You
   }
 
 delayTheInevitable :: CardDef

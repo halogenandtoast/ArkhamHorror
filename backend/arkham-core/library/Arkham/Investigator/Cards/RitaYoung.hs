@@ -7,6 +7,7 @@ module Arkham.Investigator.Cards.RitaYoung
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Source
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
@@ -50,7 +51,7 @@ instance HasAbilities RitaYoung where
               [ LocationExists AccessibleLocation
               , EnemyCriteria
                 (EnemyExists $ EvadingEnemy <> EnemyCanBeDamagedBySource
-                  (toAbilitySource a 1)
+                  (toSource a)
                 )
               ]
             )
@@ -71,6 +72,7 @@ toEnemyId (x : xs) = case windowType x of
 instance RunMessage RitaYoung where
   runMessage msg i@(RitaYoung attrs) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+      push $ createCardEffect Cards.ritaYoung Nothing (toSource attrs) (InvestigatorTarget iid)
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> enemyId) _ ->
       do

@@ -788,6 +788,7 @@ library
       Arkham.Enemy.Cards.HasturTheTatteredKing
       Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper
       Arkham.Enemy.Cards.HermanCollins
+      Arkham.Enemy.Cards.Hoods
       Arkham.Enemy.Cards.HuntingHorror
       Arkham.Enemy.Cards.HuntingNightgaunt
       Arkham.Enemy.Cards.Ichtaca
@@ -967,6 +968,7 @@ library
       Arkham.Event.Cards.HypnoticGaze
       Arkham.Event.Cards.IfItBleeds
       Arkham.Event.Cards.IllSeeYouInHell
+      Arkham.Event.Cards.ImDoneRunnin
       Arkham.Event.Cards.ImOuttaHere
       Arkham.Event.Cards.ImpromptuBarrier
       Arkham.Event.Cards.Improvisation

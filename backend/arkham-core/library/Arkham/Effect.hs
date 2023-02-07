@@ -36,6 +36,7 @@ import Arkham.Asset.Assets
 import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect )
 import Arkham.Event.Events
   ( exposeWeakness3Effect
+  , imDoneRunninEffect
   , marksmanship1Effect
   , mindOverMatter2Effect
   , mindOverMatterEffect
@@ -209,6 +210,7 @@ allEffects = mapFromList
   , ("04325", SomeEffect ichtacaScionOfYigEffect)
   , ("04326", SomeEffect alejandroVelaEffect)
   , ("05005", SomeEffect ritaYoungElderSignEffect)
+  , ("05016", SomeEffect imDoneRunninEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

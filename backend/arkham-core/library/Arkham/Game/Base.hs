@@ -77,6 +77,7 @@ data Game = Game
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
   , gameEnemyMoving :: Maybe EnemyId
+  , gameEnemyEvading :: Maybe EnemyId
   , -- Active questions
     gameQuestion :: HashMap InvestigatorId (Question Message)
   , -- handling time warp

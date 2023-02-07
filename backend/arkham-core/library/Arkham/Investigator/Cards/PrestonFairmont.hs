@@ -7,7 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field(..))
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner

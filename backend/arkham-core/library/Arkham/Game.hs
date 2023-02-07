@@ -242,6 +242,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameQuestion = mempty
       , gameSkillTestResults = Nothing
       , gameEnemyMoving = Nothing
+      , gameEnemyEvading = Nothing
       , gameActionCanBeUndone = False
       , gameActionDiff = []
       , gameInAction = False
@@ -1795,6 +1796,8 @@ enemyMatcherFilter = \case
   IsIchtacasPrey -> remembered . IchtacasPrey . toId
   MovingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
+  EvadingEnemy ->
+    \enemy -> (== Just (toId enemy)) . view enemyEvadingL <$> getGame
   M.EnemyAt locationMatcher -> \enemy -> do
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
     case enemyLocation of

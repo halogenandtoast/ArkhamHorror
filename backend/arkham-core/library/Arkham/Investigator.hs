@@ -82,6 +82,7 @@ allInvestigators = mapFromList $ map
   , SomeInvestigatorCard joeDiamond
   , SomeInvestigatorCard prestonFairmont
   , SomeInvestigatorCard dianaStanley
+  , SomeInvestigatorCard ritaYoung
   , SomeInvestigatorCard normanWithers
   , SomeInvestigatorCard nathanielCho
   , SomeInvestigatorCard harveyWalters

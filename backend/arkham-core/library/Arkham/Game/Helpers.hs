@@ -326,7 +326,9 @@ getCanAffordUse
 getCanAffordUse iid ability window = do
   usedAbilities <-
     filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
-  case abilityLimit ability of
+  ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability)
+  let limit = if ignoreLimit then NoLimit else limit
+  case limit of
     NoLimit -> case abilityType ability of
       ReactionAbility _ _ ->
         pure $ notElem ability (map usedAbility usedAbilities)

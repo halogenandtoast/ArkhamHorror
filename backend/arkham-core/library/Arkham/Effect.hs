@@ -46,7 +46,7 @@ import Arkham.Event.Events
   , willToSurviveEffect
   , vantagePointEffect
   )
-import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect )
+import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect )
 import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect )
 
 createEffect
@@ -208,6 +208,7 @@ allEffects = mapFromList
   , ("04321", SomeEffect theYithianRelicEffect)
   , ("04325", SomeEffect ichtacaScionOfYigEffect)
   , ("04326", SomeEffect alejandroVelaEffect)
+  , ("05005", SomeEffect ritaYoungElderSignEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

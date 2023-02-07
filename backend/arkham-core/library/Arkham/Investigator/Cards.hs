@@ -85,6 +85,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , joeDiamond
   , prestonFairmont
   , dianaStanley
+  , ritaYoung
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -242,6 +243,13 @@ dianaStanley = investigator
   ("Diana Stanley" <:> "The Redeemed Cultist")
   Mystic
   [Cultist, SilverTwilight]
+
+ritaYoung :: CardDef
+ritaYoung = investigator
+  "05005"
+  ("Rita Young" <:> "The Athlete")
+  Survivor
+  [Miskatonic]
 
 normanWithers :: CardDef
 normanWithers = investigator

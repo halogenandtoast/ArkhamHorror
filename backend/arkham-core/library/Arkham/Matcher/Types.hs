@@ -204,6 +204,7 @@ data EnemyMatcher
   | UniqueEnemy
   | NotEnemy EnemyMatcher
   | MovingEnemy
+  | EvadingEnemy
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   deriving stock (Show, Eq, Generic)

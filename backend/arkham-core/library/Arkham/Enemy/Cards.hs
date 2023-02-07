@@ -86,6 +86,7 @@ allPlayerEnemyCards = mapFromList $ concatMap
   , theThingThatFollows
   , theManInThePallidMask
   , serpentsOfYig
+  , hoods
   , tommyMalloy
   ]
 
@@ -1092,6 +1093,12 @@ temporalDevourer =
     { cdCardTraits = setFromList [Monster, Extradimensional]
     , cdKeywords = singleton Keyword.Hunter
     }
+
+hoods :: CardDef
+hoods = (weakness "05017" "Hoods")
+  { cdCardTraits = setFromList [Humanoid, Cultist]
+  , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+  }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1

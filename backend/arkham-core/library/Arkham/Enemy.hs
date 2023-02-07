@@ -222,6 +222,9 @@ allEnemies = mapFrom
   , SomeEnemyCard formlessSpawn
   , SomeEnemyCard temporalDevourer
   , SomeEnemyCard flyingPolyp
+  -- The Circle Undone
+  -- signature
+  , SomeEnemyCard hoods
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

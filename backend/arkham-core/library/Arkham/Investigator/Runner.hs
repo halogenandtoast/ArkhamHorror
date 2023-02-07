@@ -647,8 +647,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     damage <- damageValueFor 1 iid
     a <$ push (EnemyDamage eid $ attack source damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
+    doNotDisengage <- hasModifier a DoNotDisengageEvaded
     push =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
-    pure $ a & engagedEnemiesL %~ deleteSet eid
+    let updateEngagedEnemies = if doNotDisengage then id else engagedEnemiesL %~ deleteSet eid
+    pure $ a & updateEngagedEnemies
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
   DefeatedAddToVictory (EnemyTarget eid) ->

@@ -207,6 +207,8 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
   | IgnoreLimit
+  | DoNotExhaustEvaded
+  | DoNotDisengageEvaded
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

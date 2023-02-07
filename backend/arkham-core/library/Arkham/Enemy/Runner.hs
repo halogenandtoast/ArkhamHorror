@@ -511,8 +511,11 @@ instance RunMessage EnemyAttrs where
             ]
       pure a
     EnemyEvaded iid eid | eid == enemyId -> do
+      modifiers <- getModifiers (InvestigatorTarget iid)
       lid <- getJustLocation iid
-      pure $ a & placementL .~ AtLocation lid & exhaustedL .~ True
+      let updatePlacement = if DoNotDisengageEvaded `elem` modifiers then id else placementL .~ AtLocation lid
+          updateExhausted = if DoNotExhaustEvaded `elem` modifiers then id else exhaustedL .~ True
+      pure $ a & updatePlacement & updateExhausted
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- modifiedEnemyEvade a
       case mEnemyEvade' of

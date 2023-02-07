@@ -2696,6 +2696,11 @@ withGameM_
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m ()
 withGameM_ f = withGameM (void . f)
 
+getEvadedEnemy :: [Window] -> Maybe EnemyId
+getEvadedEnemy [] = Nothing
+getEvadedEnemy (Window _ (Window.EnemyEvaded _ eid) : _) = Just eid
+getEvadedEnemy (_ : xs) = getEvadedEnemy xs
+
 runMessages
   :: ( MonadIO m
      , HasGameRef env
@@ -2778,6 +2783,10 @@ runMessages mLogger = do
             case msg of
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
+              CheckWindow _ (getEvadedEnemy -> Just eid) ->
+                overGame $ enemyEvadingL ?~ eid
+              RunWindow _ (getEvadedEnemy -> Just eid) ->
+                overGame $ enemyEvadingL ?~ eid
               _ -> pure ()
             runWithEnv
                 (getGame
@@ -3491,17 +3500,17 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelEachNext source msgTypes -> do
     push =<< checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
-    for_ (traceShowId msgTypes) $ \msgType -> do
+    for_ msgTypes $ \msgType -> do
       mRemovedMsg <- withQueue $ \queue ->
         let
           (before, after) = break ((== Just msgType) . messageType) queue
           (remaining, removed) = case after of
             [] -> ([], Nothing)
             (x : xs) -> (xs, Just x)
-        in (before <> remaining, traceShowId removed)
+        in (before <> remaining, removed)
 
       for mRemovedMsg $ \removedMsg -> do
-        case traceShowId removedMsg of
+        case removedMsg of
           InvestigatorDrawEnemy _ eid -> do
             pushAll [Discard (EnemyTarget eid), UnsetActiveCard]
           Revelation iid' source' -> do
@@ -4577,6 +4586,7 @@ instance RunMessage Game where
       >>= runGameMessage msg
       >>= handleActionDiff g
       <&> set enemyMovingL Nothing
+      <&> set enemyEvadingL Nothing
 
 handleActionDiff :: Game -> Game -> GameT Game
 handleActionDiff old new

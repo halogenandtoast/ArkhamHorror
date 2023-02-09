@@ -25,7 +25,7 @@ instance RunMessage BaseballBat where
       case effectSource of
         AssetSource assetId -> e <$ when
           (tokenFace token `elem` [Skull, AutoFail])
-          (pushAll [Discard (AssetTarget assetId), DisableEffect effectId])
+          (pushAll [Discard effectSource (AssetTarget assetId), DisableEffect effectId])
         _ -> error "wrong source"
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> BaseballBat <$> runMessage msg attrs

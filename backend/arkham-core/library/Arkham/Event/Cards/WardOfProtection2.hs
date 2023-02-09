@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 
 newtype WardOfProtection2 = WardOfProtection2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,6 +23,6 @@ instance RunMessage WardOfProtection2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> e <$ pushAll
       [ CancelNext (toSource attrs) RevelationMessage
       , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1
-      , Discard (EventTarget eid)
+      , discard attrs
       ]
     _ -> WardOfProtection2 <$> runMessage msg attrs

@@ -9,7 +9,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,9 +23,10 @@ instance RunMessage WorkingAHunch where
       currentLocationId <- getJustLocation iid
       locationClueCount <- field LocationClues currentLocationId
       if locationClueCount > 0
-        then e <$ pushAll
+        then pushAll
           [ InvestigatorDiscoverClues iid currentLocationId 1 Nothing
-          , Discard (EventTarget eid)
+          , discard attrs
           ]
-        else e <$ pushAll [Discard (EventTarget eid)]
+        else push $ discard attrs
+      pure e
     _ -> WorkingAHunch <$> runMessage msg attrs

@@ -21,5 +21,5 @@ instance RunMessage AceInTheHole3 where
   runMessage msg e@(AceInTheHole3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
-        [GainActions iid (toSource attrs) 3, Discard (toTarget attrs)]
+        [GainActions iid (toSource attrs) 3, discard attrs]
     _ -> AceInTheHole3 <$> runMessage msg attrs

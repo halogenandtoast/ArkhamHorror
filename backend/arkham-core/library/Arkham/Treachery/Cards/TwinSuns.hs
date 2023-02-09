@@ -24,7 +24,7 @@ instance RunMessage TwinSuns where
   runMessage msg t@(TwinSuns attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillIntellect 4
-      , Discard $ toTarget attrs
+      , Discard (toSource attrs) $ toTarget attrs
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do

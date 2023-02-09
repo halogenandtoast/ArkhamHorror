@@ -11,12 +11,15 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
+import Arkham.Ability
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype Barricade3 = Barricade3 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 barricade3 :: EventCard Barricade3
@@ -31,6 +34,14 @@ instance HasModifiersFor Barricade3 where
       else pure []
   getModifiersFor _ _ = pure []
 
+instance HasAbilities Barricade3 where
+  getAbilities (Barricade3 x) = case eventAttachedTarget x of
+    Just (LocationTarget lid) ->
+      [ mkAbility x 1 $ ForcedAbility $ Leaves Timing.When You $ LocationWithId
+          lid
+      ]
+    _ -> []
+
 instance RunMessage Barricade3 where
   runMessage msg e@(Barricade3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
@@ -39,6 +50,6 @@ instance RunMessage Barricade3 where
         (fromJustNote "must be at a location")
         iid
       e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
-    MoveFrom _ _ lid | LocationTarget lid `elem` eventAttachedTarget attrs ->
-      e <$ push (Discard (EventTarget eventId))
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
+      e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> Barricade3 <$> runMessage msg attrs

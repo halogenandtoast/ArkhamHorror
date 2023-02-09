@@ -67,5 +67,5 @@ instance RunMessage SpectralMist where
           2
         )
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> SpectralMist <$> runMessage msg attrs

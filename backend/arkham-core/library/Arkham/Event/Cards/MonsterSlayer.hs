@@ -29,6 +29,6 @@ instance RunMessage MonsterSlayer where
           (InvestigatorTarget iid)
           (DamageDealt 1)
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> MonsterSlayer <$> runMessage msg attrs

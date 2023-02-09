@@ -54,7 +54,7 @@ instance RunMessage AncientStone1 where
         shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
         pushAll
           $ [ InvestigatorDiscoverClues iid lid amount (Just Action.Investigate)
-            , Discard (toTarget attrs)
+            , Discard (toAbilitySource attrs 1) (toTarget attrs)
             ]
           <> [ RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord ]
         pure a

@@ -55,5 +55,5 @@ instance RunMessage Snakescourge where
         : [ Surge iid source | isPoisoned ]
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> Snakescourge <$> runMessage msg attrs

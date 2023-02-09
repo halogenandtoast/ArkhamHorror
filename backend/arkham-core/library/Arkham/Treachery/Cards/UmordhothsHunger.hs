@@ -21,13 +21,13 @@ umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
 
 instance RunMessage UmordhothsHunger where
   runMessage msg t@(UmordhothsHunger attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
+    Revelation _ (isSource attrs -> True) -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
         handCount <- fieldMap InvestigatorHand length iid
         pure $ if handCount == 0
-          then InvestigatorKilled source iid
-          else RandomDiscard iid
+          then InvestigatorKilled (toSource attrs) iid
+          else RandomDiscard iid (toSource attrs) AnyCard
       targets <- selectListMap EnemyTarget AnyEnemy
       pushAll (msgs <> [ HealDamage target (toSource attrs) 1 | target <- targets ])
       pure t

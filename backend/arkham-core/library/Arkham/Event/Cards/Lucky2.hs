@@ -28,7 +28,7 @@ instance RunMessage Lucky2 where
           let skillType = skillTestSkillType skillTest
           drawing <- drawCards iid attrs 1
           pushAll
-            [ Discard (EventTarget eid)
+            [ discard attrs
             , drawing
             , skillTestModifier
               (toSource attrs)

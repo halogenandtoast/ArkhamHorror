@@ -46,7 +46,7 @@ instance RunMessage IveGotAPlan where
           SkillIntellect
           mempty
           False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> IveGotAPlan <$> runMessage msg attrs

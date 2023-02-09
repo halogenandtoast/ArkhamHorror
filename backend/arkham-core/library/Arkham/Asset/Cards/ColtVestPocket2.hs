@@ -56,6 +56,6 @@ instance RunMessage ColtVestPocket2 where
         ]
       pure . ColtVestPocket2 $ attrs `with` Metadata True
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ Discard (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure a
     _ -> ColtVestPocket2 . (`with` meta) <$> runMessage msg attrs

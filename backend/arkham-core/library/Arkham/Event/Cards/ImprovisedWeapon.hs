@@ -29,7 +29,7 @@ instance RunMessage ImprovisedWeapon where
       let
         afterMsg = case zone of
           FromDiscard -> ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-          _ -> Discard (toTarget attrs)
+          _ -> discard attrs
       enemyIds <- selectList CanFightEnemy
       pushAll
         $ [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)

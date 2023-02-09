@@ -31,14 +31,14 @@ instance RunMessage Sacrifice1 where
       pushAll
         [ chooseOrRunOne
           iid
-          [ TargetLabel target [Discard target] | target <- targets ]
+          [ TargetLabel target [Discard (toSource attrs) target] | target <- targets ]
         , chooseAmounts
           iid
           "Number of cards and resources"
           (TotalAmountTarget 3)
           [("Cards", (0, 3)), ("Resources", (0, 3))]
           (toTarget attrs)
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do

@@ -350,10 +350,10 @@ instance RunMessage ActiveCost where
           push $ UseSupply iid' supply
           withPayment $ SupplyPayment supply
         DiscardCost target -> do
-          pushAll [DiscardedCost target, Discard target]
+          pushAll [DiscardedCost target, Discard (activeCostSource c) target]
           withPayment $ DiscardPayment [target]
         DiscardCardCost card -> do
-          push (DiscardCard iid (toCardId card))
+          push $ DiscardCard iid (activeCostSource c) (toCardId card)
           withPayment $ DiscardCardPayment [card]
         DiscardDrawnCardCost -> do
           let
@@ -362,7 +362,7 @@ instance RunMessage ActiveCost where
               Window _ (Window.DrawCard _ card' _) -> card'
               _ -> getDrawnCard xs
             card = getDrawnCard (activeCostWindows c)
-          push (DiscardCard iid (toCardId card))
+          push $ DiscardCard iid (activeCostSource c) (toCardId card)
           withPayment $ DiscardCardPayment [card]
         ExileCost target -> do
           push (Exile target)
@@ -642,7 +642,7 @@ instance RunMessage ActiveCost where
             InvestigatorHand
             (mapMaybe (preview _PlayerCard))
             iid
-          push $ DiscardHand iid
+          push $ DiscardHand iid (activeCostSource c)
           withPayment $ DiscardCardPayment $ map PlayerCard handCards
         DiscardFromCost x zone cardMatcher -> do
           let
@@ -687,7 +687,7 @@ instance RunMessage ActiveCost where
               (\(n, card) -> if n >= x
                 then TargetLabel
                   (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (toCardId card)
+                  [ DiscardCard iid (activeCostSource c) (toCardId card)
                   , PaidAbilityCost
                     iid
                     Nothing
@@ -695,7 +695,7 @@ instance RunMessage ActiveCost where
                   ]
                 else TargetLabel
                   (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (toCardId card)
+                  [ DiscardCard iid (activeCostSource c) (toCardId card)
                   , PaidAbilityCost
                     iid
                     Nothing
@@ -721,13 +721,13 @@ instance RunMessage ActiveCost where
               (\(n, card) -> if n >= x
                 then TargetLabel
                   (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (toCardId card)
+                  [ DiscardCard iid (activeCostSource c) (toCardId card)
                   , PaidAbilityCost iid Nothing
                     $ DiscardCardPayment [PlayerCard card]
                   ]
                 else TargetLabel
                   (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (toCardId card)
+                  [ DiscardCard iid (activeCostSource c) (toCardId card)
                   , PaidAbilityCost iid Nothing
                     $ DiscardCardPayment [PlayerCard card]
                   , PayCost acId iid skipAdditionalCosts

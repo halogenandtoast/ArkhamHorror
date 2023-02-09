@@ -40,6 +40,6 @@ instance HasAbilities Intrepid where
 instance RunMessage Intrepid where
   runMessage msg a@(Intrepid attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard $ toTarget attrs
+      push $ Discard (toAbilitySource attrs 1) $ toTarget attrs
       pure a
     _ -> Intrepid <$> runMessage msg attrs

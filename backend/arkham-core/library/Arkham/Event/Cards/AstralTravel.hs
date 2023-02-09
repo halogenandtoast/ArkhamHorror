@@ -33,7 +33,7 @@ instance RunMessage AstralTravel where
           iid
           [ targetLabel lid [MoveAction iid lid Free False] | lid <- locations ]
         , RequestTokens (toSource attrs) Nothing (Reveal 1) SetAside
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     RequestedTokens source _ tokens | isSource attrs source -> do
@@ -46,6 +46,6 @@ instance RunMessage AstralTravel where
             $ InvestigatorAssignDamage (eventOwner attrs) source DamageAny 1 0
           xs -> push $ chooseOne
             (eventOwner attrs)
-            [ targetLabel x [Discard $ AssetTarget x] | x <- xs ]
+            [ targetLabel x [Discard (toSource attrs) $ AssetTarget x] | x <- xs ]
       pure e
     _ -> AstralTravel <$> runMessage msg attrs

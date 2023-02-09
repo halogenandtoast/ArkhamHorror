@@ -44,5 +44,5 @@ instance RunMessage WhispersInYourHeadDismay where
     Revelation iid source | isSource attrs source ->
       t <$ push (AddTreacheryToHand iid $ toId attrs)
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> WhispersInYourHeadDismay <$> runMessage msg attrs

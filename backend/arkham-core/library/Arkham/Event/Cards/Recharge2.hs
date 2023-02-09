@@ -46,7 +46,7 @@ instance RunMessage Recharge2 where
     ResolveEvent iid eid (Just (AssetTarget aid)) _ | eid == toId attrs -> do
       pushAll
         [ RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure $ Recharge2 $ attrs `with` Meta (Just aid)
     RequestedTokens source _ tokens | isSource attrs source ->
@@ -58,7 +58,7 @@ instance RunMessage Recharge2 where
               . tokenFace
               )
               tokens
-            then push (Discard $ AssetTarget aid)
+            then push (Discard (toSource attrs) $ AssetTarget aid)
             else push (AddUses aid Charge 3)
           pure e
     _ -> Recharge2 . (`with` meta) <$> runMessage msg attrs

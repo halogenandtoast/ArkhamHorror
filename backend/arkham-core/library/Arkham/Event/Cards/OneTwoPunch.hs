@@ -41,7 +41,7 @@ instance RunMessage OneTwoPunch where
           (InvestigatorTarget iid)
           (SkillModifier SkillCombat 1)
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

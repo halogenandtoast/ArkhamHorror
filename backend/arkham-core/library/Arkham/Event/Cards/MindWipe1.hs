@@ -26,7 +26,7 @@ instance RunMessage MindWipe1 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
       if null enemyIds
-        then push (Discard (EventTarget eventId))
+        then push (discard attrs)
         else pushAll
           [ chooseOne
             iid
@@ -40,7 +40,7 @@ instance RunMessage MindWipe1 where
                 ]
             | eid' <- enemyIds
             ]
-          , Discard (EventTarget eid)
+          , discard attrs
           ]
       pure e
     _ -> MindWipe1 <$> runMessage msg attrs

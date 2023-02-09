@@ -48,11 +48,11 @@ instance RunMessage ActAttrs where
       pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) F)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
-    Discard (ActTarget aid) | aid == toId a -> do
+    Discard _ (ActTarget aid) | aid == toId a -> do
       pushAll
-        [ Discard (TreacheryTarget tid) | tid <- setToList actTreacheries ]
+        [ Discard GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries ]
       pure a
-    Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- select UneliminatedInvestigator
       whenMsg <- checkWindows

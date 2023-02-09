@@ -14,6 +14,7 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier ( ModifierType (..) )
 import Arkham.Name
 import Arkham.Phase
@@ -1585,12 +1586,24 @@ delayTheInevitable = (event "05021" "Delay the Inevitable" 2 Guardian)
   , cdFastWindow = Just $ DuringTurn You
   }
 
+-- Play when an encounter card or an enemy attack would cause you to do one of
+-- the following (choose one): Discard cards from hand, lose resources, lose
+-- actions, take damage, or take horror.
+--
 denyExistence :: CardDef
 denyExistence = (event "05032" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Paradox]
-  , cdFastWindow = Nothing -- TODO: big window
+  , cdFastWindow = Just $ OrWindowMatcher
+    -- [ DiscardedCardsFromHand You source
+    -- , LostResources You source
+    -- , LostActions You source
+    [ DealtDamage Timing.When source You
+    , DealtHorror Timing.When source You
+    ]
   }
+ where
+  source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
 
 trialByFire :: CardDef
 trialByFire = (event "05281" "Trial By Fire" 3 Survivor)

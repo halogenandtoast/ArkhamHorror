@@ -35,6 +35,6 @@ instance RunMessage DiscOfItzamna2 where
       a <$ case menemySpawnMessage of
         Just msg'@(EnemySpawn _ _ eid) -> replaceMessage
           msg'
-          [Discard (toTarget attrs), Discard (EnemyTarget eid)]
+          [Discard (toAbilitySource attrs 1) (toTarget attrs), Discard (toAbilitySource attrs 1) (EnemyTarget eid)]
         _ -> pure ()
     _ -> DiscOfItzamna2 <$> runMessage msg attrs

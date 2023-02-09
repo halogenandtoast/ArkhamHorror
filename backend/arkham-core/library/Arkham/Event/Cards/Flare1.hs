@@ -62,5 +62,5 @@ instance RunMessage Flare1 where
           ]
     SearchFound iid target _ [card] | isTarget e target -> e <$ pushAll
       [PutCardIntoPlay iid card Nothing (defaultWindows iid), Exile target]
-    SearchNoneFound _ target | isTarget e target -> e <$ push (Discard target)
+    SearchNoneFound _ target | isTarget e target -> e <$ push (Discard (toSource attrs) target)
     _ -> Flare1 <$> runMessage msg attrs

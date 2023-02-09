@@ -39,6 +39,7 @@ instance RunMessage Hypochondria where
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (InvestigatorDirectDamage iid source 0 1)
-    UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+      pure t
     _ -> Hypochondria <$> runMessage msg attrs

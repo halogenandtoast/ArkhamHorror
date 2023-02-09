@@ -45,6 +45,6 @@ instance RunMessage ChildrenOfValusia where
       push $ PlaceTreachery (toId attrs) TreacheryNextToAct
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> ChildrenOfValusia <$> runMessage msg attrs

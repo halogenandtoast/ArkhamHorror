@@ -14,6 +14,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
+import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
@@ -32,13 +33,13 @@ getSkillTestModifiedSkillValue st@SkillTest {..} = do
   iconCount <- skillIconCount st
   pure $ max 0 (statsSkillValue stats skillTestSkillType + iconCount)
 
-doDiscard :: InvestigatorId -> GameT ()
-doDiscard iid = do
+doDiscard :: InvestigatorId -> Source -> GameT ()
+doDiscard iid source = do
   st <- fromJustNote "missing skill test" <$> getSkillTest
   n <- getSkillTestModifiedSkillValue st
   handCount <- fieldMap InvestigatorHand length iid
   let discardCount = max 0 (handCount - n)
-  pushAll $ replicate discardCount $ ChooseAndDiscardCard iid
+  pushAll $ replicate discardCount $ ChooseAndDiscardCard iid source
 
 instance RunMessage CaptiveMind where
   runMessage msg t@(CaptiveMind attrs) = case msg of
@@ -47,10 +48,10 @@ instance RunMessage CaptiveMind where
       pure t
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        doDiscard iid
+        doDiscard iid (toSource attrs)
         pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        doDiscard iid
+        doDiscard iid (toSource attrs)
         pure t
     _ -> CaptiveMind <$> runMessage msg attrs

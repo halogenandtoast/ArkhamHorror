@@ -226,9 +226,9 @@ instance RunMessage TheEssexCountyExpress where
         s <$ case tokenFace token of
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-          ElderThing | isEasyStandard attrs -> push $ ChooseAndDiscardCard iid
+          ElderThing | isEasyStandard attrs -> push $ ChooseAndDiscardCard iid (TokenEffectSource ElderThing)
           ElderThing | isHardExpert attrs ->
-            pushAll $ replicate n (ChooseAndDiscardCard iid)
+            pushAll $ replicate n (ChooseAndDiscardCard iid (TokenEffectSource ElderThing))
           _ -> pure ()
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]

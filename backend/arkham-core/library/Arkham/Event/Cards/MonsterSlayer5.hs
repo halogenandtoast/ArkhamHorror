@@ -29,7 +29,7 @@ instance RunMessage MonsterSlayer5 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ _
       | isSource attrs source

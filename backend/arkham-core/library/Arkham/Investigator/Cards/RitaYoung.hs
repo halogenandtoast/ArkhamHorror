@@ -7,7 +7,6 @@ module Arkham.Investigator.Cards.RitaYoung
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Source
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
@@ -19,6 +18,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyEvaded )
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -51,7 +51,7 @@ instance HasAbilities RitaYoung where
               [ LocationExists AccessibleLocation
               , EnemyCriteria
                 (EnemyExists $ EvadingEnemy <> EnemyCanBeDamagedBySource
-                  (toSource a)
+                  (toAbilitySource a 1)
                 )
               ]
             )
@@ -76,11 +76,7 @@ instance RunMessage RitaYoung where
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> enemyId) _ ->
       do
-        canDamage <-
-          enemyId
-            <=~> (EvadingEnemy
-                 <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
-                 )
+        canDamage <- enemyId <=~> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
         connectingLocations <- selectList AccessibleLocation
         push
           $ chooseOrRunOne iid
@@ -115,7 +111,7 @@ ritaYoungElderSignEffect = cardEffect RitaYoungElderSignEffect Cards.ritaYoung
 
 instance HasModifiersFor RitaYoungElderSignEffect where
   getModifiersFor (AbilityTarget iid ab) (RitaYoungElderSignEffect a)
-    | abilityIndex ab == 1 && InvestigatorTarget iid == effectTarget a = do
+    | abilityIndex ab == 1 && abilitySource ab == InvestigatorSource iid && InvestigatorTarget iid == effectTarget a = do
       pure $ toModifiers a [IgnoreLimit]
   getModifiersFor _ _ = pure []
 

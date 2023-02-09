@@ -25,7 +25,7 @@ instance RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard $ toTarget attrs
+      , Discard (toSource attrs) (toTarget attrs)
       ]
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t

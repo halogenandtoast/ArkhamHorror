@@ -49,5 +49,5 @@ instance RunMessage Lure1 where
       push $ PlaceEvent iid eid $ AttachedToLocation lid
       pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (Discard (toTarget attrs))
+      e <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))
     _ -> Lure1 <$> runMessage msg attrs

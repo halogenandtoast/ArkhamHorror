@@ -43,7 +43,7 @@ instance RunMessage NoStoneUnturned5 where
               ]
           | iid' <- iids
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> NoStoneUnturned5 <$> runMessage msg attrs

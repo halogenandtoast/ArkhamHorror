@@ -35,7 +35,7 @@ getStep (Just agenda) = do
 instance RunMessage CrashingFloods where
   runMessage msg t@(CrashingFloods attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
-      [RevelationSkillTest iid source SkillAgility 3, Discard $ toTarget attrs]
+      [RevelationSkillTest iid source SkillAgility 3, Discard (toSource attrs) $ toTarget attrs]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         n <- getStep =<< selectOne (AgendaWithSide AS.A)

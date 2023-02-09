@@ -46,6 +46,6 @@ instance RunMessage Premonition where
         <> [ ReplaceCurrentDraw (toSource attrs) iid
                $ Choose 1 [Resolved ts] []
            ]
-        <> [ Discard (toTarget attrs) ]
+        <> [ discard attrs ]
       pure e
     _ -> Premonition <$> runMessage msg attrs

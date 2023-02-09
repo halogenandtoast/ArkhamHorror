@@ -20,5 +20,5 @@ instance RunMessage Amnesia where
   runMessage msg t@(Amnesia attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cardCount' <- fieldMap InvestigatorHand length iid
-      t <$ pushAll (replicate (cardCount' - 1) (ChooseAndDiscardCard iid))
+      t <$ pushAll (replicate (cardCount' - 1) (ChooseAndDiscardCard iid (toSource attrs)))
     _ -> Amnesia <$> runMessage msg attrs

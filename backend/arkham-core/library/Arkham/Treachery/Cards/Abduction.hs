@@ -38,7 +38,7 @@ instance RunMessage Abduction where
               "Discard an Ally asset you control"
               [ chooseOne
                   iid
-                  [ TargetLabel target [Discard target] | target <- targets ]
+                  [ TargetLabel target [Discard (toSource attrs) target] | target <- targets ]
               ]
             ]
         pure t

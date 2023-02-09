@@ -141,13 +141,18 @@ runInvestigatorMessage
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EndCheckWindow -> do
     depth <- getWindowDepth
-    pure $ a & usedAbilitiesL %~ filter
-      (\UsedAbility {..} -> case abilityLimit usedAbility of
-        NoLimit -> False
-        PlayerLimit PerWindow _ -> depth > usedDepth
-        GroupLimit PerWindow _ -> depth > usedDepth
-        _ -> True
-      )
+    let
+      filterAbility UsedAbility {..} = do
+        limit <- getAbilityLimit (toId a) usedAbility
+        pure $ case limit of
+          NoLimit -> False
+          PlayerLimit PerWindow _ -> depth > usedDepth
+          GroupLimit PerWindow _ -> depth > usedDepth
+          _ -> True
+
+    usedAbilities' <- filterM filterAbility investigatorUsedAbilities
+        
+    pure $ a & usedAbilitiesL .~ usedAbilities'
   ResetGame ->
     pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
       { investigatorXp = investigatorXp
@@ -275,7 +280,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
         : [ TargetLabel
               (CardIdTarget $ toCardId card)
-              [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
+              [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
           ]
     pure a
@@ -297,13 +302,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     )
   SetRole iid role | iid == investigatorId -> do
     pure $ a { investigatorClass = role }
-  AllRandomDiscard | not (a ^. defeatedL || a ^. resignedL) ->
-    a <$ push (RandomDiscard investigatorId)
-  RandomDiscard iid | iid == investigatorId -> do
-    n <- getRandomR (0, length investigatorHand - 1)
-    case investigatorHand !!? n of
-      Nothing -> pure a
-      Just c -> a <$ push (DiscardCard investigatorId (toCardId c))
+  AllRandomDiscard source matcher | not (a ^. defeatedL || a ^. resignedL) -> do
+    push $ RandomDiscard investigatorId source matcher
+    pure a
+  RandomDiscard iid source matcher | iid == investigatorId -> do
+    let filtered = filter (`cardMatch` matcher) investigatorHand
+    for_ (nonEmpty filtered) $ \targets -> do
+      c <- sample targets
+      push $ DiscardCard investigatorId source (toCardId c)
+    pure a
   FinishedWithMulligan iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     let
@@ -414,11 +421,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
-  ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
+  ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
       (assetMatcher <> DiscardableAsset <> AssetControlledBy You)
     push $ chooseOrRunOne iid $ map
-      (\aid -> targetLabel aid [Discard $ AssetTarget aid])
+      (\aid -> targetLabel aid [Discard source $ AssetTarget aid])
       discardableAssetIds
     pure a
   AttachAsset aid _ | aid `member` investigatorAssets ->
@@ -460,13 +467,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       iid
       [ TargetLabel
           (CardIdTarget $ toCardId card)
-          [DiscardCard iid (toCardId card), CheckHandSize iid]
+          [DiscardCard iid GameSource (toCardId card), CheckHandSize iid]
       | card <- filter (isNothing . cdCardSubType . toCardDef)
         $ mapMaybe (preview _PlayerCard) investigatorHand
       ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
-  ChooseAndDiscardCard iid | iid == investigatorId -> do
+  ChooseAndDiscardCard iid source | iid == investigatorId -> do
     case discardableCards a of
       [] -> pure ()
       cs ->
@@ -474,16 +481,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ chooseOne iid
           $ [ TargetLabel
                 (CardIdTarget $ toCardId c)
-                [DiscardCard iid (toCardId c)]
+                [DiscardCard iid source (toCardId c)]
             | c <- cs
             ]
     pure a
-  Discard (CardIdTarget cardId)
+  Discard source (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
-    <$ push (DiscardCard investigatorId cardId)
-  DiscardHand iid | iid == investigatorId ->
-    a <$ pushAll (map (DiscardCard iid . toCardId) investigatorHand)
-  DiscardCard iid cardId | iid == investigatorId -> do
+    <$ push (DiscardCard investigatorId source cardId)
+  DiscardHand iid source | iid == investigatorId -> do
+    pushAll $ map (DiscardCard iid source . toCardId) investigatorHand
+    pure a
+  DiscardCard iid _source cardId | iid == investigatorId -> do
     let
       card = fromJustNote "must be in hand"
         $ find ((== cardId) . toCardId) investigatorHand
@@ -520,8 +528,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       deck' <- shuffleM (card : unDeck investigatorDeck)
       push $ After msg
       pure $ a & (deckL .~ Deck deck')
-  Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-  Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
+  Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+  Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
   Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
@@ -1370,7 +1378,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               iid
               [ targetLabel
                   aid'
-                  [Discard (AssetTarget aid'), InvestigatorPlayAsset iid aid]
+                  [Discard GameSource (AssetTarget aid'), InvestigatorPlayAsset iid aid]
               | aid' <- assetsThatCanProvideSlots
               ]
     pure a
@@ -1606,7 +1614,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           [ targetLabel
               aid'
-              [ Discard (AssetTarget aid')
+              [ Discard GameSource (AssetTarget aid')
               , RefillSlots iid slotType (filter (/= aid') assetIds)
               ]
           | aid' <- assetIds

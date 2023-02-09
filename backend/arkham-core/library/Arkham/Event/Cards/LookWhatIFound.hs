@@ -7,7 +7,6 @@ import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Message
-import Arkham.Target
 
 newtype LookWhatIFound = LookWhatIFound EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,6 +22,6 @@ instance RunMessage LookWhatIFound where
       e
         <$ pushAll
              [ InvestigatorDiscoverClues iid lid 2 Nothing
-             , Discard (EventTarget eid)
+             , discard attrs
              ]
     _ -> LookWhatIFound <$> runMessage msg attrs

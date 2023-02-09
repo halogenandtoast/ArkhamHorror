@@ -26,6 +26,6 @@ instance RunMessage DaringManeuver where
         (toSource attrs)
         (InvestigatorTarget iid)
         (AnySkillValue 2)
-      , Discard (toTarget attrs)
+      , discard attrs
       ]
     _ -> DaringManeuver <$> runMessage msg attrs

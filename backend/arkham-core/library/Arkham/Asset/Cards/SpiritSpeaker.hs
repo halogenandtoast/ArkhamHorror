@@ -49,7 +49,7 @@ instance RunMessage SpiritSpeaker where
                         "Move all charges to your resource pool"
                         [ SpendUses target Charge n
                         , TakeResources iid n (toAbilitySource attrs 1) False
-                        , Discard target
+                        , Discard (toAbilitySource attrs 1) target
                         ]
                     | aid `elem` discardableAssetIds
                     ]

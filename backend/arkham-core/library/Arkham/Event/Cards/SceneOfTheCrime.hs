@@ -30,6 +30,6 @@ instance RunMessage SceneOfTheCrime where
       let clueCount = min availableClues (if hasEnemies then 2 else 1)
       e <$ pushAll
         [ InvestigatorDiscoverClues iid location clueCount Nothing
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> SceneOfTheCrime <$> runMessage msg attrs

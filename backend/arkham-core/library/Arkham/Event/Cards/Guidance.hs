@@ -31,7 +31,7 @@ instance RunMessage Guidance where
               [GainActions investigator (toSource attrs) 1]
           | investigator <- investigators
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> Guidance <$> runMessage msg attrs

@@ -28,6 +28,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Story
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -221,7 +222,7 @@ instance RunMessage TheCityOfArchives where
           push $ InvestigatorPlaceCluesOnLocation iid 1
         Tablet -> do
           let discardCount = if isEasyStandard attrs then 1 else n
-          pushAll $ replicate discardCount $ RandomDiscard iid
+          pushAll $ replicate discardCount $ RandomDiscard iid (TokenEffectSource Tablet) AnyCard
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

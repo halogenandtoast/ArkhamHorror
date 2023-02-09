@@ -41,5 +41,5 @@ instance RunMessage SelfDestructive where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> SelfDestructive <$> runMessage msg attrs

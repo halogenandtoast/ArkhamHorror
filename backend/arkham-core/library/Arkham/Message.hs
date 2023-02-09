@@ -38,7 +38,6 @@ import Arkham.Exception
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
-import Arkham.Location.Base
 import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
 import Arkham.Name
 import Arkham.Phase
@@ -126,7 +125,7 @@ data Message
   | -- Story Card Messages
     ReadStory InvestigatorId CardDef
   | ResolveStory InvestigatorId CardDef
-  | Do Message
+  | ResolveStoryStep InvestigatorId CardDef Int
   | -- Handle discard costs
     DiscardedCost Target
   | -- Act Deck Messages
@@ -207,7 +206,7 @@ data Message
   | AllDrawCardAndResource
   | AllDrawEncounterCard
   | AllInvestigatorsResigned
-  | AllRandomDiscard
+  | AllRandomDiscard Source CardMatcher
   | AssetDamage AssetId Source Int Int
   | AssetDefeated AssetId
   | -- Attach
@@ -238,8 +237,8 @@ data Message
   | CheckWindow [InvestigatorId] [Window]
   | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
   | RunWindow InvestigatorId [Window]
-  | ChooseAndDiscardAsset InvestigatorId AssetMatcher
-  | ChooseAndDiscardCard InvestigatorId
+  | ChooseAndDiscardAsset InvestigatorId Source AssetMatcher
+  | ChooseAndDiscardCard InvestigatorId Source
   | ChooseEndTurn InvestigatorId
   | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
   | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
@@ -281,9 +280,9 @@ data Message
   | Damage Target Source Int
   | DeckHasNoCards InvestigatorId (Maybe Target)
   | DisableEffect EffectId
-  | Discard Target
-  | DiscardCard InvestigatorId CardId
-  | DiscardHand InvestigatorId
+  | Discard Source Target
+  | DiscardCard InvestigatorId Source CardId
+  | DiscardHand InvestigatorId Source
   | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
   | DiscardUntilFirst InvestigatorId Source CardMatcher
   | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
@@ -488,7 +487,7 @@ data Message
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
-  | RandomDiscard InvestigatorId
+  | RandomDiscard InvestigatorId Source CardMatcher
   | Ready Target
   | ReadyAlternative Source Target
   | ReadyExhausted
@@ -660,8 +659,8 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
-  | -- Fields
-    UpdateLocation LocationAttrs LocationId
+  | -- Commit
+    Do Message
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)

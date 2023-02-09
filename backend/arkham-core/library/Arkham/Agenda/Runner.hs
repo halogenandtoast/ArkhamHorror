@@ -13,6 +13,7 @@ import Arkham.Helpers.Message as X
 import Arkham.Classes
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -29,10 +30,10 @@ instance RunMessage AgendaAttrs
       pure $ a & doomL +~ n
     RemoveDoom (AgendaTarget aid) n | aid == agendaId ->
       pure $ a & doomL %~ max 0 . subtract n
-    Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-    Discard (AgendaTarget aid) | aid == toId a -> do
+    Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    Discard _ (AgendaTarget aid) | aid == toId a -> do
       pushAll
-        [ Discard (TreacheryTarget tid) | tid <- setToList agendaTreacheries ]
+        [ Discard GameSource (TreacheryTarget tid) | tid <- setToList agendaTreacheries ]
       pure a
     AttachTreachery tid (AgendaTarget aid) | aid == agendaId ->
       pure $ a & treacheriesL %~ insertSet tid

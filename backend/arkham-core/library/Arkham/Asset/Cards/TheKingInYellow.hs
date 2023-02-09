@@ -57,8 +57,10 @@ instance HasModifiersFor TheKingInYellow where
 
 instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing $ defaultWindows iid)
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (Discard $ toTarget attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure a
     _ -> TheKingInYellow <$> runMessage msg attrs

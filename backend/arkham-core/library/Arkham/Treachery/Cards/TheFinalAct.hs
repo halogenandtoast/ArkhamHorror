@@ -30,8 +30,8 @@ instance RunMessage TheFinalAct where
         then
           [ PlaceDoom (AgendaTarget agenda) 2
           , AdvanceAgendaIfThresholdSatisfied
-          , Discard $ toTarget attrs
+          , Discard (toSource attrs) $ toTarget attrs
           ]
-        else [Discard $ toTarget attrs]
+        else [Discard (toSource attrs) $ toTarget attrs]
       pure t
     _ -> TheFinalAct <$> runMessage msg attrs

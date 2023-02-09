@@ -39,7 +39,7 @@ instance RunMessage MoonlightRitual where
         <> [ targetLabel aid [RemoveDoom (AssetTarget aid) assetDoomCount]
            | (aid, assetDoomCount) <- assets
            ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> MoonlightRitual <$> runMessage msg attrs

@@ -58,6 +58,6 @@ instance RunMessage PsychopompsSong where
                   []
                   []
               _ -> error "impossible"
-          t <$ replaceMessage damageMsg [newMsg, Discard (toTarget attrs)]
+          t <$ replaceMessage damageMsg [newMsg, Discard (toAbilitySource attrs 1) (toTarget attrs)]
         Nothing -> throwIO $ InvalidState "No damage occured"
     _ -> PsychopompsSong <$> runMessage msg attrs

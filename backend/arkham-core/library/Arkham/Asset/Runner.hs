@@ -20,6 +20,7 @@ import Arkham.Matcher ( AssetMatcher (AnyAsset) )
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -79,7 +80,7 @@ instance RunMessage AssetAttrs where
           <> resolve (AssetDefeated assetId)
           <> [afterWindow]
       pure a
-    AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
+    AssetDefeated aid | aid == assetId -> a <$ push (Discard GameSource $ toTarget a)
     Msg.AssetDamage aid _ damage horror | aid == assetId -> do
       pushAll
         $ [ PlaceDamage (toTarget a) damage | damage > 0 ]
@@ -117,7 +118,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
-      when shouldDiscard $ push $ Discard (AssetTarget assetId)
+      when shouldDiscard $ push $ Discard GameSource (AssetTarget assetId)
       pure a
     AddUses aid useType' n | aid == assetId -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
@@ -128,7 +129,7 @@ instance RunMessage AssetAttrs where
         let remainingUses = max 0 (m - n)
         when
           (assetDiscardWhenNoUses && remainingUses == 0)
-          (push $ Discard $ toTarget a)
+          (push $ Discard GameSource $ toTarget a)
         pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
@@ -137,7 +138,7 @@ instance RunMessage AssetAttrs where
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemoveFromPlay $ toSource a)
-    Discard target | a `isTarget` target -> do
+    Discard _ target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       a <$ pushAll
         (windows'

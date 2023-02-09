@@ -28,6 +28,6 @@ instance RunMessage FightOrFlight where
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> FightOrFlight <$> runMessage msg attrs

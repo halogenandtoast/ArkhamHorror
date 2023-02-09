@@ -37,7 +37,7 @@ instance RunMessage CoupDeGrace where
             | enemy <- enemies
             ]
         : [ ChooseEndTurn iid | isTurn ]
-        <> [Discard (toTarget attrs)]
+        <> [discard attrs]
       pure e
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       drawing <- drawCards (eventController attrs) attrs 1

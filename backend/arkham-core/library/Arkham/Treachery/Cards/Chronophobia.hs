@@ -39,5 +39,5 @@ instance RunMessage Chronophobia where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (InvestigatorDirectDamage iid source 0 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> Chronophobia <$> runMessage msg attrs

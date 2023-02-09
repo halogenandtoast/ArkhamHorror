@@ -29,10 +29,10 @@ instance RunMessage AlterFate3 where
       pushAll
         [ chooseOne
           iid
-          [ targetLabel treachery [Discard (TreacheryTarget treachery)]
+          [ targetLabel treachery [Discard (toSource attrs) (TreacheryTarget treachery)]
           | treachery <- treacheries
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> AlterFate3 <$> runMessage msg attrs

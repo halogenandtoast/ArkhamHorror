@@ -59,5 +59,5 @@ instance RunMessage LockedDoor where
           SkillLabel sType [BeginSkillTest iid source target Nothing sType 4]
       t <$ push (chooseOne iid $ map beginSkillTest [SkillCombat, SkillAgility])
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> t <$ push (Discard (toSource attrs) $ toTarget attrs)
     _ -> LockedDoor <$> runMessage msg attrs

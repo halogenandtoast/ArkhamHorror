@@ -22,10 +22,9 @@ thinkOnYourFeet = event ThinkOnYourFeet Cards.thinkOnYourFeet
 instance RunMessage ThinkOnYourFeet where
   runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      let discard = Discard (toTarget attrs)
       connectedLocationIds <- selectList AccessibleLocation
       if null connectedLocationIds
-         then push discard
+         then push $ discard attrs
          else pushAll
           [ chooseOne
             iid
@@ -34,7 +33,7 @@ instance RunMessage ThinkOnYourFeet where
                 [Move (toSource attrs) iid lid']
             | lid' <- connectedLocationIds
             ]
-          , discard
+          , discard attrs
           ]
       pure e
     _ -> ThinkOnYourFeet <$> runMessage msg attrs

@@ -55,10 +55,10 @@ instance RunMessage Corrosion where
       let
         discardAsset (asset, cost) = targetLabel
           asset
-          [Discard (AssetTarget asset), RevelationChoice iid source (n - cost)]
+          [Discard (toSource attrs) (AssetTarget asset), RevelationChoice iid source (n - cost)]
         discardHandAsset card = TargetLabel
           (CardIdTarget $ toCardId card)
-          [ Discard (CardIdTarget $ toCardId card)
+          [ Discard (toSource attrs) (CardIdTarget $ toCardId card)
           , RevelationChoice
             iid
             source

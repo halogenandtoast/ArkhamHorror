@@ -65,7 +65,7 @@ instance RunMessage ConspiracyOfBlood where
         pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ Discard (toTarget attrs)
+        push $ Discard (toSource attrs) (toTarget attrs)
         pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do

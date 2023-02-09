@@ -11,6 +11,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
+import Arkham.Matcher (CardMatcher(..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
@@ -59,7 +60,7 @@ instance RunMessage ReturnToTheDevourerBelow where
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
           pastMidnightMessages =
-            if pastMidnight then [AllRandomDiscard, AllRandomDiscard] else []
+            if pastMidnight then [AllRandomDiscard (toSource attrs) AnyCard, AllRandomDiscard (toSource attrs) AnyCard] else []
           cultistsWhoGotAwayMessages = replicate
             ((length cultistsWhoGotAway + 1) `div` 2)
             PlaceDoomOnAgenda

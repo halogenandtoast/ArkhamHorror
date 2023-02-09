@@ -65,10 +65,10 @@ instance RunMessage CreepingDarkness where
                 SkillWillpower
                 3
             ]
-        : [ Label "Check supplies" [Discard (toTarget attrs)] | hasTorches ]
+        : [ Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches ]
       pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ Discard (toTarget attrs)
+        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
         pure t
     _ -> CreepingDarkness <$> runMessage msg attrs

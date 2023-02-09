@@ -57,5 +57,5 @@ instance RunMessage HidingSpot where
         ]
       pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      e <$ push (Discard $ toTarget attrs)
+      e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> HidingSpot <$> runMessage msg attrs

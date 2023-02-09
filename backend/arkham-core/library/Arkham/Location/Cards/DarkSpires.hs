@@ -41,7 +41,7 @@ instance RunMessage DarkSpires where
         iid
         [ Label
           "You cannot bring yourseld to do what must be done."
-          [UpdateLocation (attrs & canBeFlippedL .~ True) (toId attrs)]
+          [ResolveStoryStep iid story' 1]
         , Label
           "Realizing what you must do, you step forward and push her."
           [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
@@ -49,4 +49,6 @@ instance RunMessage DarkSpires where
           ]
         ]
       pure l
+    ResolveStoryStep _ story' 1 | story' == Story.stepsOfThePalace -> do
+      pure . DarkSpires $ attrs & canBeFlippedL .~ True
     _ -> DarkSpires <$> runMessage msg attrs

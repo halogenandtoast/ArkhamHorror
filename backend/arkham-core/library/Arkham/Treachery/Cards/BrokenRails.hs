@@ -29,7 +29,7 @@ instance RunMessage BrokenRails where
         investigatorIds
       pushAll
         $ [ LoseActions iid' source 1 | iid' <- investigatorIds ]
-        <> [ ChooseAndDiscardAsset iid' AnyAsset
+        <> [ ChooseAndDiscardAsset iid' (toSource attrs) AnyAsset
            | iid' <- investigatorsWhoMustDiscard
            ]
       pure t

@@ -73,7 +73,7 @@ instance RunMessage TheDevourerBelow where
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         pastMidnightMessages =
-          if pastMidnight then [AllRandomDiscard, AllRandomDiscard] else []
+          if pastMidnight then [AllRandomDiscard (toSource attrs) AnyCard, AllRandomDiscard (toSource attrs) AnyCard] else []
         cultistsWhoGotAwayMessages =
           replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
 

@@ -46,7 +46,7 @@ instance RunMessage CheatDeath5 where
 
       pushAll
         $ map (DisengageEnemy iid) enemies
-        <> map (Discard . TreacheryTarget) treacheries
+        <> map (Discard (toSource attrs) . TreacheryTarget) treacheries
         <> maybeToList mHealHorror
         <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
         <> [ chooseOrRunOne iid $ map

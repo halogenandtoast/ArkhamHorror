@@ -43,5 +43,5 @@ instance RunMessage OozeAndFilth where
         ]
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> OozeAndFilth <$> runMessage msg attrs

@@ -36,7 +36,7 @@ instance RunMessage CorpseDweller where
         (LocationWithId lid)
       push $ chooseOrRunOne
         iid
-        [ targetLabel humanoid [Discard (EnemyTarget humanoid)]
+        [ targetLabel humanoid [Discard (toSource attrs) (EnemyTarget humanoid)]
         | humanoid <- humanoids
         ]
       CorpseDweller <$> runMessage msg attrs

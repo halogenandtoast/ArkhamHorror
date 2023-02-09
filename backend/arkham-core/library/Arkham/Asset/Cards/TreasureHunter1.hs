@@ -41,7 +41,7 @@ instance RunMessage TreasureHunter1 where
       (chooseOne
         iid
         [ Label "Pay 1 Resource to Treasure Hunter" [SpendResources iid 1]
-        , Label "Discard Treasure Hunter" [Discard $ toTarget attrs]
+        , Label "Discard Treasure Hunter" [Discard (toAbilitySource attrs 1) $ toTarget attrs]
         ]
       )
     _ -> TreasureHunter1 <$> runMessage msg attrs

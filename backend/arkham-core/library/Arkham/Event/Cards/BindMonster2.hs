@@ -47,7 +47,7 @@ instance RunMessage BindMonster2 where
         False
       ]
     SkillTestEnds _ _ ->
-      e <$ when (isNothing $ eventAttachedTarget attrs) (push (Discard $ toTarget attrs))
+      e <$ when (isNothing $ eventAttachedTarget attrs) (push (discard attrs))
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       case eventAttachedTarget attrs of
         Just target ->
@@ -59,5 +59,5 @@ instance RunMessage BindMonster2 where
           e <$ withQueue_ (filter (/= Ready target))
         _ -> error "invalid target"
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> e <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> e <$ push (discard attrs)
     _ -> BindMonster2 <$> runMessage msg attrs

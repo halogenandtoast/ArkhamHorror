@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype CrypticResearch4 = CrypticResearch4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,7 +23,7 @@ instance RunMessage CrypticResearch4 where
       pushAll
         [ chooseOne iid
           $ [ targetLabel iid' [drawing] | (iid', drawing) <- investigators ]
-        , Discard (EventTarget eid)
+        , discard attrs
         ]
       pure e
     _ -> CrypticResearch4 <$> runMessage msg attrs

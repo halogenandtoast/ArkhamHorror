@@ -40,6 +40,6 @@ instance RunMessage IfItBleeds where
           horrorValue
           (colocatedWith iid)
         pure $ targetLabel enemyId healMessages
-      pushAll [chooseOne iid choices, Discard $ toTarget attrs]
+      pushAll [chooseOne iid choices, discard attrs]
       pure e
     _ -> IfItBleeds <$> runMessage msg attrs

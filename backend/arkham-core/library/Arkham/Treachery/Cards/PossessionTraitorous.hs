@@ -40,6 +40,6 @@ instance RunMessage PossessionTraitorous where
       Nothing -> pure t
     InvestigatorCommittedCard _ card | toCardId card == unTreacheryId (toId attrs) ->
       do
-        pushAll [Discard (toTarget attrs), FailSkillTest]
+        pushAll [Discard (toSource attrs) (toTarget attrs), FailSkillTest]
         pure t
     _ -> PossessionTraitorous <$> runMessage msg attrs

@@ -125,7 +125,7 @@ instance RunMessage EnemyAttrs where
       locations' <- select Anywhere
       keywords <- getModifiedKeywords a
       if lid `notElem` locations'
-        then a <$ push (Discard (EnemyTarget eid))
+        then push (Discard GameSource (EnemyTarget eid))
         else do
           if Keyword.Aloof
             `notElem` keywords
@@ -172,7 +172,7 @@ instance RunMessage EnemyAttrs where
               pushAll
                 $ EnemyEntered eid lid
                 : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
-          pure a
+      pure a
     EnemySpawnedAt lid eid | eid == enemyId -> do
       a <$ push (EnemyEntered eid lid)
     EnemyEntered eid lid | eid == enemyId -> do
@@ -774,7 +774,7 @@ instance RunMessage EnemyAttrs where
           [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance) ]
         defeatMsgs = if isJust (victory <|> vengeance)
           then resolve $ RemoveEnemy eid
-          else [Discard $ toTarget a]
+          else [Discard GameSource $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
@@ -784,7 +784,7 @@ instance RunMessage EnemyAttrs where
         <> [afterMsg]
         <> defeatMsgs
       pure a
-    Discard target | a `isTarget` target -> do
+    Discard _ target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
@@ -808,7 +808,7 @@ instance RunMessage EnemyAttrs where
         <$> [Timing.When, Timing.After]
       pushAll
         $ windowMsg
-        : map (Discard . AssetTarget) enemyAssets
+        : map (Discard GameSource . AssetTarget) enemyAssets
         <> [ UnsealToken token | token <- enemySealedTokens ]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
@@ -855,7 +855,7 @@ instance RunMessage EnemyAttrs where
       case lids of
         [] ->
           pushAll
-            $ Discard (EnemyTarget eid)
+            $ Discard GameSource (EnemyTarget eid)
             : [ Surge iid (toSource a)
               | iid <- maybeToList miid
               , enemySurgeIfUnabledToSpawn

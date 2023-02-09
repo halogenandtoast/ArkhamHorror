@@ -40,6 +40,6 @@ instance RunMessage BeyondTheVeil where
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 10 0
-      , Discard $ toTarget attrs
+      , Discard (toAbilitySource attrs 2) $ toTarget attrs
       ]
     _ -> BeyondTheVeil <$> runMessage msg attrs

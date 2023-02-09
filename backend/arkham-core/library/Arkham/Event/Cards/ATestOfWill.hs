@@ -30,7 +30,7 @@ instance RunMessage ATestOfWill where
           Nothing
           SkillWillpower
           3
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

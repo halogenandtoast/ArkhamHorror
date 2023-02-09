@@ -37,7 +37,7 @@ instance RunMessage DraggedUnder where
       t <$ push (RevelationSkillTest iid source SkillAgility 3)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 2 0
-      , Discard $ toTarget attrs
+      , Discard (toAbilitySource attrs 1) $ toTarget attrs
       ]
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ BeginSkillTest

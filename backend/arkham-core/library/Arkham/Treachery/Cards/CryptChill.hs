@@ -25,7 +25,7 @@ instance RunMessage CryptChill where
       | isSource attrs source -> do
         hasAssets <- selectAny (DiscardableAsset <> AssetControlledBy You)
         push $ if hasAssets
-          then ChooseAndDiscardAsset iid AnyAsset
+          then ChooseAndDiscardAsset iid (toSource attrs) AnyAsset
           else InvestigatorAssignDamage iid source DamageAny 2 0
         pure t
     _ -> CryptChill <$> runMessage msg attrs

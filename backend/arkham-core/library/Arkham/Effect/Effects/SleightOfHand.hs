@@ -30,5 +30,6 @@ instance RunMessage SleightOfHand where
             for_ mController $ \controllerId ->
               push (ReturnToHand controllerId (AssetTarget aid))
         _ -> pure ()
-      e <$ push (Discard $ toTarget attrs)
+      push $ Discard (toSource attrs) (toTarget attrs)
+      pure e
     _ -> SleightOfHand <$> runMessage msg attrs

@@ -49,7 +49,7 @@ instance RunMessage GrandGuignol where
             [InvestigatorAssignDamage iid source DamageAny 0 2]
         : [ Label
               "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
-              (map (DiscardCard iid) nonWeaknessCards <> [drawing])
+              (map (DiscardCard iid (toAbilitySource attrs 1)) nonWeaknessCards <> [drawing])
           | not (null nonWeaknessCards)
           ]
       pure a

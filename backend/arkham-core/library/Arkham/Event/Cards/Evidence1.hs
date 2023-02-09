@@ -16,7 +16,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Enemy.Types
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype Evidence1 = Evidence1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -37,6 +36,6 @@ instance RunMessage Evidence1 where
         $ [ InvestigatorDiscoverClues iid currentLocationId amount Nothing
           | amount > 0
           ]
-        <> [Discard (EventTarget eid)]
+        <> [discard attrs]
       pure e
     _ -> Evidence1 <$> runMessage msg attrs

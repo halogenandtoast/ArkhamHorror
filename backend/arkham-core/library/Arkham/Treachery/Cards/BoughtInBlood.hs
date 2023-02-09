@@ -33,11 +33,11 @@ instance RunMessage BoughtInBlood where
             $ chooseOrRunOne iid
             $ [ Label
                   "Discard an Ally asset you control from play"
-                  [ChooseAndDiscardAsset iid AllyAsset]
+                  [ChooseAndDiscardAsset iid (toSource attrs) AllyAsset]
               | notNull inPlay'
               ]
             <> [ Label "Discard each Ally asset from your hand"
-                   $ map (DiscardCard iid) inHand'
+                   $ map (DiscardCard iid (toSource attrs)) inHand'
                | notNull inHand'
                ]
       pure t

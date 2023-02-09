@@ -35,6 +35,6 @@ instance RunMessage LiveAndLearn where
             (skillTestAction st)
             (skillTestSkillType st)
             (skillTestDifficulty st)
-          , Discard (toTarget attrs)
+          , discard attrs
           ]
     _ -> LiveAndLearn <$> runMessage msg attrs

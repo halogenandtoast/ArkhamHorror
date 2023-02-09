@@ -36,7 +36,7 @@ instance RunMessage VortexOfTime where
              4
          | iid <- investigatorsAtSentinelHills
          ]
-        <> [Discard $ toTarget attrs]
+        <> [Discard (toSource attrs) $ toTarget attrs]
         )
     FailedSkillTest iid _ source SkillTestTarget{} _ _
       | isSource attrs source -> t

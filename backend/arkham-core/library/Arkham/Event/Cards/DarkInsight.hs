@@ -31,5 +31,5 @@ instance RunMessage DarkInsight where
           EnemyType -> CancelNext (toSource attrs) DrawEnemyMessage
           _ -> error "Not handled yet"
       -- TODO: Figure out what exactly we should cancel (RevelationMessage for treachery, Enemy, Event, Skill, etc.)
-      e <$ pushAll [cancelMsg, Discard (toTarget attrs)]
+      e <$ pushAll [cancelMsg, discard attrs]
     _ -> DarkInsight <$> runMessage msg attrs

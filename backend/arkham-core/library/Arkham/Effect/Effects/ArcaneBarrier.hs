@@ -55,6 +55,6 @@ instance RunMessage ArcaneBarrier where
             _ -> error "messages must be supplied"
         case effectSource of
           TreacherySource tid ->
-            e <$ pushAll (Discard (TreacheryTarget tid) : moveMessages)
+            e <$ pushAll (Discard effectSource (TreacheryTarget tid) : moveMessages)
           _ -> error "Has to be a treachery source"
     _ -> ArcaneBarrier <$> runMessage msg attrs

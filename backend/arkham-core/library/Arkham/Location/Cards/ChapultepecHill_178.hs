@@ -55,7 +55,10 @@ instance RunMessage ChapultepecHill_178 where
   runMessage msg l@(ChapultepecHill_178 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ investigatorAt (toId attrs)
-      for_ iids $ \iid -> pushAll [RandomDiscard iid, RandomDiscard iid]
+      for_ iids $ \iid -> pushAll
+        [ RandomDiscard iid (toAbilitySource attrs 1) AnyCard
+        , RandomDiscard iid (toAbilitySource attrs 1) AnyCard
+        ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing

@@ -40,7 +40,7 @@ instance RunMessage StrangeSolution where
       | isSource attrs source -> do
         drawing <- drawCards iid attrs 2
         pushAll
-          [ Discard (toTarget attrs)
+          [ Discard (toAbilitySource attrs 1) (toTarget attrs)
           , drawing
           , Record YouHaveIdentifiedTheSolution
           ]

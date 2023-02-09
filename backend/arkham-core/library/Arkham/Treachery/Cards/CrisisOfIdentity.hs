@@ -37,9 +37,9 @@ instance RunMessage CrisisOfIdentity where
       skills <- selectList
         (SkillControlledBy (InvestigatorWithId iid) <> SkillWithClass role)
       pushAll
-        $ [ Discard $ AssetTarget aid | aid <- assets ]
-        <> [ Discard $ EventTarget eid | eid <- events ]
-        <> [ Discard $ SkillTarget sid | sid <- skills ]
+        $ [ Discard (toSource attrs) $ AssetTarget aid | aid <- assets ]
+        <> [ Discard (toSource attrs) $ EventTarget eid | eid <- events ]
+        <> [ Discard (toSource attrs) $ SkillTarget sid | sid <- skills ]
         <> [DiscardTopOfDeck iid 1 (Just $ toTarget attrs)]
       pure t
     DiscardedTopOfDeck iid [card] target | isTarget attrs target -> do

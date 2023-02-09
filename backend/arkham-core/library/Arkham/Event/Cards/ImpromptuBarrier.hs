@@ -36,7 +36,7 @@ instance RunMessage ImpromptuBarrier where
       let
         afterMsg = case zone of
           FromDiscard -> ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-          _ -> Discard (toTarget attrs)
+          _ -> discard attrs
       pushAll
         [ ChooseEvadeEnemy
           iid

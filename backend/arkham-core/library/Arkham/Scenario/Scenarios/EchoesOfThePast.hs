@@ -247,7 +247,7 @@ instance RunMessage EchoesOfThePast where
           push $ chooseOne
             iid
             [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-        Tablet -> push $ RandomDiscard iid
+        Tablet -> push $ RandomDiscard iid (TokenEffectSource Tablet) AnyCard
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when
@@ -267,7 +267,7 @@ instance RunMessage EchoesOfThePast where
           push $ chooseOne
             iid
             [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-        Tablet -> push $ RandomDiscard iid
+        Tablet -> push $ RandomDiscard iid (TokenEffectSource Tablet) AnyCard
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when

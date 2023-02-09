@@ -11,7 +11,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher (LocationMatcher(..), EnemyMatcher(..))
+import Arkham.Matcher (LocationMatcher(..), enemyAt)
 import Arkham.Message
 import Arkham.Target
 
@@ -27,7 +27,7 @@ instance RunMessage Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       studyId <- selectJust $ LocationWithTitle "Study"
-      enemyIds <- selectList $ EnemyAt $ LocationWithId studyId
+      enemyIds <- selectList $ enemyAt studyId
 
       hallway <- getSetAsideCard Locations.hallway
       cellar <- getSetAsideCard Locations.cellar
@@ -36,17 +36,17 @@ instance RunMessage Trapped where
 
       let hallwayId = LocationId $ toCardId hallway
 
-      a <$ pushAll
-        ([ PlaceLocation hallway
-         , PlaceLocation cellar
-         , PlaceLocation attic
-         , PlaceLocation parlor
-         ]
-        <> map (Discard . EnemyTarget) enemyIds
-        <> [ RevealLocation Nothing hallwayId
-           , MoveAllTo (toSource attrs) hallwayId
-           , RemoveLocation studyId
-           , AdvanceActDeck actDeckId (toSource attrs)
-           ]
-        )
+      pushAll $
+        [ PlaceLocation hallway
+        , PlaceLocation cellar
+        , PlaceLocation attic
+        , PlaceLocation parlor
+        ]
+       <> map (Discard (toSource attrs) . EnemyTarget) enemyIds
+       <> [ RevealLocation Nothing hallwayId
+          , MoveAllTo (toSource attrs) hallwayId
+          , RemoveLocation studyId
+          , AdvanceActDeck actDeckId (toSource attrs)
+          ]
+      pure a
     _ -> Trapped <$> runMessage msg attrs

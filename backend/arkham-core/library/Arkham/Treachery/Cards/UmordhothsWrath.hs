@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -42,7 +43,7 @@ instance RunMessage UmordhothsWrath where
         then t <$ pushAll
           [ chooseOne
             iid
-            [ Label "Discard a card from your hand" [RandomDiscard iid]
+            [ Label "Discard a card from your hand" [RandomDiscard iid (toSource attrs) AnyCard]
             , Label
               "Take 1 damage and 1 horror"
               [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]

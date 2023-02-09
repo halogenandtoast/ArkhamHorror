@@ -72,7 +72,7 @@ instance RunMessage WellOfSouls where
             [InvestigatorDirectDamage iid (toSource attrs) 0 1]
         : [ Label
               "Discard 2 random cards from your hand"
-              [RandomDiscard iid, RandomDiscard iid]
+              [RandomDiscard iid (toAbilitySource attrs 1) AnyCard, RandomDiscard iid (toAbilitySource attrs 1) AnyCard]
           | hasCardsInHand
           ]
       pure l

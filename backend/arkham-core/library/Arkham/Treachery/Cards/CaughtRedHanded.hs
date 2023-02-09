@@ -38,7 +38,7 @@ instance RunMessage CaughtRedHanded where
            ]
         <> if null hunters
              then [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)]
-             else [Discard $ toTarget attrs]
+             else [Discard (toSource attrs) $ toTarget attrs]
 
       pure t
     _ -> CaughtRedHanded <$> runMessage msg attrs

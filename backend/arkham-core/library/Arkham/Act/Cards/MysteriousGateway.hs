@@ -2,8 +2,8 @@ module Arkham.Act.Cards.MysteriousGateway where
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
+import Arkham.Act.Types
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Card
@@ -34,29 +34,27 @@ instance RunMessage MysteriousGateway where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- selectList $ InvestigatorAt $ LocationWithTitle "Guest Hall"
       holeInTheWall <- getSetAsideCard Locations.holeInTheWall
-      a <$ pushAll
-        ([PlaceLocation holeInTheWall]
-        <> [ chooseOne
-             leadInvestigatorId
-             [ TargetLabel
+      pushAll
+        [ PlaceLocation holeInTheWall
+        , chooseOne
+            leadInvestigatorId
+            [ targetLabel iid'
+               [ MoveTo (toSource attrs) iid' $ LocationId $ toCardId holeInTheWall
+               , BeginSkillTest
+                 iid'
+                 (ActSource aid)
                  (InvestigatorTarget iid')
-                 [ MoveTo
-                   (toSource attrs)
-                   iid'
-                   (LocationId $ toCardId holeInTheWall)
-                 , BeginSkillTest
-                   iid'
-                   (ActSource aid)
-                   (InvestigatorTarget iid')
-                   Nothing
-                   SkillWillpower
-                   4
-                 ]
-             | iid' <- investigatorIds
-             ]
-           , AdvanceActDeck actDeckId (toSource attrs)
-           ]
-        )
+                 Nothing
+                 SkillWillpower
+                 4
+               ]
+            | iid' <- investigatorIds
+            ]
+        , AdvanceActDeck actDeckId (toSource attrs)
+        ]
+      pure a
     FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} _ n
-      | aid == actId -> a <$ pushAll (replicate n (RandomDiscard iid))
+      | aid == actId -> do
+      pushAll $ replicate n $ RandomDiscard iid (toSource attrs) AnyCard
+      pure a
     _ -> MysteriousGateway <$> runMessage msg attrs

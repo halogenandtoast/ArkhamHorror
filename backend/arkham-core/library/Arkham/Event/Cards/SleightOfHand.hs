@@ -43,6 +43,6 @@ instance RunMessage SleightOfHand where
               ]
           | card <- cards
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> SleightOfHand <$> runMessage msg attrs

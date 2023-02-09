@@ -42,6 +42,6 @@ instance RunMessage LostInTime where
                 )
             | (aid, dmg, hrr) <- assetsWithDamageAndHorror
             ]
-        else pushAll $ replicate 3 (ChooseAndDiscardCard iid)
+        else pushAll $ replicate 3 (ChooseAndDiscardCard iid (toSource attrs))
       pure t
     _ -> LostInTime <$> runMessage msg attrs

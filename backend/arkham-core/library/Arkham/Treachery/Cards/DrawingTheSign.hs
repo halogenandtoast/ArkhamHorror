@@ -37,8 +37,10 @@ instance HasAbilities DrawingTheSign where
 
 instance RunMessage DrawingTheSign where
   runMessage msg t@(DrawingTheSign attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+    Revelation iid source | isSource attrs source -> do
+      push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
+      pure t
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> DrawingTheSign <$> runMessage msg attrs

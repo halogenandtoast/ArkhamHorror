@@ -34,7 +34,7 @@ instance RunMessage Eavesdrop where
           [ TargetLabel target [HandleTargetChoice iid (toSource attrs) target]
           | target <- targets
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source ->

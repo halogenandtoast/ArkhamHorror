@@ -44,6 +44,6 @@ instance RunMessage ColtVestPocket where
         ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ Discard (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure a
     _ -> ColtVestPocket <$> runMessage msg attrs

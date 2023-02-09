@@ -42,7 +42,7 @@ instance RunMessage HypnoticGaze where
         PerformEnemyAttack _ eid _ _ : queue' -> (queue', eid)
         _ -> error "unhandled"
       ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside, ignoreWindow, Discard (toTarget attrs)]
+      pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside, ignoreWindow, discard attrs]
       pure $ HypnoticGaze (attrs `with` Metadata (Just enemyId))
     RequestedTokens source _ faces | isSource attrs source -> do
       let

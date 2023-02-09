@@ -68,7 +68,7 @@ instance RunMessage RationalThought where
       push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure $ RationalThought $ attrs `with` Metadata True
     HealHorror (InvestigatorTarget iid) source amount
       | unCardCode (unInvestigatorId iid)

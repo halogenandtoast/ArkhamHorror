@@ -41,5 +41,5 @@ instance RunMessage Atychiphobia where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> Atychiphobia <$> runMessage msg attrs

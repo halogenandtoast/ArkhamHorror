@@ -70,7 +70,7 @@ instance RunMessage Backpack where
         let
           remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
         pushAll
-          $ [ Discard (toTarget attrs) | null remaining ]
+          $ [ Discard (toSource attrs) (toTarget attrs) | null remaining ]
           <> [AddToHand iid card, msg]
         pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     _ -> Backpack <$> runMessage msg attrs

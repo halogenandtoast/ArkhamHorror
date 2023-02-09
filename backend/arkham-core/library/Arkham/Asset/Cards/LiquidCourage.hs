@@ -59,13 +59,13 @@ instance RunMessage LiquidCourage where
         | iid' <- iids
         ]
       pure a
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source
-      -> a <$ push
-        (AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 1)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> a <$ pushAll
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
+      push $ AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 1
+      pure a
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
+      pushAll
         [ AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 0
-        , RandomDiscard iid
+        , RandomDiscard iid (toSource attrs) AnyCard
         ]
+      pure a
     _ -> LiquidCourage <$> runMessage msg attrs

@@ -31,7 +31,7 @@ instance RunMessage ATestOfWill2 where
           Nothing
           SkillWillpower
           3
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

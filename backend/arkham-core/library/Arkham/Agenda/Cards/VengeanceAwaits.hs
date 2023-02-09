@@ -19,6 +19,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
+import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -64,11 +65,11 @@ instance RunMessage VengeanceAwaits where
           enemies <- selectListMap EnemyTarget $ EnemyAt $ LocationWithId
             ritualSiteId
           pushAll
-            $ [ Discard enemy | enemy <- enemies ]
+            $ [ Discard (toSource attrs) enemy | enemy <- enemies ]
             <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       actIds <- selectList AnyAct
-      a <$ pushAll [ Discard (ActTarget actId) | actId <- actIds ]
+      a <$ pushAll [ Discard GameSource (ActTarget actId) | actId <- actIds ]
     _ -> VengeanceAwaits <$> runMessage msg attrs

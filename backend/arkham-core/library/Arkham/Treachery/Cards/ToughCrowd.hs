@@ -39,5 +39,5 @@ instance RunMessage ToughCrowd where
       agendaId <- selectJust AnyAgenda
       t <$ push (AttachTreachery (toId attrs) (AgendaTarget agendaId))
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> ToughCrowd <$> runMessage msg attrs

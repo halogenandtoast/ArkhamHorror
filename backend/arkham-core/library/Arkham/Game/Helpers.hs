@@ -317,6 +317,11 @@ filterDepthSpecificAbilities usedAbilities = do
       || depth
       <= usedDepth ability
 
+getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
+getAbilityLimit iid ability = do
+  ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability)
+  pure $ if ignoreLimit then PlayerLimit PerWindow 1 else abilityLimit ability
+
 -- TODO: The limits that are correct are the one that check usedTimes Group
 -- limits for instance won't work if we have a group limit higher than one, for
 -- that we need to sum uses across all investigators. So we should fix this
@@ -326,8 +331,7 @@ getCanAffordUse
 getCanAffordUse iid ability window = do
   usedAbilities <-
     filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
-  ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability)
-  let limit = if ignoreLimit then NoLimit else abilityLimit ability
+  limit <- getAbilityLimit iid ability
   case limit of
     NoLimit -> case abilityType ability of
       ReactionAbility _ _ ->
@@ -2551,17 +2555,9 @@ spawnAtOneOf :: InvestigatorId -> EnemyId -> [LocationId] -> GameT ()
 spawnAtOneOf iid eid targetLids = do
   locations' <- select Matcher.Anywhere
   case setToList (setFromList targetLids `intersection` locations') of
-    [] -> push (Discard (EnemyTarget eid))
+    [] -> push (Discard GameSource (EnemyTarget eid))
     [lid] -> pushAll (resolve $ EnemySpawn Nothing lid eid)
-    lids -> push
-      (chooseOne
-        iid
-        [ TargetLabel
-            (LocationTarget lid)
-            (resolve $ EnemySpawn Nothing lid eid)
-        | lid <- lids
-        ]
-      )
+    lids -> push $ chooseOne iid [ targetLabel lid $ resolve $ EnemySpawn Nothing lid eid | lid <- lids ]
 
 sourceCanDamageEnemy :: HasGame m => EnemyId -> Source -> m Bool
 sourceCanDamageEnemy eid source = do

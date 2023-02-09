@@ -44,5 +44,5 @@ instance RunMessage LedAstray where
                   advanceAgenda
                 ]
             ]
-      t <$ pushAll (revelation <> [Discard $ toTarget attrs])
+      t <$ pushAll (revelation <> [Discard (toSource attrs) $ toTarget attrs])
     _ -> LedAstray <$> runMessage msg attrs

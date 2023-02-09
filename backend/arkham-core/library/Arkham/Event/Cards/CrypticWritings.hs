@@ -38,7 +38,7 @@ instance HasAbilities CrypticWritings where
 instance RunMessage CrypticWritings where
   runMessage msg e@(CrypticWritings attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll [TakeResources iid 2 (toSource attrs) False, Discard (toTarget attrs)]
+      pushAll [TakeResources iid 2 (toSource attrs) False, discard attrs]
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _)
       | iid' == iid -> do

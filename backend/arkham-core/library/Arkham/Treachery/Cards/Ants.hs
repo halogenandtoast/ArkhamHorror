@@ -38,10 +38,10 @@ instance RunMessage Ants where
         selectAny $ DiscardableAsset <> assetControlledBy iid
       push
         $ chooseOrRunOne iid
-        $ Label "Discard hand card" [ChooseAndDiscardCard iid]
+        $ Label "Discard hand card" [ChooseAndDiscardCard iid (toSource attrs)]
         : [ Label
               "Discard a card from your play area"
-              [ChooseAndDiscardAsset iid DiscardableAsset]
+              [ChooseAndDiscardAsset iid (toSource attrs) DiscardableAsset]
           | hasDiscardableAssets
           ]
       pure t

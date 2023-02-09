@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,6 +19,6 @@ instance RunMessage DrawnToTheFlame where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ InvestigatorDrawEncounterCard iid
       , InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
-      , Discard (EventTarget eid)
+      , discard attrs
       ]
     _ -> DrawnToTheFlame <$> runMessage msg attrs

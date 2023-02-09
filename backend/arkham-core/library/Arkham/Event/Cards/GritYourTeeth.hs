@@ -30,6 +30,6 @@ instance RunMessage GritYourTeeth where
           (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
           (toSource attrs)
           (InvestigatorTarget iid)
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> GritYourTeeth <$> runMessage msg attrs

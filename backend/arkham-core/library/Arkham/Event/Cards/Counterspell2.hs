@@ -26,7 +26,7 @@ instance RunMessage Counterspell2 where
       cancelToken token
       pushAll
         [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawTokenMessage, RevealTokenMessage]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> Counterspell2 <$> runMessage msg attrs

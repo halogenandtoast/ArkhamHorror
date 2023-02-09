@@ -50,7 +50,7 @@ instance RunMessage TheNecronomiconAdvanced where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ InvestigatorDamage iid source 0 1
       if assetHorror attrs <= 1
-        then a <$ push (Discard (toTarget attrs))
+        then a <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))
         else pure $ TheNecronomiconAdvanced
           (attrs { assetHorror = max 0 (assetHorror attrs -1 )})
     _ -> TheNecronomiconAdvanced <$> runMessage msg attrs

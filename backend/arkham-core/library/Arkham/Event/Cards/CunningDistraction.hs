@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
-import Arkham.Target
 
 newtype CunningDistraction = CunningDistraction EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -21,6 +20,6 @@ instance RunMessage CunningDistraction where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <-
         selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
-      pushAll $ map (EnemyEvaded iid) enemyIds <> [Discard (EventTarget eid)]
+      pushAll $ map (EnemyEvaded iid) enemyIds <> [discard attrs]
       pure e
     _ -> CunningDistraction <$> runMessage msg attrs

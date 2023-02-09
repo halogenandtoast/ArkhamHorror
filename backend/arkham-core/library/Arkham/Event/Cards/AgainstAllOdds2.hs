@@ -45,6 +45,6 @@ instance RunMessage AgainstAllOdds2 where
             (InvestigatorTarget iid)
           ]
           <> [ ignoreWindow | n > 1 ]
-          <> [ Discard (toTarget attrs) ]
+          <> [ discard attrs ]
         pure e
     _ -> AgainstAllOdds2 <$> runMessage msg attrs

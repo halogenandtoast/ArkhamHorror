@@ -45,7 +45,7 @@ instance RunMessage LowOnSupplies where
              then
                [ Label
                    "Each investigator chooses and discards an asset he or she controls."
-                   [ ChooseAndDiscardAsset iid' AnyAsset
+                   [ ChooseAndDiscardAsset iid' (toSource attrs) AnyAsset
                    | iid' <- investigatorIds
                    ]
                ]

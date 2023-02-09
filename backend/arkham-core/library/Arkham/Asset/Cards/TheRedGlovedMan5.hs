@@ -73,25 +73,24 @@ instance RunMessage TheRedGlovedMan5 where
     UseCardAbilityChoice iid source 1 (SkillChoiceMetadata c) windows' p
       | isSource attrs source -> case metadata of
         Metadata [] -> do
-          push
-            (chooseOne
-              iid
-              [ Label
-                  label
-                  [ UseCardAbilityChoice
-                      iid
-                      source
-                      1
-                      (SkillChoiceMetadata s)
-                      windows'
-                      p
-                  ]
-              | (label, s) <- filter ((/= c) . snd) skillTypes
-              ]
-            )
+          push $ chooseOne
+            iid
+            [ Label
+                label
+                [ UseCardAbilityChoice
+                    iid
+                    source
+                    1
+                    (SkillChoiceMetadata s)
+                    windows'
+                    p
+                ]
+            | (label, s) <- filter ((/= c) . snd) skillTypes
+            ]
           pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c]
         Metadata [x] -> pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c, x]
         _ -> error "Only two skills for the red gloved man"
-    UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      a <$ push (Discard $ toTarget attrs)
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+      pure a
     _ -> TheRedGlovedMan5 . (`with` metadata) <$> runMessage msg attrs

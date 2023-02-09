@@ -41,15 +41,9 @@ instance RunMessage DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ push
-      (BeginSkillTest
-        iid
-        source
-        (InvestigatorTarget iid)
-        Nothing
-        SkillWillpower
-        3
-      )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ BeginSkillTest iid source (InvestigatorTarget iid) Nothing SkillWillpower 3
+      pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> t <$ push (Discard (toSource attrs) $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

@@ -9,7 +9,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype EmergencyCache2 = EmergencyCache2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,7 +24,7 @@ instance RunMessage EmergencyCache2 where
       pushAll
         [ TakeResources iid 3 (toSource attrs) False
         , drawing
-        , Discard (EventTarget eid)
+        , discard attrs
         ]
       pure e
     _ -> EmergencyCache2 <$> runMessage msg attrs

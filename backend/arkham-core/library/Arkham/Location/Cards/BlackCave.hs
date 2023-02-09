@@ -44,7 +44,7 @@ instance RunMessage BlackCave where
             [InvestigatorAssignDamage iid source DamageAny 0 1]
         : [ Label
               "Choose and discard 2 cards from your hand"
-              [ChooseAndDiscardCard iid, ChooseAndDiscardCard iid]
+              [ChooseAndDiscardCard iid (toAbilitySource attrs 1), ChooseAndDiscardCard iid (toAbilitySource attrs 1)]
           | cardsInHand >= 2
           ]
       pure l

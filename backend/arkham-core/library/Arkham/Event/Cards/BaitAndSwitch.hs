@@ -28,7 +28,7 @@ instance RunMessage BaitAndSwitch where
         SkillAgility
         AnyEnemy
         False
-      , Discard (EventTarget eid)
+      , discard attrs
       ]
     Successful (Action.Evade, EnemyTarget eid) iid _ target _
       | isTarget attrs target -> do

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -28,8 +29,8 @@ instance RunMessage ChillFromBelow where
         if handCount < n
           then
             pushAll
-            $ replicate handCount (RandomDiscard iid)
+            $ replicate handCount (RandomDiscard iid (toSource attrs) AnyCard)
             <> [InvestigatorAssignDamage iid source DamageAny (n - handCount) 0]
-          else pushAll $ replicate n (RandomDiscard iid)
+          else pushAll $ replicate n (RandomDiscard iid (toSource attrs) AnyCard)
         pure t
     _ -> ChillFromBelow <$> runMessage msg attrs

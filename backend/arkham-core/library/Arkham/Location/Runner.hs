@@ -77,8 +77,6 @@ instance RunMessage LocationAttrs where
         & (cluesL +~ flipCount)
         & (doomL .~ doomCount)
         & (withoutCluesL .~ (flipCount >= 0))
-    UpdateLocation newAttrs lid | lid == locationId -> do
-      pure newAttrs
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
@@ -143,8 +141,8 @@ instance RunMessage LocationAttrs where
         pure $ a & eventsL %~ insertSet eid
       _ -> pure $ a & eventsL %~ deleteSet eid
     Discarded (AssetTarget aid) _ -> pure $ a & assetsL %~ deleteSet aid
-    Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-    Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
+    Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discarded (EnemyTarget eid) _ -> pure $ a & enemiesL %~ deleteSet eid
     PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
     Flipped (AssetSource aid) card | toCardType card /= AssetType ->
@@ -154,7 +152,7 @@ instance RunMessage LocationAttrs where
       pure $ a & treacheriesL %~ deleteSet tid
     RemoveFromGame (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     RemoveFromGame (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
-    Discard target | isTarget a target ->
+    Discard _ target | isTarget a target ->
       a <$ pushAll (resolve (RemoveLocation $ toId a))
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
@@ -238,7 +236,7 @@ instance RunMessage LocationAttrs where
                 _ -> False
           withQueue_ $ filter (/= next)
           if null availableLocationIds
-            then push (Discard (EnemyTarget eid))
+            then push (Discard GameSource (EnemyTarget eid))
             else push $ chooseOne
               activeInvestigatorId
               [ targetLabel

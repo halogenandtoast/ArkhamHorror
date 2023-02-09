@@ -62,7 +62,7 @@ instance RunMessage UncageTheSoul where
               ]
           | c <- cards
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> UncageTheSoul <$> runMessage msg attrs

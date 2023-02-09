@@ -15,7 +15,7 @@ import Arkham.Event.Types ( Field (..) )
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Matcher hiding ( AssetCard, EventCard, PlaceUnderneath )
+import Arkham.Matcher hiding ( AssetCard, EventCard, SkillCard, PlaceUnderneath )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Skill.Types ( Field (..) )

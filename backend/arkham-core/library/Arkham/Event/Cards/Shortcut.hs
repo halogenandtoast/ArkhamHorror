@@ -22,11 +22,10 @@ shortcut = event Shortcut Cards.shortcut
 instance RunMessage Shortcut where
   runMessage msg e@(Shortcut attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      let discard = Discard $ toTarget attrs
       investigatorIds <- selectList $ colocatedWith iid
       connectingLocations <- selectList AccessibleLocation
       if null connectingLocations
-        then push discard
+        then push $ discard attrs
         else pushAll
           [ chooseOne
             iid
@@ -42,7 +41,7 @@ instance RunMessage Shortcut where
                 ]
             | iid' <- investigatorIds
             ]
-          , discard
+          , discard attrs
           ]
       pure e
     _ -> Shortcut <$> runMessage msg attrs

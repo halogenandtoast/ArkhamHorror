@@ -32,7 +32,7 @@ instance RunMessage Counterpunch where
       let enemyId = toEnemy windows'
       pushAll
         [ FightEnemy iid enemyId (toSource attrs) Nothing SkillCombat False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> Counterpunch <$> runMessage msg attrs

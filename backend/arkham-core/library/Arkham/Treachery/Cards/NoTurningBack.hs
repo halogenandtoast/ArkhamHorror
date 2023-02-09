@@ -82,12 +82,12 @@ instance RunMessage NoTurningBack where
                 SkillCombat
                 3
             ]
-        : [ Label "Check your supplies" [Discard (toTarget attrs)]
+        : [ Label "Check your supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
           | hasPickaxe
           ]
       pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ Discard (toTarget attrs)
+        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
         pure t
     _ -> NoTurningBack <$> runMessage msg attrs

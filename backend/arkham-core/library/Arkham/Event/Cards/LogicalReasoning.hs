@@ -39,7 +39,7 @@ instance RunMessage LogicalReasoning where
                  "Discard a Terror"
                  [ chooseOne
                      iid'
-                     [ targetLabel terror [Discard $ TreacheryTarget terror]
+                     [ targetLabel terror [Discard (toSource attrs) $ TreacheryTarget terror]
                      | terror <- terrors
                      ]
                  ]
@@ -53,5 +53,5 @@ instance RunMessage LogicalReasoning where
             [chooseOrRunOne iid' choices']
           )
           options
-      e <$ pushAll [chooseOrRunOne iid choices, Discard (toTarget attrs)]
+      e <$ pushAll [chooseOrRunOne iid choices, discard attrs]
     _ -> LogicalReasoning <$> runMessage msg attrs

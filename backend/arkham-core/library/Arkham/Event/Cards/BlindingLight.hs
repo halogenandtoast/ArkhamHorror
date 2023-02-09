@@ -30,6 +30,6 @@ instance RunMessage BlindingLight where
         SkillWillpower
         AnyEnemy
         False
-      , Discard (EventTarget eid)
+      , discard attrs
       ]
     _ -> BlindingLight <$> runMessage msg attrs

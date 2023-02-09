@@ -56,6 +56,6 @@ instance RunMessage VoiceOfTheJungle where
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        push $ Discard (toTarget attrs)
+        push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
         pure t
     _ -> VoiceOfTheJungle <$> runMessage msg attrs

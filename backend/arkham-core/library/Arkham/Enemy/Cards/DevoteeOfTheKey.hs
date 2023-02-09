@@ -43,7 +43,7 @@ instance RunMessage DevoteeOfTheKey where
         sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
         if loc == sentinelPeak
           then pushAll
-            [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
+            [Discard (toAbilitySource attrs 1) (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
           else do
             choices <- selectList $ ClosestPathLocation loc sentinelPeak
             case choices of

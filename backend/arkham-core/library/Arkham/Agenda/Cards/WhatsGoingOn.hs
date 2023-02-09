@@ -35,7 +35,7 @@ instance RunMessage WhatsGoingOn where
             [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
         : [ Label
               "Each investigator discards 1 card at random from his or her hand"
-              [AllRandomDiscard]
+              [AllRandomDiscard (toSource attrs) AnyCard]
           | canChooseDiscardOption
           ]
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)

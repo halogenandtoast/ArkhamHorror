@@ -43,7 +43,7 @@ instance RunMessage GiftOfMadnessPity where
       t <$ push (AddTreacheryToHand iid $ toId attrs)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ pushAll
       [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
-      , Discard $ toTarget attrs
+      , Discard (toAbilitySource attrs 1) (toTarget attrs)
       ]
     DrewFromScenarioDeck _ _ target cards | isTarget attrs target ->
       t <$ push (PlaceUnderneath ActDeckTarget cards)

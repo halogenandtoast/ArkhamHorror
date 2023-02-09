@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -24,10 +25,14 @@ instance RunMessage TwistedToHisWill where
   runMessage msg t@(TwistedToHisWill attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       doomCount <- getDoomCount
-      t <$ if doomCount > 0
-        then push (RevelationSkillTest iid source SkillWillpower doomCount)
-        else push (Surge iid source)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t
-      <$ pushAll [RandomDiscard iid, RandomDiscard iid]
+      push $ if doomCount > 0
+        then RevelationSkillTest iid source SkillWillpower doomCount
+        else Surge iid source
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
+      pushAll
+        [ RandomDiscard iid (toSource attrs) AnyCard
+        , RandomDiscard iid (toSource attrs) AnyCard
+        ]
+      pure t
     _ -> TwistedToHisWill <$> runMessage msg attrs

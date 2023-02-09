@@ -34,7 +34,7 @@ instance RunMessage MindOverMatter2 where
           (toSource attrs)
           (InvestigatorTarget iid)
         , drawing
-        , Discard (EventTarget eid)
+        , discard attrs
         ]
       pure e
     _ -> MindOverMatter2 <$> runMessage msg attrs

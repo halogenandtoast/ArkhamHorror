@@ -57,5 +57,5 @@ instance RunMessage SpiritsTorment where
         else InvestigatorAssignDamage iid source DamageAny 0 1
       pure t
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> SpiritsTorment <$> runMessage msg attrs

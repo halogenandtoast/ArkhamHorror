@@ -40,7 +40,7 @@ instance HasAbilities PrismaticCascade where
 instance RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RandomDiscard iid
+      push $ RandomDiscard iid (toSource attrs) AnyCard
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2] ]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels
@@ -48,5 +48,5 @@ instance RunMessage PrismaticCascade where
         Just label -> pure . PrismaticCascade $ attrs & labelL .~ label
         Nothing -> error "could not find label"
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      l <$ push (Discard $ toTarget attrs)
+      l <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> PrismaticCascade <$> runMessage msg attrs

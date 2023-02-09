@@ -66,7 +66,7 @@ instance RunMessage UnearthTheAncients where
           (Just $ toTarget attrs)
           skillType
           False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure $ UnearthTheAncients $ attrs `with` Metadata (Just card)
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->

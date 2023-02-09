@@ -47,9 +47,8 @@ instance RunMessage FarAboveYourHouse where
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         investigatorIds <- getInvestigatorIds
-        l <$ pushAll
-          (concat $ replicate @[[Message]]
-            n
-            [ RandomDiscard iid' | iid' <- investigatorIds ]
-          )
+        pushAll $ concat $ replicate @[[Message]]
+          n
+          [ RandomDiscard iid' (toAbilitySource attrs 1) AnyCard | iid' <- investigatorIds ]
+        pure l
     _ -> FarAboveYourHouse <$> runMessage msg attrs

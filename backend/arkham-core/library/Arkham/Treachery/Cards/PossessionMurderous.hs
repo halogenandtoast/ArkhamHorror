@@ -55,6 +55,6 @@ instance RunMessage PossessionMurderous where
         pure t
       _ -> pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> PossessionMurderous <$> runMessage msg attrs

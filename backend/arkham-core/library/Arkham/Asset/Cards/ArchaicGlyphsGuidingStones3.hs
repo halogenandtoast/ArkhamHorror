@@ -37,7 +37,7 @@ instance RunMessage ArchaicGlyphsGuidingStones3 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       case mlid of
-        Nothing -> push $ Discard (toTarget attrs)
+        Nothing -> push $ Discard (toSource attrs) (toTarget attrs)
         Just lid -> do
           skillType <- field LocationInvestigateSkill lid
           pushAll
@@ -48,7 +48,7 @@ instance RunMessage ArchaicGlyphsGuidingStones3 where
               (Just $ toTarget attrs)
               skillType
               False
-            , Discard (toTarget attrs)
+            , Discard (toSource attrs) (toTarget attrs)
             ]
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target n
@@ -57,6 +57,6 @@ instance RunMessage ArchaicGlyphsGuidingStones3 where
         let
           additional = n `div` 2
           amount = min clueCount (1 + additional)
-        a <$ push
-          (InvestigatorDiscoverClues iid lid amount (Just Action.Investigate))
+        push $ InvestigatorDiscoverClues iid lid amount $ Just Action.Investigate
+        pure a
     _ -> ArchaicGlyphsGuidingStones3 <$> runMessage msg attrs

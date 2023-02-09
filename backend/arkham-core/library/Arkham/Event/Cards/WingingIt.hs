@@ -35,7 +35,7 @@ instance RunMessage WingingIt where
       let
         eventResolution = if zone == Zone.FromDiscard
           then ShuffleIntoDeck (Deck.InvestigatorDeck iid)
-          else Discard
+          else const (discard attrs)
         modifiers =
           [ skillTestModifier attrs (InvestigatorTarget iid) (DiscoveredClues 1)
           | zone == Zone.FromDiscard

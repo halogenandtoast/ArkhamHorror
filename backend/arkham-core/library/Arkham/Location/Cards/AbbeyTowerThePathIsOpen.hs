@@ -74,6 +74,6 @@ instance RunMessage AbbeyTowerThePathIsOpen where
         discardAmount = findWithDefault 0 "Cards" choicesMap
       when (discardAmount > 0) $ pushAll $ replicate
         discardAmount
-        (ChooseAndDiscardCard iid)
+        (ChooseAndDiscardCard iid (toAbilitySource attrs 1))
       pure l
     _ -> AbbeyTowerThePathIsOpen <$> runMessage msg attrs

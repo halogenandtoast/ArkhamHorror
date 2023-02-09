@@ -15,6 +15,7 @@ import Arkham.Event.Runner
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Source
 import Arkham.Target
 
 newtype CallingInFavors = CallingInFavors EventAttrs
@@ -55,5 +56,5 @@ instance RunMessage CallingInFavors where
               ]
           | (target, cost) <- targetsWithCosts
           ]
-      e <$ pushAll [choice, Discard (toTarget attrs)]
+      e <$ pushAll [choice, Discard GameSource (toTarget attrs)]
     _ -> CallingInFavors <$> runMessage msg attrs

@@ -31,7 +31,7 @@ instance RunMessage SecondWind where
       pushAll
         [ HealDamage (InvestigatorTarget iid) (toSource attrs) damageToHeal
         , drawing
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> SecondWind <$> runMessage msg attrs

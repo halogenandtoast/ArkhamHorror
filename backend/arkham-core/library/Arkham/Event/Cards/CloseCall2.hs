@@ -27,6 +27,6 @@ instance RunMessage CloseCall2 where
       | eid == toId attrs
       -> e <$ pushAll
         [ ShuffleBackIntoEncounterDeck (EnemyTarget enemyId)
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> CloseCall2 <$> runMessage msg attrs

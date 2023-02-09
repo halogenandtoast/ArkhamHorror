@@ -33,6 +33,6 @@ instance RunMessage LostSoul where
          else do
            willpower <- getSkillValue SkillWillpower iid
            pure $ RevelationSkillTest iid source SkillIntellect willpower
-      t <$ pushAll [skillTestMsg, Discard $ toTarget attrs]
+      t <$ pushAll [skillTestMsg, Discard (toSource attrs) $ toTarget attrs]
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> t <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
     _ -> LostSoul <$> runMessage msg attrs

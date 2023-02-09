@@ -52,6 +52,6 @@ instance RunMessage TownHall where
       let
         weaknessCount = count cardIsWeakness hand
         discardCount = min (length hand - 3) (length hand - weaknessCount)
-      pushAll $ replicate discardCount $ ChooseAndDiscardCard iid
+      pushAll $ replicate discardCount $ ChooseAndDiscardCard iid (toAbilitySource attrs 1)
       pure l
     _ -> TownHall <$> runMessage msg attrs

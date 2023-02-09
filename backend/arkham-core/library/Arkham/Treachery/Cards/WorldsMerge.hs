@@ -42,6 +42,6 @@ instance RunMessage WorldsMerge where
         n <- getStep =<< selectOne (AgendaWithSide AS.C)
         pushAll $ InvestigatorAssignDamage iid source DamageAny 0 n : replicate
           n
-          (ChooseAndDiscardCard iid)
+          (ChooseAndDiscardCard iid (toSource attrs))
         pure t
     _ -> WorldsMerge <$> runMessage msg attrs

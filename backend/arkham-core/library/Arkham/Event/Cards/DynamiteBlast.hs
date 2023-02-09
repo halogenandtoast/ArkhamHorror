@@ -10,7 +10,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -47,5 +46,5 @@ instance RunMessage DynamiteBlast where
       let
         availableChoices =
           map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
-      e <$ pushAll [chooseOne iid availableChoices, Discard (EventTarget eid)]
+      e <$ pushAll [chooseOne iid availableChoices, discard attrs]
     _ -> DynamiteBlast <$> runMessage msg attrs

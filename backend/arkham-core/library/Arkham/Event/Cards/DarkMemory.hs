@@ -11,7 +11,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DarkMemory = DarkMemory EventAttrs
@@ -43,6 +42,6 @@ instance RunMessage DarkMemory where
       e <$ pushAll
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied
-        , Discard (EventTarget eid)
+        , discard attrs
         ]
     _ -> DarkMemory <$> runMessage msg attrs

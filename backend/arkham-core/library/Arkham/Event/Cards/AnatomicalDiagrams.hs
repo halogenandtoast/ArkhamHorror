@@ -42,6 +42,6 @@ instance RunMessage AnatomicalDiagrams where
               ]
           | enemy <- enemies
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> AnatomicalDiagrams <$> runMessage msg attrs

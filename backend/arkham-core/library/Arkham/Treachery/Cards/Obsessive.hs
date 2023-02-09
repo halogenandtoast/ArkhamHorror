@@ -45,9 +45,9 @@ instance RunMessage Obsessive where
         (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
       for_ (nonEmpty cards) $ \cards' -> do
         card <- sample cards'
-        push $ DiscardCard iid (toCardId card)
+        push $ DiscardCard iid (toAbilitySource attrs 1) (toCardId card)
       pure t
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ Discard (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure t
     _ -> Obsessive <$> runMessage msg attrs

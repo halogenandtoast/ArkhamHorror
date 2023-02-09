@@ -21,6 +21,6 @@ instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs@EffectAttrs {..}) = case msg of
     EndRoundWindow -> case effectTarget of
       CardIdTarget cardId ->
-        e <$ pushAll [Discard $ CardIdTarget cardId, DisableEffect effectId]
+        e <$ pushAll [Discard effectSource $ CardIdTarget cardId, DisableEffect effectId]
       _ -> error "Wrong target type"
     _ -> AChanceEncounter <$> runMessage msg attrs

@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype Elusive = Elusive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -31,6 +30,6 @@ instance RunMessage Elusive where
            | notNull targets
            ]
         <> map EnemyCheckEngagement enemyIds
-        <> [Discard (EventTarget eventId)]
+        <> [discard attrs]
       pure e
     _ -> Elusive <$> runMessage msg attrs

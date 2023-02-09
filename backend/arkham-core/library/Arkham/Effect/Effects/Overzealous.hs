@@ -27,7 +27,7 @@ instance HasModifiersFor Overzealous where
 
 instance RunMessage Overzealous where
   runMessage msg e@(Overzealous attrs) = case msg of
-    Discard (TreacheryTarget tid)
+    Discard _ (TreacheryTarget tid)
       | effectTarget attrs == CardIdTarget (unTreacheryId tid) -> e
       <$ push (DisableEffect $ effectId attrs)
     _ -> Overzealous <$> runMessage msg attrs

@@ -32,7 +32,7 @@ instance RunMessage RitesHowled where
         ([ DiscardTopOfDeck iid 3 (Just $ toTarget attrs)
          | iid <- investigatorIds
          ]
-        <> [Discard $ toTarget attrs]
+        <> [Discard (toSource attrs) $ toTarget attrs]
         )
     DiscardedTopOfDeck iid _cards target | isTarget attrs target -> do
       isAltered <-

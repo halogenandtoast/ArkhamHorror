@@ -55,5 +55,5 @@ instance RunMessage Overgrowth where
       push $ chooseOne iid $ map beginSkillTest [SkillCombat, SkillIntellect]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> Overgrowth <$> runMessage msg attrs

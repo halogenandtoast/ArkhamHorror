@@ -13,6 +13,7 @@ import Arkham.Classes
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Slot
+import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Runner
 
@@ -31,7 +32,7 @@ instance RunMessage Straitjacket where
         $ AssetControlledBy (InvestigatorWithId iid)
         <> assetIs Assets.straitjacket
       if alreadyInStraitJacket
-        then t <$ push (Discard $ toTarget attrs)
+        then t <$ push (Discard GameSource $ toTarget attrs)
         else do
           returnableAssets <-
             selectList

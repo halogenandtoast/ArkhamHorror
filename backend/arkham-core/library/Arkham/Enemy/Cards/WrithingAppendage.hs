@@ -42,8 +42,9 @@ instance HasAbilities WrithingAppendage where
 
 instance RunMessage WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      e <$ push (RandomDiscard iid)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ RandomDiscard iid (toSource attrs) AnyCard
+      pure e
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       -- TODO: Damage here should not be dealt from an investigator to avoid
       -- triggering any abilities

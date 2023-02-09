@@ -49,7 +49,7 @@ instance RunMessage ArchaicGlyphs where
       case assetPlacement attrs of
         InPlayArea controllerId -> do
           pushAll
-            [ Discard (toTarget attrs)
+            [ Discard (toSource attrs) (toTarget attrs)
             , TakeResources controllerId 5 (toAbilitySource attrs 2) False
             , Record YouHaveTranslatedTheGlyphs
             ]

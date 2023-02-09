@@ -32,7 +32,7 @@ instance RunMessage ScrollOfProphecies where
       investigators <- forToSnd investigatorIds $ \i -> drawCards i attrs 3
       push $ chooseOne
         iid
-        [ targetLabel iid' [drawing, ChooseAndDiscardCard iid']
+        [ targetLabel iid' [drawing, ChooseAndDiscardCard iid' (toAbilitySource attrs 1)]
         | (iid', drawing) <- investigators
         ]
       pure a

@@ -30,7 +30,7 @@ instance RunMessage Lucky3 where
             skillType = skillTestSkillType skillTest
           drawing <- drawCards iid attrs 1
           pushAll
-            [ Discard (toTarget attrs)
+            [ discard attrs
             , drawing
             , skillTestModifier
               (toSource attrs)

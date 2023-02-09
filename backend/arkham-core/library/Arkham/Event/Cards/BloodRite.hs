@@ -38,7 +38,7 @@ instance RunMessage BloodRite where
           windows
           1
           (DiscardCardPayment [])
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     PayForCardAbility iid source windows 1 payment@(DiscardCardPayment discardedCards)
@@ -52,7 +52,7 @@ instance RunMessage BloodRite where
               $ (chooseOne iid
                 $ [ TargetLabel
                       (CardIdTarget $ toCardId card)
-                      [ DiscardCard iid (toCardId card)
+                      [ DiscardCard iid (toSource attrs) (toCardId card)
                       , PayForCardAbility
                         iid
                         source

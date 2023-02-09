@@ -62,7 +62,7 @@ instance RunMessage MistsOfRlyehEffect where
     RevealToken _ iid token -> case effectTarget of
       InvestigatorTarget iid' | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (push $ ChooseAndDiscardCard iid)
+        (push $ ChooseAndDiscardCard iid effectSource)
       _ -> pure e
     SkillTestEnds _ _ -> do
       case effectTarget of

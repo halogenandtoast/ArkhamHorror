@@ -38,7 +38,7 @@ instance RunMessage GetOverHere where
               ]
           | enemy <- enemies
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> GetOverHere <$> runMessage msg attrs

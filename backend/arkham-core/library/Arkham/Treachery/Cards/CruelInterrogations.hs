@@ -63,6 +63,6 @@ instance RunMessage CruelInterrogations where
       pure t
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ Discard (toTarget attrs)
+        push $ Discard (toSource attrs) (toTarget attrs)
         pure t
     _ -> CruelInterrogations <$> runMessage msg attrs

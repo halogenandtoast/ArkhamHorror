@@ -48,5 +48,5 @@ instance RunMessage InsatiableBloodlust where
             push (AttachTreachery treacheryId (EnemyTarget eid))
         InsatiableBloodlust <$> runMessage msg attrs
       UseCardAbility _ source 1 _ _ | isSource attrs source ->
-        t <$ push (Discard $ toTarget attrs)
+        t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
       _ -> InsatiableBloodlust <$> runMessage msg attrs

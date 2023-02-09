@@ -28,6 +28,6 @@ instance RunMessage BuryThemDeep where
       -> do
         push $ AddToVictory (toTarget attrs)
         e <$ replaceMessage
-          (Discard $ EnemyTarget enemyId)
+          (Discard (toSource attrs) $ EnemyTarget enemyId)
           [AddToVictory (EnemyTarget enemyId)]
     _ -> BuryThemDeep <$> runMessage msg attrs

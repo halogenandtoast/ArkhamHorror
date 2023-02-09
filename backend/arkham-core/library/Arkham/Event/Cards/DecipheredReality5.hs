@@ -44,7 +44,7 @@ instance RunMessage DecipheredReality5 where
           (Just $ toTarget attrs)
           skillType
           False
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     Successful (Action.Investigate, actionTarget) iid source target n

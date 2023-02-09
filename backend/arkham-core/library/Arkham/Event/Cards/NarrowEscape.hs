@@ -31,7 +31,7 @@ instance RunMessage NarrowEscape where
           (EffectModifiers $ toModifiers attrs [AnySkillValue 2])
           (toSource attrs)
           (InvestigatorTarget iid)
-        , Discard (EventTarget eid)
+        , discard attrs
         ]
       pure e
     _ -> NarrowEscape <$> runMessage msg attrs

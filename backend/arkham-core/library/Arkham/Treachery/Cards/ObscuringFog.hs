@@ -52,5 +52,5 @@ instance RunMessage ObscuringFog where
         $ LocationTarget currentLocationId
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> ObscuringFog <$> runMessage msg attrs

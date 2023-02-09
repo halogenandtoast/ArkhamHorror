@@ -23,6 +23,6 @@ instance RunMessage SneakAttack where
       enemies <- selectList $ ExhaustedEnemy <> enemiesColocatedWith you
       pushAll
         $ [ EnemyDamage enemy $ nonAttack attrs 2 | enemy <- enemies ]
-        <> [Discard $ toTarget attrs]
+        <> [discard attrs]
       pure e
     _ -> SneakAttack <$> runMessage msg attrs

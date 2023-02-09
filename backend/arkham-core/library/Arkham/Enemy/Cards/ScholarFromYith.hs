@@ -50,7 +50,7 @@ instance HasAbilities ScholarFromYith where
 instance RunMessage ScholarFromYith where
   runMessage msg e@(ScholarFromYith attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll [RandomDiscard iid, RandomDiscard iid]
+      pushAll [RandomDiscard iid (toSource attrs) AnyCard, RandomDiscard iid (toSource attrs) AnyCard]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ BeginSkillTest

@@ -32,11 +32,11 @@ instance RunMessage Lockpicks where
     PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
       case effectSource attrs of
         AssetSource aid ->
-          e <$ pushAll [Discard $ AssetTarget aid, DisableEffect $ toId attrs]
+          e <$ pushAll [Discard (effectSource attrs) $ AssetTarget aid, DisableEffect $ toId attrs]
         _ -> error "lockpicks is an asset"
     FailedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
       case effectSource attrs of
         AssetSource aid ->
-          e <$ pushAll [Discard $ AssetTarget aid, DisableEffect $ toId attrs]
+          e <$ pushAll [Discard (effectSource attrs) $ AssetTarget aid, DisableEffect $ toId attrs]
         _ -> error "lockpicks is an asset"
     _ -> Lockpicks <$> runMessage msg attrs

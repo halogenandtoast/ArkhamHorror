@@ -60,5 +60,5 @@ instance RunMessage UnhallowedCountry where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> UnhallowedCountry <$> runMessage msg attrs

@@ -57,7 +57,7 @@ instance RunMessage ForbiddenTome where
           iid
           [ Label
             "Discard Forbidden Tome"
-            [Discard (toTarget attrs), Record YouHaveTranslatedTheTome]
+            [Discard (toAbilitySource attrs 1) (toTarget attrs), Record YouHaveTranslatedTheTome]
           , Label "Do not discard Forbidden Tome" []
           ]
       pure a

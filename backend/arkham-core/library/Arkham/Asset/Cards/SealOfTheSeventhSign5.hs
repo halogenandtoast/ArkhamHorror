@@ -37,7 +37,7 @@ instance RunMessage SealOfTheSeventhSign5 where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ SpendUses (toTarget attrs) Charge 1
       pure a
-    Discard (isTarget attrs -> True) -> do
+    Discard _ (isTarget attrs -> True) -> do
       push $ RemoveFromGame (toTarget attrs)
       pure a
     _ -> SealOfTheSeventhSign5 <$> runMessage msg attrs

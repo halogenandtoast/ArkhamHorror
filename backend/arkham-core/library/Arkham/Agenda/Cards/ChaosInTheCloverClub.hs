@@ -38,12 +38,10 @@ instance RunMessage ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
-      a <$ pushAll [ Discard $ EnemyTarget eid | eid <- criminals ]
+      pushAll [ Discard (toSource attrs) $ EnemyTarget eid | eid <- criminals ]
+      pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ push
-        (chooseOne
-          leadInvestigatorId
-          [Label "Continue" [ScenarioResolution $ Resolution 4]]
-        )
+      push $ chooseOne leadInvestigatorId [Label "Continue" [ScenarioResolution $ Resolution 4]]
+      pure a
     _ -> ChaosInTheCloverClub <$> runMessage msg attrs

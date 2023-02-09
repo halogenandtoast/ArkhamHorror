@@ -37,11 +37,11 @@ instance RunMessage TorturousChords where
         pure $ TorturousChords $ attrs & resourcesL .~ n
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ Discard $ toTarget attrs
+        push $ Discard (toSource attrs) $ toTarget attrs
         pure t
     PlayCard iid _ _ _ False | treacheryOnInvestigator iid attrs -> do
       when
         (treacheryResources attrs <= 1)
-        (push $ Discard $ toTarget attrs)
+        (push $ Discard (toSource attrs) $ toTarget attrs)
       pure $ TorturousChords $ attrs & resourcesL %~ (max 0 . subtract 1)
     _ -> TorturousChords <$> runMessage msg attrs

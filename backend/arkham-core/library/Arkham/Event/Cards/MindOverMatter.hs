@@ -32,7 +32,7 @@ instance RunMessage MindOverMatter where
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)
-        , Discard (EventTarget eid)
+        , discard attrs
         ]
     _ -> MindOverMatter <$> runMessage msg attrs
 

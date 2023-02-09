@@ -61,5 +61,5 @@ instance RunMessage NobodysHome where
           : [ Surge iid source | clueless ]
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> NobodysHome <$> runMessage msg attrs

@@ -56,7 +56,7 @@ instance RunMessage Entombed where
       push $ chooseOne iid [testChoice SkillAgility, testChoice SkillCombat]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         pure $ Entombed $ attrs `With` Metadata

@@ -60,5 +60,5 @@ instance RunMessage RiftSeeker where
         ]
       pure e
     UseCardAbility _iid source 2 _ _ | isSource attrs source ->
-      e <$ push (Discard $ toTarget attrs)
+      e <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> RiftSeeker <$> runMessage msg attrs

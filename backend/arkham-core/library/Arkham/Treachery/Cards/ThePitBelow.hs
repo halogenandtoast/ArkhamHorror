@@ -40,14 +40,14 @@ instance RunMessage ThePitBelow where
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       case mlid of
-        Nothing -> push (Discard $ toTarget attrs)
+        Nothing -> push (Discard (toSource attrs) $ toTarget attrs)
         Just lid -> do
           hasThePitBelow <-
             selectAny
             $ TreacheryAt (LocationWithId lid)
             <> treacheryIs Cards.thePitBelow
           if hasThePitBelow
-            then pushAll [Discard (toTarget attrs), Surge iid (toSource attrs)]
+            then pushAll [Discard (toSource attrs) (toTarget attrs), Surge iid (toSource attrs)]
             else push (AttachTreachery (toId attrs) $ LocationTarget lid)
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
@@ -58,6 +58,6 @@ instance RunMessage ThePitBelow where
         $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 3 0
           | iid <- iids
           ]
-        <> [Discard $ toTarget attrs]
+        <> [Discard (toAbilitySource attrs 1) $ toTarget attrs]
       pure t
     _ -> ThePitBelow <$> runMessage msg attrs

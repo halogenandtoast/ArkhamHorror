@@ -50,10 +50,10 @@ instance RunMessage RealmOfMadness where
       let
         discardAsset (asset, cost) = targetLabel
           asset
-          [Discard (AssetTarget asset), RevelationChoice iid (toSource attrs) (n - cost)]
+          [Discard (toSource attrs) (AssetTarget asset), RevelationChoice iid (toSource attrs) (n - cost)]
         discardHandCard card = TargetLabel
           (CardIdTarget $ toCardId card)
-          [ Discard (CardIdTarget $ toCardId card)
+          [ Discard (toSource attrs) (CardIdTarget $ toCardId card)
           , RevelationChoice
             iid
             (toSource attrs)

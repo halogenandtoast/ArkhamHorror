@@ -213,6 +213,10 @@ pattern AssetCard :: CardMatcher
 pattern AssetCard <- CardWithType AssetType where
   AssetCard = CardWithType AssetType
 
+pattern SkillCard :: CardMatcher
+pattern SkillCard <- CardWithType SkillType where
+  SkillCard = CardWithType SkillType
+
 pattern IsAlly :: CardMatcher
 pattern IsAlly <-
   CardMatches [CardWithType AssetType, CardWithTrait Ally] where

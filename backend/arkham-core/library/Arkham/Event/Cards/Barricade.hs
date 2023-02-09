@@ -47,5 +47,5 @@ instance RunMessage Barricade where
       lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      e <$ push (Discard $ toTarget attrs)
+      e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> Barricade <$> runMessage msg attrs

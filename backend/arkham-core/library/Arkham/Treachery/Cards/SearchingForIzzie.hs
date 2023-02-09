@@ -64,7 +64,7 @@ instance RunMessage SearchingForIzzie where
           False
         pure t
     Successful (Action.Investigate, _) _ _ target _ | isTarget attrs target ->
-      t <$ push (Discard target)
+      t <$ push (Discard (toAbilitySource attrs 1) target)
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ push (SufferTrauma investigator 0 1)

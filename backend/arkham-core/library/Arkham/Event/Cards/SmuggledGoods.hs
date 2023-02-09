@@ -56,7 +56,7 @@ instance RunMessage SmuggledGoods where
             | hasIllicitCardInDiscard
             ]
           )
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> SmuggledGoods <$> runMessage msg attrs

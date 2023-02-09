@@ -35,6 +35,6 @@ instance RunMessage ScroungeForSupplies where
           [ TargetLabel (CardIdTarget $ toCardId target) [AddToHand iid target]
           | target <- targets
           ]
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
     _ -> ScroungeForSupplies <$> runMessage msg attrs

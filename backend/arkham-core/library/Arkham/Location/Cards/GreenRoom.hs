@@ -44,6 +44,6 @@ instance RunMessage GreenRoom where
         (InvestigatorTarget iid)
         (SkillModifier SkillIntellect 3)
       , Investigate iid (toId attrs) source Nothing SkillIntellect False
-      , DiscardHand iid
+      , DiscardHand iid (toAbilitySource attrs 1)
       ]
     _ -> GreenRoom <$> runMessage msg attrs

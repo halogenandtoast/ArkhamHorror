@@ -41,7 +41,7 @@ instance RunMessage HiredMuscle1 where
       (chooseOne
         iid
         [ Label "Pay 1 Resource to Hired Muscle" [SpendResources iid 1]
-        , Label "Discard Hired Muscle" [Discard $ toTarget attrs]
+        , Label "Discard Hired Muscle" [Discard (toAbilitySource attrs 1) $ toTarget attrs]
         ]
       )
     _ -> HiredMuscle1 <$> runMessage msg attrs

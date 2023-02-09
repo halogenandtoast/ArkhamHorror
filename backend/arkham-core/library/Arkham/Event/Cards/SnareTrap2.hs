@@ -60,5 +60,5 @@ instance RunMessage SnareTrap2 where
           Ready t -> t == target
           _ -> False
         )
-        (const [Discard $ toTarget attrs])
+        (const [Discard (toAbilitySource attrs 2) $ toTarget attrs])
     _ -> SnareTrap2 <$> runMessage msg attrs

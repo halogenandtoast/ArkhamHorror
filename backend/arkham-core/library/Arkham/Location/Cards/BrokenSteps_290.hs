@@ -44,7 +44,7 @@ instance RunMessage BrokenSteps_290 where
           <$> scenarioField ScenarioDiscard
       let
         choices =
-          [ Label "Discard an asset" [ChooseAndDiscardAsset iid AnyAsset]
+          [ Label "Discard an asset" [ChooseAndDiscardAsset iid (toAbilitySource attrs 1) AnyAsset]
           | hasAssets
           ]
           <> [ Label

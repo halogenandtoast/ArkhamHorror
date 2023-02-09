@@ -22,7 +22,7 @@ instance RunMessage LessonLearned2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
         [ InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
-        , Discard (toTarget attrs)
+        , discard attrs
         ]
       pure e
     _ -> LessonLearned2 <$> runMessage msg attrs

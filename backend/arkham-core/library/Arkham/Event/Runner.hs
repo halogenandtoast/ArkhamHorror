@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Event.Runner
   ( module X
+  , discard
   ) where
 
 import Arkham.Event.Types as X
@@ -12,7 +13,11 @@ import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
+import Arkham.Source
 import Arkham.Target
+
+discard :: EventAttrs -> Message
+discard = Discard GameSource . toTarget
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do
@@ -28,11 +33,11 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   InvestigatorEliminated iid
     | eventAttachedTarget a == Just (InvestigatorTarget iid) -> a
-    <$ push (Discard (EventTarget eventId))
-  Discard target | eventAttachedTarget a == Just target -> do
+    <$ push (Discard GameSource (EventTarget eventId))
+  Discard _ target | eventAttachedTarget a == Just target -> do
     pushAll
       $ [ UnsealToken token | token <- eventSealedTokens ]
-      <> [Discard $ toTarget a]
+      <> [Discard GameSource $ toTarget a]
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
   Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True

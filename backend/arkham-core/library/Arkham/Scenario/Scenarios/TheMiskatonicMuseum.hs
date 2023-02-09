@@ -22,6 +22,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Scenarios.TheMiskatonicMuseum.Story
+import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -203,7 +204,7 @@ instance RunMessage TheMiskatonicMuseum where
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard, FromVoid]
           (cardIs Enemies.huntingHorror)
-        ElderThing -> push $ ChooseAndDiscardAsset iid AnyAsset
+        ElderThing -> push $ ChooseAndDiscardAsset iid (TokenEffectSource ElderThing) AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getJustLocation iid

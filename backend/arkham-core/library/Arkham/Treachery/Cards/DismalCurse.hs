@@ -38,7 +38,7 @@ instance RunMessage DismalCurse where
   runMessage msg t@(DismalCurse attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard $ toTarget attrs
+      , Discard (toSource attrs) $ toTarget attrs
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

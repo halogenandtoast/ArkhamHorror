@@ -47,5 +47,5 @@ instance RunMessage SordidAndSilent where
           pure t
         _ -> pure t
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> SordidAndSilent <$> runMessage msg attrs

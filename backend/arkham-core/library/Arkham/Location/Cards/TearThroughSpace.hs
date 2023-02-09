@@ -41,7 +41,7 @@ instance RunMessage TearThroughSpace where
         [ Label
           "Place 1 doom on Tear through Space"
           [PlaceDoom (toTarget attrs) 1]
-        , Label "Discard Tear through Space" [Discard (toTarget attrs)]
+        , Label "Discard Tear through Space" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
         ]
       )
     Revelation _ source | isSource attrs source -> do

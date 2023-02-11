@@ -44,6 +44,7 @@ instance RunMessage Straitjacket where
             (map (ReturnToHand iid . AssetTarget) returnableAssets
             <> [TakeControlOfSetAsideAsset iid (PlayerCard asset)]
             )
-    After (Revelation _ source) | isSource attrs source ->
-      t <$ push (Discarded (toTarget attrs) (toCard attrs)) -- Using discarded to remove existence)
+    After (Revelation _ source) | isSource attrs source -> do
+      push $ Discarded (toTarget attrs) (toSource attrs) (toCard attrs) -- Using discarded to remove existence)
+      pure t
     _ -> Straitjacket <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance RunMessage ArcaneBarrier where
             [ Label "Cancel Move" []
             , Label
               "Discard top 5 cards of your deck"
-              (DiscardTopOfDeck iid 5 Nothing : moveMessages)
+              (DiscardTopOfDeck iid 5 effectSource Nothing : moveMessages)
             ]
           , DisableEffect effectId
           ]

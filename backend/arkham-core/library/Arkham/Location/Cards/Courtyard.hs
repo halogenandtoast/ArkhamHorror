@@ -36,14 +36,18 @@ instance HasAbilities Courtyard where
 
 instance RunMessage Courtyard where
   runMessage msg l@(Courtyard attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (DiscardTopOfEncounterDeck iid 1 (Just $ toTarget attrs))
-    DiscardedTopOfEncounterDeck iid [card] target | isTarget attrs target -> do
-      l <$ when
-        (toCardType card == EnemyType)
-        (pushAll
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ DiscardTopOfEncounterDeck
+        iid
+        1
+        (toAbilitySource attrs 1)
+        (Just $ toTarget attrs)
+      pure l
+    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target ->
+      do
+        when (toCardType card == EnemyType) $ pushAll
           [ RemoveFromEncounterDiscard card
           , InvestigatorDrewEncounterCard iid card
           ]
-        )
+        pure l
     _ -> Courtyard <$> runMessage msg attrs

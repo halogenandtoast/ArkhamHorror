@@ -31,7 +31,7 @@ instance RunMessage TreacheryAttrs where
       a <$ push (Discard GameSource $ toTarget a)
     AddTreacheryToHand iid tid | tid == treacheryId ->
       pure $ a & placementL .~ TreacheryInHandOf iid
-    Discarded target _ | target `elem` treacheryAttachedTarget a ->
+    Discarded target _ _ | target `elem` treacheryAttachedTarget a ->
       a <$ push (Discard GameSource $ toTarget a)
     After (Revelation _ source) | isSource a source -> a <$ when
       (treacheryPlacement == TreacheryLimbo)

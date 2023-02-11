@@ -62,7 +62,7 @@ instance RunMessage YogSothoth where
                 (Just $ EffectInt discardCount)
                 source
                 (InvestigatorTarget iid)
-              , DiscardTopOfDeck iid discardCount Nothing
+              , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
               ]
           | discardCount <- [0 .. enemySanityDamage]
           ]

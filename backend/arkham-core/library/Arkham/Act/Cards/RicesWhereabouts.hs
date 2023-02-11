@@ -39,6 +39,7 @@ instance HasAbilities RicesWhereabouts where
     , mkAbility x 2 $ ForcedAbility $ Discarded
       Timing.When
       You
+      AnySource
       (cardIs Assets.jazzMulligan)
     , mkAbility x 3 $ Objective $ ForcedAbility $ TookControlOfAsset
       Timing.When
@@ -51,11 +52,11 @@ instance RunMessage RicesWhereabouts where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
-      a <$ push (DiscardTopOfEncounterDeck iid discardCount Nothing)
+      a <$ push (DiscardTopOfEncounterDeck iid discardCount (toAbilitySource attrs 1) Nothing)
     UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
       let
         mCard = flip firstJust windows' $ \case
-          Window _ (Window.Discarded _ card)
+          Window _ (Window.Discarded _ _ card)
             | toCardDef card == Assets.jazzMulligan -> Just card
           _ -> Nothing
       case mCard of

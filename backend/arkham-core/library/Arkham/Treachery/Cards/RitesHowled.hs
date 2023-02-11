@@ -29,12 +29,12 @@ instance RunMessage RitesHowled where
     Revelation _iid source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       t <$ pushAll
-        ([ DiscardTopOfDeck iid 3 (Just $ toTarget attrs)
+        ([ DiscardTopOfDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
          | iid <- investigatorIds
          ]
         <> [Discard (toSource attrs) $ toTarget attrs]
         )
-    DiscardedTopOfDeck iid _cards target | isTarget attrs target -> do
+    DiscardedTopOfDeck iid _cards _ target | isTarget attrs target -> do
       isAltered <-
         selectAny $ LocationWithTrait Altered <> LocationWithInvestigator
           (InvestigatorWithId iid)

@@ -29,10 +29,10 @@ instance RunMessage HuntedByByakhee where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         t <$ pushAll
-          [ DiscardTopOfEncounterDeck iid n (Just $ toTarget attrs)
+          [ DiscardTopOfEncounterDeck iid n (toSource attrs) (Just $ toTarget attrs)
           , ShuffleDeck Deck.EncounterDeck
           ]
-    DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
+    DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let
         isByakhee = member Byakhee . cdCardTraits . toCardDef
         isOmen = member Omen . cdCardTraits . toCardDef

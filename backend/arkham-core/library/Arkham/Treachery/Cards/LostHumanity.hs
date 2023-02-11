@@ -38,6 +38,6 @@ instance RunMessage LostHumanity where
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
       -> do
-        push $ DiscardTopOfDeck iid n Nothing
+        push $ DiscardTopOfDeck iid n (toSource attrs) Nothing
         pure t
     _ -> LostHumanity <$> runMessage msg attrs

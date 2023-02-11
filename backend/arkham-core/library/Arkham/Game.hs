@@ -3705,7 +3705,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . actsL %~ HashMap.filterWithKey (\k _ -> k /= aid)
   Discard _ (AgendaTarget aid) ->
     pure $ g & entitiesL . agendasL %~ HashMap.filterWithKey (\k _ -> k /= aid)
-  Discarded (EnemyTarget eid) _ -> do
+  Discarded (EnemyTarget eid) _ _ -> do
     enemy <- getEnemy eid
     card <- field EnemyCard eid
     case card of
@@ -4120,9 +4120,9 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & enemiesInVoidL %~ deleteMap eid
-  Discarded (InvestigatorTarget iid) card -> do
+  Discarded (InvestigatorTarget iid) source card -> do
     push =<< checkWindows
-      ((`Window` Window.Discarded iid card) <$> [Timing.When, Timing.After])
+      ((`Window` Window.Discarded iid source card) <$> [Timing.When, Timing.After])
     pure g
   InvestigatorAssignDamage iid' (InvestigatorSource iid) _ n 0 | n > 0 -> do
     let
@@ -4330,9 +4330,9 @@ runGameMessage msg g = case msg of
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility _ -> pure $ g & activeAbilitiesL %~ drop 1
-  Discarded (AssetTarget aid) (EncounterCard _) ->
+  Discarded (AssetTarget aid) _ (EncounterCard _) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid
-  Discarded (AssetTarget aid) _ ->
+  Discarded (AssetTarget aid) _ _ ->
     flip catch (\(_ :: MissingEntity) -> pure g) $ do
       asset <- getAsset aid
       let
@@ -4377,7 +4377,7 @@ runGameMessage msg g = case msg of
       & inDiscardEntitiesL
       . at iid
       ?~ (dEntities & eventsL . at (toId event') ?~ event')
-  Discarded (TreacheryTarget aid) _ -> do
+  Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid
     pure g
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid

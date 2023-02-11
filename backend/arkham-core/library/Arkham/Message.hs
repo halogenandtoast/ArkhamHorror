@@ -285,12 +285,12 @@ data Message
   | DiscardHand InvestigatorId Source
   | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
   | DiscardUntilFirst InvestigatorId Source CardMatcher
-  | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
-  | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
-  | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int (Maybe Target) [EncounterCard]
-  | Discarded Target Card
-  | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Target
-  | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
+  | DiscardTopOfDeck InvestigatorId Int Source (Maybe Target)
+  | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
+  | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int Source (Maybe Target) [EncounterCard]
+  | Discarded Target Source Card
+  | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Source Target
+  | DiscardedTopOfDeck InvestigatorId [PlayerCard] Source Target
   | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
   | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId

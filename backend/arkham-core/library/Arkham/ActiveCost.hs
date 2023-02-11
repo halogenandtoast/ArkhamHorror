@@ -278,7 +278,7 @@ instance RunMessage ActiveCost where
             InvestigatorDeck
             (map PlayerCard . take n . unDeck)
             iid
-          push $ DiscardTopOfDeck iid n Nothing
+          push $ DiscardTopOfDeck iid n source Nothing
           withPayment $ DiscardCardPayment cards
         ExhaustCost target -> do
           push (Exhaust target)

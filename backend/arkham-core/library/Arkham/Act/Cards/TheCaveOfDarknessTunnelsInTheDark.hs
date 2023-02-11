@@ -68,7 +68,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
       iids <- getInvestigatorIds
       pushAll
         $ townHallMessages
-        <> [ DiscardTopOfEncounterDeck iid 1 (Just $ toTarget attrs) | iid <- iids ]
+        <> [ DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids ]
         <> [ AdvanceToAct
                (actDeckId attrs)
                Acts.strangeOccurences
@@ -76,7 +76,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
                (toSource attrs)
            ]
       pure a
-    DiscardedTopOfEncounterDeck iid [card] target | isTarget attrs target -> do
+    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
       when (toCardType card == TreacheryType) $ pushAll
         [ RemoveFromEncounterDiscard card
         , InvestigatorDrewEncounterCard iid card

@@ -5,12 +5,12 @@ module Arkham.Treachery.Cards.VisionsOfFuturesPast
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
@@ -27,5 +27,7 @@ instance RunMessage VisionsOfFuturesPast where
       Revelation iid source | isSource attrs source ->
         t <$ push (RevelationSkillTest iid source SkillWillpower 5)
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-        | tid == treacheryId -> t <$ push (DiscardTopOfDeck iid n Nothing)
+        | tid == treacheryId -> do
+          push (DiscardTopOfDeck iid n (toSource attrs) Nothing)
+          pure t
       _ -> VisionsOfFuturesPast <$> runMessage msg attrs

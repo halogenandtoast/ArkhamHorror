@@ -67,7 +67,7 @@ data WindowType
   | DealtHorror Source Target
   | DeckHasNoCards InvestigatorId
   | Defeated Source
-  | Discarded InvestigatorId Card
+  | Discarded InvestigatorId Source Card
   | DiscoverClues InvestigatorId LocationId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier

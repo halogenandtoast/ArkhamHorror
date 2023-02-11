@@ -36,5 +36,10 @@ instance RunMessage HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
-      l <$ when (horror > 0) (push $ DiscardTopOfDeck iid horror Nothing)
+      when (horror > 0) $ push $ DiscardTopOfDeck
+        iid
+        horror
+        (toAbilitySource attrs 1)
+        Nothing
+      pure l
     _ -> HumanitiesBuilding <$> runMessage msg attrs

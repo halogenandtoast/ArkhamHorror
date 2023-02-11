@@ -151,7 +151,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> True
 
     usedAbilities' <- filterM filterAbility investigatorUsedAbilities
-        
+
     pure $ a & usedAbilitiesL .~ usedAbilities'
   ResetGame ->
     pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
@@ -530,9 +530,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & (deckL .~ Deck deck')
   Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-  Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  Discarded (EnemyTarget eid) _ _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
-  Discarded (AssetTarget aid) (PlayerCard card)
+  Discarded (AssetTarget aid) _ (PlayerCard card)
     | aid `elem` investigatorAssets -> do
       let
         slotTypes = cdSlots $ toCardDef card
@@ -550,7 +550,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (assetsL %~ deleteSet aid)
         & (discardL %~ (card :))
         & (slotsL %~ removeFromSlots aid)
-  Discarded (AssetTarget aid) (EncounterCard _)
+  Discarded (AssetTarget aid) _ (EncounterCard _)
     | aid `elem` investigatorAssets
     -> pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets ->
@@ -1635,7 +1635,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (remainingActionsL .~ actionsForTurn)
       & (additionalActionsL %~ (additionalActions <>))
       & (actionsTakenL .~ mempty)
-  DiscardTopOfDeck iid n mTarget | iid == investigatorId -> do
+  DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
     let (cs, deck') = splitAt n (unDeck investigatorDeck)
     windowMsgs <- if null deck'
       then pure <$> checkWindows
@@ -1644,7 +1644,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       $ windowMsgs
       <> [ DeckHasNoCards investigatorId mTarget | null deck' ]
-      <> [ DiscardedTopOfDeck iid cs target | target <- maybeToList mTarget ]
+      <> [ DiscardedTopOfDeck iid cs source target | target <- maybeToList mTarget ]
     pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
   DiscardUntilFirst iid source matcher | iid == investigatorId -> do
     let

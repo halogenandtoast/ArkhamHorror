@@ -425,7 +425,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   DefeatedAddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     pure $ a & (victoryDisplayL %~ (card :))
-  Discarded (EnemyTarget eid) _ -> do
+  Discarded (EnemyTarget eid) _ _ -> do
     card <- field EnemyCard eid
     case card of
       PlayerCard _ -> pure a
@@ -596,7 +596,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push (FoundCards foundCards)
 
     pure $ a & (encounterDeckL .~ Deck encounterDeck)
-  Discarded (AssetTarget _) (EncounterCard ec) ->
+  Discarded (AssetTarget _) _ (EncounterCard ec) ->
     -- TODO: determine why this was only specified for Asset
     pure $ a & discardL %~ (ec :)
   ResignWith (AssetTarget aid) -> do
@@ -754,28 +754,30 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     let (cards, encounterDeck) = splitAt n $ unDeck scenarioEncounterDeck
     push (RequestedEncounterCards target cards)
     pure $ a & encounterDeckL .~ Deck encounterDeck
-  DiscardTopOfEncounterDeck iid n mtarget ->
-    a <$ push (DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget [])
-  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 mtarget cards ->
+  DiscardTopOfEncounterDeck iid n source mtarget ->
+    a <$ push (DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget [])
+  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards ->
     a <$ case mtarget of
       Nothing -> pure ()
-      Just target -> push (DiscardedTopOfEncounterDeck iid cards target)
-  DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget discardedCards ->
+      Just target -> push (DiscardedTopOfEncounterDeck iid cards source target)
+  DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards ->
     case unDeck scenarioEncounterDeck of
       [] -> do
         push $ DiscardTopOfEncounterDeckWithDiscardedCards
           iid
           0
+          source
           mtarget
           discardedCards
         pure a
       (card : cards) -> do
         pushAll
-          $ Discarded (InvestigatorTarget iid) (EncounterCard card)
+          $ Discarded (InvestigatorTarget iid) source (EncounterCard card)
           : [ ShuffleEncounterDiscardBackIn | null cards ]
           <> [ DiscardTopOfEncounterDeckWithDiscardedCards
                  iid
                  (n - 1)
+                 source
                  mtarget
                  (card : discardedCards)
              ]

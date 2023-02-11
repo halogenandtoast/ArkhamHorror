@@ -27,15 +27,15 @@ instance RunMessage PassageIntoTheVeil where
       huntingHorrorAtYourLocation <-
         selectAny $ enemyIs Enemies.huntingHorror <> EnemyAt
           (LocationWithInvestigator $ InvestigatorWithId iid)
-      t <$ push
-        (BeginSkillTest
+      push
+        $ BeginSkillTest
           iid
           source
           (InvestigatorTarget iid)
           Nothing
           SkillWillpower
           (if huntingHorrorAtYourLocation then 5 else 3)
-        )
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         assetIds <- selectList (AssetControlledBy You)
@@ -44,7 +44,7 @@ instance RunMessage PassageIntoTheVeil where
             iid
             [ Label
               "Discard the top 5 cards of your deck"
-              [DiscardTopOfDeck iid 5 Nothing]
+              [DiscardTopOfDeck iid 5 (toSource attrs) Nothing]
             , Label
               "Take 1 direct damage and deal 1 damage to each of your Ally assets"
               (InvestigatorDirectDamage iid source 1 0

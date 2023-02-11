@@ -21,6 +21,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ExtracurricularActivity.FlavorText
+import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
@@ -132,6 +133,7 @@ instance RunMessage ExtracurricularActivity where
       (DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
+        (TokenEffectSource ElderThing)
         (Just $ TokenTarget drawnToken)
       )
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
@@ -139,9 +141,10 @@ instance RunMessage ExtracurricularActivity where
         Skull -> push $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
+          (TokenEffectSource Skull)
           Nothing
         _ -> pure ()
-    DiscardedTopOfDeck _iid cards target@(TokenTarget token) ->
+    DiscardedTopOfDeck _iid cards _ target@(TokenTarget token) ->
       s <$ case tokenFace token of
         ElderThing -> do
           let

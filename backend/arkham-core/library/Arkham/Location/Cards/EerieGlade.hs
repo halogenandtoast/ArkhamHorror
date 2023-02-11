@@ -43,5 +43,10 @@ instance RunMessage EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
-      l <$ push (DiscardTopOfDeck iid (actionRemainingCount * 2) Nothing)
+      push $ DiscardTopOfDeck
+        iid
+        (actionRemainingCount * 2)
+        (toAbilitySource attrs 1)
+        Nothing
+      pure l
     _ -> EerieGlade <$> runMessage msg attrs

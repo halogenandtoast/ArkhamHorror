@@ -24,7 +24,6 @@ default-extensions:
 - TypeOperators
 - UndecidableInstances
 - ViewPatterns
-- DeepSubsumption
 - StrictData
 
 library:

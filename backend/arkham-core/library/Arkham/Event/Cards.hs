@@ -1595,10 +1595,10 @@ denyExistence = (event "05032" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Paradox]
   , cdFastWindow = Just $ OrWindowMatcher
-    -- [ DiscardedCardsFromHand You source
+    [ Discarded Timing.When You source AnyCard
     -- , LostResources You source
     -- , LostActions You source
-    [ DealtDamage Timing.When source You
+    , DealtDamage Timing.When source You
     , DealtHorror Timing.When source You
     ]
   }

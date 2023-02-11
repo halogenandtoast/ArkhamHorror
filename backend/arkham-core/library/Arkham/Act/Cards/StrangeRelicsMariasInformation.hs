@@ -57,7 +57,11 @@ instance RunMessage StrangeRelicsMariasInformation where
         $ [ Remember $ IchtacasDestination downtown
           , Remember $ IchtacasDestination rivertown
           ]
-        <> [ DiscardTopOfEncounterDeck iid 1 (Just $ toTarget attrs)
+        <> [ DiscardTopOfEncounterDeck
+               iid
+               1
+               (toSource attrs)
+               (Just $ toTarget attrs)
            | iid <- iids
            ]
         <> [ AdvanceToAct
@@ -67,10 +71,11 @@ instance RunMessage StrangeRelicsMariasInformation where
                (toSource attrs)
            ]
       pure a
-    DiscardedTopOfEncounterDeck iid [card] target | isTarget attrs target -> do
-      when (toCardType card == TreacheryType) $ pushAll
-        [ RemoveFromEncounterDiscard card
-        , InvestigatorDrewEncounterCard iid card
-        ]
-      pure a
+    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target ->
+      do
+        when (toCardType card == TreacheryType) $ pushAll
+          [ RemoveFromEncounterDiscard card
+          , InvestigatorDrewEncounterCard iid card
+          ]
+        pure a
     _ -> StrangeRelicsMariasInformation <$> runMessage msg attrs

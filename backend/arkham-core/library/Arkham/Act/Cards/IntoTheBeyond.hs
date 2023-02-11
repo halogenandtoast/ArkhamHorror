@@ -6,7 +6,6 @@ module Arkham.Act.Cards.IntoTheBeyond
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -37,28 +36,31 @@ instance HasAbilities IntoTheBeyond where
 
 instance RunMessage IntoTheBeyond where
   runMessage msg a@(IntoTheBeyond attrs@ActAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ DiscardTopOfEncounterDeck
+        iid
+        3
+        (toSource attrs)
+        (Just $ toTarget attrs)
+      pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs ->
       a <$ push (AdvanceActDeck actDeckId (toSource attrs))
-    DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
+    DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      a <$ unless
-        (null locationCards)
-        (pushAll
-          [ FocusCards (map EncounterCard locationCards)
-          , chooseOne
-            iid
-            [ TargetLabel
-                (CardIdTarget $ toCardId location)
-                [ RemoveFromEncounterDiscard location
-                , InvestigatorDrewEncounterCard iid location
-                ]
-            | location <- locationCards
-            ]
-          , UnfocusCards
+      unless (null locationCards) $ pushAll
+        [ FocusCards (map EncounterCard locationCards)
+        , chooseOne
+          iid
+          [ TargetLabel
+              (CardIdTarget $ toCardId location)
+              [ RemoveFromEncounterDiscard location
+              , InvestigatorDrewEncounterCard iid location
+              ]
+          | location <- locationCards
           ]
-        )
+        , UnfocusCards
+        ]
+      pure a
     _ -> IntoTheBeyond <$> runMessage msg attrs

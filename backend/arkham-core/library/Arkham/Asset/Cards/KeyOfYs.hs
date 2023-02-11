@@ -46,6 +46,6 @@ instance RunMessage KeyOfYs where
       push $ MovedHorror source (InvestigatorTarget iid) 1
       pure . KeyOfYs $ attrs & horrorL +~ 1
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ DiscardTopOfDeck iid 10 Nothing
+      push $ DiscardTopOfDeck iid 10 (toAbilitySource attrs 2) Nothing
       pure a
     _ -> KeyOfYs <$> runMessage msg attrs

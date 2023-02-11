@@ -22,8 +22,8 @@ pushedIntoTheBeyond = PushedIntoTheBeyond . uncurry4 (baseAttrs "02100")
 instance RunMessage PushedIntoTheBeyond where
   runMessage msg e@(PushedIntoTheBeyond attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId ->
-      e <$ push (DiscardTopOfDeck iid 3 (Just $ EffectTarget eid))
-    DiscardedTopOfDeck iid cards (EffectTarget eid) | eid == effectId ->
+      e <$ push (DiscardTopOfDeck iid 3 effectSource (Just $ EffectTarget eid))
+    DiscardedTopOfDeck iid cards _ (EffectTarget eid) | eid == effectId ->
       case effectMetadata of
         Just (EffectCardCode x) -> e <$ when
           (x `elem` map (cdCardCode . toCardDef) cards)

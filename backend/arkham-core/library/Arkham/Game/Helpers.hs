@@ -1438,9 +1438,12 @@ windowMatches iid source window' = \case
   Matcher.AmongSearchedCards whoMatcher -> case window' of
     Window _ (Window.AmongSearchedCards who) -> matchWho iid who whoMatcher
     _ -> pure False
-  Matcher.Discarded timing whoMatcher cardMatcher -> case window' of
-    Window t (Window.Discarded who card) | t == timing ->
-      (cardMatch card cardMatcher &&) <$> matchWho iid who whoMatcher
+  Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher -> case window' of
+    Window t (Window.Discarded who source' card) | t == timing -> andM
+      [ pure $ cardMatch card cardMatcher
+      , matchWho iid who whoMatcher
+      , sourceMatches source' sourceMatcher
+      ]
     _ -> pure False
   Matcher.AssetWouldBeDiscarded timing assetMatcher -> case window' of
     Window t (Window.WouldBeDiscarded (AssetTarget aid)) | t == timing ->

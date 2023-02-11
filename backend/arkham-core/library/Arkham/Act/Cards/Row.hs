@@ -50,12 +50,12 @@ instance RunMessage Row where
       _ <- popMessageMatching $ \case
         InvestigatorDoDrawEncounterCard iid' -> iid == iid'
         _ -> False
-      a <$ push (DiscardTopOfEncounterDeck iid 5 (Just $ toTarget attrs))
+      a <$ push (DiscardTopOfEncounterDeck iid 5 (toSource attrs) (Just $ toTarget attrs))
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
-    DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
+    DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "Must be at a location")

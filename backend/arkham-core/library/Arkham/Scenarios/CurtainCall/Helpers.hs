@@ -21,7 +21,7 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
     _ -> False
   replaceMessageMatching
     \case
-      Discarded (EnemyTarget eid) _ -> eid == theManInThePallidMask
+      Discarded (EnemyTarget eid) _ _ -> eid == theManInThePallidMask
       _ -> False
     (const [EnemyMove theManInThePallidMask lobbyId])
 

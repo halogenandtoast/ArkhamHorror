@@ -48,7 +48,7 @@ instance RunMessage Yaotl1 where
       push $ CreateEffect "04035" Nothing source (InvestigatorTarget iid)
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ DiscardTopOfDeck iid 1 Nothing
+      push $ DiscardTopOfDeck iid 1 (toAbilitySource attrs 2) Nothing
       pure a
     _ -> Yaotl1 <$> runMessage msg attrs
 

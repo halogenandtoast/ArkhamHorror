@@ -140,10 +140,10 @@ instance RunMessage LocationAttrs where
       AtLocation lid | lid == locationId ->
         pure $ a & eventsL %~ insertSet eid
       _ -> pure $ a & eventsL %~ deleteSet eid
-    Discarded (AssetTarget aid) _ -> pure $ a & assetsL %~ deleteSet aid
+    Discarded (AssetTarget aid) _ _ -> pure $ a & assetsL %~ deleteSet aid
     Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-    Discarded (EnemyTarget eid) _ -> pure $ a & enemiesL %~ deleteSet eid
+    Discarded (EnemyTarget eid) _ _ -> pure $ a & enemiesL %~ deleteSet eid
     PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
     Flipped (AssetSource aid) card | toCardType card /= AssetType ->
       pure $ a & assetsL %~ deleteSet aid

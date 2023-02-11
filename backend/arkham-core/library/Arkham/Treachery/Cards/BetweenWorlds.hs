@@ -41,6 +41,6 @@ instance RunMessage BetweenWorlds where
         ]
       pure t
     After (Revelation _ source) | isSource attrs source -> do
-      push (Discarded (toTarget attrs) (toCard attrs)) -- Using discarded to remove existence)
+      push (Discarded (toTarget attrs) (toSource attrs) (toCard attrs)) -- Using discarded to remove existence)
       pure t
     _ -> BetweenWorlds <$> runMessage msg attrs

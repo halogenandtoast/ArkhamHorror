@@ -39,5 +39,5 @@ instance HasAbilities ServantOfTheLurker where
 instance RunMessage ServantOfTheLurker where
   runMessage msg e@(ServantOfTheLurker attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      e <$ push (DiscardTopOfDeck iid 2 Nothing)
+      e <$ push (DiscardTopOfDeck iid 2 (toAbilitySource attrs 1) Nothing)
     _ -> ServantOfTheLurker <$> runMessage msg attrs

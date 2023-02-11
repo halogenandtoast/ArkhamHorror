@@ -80,7 +80,7 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
 filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack _ eid' _ | eid == eid' -> Nothing
   EnemyAttack _ eid' _ _ | eid == eid' -> Nothing
-  Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
+  Discarded (EnemyTarget eid') _ _ | eid == eid' -> Nothing
   m -> Just m
 
 filterOutEnemyUiMessages :: EnemyId -> UI Message -> Maybe (UI Message)
@@ -784,11 +784,11 @@ instance RunMessage EnemyAttrs where
         <> [afterMsg]
         <> defeatMsgs
       pure a
-    Discard _ target | a `isTarget` target -> do
+    Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
-        <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+        <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
       pure a
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll

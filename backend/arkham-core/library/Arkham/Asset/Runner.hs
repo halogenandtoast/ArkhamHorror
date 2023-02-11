@@ -138,11 +138,11 @@ instance RunMessage AssetAttrs where
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemoveFromPlay $ toSource a)
-    Discard _ target | a `isTarget` target -> do
+    Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       a <$ pushAll
         (windows'
-        <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+        <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
         )
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]

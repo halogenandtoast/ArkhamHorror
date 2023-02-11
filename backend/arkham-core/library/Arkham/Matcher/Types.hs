@@ -518,7 +518,7 @@ data WindowMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
-  | Discarded Timing Who CardMatcher
+  | Discarded Timing Who SourceMatcher CardMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher

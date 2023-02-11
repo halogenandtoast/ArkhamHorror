@@ -238,9 +238,10 @@ instance RunMessage WhereDoomAwaits where
       (DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
+        (TokenEffectSource ElderThing)
         (Just $ TokenTarget drawnToken)
       )
-    DiscardedTopOfDeck _iid cards target@(TokenTarget token) ->
+    DiscardedTopOfDeck _iid cards _ target@(TokenTarget token) ->
       s <$ case tokenFace token of
         ElderThing -> do
           let

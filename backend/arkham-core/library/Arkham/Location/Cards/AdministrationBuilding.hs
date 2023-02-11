@@ -39,5 +39,5 @@ instance RunMessage AdministrationBuilding where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Faculty Offices")
     UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      l <$ push (DiscardTopOfDeck iid 1 Nothing)
+      l <$ push (DiscardTopOfDeck iid 1 (toAbilitySource attrs 2) Nothing)
     _ -> AdministrationBuilding <$> runMessage msg attrs

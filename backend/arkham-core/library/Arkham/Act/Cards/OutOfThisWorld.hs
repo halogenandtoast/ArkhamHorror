@@ -6,7 +6,6 @@ module Arkham.Act.Cards.OutOfThisWorld
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -37,28 +36,32 @@ instance RunMessage OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverse <- getSetAsideCard Locations.theEdgeOfTheUniverse
-      a <$ pushAll
+      pushAll
         [ PlaceLocation theEdgeOfTheUniverse
         , AdvanceActDeck actDeckId (toSource attrs)
         ]
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
-    DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
+      pure a
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ DiscardTopOfEncounterDeck
+        iid
+        3
+        (toSource attrs)
+        (Just $ toTarget attrs)
+      pure a
+    DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      a <$ unless
-        (null locationCards)
-        (pushAll
-          [ FocusCards (map EncounterCard locationCards)
-          , chooseOne
-            iid
-            [ TargetLabel
-                (CardIdTarget $ toCardId location)
-                [ RemoveFromEncounterDiscard location
-                , InvestigatorDrewEncounterCard iid location
-                ]
-            | location <- locationCards
-            ]
-          , UnfocusCards
+      unless (null locationCards) $ pushAll
+        [ FocusCards (map EncounterCard locationCards)
+        , chooseOne
+          iid
+          [ TargetLabel
+              (CardIdTarget $ toCardId location)
+              [ RemoveFromEncounterDiscard location
+              , InvestigatorDrewEncounterCard iid location
+              ]
+          | location <- locationCards
           ]
-        )
+        , UnfocusCards
+        ]
+      pure a
     _ -> OutOfThisWorld <$> runMessage msg attrs

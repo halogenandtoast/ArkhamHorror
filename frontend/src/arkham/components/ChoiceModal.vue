@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import type { Game } from '@/arkham/types/Game';
+import type { Message } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
@@ -158,11 +159,51 @@ const submitAmounts = async () => {
     chooseAmounts(amountSelections.value)
   }
 }
+
+const skillTestResults = computed(() => props.game.skillTestResults)
+
+const cardLabels = computed(() =>
+  choices.value.
+    flatMap<[Message, number][]>((choice, index) => {
+      return choice.tag === "CardLabel" ? [[choice, index]] : []
+    }))
+
+const showChoices = computed(() =>
+  focusedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value
+)
+
+const title = computed(() => {
+  if (skillTestResults.value) {
+    return "Results"
+  }
+
+  if (cardLabels.value.length > 0) {
+    return "Choose"
+  }
+
+  if (question.value && question.value.tag === 'QuestionLabel') {
+    return question.value.label
+  }
+
+  if (question.value && question.value.tag === QuestionType.READ) {
+    if (question.value.flavorText.title) {
+      return question.value.flavorText.title
+    }
+
+    return "Story"
+  }
+
+  if (showChoices.value) {
+    return "Choose"
+  }
+
+  return null
+})
 </script>
 
 <template>
-  <Draggable v-if="focusedCards.length > 0 || paymentAmountsLabel || amountsLabel">
-    <template #handle><h1>Choose</h1></template>
+  <Draggable v-if="showChoices">
+  <template #handle><h1>{{title}}</h1></template>
     <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
       <div class="modal-contents focused-cards">
         <Card

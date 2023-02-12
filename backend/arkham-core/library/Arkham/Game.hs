@@ -2956,6 +2956,7 @@ runGameMessage msg g = case msg of
       & (gameStateL .~ IsActive)
       & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)
+      & (focusedTokensL .~ mempty)
       & (activeCardL .~ Nothing)
       & (activeAbilitiesL .~ mempty)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
@@ -3493,11 +3494,12 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       eid = toId enemy
-    pushAll
+    pushAll $
       [ SetBearer (toTarget enemy) iid
       , RemoveCardFromHand iid (toCardId card)
-      , InvestigatorDrawEnemy iid eid
       ]
+      <> [ Revelation iid (toSource enemy) | cdRevelation (toCardDef card) ]
+      <> [ InvestigatorDrawEnemy iid eid ]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelEachNext source msgTypes -> do
     push =<< checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]

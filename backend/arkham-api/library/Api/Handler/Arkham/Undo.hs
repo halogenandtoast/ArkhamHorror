@@ -4,12 +4,13 @@ module Api.Handler.Arkham.Undo
 
 import Import hiding ( delete, on, (==.) )
 
-import Data.Aeson.Patch
 import Api.Arkham.Helpers
+import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
 import Arkham.Game
 import Arkham.Id
 import Control.Lens ( view )
+import Data.Aeson.Patch
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental ( deleteKey )
@@ -53,7 +54,9 @@ putApiV1ArkhamGameUndoR gameId = do
                 now
               deleteKey stepId
 
-              replace pid $ arkhamPlayer
-                { arkhamPlayerInvestigatorId = coerce
-                  (view activeInvestigatorIdL ge)
-                }
+              case arkhamGameMultiplayerVariant of
+                Solo -> replace pid $ arkhamPlayer
+                  { arkhamPlayerInvestigatorId = coerce
+                    (view activeInvestigatorIdL ge)
+                  }
+                WithFriends -> pure ()

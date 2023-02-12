@@ -1353,6 +1353,64 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher -> case window' of
+    Window timing' (Window.TakeDamage source' _ (InvestigatorTarget who)) ->
+      andM
+        [ pure $ timing == timing'
+        , sourceMatches source' sourceMatcher
+        , matchWho iid who whoMatcher
+        ]
+    _ -> pure False
+  Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher -> case window' of
+    Window timing' (Window.TakeHorror source' (InvestigatorTarget who)) ->
+      andM
+        [ pure $ timing == timing'
+        , sourceMatches source' sourceMatcher
+        , matchWho iid who whoMatcher
+        ]
+    _ -> pure False
+  Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher -> case window' of
+    Window timing' (Window.WouldTakeDamage source' (InvestigatorTarget who) _) ->
+      andM
+        [ pure $ timing == timing'
+        , sourceMatches source' sourceMatcher
+        , matchWho iid who whoMatcher
+        ]
+    Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _) | n > 0 ->
+      andM
+        [ pure $ timing == timing'
+        , sourceMatches source' sourceMatcher
+        , matchWho iid who whoMatcher
+        ]
+    _ -> pure False
+  Matcher.InvestigatorWouldTakeHorror timing whoMatcher sourceMatcher -> case window' of
+    Window timing' (Window.WouldTakeHorror source' (InvestigatorTarget who) _) ->
+      andM
+        [ pure $ timing == timing'
+        , sourceMatches source' sourceMatcher
+        , matchWho iid who whoMatcher
+        ]
+    Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) _ n) | n > 0 ->
+      andM
+        [ pure $ timing == timing'
+        , sourceMatches source' sourceMatcher
+        , matchWho iid who whoMatcher
+        ]
+    _ -> pure False
+  Matcher.LostActions timing whoMatcher sourceMatcher -> case window' of
+    Window timing' (Window.LostActions who source' _) -> andM
+      [ pure $ timing == timing'
+      , sourceMatches source' sourceMatcher
+      , matchWho iid who whoMatcher
+      ]
+    _ -> pure False
+  Matcher.LostResources timing whoMatcher sourceMatcher -> case window' of
+    Window timing' (Window.LostResources who source' _) -> andM
+      [ pure $ timing == timing'
+      , sourceMatches source' sourceMatcher
+      , matchWho iid who whoMatcher
+      ]
+    _ -> pure False
   Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher -> case window' of
     Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source') -> sourceMatches source' sourceMatcher
     _ -> pure False
@@ -1904,12 +1962,12 @@ windowMatches iid source window' = \case
         _ -> pure False
       _ -> pure False
   Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
-    Window t (Window.DealtDamage source' _ (InvestigatorTarget iid'))
+    Window t (Window.DealtDamage source' _ (InvestigatorTarget iid') _)
       | t == whenMatcher -> andM
         [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
   Matcher.DealtHorror whenMatcher sourceMatcher whoMatcher -> case window' of
-    Window t (Window.DealtHorror source' (InvestigatorTarget iid'))
+    Window t (Window.DealtHorror source' (InvestigatorTarget iid') _)
       | t == whenMatcher -> andM
         [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
@@ -1923,7 +1981,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.AssetDealtDamage timingMatcher sourceMatcher assetMatcher ->
     case window' of
-      Window t (Window.DealtDamage source' _ (AssetTarget aid))
+      Window t (Window.DealtDamage source' _ (AssetTarget aid) _)
         | t == timingMatcher
         -> andM
           [ member aid <$> select assetMatcher
@@ -1932,7 +1990,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher
     -> case window' of
-      Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid))
+      Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid) _)
         | t == timingMatcher -> andM
           [ damageEffectMatches damageEffect damageEffectMatcher
           , member eid <$> select enemyMatcher

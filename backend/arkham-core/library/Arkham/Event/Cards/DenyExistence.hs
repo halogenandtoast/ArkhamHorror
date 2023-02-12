@@ -7,9 +7,12 @@ where
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Runner
-import Arkham.Message
+import Arkham.Message hiding (Discarded)
+import Arkham.Target
+import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -29,6 +32,40 @@ denyExistence =
 
 instance RunMessage DenyExistence where
   runMessage msg e@(DenyExistence attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll [discard attrs]
+    InvestigatorPlayEvent iid eid mTarget windows _ | eid == toId attrs -> do
+      let
+        go str w = Label str [ResolveEvent iid eid mTarget [w]]
+        choices = flip mapMaybe (traceShowId windows) $ \w -> case windowType w of
+          Discarded{} -> Just $ go "discard cards" w
+          LostResources{} -> Just $ go "lose resources" w
+          LostActions{} -> Just $ go "lose actions" w
+          WouldTakeDamage{} -> Just $ go "take damage" w
+          WouldTakeHorror{} -> Just $ go "take horror" w
+          _ -> Nothing
+      pushAll [chooseOrRunOne iid choices, discard attrs]
+      pure e
+    ResolveEvent _ eid _ [w] | eid == toId attrs -> do
+      case windowType w of
+        Discarded iid source c -> do
+          popMessageMatching_ (== Do (DiscardCard iid source (toCardId c)))
+        LostResources iid source n -> do
+          popMessageMatching_ (== Do (LoseResources iid source n))
+        LostActions iid source n -> do
+          popMessageMatching_ (== Do (LoseActions iid source n))
+        WouldTakeDamage _source (InvestigatorTarget iid) n -> do
+          push $ CancelDamage iid n
+        WouldTakeHorror _source (InvestigatorTarget iid) n -> do
+          push $ CancelHorror iid n
+        _ -> error "Invalid window"
+      popMessageMatching_ $ \case
+        CheckWindow _ [w'] -> windowType w == windowType w'
+        _ -> False
+      replaceMessageMatching
+        \case
+          CheckWindow _ ws -> any ((== windowType w) . windowType) ws
+          _ -> False
+        \case
+          CheckWindow iids ws -> [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
+          _ -> error "no match"
+      pure e
     _ -> DenyExistence <$> runMessage msg attrs

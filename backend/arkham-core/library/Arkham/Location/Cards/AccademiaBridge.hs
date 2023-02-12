@@ -41,6 +41,7 @@ instance HasAbilities AccademiaBridge where
 
 instance RunMessage AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (LoseResources iid 2)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ LoseResources iid (toAbilitySource attrs 1) 2
+      pure l
     _ -> AccademiaBridge <$> runMessage msg attrs

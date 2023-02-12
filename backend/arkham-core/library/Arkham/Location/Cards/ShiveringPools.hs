@@ -27,16 +27,12 @@ newtype ShiveringPools = ShiveringPools LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shiveringPools :: LocationCard ShiveringPools
-shiveringPools = locationWith
-  ShiveringPools
-  Cards.shiveringPools
-  5
-  (PerPlayer 1)
-  ((connectsToL .~ adjacentLocations)
-  . (costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-    )
-  )
+shiveringPools =
+  locationWith ShiveringPools Cards.shiveringPools 5 (PerPlayer 1)
+    $ (connectsToL .~ adjacentLocations)
+    . (costToEnterUnrevealedL
+      .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+      )
 
 instance HasAbilities ShiveringPools where
   getAbilities (ShiveringPools attrs) =
@@ -72,7 +68,11 @@ instance RunMessage ShiveringPools where
         $ Label
             "Take 1 direct damage"
             [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-        : [ Label "Lose 5 resources" [LoseResources iid 5] | hasResources ]
+        : [ Label
+              "Lose 5 resources"
+              [LoseResources iid (toAbilitySource attrs 1) 5]
+          | hasResources
+          ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)

@@ -491,7 +491,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DiscardHand iid source | iid == investigatorId -> do
     pushAll $ map (DiscardCard iid source . toCardId) investigatorHand
     pure a
-  DiscardCard iid _source cardId | iid == investigatorId -> do
+  DiscardCard iid source cardId | iid == investigatorId -> do
+    let
+      card = fromJustNote "must be in hand"
+        $ find ((== cardId) . toCardId) investigatorHand
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.Discarded iid source card)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.Discarded iid source card)]
+    pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
+    pure a
+  Do (DiscardCard iid _source cardId) | iid == investigatorId -> do
     let
       card = fromJustNote "must be in hand"
         $ find ((== cardId) . toCardId) investigatorHand
@@ -795,14 +805,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         ([ CheckWindow
              [iid]
-             [Window Timing.When (Window.WouldTakeDamage source (toTarget a))]
+             [Window Timing.When (Window.WouldTakeDamage source (toTarget a) damage)]
          | damage > 0
          ]
         <> [ CheckWindow
                [iid]
                [ Window
                    Timing.When
-                   (Window.WouldTakeHorror source (toTarget a))
+                   (Window.WouldTakeHorror source (toTarget a) horror)
                ]
            | horror > 0
            ]
@@ -842,14 +852,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else a <$ pushAll
           ([ CheckWindow
                [iid]
-               [Window Timing.When (Window.WouldTakeDamage source (toTarget a))]
+               [Window Timing.When (Window.WouldTakeDamage source (toTarget a) damage)]
            | damage > 0
            ]
           <> [ CheckWindow
                  [iid]
                  [ Window
                      Timing.When
-                     (Window.WouldTakeHorror source (toTarget a))
+                     (Window.WouldTakeHorror source (toTarget a) horror)
                  ]
              | horror > 0
              ]
@@ -903,11 +913,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         $ [ placedWindowMsg
           , CheckWindow [iid]
-          $ [ Window Timing.When (Window.DealtDamage source damageEffect target)
+          $ [ Window Timing.When (Window.DealtDamage source damageEffect target damage)
             | target <- nub damageTargets
+            , let damage = count (== target) damageTargets
             ]
-          <> [ Window Timing.When (Window.DealtHorror source target)
+          <> [ Window Timing.When (Window.DealtHorror source target horror)
              | target <- nub horrorTargets
+             , let horror = count (== target) horrorTargets
              ]
           <> [ Window
                  Timing.When
@@ -1816,7 +1828,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   Do (SpendResources iid n) | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n
-  LoseResources iid n | iid == investigatorId ->
+  LoseResources iid source n | iid == investigatorId -> do
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.LostResources iid source n)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.LostResources iid source n)]
+    pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
+    pure a
+  Do (LoseResources iid _ n) | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n
   LoseAllResources iid | iid == investigatorId -> pure $ a & resourcesL .~ 0
   TakeResources iid n source True | iid == investigatorId -> do
@@ -2154,7 +2173,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case mAdditionalAction of
       Nothing -> pure $ a & remainingActionsL %~ max 0 . subtract n
       Just aa -> pure $ a & additionalActionsL %~ deleteFirst aa
-  LoseActions iid _ n | iid == investigatorId ->
+  LoseActions iid source n | iid == investigatorId -> do
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.LostActions iid source n)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.LostActions iid source n)]
+    pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
+    pure a
+  Do (LoseActions iid _ n) | iid == investigatorId ->
     pure $ a & remainingActionsL %~ max 0 . subtract n
   SetActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL .~ n

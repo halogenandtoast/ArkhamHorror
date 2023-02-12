@@ -31,7 +31,7 @@ instance RunMessage LowOnSupplies where
             then
               [ Label
                   "Each investigator loses 2 resources."
-                  [ LoseResources iid' 2 | iid' <- investigatorIds ]
+                  [ LoseResources iid' (toSource attrs) 2 | iid' <- investigatorIds ]
               ]
             else []
           )

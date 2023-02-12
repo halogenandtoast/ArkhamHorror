@@ -2186,7 +2186,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       EncounterCard _ ->
         error "Can not put encounter card on top of investigator deck"
       VengeanceCard _ ->
-        error "Can not put vengrance card on top of investigator deck"
+        error "Can not put vengeance card on top of investigator deck"
   PutCardOnTopOfDeck _ _ card -> case card of
     PlayerCard pc ->
       pure
@@ -2195,9 +2195,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (handL %~ filter (/= card))
         & (discardL %~ filter (/= pc))
     EncounterCard _ ->
-      error "Can not put encounter card on top of investigator deck"
-    VengeanceCard _ ->
-      error "Can not put vengrance card on top of investigator deck"
+      pure
+        $ a
+        & (handL %~ filter (/= card))
+    VengeanceCard vcard ->
+      pure
+        $ a
+        & (handL %~ filter (/= vcard))
   PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') card
     | iid == investigatorId && iid == iid' -> case card of
       PlayerCard pc ->

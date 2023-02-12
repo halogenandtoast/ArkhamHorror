@@ -55,9 +55,28 @@ const testResult = computed(() => {
   }
 })
 
-const showChoices = computed(() => choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL }) || (applyResultsAction.value !== -1))
+// focused cards are handled by the player's choice modal
+const focusedCards = computed(() => {
+  const playerCards = Object.values(props.game.investigators[props.investigatorId].foundCards).flat()
+  if (playerCards.length > 0) {
+    return playerCards
+  }
+
+  const encounterCards = Object.values(props.game.foundCards).flat()
+  if (encounterCards.length > 0) {
+    return encounterCards
+  }
+
+  return props.game.focusedCards
+})
+
+const showChoices = computed(() => focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL }) || (applyResultsAction.value !== -1))
 
 const title = computed(() => {
+  if (focusedCards.value.length > 0) {
+    return null
+  }
+
   if (skillTestResults.value) {
     return "Results"
   }
@@ -78,7 +97,7 @@ const title = computed(() => {
     return "Story"
   }
 
-  if (showChoices.value) {
+  if (showChoices.value === true) {
     return "Choose"
   }
 

@@ -804,21 +804,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -> do
       pushAll
         ([ CheckWindow
-             [iid]
-             [Window Timing.When (Window.WouldTakeDamage source (toTarget a) damage)]
-         | damage > 0
-         ]
-        <> [ CheckWindow
-               [iid]
-               [ Window
-                   Timing.When
-                   (Window.WouldTakeHorror source (toTarget a) horror)
-               ]
-           | horror > 0
-           ]
-        <> [ CheckWindow
-               [iid]
-               [ Window
+             [iid] $
+               Window
                    Timing.When
                    (Window.WouldTakeDamageOrHorror
                      source
@@ -826,9 +813,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      damage
                      horror
                    )
-               ]
-           | horror > 0 || damage > 0
-           ]
+             : [Window Timing.When (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0] <>
+             [ Window
+                 Timing.When
+                 (Window.WouldTakeHorror source (toTarget a) horror)
+             | horror > 0]
+         | damage > 0 || horror > 0
+         ]
         <> [ InvestigatorDoAssignDamage
              iid
              source
@@ -848,24 +839,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -> do
       modifiers <- getModifiers (toTarget a)
       if TreatAllDamageAsDirect `elem` modifiers
-        then a <$ push (InvestigatorDirectDamage iid source damage horror)
-        else a <$ pushAll
+        then push (InvestigatorDirectDamage iid source damage horror)
+        else pushAll
           ([ CheckWindow
                [iid]
-               [Window Timing.When (Window.WouldTakeDamage source (toTarget a) damage)]
-           | damage > 0
-           ]
-          <> [ CheckWindow
-                 [iid]
-                 [ Window
-                     Timing.When
-                     (Window.WouldTakeHorror source (toTarget a) horror)
-                 ]
-             | horror > 0
-             ]
-          <> [ CheckWindow
-                 [iid]
-                 [ Window
+               $ Window
                      Timing.When
                      (Window.WouldTakeDamageOrHorror
                        source
@@ -873,9 +851,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                        damage
                        horror
                      )
-                 ]
-             | horror > 0 || damage > 0
-             ]
+               : [Window Timing.When (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
+               <> [ Window Timing.When (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
+           | damage > 0 || horror > 0
+           ]
           <> [ InvestigatorDoAssignDamage
                iid
                source
@@ -888,6 +867,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              , CheckDefeated source
              ]
           )
+      pure a
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
     | iid == investigatorId
     -> do

@@ -611,6 +611,7 @@ instance RunMessage EnemyAttrs where
       let
         source = damageAssignmentSource damageAssignment
         damageEffect = damageAssignmentDamageEffect damageAssignment
+        damageAmount = damageAssignmentAmount damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
       when
         canDamage
@@ -618,12 +619,12 @@ instance RunMessage EnemyAttrs where
           dealtDamageWhenMsg <- checkWindows
             [ Window
                 Timing.When
-                (Window.DealtDamage source damageEffect $ toTarget a)
+                (Window.DealtDamage source damageEffect (toTarget a) damageAmount)
             ]
           dealtDamageAfterMsg <- checkWindows
             [ Window
                 Timing.After
-                (Window.DealtDamage source damageEffect $ toTarget a)
+                (Window.DealtDamage source damageEffect (toTarget a) damageAmount)
             ]
           takeDamageWhenMsg <- checkWindows
             [ Window

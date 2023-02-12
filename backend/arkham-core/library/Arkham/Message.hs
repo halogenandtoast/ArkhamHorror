@@ -433,7 +433,7 @@ data Message
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
-  | LoseResources InvestigatorId Int
+  | LoseResources InvestigatorId Source Int
   | LoseAllResources InvestigatorId
   | SpendActions InvestigatorId Source (Maybe Action) Int
   | Move Source InvestigatorId LocationId

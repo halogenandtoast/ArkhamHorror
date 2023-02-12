@@ -4447,10 +4447,8 @@ preloadEntities g = do
     foundOfElems = concat . HashMap.elems . investigatorFoundCards . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
-        $ ((concat . HashMap.elems $ gameFoundCards g) :: [Card])
-        <> (concatMap foundOfElems (view (entitiesL . investigatorsL) g) :: [ Card
-             ]
-           )
+        $ (concat . HashMap.elems $ gameFoundCards g)
+        <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getInvestigator =<< getActiveInvestigatorId
   searchEntities <- foldM (addEntity active) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators

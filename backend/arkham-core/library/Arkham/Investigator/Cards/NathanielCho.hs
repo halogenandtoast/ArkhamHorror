@@ -3,19 +3,19 @@ module Arkham.Investigator.Cards.NathanielCho where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype NathanielCho = NathanielCho InvestigatorAttrs
@@ -37,19 +37,14 @@ nathanielCho = investigator
 
 instance HasAbilities NathanielCho where
   getAbilities (NathanielCho x) =
-    [ restrictedAbility
-        x
-        1
-        Self
-        (ReactionAbility
-          (EnemyDealtDamage
-            Timing.When
-            AnyDamageEffect
-            AnyEnemy
-            (SourceOwnedBy You <> SourceIsType EventType)
-          )
-          Free
+    [ restrictedAbility x 1 Self $ ReactionAbility
+        (EnemyDealtDamage
+          Timing.When
+          AnyDamageEffect
+          AnyEnemy
+          (SourceOwnedBy You <> SourceIsType EventType)
         )
+        Free
     ]
 
 instance HasTokenValue NathanielCho where
@@ -60,7 +55,7 @@ instance HasTokenValue NathanielCho where
 
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.DealtDamage _ _ (EnemyTarget eid))] _
+    UseCardAbility _ source 1 [Window _ (Window.DealtDamage _ _ (EnemyTarget eid) _)] _
       | isSource attrs source
       -> a <$ push
         (CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid))

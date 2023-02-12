@@ -482,6 +482,8 @@ data WindowMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing SourceMatcher DefeatedByMatcher Who
   | InvestigatorWouldBeDefeated Timing SourceMatcher DefeatedByMatcher Who
+  | InvestigatorWouldTakeDamage Timing Who SourceMatcher
+  | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | AmongSearchedCards Who
   | DeckHasNoCards Timing Who
   | MovedBy Timing Who SourceMatcher
@@ -506,6 +508,8 @@ data WindowMatcher
   | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyDealtExcessDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyTakeDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
+  | InvestigatorTakeDamage Timing Who SourceMatcher
+  | InvestigatorTakeHorror Timing Who SourceMatcher
   | EnemyLeavesPlay Timing EnemyMatcher
   | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher
@@ -571,6 +575,8 @@ data WindowMatcher
   | PhaseStep Timing PhaseStepMatcher
   | AddingToCurrentDepth
   | CancelledOrIgnoredCardOrGameEffect SourceMatcher
+  | LostResources Timing Who SourceMatcher
+  | LostActions Timing Who SourceMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

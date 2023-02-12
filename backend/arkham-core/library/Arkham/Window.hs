@@ -62,9 +62,9 @@ data WindowType
   | ChosenRandomLocation LocationId
   | CommittedCard InvestigatorId Card
   | CommittedCards InvestigatorId [Card]
-  | DealtDamage Source DamageEffect Target
+  | DealtDamage Source DamageEffect Target Int
   | DealtExcessDamage Source DamageEffect Target Int
-  | DealtHorror Source Target
+  | DealtHorror Source Target Int
   | DeckHasNoCards InvestigatorId
   | Defeated Source
   | Discarded InvestigatorId Source Card
@@ -122,6 +122,8 @@ data WindowType
   | PlaceUnderneath Target Card
   | PlacedClues Target Int
   | PlacedResources Target Int
+  | LostResources InvestigatorId Source Int
+  | LostActions InvestigatorId Source Int
   | PlacedDamage Target Int
   | PlacedHorror Target Int
   | PlacedDoom Target Int
@@ -138,6 +140,7 @@ data WindowType
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
   | TakeDamage Source DamageEffect Target
+  | TakeHorror Source Target
   | TookControlOfAsset InvestigatorId AssetId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId
@@ -148,9 +151,9 @@ data WindowType
   | WouldPassSkillTest InvestigatorId
   | WouldReady Target
   | WouldRevealChaosToken Source InvestigatorId
-  | WouldTakeDamage Source Target
+  | WouldTakeDamage Source Target Int
   | WouldTakeDamageOrHorror Source Target Int Int
-  | WouldTakeHorror Source Target
+  | WouldTakeHorror Source Target Int
   | Explored InvestigatorId (Result Card LocationId)
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep

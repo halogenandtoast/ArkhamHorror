@@ -39,7 +39,7 @@ instance HasAbilities EndlessBridge where
 instance RunMessage EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ LoseResources iid 2
+      push $ LoseResources iid (toSource attrs) 2
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2] ]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels

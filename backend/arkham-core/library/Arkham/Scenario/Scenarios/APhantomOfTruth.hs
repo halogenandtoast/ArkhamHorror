@@ -339,7 +339,7 @@ instance RunMessage APhantomOfTruth where
       _ -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ n -> case tokenFace token of
       Cultist | isEasyStandard attrs -> s <$ cultistEffect
-      ElderThing -> s <$ push (LoseResources iid n)
+      ElderThing -> s <$ push (LoseResources iid (TokenEffectSource ElderThing) n)
       _ -> pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds

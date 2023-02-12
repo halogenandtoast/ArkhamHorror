@@ -40,7 +40,7 @@ instance HasAbilities SurvivalKnife where
 
 toEnemy :: [WindowType] -> EnemyId
 toEnemy [] = error "called during incorrect window"
-toEnemy (Window.DealtDamage (EnemyAttackSource eid) _ _ : _) = eid
+toEnemy (Window.DealtDamage (EnemyAttackSource eid) _ _ _ : _) = eid
 toEnemy (_ : xs) = toEnemy xs
 
 instance RunMessage SurvivalKnife where

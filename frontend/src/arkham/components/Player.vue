@@ -181,6 +181,7 @@ function beforeLeaveHand(el) {
           v-if="topOfHunchDeckRevealed"
           :card="topOfHunchDeck"
           :game="game"
+          :ownerId="player.id"
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
         />
@@ -229,6 +230,7 @@ function beforeLeaveHand(el) {
           :card="card"
           :game="game"
           :investigatorId="investigatorId"
+          :ownerId="player.id"
           :key="card.contents.id"
           @choose="$emit('choose', $event)"
         />
@@ -367,7 +369,7 @@ function beforeLeaveHand(el) {
   font-size: 1.2em;
   color: rgba(255, 255, 255, 0.6);
   left: 50%;
-  top: 43%;
+  top: 40%;
   background: rgba(0, 0, 0, 0.6);
   padding: 10px;
   border-radius: 20px;

@@ -421,7 +421,7 @@ const setSet = (set) => {
 <style scoped lang="scss">
 .container {
   display: flex;
-  height: 100%;
+  height: calc(100% - 40px);
 }
 
 .results {

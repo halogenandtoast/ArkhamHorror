@@ -4,6 +4,7 @@ module Api.Handler.Arkham.Undo
 
 import Import hiding ( delete, on, (==.) )
 
+import Data.Aeson.Patch
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
 import Arkham.Game
@@ -29,7 +30,8 @@ putApiV1ArkhamGameUndoR gameId = do
     Nothing -> pure ()
     Just (Entity stepId step) -> do
       -- never delete the initial step as it can not be redone
-      when (arkhamStepStep step > 0) $ do
+      -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
+      when (arkhamStepStep step > 0 && not (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step)) $ do
         writeChannel <- getChannel gameId
 
         case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of

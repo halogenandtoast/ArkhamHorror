@@ -35,7 +35,7 @@ instance RunMessage DenyExistence where
     InvestigatorPlayEvent iid eid mTarget windows _ | eid == toId attrs -> do
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
-        choices = flip mapMaybe (traceShowId windows) $ \w -> case windowType w of
+        choices = flip mapMaybe windows $ \w -> case windowType w of
           Discarded{} -> Just $ go "discard cards" w
           LostResources{} -> Just $ go "lose resources" w
           LostActions{} -> Just $ go "lose actions" w

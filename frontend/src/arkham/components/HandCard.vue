@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue'
+import { computed, inject, Ref } from 'vue'
 import type { Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { Message } from '@/arkham/types/Message'
@@ -11,6 +11,7 @@ export interface Props {
   game: Game
   card: Card
   investigatorId: string
+  ownerId: string
 }
 
 const props = defineProps<Props>()
@@ -27,6 +28,8 @@ const cardAction = computed(() => {
     return false
   })
 })
+
+const solo = inject<Ref<boolean>>('solo')
 
 function isAbility(v: Message) {
   if (v.tag !== 'AbilityLabel') {
@@ -67,6 +70,10 @@ const classObject = computed(() => {
 
 const baseUrl = inject('baseUrl')
 
+const cardBack = computed(() => {
+  return `${baseUrl}/img/arkham/player_back.jpg`
+})
+
 const image = computed(() => {
   const { cardCode } = props.card.contents;
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
@@ -74,7 +81,7 @@ const image = computed(() => {
 </script>
 
 <template>
-  <div class="card-container">
+  <div class="card-container" v-if="solo || (investigatorId == ownerId)">
     <img
       :class="classObject"
       class="card"
@@ -90,6 +97,9 @@ const image = computed(() => {
       @click="$emit('choose', ability)"
       />
 
+  </div>
+  <div class="card-container" v-else>
+    <img class="card" :src="cardBack" />
   </div>
 </template>
 

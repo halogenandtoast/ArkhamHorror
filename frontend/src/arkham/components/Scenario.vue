@@ -7,7 +7,6 @@ import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
-import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
@@ -16,7 +15,6 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import Location from '@/arkham/components/Location.vue';
-import Draggable from '@/components/Draggable.vue';
 
 export interface Props {
   game: Game
@@ -287,24 +285,12 @@ const cardsNextToAct = computed(() => {
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
-const skillTestResults = computed(() => props.game.skillTestResults)
 </script>
 
 <template>
   <div v-if="!game.gameOver" id="scenario" class="scenario">
     <div class="scenario-body">
       <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
-      <Draggable v-if="!skillTestResults && (game.skillTest?.committedCards?.length || 0) > 0" >
-        <template #handle>
-          <h2>Committed Cards</h2>
-        </template>
-        <CommittedSkills
-          :game="game"
-          :cards="game.skillTest.committedCards"
-          :investigatorId="investigatorId"
-          @choose="choose"
-        />
-      </Draggable>
       <CardRow
         v-if="showCards.ref.length > 0"
         :game="game"

@@ -3,6 +3,7 @@ import { computed, ref, inject, ComputedRef, reactive } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
+import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -114,6 +115,9 @@ const hideCards = () => {
   viewingDiscard.value = false
 }
 
+const committedCards = computed(() => props.game.skillTest?.committedCards || [])
+const playerHand = computed(() => props.player.hand.filter((card) => !committedCards.value.some((cc) => card.contents.id == cc.contents.id)))
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
@@ -167,6 +171,16 @@ function beforeLeaveHand(el) {
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
+
+      <div v-if="committedCards.length > 0" class="committed-skills">
+        <h2>Committed Skills</h2>
+        <CommittedSkills
+          :game="game"
+          :cards="committedCards"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
     </transition-group>
 
     <ChoiceModal
@@ -226,7 +240,7 @@ function beforeLeaveHand(el) {
       </div>
       <transition-group name="hand" tag="section" class="hand" @before-leave="beforeLeaveHand">
         <HandCard
-          v-for="card in player.hand"
+          v-for="card in playerHand"
           :card="card"
           :game="game"
           :investigatorId="investigatorId"
@@ -419,5 +433,21 @@ function beforeLeaveHand(el) {
   display: flex;
   justify-self: self-start;
   align-self: start;
+}
+
+.committed-skills {
+  margin-left: auto;
+  display: flex;
+  h2 {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.4vh;
+    margin: 0;
+    margin-top: -10px;
+    margin-bottom: -10px;
+    writing-mode: vertical-rl;
+    orientation: mixed;
+    color: rgba(255, 255, 255, 0.75);
+  }
 }
 </style>

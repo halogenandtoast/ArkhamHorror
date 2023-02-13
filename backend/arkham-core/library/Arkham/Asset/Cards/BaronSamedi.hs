@@ -36,9 +36,9 @@ handleDoom msg attrs = do
 
 instance HasAbilities BaronSamedi where
   getAbilities (BaronSamedi a) =
-    [ limitedAbility (PlayerLimit PerWindow 1) $ restrictedAbility a 1 ControlsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ForcedAbility
-      $ PlacedCounter Timing.When 
+      $ PlacedCounter Timing.When
       (InvestigatorAt $ LocationWithInvestigator $ HasMatchingAsset $ AssetWithId $ toId a) DamageCounter (GreaterThan $ Static 0)
     , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a
     ]
@@ -54,7 +54,7 @@ instance RunMessage BaronSamedi where
       push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (toDamagedInvestigator -> iid') _ -> do
-      push $ InvestigatorDoAssignDamage iid' (toSource attrs) DamageAny (NotAsset AnyAsset)  1 0 [] []
+      push $ PlaceAdditionalDamage (InvestigatorTarget iid') (toSource attrs) 1 0
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws p -> do
       pushAll [PlaceDoom (toTarget attrs) 1, UseCardAbilityStep iid (toSource attrs) 2 ws p 1]

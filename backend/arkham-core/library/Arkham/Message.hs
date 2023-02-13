@@ -464,6 +464,7 @@ data Message
   | FlipDoom Target Int
   | PlaceDoom Target Int
   | PlaceDamage Target Int
+  | PlaceAdditionalDamage Target Source Int Int
   | PlaceHorror Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId

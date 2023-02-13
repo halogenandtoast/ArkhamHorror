@@ -652,6 +652,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [x] | x /= iid -> push (InvestigatorDamageInvestigator iid x)
         _ -> pure ()
     pure a
+  PlaceAdditionalDamage target source damage horror | isTarget a target -> do
+    push $ Msg.InvestigatorDamage (toId a) source damage horror
+    pure a
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
     damage <- damageValueFor 1 iid
     push $ InvestigatorAssignDamage
@@ -2602,7 +2605,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           usesAction = not isAdditional
           drawCardsF = if usesAction then drawCardsAction else drawCards
-            
+
         playableCards <- getPlayableCards a UnpaidCost windows
         drawing <- drawCardsF iid a 1
         push

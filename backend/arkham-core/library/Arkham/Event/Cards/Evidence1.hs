@@ -36,6 +36,5 @@ instance RunMessage Evidence1 where
         $ [ InvestigatorDiscoverClues iid currentLocationId amount Nothing
           | amount > 0
           ]
-        <> [discard attrs]
       pure e
     _ -> Evidence1 <$> runMessage msg attrs

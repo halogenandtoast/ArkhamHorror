@@ -45,7 +45,6 @@ instance RunMessage SlipAway where
           SkillAgility
           AnyEnemy
           False
-        , discard attrs
         ]
       pure e
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n

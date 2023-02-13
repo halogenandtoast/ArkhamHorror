@@ -172,6 +172,7 @@ allEvents = mapFrom
   , SomeEventCard lodgeDebts
   , SomeEventCard darkInsight
   , SomeEventCard imDoneRunnin
+  , SomeEventCard mystifyingSong
   , SomeEventCard delayTheInevitable
   , SomeEventCard denyExistence
   , SomeEventCard trialByFire

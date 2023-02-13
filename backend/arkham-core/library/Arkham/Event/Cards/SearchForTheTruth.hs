@@ -21,6 +21,6 @@ instance RunMessage SearchForTheTruth where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       clueCount' <- field InvestigatorClues iid
       drawing <- drawCards iid attrs (min 5 clueCount')
-      pushAll [drawing, discard attrs]
+      push drawing
       pure e
     _ -> SearchForTheTruth <$> runMessage msg attrs

@@ -23,6 +23,5 @@ instance RunMessage WardOfProtection2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> e <$ pushAll
       [ CancelNext (toSource attrs) RevelationMessage
       , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1
-      , discard attrs
       ]
     _ -> WardOfProtection2 <$> runMessage msg attrs

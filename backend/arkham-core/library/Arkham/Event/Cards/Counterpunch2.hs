@@ -38,7 +38,6 @@ instance RunMessage Counterpunch2 where
           (InvestigatorTarget iid)
           [SkillModifier SkillCombat 2, DamageDealt 1]
         , FightEnemy iid enemyId (toSource attrs) Nothing SkillCombat False
-        , discard attrs
         ]
       pure e
     _ -> Counterpunch2 <$> runMessage msg attrs

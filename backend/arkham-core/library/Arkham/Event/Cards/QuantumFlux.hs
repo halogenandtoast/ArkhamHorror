@@ -15,7 +15,7 @@ newtype QuantumFlux = QuantumFlux EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quantumFlux :: EventCard QuantumFlux
-quantumFlux = event QuantumFlux Cards.quantumFlux
+quantumFlux = eventWith QuantumFlux Cards.quantumFlux $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage QuantumFlux where
   runMessage msg e@(QuantumFlux attrs) = case msg of
@@ -24,7 +24,6 @@ instance RunMessage QuantumFlux where
       pushAll
         [ ShuffleDiscardBackIn iid
         , drawing
-        , RemoveFromGame (toTarget attrs)
         ]
       pure e
     _ -> QuantumFlux <$> runMessage msg attrs

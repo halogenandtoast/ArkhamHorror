@@ -32,7 +32,6 @@ instance RunMessage AlterFate3 where
           [ targetLabel treachery [Discard (toSource attrs) (TreacheryTarget treachery)]
           | treachery <- treacheries
           ]
-        , discard attrs
         ]
       pure e
     _ -> AlterFate3 <$> runMessage msg attrs

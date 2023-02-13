@@ -244,6 +244,7 @@ data EventMatcher
   | EventWithClass ClassSymbol
   | EventControlledBy InvestigatorMatcher
   | EventAt LocationMatcher
+  | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher
   | EventReady
   | EventCardMatch CardMatcher

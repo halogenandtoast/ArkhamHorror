@@ -54,7 +54,6 @@ instance RunMessage VantagePoint where
                 ]
             | notNull otherLocationsWithClues
             ]
-          <> [discard attrs]
         pure e
     _ -> VantagePoint <$> runMessage msg attrs
 

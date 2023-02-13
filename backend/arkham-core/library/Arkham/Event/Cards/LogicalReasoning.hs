@@ -53,5 +53,5 @@ instance RunMessage LogicalReasoning where
             [chooseOrRunOne iid' choices']
           )
           options
-      e <$ pushAll [chooseOrRunOne iid choices, discard attrs]
+      e <$ pushAll [chooseOrRunOne iid choices]
     _ -> LogicalReasoning <$> runMessage msg attrs

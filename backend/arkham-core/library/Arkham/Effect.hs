@@ -40,6 +40,7 @@ import Arkham.Event.Events
   , marksmanship1Effect
   , mindOverMatter2Effect
   , mindOverMatterEffect
+  , mystifyingSongEffect
   , onTheLamEffect
   , oneTwoPunch5Effect
   , oneTwoPunchEffect
@@ -211,6 +212,7 @@ allEffects = mapFromList
   , ("04326", SomeEffect alejandroVelaEffect)
   , ("05005", SomeEffect ritaYoungElderSignEffect)
   , ("05016", SomeEffect imDoneRunninEffect)
+  , ("05018", SomeEffect mystifyingSongEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

@@ -37,6 +37,5 @@ instance RunMessage TrueSurvivor3 where
           [ TargetLabel (CardIdTarget $ toCardId target) [AddToHand iid target]
           | target <- targets
           ]
-        , discard attrs
         ]
     _ -> TrueSurvivor3 <$> runMessage msg attrs

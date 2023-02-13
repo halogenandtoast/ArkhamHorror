@@ -35,7 +35,6 @@ instance RunMessage SeekingAnswers2 where
           (Just $ toTarget attrs)
           skillType
           False
-        , discard attrs
         ]
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do

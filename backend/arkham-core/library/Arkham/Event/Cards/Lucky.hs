@@ -27,8 +27,7 @@ instance RunMessage Lucky where
         Just skillTest -> do
           let skillType = skillTestSkillType skillTest
           pushAll
-            [ discard attrs
-            , skillTestModifier
+            [ skillTestModifier
               (toSource attrs)
               (InvestigatorTarget iid)
               (SkillModifier skillType 2)

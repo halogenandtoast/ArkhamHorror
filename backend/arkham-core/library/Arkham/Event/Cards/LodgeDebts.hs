@@ -21,7 +21,7 @@ newtype LodgeDebts = LodgeDebts EventAttrs
 
 lodgeDebts :: EventCard LodgeDebts
 lodgeDebts =
-  event LodgeDebts Cards.lodgeDebts
+  eventWith LodgeDebts Cards.lodgeDebts $ afterPlayL .~ RemoveThisFromGame
 
 instance HasAbilities LodgeDebts where
   getAbilities (LodgeDebts a) =
@@ -35,8 +35,7 @@ instance HasAbilities LodgeDebts where
 
 instance RunMessage LodgeDebts where
   runMessage msg e@(LodgeDebts attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll [RemoveFromGame (toTarget attrs)]
+    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
       | iid == iid' -> do
       push $ SufferTrauma iid 0 1

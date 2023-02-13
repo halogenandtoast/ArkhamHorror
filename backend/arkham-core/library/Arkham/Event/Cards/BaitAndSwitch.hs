@@ -20,16 +20,15 @@ baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
 instance RunMessage BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
-      [ ChooseEvadeEnemy
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+      push $ ChooseEvadeEnemy
         iid
         (toSource attrs)
         (Just $ toTarget attrs)
         SkillAgility
         AnyEnemy
         False
-      , discard attrs
-      ]
+      pure e
     Successful (Action.Evade, EnemyTarget eid) iid _ target _
       | isTarget attrs target -> do
         nonElite <- member eid <$> select NonEliteEnemy

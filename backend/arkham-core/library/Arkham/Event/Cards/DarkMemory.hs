@@ -33,7 +33,7 @@ instance RunMessage DarkMemory where
       [ RevealInHand $ toCardId attrs
       , InvestigatorAssignDamage
         iid
-        (CardIdSource $ toCardId attrs)
+        (CardSource $ toCard attrs)
         DamageAny
         0
         2
@@ -42,6 +42,5 @@ instance RunMessage DarkMemory where
       e <$ pushAll
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied
-        , discard attrs
         ]
     _ -> DarkMemory <$> runMessage msg attrs

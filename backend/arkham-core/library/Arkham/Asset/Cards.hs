@@ -133,6 +133,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , artStudent
   , backpack
   , bandolier
+  , baronSamedi
   , baseballBat
   , beatCop
   , beatCop2
@@ -2564,6 +2565,13 @@ twilightBlade = (asset "05013" ("Twilight Blade" <:> "Sanctum's Reward") 3 Neutr
   , cdSkills = [#willpower, #combat, #wild]
   , cdSlots = [HandSlot]
   }
+
+baronSamedi :: CardDef
+baronSamedi =
+  (weakness "05019" ("Baron Samedi" <:> "Lord of the Cemetery"))
+    { cdCardTraits = singleton Avatar
+    , cdSlots = [AllySlot]
+    }
 
 fingerprintKit :: CardDef
 fingerprintKit = (asset "05024" "Fingerprint Kit" 4 Seeker)

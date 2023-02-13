@@ -24,7 +24,6 @@ instance RunMessage EmergencyCache2 where
       pushAll
         [ TakeResources iid 3 (toSource attrs) False
         , drawing
-        , discard attrs
         ]
       pure e
     _ -> EmergencyCache2 <$> runMessage msg attrs

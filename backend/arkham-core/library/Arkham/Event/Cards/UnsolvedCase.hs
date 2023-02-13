@@ -27,7 +27,7 @@ newtype UnsolvedCase = UnsolvedCase EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unsolvedCase :: EventCard UnsolvedCase
-unsolvedCase = event UnsolvedCase Cards.unsolvedCase
+unsolvedCase = eventWith UnsolvedCase Cards.unsolvedCase $ afterPlayL .~ RemoveThisFromGame
 
 instance HasModifiersFor UnsolvedCase where
   getModifiersFor (InvestigatorTarget iid) (UnsolvedCase attrs) = case eventPlacement attrs of
@@ -73,7 +73,6 @@ instance RunMessage UnsolvedCase where
               ]
           | notNull highestShroud && hasClues
           ]
-        <> [RemoveFromGame (toTarget attrs)]
       pure e
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       -- no-op, handled in HasModifiersFor

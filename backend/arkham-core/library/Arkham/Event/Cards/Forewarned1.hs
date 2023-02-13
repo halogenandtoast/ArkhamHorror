@@ -23,6 +23,5 @@ instance RunMessage Forewarned1 where
       e <$ pushAll
         [ InvestigatorPlaceCluesOnLocation iid 1
         , CancelNext (toSource attrs) RevelationMessage
-        , discard attrs
         ]
     _ -> Forewarned1 <$> runMessage msg attrs

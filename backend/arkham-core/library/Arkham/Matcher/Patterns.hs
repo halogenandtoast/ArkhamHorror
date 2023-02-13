@@ -91,6 +91,12 @@ pattern InvestigatorCanHealDamage :: InvestigatorMatcher
 pattern InvestigatorCanHealDamage <- Anyone where
   InvestigatorCanHealDamage = Anyone
 
+-- ** Event Patterns **
+
+pattern EventWithAnyDoom :: EventMatcher
+pattern EventWithAnyDoom <- EventWithDoom (GreaterThan (Static 0)) where
+  EventWithAnyDoom = EventWithDoom (GreaterThan (Static 0))
+
 -- ** Asset Patterns **
 
 pattern AllyAsset :: AssetMatcher

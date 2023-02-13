@@ -42,5 +42,5 @@ instance RunMessage Oops where
               | x <- xs
               ]
         e <$ pushAll
-          [CancelFailedByModifierEffects, damageMsg, discard attrs]
+          [CancelFailedByModifierEffects, damageMsg]
     _ -> Oops <$> runMessage msg attrs

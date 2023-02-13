@@ -24,24 +24,21 @@ instance RunMessage Shortcut where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- selectList $ colocatedWith iid
       connectingLocations <- selectList AccessibleLocation
-      if null connectingLocations
-        then push $ discard attrs
-        else pushAll
-          [ chooseOne
-            iid
-            [ TargetLabel
-                (InvestigatorTarget iid')
-                [ chooseOne
-                    iid
-                    [ TargetLabel
-                        (LocationTarget lid')
-                        [Move (toSource attrs) iid' lid']
-                    | lid' <- connectingLocations
-                    ]
-                ]
-            | iid' <- investigatorIds
-            ]
-          , discard attrs
+      unless (null connectingLocations) $ pushAll
+        [ chooseOne
+          iid
+          [ TargetLabel
+              (InvestigatorTarget iid')
+              [ chooseOne
+                  iid
+                  [ TargetLabel
+                      (LocationTarget lid')
+                      [Move (toSource attrs) iid' lid']
+                  | lid' <- connectingLocations
+                  ]
+              ]
+          | iid' <- investigatorIds
           ]
+        ]
       pure e
     _ -> Shortcut <$> runMessage msg attrs

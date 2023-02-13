@@ -22,7 +22,6 @@ instance RunMessage LookWhatIFound2 where
       pushAll
         [ ResolveEvent iid eid Nothing windows'
         , ResolveEvent iid eid Nothing windows'
-        , discard attrs
         ]
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do

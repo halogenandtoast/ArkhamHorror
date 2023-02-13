@@ -32,7 +32,6 @@ instance RunMessage StandTogether where
                   iid'
                   [ TakeResources iid' 2 (toSource attrs) False
                   , TakeResources iid 2 (toSource attrs) False
-                  , discard attrs
                   ]
               ]
           | iid' <- investigators

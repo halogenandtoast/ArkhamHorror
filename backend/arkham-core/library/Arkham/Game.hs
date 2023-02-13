@@ -1431,11 +1431,11 @@ getAssetsMatching matcher = do
           Just (AssetTarget aid) -> Just aid
           _ -> Nothing
       pure $ filter ((`elem` aids) . toId) as
-    AssetAtLocation lid -> pure $ flip filter as $ \a ->
+    AssetAtLocation lid -> flip filterM as $ \a ->
       case assetPlacement (toAttrs a) of
-        AtLocation lid' -> lid == lid'
-        AttachedToLocation lid' -> lid == lid'
-        _ -> False
+        AtLocation lid' -> pure $ lid == lid'
+        AttachedToLocation lid' -> pure $ lid == lid'
+        _ -> pure False
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode . toAttrs) as
@@ -1596,6 +1596,8 @@ getEventsMatching matcher = do
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
+    EventWithDoom valueMatcher ->
+      filterM ((`gameValueMatches` valueMatcher) . eventDoom . toAttrs) as
     EventReady -> pure $ filter (not . eventExhausted . toAttrs) as
     EventMatches ms -> foldM filterMatcher as ms
     AnyEvent -> pure as
@@ -2590,6 +2592,7 @@ instance Projection Event where
       EventTraits -> pure $ cdCardTraits cdef
       EventAbilities -> pure $ getAbilities e
       EventOwner -> pure eventOwner
+      EventDoom -> pure eventDoom
       EventCard ->
         -- an event might need to be converted back to its original card
         pure $ lookupCard eventOriginalCardCode (unEventId eid)
@@ -3484,6 +3487,7 @@ runGameMessage msg g = case msg of
           pushAll
             [ CardEnteredPlay iid card
             , InvestigatorPlayEvent iid eid mtarget windows' zone
+            , FinishedEvent eid
             , ResolvedCard iid card
             ]
           pure $ g & entitiesL . eventsL %~ insertMap eid event'

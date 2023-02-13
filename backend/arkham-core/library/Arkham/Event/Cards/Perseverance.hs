@@ -47,7 +47,6 @@ instance RunMessage Perseverance where
           <> [ ("Horror", (0, assignedHorror)) | assignedHorror > 0 ]
           )
           (toTarget attrs)
-        , discard attrs
         ]
       pure e
     ResolveAmounts iid choices target | isTarget attrs target -> do

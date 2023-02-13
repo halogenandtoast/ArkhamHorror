@@ -38,7 +38,6 @@ instance RunMessage Sacrifice1 where
           (TotalAmountTarget 3)
           [("Cards", (0, 3)), ("Resources", (0, 3))]
           (toTarget attrs)
-        , discard attrs
         ]
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do

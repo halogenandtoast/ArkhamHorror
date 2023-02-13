@@ -40,6 +40,5 @@ instance RunMessage Backstab where
           SkillAgility
           mempty
           False
-        , discard attrs
         ]
     _ -> Backstab <$> runMessage msg attrs

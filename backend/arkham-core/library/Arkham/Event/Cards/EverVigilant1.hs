@@ -37,7 +37,6 @@ instance RunMessage EverVigilant1 where
     InvestigatorPlayEvent iid eid mtarget windows' _ | eid == toId attrs -> do
       e <$ pushAll
         (replicate 3 (ResolveEvent iid eid mtarget windows')
-        <> [discard attrs]
         )
     ResolveEvent iid eid _mtarget windows' | eid == toId attrs -> do
       let

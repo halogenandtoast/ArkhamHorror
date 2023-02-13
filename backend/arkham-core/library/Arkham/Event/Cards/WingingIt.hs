@@ -33,9 +33,6 @@ instance RunMessage WingingIt where
         iid
       skillType <- field LocationInvestigateSkill lid
       let
-        eventResolution = if zone == Zone.FromDiscard
-          then ShuffleIntoDeck (Deck.InvestigatorDeck iid)
-          else const (discard attrs)
         modifiers =
           [ skillTestModifier attrs (InvestigatorTarget iid) (DiscoveredClues 1)
           | zone == Zone.FromDiscard
@@ -43,8 +40,7 @@ instance RunMessage WingingIt where
       e <$ pushAll
         (skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-1))
         : modifiers
-        <> [ Investigate iid lid (toSource attrs) Nothing skillType False
-           , eventResolution (toTarget attrs)
-           ]
+        <> [ Investigate iid lid (toSource attrs) Nothing skillType False ]
+        <> [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == Zone.FromDiscard ]
         )
     _ -> WingingIt <$> runMessage msg attrs

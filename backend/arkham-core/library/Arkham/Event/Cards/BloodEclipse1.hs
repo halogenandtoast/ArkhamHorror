@@ -37,7 +37,6 @@ instance RunMessage BloodEclipse1 where
             SkillWillpower
             mempty
             False
-          , discard attrs
           ]
         pure e
     _ -> BloodEclipse1 <$> runMessage msg attrs

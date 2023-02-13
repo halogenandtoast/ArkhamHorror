@@ -698,7 +698,7 @@ sourceToTarget = \case
   YouSource -> YouTarget
   AssetSource aid -> AssetTarget aid
   EnemySource eid -> EnemyTarget eid
-  CardIdSource cid -> CardIdTarget cid
+  CardSource c -> CardTarget c
   ScenarioSource -> ScenarioTarget
   InvestigatorSource iid -> InvestigatorTarget iid
   CardCodeSource cid -> CardCodeTarget cid
@@ -851,7 +851,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         _ -> Nothing
 
     canAffordAdditionalCosts <- allM
-      (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows')
+      (getCanAffordCost iid (CardSource c) Nothing windows')
       ([ ActionCost 1 | not inFastWindow && costStatus /= PaidCost ]
       <> additionalCosts
       <> sealedTokenCost
@@ -2210,7 +2210,7 @@ sourceTraits = \case
   AssetSource aid -> field AssetTraits aid
 
   CardCodeSource _ -> pure mempty
-  CardIdSource _ -> pure mempty
+  CardSource c -> pure (toTraits c)
   DeckSource -> pure mempty
   EffectSource _ -> pure mempty
   EmptyDeckSource -> pure mempty
@@ -2693,5 +2693,5 @@ additionalActionCovers
   -> AdditionalAction
   -> m Bool
 additionalActionCovers source maction = \case
-  TraitRestrictedAdditionalAction t -> member t <$> sourceTraits source
+  TraitRestrictedAdditionalAction t _ -> member t <$> sourceTraits source
   ActionRestrictedAdditionalAction a -> pure $ maction == Just a

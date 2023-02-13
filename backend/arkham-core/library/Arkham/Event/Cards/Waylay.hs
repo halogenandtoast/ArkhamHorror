@@ -47,7 +47,6 @@ instance RunMessage Waylay where
               ]
           | (enemy, evade) <- enemiesWithEvade
           ]
-        , discard attrs
         ]
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) (SkillTestInitiatorTarget (EnemyTarget eid)) _ _

@@ -35,6 +35,5 @@ instance RunMessage DumbLuck where
       let enemyId = toEnemyId windows
       e <$ pushAll
         [ PutOnTopOfDeck iid Deck.EncounterDeck (EnemyTarget enemyId)
-        , discard attrs
         ]
     _ -> DumbLuck <$> runMessage msg attrs

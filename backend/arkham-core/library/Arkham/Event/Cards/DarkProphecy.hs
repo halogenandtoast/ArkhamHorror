@@ -39,7 +39,6 @@ instance RunMessage DarkProphecy where
             $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
             )
           , ignoreWindow
-          , discard attrs
           ]
         pure e
     _ -> DarkProphecy <$> runMessage msg attrs

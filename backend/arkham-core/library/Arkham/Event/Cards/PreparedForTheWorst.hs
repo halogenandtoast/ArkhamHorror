@@ -32,6 +32,5 @@ instance RunMessage PreparedForTheWorst where
           [fromTopOfDeck 9]
           (CardWithType AssetType <> CardWithTrait Weapon)
           (DrawFound iid 1)
-        , discard attrs
         ]
     _ -> PreparedForTheWorst <$> runMessage msg attrs

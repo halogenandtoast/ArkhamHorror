@@ -57,6 +57,5 @@ instance RunMessage Contraband where
           | (useType', assetUseCount, assetId) <-
             ammoAssetsWithUseCount <> supplyAssetsWithUseCount
           ]
-        , discard attrs
         ]
     _ -> Contraband <$> runMessage msg attrs

@@ -33,11 +33,7 @@ impromptuBarrier =
 instance RunMessage ImpromptuBarrier where
   runMessage msg e@(ImpromptuBarrier (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      let
-        afterMsg = case zone of
-          FromDiscard -> ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-          _ -> discard attrs
-      pushAll
+      pushAll $
         [ ChooseEvadeEnemy
           iid
           (toSource attrs)
@@ -45,8 +41,7 @@ instance RunMessage ImpromptuBarrier where
           SkillCombat
           mempty
           False
-        , afterMsg
-        ]
+        ] <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
       pure . ImpromptuBarrier $ attrs `with` Metadata (zone == FromDiscard)
     ChosenEvadeEnemy (isSource attrs -> True) eid -> do
       push $ skillTestModifier attrs (EnemyTarget eid) (EnemyEvade (-1))

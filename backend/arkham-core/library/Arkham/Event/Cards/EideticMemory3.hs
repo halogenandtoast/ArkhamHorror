@@ -28,7 +28,7 @@ newtype EideticMemory3 = EideticMemory3 EventAttrs
 
 eideticMemory3 :: EventCard EideticMemory3
 eideticMemory3 =
-  event EideticMemory3 Cards.eideticMemory3
+  eventWith EideticMemory3 Cards.eideticMemory3 $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage EideticMemory3 where
   runMessage msg e@(EideticMemory3 attrs) = case msg of
@@ -50,7 +50,7 @@ instance RunMessage EideticMemory3 where
         [ CreateEffect
             "03306"
             Nothing
-            (CardIdSource $ toCardId attrs)
+            (CardSource $ toCard attrs)
             (CardIdTarget $ toCardId attrs)
         ]
         RemoveChosenCardFromGame

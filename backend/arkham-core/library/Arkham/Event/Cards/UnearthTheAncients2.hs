@@ -67,7 +67,6 @@ instance RunMessage UnearthTheAncients2 where
           SkillTestTarget
           (SetDifficulty $ sum $ map getCost $ chosenCards metadata)
         , Investigate iid lid (toSource attrs) Nothing skillType False
-        , discard attrs
         ]
       pure e
     Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do

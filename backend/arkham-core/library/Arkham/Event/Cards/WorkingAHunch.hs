@@ -22,11 +22,7 @@ instance RunMessage WorkingAHunch where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getJustLocation iid
       locationClueCount <- field LocationClues currentLocationId
-      if locationClueCount > 0
-        then pushAll
-          [ InvestigatorDiscoverClues iid currentLocationId 1 Nothing
-          , discard attrs
-          ]
-        else push $ discard attrs
+      when (locationClueCount > 0) $ push $
+        InvestigatorDiscoverClues iid currentLocationId 1 Nothing
       pure e
     _ -> WorkingAHunch <$> runMessage msg attrs

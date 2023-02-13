@@ -19,9 +19,6 @@ instance RunMessage LookWhatIFound where
   runMessage msg e@(LookWhatIFound attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getJustLocation iid
-      e
-        <$ pushAll
-             [ InvestigatorDiscoverClues iid lid 2 Nothing
-             , discard attrs
-             ]
+      push $ InvestigatorDiscoverClues iid lid 2 Nothing
+      pure e
     _ -> LookWhatIFound <$> runMessage msg attrs

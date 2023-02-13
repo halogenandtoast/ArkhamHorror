@@ -30,7 +30,6 @@ instance RunMessage IllSeeYouInHell where
         (defeatEnemyMessages
         <> [ InvestigatorDefeated (toSource attrs) iid
            , SufferTrauma iid 1 0
-           , discard attrs
            ]
         )
     _ -> IllSeeYouInHell <$> runMessage msg attrs

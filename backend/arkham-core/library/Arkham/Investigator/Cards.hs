@@ -86,6 +86,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , prestonFairmont
   , dianaStanley
   , ritaYoung
+  , marieLambeau
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -250,6 +251,13 @@ ritaYoung = investigator
   ("Rita Young" <:> "The Athlete")
   Survivor
   [Miskatonic]
+
+marieLambeau :: CardDef
+marieLambeau = investigator
+  "05006"
+  ("Marie Lambeau" <:> "The Entertainer")
+  Mystic
+  [Performer, Sorcerer]
 
 normanWithers :: CardDef
 normanWithers = investigator

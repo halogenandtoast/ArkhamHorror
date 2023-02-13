@@ -34,7 +34,6 @@ instance RunMessage CheapShot where
           (toSource attrs)
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        , discard attrs
         ]
     PassedSkillTest iid _ _ (SkillTestInitiatorTarget (InvestigatorTarget _)) _ n
       | n >= 2

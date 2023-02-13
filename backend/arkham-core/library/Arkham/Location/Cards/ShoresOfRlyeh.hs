@@ -32,7 +32,6 @@ instance HasModifiersFor ShoresOfRlyeh where
     enemyDoom <- selectAgg Sum EnemyDoom $ enemyAt (toId a)
     treacheryDoom <- selectAgg Sum TreacheryDoom $ treacheryAt (toId a)
     assetDoom <- selectAgg Sum AssetDoom $ assetAt (toId a)
-    -- eventDoom <- selectAgg Sum EventDoom $ eventAt (toId a)
     investigatorDoom <- selectAgg Sum InvestigatorDoom $ investigatorAt (toId a)
     doomOnSelf <- fieldMap LocationDoom Sum (toId a)
     pure $ toModifiers

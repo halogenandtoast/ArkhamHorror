@@ -33,7 +33,7 @@ instance RunMessage YouHandleThisOne where
               | target <- targets
               ]
           ]
-        <> [TakeResources iid 1 (toSource attrs) False, discard attrs]
+        <> [TakeResources iid 1 (toSource attrs) False]
       pure e
     HandleTargetChoice iid source (InvestigatorTarget iid')
       | isSource attrs source -> do

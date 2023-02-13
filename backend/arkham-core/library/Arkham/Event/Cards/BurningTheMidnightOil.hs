@@ -28,7 +28,6 @@ instance RunMessage BurningTheMidnightOil where
       pushAll
         [ TakeResources iid 2 (toSource attrs) False
         , Investigate iid lid (toSource attrs) Nothing skillType False
-        , discard attrs
         ]
       pure e
     _ -> BurningTheMidnightOil <$> runMessage msg attrs

@@ -30,6 +30,5 @@ instance RunMessage Elusive where
            | notNull targets
            ]
         <> map EnemyCheckEngagement enemyIds
-        <> [discard attrs]
       pure e
     _ -> Elusive <$> runMessage msg attrs

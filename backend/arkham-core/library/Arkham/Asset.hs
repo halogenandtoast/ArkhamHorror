@@ -427,6 +427,7 @@ allAssets = mapFrom
   , SomeAssetCard detectivesColt1911s
   , SomeAssetCard familyInheritance
   , SomeAssetCard twilightBlade
+  , SomeAssetCard baronSamedi
   --- seeker [tcu]
   , SomeAssetCard fingerprintKit
   --- survivor [tcu]

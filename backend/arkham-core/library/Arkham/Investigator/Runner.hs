@@ -2599,11 +2599,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [Action.Resource]
         canAffordDrawCards <- getCanAfford a [Action.Draw]
-        canAffordPlayCard <- getCanAfford a [Action.Play]
-        playableCards <- getPlayableCards a UnpaidCost windows
         let
           usesAction = not isAdditional
           drawCardsF = if usesAction then drawCardsAction else drawCards
+            
+        playableCards <- getPlayableCards a UnpaidCost windows
         drawing <- drawCardsF iid a 1
         push
           $ AskPlayer
@@ -2625,9 +2625,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ TargetLabel
                  (CardIdTarget $ toCardId c)
                  [InitiatePlayCard iid c Nothing windows usesAction]
-             | c <- playableCards
-             , canAffordPlayCard || isFastCard c
-             ]
+             | c <- playableCards ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
           <> map ((\f -> f windows []) . AbilityLabel iid) actions
     pure a

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Exception
+import Arkham.Helpers.Message
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -37,27 +37,6 @@ instance RunMessage PsychopompsSong where
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mMsg <- findFromQueue $ \case
-        InvestigatorDamage iid' _ n _ | iid' == iid -> n > 0
-        InvestigatorDoAssignDamage iid' _ _ _ n _ [] [] | iid' == iid -> n > 0
-        _ -> False
-      case mMsg of
-        Just damageMsg -> do
-          let
-            newMsg = case damageMsg of
-              InvestigatorDamage _ source' n horror ->
-                InvestigatorDamage iid source' (n + 2) horror
-              InvestigatorDoAssignDamage _ source' strategy matcher n horror [] [] ->
-                InvestigatorDoAssignDamage
-                  iid
-                  source'
-                  strategy
-                  matcher
-                  (n + 2)
-                  horror
-                  []
-                  []
-              _ -> error "impossible"
-          t <$ replaceMessage damageMsg [newMsg, Discard (toAbilitySource attrs 1) (toTarget attrs)]
-        Nothing -> throwIO $ InvalidState "No damage occured"
+      dealAdditionalDamage iid 2 [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+      pure t
     _ -> PsychopompsSong <$> runMessage msg attrs

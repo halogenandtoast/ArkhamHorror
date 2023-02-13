@@ -29,7 +29,6 @@ instance RunMessage GlimpseTheUnthinkable1 where
       pushAll
         [ drawing
         , ResolveEvent iid eid mtarget windows'
-        , discard attrs
         ]
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do

@@ -33,6 +33,5 @@ instance RunMessage BlindingLight2 where
         SkillWillpower
         AnyEnemy
         False
-      , discard attrs
       ]
     _ -> BlindingLight2 <$> runMessage msg attrs

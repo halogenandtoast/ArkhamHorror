@@ -53,8 +53,8 @@ addActiveCostCost cost ac = ac & costsL <>~ cost
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> abilitySource a
-  ForCard _ c -> CardIdSource $ toCardId c
-  ForCost c -> CardIdSource $ toCardId c
+  ForCard _ c -> CardSource c
+  ForCost c -> CardSource c
 
 costsL :: Lens' ActiveCost Cost
 costsL = lens activeCostCosts $ \m x -> m { activeCostCosts = x }

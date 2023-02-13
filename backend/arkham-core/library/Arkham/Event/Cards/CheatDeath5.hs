@@ -18,7 +18,7 @@ newtype CheatDeath5 = CheatDeath5 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cheatDeath5 :: EventCard CheatDeath5
-cheatDeath5 = event CheatDeath5 Cards.cheatDeath5
+cheatDeath5 = eventWith CheatDeath5 Cards.cheatDeath5 $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage CheatDeath5 where
   runMessage msg e@(CheatDeath5 attrs) = case msg of
@@ -55,6 +55,5 @@ instance RunMessage CheatDeath5 where
            | notNull locations
            ]
         <> [ ChooseEndTurn iid | yourTurn ]
-        <> [RemoveFromGame $ toTarget attrs]
       pure e
     _ -> CheatDeath5 <$> runMessage msg attrs

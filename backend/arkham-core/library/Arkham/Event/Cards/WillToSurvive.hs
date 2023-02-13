@@ -28,7 +28,6 @@ instance RunMessage WillToSurvive where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ CreateEffect "60512" Nothing (toSource attrs) (InvestigatorTarget iid)
-        , discard attrs
         ]
     _ -> WillToSurvive <$> runMessage msg attrs
 

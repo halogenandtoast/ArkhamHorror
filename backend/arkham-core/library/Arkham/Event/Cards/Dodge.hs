@@ -17,5 +17,5 @@ dodge = event Dodge Cards.dodge
 instance RunMessage Dodge where
   runMessage msg e@(Dodge attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
-      e <$ pushAll [CancelNext (toSource attrs) AttackMessage, discard attrs]
+      e <$ pushAll [CancelNext (toSource attrs) AttackMessage]
     _ -> Dodge <$> runMessage msg attrs

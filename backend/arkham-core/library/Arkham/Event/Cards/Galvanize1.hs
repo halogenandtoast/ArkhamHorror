@@ -40,7 +40,6 @@ instance RunMessage Galvanize1 where
              iid
              (toSource attrs)
              (ActionRestrictedAdditionalAction Action.Fight)
-           , discard attrs
            ]
       pure e
     _ -> Galvanize1 <$> runMessage msg attrs

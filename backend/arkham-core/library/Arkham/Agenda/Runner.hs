@@ -56,9 +56,9 @@ instance RunMessage AgendaAttrs
         & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)
         & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
-      case a ^. doomThresholdL of
-        Nothing -> pure a
-        Just threshold -> do
+      cannotBeAdvanced <- hasModifier a CannotBeAdvancedByDoomThreshold
+      unless cannotBeAdvanced $ do
+        for_ (a ^. doomThresholdL) $ \threshold -> do
           perPlayerDoomThreshold <- getPlayerCountValue threshold
           modifiers' <- getModifiers (toTarget a)
           let
@@ -87,7 +87,7 @@ instance RunMessage AgendaAttrs
                     (Window.AgendaWouldAdvance DoomThreshold $ toId a)
                 ]
               pushAll [whenMsg, afterMsg, Do AdvanceAgendaIfThresholdSatisfied]
-          pure a
+      pure a
     Do AdvanceAgendaIfThresholdSatisfied -> do
       case a ^. doomThresholdL of
         Nothing -> error "can not advance without threshold"

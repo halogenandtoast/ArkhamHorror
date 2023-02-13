@@ -1,7 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Event.Runner
   ( module X
-  , discard
   ) where
 
 import Arkham.Event.Types as X
@@ -15,9 +14,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
-
-discard :: EventAttrs -> Message
-discard = Discard GameSource . toTarget
+import Arkham.Placement
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do
@@ -50,4 +47,11 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
   PlaceEvent _ eid placement | eid == eventId ->
     pure $ a & placementL .~ placement
+  FinishedEvent eid | eid == eventId -> do
+    case eventPlacement of
+      Unplaced -> case eventAfterPlay of
+        DiscardThis -> push $ Discard GameSource (toTarget a)
+        RemoveThisFromGame -> push (RemoveEvent $ toId a)
+      _ -> pure ()
+    pure a
   _ -> pure a

@@ -22,6 +22,5 @@ instance RunMessage SureGamble3 where
     InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealToken _ token)] _
       | eid == eventId -> e <$ pushAll
         [ CreateEffect "01088" Nothing (toSource attrs) (TokenTarget token)
-        , discard attrs
         ]
     _ -> SureGamble3 <$> runMessage msg attrs

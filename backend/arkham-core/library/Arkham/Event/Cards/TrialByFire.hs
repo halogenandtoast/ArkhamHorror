@@ -38,7 +38,6 @@ instance RunMessage TrialByFire where
               ]
           | skill <- allSkills
           ]
-        , discard attrs
         ]
       pure e
     _ -> TrialByFire <$> runMessage msg attrs

@@ -38,7 +38,6 @@ instance RunMessage BloodRite where
           windows
           1
           (DiscardCardPayment [])
-        , discard attrs
         ]
       pure e
     PayForCardAbility iid source windows 1 payment@(DiscardCardPayment discardedCards)

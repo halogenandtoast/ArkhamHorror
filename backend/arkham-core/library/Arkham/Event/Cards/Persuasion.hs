@@ -53,7 +53,6 @@ instance RunMessage Persuasion where
                   ]
               | (enemy, horror) <- enemies
               ]
-            , discard attrs
             ]
         _ -> error "investigator not at location"
       pure e

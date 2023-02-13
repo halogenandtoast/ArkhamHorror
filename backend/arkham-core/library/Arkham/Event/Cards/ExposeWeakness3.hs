@@ -49,7 +49,6 @@ instance RunMessage ExposeWeakness3 where
           | (enemy, enemyFight) <- enemies
           ]
         , drawing
-        , discard attrs
         ]
       pure e
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _

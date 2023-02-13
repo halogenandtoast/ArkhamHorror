@@ -56,6 +56,5 @@ instance RunMessage AChanceEncounter where
           | card <- filteredDiscards
           ]
         , UnfocusCards
-        , discard attrs
         ]
     _ -> AChanceEncounter <$> runMessage msg attrs

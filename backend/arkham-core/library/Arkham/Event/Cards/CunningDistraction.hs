@@ -20,6 +20,6 @@ instance RunMessage CunningDistraction where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <-
         selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
-      pushAll $ map (EnemyEvaded iid) enemyIds <> [discard attrs]
+      pushAll $ map (EnemyEvaded iid) enemyIds
       pure e
     _ -> CunningDistraction <$> runMessage msg attrs

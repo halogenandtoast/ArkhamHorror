@@ -51,7 +51,6 @@ instance RunMessage EatLead2 where
                 (MaxAmountTarget uses)
                 [("Ammo", (0, uses))]
                 (toTarget attrs)
-              , discard attrs
               ]
             pure . EatLead2 $ attrs `with` Metadata (Just aid)
           _ -> error "Invalid source"

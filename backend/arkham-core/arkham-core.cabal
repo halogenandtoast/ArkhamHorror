@@ -279,6 +279,7 @@ library
       Arkham.Asset.Cards.AshleighClarke
       Arkham.Asset.Cards.Backpack
       Arkham.Asset.Cards.Bandolier
+      Arkham.Asset.Cards.BaronSamedi
       Arkham.Asset.Cards.BaseballBat
       Arkham.Asset.Cards.Bauta
       Arkham.Asset.Cards.BearTrap
@@ -999,6 +1000,7 @@ library
       Arkham.Event.Cards.MonsterSlayer
       Arkham.Event.Cards.MonsterSlayer5
       Arkham.Event.Cards.MoonlightRitual
+      Arkham.Event.Cards.MystifyingSong
       Arkham.Event.Cards.NarrowEscape
       Arkham.Event.Cards.NoStoneUnturned
       Arkham.Event.Cards.NoStoneUnturned5
@@ -1120,6 +1122,7 @@ library
       Arkham.Investigator.Cards.JoeDiamond
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LolaHayes
+      Arkham.Investigator.Cards.MarieLambeau
       Arkham.Investigator.Cards.MarkHarrigan
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.NathanielCho

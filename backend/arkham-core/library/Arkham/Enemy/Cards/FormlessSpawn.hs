@@ -36,7 +36,6 @@ instance HasModifiersFor FormlessSpawn where
       Locations.nexusOfNKai
     assetDoom <- selectAgg Sum AssetDoom $ AssetAt $ locationIs
       Locations.nexusOfNKai
-    -- eventDoom <- selectAgg Sum EventDoom $ eventAt (toId a)
     investigatorDoom <-
       selectAgg Sum InvestigatorDoom $ InvestigatorAt $ locationIs
         Locations.nexusOfNKai

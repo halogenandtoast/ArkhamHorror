@@ -49,5 +49,5 @@ instance RunMessage HeroicRescue where
               , EnemyDamage targetEnemy $ nonAttack attrs 1
               ]
             _ -> error "Mismatched"
-        e <$ pushAll [discard attrs]
+        pure e
     _ -> HeroicRescue <$> runMessage msg attrs

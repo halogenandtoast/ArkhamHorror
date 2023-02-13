@@ -29,7 +29,6 @@ instance RunMessage ManoAMano2 where
           [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 2]
           | enemy <- enemies
           ]
-        , discard attrs
         ]
       pure e
     _ -> ManoAMano2 <$> runMessage msg attrs

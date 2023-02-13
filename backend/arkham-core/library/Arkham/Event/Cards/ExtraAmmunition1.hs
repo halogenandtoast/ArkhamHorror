@@ -27,7 +27,6 @@ instance RunMessage ExtraAmmunition1 where
         [ chooseOrRunOne
           iid
           [ targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms ]
-        , discard attrs
         ]
       pure e
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

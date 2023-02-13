@@ -38,7 +38,6 @@ instance RunMessage FirstWatch where
         playerCount <- getPlayerCount
         e <$ pushAll
           [ DrawEncounterCards (EventTarget eventId) playerCount
-          , discard attrs
           ]
       UseCardAbilityChoice iid (EventSource eid) 1 (EncounterCardMetadata card) [] _
         | eid == eventId

@@ -33,9 +33,6 @@ instance HasModifiersFor ExtensiveResearch where
 instance RunMessage ExtensiveResearch where
   runMessage msg e@(ExtensiveResearch attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
-        , discard attrs
-        ]
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
       pure e
     _ -> ExtensiveResearch <$> runMessage msg attrs

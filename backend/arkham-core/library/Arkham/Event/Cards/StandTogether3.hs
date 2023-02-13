@@ -40,7 +40,6 @@ instance RunMessage StandTogether3 where
                   ]
               | (x, drawing2) <- investigators
               ]
-            , discard attrs
             ]
       pure e
     _ -> StandTogether3 <$> runMessage msg attrs

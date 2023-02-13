@@ -27,10 +27,8 @@ monsterSlayer5 = event MonsterSlayer5 Cards.monsterSlayer5
 instance RunMessage MonsterSlayer5 where
   runMessage msg e@(MonsterSlayer5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll
-        [ ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        , discard attrs
-        ]
+      push $ ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+      pure e
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ _
       | isSource attrs source
       -> do

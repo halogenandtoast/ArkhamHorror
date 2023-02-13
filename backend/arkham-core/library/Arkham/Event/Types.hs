@@ -30,6 +30,7 @@ data instance Field Event :: Type -> Type where
   EventTraits :: Field Event (HashSet Trait)
   EventAbilities :: Field Event [Ability]
   EventOwner :: Field Event InvestigatorId
+  EventDoom :: Field Event Int
   EventCard :: Field Event Card
   EventSealedTokens :: Field Event [Token]
 
@@ -51,8 +52,12 @@ data EventAttrs = EventAttrs
   , eventPaymentMessages :: [Message]
   , eventSealedTokens :: [Token]
   , eventPlacement :: Placement
+  , eventAfterPlay :: AfterPlayStrategy
   }
   deriving stock (Show, Eq, Generic)
+
+afterPlayL :: Lens' EventAttrs AfterPlayStrategy
+afterPlayL = lens eventAfterPlay $ \m x -> m { eventAfterPlay = x }
 
 placementL :: Lens' EventAttrs Placement
 placementL = lens eventPlacement $ \m x -> m { eventPlacement = x }
@@ -98,6 +103,9 @@ instance IsCard EventAttrs where
   toCardId = unEventId . eventId
   toCardOwner = Just . eventOwner
 
+eventWith :: (EventAttrs -> a) -> CardDef -> (EventAttrs -> EventAttrs) -> CardBuilder (InvestigatorId, EventId) a
+eventWith f cardDef g = Arkham.Event.Types.event (f . g) cardDef
+
 event ::
   (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef =
@@ -117,6 +125,7 @@ event f cardDef =
             , eventPaymentMessages = []
             , eventSealedTokens = []
             , eventPlacement = Unplaced
+            , eventAfterPlay = DiscardThis
             }
     }
 

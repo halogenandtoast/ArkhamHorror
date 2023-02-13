@@ -43,7 +43,6 @@ instance RunMessage DarkPact where
               [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 2 0]
           | iid' <- iids
           ]
-        , discard attrs
         ]
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)

@@ -26,10 +26,6 @@ improvisedWeapon = event ImprovisedWeapon Cards.improvisedWeapon
 instance RunMessage ImprovisedWeapon where
   runMessage msg e@(ImprovisedWeapon attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      let
-        afterMsg = case zone of
-          FromDiscard -> ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-          _ -> discard attrs
       enemyIds <- selectList CanFightEnemy
       pushAll
         $ [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
@@ -53,7 +49,7 @@ instance RunMessage ImprovisedWeapon where
                  ]
              | enemyId <- enemyIds
              ]
-           , afterMsg
            ]
+        <> [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard ]
       pure e
     _ -> ImprovisedWeapon <$> runMessage msg attrs

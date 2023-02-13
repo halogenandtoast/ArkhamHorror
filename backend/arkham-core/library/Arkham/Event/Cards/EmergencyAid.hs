@@ -47,6 +47,6 @@ instance RunMessage EmergencyAid where
             ]
           else Nothing
 
-      pushAll [chooseOne iid choices , discard attrs]
+      pushAll [chooseOne iid choices]
       pure e
     _ -> EmergencyAid <$> runMessage msg attrs

@@ -53,9 +53,6 @@ instance RunMessage ExposeWeakness1 where
               (Just $ EffectInt n)
               source
               (EnemyTarget enemyId)
-            , discard attrs
             ]
           _ -> error "had to have an enemy"
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> e <$ push (discard attrs)
     _ -> ExposeWeakness1 <$> runMessage msg attrs

@@ -26,7 +26,6 @@ instance RunMessage CleanThemOut where
       pushAll
         [ TakeResources iid 2 (toSource attrs) False
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        , discard attrs
         ]
       pure e
     _ -> CleanThemOut <$> runMessage msg attrs

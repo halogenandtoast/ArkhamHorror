@@ -35,7 +35,6 @@ instance RunMessage DevilsLuck where
             <> [ ("Horror", (0, horror)) | horror > 0 ]
             )
             (toTarget attrs)
-          , discard attrs
           ]
         pure e
     ResolveAmounts iid choices target | isTarget attrs target -> do

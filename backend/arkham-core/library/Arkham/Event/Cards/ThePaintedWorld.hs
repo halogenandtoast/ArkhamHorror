@@ -26,7 +26,7 @@ newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePaintedWorld :: EventCard ThePaintedWorld
-thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
+thePaintedWorld = eventWith ThePaintedWorld Cards.thePaintedWorld $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
@@ -47,7 +47,7 @@ instance RunMessage ThePaintedWorld where
         [ CreateEffect
             "03012"
             Nothing
-            (CardIdSource $ toCardId attrs)
+            (CardSource $ toCard attrs)
             (CardIdTarget $ toCardId attrs)
         ]
         LeaveChosenCard

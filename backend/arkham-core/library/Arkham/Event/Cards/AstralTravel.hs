@@ -33,7 +33,6 @@ instance RunMessage AstralTravel where
           iid
           [ targetLabel lid [MoveAction iid lid Free False] | lid <- locations ]
         , RequestTokens (toSource attrs) Nothing (Reveal 1) SetAside
-        , discard attrs
         ]
       pure e
     RequestedTokens source _ tokens | isSource attrs source -> do

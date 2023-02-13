@@ -42,7 +42,7 @@ instance RunMessage DenyExistence where
           WouldTakeDamage{} -> Just $ go "take damage" w
           WouldTakeHorror{} -> Just $ go "take horror" w
           _ -> Nothing
-      pushAll [chooseOrRunOne iid choices, discard attrs]
+      push $ chooseOrRunOne iid choices
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       case windowType w of

@@ -19,6 +19,5 @@ instance RunMessage DrawnToTheFlame where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ InvestigatorDrawEncounterCard iid
       , InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
-      , discard attrs
       ]
     _ -> DrawnToTheFlame <$> runMessage msg attrs

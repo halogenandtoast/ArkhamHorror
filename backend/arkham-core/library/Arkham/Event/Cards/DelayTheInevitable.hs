@@ -22,5 +22,5 @@ delayTheInevitable =
 instance RunMessage DelayTheInevitable where
   runMessage msg e@(DelayTheInevitable attrs) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll [discard attrs]
+      pure e
     _ -> DelayTheInevitable <$> runMessage msg attrs

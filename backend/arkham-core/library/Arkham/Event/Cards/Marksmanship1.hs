@@ -96,7 +96,6 @@ instance RunMessage Marksmanship1 where
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)
-        , discard attrs
         ]
       pure e
     _ -> Marksmanship1 <$> runMessage msg attrs

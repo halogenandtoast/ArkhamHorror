@@ -30,6 +30,5 @@ instance RunMessage TruthFromFiction where
           [ targetLabel aid [AddUses aid Uses.Secret 2]
           | aid <- assets
           ]
-        , discard attrs
         ]
     _ -> TruthFromFiction <$> runMessage msg attrs

@@ -209,6 +209,7 @@ data ModifierType
   | IgnoreLimit
   | DoNotExhaustEvaded
   | DoNotDisengageEvaded
+  | CannotBeAdvancedByDoomThreshold
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

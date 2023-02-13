@@ -36,7 +36,6 @@ instance RunMessage Improvisation where
         [ switchRole iid
         , reductionEffect iid attrs
         , drawing
-        , discard attrs
         ]
       pure e
     _ -> Improvisation <$> runMessage msg attrs

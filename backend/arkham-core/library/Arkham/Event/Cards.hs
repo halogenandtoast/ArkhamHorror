@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Asset.Uses qualified as Uses
+import Arkham.Agenda.AdvancementReason
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -196,6 +197,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , monsterSlayer
   , monsterSlayer5
   , moonlightRitual
+  , mystifyingSong
   , narrowEscape
   , noStoneUnturned
   , noStoneUnturned5
@@ -1575,8 +1577,16 @@ darkInsight = (event "05014" "Dark Insight" 2 Neutral)
 
 imDoneRunnin :: CardDef
 imDoneRunnin = (event "05016" "\"I'm done runnin'!\"" 0 Neutral)
-  { cdCardTraits = singleton Spirit
+  { cdSkills = [#combat, #agility, #wild]
+  , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
+  }
+
+mystifyingSong :: CardDef
+mystifyingSong = (event "05018" "Mystifying Song" 3 Neutral)
+  { cdSkills = [#wild, #wild]
+  , cdCardTraits = setFromList [Spell, Song]
+  , cdFastWindow = Just $ AgendaWouldAdvance Timing.When DoomThreshold AnyAgenda
   }
 
 delayTheInevitable :: CardDef

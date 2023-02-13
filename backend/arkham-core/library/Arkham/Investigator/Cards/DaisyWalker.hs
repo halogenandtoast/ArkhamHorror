@@ -50,8 +50,8 @@ instance RunMessage DaisyWalker where
         pure i
     Setup -> DaisyWalker <$> runMessage
       msg
-      (attrs & additionalActionsL %~ (TraitRestrictedAdditionalAction Tome :))
+      (attrs & additionalActionsL %~ (TraitRestrictedAdditionalAction Tome AbilitiesOnly :))
     BeginRound -> DaisyWalker <$> runMessage
       msg
-      (attrs & additionalActionsL %~ (TraitRestrictedAdditionalAction Tome :))
+      (attrs & additionalActionsL %~ (TraitRestrictedAdditionalAction Tome AbilitiesOnly :))
     _ -> DaisyWalker <$> runMessage msg attrs

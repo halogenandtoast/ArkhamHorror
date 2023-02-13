@@ -36,7 +36,6 @@ instance RunMessage Infighting3 where
           )
           (toSource attrs)
           (InvestigatorTarget iid)
-        , discard attrs
         ]
       pure e
     _ -> Infighting3 <$> runMessage msg attrs

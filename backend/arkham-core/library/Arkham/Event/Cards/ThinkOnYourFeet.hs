@@ -23,17 +23,14 @@ instance RunMessage ThinkOnYourFeet where
   runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       connectedLocationIds <- selectList AccessibleLocation
-      if null connectedLocationIds
-         then push $ discard attrs
-         else pushAll
-          [ chooseOne
-            iid
-            [ TargetLabel
-                (LocationTarget lid')
-                [Move (toSource attrs) iid lid']
-            | lid' <- connectedLocationIds
-            ]
-          , discard attrs
+      unless (null connectedLocationIds) $ pushAll
+        [ chooseOne
+          iid
+          [ TargetLabel
+              (LocationTarget lid')
+              [Move (toSource attrs) iid lid']
+          | lid' <- connectedLocationIds
           ]
+        ]
       pure e
     _ -> ThinkOnYourFeet <$> runMessage msg attrs

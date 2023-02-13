@@ -121,7 +121,7 @@ getChoiceAmount key choices =
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
-  | ResolvedAbility Ability
+  | ResolvedAbility Ability -- INTERNAL
   | -- Story Card Messages
     ReadStory InvestigatorId CardDef
   | ResolveStory InvestigatorId CardDef
@@ -424,9 +424,9 @@ data Message
   | InvestigatorClearUnusedAssetSlots InvestigatorId
   | InvestigatorPlayedAsset InvestigatorId AssetId
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
+  | FinishedEvent EventId
   | InvestigatorResigned InvestigatorId
   | InvestigatorSpendClues InvestigatorId Int
-  | InvestigatorTakeDamage InvestigatorId Source Int Int
   | InvestigatorWhenDefeated Source InvestigatorId
   | InvestigatorWhenEliminated Source InvestigatorId
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator

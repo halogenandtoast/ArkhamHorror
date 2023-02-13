@@ -37,6 +37,5 @@ instance RunMessage LetMeHandleThis where
             Nothing
             (toSource attrs)
             (InvestigatorTarget iid)
-          , discard attrs
           ]
     _ -> LetMeHandleThis <$> runMessage msg attrs

@@ -1,7 +1,8 @@
-module Arkham.Asset.Cards.AceOfSwords1 (
-  aceOfSwords1,
-  AceOfSwords1 (..),
-) where
+module Arkham.Asset.Cards.DeathXIII1
+  ( deathXiii1
+  , DeathXIII1(..)
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,27 +18,27 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
-newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
+newtype DeathXIII1 = DeathXIII1 AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aceOfSwords1 :: AssetCard AceOfSwords1
-aceOfSwords1 =
-  asset AceOfSwords1 Cards.aceOfSwords1
+deathXiii1 :: AssetCard DeathXIII1
+deathXiii1 =
+  asset DeathXIII1 Cards.deathXiii1
 
-instance HasModifiersFor AceOfSwords1 where
-  getModifiersFor (InvestigatorTarget iid) (AceOfSwords1 a) =
+instance HasModifiersFor DeathXIII1 where
+  getModifiersFor (InvestigatorTarget iid) (DeathXIII1 a) =
     pure $
-      toModifiers a [SkillModifier SkillCombat 1 | controlledBy a iid]
+      toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
-instance HasAbilities AceOfSwords1 where
-  getAbilities (AceOfSwords1 a) =
+instance HasAbilities DeathXIII1 where
+  getAbilities (DeathXIII1 a) =
     [restrictedAbility a 1 InYourHand $ ReactionAbility (GameBegins Timing.When) Free]
 
-instance RunMessage AceOfSwords1 where
-  runMessage msg a@(AceOfSwords1 attrs) = case msg of
+instance RunMessage DeathXIII1 where
+  runMessage msg a@(DeathXIII1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
       push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
       pure a
-    _ -> AceOfSwords1 <$> runMessage msg attrs
+    _ -> DeathXIII1 <$> runMessage msg attrs

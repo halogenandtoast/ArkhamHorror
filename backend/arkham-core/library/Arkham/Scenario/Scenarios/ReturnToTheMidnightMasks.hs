@@ -116,7 +116,7 @@ instance RunMessage ReturnToTheMidnightMasks where
           , EncounterSet.Nightgaunts
           , EncounterSet.LockedDoors
           ]
-        pushAllEnd
+        pushAll
           $ [ story investigatorIds (introPart1 intro1or2)
             , story investigatorIds introPart2
             , SetEncounterDeck encounterDeck

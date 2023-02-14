@@ -30,7 +30,7 @@ instance RunMessage PossessionTraitorous where
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
       when (horror > sanity * 2) $ push $ InvestigatorKilled (toSource attrs) iid
-      t <$ push (AddTreacheryToHand iid (toId attrs))
+      t <$ push (PlaceTreachery (toId attrs) (TreacheryInHandOf iid))
     EndCheckWindow {} -> case treacheryInHandOf attrs of
       Just iid -> do
         horror <- field InvestigatorHorror iid

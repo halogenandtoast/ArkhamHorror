@@ -62,7 +62,7 @@ instance RunMessage ReturnToTheGathering where
         bedroom <- genCard Locations.bedroom
         bathroom <- genCard Locations.bathroom
 
-        pushAllEnd
+        pushAll
           [ SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck

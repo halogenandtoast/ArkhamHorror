@@ -139,7 +139,7 @@ instance RunMessage TheMiskatonicMuseum where
         :| [Locations.administrationOffice_131]
         )
 
-      pushAllEnd
+      pushAll
         [ story investigatorIds intro1
         , story investigatorIds (intro2 armitageKidnapped)
         , SetEncounterDeck encounterDeck

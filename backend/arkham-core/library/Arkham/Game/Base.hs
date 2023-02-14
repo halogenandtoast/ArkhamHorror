@@ -74,6 +74,7 @@ data Game = Game
   , gameActiveCard :: Maybe Card
   , gameActiveAbilities :: [Ability]
   , gameRemovedFromPlay :: [Card]
+  , gameInSetup :: Bool
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
   , gameEnemyMoving :: Maybe EnemyId

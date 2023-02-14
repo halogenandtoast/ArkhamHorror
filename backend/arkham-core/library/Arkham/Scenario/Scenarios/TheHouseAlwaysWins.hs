@@ -74,7 +74,7 @@ instance RunMessage TheHouseAlwaysWins where
         laBellaLunaId = toLocationId laBellaLuna
         cloverClubLoungeId = toLocationId cloverClubLounge
 
-      pushAllEnd
+      pushAll
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck

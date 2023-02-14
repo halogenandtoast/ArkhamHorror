@@ -167,7 +167,6 @@ data Message
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId Card
-  | AddTreacheryToHand InvestigatorId TreacheryId
   | ReturnToHand InvestigatorId Target
   | -- Adding Cards to Deck
     AddFocusedToTopOfDeck InvestigatorId Target CardId
@@ -216,7 +215,8 @@ data Message
   | BeforeRevealTokens
   | BeforeSkillTest InvestigatorId SkillType Int
   | -- Game State Control
-    Begin Phase
+    BeginGame
+  | Begin Phase
   | BeginRound
   | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
   | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int

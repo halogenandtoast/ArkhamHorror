@@ -71,7 +71,7 @@ instance RunMessage TheGathering where
       study <- genCard Locations.study
       let studyId = toLocationId study
 
-      pushAllEnd
+      pushAll
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck

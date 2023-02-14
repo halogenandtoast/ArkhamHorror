@@ -976,6 +976,7 @@ passesCriteria iid source windows' = \case
     hand <- liftA2 (<>) (fieldMap InvestigatorHand (map toCardId) iid) (map toCardId <$> getAsIfInHandCards iid)
     case source of
       EventSource eid -> pure $ unEventId eid `elem` hand
+      AssetSource aid -> pure $ unAssetId aid `elem` hand
       TreacherySource tid -> do
         member tid <$> select
           (Matcher.TreacheryInHandOf $ Matcher.InvestigatorWithId iid)
@@ -1353,6 +1354,9 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.GameBegins timing -> pure $ case window' of
+    Window timing' Window.GameBegins -> timing == timing'
+    _ -> False
   Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher -> case window' of
     Window timing' (Window.TakeDamage source' _ (InvestigatorTarget who)) ->
       andM

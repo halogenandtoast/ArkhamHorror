@@ -110,7 +110,7 @@ instance RunMessage TheDevourerBelow where
         , randomSet
         ]
 
-      pushAllEnd
+      pushAll
         $ [ story investigatorIds intro
           , SetEncounterDeck encounterDeck
           , AddToken ElderThing

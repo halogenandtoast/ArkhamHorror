@@ -251,6 +251,7 @@ library
       Arkham.Asset.Assets
       Arkham.Asset.Cards
       Arkham.Asset.Cards.AbbessAllegriaDiBiase
+      Arkham.Asset.Cards.AceOfSwords1
       Arkham.Asset.Cards.AdamLynch
       Arkham.Asset.Cards.Adaptable1
       Arkham.Asset.Cards.AlchemicalConcoction
@@ -975,6 +976,7 @@ library
       Arkham.Event.Cards.Improvisation
       Arkham.Event.Cards.ImprovisedWeapon
       Arkham.Event.Cards.Infighting3
+      Arkham.Event.Cards.Interrogate
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse4

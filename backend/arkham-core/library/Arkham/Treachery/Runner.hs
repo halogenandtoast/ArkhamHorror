@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Treachery.Runner
   ( module X
+  , addHiddenToHand
   ) where
 
 import Arkham.Prelude
@@ -13,8 +14,12 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Message
+import Arkham.Id
 import Arkham.Source
 import Arkham.Target
+
+addHiddenToHand :: InvestigatorId -> TreacheryAttrs -> Message
+addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
@@ -29,8 +34,6 @@ instance RunMessage TreacheryAttrs where
       pure $ a & resourcesL +~ n
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a ->
       a <$ push (Discard GameSource $ toTarget a)
-    AddTreacheryToHand iid tid | tid == treacheryId ->
-      pure $ a & placementL .~ TreacheryInHandOf iid
     Discarded target _ _ | target `elem` treacheryAttachedTarget a ->
       a <$ push (Discard GameSource $ toTarget a)
     After (Revelation _ source) | isSource a source -> a <$ when

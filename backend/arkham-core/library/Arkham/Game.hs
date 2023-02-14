@@ -248,6 +248,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameActionDiff = []
       , gameInAction = False
       , gameActiveCost = mempty
+      , gameInSetup = True
       }
     )
  where
@@ -1011,7 +1012,7 @@ getScenariosMatching matcher = do
   go = \case
     TheScenario -> pure . const True
 
-getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
+getAbilitiesMatching :: (HasCallStack, HasGame m) => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
   case matcher of
@@ -1941,6 +1942,7 @@ getAsset aid = do
   g <- getGame
   maybe (throw missingAsset) pure
     $ preview (entitiesL . assetsL . ix aid) g
+    <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
     <|> getInDiscardEntity assetsL aid g
   where missingAsset = MissingEntity $ "Unknown asset: " <> tshow aid
 
@@ -2813,6 +2815,9 @@ runPreGameMessage msg g = case msg of
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
   ResetGame -> pure $ g & modifiersL .~ mempty & entitiesL . investigatorsL %~ map returnToBody
+  Setup -> pure $ g & inSetupL .~ True
+  StartScenario _ -> pure $ g & inSetupL .~ True
+  EndSetup -> pure $ g & inSetupL .~ False
   _ -> pure g
 
 getActiveInvestigator :: HasGame m => m Investigator
@@ -2979,6 +2984,7 @@ runGameMessage msg g = case msg of
          , InvestigatorsMulligan
          , Setup
          , EndSetup
+         , BeginGame
          ]
     pure
       $ g
@@ -2997,6 +3003,11 @@ runGameMessage msg g = case msg of
          , EndSetup
          ]
     pure $ g & (phaseL .~ InvestigationPhase)
+  BeginGame -> do
+    whenWindow <- checkWindows [Window Timing.When Window.GameBegins]
+    afterWindow <- checkWindows [Window Timing.After Window.GameBegins]
+    pushAll [whenWindow, afterWindow]
+    pure g
   InvestigatorsMulligan ->
     g <$ pushAll [ InvestigatorMulligan iid | iid <- g ^. playerOrderL ]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
@@ -3014,7 +3025,7 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createTokenValueEffect n source target
     push $ CreatedEffect
       effectId
-      (Just $ EffectModifiers [Modifier source $ TokenValueModifier n])
+      (Just $ EffectModifiers [Modifier source (TokenValueModifier n) False])
       source
       target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
@@ -4472,6 +4483,7 @@ preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
     let cards = allCards g
+    let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
     allModifiers <- getMonoidalHashMap <$> foldMapM
       (`toTargetModifiers` (entities <> inHandEntities))
       (SkillTestTarget
@@ -4485,7 +4497,7 @@ preloadModifiers g = case gameMode g of
            (toList $ entitiesInvestigators $ gameEntities g)
       <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
       )
-    pure $ g { gameModifiers = allModifiers }
+    pure $ g { gameModifiers = HashMap.map (filter modifierFilter) allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =
@@ -4546,12 +4558,12 @@ handleTraitRestrictedModifiers g = do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers $ \case
-        Modifier source (TraitRestrictedModifier t mt) -> do
+        Modifier source (TraitRestrictedModifier t mt) isSetup -> do
           traits <- runReaderT (targetTraits target) g
           when (t `member` traits) $ modify $ insertWith
             (<>)
             target
-            [Modifier source mt]
+            [Modifier source mt isSetup]
         _ -> pure ()
   pure $ g { gameModifiers = modifiers' }
 
@@ -4561,7 +4573,7 @@ handleBlanked g = do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers $ \case
-        Modifier _ Blank -> applyBlank (targetToSource target)
+        Modifier _ Blank _ -> applyBlank (targetToSource target)
         _ -> pure ()
   pure $ g { gameModifiers = modifiers' }
 
@@ -4571,7 +4583,7 @@ applyBlank s = do
   for_ (mapToList current) $ \(target, targetModifiers) -> do
     let
       modifiers' = flip mapMaybe targetModifiers $ \case
-        Modifier s' _ | s == s' -> Nothing
+        Modifier s' _ _ | s == s' -> Nothing
         other -> Just other
     modify $ insertMap target modifiers'
 

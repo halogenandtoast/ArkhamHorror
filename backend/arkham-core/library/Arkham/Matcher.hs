@@ -203,6 +203,7 @@ replaceYourLocation iid (Just lid) = go
     FarthestLocationFromYou m -> FarthestLocationFromLocation lid (go m)
     FarthestLocationFromAll m -> FarthestLocationFromAll (go m)
     NearestLocationToYou m -> NearestLocationToYou (go m) -- TODO: FIX to FromLocation
+    LocationWithLowerShroudThan m -> LocationWithLowerShroudThan (go m)
     LocationWithTrait{} -> matcher
     LocationWithoutTrait{} -> matcher
     LocationInDirection dir m -> LocationInDirection dir (go m)

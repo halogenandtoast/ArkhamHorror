@@ -319,6 +319,7 @@ data LocationMatcher
   | ClosestPathLocation LocationId LocationId
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
+  | LocationWithLowerShroudThan LocationMatcher
   -- ^ start destination / end destination
   | BlockedLocation
   | ThisLocation

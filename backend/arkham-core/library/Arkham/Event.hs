@@ -173,6 +173,7 @@ allEvents = mapFrom
   , SomeEventCard darkInsight
   , SomeEventCard imDoneRunnin
   , SomeEventCard mystifyingSong
+  , SomeEventCard interrogate
   , SomeEventCard delayTheInevitable
   , SomeEventCard denyExistence
   , SomeEventCard trialByFire

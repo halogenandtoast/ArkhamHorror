@@ -59,6 +59,7 @@ data WindowType
   | AssetDefeated AssetId DefeatedBy
   | AssignedHorror Source InvestigatorId [Target]
   | AtEndOfRound
+  | GameBegins
   | ChosenRandomLocation LocationId
   | CommittedCard InvestigatorId Card
   | CommittedCards InvestigatorId [Card]

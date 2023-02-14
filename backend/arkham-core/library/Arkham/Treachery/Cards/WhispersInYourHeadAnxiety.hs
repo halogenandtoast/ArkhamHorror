@@ -38,7 +38,7 @@ instance HasAbilities WhispersInYourHeadAnxiety where
 instance RunMessage WhispersInYourHeadAnxiety where
   runMessage msg t@(WhispersInYourHeadAnxiety attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ push (AddTreacheryToHand iid $ toId attrs)
+      t <$ push (PlaceTreachery (toId attrs) (TreacheryInHandOf iid))
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       t <$ push (Discard (toSource attrs) $ toTarget attrs)
     _ -> WhispersInYourHeadAnxiety <$> runMessage msg attrs

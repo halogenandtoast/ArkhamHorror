@@ -30,6 +30,7 @@ import Arkham.Trait
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType
+  , modifierActiveDuringSetup :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable

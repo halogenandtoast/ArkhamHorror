@@ -88,7 +88,7 @@ instance RunMessage CurseOfTheRougarou where
             (_, (_, x) : _) -> x
             _ -> error "handled"
         bayouId = LocationId $ toCardId bayou
-      pushAllEnd
+      pushAll
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> concat
              [ [ PlaceLocation card

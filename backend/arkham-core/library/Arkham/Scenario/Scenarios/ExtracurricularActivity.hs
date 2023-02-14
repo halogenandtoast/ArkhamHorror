@@ -85,7 +85,7 @@ instance RunMessage ExtracurricularActivity where
 
       let miskatonicQuadId = toLocationId miskatonicQuad
 
-      pushAllEnd
+      pushAll
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck

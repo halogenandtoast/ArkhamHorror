@@ -127,7 +127,7 @@ instance RunMessage TheMidnightMasks where
           then TheMidnightMasksIntroOne
           else TheMidnightMasksIntroTwo
 
-      pushAllEnd
+      pushAll
         $ [ story investigatorIds (introPart1 intro1or2)
           , story investigatorIds introPart2
           , SetEncounterDeck encounterDeck

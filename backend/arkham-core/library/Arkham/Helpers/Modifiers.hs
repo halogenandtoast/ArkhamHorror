@@ -30,7 +30,7 @@ withoutModifier
 withoutModifier a m = not <$> hasModifier a m
 
 toModifier :: SourceEntity a => a -> ModifierType -> Modifier
-toModifier = Modifier . toSource
+toModifier a mType = Modifier (toSource a) mType False
 
 toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier

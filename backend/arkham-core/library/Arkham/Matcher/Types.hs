@@ -565,6 +565,7 @@ data WindowMatcher
   | RevealLocation Timing Who Where
   | FlipLocation Timing Who Where
   | PutLocationIntoPlay Timing Who Where
+  | GameBegins Timing
   | GameEnds Timing
   | InvestigatorEliminated Timing Who
   | AnyWindow

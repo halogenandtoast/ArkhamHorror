@@ -205,7 +205,7 @@ instance RunMessage TheUnspeakableOath where
           Hard -> MinusFour
           Expert -> MinusFive
 
-      pushAllEnd
+      pushAll
         $ [story investigatorIds intro1Or2, story investigatorIds intro3]
         <> [ story investigatorIds constancesInformation
            | constanceInterviewed

@@ -172,6 +172,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , improvisation
   , improvisedWeapon
   , infighting3
+  , interrogate
   , iveGotAPlan
   , iveGotAPlan2
   , iveHadWorse4
@@ -1587,6 +1588,19 @@ mystifyingSong = (event "05018" "Mystifying Song" 3 Neutral)
   { cdSkills = [#wild, #wild]
   , cdCardTraits = setFromList [Spell, Song]
   , cdFastWindow = Just $ AgendaWouldAdvance Timing.When DoomThreshold AnyAgenda
+  }
+
+interrogate :: CardDef
+interrogate = (event "05020" "Interrogate" 2 Guardian)
+  { cdSkills = [#combat, #intellect]
+  , cdCardTraits = setFromList [Tactic, Insight]
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyWithTrait Humanoid
+    <> EnemyAt YourLocation
+  , cdActions = [Action.Parley]
   }
 
 delayTheInevitable :: CardDef

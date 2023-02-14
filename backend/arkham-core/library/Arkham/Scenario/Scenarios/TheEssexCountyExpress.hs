@@ -180,7 +180,7 @@ instance RunMessage TheEssexCountyExpress where
              , PlacedLocationDirection engineCarId RightOf end
              , CreateWindowModifierEffect
                EffectSetupWindow
-               (EffectModifiers [Modifier ScenarioSource Blank])
+               (EffectModifiers [Modifier ScenarioSource Blank False])
                ScenarioSource
                (LocationTarget start)
              , RevealLocation Nothing start

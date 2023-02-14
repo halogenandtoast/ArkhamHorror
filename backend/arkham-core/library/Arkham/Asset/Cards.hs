@@ -108,6 +108,7 @@ allPlayerAssetCards :: HashMap CardCode CardDef
 allPlayerAssetCards = mapFromList $ concatMap
   toCardCodePairs
   [ abbessAllegriaDiBiase
+  , aceOfSwords1
   , adaptable1
   , alchemicalTransmutation
   , alejandroVela
@@ -2572,6 +2573,14 @@ baronSamedi =
     { cdCardTraits = singleton Avatar
     , cdSlots = [AllySlot]
     }
+
+aceOfSwords1 :: CardDef
+aceOfSwords1 = (asset "05023" ("Ace of Swords" <:> "Let Your Arrow Fly True") 3 Guardian)
+  { cdCardTraits = singleton Tarot
+  , cdSlots = [TarotSlot]
+  , cdLevel = 1
+  , cdCardInHandEffects = True
+  }
 
 fingerprintKit :: CardDef
 fingerprintKit = (asset "05024" "Fingerprint Kit" 4 Seeker)

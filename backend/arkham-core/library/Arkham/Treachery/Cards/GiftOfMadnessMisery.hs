@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher hiding ( PlaceUnderneath, treacheryInHandOf )
+import Arkham.Matcher hiding ( PlaceUnderneath, treacheryInHandOf, TreacheryInHandOf )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Scenario.Deck
@@ -40,7 +40,7 @@ instance HasAbilities GiftOfMadnessMisery where
 instance RunMessage GiftOfMadnessMisery where
   runMessage msg t@(GiftOfMadnessMisery attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ push (AddTreacheryToHand iid $ toId attrs)
+      t <$ push (addHiddenToHand iid attrs)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> t <$ pushAll
       [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
       , Discard (toAbilitySource attrs 1) (toTarget attrs)

@@ -169,7 +169,7 @@ instance RunMessage CarnevaleOfHorrors where
       -- Assets
       abbess <- genCard Assets.abbessAllegriaDiBiase
 
-      pushAllEnd
+      pushAll
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> [ PlaceLocation cardDef | cardDef <- toList locations ]
         <> [ SetLocationLabel (LocationId $ toCardId location) label

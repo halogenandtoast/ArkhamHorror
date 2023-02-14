@@ -263,6 +263,7 @@ investigator f cardDef Stats {..} =
               , Slot (InvestigatorSource iid) Nothing
               ]
             )
+          , (TarotSlot, [Slot (InvestigatorSource iid) Nothing])
           ]
         , investigatorXp = 0
         , investigatorPhysicalTrauma = 0

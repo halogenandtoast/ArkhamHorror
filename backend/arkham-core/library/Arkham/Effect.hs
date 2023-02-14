@@ -110,7 +110,7 @@ lookupEffect cardCode eid mmetadata source target =
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
 buildTokenValueEffect eid n source = buildWindowModifierEffect
   eid
-  (EffectModifiers [Modifier source $ TokenValueModifier n])
+  (EffectModifiers [Modifier source (TokenValueModifier n) False])
   EffectSkillTestWindow
   source
 

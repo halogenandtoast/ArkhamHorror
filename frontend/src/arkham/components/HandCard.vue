@@ -44,6 +44,8 @@ function isAbility(v: Message) {
     return v.ability.source.contents === id.value
   } else if (tag === 'EventSource') {
     return v.ability.source.contents === id.value
+  } else if (tag === 'AssetSource') {
+    return v.ability.source.contents === id.value
   }
 
   return false

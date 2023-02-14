@@ -428,6 +428,8 @@ allAssets = mapFrom
   , SomeAssetCard familyInheritance
   , SomeAssetCard twilightBlade
   , SomeAssetCard baronSamedi
+  --- guardian [tcu]
+  , SomeAssetCard aceOfSwords1
   --- seeker [tcu]
   , SomeAssetCard fingerprintKit
   --- survivor [tcu]

@@ -43,7 +43,8 @@ instance RunMessage PossessionMurderous where
       when (horror > sanity * 2) $ push $ InvestigatorKilled
         (toSource attrs)
         iid
-      push $ AddTreacheryToHand iid (toId attrs)
+
+      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
       pure t
     EndCheckWindow{} -> case treacheryPlacement attrs of
       TreacheryInHandOf iid -> do

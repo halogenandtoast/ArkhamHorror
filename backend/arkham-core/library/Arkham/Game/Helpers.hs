@@ -2409,6 +2409,7 @@ locationMatches investigatorId source window locationId matcher' = do
         )
 
     -- normal cases
+    Matcher.LocationWithLowerShroudThan _  -> locationId <=~> matcher
     Matcher.LocationNotInPlay -> locationId <=~> matcher
     Matcher.LocationWithLabel _ -> locationId <=~> matcher
     Matcher.LocationWithTitle _ -> locationId <=~> matcher

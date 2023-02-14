@@ -105,6 +105,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , cheatDeath5
   , cleanThemOut
   , closeCall2
+  , connectTheDots
   , contraband
   , contraband2
   , coupDeGrace
@@ -1610,10 +1611,14 @@ delayTheInevitable = (event "05021" "Delay the Inevitable" 2 Guardian)
   , cdFastWindow = Just $ DuringTurn You
   }
 
--- Play when an encounter card or an enemy attack would cause you to do one of
--- the following (choose one): Discard cards from hand, lose resources, lose
--- actions, take damage, or take horror.
---
+connectTheDots :: CardDef
+connectTheDots = (event "05025" "Connect the Dots" 4 Seeker)
+  { cdSkills = [#intellect, #intellect]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just $ DiscoveringLastClue Timing.After You Anywhere
+  , cdCriteria = Just $ Criteria.LocationExists $ LocationWithLowerShroudThan YourLocation <> LocationWithDiscoverableCluesBy You
+  }
+
 denyExistence :: CardDef
 denyExistence = (event "05032" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]

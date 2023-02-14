@@ -913,6 +913,7 @@ library
       Arkham.Event.Cards.CheatDeath5
       Arkham.Event.Cards.CleanThemOut
       Arkham.Event.Cards.CloseCall2
+      Arkham.Event.Cards.ConnectTheDots
       Arkham.Event.Cards.Contraband
       Arkham.Event.Cards.Contraband2
       Arkham.Event.Cards.Counterpunch
@@ -1591,7 +1592,10 @@ library
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Skill
       Arkham.Skill.Cards
+      Arkham.Skill.Cards.AbleBodied
       Arkham.Skill.Cards.AllIn5
+      Arkham.Skill.Cards.Cunning
+      Arkham.Skill.Cards.Curiosity
       Arkham.Skill.Cards.Daring
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2
@@ -1619,6 +1623,7 @@ library
       Arkham.Skill.Cards.Overpower2
       Arkham.Skill.Cards.Perception
       Arkham.Skill.Cards.Perception2
+      Arkham.Skill.Cards.Prophesy
       Arkham.Skill.Cards.QuickThinking
       Arkham.Skill.Cards.RecklessAssault
       Arkham.Skill.Cards.Resourceful

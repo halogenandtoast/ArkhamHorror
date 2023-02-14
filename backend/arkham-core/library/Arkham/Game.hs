@@ -1107,10 +1107,17 @@ getLocationsMatching lmatcher = do
       if null ls'
         then pure []
         else do
-          highestShroud <- getMax0 <$> foldMapM (fmap Max . field LocationShroud . toId) ls'
-          filterM (fmap (== highestShroud) . field LocationShroud . toId) ls'
+          highestShroud <- getMax0 <$> foldMapM (fieldMap LocationShroud Max . toId) ls'
+          filterM (fieldMap LocationShroud (== highestShroud) . toId) ls'
     IsIchtacasDestination ->
       filterM (remembered . IchtacasDestination . toId) ls
+    LocationWithLowerShroudThan higherShroudMatcher -> do
+      ls' <- getLocationsMatching higherShroudMatcher
+      if null ls'
+        then pure []
+        else do
+          lowestShroud <- getMin <$> foldMapM (fieldMap LocationShroud Min . toId) ls'
+          filterM (fieldMap LocationShroud (< lowestShroud) . toId) ls'
     LocationWithDiscoverableCluesBy whoMatcher -> do
       filterM
         (selectAny

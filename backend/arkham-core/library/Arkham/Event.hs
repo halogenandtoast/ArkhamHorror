@@ -175,6 +175,7 @@ allEvents = mapFrom
   , SomeEventCard mystifyingSong
   , SomeEventCard interrogate
   , SomeEventCard delayTheInevitable
+  , SomeEventCard connectTheDots
   , SomeEventCard denyExistence
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite

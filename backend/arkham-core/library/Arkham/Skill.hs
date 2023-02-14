@@ -80,7 +80,11 @@ allSkills = mapFrom
   , SomeSkillCard takeHeart
   , SomeSkillCard allIn5
   , SomeSkillCard steadfast
+  , SomeSkillCard curiosity
+  , SomeSkillCard cunning
   , SomeSkillCard daring
+  , SomeSkillCard prophesy
+  , SomeSkillCard ableBodied
   , SomeSkillCard overpower2
   , SomeSkillCard perception2
   , SomeSkillCard neitherRainNorSnow

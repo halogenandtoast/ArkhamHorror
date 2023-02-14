@@ -65,7 +65,10 @@ skill cardCode name icons classSymbol = CardDef
 allPlayerSkillCards :: HashMap CardCode CardDef
 allPlayerSkillCards = mapFromList $ concatMap
   toCardCodePairs
-  [ allIn5
+  [ ableBodied
+  , allIn5
+  , cunning
+  , curiosity
   , daring
   , deduction
   , deduction2
@@ -93,6 +96,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , overpower2
   , perception
   , perception2
+  , prophesy
   , quickThinking
   , recklessAssault
   , resourceful
@@ -439,6 +443,26 @@ allIn5 = (skill "04309" "All In" [#wild, #wild] Rogue)
 
 steadfast :: CardDef
 steadfast = (skill "05022" "Steadfast" [#willpower, #combat] Guardian)
+  { cdCardTraits = singleton Innate
+  }
+
+curiosity :: CardDef
+curiosity = (skill "05026" "Curiosity" [#willpower, #intellect] Seeker)
+  { cdCardTraits = singleton Innate
+  }
+
+cunning :: CardDef
+cunning = (skill "05030" "Cunning" [#intellect, #agility] Rogue)
+  { cdCardTraits = singleton Innate
+  }
+
+prophesy :: CardDef
+prophesy = (skill "05034" "Prophesy" [#wild] Mystic)
+  { cdCardTraits = singleton Practiced
+  }
+
+ableBodied :: CardDef
+ableBodied = (skill "05038" "Able Bodied" [#combat, #agility] Survivor)
   { cdCardTraits = singleton Innate
   }
 

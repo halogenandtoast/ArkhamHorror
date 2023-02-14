@@ -169,6 +169,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , darioElAmin
   , darkHorse
   , davidRenfield
+  , deathXiii1
   , decoratedSkull
   , dejaVu5
   , detectivesColt1911s
@@ -205,6 +206,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fireExtinguisher1
   , firstAid
   , firstAid3
+  , fiveOfPentacles1
   , flamethrower5
   , flashlight
   , fleshWard
@@ -216,6 +218,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fortyFiveAutomatic2
   , fortyOneDerringer
   , fortyOneDerringer2
+  , fourOfCups1
   , grannyOrne
   , grannyOrne3
   , gravediggersShovel
@@ -380,6 +383,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , theCustodian
   , theGoldPocketWatch4
   , theKingInYellow
+  , theMoonXiii1
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
@@ -2588,6 +2592,38 @@ fingerprintKit = (asset "05024" "Fingerprint Kit" 4 Seeker)
   , cdSkills = [#intellect]
   , cdSlots = [HandSlot]
   , cdUses = Uses Supply 3
+  }
+
+deathXiii1 :: CardDef
+deathXiii1 = (asset "05027" ("Death • XIII" <:> "Free from the Past") 3 Seeker)
+  { cdCardTraits = singleton Tarot
+  , cdSlots = [TarotSlot]
+  , cdLevel = 1
+  , cdCardInHandEffects = True
+  }
+
+theMoonXiii1 :: CardDef
+theMoonXiii1 = (asset "05031" ("The Moon • XVIII" <:> "Message from Your Inner Self") 3 Rogue)
+  { cdCardTraits = singleton Tarot
+  , cdSlots = [TarotSlot]
+  , cdLevel = 1
+  , cdCardInHandEffects = True
+  }
+
+fourOfCups1 :: CardDef
+fourOfCups1 = (asset "05035" ("Four of Cups" <:> "Chalice of the Heart") 3 Mystic)
+  { cdCardTraits = singleton Tarot
+  , cdSlots = [TarotSlot]
+  , cdLevel = 1
+  , cdCardInHandEffects = True
+  }
+
+fiveOfPentacles1 :: CardDef
+fiveOfPentacles1 = (asset "05039" ("Five of Pentacles" <:> "From the Brink") 3 Survivor)
+  { cdCardTraits = singleton Tarot
+  , cdSlots = [TarotSlot]
+  , cdLevel = 1
+  , cdCardInHandEffects = True
   }
 
 trackShoes :: CardDef

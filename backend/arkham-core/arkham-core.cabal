@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -320,6 +320,7 @@ library
       Arkham.Asset.Cards.DarioElAmin
       Arkham.Asset.Cards.DarkHorse
       Arkham.Asset.Cards.DavidRenfield
+      Arkham.Asset.Cards.DeathXIII1
       Arkham.Asset.Cards.DecoratedSkull
       Arkham.Asset.Cards.DejaVu5
       Arkham.Asset.Cards.DetectivesColt1911s
@@ -357,6 +358,7 @@ library
       Arkham.Asset.Cards.FirstAid
       Arkham.Asset.Cards.FirstAid3
       Arkham.Asset.Cards.FishingNet
+      Arkham.Asset.Cards.FiveOfPentacles1
       Arkham.Asset.Cards.Flamethrower5
       Arkham.Asset.Cards.Flashlight
       Arkham.Asset.Cards.FleshWard
@@ -368,6 +370,7 @@ library
       Arkham.Asset.Cards.FortyFiveAutomatic2
       Arkham.Asset.Cards.FortyOneDerringer
       Arkham.Asset.Cards.FortyOneDerringer2
+      Arkham.Asset.Cards.FourOfCups1
       Arkham.Asset.Cards.GildedVolto
       Arkham.Asset.Cards.GrannyOrne
       Arkham.Asset.Cards.GrannyOrne3
@@ -547,6 +550,7 @@ library
       Arkham.Asset.Cards.TheCustodian
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheKingInYellow
+      Arkham.Asset.Cards.TheMoonXIII1
       Arkham.Asset.Cards.TheNecronomicon
       Arkham.Asset.Cards.TheNecronomiconAdvanced
       Arkham.Asset.Cards.TheNecronomiconOlausWormiusTranslation

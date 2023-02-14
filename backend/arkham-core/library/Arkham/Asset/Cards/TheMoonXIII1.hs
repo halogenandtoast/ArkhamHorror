@@ -1,7 +1,8 @@
-module Arkham.Asset.Cards.AceOfSwords1 (
-  aceOfSwords1,
-  AceOfSwords1 (..),
-) where
+module Arkham.Asset.Cards.TheMoonXIII1
+  ( theMoonXiii1
+  , TheMoonXIII1(..)
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,27 +18,27 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
-newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
+newtype TheMoonXIII1 = TheMoonXIII1 AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aceOfSwords1 :: AssetCard AceOfSwords1
-aceOfSwords1 =
-  asset AceOfSwords1 Cards.aceOfSwords1
+theMoonXiii1 :: AssetCard TheMoonXIII1
+theMoonXiii1 =
+  asset TheMoonXIII1 Cards.theMoonXiii1
 
-instance HasModifiersFor AceOfSwords1 where
-  getModifiersFor (InvestigatorTarget iid) (AceOfSwords1 a) =
+instance HasModifiersFor TheMoonXIII1 where
+  getModifiersFor (InvestigatorTarget iid) (TheMoonXIII1 a) =
     pure $
-      toModifiers a [SkillModifier SkillCombat 1 | controlledBy a iid]
+      toModifiers a [SkillModifier SkillAgility 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
-instance HasAbilities AceOfSwords1 where
-  getAbilities (AceOfSwords1 a) =
+instance HasAbilities TheMoonXIII1 where
+  getAbilities (TheMoonXIII1 a) =
     [restrictedAbility a 1 InYourHand $ ReactionAbility (GameBegins Timing.When) Free]
 
-instance RunMessage AceOfSwords1 where
-  runMessage msg a@(AceOfSwords1 attrs) = case msg of
+instance RunMessage TheMoonXIII1 where
+  runMessage msg a@(TheMoonXIII1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
       push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
       pure a
-    _ -> AceOfSwords1 <$> runMessage msg attrs
+    _ -> TheMoonXIII1 <$> runMessage msg attrs

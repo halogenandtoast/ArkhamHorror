@@ -432,8 +432,14 @@ allAssets = mapFrom
   , SomeAssetCard aceOfSwords1
   --- seeker [tcu]
   , SomeAssetCard fingerprintKit
+  , SomeAssetCard deathXiii1
+  --- rogue [tcu]
+  , SomeAssetCard theMoonXiii1
+  --- mystic [tcu]
+  , SomeAssetCard fourOfCups1
   --- survivor [tcu]
   , SomeAssetCard trackShoes
+  , SomeAssetCard fiveOfPentacles1
   -- The Secret Name
   --- survivor [tsn]
   , SomeAssetCard meatCleaver

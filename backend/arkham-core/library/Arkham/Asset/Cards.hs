@@ -201,6 +201,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fieldwork
   , fineClothes
   , fingerprintKit
+  , fingerprintKit4
   , finnsTrustyThirtyEight
   , fireAxe
   , fireExtinguisher1
@@ -2700,6 +2701,14 @@ handcuffs2 = fast $ (asset "09035" "Handcuffs" 1 Guardian)
   { cdCardTraits = setFromList [Item, Police]
   , cdSkills = [#combat, #agility]
   , cdLevel = 2
+  }
+
+fingerprintKit4 :: CardDef
+fingerprintKit4 = (asset "09057" "Fingerprint Kit" 5 Seeker)
+  { cdCardTraits = setFromList [Item, Tool]
+  , cdSkills = [#intellect, #intellect]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Supply 3
   }
 
 physicalTraining2 :: CardDef

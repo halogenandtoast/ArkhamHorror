@@ -468,6 +468,8 @@ allAssets = mapFrom
   --- guardian [tsk]
   -- , SomeAssetCard runicAxe
   , SomeAssetCard handcuffs2
+  --- seeker [tsk]
+  , SomeAssetCard fingerprintKit4
   -- Return to Night of the Zealot
   --- guardian [rtnotz]
   , SomeAssetCard physicalTraining2

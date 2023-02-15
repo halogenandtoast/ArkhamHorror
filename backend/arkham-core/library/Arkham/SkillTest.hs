@@ -42,6 +42,9 @@ committedCardsL =
 resultL :: Lens' SkillTest SkillTestResult
 resultL = lens skillTestResult $ \m x -> m {skillTestResult = x}
 
+typeL :: Lens' SkillTest SkillTestType
+typeL = lens skillTestType $ \m x -> m {skillTestType = x}
+
 valueModifierL :: Lens' SkillTest Int
 valueModifierL =
   lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}

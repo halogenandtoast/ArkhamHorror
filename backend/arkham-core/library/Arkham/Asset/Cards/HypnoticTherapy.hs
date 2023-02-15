@@ -44,7 +44,7 @@ instance HasAbilities HypnoticTherapy where
 instance RunMessage HypnoticTherapy where
   runMessage msg a@(HypnoticTherapy attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)

@@ -40,8 +40,8 @@ instance RunMessage DisruptingTheRitual where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
       (chooseOne
         iid
-        [ SkillLabel SkillWillpower [BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 3]
-        , SkillLabel SkillAgility [BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3]
+        [ SkillLabel SkillWillpower [beginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 3]
+        , SkillLabel SkillAgility [beginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3]
         ]
       )
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do

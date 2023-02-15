@@ -53,7 +53,7 @@ instance RunMessage StepsOfYhagharl where
       pushAll revelationMsgs
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

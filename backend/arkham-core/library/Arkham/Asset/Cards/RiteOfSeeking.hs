@@ -11,10 +11,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Helpers.Investigator
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.SkillType
 import Arkham.Target
 
 newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
@@ -33,15 +34,12 @@ instance HasAbilities RiteOfSeeking where
 
 instance RunMessage RiteOfSeeking where
   runMessage msg a@(RiteOfSeeking attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <- fieldMap
-        InvestigatorLocation
-        (fromJustNote "must be at a location")
-        iid
+    UseCardAbility iid source@(isSource attrs -> True) 1 _ _ -> do
+      lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
-        [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid)
-        , Investigate iid lid source Nothing skillType False
+        [ createCardEffect Cards.riteOfSeeking Nothing source (InvestigationTarget iid lid)
+        , Investigate iid lid source Nothing (if skillType == SkillIntellect then SkillWillpower else skillType) False
         ]
       pure a
     _ -> RiteOfSeeking <$> runMessage msg attrs

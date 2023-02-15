@@ -42,15 +42,6 @@ instance Functor (CardBuilder ident) where
   fmap f CardBuilder {..} =
     CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = f . cbCardBuilder }
 
-newtype SetAsideCard = SetAsideCard { unSetAsideCard :: Card }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, HasCardCode, HasCardDef, IsCard)
-
-newtype UnderScenarioReferenceCard = UnderScenarioReferenceCard { unUnderScenarioReferenceCard :: Card }
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
-
-newtype CommittedCard = CommittedCard { unCommittedCard :: Card }
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
-
 instance IsCard Card where
   toCardId = \case
     PlayerCard pc -> toCardId pc
@@ -92,8 +83,7 @@ cardMatch a = \case
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
-  CardWithSkill skillType ->
-    SkillIcon skillType `member` setFromList @(HashSet SkillIcon) (cdSkills $ toCardDef a)
+  CardWithSkillIcon skillIcon -> skillIcon `member` setFromList @(HashSet SkillIcon) (cdSkills $ toCardDef a)
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
@@ -171,14 +161,6 @@ data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId
   , campaignStoryCardPlayerCard :: PlayerCard
   }
-
-newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
-  deriving stock (Show, Generic)
-  deriving newtype (ToJSON, FromJSON)
-
-newtype HandCard = HandCard { unHandCard ::Card }
-  deriving stock (Show, Generic)
-  deriving newtype (ToJSON, FromJSON)
 
 class HasCard env a where
   getCard :: (MonadReader env m, MonadIO m) => CardId -> a -> m Card

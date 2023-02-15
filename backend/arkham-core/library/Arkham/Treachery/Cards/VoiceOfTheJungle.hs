@@ -46,7 +46,7 @@ instance RunMessage VoiceOfTheJungle where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

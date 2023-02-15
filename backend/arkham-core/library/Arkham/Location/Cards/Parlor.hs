@@ -52,7 +52,7 @@ instance RunMessage Parlor where
         selectOne (assetIs Cards.litaChantler) >>= \case
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ push
-            (BeginSkillTest
+            (beginSkillTest
               iid
               source
               (AssetTarget aid)

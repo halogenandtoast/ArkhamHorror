@@ -42,7 +42,7 @@ instance HasAbilities Garden where
 instance RunMessage Garden where
   runMessage msg l@(Garden attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (BeginSkillTest
+      (beginSkillTest
         iid
         source
         (LocationTarget $ toId attrs)

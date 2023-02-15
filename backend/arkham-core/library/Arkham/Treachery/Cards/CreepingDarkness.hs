@@ -57,7 +57,7 @@ instance RunMessage CreepingDarkness where
         $ chooseOrRunOne iid
         $ Label
             "Test {willpower} (3)"
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)

@@ -11,11 +11,8 @@ import Arkham.Asset.Runner
 import Arkham.Card.CardDef
 import Arkham.Cost
 import Arkham.Criteria
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Projection
-import Arkham.SkillTest
-import Arkham.SkillType
 import Arkham.Target
 
 newtype WellPrepared2 = WellPrepared2 AssetAttrs
@@ -44,34 +41,30 @@ instance HasAbilities WellPrepared2 where
 instance RunMessage WellPrepared2 where
   runMessage msg a@(WellPrepared2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      mSkillTest <- getSkillTest
-      case mSkillTest of
-        Nothing -> error "can only have been triggered during a skill test"
-        Just skillTest -> do
-          let skillType = skillTestSkillType skillTest
-          assetIds <-
-            selectList
-            $ NotAsset (AssetWithId $ toId attrs)
-            <> AssetControlledBy (InvestigatorWithId iid)
-            <> AssetWithMatchingSkillTestIcon
-          assetIdsWithIconCount <- for assetIds $ \aid -> do
-            x <- fieldMap
-              AssetCard
-              (length
-              . filter (`elem` [SkillIcon skillType, WildIcon])
-              . cdSkills
-              . toCardDef
-              )
-              aid
-            pure (aid, x)
-          push $ chooseOne
-            iid
-            [ targetLabel
-                aid
-                [ skillTestModifier (toSource attrs) (InvestigatorTarget iid)
-                    $ SkillModifier skillType x
-                ]
-            | (aid, x) <- assetIdsWithIconCount
+      matchingIcons <- getSkillTestMatchingSkillIcons
+
+      assetIds <-
+        selectList
+        $ NotAsset (AssetWithId $ toId attrs)
+        <> AssetControlledBy (InvestigatorWithId iid)
+        <> AssetWithMatchingSkillTestIcon
+      assetIdsWithIconCount <- for assetIds $ \aid -> do
+        x <- fieldMap
+          AssetCard
+          (length
+          . filter (`member` matchingIcons)
+          . cdSkills
+          . toCardDef
+          )
+          aid
+        pure (aid, x)
+      push $ chooseOne
+        iid
+        [ targetLabel
+            aid
+            [ skillTestModifier (toSource attrs) (InvestigatorTarget iid) (AnySkillValue x)
             ]
-          pure a
+        | (aid, x) <- assetIdsWithIconCount
+        ]
+      pure a
     _ -> WellPrepared2 <$> runMessage msg attrs

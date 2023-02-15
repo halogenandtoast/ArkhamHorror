@@ -52,7 +52,7 @@ instance RunMessage Entombed where
         difficulty = max 0 (4 - difficultyReduction metadata)
         testChoice sType = SkillLabel
           sType
-          [BeginSkillTest iid source (idToTarget iid) Nothing sType difficulty]
+          [beginSkillTest iid source (idToTarget iid) Nothing sType difficulty]
       push $ chooseOne iid [testChoice SkillAgility, testChoice SkillCombat]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

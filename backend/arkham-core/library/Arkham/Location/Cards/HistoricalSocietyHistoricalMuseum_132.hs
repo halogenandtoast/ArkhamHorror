@@ -14,7 +14,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing

@@ -2,6 +2,7 @@
 module Arkham.SkillTest.Runner
   ( module X
   , skillIconCount
+  , getCurrentSkillValue
   ) where
 
 import Arkham.Prelude
@@ -14,7 +15,9 @@ import Arkham.Classes
 import Arkham.Game.Helpers hiding ( matches )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Message
+import Arkham.Projection
 import Arkham.RequestedTokenStrategy
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -27,15 +30,26 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
 
+getCurrentSkillValue :: SkillTest -> GameT Int
+getCurrentSkillValue st = case skillTestType st of
+  SkillSkillTest sType -> do
+    stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
+    pure $ statsSkillValue stats sType
+  ResourceSkillTest -> field InvestigatorResources (skillTestInvestigator st)
+
 skillIconCount :: SkillTest -> GameT Int
 skillIconCount SkillTest {..} = do
-  investigatorModifiers <- getModifiers
-    (InvestigatorTarget skillTestInvestigator)
-  if SkillCannotBeIncreased skillTestSkillType `elem` investigatorModifiers
-    then pure 0
-    else length . filter matches <$> concatMapM
+  totalIcons <- length . filter matches <$> concatMapM
       (iconsForCard . snd)
       (toList skillTestCommittedCards)
+  case skillTestType of
+    SkillSkillTest sType -> do
+      investigatorModifiers <- getModifiers
+        (InvestigatorTarget skillTestInvestigator)
+      pure $ if SkillCannotBeIncreased sType `elem` investigatorModifiers
+        then 0
+        else totalIcons
+    ResourceSkillTest -> pure totalIcons
  where
   iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
     modifiers' <- getModifiers (CardIdTarget pcId)
@@ -45,7 +59,9 @@ skillIconCount SkillTest {..} = do
       modifiers'
   iconsForCard _ = pure []
   matches WildIcon = True
-  matches (SkillIcon s) = s == skillTestSkillType
+  matches (SkillIcon s) = case skillTestType of
+    SkillSkillTest sType -> s == sType
+    ResourceSkillTest -> False
   applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
   applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
   applySkillModifiers _ ys = ys
@@ -175,10 +191,9 @@ instance RunMessage SkillTest where
           %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
           )
     PassSkillTest -> do
-      stats <- modifiedStatsOf skillTestAction skillTestInvestigator
+      currentSkillValue <- getCurrentSkillValue s
       iconCount <- skillIconCount s
       let
-        currentSkillValue = statsSkillValue stats skillTestSkillType
         modifiedSkillValue' =
           max 0 (currentSkillValue + skillTestValueModifier + iconCount)
       pushAll
@@ -195,7 +210,7 @@ instance RunMessage SkillTest where
                 skillTestAction
                 skillTestSource
                 target
-                skillTestSkillType
+                skillTestType
                 difficulty
               )
           | target <- skillTestSubscribers
@@ -206,7 +221,7 @@ instance RunMessage SkillTest where
                skillTestAction
                skillTestSource
                (SkillTestInitiatorTarget skillTestTarget)
-               skillTestSkillType
+               skillTestType
                difficulty
              )
            , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
@@ -285,7 +300,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  target
-                 skillTestSkillType
+                 skillTestType
                  n
                )
            | target <- skillTestSubscribers
@@ -296,7 +311,7 @@ instance RunMessage SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestSkillType
+                   skillTestType
                    n
                  )
              ]
@@ -308,7 +323,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  target
-                 skillTestSkillType
+                 skillTestType
                  n
                )
            | target <- skillTestSubscribers
@@ -319,7 +334,7 @@ instance RunMessage SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestSkillType
+                   skillTestType
                    n
                  )
              ]
@@ -346,7 +361,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  target
-                 skillTestSkillType
+                 skillTestType
                  n
                )
            | target <- skillTestSubscribers
@@ -357,7 +372,7 @@ instance RunMessage SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestSkillType
+                   skillTestType
                    n
                  )
              ]
@@ -369,7 +384,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  target
-                 skillTestSkillType
+                 skillTestType
                  n
                )
            | target <- skillTestSubscribers
@@ -380,7 +395,7 @@ instance RunMessage SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestSkillType
+                   skillTestType
                    n
                  )
              ]
@@ -409,7 +424,7 @@ instance RunMessage SkillTest where
                     skillTestAction
                     skillTestSource
                     target
-                    skillTestSkillType
+                    skillTestType
                     n
                   )
               | target <- skillTestSubscribers
@@ -420,7 +435,7 @@ instance RunMessage SkillTest where
                      skillTestAction
                      skillTestSource
                      (SkillTestInitiatorTarget skillTestTarget)
-                     skillTestSkillType
+                     skillTestType
                      n
                    )
                ]
@@ -431,7 +446,7 @@ instance RunMessage SkillTest where
                       skillTestAction
                       skillTestSource
                       target
-                      skillTestSkillType
+                      skillTestType
                       n
                   | target <- skillTestSubscribers
                   ]
@@ -440,7 +455,7 @@ instance RunMessage SkillTest where
                         skillTestAction
                         skillTestSource
                         (SkillTestInitiatorTarget skillTestTarget)
-                        skillTestSkillType
+                        skillTestType
                         n
                     ]
                  )
@@ -452,7 +467,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  (SkillTestInitiatorTarget skillTestTarget)
-                 skillTestSkillType
+                 skillTestType
                  n
                )
            ]
@@ -462,7 +477,7 @@ instance RunMessage SkillTest where
                    skillTestAction
                    skillTestSource
                    target
-                   skillTestSkillType
+                   skillTestType
                    n
                  )
              | target <- skillTestSubscribers
@@ -472,7 +487,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  target
-                 skillTestSkillType
+                 skillTestType
                  n
              | target <- skillTestSubscribers
              ]
@@ -481,7 +496,7 @@ instance RunMessage SkillTest where
                  skillTestAction
                  skillTestSource
                  (SkillTestInitiatorTarget skillTestTarget)
-                 skillTestSkillType
+                 skillTestType
                  n
              ]
           )
@@ -515,13 +530,12 @@ instance RunMessage SkillTest where
         pure $ s & valueModifierL %~ subtract tokenValues
     RecalculateSkillTestResults -> do
       modifiers' <- getModifiers SkillTestTarget
-      stats <- modifiedStatsOf skillTestAction skillTestInvestigator
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       iconCount <- if CancelSkills `elem` modifiers'
         then pure 0
         else skillIconCount s
+      currentSkillValue <- getCurrentSkillValue s
       let
-        currentSkillValue = statsSkillValue stats skillTestSkillType
         addResultModifier n (SkillTestResultValueModifier m) = n + m
         addResultModifier n _ = n
         resultValueModifiers = foldl' addResultModifier 0 modifiers'
@@ -537,13 +551,12 @@ instance RunMessage SkillTest where
       tokenValues <- sum <$> for
         (skillTestRevealedTokens <> skillTestResolvedTokens)
         (getModifiedTokenValue s)
-      stats <- modifiedStatsOf skillTestAction skillTestInvestigator
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       iconCount <- if CancelSkills `elem` modifiers'
         then pure 0
         else skillIconCount s
+      currentSkillValue <- getCurrentSkillValue s
       let
-        currentSkillValue = statsSkillValue stats skillTestSkillType
         totaledTokenValues = tokenValues + skillTestValueModifier
         modifiedSkillValue' =
           max 0 (currentSkillValue + totaledTokenValues + iconCount)

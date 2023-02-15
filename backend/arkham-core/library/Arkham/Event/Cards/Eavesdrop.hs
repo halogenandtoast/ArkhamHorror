@@ -39,7 +39,7 @@ instance RunMessage Eavesdrop where
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source ->
       do
         n <- fromJustNote "Enemy must have evade" <$> field EnemyEvade eid
-        push $ BeginSkillTest
+        push $ beginSkillTest
           iid
           (toSource attrs)
           (toTarget attrs)

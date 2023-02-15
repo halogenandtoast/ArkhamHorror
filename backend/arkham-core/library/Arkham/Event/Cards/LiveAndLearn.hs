@@ -33,7 +33,7 @@ instance RunMessage LiveAndLearn where
             (skillTestSource st)
             (skillTestTarget st)
             (skillTestAction st)
-            (skillTestSkillType st)
+            (skillTestType st)
             (skillTestDifficulty st)
           ]
     _ -> LiveAndLearn <$> runMessage msg attrs

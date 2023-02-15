@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding ( EnemyEvade )
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.SkillTest
 import Arkham.Modifier qualified as Modifier
 import Arkham.SkillType
 import Arkham.Source

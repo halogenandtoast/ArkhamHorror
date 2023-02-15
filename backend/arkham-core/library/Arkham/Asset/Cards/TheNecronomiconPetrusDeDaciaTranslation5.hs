@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Helpers.SkillTest
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Target
 
@@ -52,11 +51,10 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
   runMessage msg a@(TheNecronomiconPetrusDeDaciaTranslation5 attrs) =
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-        msv <- getSkillTestSkillType
-        for_ msv $ \sv -> push $ skillTestModifier
+        push $ skillTestModifier
           (toSource attrs)
           (InvestigatorTarget iid)
-          (SkillModifier sv 2)
+          (AnySkillValue 2)
         pure a
       UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
         drawing <- drawCards iid attrs 2

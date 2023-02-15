@@ -37,7 +37,7 @@ instance HasAbilities ConstanceDumaine where
 instance RunMessage ConstanceDumaine where
   runMessage msg a@(ConstanceDumaine attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
+      (beginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         modifiers <- getModifiers (InvestigatorTarget iid)

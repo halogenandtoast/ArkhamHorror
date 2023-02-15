@@ -39,7 +39,7 @@ instance HasAbilities LaboratoryOfTheGreatRace where
 instance RunMessage LaboratoryOfTheGreatRace where
   runMessage msg l@(LaboratoryOfTheGreatRace attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)

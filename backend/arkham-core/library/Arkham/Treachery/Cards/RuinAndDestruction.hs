@@ -28,7 +28,7 @@ instance RunMessage RuinAndDestruction where
         selectList $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle
           broodTitle
       pushAll $
-        [ BeginSkillTest
+        [ beginSkillTest
              iid'
              source
              (InvestigatorTarget iid')

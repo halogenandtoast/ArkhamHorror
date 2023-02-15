@@ -35,7 +35,7 @@ instance RunMessage MedicalTexts where
         iid
         [ TargetLabel
             (InvestigatorTarget iid')
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 source
                 (InvestigatorTarget iid')

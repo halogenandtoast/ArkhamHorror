@@ -229,6 +229,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grotesqueStatue4
   , grounded1
   , guardDog
+  , guardDog2
   , handcuffs
   , handcuffs2
   , harlanEarnstone
@@ -339,6 +340,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , relicOfAgesUnleashTheTimestream
   , researchLibrarian
   , riteOfSeeking
+  , riteOfSeeking2
   , riteOfSeeking4
   , ritualCandles
   , rolands38Special
@@ -408,6 +410,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , untilTheEndOfTime
   , vaultOfKnowledge
   , venturer
+  , wellConnected
+  , wellConnected3
   , wellPrepared2
   , wendysAmulet
   , whittonGreene
@@ -449,6 +453,7 @@ rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
   , cdUnique = True
   , cdUses = Uses Ammo 4
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01506"]
   }
 
 daisysToteBag :: CardDef
@@ -456,6 +461,7 @@ daisysToteBag = (asset "01008" "Daisy's Tote Bag" 2 Neutral)
   { cdSkills = [#willpower, #intellect, #wild]
   , cdCardTraits = setFromList [Item]
   , cdUnique = True
+  , cdAlternateCardCodes = ["01508"]
   }
 
 theNecronomicon :: CardDef
@@ -463,6 +469,7 @@ theNecronomicon =
   (weakness "01009" ("The Necronomicon" <:> "John Dee Translation"))
     { cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [HandSlot]
+    , cdAlternateCardCodes = ["01509"]
     }
 
 heirloomOfHyperborea :: CardDef
@@ -478,6 +485,7 @@ heirloomOfHyperborea = (asset
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["01512"]
   }
 
 wendysAmulet :: CardDef
@@ -486,6 +494,7 @@ wendysAmulet = (asset "01014" "Wendy's Amulet" 2 Neutral)
   , cdCardTraits = setFromList [Item, Relic]
   , cdUnique = True
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["01514"]
   }
 
 fortyFiveAutomatic :: CardDef
@@ -2603,6 +2612,13 @@ deathXiii1 = (asset "05027" ("Death • XIII" <:> "Free from the Past") 3 Seeker
   , cdCardInHandEffects = True
   }
 
+wellConnected :: CardDef
+wellConnected = (asset "05028" "Well Connected" 2 Rogue)
+  { cdCardTraits = singleton Condition
+  , cdSkills = [#intellect]
+  , cdLimits = [LimitPerInvestigator 1]
+  }
+
 theMoonXiii1 :: CardDef
 theMoonXiii1 = (asset "05031" ("The Moon • XVIII" <:> "Message from Your Inner Self") 3 Rogue)
   { cdCardTraits = singleton Tarot
@@ -2696,6 +2712,14 @@ runicAxe = (asset "09022" "Runix Axe" 4 Guardian)
   , cdSlots = [HandSlot, HandSlot]
   }
 
+guardDog2 :: CardDef
+guardDog2 = (asset "09034" "Guard Dog" 3 Guardian)
+  { cdSkills = [#willpower, #combat]
+  , cdCardTraits = setFromList [Ally, Creature]
+  , cdSlots = [AllySlot]
+  , cdLevel = 2
+  }
+
 handcuffs2 :: CardDef
 handcuffs2 = fast $ (asset "09035" "Handcuffs" 1 Guardian)
   { cdCardTraits = setFromList [Item, Police]
@@ -2754,6 +2778,16 @@ rabbitsFoot3 = (asset "50010" "Rabbit's Foot" 1 Survivor)
   , cdSlots = [AccessorySlot]
   }
 
+riteOfSeeking2 :: CardDef
+riteOfSeeking2 = (asset "51007" "Rite of Seeking" 4 Mystic)
+  { cdCardTraits = singleton Spell
+  , cdSkills = [#intellect]
+  , cdLevel = 2
+  , cdUses = Uses Charge 3
+  , cdSlots = [ArcaneSlot]
+  , cdAlternateCardCodes = ["01689"]
+  }
+
 coltVestPocket2 :: CardDef
 coltVestPocket2 = (asset "53006" "Colt Vest Pocket" 2 Rogue)
   { cdSkills = [#combat, #agility]
@@ -2764,12 +2798,20 @@ coltVestPocket2 = (asset "53006" "Colt Vest Pocket" 2 Rogue)
   }
 
 mistsOfRlyeh2 :: CardDef
-mistsOfRlyeh2 = (asset "04271" "Mists of R'lyeh" 2 Mystic)
+mistsOfRlyeh2 = (asset "53007" "Mists of R'lyeh" 2 Mystic)
   { cdSkills = [#agility]
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]
   , cdUses = Uses Charge 5
   , cdLevel = 2
+  }
+
+wellConnected3 :: CardDef
+wellConnected3 = (asset "54006" "Well Connected" 2 Rogue)
+  { cdCardTraits = singleton Condition
+  , cdSkills = [#intellect, #agility]
+  , cdLimits = [LimitPerInvestigator 1]
+  , cdLevel = 3
   }
 
 randallCho :: CardDef

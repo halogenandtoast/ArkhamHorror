@@ -13,6 +13,7 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Target
 
@@ -65,7 +66,7 @@ instance RunMessage MadnessCoils where
                   leadInvestigatorId
                   [ targetLabel
                       iid
-                      [ BeginSkillTest
+                      [ beginSkillTest
                           iid
                           (toSource attrs)
                           (toTarget attrs)
@@ -93,7 +94,7 @@ instance RunMessage MadnessCoils where
            ]
         )
       pure a
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} st _
+    FailedSkillTest _ _ source SkillTestInitiatorTarget{} (SkillSkillTest st) _
       | isSource attrs source -> do
         pushAfter (== SkillTestApplyResultsAfter) $ AdvanceAgenda (toId attrs)
         pure $ MadnessCoils $ attrs `with` Metadata

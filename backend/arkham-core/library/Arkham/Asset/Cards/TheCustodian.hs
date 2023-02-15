@@ -51,7 +51,7 @@ instance RunMessage TheCustodian where
         push drawing
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toAbilitySource attrs 2)
         (toTarget attrs)

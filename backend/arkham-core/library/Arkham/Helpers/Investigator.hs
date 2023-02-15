@@ -14,7 +14,6 @@ import Arkham.Damage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot
 import Arkham.Id
 import Arkham.Investigator.Types
@@ -26,7 +25,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Arkham.Treachery.Types ( Field (..) )
 import Control.Monad.Extra ( orM )
 import Data.Foldable ( foldrM )
 import Data.UUID ( nil )
@@ -93,21 +91,6 @@ damageValueFor baseValue iid = do
   applyModifier (DamageDealt m) n = max 0 (n + m)
   applyModifier NoDamageDealt _ = 0
   applyModifier _ n = n
-
-getIsScenarioAbility :: HasGame m => m Bool
-getIsScenarioAbility = do
-  source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
-  case source of
-    SkillTestSource _ _ source' _ -> case source' of
-      EnemySource _ -> pure True
-      AgendaSource _ -> pure True
-      LocationSource _ -> pure True
-      TreacherySource tid ->
-        -- If treachery has a subtype then it is a weakness not an encounter card
-        isNothing . cdCardSubType <$> field TreacheryCardDef tid
-      ActSource _ -> pure True
-      _ -> pure False
-    _ -> pure False
 
 getHandSize :: HasGame m => InvestigatorAttrs -> m Int
 getHandSize attrs = do
@@ -371,13 +354,13 @@ modifiedStatsOf maction i = do
     }
 
 getAvailableSkillsFor
-  :: HasGame m => SkillType -> InvestigatorId -> m [SkillType]
+  :: HasGame m => SkillType -> InvestigatorId -> m (HashSet SkillType)
 getAvailableSkillsFor skillType iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  pure $ foldr applyModifier [skillType] modifiers
+  pure $ foldr applyModifier (singleton skillType) modifiers
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
-    | toReplace == skillType = toUse : skills
+    | toReplace == skillType = insertSet toUse skills
   applyModifier _ skills = skills
 
 isEliminated :: HasGame m => InvestigatorId -> m Bool

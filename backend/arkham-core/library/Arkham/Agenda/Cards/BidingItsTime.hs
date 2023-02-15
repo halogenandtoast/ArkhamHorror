@@ -74,7 +74,7 @@ instance RunMessage BidingItsTime where
       a <$ pushAll
         (CreateEnemy card
         : EnemySpawn Nothing locationId enemyId
-        : [ BeginSkillTest
+        : [ beginSkillTest
               iid
               source
               (EnemyTarget enemyId)

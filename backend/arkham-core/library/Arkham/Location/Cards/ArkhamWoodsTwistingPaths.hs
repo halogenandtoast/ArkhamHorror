@@ -51,6 +51,6 @@ instance RunMessage ArkhamWoodsTwistingPaths where
         effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
       l <$ pushAll
         [ CreateEffect "01151" effectMetadata source target
-        , BeginSkillTest iid source target Nothing SkillIntellect 3
+        , beginSkillTest iid source target Nothing SkillIntellect 3
         ]
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

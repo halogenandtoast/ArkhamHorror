@@ -65,7 +65,7 @@ instance RunMessage Fold where
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> a <$ push
-            (BeginSkillTest
+            (beginSkillTest
               iid
               source
               (AssetTarget aid)

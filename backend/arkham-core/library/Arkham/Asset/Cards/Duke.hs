@@ -12,7 +12,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( MoveAction )

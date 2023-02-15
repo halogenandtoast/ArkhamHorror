@@ -42,7 +42,7 @@ instance RunMessage Interrogate where
               iid
               [ targetLabel
                   enemy
-                  [ BeginSkillTest
+                  [ beginSkillTest
                       iid
                       (toSource attrs)
                       (EnemyTarget enemy)

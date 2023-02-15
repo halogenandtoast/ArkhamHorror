@@ -39,7 +39,7 @@ instance RunMessage DeconstructionRoom where
   runMessage msg l@(DeconstructionRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- field LocationClues (toId attrs)
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)

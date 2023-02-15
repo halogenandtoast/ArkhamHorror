@@ -52,7 +52,7 @@ instance RunMessage ChapultepecPark where
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)

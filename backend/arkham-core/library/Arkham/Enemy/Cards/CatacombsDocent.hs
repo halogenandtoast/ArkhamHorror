@@ -39,7 +39,7 @@ instance HasAbilities CatacombsDocent where
 instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (toTarget attrs)

@@ -11,7 +11,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.SkillTest
 import Arkham.Target
 
 newtype OperaGarnier213 = OperaGarnier213 LocationAttrs

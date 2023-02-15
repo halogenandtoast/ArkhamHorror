@@ -42,7 +42,7 @@ instance HasAbilities GreatLibrary where
 instance RunMessage GreatLibrary where
   runMessage msg l@(GreatLibrary attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)

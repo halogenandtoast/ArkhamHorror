@@ -13,7 +13,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message

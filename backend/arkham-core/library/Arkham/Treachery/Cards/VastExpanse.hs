@@ -28,7 +28,7 @@ instance RunMessage VastExpanse where
       let
         revelationMsg = if extradimensionalCount == 0
           then Surge iid source
-          else BeginSkillTest
+          else beginSkillTest
             iid
             source
             (InvestigatorTarget iid)

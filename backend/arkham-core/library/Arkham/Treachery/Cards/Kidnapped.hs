@@ -40,7 +40,7 @@ instance RunMessage Kidnapped where
         iid
         [ Label
           "Test {willpower} (4)"
-          [ BeginSkillTest
+          [ beginSkillTest
               iid
               (toSource attrs)
               (toTarget attrs)
@@ -50,7 +50,7 @@ instance RunMessage Kidnapped where
           ]
         , Label
           "Test {agility} (4)"
-          [ BeginSkillTest
+          [ beginSkillTest
               iid
               (toSource attrs)
               (toTarget attrs)

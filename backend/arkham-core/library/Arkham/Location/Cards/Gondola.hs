@@ -46,7 +46,7 @@ instance RunMessage Gondola where
           iid
           [ Label
             "Test {combat} (2)"
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)
@@ -56,7 +56,7 @@ instance RunMessage Gondola where
             ]
           , Label
             "Test {agility} (2)"
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)

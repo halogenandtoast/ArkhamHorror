@@ -40,7 +40,7 @@ instance RunMessage DraggedUnder where
       , Discard (toAbilitySource attrs 1) $ toTarget attrs
       ]
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

@@ -21,15 +21,10 @@ ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 
 instance RunMessage EphemeralExhibits where
   runMessage msg t@(EphemeralExhibits attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ push
-      (BeginSkillTest
-        iid
-        source
-        (InvestigatorTarget iid)
-        Nothing
-        SkillIntellect
-        3
-      )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> t <$ push (LoseActions iid source n)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) Nothing SkillIntellect 3
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n -> do
+      push $ LoseActions iid (toSource attrs) n
+      pure t
     _ -> EphemeralExhibits <$> runMessage msg attrs

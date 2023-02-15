@@ -13,6 +13,7 @@ import Arkham.Classes
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message hiding ( Run )
+import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -48,7 +49,7 @@ instance RunMessage Run where
               iid
               [ Label
                 "Attempt to dodge the creature"
-                [ BeginSkillTest
+                [ beginSkillTest
                     iid
                     (toSource attrs)
                     (toTarget attrs)
@@ -58,7 +59,7 @@ instance RunMessage Run where
                 ]
               , Label
                 "Attempt to endure the creature's extreme heat"
-                [ BeginSkillTest
+                [ beginSkillTest
                     iid
                     (toSource attrs)
                     (toTarget attrs)
@@ -69,10 +70,10 @@ instance RunMessage Run where
               ]
           : [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
           )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillAgility _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} (SkillSkillTest SkillAgility) _
       | isSource attrs source && onSide B attrs -> a
       <$ push (SufferTrauma iid 1 0)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillCombat _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} (SkillSkillTest SkillCombat) _
       | isSource attrs source && onSide B attrs -> a
       <$ push (SufferTrauma iid 1 0)
     _ -> Run . (`with` metadata) <$> runMessage msg attrs

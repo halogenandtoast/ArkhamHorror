@@ -46,7 +46,7 @@ instance HasAbilities WhateleyRuins_251 where
 instance RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 4)
+      (beginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 4)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         abominations <- getBroodOfYogSothoth

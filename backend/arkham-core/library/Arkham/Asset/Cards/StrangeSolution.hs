@@ -28,7 +28,7 @@ instance HasAbilities StrangeSolution where
 instance RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (BeginSkillTest
+      (beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

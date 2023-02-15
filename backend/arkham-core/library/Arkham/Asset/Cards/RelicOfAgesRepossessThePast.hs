@@ -40,7 +40,7 @@ instance RunMessage RelicOfAgesRepossessThePast where
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
-          beginSkillTest skillType = BeginSkillTest
+          chooseSkillTest skillType = beginSkillTest
             iid
             (toSource attrs)
             (InvestigatorTarget iid)
@@ -49,7 +49,7 @@ instance RunMessage RelicOfAgesRepossessThePast where
             4
         push $ chooseOne
           iid
-          [ SkillLabel skillType [beginSkillTest skillType]
+          [ SkillLabel skillType [chooseSkillTest skillType]
           | skillType <- [SkillWillpower, SkillIntellect]
           ]
         pure a

@@ -57,7 +57,7 @@ instance RunMessage MomentOfDoom where
         iid
         [ SkillLabel
             skill
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)

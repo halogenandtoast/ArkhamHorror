@@ -25,7 +25,7 @@ umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 instance RunMessage UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
-      (BeginSkillTest
+      (beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

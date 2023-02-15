@@ -40,7 +40,7 @@ instance RunMessage MysteriousGateway where
             leadInvestigatorId
             [ targetLabel iid'
                [ MoveTo (toSource attrs) iid' $ LocationId $ toCardId holeInTheWall
-               , BeginSkillTest
+               , beginSkillTest
                  iid'
                  (ActSource aid)
                  (InvestigatorTarget iid')

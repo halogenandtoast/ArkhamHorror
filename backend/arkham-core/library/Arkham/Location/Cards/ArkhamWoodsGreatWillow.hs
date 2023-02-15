@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards ( arkhamWoodsGreatWillow )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing

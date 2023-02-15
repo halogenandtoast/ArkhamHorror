@@ -18,7 +18,6 @@ import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 

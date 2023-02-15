@@ -53,13 +53,7 @@ instance RunMessage CruelInterrogations where
           ]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
-        iid
-        (toAbilitySource attrs 1)
-        (InvestigatorTarget iid)
-        Nothing
-        SkillWillpower
-        2
+      push $ beginSkillTest iid (toAbilitySource attrs 1) (InvestigatorTarget iid) Nothing SkillWillpower 2
       pure t
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
       -> do

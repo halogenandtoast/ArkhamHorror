@@ -10,7 +10,6 @@ import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
@@ -43,7 +42,7 @@ instance RunMessage Persuasion where
               iid
               [ targetLabel
                   enemy
-                  [ BeginSkillTest
+                  [ beginSkillTest
                       iid
                       (toSource attrs)
                       (EnemyTarget enemy)

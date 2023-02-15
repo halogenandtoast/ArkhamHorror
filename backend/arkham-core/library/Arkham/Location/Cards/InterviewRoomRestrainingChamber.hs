@@ -44,7 +44,7 @@ instance RunMessage InterviewRoomRestrainingChamber where
         iid
         [ Label
           "Use {intellect}"
-          [ BeginSkillTest
+          [ beginSkillTest
               iid
               (toSource attrs)
               (InvestigatorTarget iid)
@@ -54,7 +54,7 @@ instance RunMessage InterviewRoomRestrainingChamber where
           ]
         , Label
           "Use {combat}"
-          [ BeginSkillTest
+          [ beginSkillTest
               iid
               (toSource attrs)
               (InvestigatorTarget iid)

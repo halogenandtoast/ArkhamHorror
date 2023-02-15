@@ -49,7 +49,7 @@ instance RunMessage BindMonster2 where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       case eventAttachedTarget attrs of
         Just target ->
-          e <$ push (BeginSkillTest iid source target Nothing SkillWillpower 3)
+          e <$ push (beginSkillTest iid source target Nothing SkillWillpower 3)
         Nothing -> throwIO $ InvalidState "must be attached"
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> case eventAttachedTarget attrs of

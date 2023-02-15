@@ -9,7 +9,6 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 

@@ -139,6 +139,7 @@ import Data.HashMap.Monoidal ( getMonoidalHashMap )
 import Data.HashMap.Monoidal qualified as MonoidalHashMap
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
+import Data.HashSet qualified as HashSet
 import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
 import Data.Sequence qualified as Seq
@@ -1448,13 +1449,10 @@ getAssetsMatching matcher = do
     AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode . toAttrs) as
     AssetWithMatchingSkillTestIcon -> do
-      mskillTest <- getSkillTest
-      case mskillTest of
-        Nothing -> pure []
-        Just st -> do
-          valids <- select
-            (AssetCardMatch $ CardWithSkill $ skillTestSkillType st)
-          pure $ filter ((`member` valids) . toId) as
+      skillIcons <- getSkillTestMatchingSkillIcons
+      valids <- select
+        (AssetCardMatch $ CardWithOneOf $ map CardWithSkillIcon $ setToList skillIcons)
+      pure $ filter ((`member` valids) . toId) as
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
     UniqueAsset ->
@@ -2374,16 +2372,11 @@ instance Query ExtendedCardMatcher where
                   iids
         pure $ c `elem` cards
       EligibleForCurrentSkillTest -> do
-        mSkillTest <- getSkillTest
-        case mSkillTest of
-          Nothing -> pure False
-          Just st -> pure
-            (WildIcon
-            `elem` cdSkills (toCardDef c)
-            || SkillIcon (skillTestSkillType st)
-            `elem` cdSkills (toCardDef c)
-            || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
-            )
+        skillIcons <- getSkillTestMatchingSkillIcons
+        pure
+          (any (`member` skillIcons) (cdSkills (toCardDef c))
+          || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
+          )
       InDiscardOf who -> do
         iids <- selectList who
         discards <-
@@ -3939,50 +3932,33 @@ runGameMessage msg g = case msg of
     pushAll . (: [EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
-  BeginSkillTest iid source target maction skillType difficulty -> do
-    availableSkills <- getAvailableSkillsFor skillType iid
+  BeginSkillTest iid source target maction skillTestType difficulty -> do
     windows' <- windows
-      [Window.InitiatedSkillTest iid maction skillType difficulty]
-    let
-      msgs = case availableSkills of
-        [] ->
-          windows'
-            <> [ BeginSkillTestAfterFast
-                   iid
-                   source
-                   target
-                   maction
-                   skillType
-                   difficulty
-               ]
-        [_] ->
-          windows'
-            <> [ BeginSkillTestAfterFast
-                   iid
-                   source
-                   target
-                   maction
-                   skillType
-                   difficulty
-               ]
-        xs ->
-          [ chooseOne
-              iid
-              [ SkillLabel
-                  skillType'
-                  (windows'
-                  <> [ BeginSkillTestAfterFast
-                         iid
-                         source
-                         target
-                         maction
-                         skillType'
-                         difficulty
-                     ]
-                  )
-              | skillType' <- xs
-              ]
-          ]
+      [Window.InitiatedSkillTest iid maction skillTestType difficulty]
+    let defaultCase = windows' <> [ BeginSkillTestAfterFast iid source target maction skillTestType difficulty ]
+
+    msgs <- case skillTestType of
+      ResourceSkillTest -> pure defaultCase
+      SkillSkillTest skillType -> do
+        availableSkills <- getAvailableSkillsFor skillType iid
+        pure $ if HashSet.size availableSkills < 2 then defaultCase else
+            [ chooseOne
+                iid
+                [ SkillLabel
+                    skillType'
+                    (windows'
+                    <> [ BeginSkillTestAfterFast
+                           iid
+                           source
+                           target
+                           maction
+                           (SkillSkillTest skillType')
+                           difficulty
+                       ]
+                    )
+                | skillType' <- setToList availableSkills
+                ]
+            ]
 
     mSkillTest <- getSkillTest
     case mSkillTest of
@@ -3994,17 +3970,15 @@ runGameMessage msg g = case msg of
     windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
     pushAll
       [windowMsg, BeforeSkillTest iid skillType difficulty, EndSkillTestWindow]
-    skillValue <- getSkillValue skillType iid
     pure
       $ g
       & (skillTestL
-        ?~ initSkillTest
+        ?~ buildSkillTest
              iid
              source
              target
              maction
              skillType
-             skillValue
              difficulty
         )
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
@@ -4203,7 +4177,7 @@ runGameMessage msg g = case msg of
 
     pushAll
       [ performRevelationSkillTestWindow
-      , BeginSkillTest
+      , beginSkillTest
         iid
         (TreacherySource tid)
         (InvestigatorTarget iid)

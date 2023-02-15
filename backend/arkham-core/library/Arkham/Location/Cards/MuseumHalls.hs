@@ -66,7 +66,7 @@ instance RunMessage MuseumHalls where
         museumEntrance <- fromJustNote "missing location"
           <$> selectOne (LocationWithTitle "Museum Entrance")
         l <$ push
-          (BeginSkillTest
+          (beginSkillTest
             iid
             source
             (LocationTarget museumEntrance)

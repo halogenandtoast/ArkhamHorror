@@ -51,7 +51,7 @@ instance RunMessage CrossingTheThreshold where
         Nothing -> error "no advancing investigator"
         Just iid -> do
           pushAll
-            [ BeginSkillTest
+            [ beginSkillTest
               iid
               (toSource attrs)
               (InvestigatorTarget iid)

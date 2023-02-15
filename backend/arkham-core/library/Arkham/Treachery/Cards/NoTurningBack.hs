@@ -74,7 +74,7 @@ instance RunMessage NoTurningBack where
         $ chooseOrRunOne iid
         $ Label
             "Test {combat} (3)"
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)

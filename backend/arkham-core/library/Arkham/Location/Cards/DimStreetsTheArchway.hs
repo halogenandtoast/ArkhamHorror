@@ -56,7 +56,7 @@ instance RunMessage DimStreetsTheArchway where
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
       pushAll
-        [ BeginSkillTest
+        [ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

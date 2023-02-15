@@ -12,7 +12,6 @@ import Arkham.Event.Runner
 import Arkham.Enemy.Types ( Field(..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait

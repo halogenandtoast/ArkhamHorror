@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Helpers.SkillTest
 import Arkham.Message
 
 newtype Fieldwork = Fieldwork EffectAttrs

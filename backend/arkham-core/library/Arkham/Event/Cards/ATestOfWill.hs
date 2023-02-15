@@ -23,7 +23,7 @@ instance RunMessage ATestOfWill where
   runMessage msg e@(ATestOfWill attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
-        [ BeginSkillTest
+        [ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

@@ -36,7 +36,7 @@ instance HasAbilities FarAboveYourHouse where
 instance RunMessage FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (BeginSkillTest
+      (beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)

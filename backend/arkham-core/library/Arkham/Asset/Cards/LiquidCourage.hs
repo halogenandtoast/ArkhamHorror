@@ -48,7 +48,7 @@ instance RunMessage LiquidCourage where
         [ targetLabel
             iid'
             [ HealHorrorWithAdditional (idToTarget iid') (toSource attrs) 1
-            , BeginSkillTest
+            , beginSkillTest
               iid'
               source
               (idToTarget iid')

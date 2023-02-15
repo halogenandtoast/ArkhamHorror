@@ -55,7 +55,7 @@ instance RunMessage AlejandroVela where
           Nothing
           (toSource attrs)
           SkillTestTarget
-        , BeginSkillTest
+        , beginSkillTest
           iid
           (toSource attrs)
           (toTarget attrs)

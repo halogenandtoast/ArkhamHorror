@@ -182,6 +182,7 @@ allEvents = mapFrom
   , SomeEventCard astoundingRevelation
   , SomeEventCard firstWatch
   , SomeEventCard scroungeForSupplies
+  , SomeEventCard dodge2
   , SomeEventCard unearthTheAncients2
   , SomeEventCard dynamiteBlast2
   , SomeEventCard barricade3

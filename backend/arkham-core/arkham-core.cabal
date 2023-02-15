@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -382,6 +382,7 @@ library
       Arkham.Asset.Cards.GrotesqueStatue4
       Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
+      Arkham.Asset.Cards.GuardDog2
       Arkham.Asset.Cards.Handcuffs
       Arkham.Asset.Cards.Handcuffs2
       Arkham.Asset.Cards.HardKnocks
@@ -503,6 +504,7 @@ library
       Arkham.Asset.Cards.RelicOfAgesUnleashTheTimestream
       Arkham.Asset.Cards.ResearchLibrarian
       Arkham.Asset.Cards.RiteOfSeeking
+      Arkham.Asset.Cards.RiteOfSeeking2
       Arkham.Asset.Cards.RiteOfSeeking4
       Arkham.Asset.Cards.RitualCandles
       Arkham.Asset.Cards.Rolands38Special
@@ -575,6 +577,8 @@ library
       Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.VaultOfKnowledge
       Arkham.Asset.Cards.Venturer
+      Arkham.Asset.Cards.WellConnected
+      Arkham.Asset.Cards.WellConnected3
       Arkham.Asset.Cards.WellPrepared2
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
@@ -705,6 +709,7 @@ library
       Arkham.Effect.Effects.PushedIntoTheBeyond
       Arkham.Effect.Effects.QuickThinking
       Arkham.Effect.Effects.RiteOfSeeking
+      Arkham.Effect.Effects.RiteOfSeeking2
       Arkham.Effect.Effects.RiteOfSeeking4
       Arkham.Effect.Effects.Shrivelling
       Arkham.Effect.Effects.SleightOfHand
@@ -937,6 +942,7 @@ library
       Arkham.Event.Cards.DenyExistence
       Arkham.Event.Cards.DevilsLuck
       Arkham.Event.Cards.Dodge
+      Arkham.Event.Cards.Dodge2
       Arkham.Event.Cards.DrawnToTheFlame
       Arkham.Event.Cards.DumbLuck
       Arkham.Event.Cards.DumbLuck2
@@ -1653,6 +1659,7 @@ library
       Arkham.SkillTest
       Arkham.SkillTest.Base
       Arkham.SkillTest.Runner
+      Arkham.SkillTest.Type
       Arkham.SkillTestResult
       Arkham.SkillType
       Arkham.Slot

@@ -38,7 +38,7 @@ instance RunMessage CrystalPillars where
   runMessage msg l@(CrystalPillars attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- getVengeanceInVictoryDisplay
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)

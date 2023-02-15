@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Action (Action)
 import Arkham.SkillTestResult
 import Arkham.SkillTest.Base as X
+import Arkham.SkillTest.Type as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.SkillType
 import Arkham.Card
@@ -52,12 +53,22 @@ initSkillTest ::
   Maybe Action ->
   SkillType ->
   Int ->
+  SkillTest
+initSkillTest iid source target maction skillType' difficulty' =
+  buildSkillTest iid source target maction (SkillSkillTest skillType') difficulty'
+
+buildSkillTest ::
+  InvestigatorId ->
+  Source ->
+  Target ->
+  Maybe Action ->
+  SkillTestType ->
   Int ->
   SkillTest
-initSkillTest iid source target maction skillType' _skillValue' difficulty' =
+buildSkillTest iid source target maction skillTestType' difficulty' =
   SkillTest
     { skillTestInvestigator = iid
-    , skillTestSkillType = skillType'
+    , skillTestType = skillTestType'
     , skillTestDifficulty = difficulty'
     , skillTestSetAsideTokens = mempty
     , skillTestRevealedTokens = mempty

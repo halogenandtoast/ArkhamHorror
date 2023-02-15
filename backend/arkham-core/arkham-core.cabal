@@ -352,6 +352,7 @@ library
       Arkham.Asset.Cards.Fieldwork
       Arkham.Asset.Cards.FineClothes
       Arkham.Asset.Cards.FingerprintKit
+      Arkham.Asset.Cards.FingerprintKit4
       Arkham.Asset.Cards.FinnsTrustyThirtyEight
       Arkham.Asset.Cards.FireAxe
       Arkham.Asset.Cards.FireExtinguisher1

@@ -215,6 +215,7 @@ data Message
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealTokens
   | BeforeSkillTest InvestigatorId SkillTestType Int
+  | ChangeSkillTestType SkillTestType
   | -- Game State Control
     BeginGame
   | Begin Phase

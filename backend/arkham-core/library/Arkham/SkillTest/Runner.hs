@@ -586,4 +586,6 @@ instance RunMessage SkillTest where
               (modifiedSkillTestDifficulty - modifiedSkillValue')
             )
           & (valueModifierL .~ totaledTokenValues)
+    ChangeSkillTestType newSkillTestType ->
+      pure $ s & typeL .~ newSkillTestType
     _ -> pure s

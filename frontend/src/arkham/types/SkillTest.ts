@@ -15,7 +15,6 @@ export const sourceDecoder = JsonDecoder.object<Source>({
 
 export interface SkillTest {
   investigator: string;
-  skillType: SkillType;
   difficulty: number;
   setAsideTokens: ChaosToken[];
   // result: SkillTestResult;
@@ -35,7 +34,6 @@ export interface SkillTestResults {
 export const skillTestDecoder = JsonDecoder.object<SkillTest>(
   {
     investigator: JsonDecoder.string,
-    skillType: skillTypeDecoder,
     action: JsonDecoder.nullable(JsonDecoder.string),
     difficulty: JsonDecoder.number,
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),

@@ -32,7 +32,7 @@ instance RunMessage AlchemicalTransmutation where
   runMessage msg a@(AlchemicalTransmutation attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
       [ CreateEffect "03032" Nothing source (InvestigatorTarget iid)
-      , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 1
+      , beginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 1
       ]
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n -> do
       push $ TakeResources iid (min n 3) (toAbilitySource attrs 1) False

@@ -36,7 +36,7 @@ instance RunMessage GardenDistrict where
   runMessage msg l@(GardenDistrict attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
-        (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 7)
+        (beginSkillTest iid source (toTarget attrs) Nothing SkillAgility 7)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l <$ push (Remember FoundAStrangeDoll)
     _ -> GardenDistrict <$> runMessage msg attrs

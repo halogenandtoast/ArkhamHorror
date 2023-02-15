@@ -21,9 +21,9 @@ jeremiahPierce = JeremiahPierce . uncurry4 (baseAttrs "50044")
 
 instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of
-    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs ->
-      e <$ pushAll
-        [ BeginSkillTest
+    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
+      pushAll
+        [ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
@@ -32,6 +32,7 @@ instance RunMessage JeremiahPierce where
           4
         , DisableEffect $ effectId attrs
         ]
+      pure e
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> e <$ pushAll
         (replicate n PlaceDoomOnAgenda <> [AdvanceAgendaIfThresholdSatisfied])

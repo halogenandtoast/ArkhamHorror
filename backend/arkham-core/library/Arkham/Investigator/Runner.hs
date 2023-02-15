@@ -52,7 +52,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -1892,7 +1891,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         cards
     pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
-  BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
+  BeforeSkillTest iid skillTestType skillDifficulty | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     skillTest <- fromJustNote "missing skill test" <$> getSkillTest
     committedCards <- field InvestigatorCommittedCards iid
@@ -1904,10 +1903,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       committedCardCodes =
         map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
           skillTest
-    let window = Window Timing.When (Window.SkillTest skillType)
+    let window = Window Timing.When (Window.SkillTest skillTestType)
     actions <- getActions iid window
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- field LocationClues investigatorLocation
+    skillIcons <- getSkillTestMatchingSkillIcons
 
     skillTestModifiers' <- getModifiers SkillTestTarget
     cannotCommitCards <- elem (CannotCommitCards AnyCard)
@@ -1917,7 +1917,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [ StartSkillTestButton investigatorId
         | CannotPerformSkillTest `notElem` skillTestModifiers'
         ]
-      beginMessage = BeforeSkillTest iid skillType skillDifficulty
+      beginMessage = BeforeSkillTest iid skillTestType skillDifficulty
     committableCards <- if cannotCommitCards || onlyCardComittedToTestCommitted
       then pure []
       else do
@@ -1939,9 +1939,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ScenarioAbility -> pure isScenarioAbility
                 SelfCanCommitWhen matcher ->
                   notNull <$> select (You <> matcher)
-                MinSkillTestValueDifference n -> do
-                  baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
-                  pure $ (skillDifficulty - baseValue) >= n
+                MinSkillTestValueDifference n -> case skillTestType of
+                  SkillSkillTest skillType -> do
+                    baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
+                    pure $ (skillDifficulty - baseValue) >= n
+                  ResourceSkillTest -> pure $ (skillDifficulty - investigatorResources) >= n
               prevented = flip
                 any
                 modifiers'
@@ -1957,10 +1959,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             pure
               $ PlayerCard card
               `notElem` committedCards
-              && (WildIcon
-                 `elem` cdSkills (toCardDef card)
-                 || SkillIcon skillType
-                 `elem` cdSkills (toCardDef card)
+              && (any (`member` skillIcons) (cdSkills (toCardDef card))
                  || (null (cdSkills $ toCardDef card)
                     && toCardType card
                     == SkillType
@@ -1999,7 +1998,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         iid
         triggerMessage
     pure a
-  BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
+  BeforeSkillTest iid skillTestType skillDifficulty | iid /= investigatorId -> do
     locationId <- getJustLocation iid
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- field LocationClues locationId
@@ -2017,7 +2016,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             . HashMap.elems
             $ skillTestCommittedCards skillTest
       modifiers' <- getModifiers (toTarget a)
-      let beginMessage = BeforeSkillTest iid skillType skillDifficulty
+      skillIcons <- getSkillTestMatchingSkillIcons
+      let beginMessage = BeforeSkillTest iid skillTestType skillDifficulty
       committableCards <-
         if notNull committedCards || onlyCardComittedToTestCommitted
           then pure []
@@ -2047,13 +2047,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       ScenarioAbility -> pure isScenarioAbility
                       SelfCanCommitWhen matcher ->
                         notNull <$> select (You <> matcher)
-                      MinSkillTestValueDifference n -> do
-                        baseValue <- baseSkillValueFor
-                          skillType
-                          Nothing
-                          []
-                          (toId a)
-                        pure $ (skillDifficulty - baseValue) >= n
+                      MinSkillTestValueDifference n -> case skillTestType of
+                        SkillSkillTest skillType -> do
+                          baseValue <- baseSkillValueFor
+                            skillType
+                            Nothing
+                            []
+                            (toId a)
+                          pure $ (skillDifficulty - baseValue) >= n
+                        ResourceSkillTest -> pure $ (skillDifficulty - investigatorResources) >= n
                     prevented = flip
                       any
                       modifiers'
@@ -2068,10 +2070,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure
                     $ PlayerCard card
                     `notElem` committedCards
-                    && (WildIcon
-                       `elem` cdSkills (toCardDef card)
-                       || SkillIcon skillType
-                       `elem` cdSkills (toCardDef card)
+                    && (any (`member` skillIcons) (cdSkills (toCardDef card))
+                       || (null (cdSkills (toCardDef card)) && toCardType card == SkillType)
                        )
                     && passesCriterias
                     && not prevented

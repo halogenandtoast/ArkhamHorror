@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
@@ -15,7 +14,6 @@ import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Stats
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -28,10 +26,10 @@ captiveMind :: TreacheryCard CaptiveMind
 captiveMind = treachery CaptiveMind Cards.captiveMind
 
 getSkillTestModifiedSkillValue :: SkillTest -> GameT Int
-getSkillTestModifiedSkillValue st@SkillTest {..} = do
-  stats <- modifiedStatsOf skillTestAction skillTestInvestigator
+getSkillTestModifiedSkillValue st = do
+  currentSkillValue <- getCurrentSkillValue st
   iconCount <- skillIconCount st
-  pure $ max 0 (statsSkillValue stats skillTestSkillType + iconCount)
+  pure $ max 0 (currentSkillValue + iconCount)
 
 doDiscard :: InvestigatorId -> Source -> GameT ()
 doDiscard iid source = do

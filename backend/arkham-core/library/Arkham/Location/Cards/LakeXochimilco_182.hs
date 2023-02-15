@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.SkillTest
 import Arkham.Timing qualified as Timing
 
 newtype LakeXochimilco_182 = LakeXochimilco_182 LocationAttrs

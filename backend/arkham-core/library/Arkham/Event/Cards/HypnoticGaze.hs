@@ -38,11 +38,11 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 instance RunMessage HypnoticGaze where
   runMessage msg e@(HypnoticGaze (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
-      enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack _ eid _ _ : queue' -> (queue', eid)
+      enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
+        PerformEnemyAttack _ eid _ _ : _ -> eid
         _ -> error "unhandled"
       ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside, ignoreWindow]
+      pushAll [CancelNext (toSource attrs) AttackMessage, RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside, ignoreWindow]
       pure $ HypnoticGaze (attrs `with` Metadata (Just enemyId))
     RequestedTokens source _ faces | isSource attrs source -> do
       let

@@ -27,14 +27,13 @@ instance RunMessage Lucky3 where
         Just skillTest -> do
           let
             iid' = skillTestInvestigator skillTest
-            skillType = skillTestSkillType skillTest
           drawing <- drawCards iid attrs 1
           pushAll
             [ drawing
             , skillTestModifier
               (toSource attrs)
               (InvestigatorTarget iid')
-              (SkillModifier skillType 3)
+              (AnySkillValue 3)
             , RerunSkillTest
             ]
       pure e

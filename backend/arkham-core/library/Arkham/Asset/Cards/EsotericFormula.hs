@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

@@ -12,6 +12,7 @@ import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
 import Arkham.Helpers.Message as X
+import Arkham.Helpers.SkillTest as X
 import Arkham.Spawn as X
 
 import Arkham.Action qualified as Action
@@ -439,7 +440,7 @@ instance RunMessage EnemyAttrs where
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight a
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         source
         (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
@@ -519,7 +520,7 @@ instance RunMessage EnemyAttrs where
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- modifiedEnemyEvade a
       case mEnemyEvade' of
-        Just n -> push $ BeginSkillTest
+        Just n -> push $ beginSkillTest
           iid
           source
           (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)

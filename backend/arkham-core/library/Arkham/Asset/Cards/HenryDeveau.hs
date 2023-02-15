@@ -35,7 +35,7 @@ instance HasAbilities HenryDeveau where
 instance RunMessage HenryDeveau where
   runMessage msg a@(HenryDeveau attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         source
         (toTarget attrs)

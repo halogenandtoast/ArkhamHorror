@@ -11,6 +11,7 @@ import Arkham.Classes as X
 import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
 import Arkham.Helpers.Message as X
+import Arkham.Helpers.SkillTest as X
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -29,7 +30,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -81,7 +81,7 @@ instance RunMessage LocationAttrs where
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
         shroudValue' <- getModifiedShroudValueFor a
-        push $ BeginSkillTest
+        push $ beginSkillTest
           iid
           source
           (maybe (LocationTarget lid) (ProxyTarget (LocationTarget lid)) mTarget

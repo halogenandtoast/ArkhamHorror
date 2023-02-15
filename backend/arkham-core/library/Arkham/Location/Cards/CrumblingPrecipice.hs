@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -36,7 +37,7 @@ instance HasAbilities CrumblingPrecipice where
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
@@ -44,8 +45,8 @@ instance RunMessage CrumblingPrecipice where
         SkillWillpower
         4
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) _ SkillWillpower _ -> do
-      push $ BeginSkillTest
+    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillWillpower) _ -> do
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
@@ -53,8 +54,8 @@ instance RunMessage CrumblingPrecipice where
         SkillAgility
         3
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) _ SkillAgility _ -> do
-      push $ BeginSkillTest
+    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillAgility) _ -> do
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
@@ -62,7 +63,7 @@ instance RunMessage CrumblingPrecipice where
         SkillCombat
         2
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) _ SkillCombat _ -> do
+    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillCombat) _ -> do
       push $ InvestigatorKilled (toSource attrs) iid
       pure l
     _ -> CrumblingPrecipice <$> runMessage msg attrs

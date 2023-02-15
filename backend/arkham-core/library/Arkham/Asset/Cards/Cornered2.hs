@@ -10,9 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
-import Arkham.SkillTest
 import Arkham.Target
 
 newtype Cornered2 = Cornered2 AssetAttrs
@@ -33,9 +31,6 @@ instance HasAbilities Cornered2 where
 instance RunMessage Cornered2 where
   runMessage msg a@(Cornered2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      skillType <- skillTestSkillType <$> getJustSkillTest
-      push $ skillTestModifier attrs (InvestigatorTarget iid) $ SkillModifier
-        skillType
-        2
+      push $ skillTestModifier attrs (InvestigatorTarget iid) $ AnySkillValue 2
       pure a
     _ -> Cornered2 <$> runMessage msg attrs

@@ -5,6 +5,7 @@ module Arkham.Event.Runner
 
 import Arkham.Event.Types as X
 import Arkham.Helpers.Message as X
+import Arkham.Helpers.SkillTest as X
 
 import Arkham.Prelude
 

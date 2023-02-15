@@ -40,7 +40,7 @@ instance HasAbilities InterviewRoomIchorFilledChamber where
 instance RunMessage InterviewRoomIchorFilledChamber where
   runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (InvestigatorTarget iid)

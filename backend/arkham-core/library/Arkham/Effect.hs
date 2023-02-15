@@ -31,6 +31,8 @@ import Arkham.Asset.Assets
   , mistsOfRlyeh2Effect
   , mistsOfRlyehEffect
   , pnakoticManuscripts5Effect
+  , wellConnectedEffect
+  , wellConnected3Effect
   , yaotl1Effect
   )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect )
@@ -213,11 +215,14 @@ allEffects = mapFromList
   , ("05005", SomeEffect ritaYoungElderSignEffect)
   , ("05016", SomeEffect imDoneRunninEffect)
   , ("05018", SomeEffect mystifyingSongEffect)
+  , ("05028", SomeEffect wellConnectedEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)
   , ("50044", SomeEffect jeremiahPierce)
+  , ("51007", SomeEffect riteOfSeeking2)
   , ("52007", SomeEffect mistsOfRlyeh2Effect)
+  , ("54006", SomeEffect wellConnected3Effect)
   , ("60101", SomeEffect nathanielCho)
   , ("60103", SomeEffect tommyMalloy)
   , ("60117", SomeEffect oneTwoPunchEffect)

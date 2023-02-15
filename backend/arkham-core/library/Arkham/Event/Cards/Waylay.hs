@@ -37,7 +37,7 @@ instance RunMessage Waylay where
           iid
           [ targetLabel
               enemy
-              [ BeginSkillTest
+              [ beginSkillTest
                   iid
                   (toSource attrs)
                   (EnemyTarget enemy)

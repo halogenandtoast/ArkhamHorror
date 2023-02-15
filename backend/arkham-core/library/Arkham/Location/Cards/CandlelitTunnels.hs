@@ -66,7 +66,7 @@ instance HasAbilities CandlelitTunnels where
 instance RunMessage CandlelitTunnels where
   runMessage msg l@(CandlelitTunnels attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         (toSource attrs)
         (toTarget attrs)

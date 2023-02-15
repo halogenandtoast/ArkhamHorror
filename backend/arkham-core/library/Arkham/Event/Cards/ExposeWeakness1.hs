@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
 
@@ -32,7 +31,7 @@ instance RunMessage ExposeWeakness1 where
         iid
         [ targetLabel
             enemy
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (EnemyTarget enemy)

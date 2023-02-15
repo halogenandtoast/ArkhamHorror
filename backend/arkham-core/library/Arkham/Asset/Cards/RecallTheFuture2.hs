@@ -11,10 +11,8 @@ import Arkham.Asset.Runner
 import Arkham.ChaosBag.Base
 import Arkham.Cost
 import Arkham.Criteria
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.SkillTest
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -59,11 +57,9 @@ instance RunMessage RecallTheFuture2 where
     When (RevealToken _ _ (Token _ t)) | Just t == chosenToken metadata -> do
       unless (assetExhausted attrs) $
         for_ (assetController attrs) $ \iid -> do
-          skillType <- skillTestSkillType <$> getJustSkillTest
           pushAll
             [ Exhaust (toTarget attrs)
-            , skillTestModifier attrs (InvestigatorTarget iid)
-              $ SkillModifier skillType 2
+            , skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
             ]
       pure a
     SkillTestEnds _ _ ->

@@ -434,6 +434,7 @@ allAssets = mapFrom
   , SomeAssetCard fingerprintKit
   , SomeAssetCard deathXiii1
   --- rogue [tcu]
+  , SomeAssetCard wellConnected
   , SomeAssetCard theMoonXiii1
   --- mystic [tcu]
   , SomeAssetCard fourOfCups1
@@ -467,6 +468,7 @@ allAssets = mapFrom
   -- The Scarlet Keys
   --- guardian [tsk]
   -- , SomeAssetCard runicAxe
+  , SomeAssetCard guardDog2
   , SomeAssetCard handcuffs2
   --- seeker [tsk]
   , SomeAssetCard fingerprintKit4
@@ -482,9 +484,17 @@ allAssets = mapFrom
   --- survivor [rtnotz]
   , SomeAssetCard digDeep2
   , SomeAssetCard rabbitsFoot3
+  -- Return to the Dunwich Legacy
+  --- mystic [rtdwl]
+  , SomeAssetCard riteOfSeeking2
   -- Return to the Forgotten Age
   --- rogue [rttfa]
   , SomeAssetCard coltVestPocket2
+  --- mystic [rttfa]
+  , SomeAssetCard mistsOfRlyeh2
+  -- Return to the circle undone
+  -- rogue [rttcu]
+  , SomeAssetCard wellConnected3
   -- Investigator Starter Decks
   --- Nathaniel Cho
   , SomeAssetCard randallCho

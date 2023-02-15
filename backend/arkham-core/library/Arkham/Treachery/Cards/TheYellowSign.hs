@@ -22,7 +22,7 @@ theYellowSign = treachery TheYellowSign Cards.theYellowSign
 instance RunMessage TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
-      (BeginSkillTest
+      (beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

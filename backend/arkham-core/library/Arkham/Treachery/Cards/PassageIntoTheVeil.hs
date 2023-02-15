@@ -28,7 +28,7 @@ instance RunMessage PassageIntoTheVeil where
         selectAny $ enemyIs Enemies.huntingHorror <> EnemyAt
           (LocationWithInvestigator $ InvestigatorWithId iid)
       push
-        $ BeginSkillTest
+        $ beginSkillTest
           iid
           source
           (InvestigatorTarget iid)

@@ -12,7 +12,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Keyword qualified as Keyword
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

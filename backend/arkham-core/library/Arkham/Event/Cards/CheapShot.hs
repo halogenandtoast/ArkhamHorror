@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Message
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
 

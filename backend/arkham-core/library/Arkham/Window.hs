@@ -7,7 +7,7 @@ import Arkham.Attack
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.SkillTest.Base
-import Arkham.SkillType (SkillType)
+import Arkham.SkillTest.Type
 import Arkham.Card (Card)
 import Arkham.Damage
 import Arkham.DamageEffect (DamageEffect)
@@ -102,7 +102,7 @@ data WindowType
   | Healed DamageType Target Source Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
-  | InitiatedSkillTest InvestigatorId (Maybe Action) SkillType Int
+  | InitiatedSkillTest InvestigatorId (Maybe Action) SkillTestType Int
   | InvestigatorDefeated Source DefeatedBy InvestigatorId
   | InvestigatorWouldBeDefeated Source DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId
@@ -135,7 +135,7 @@ data WindowType
   | RevealToken InvestigatorId Token
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | WouldPerformRevelationSkillTest InvestigatorId
-  | SkillTest SkillType
+  | SkillTest SkillTestType
   | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int

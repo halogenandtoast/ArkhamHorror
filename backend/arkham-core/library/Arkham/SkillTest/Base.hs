@@ -9,14 +9,14 @@ import Arkham.Card.Id
 import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTestResult
-import Arkham.SkillType
+import Arkham.SkillTest.Type
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
-  , skillTestSkillType :: SkillType
+  , skillTestType :: SkillTestType
   , skillTestDifficulty :: Int
   , skillTestSetAsideTokens :: [Token]
   , skillTestRevealedTokens :: [Token] -- tokens may change from physical representation
@@ -54,7 +54,7 @@ instance SourceEntity SkillTest where
   toSource SkillTest {..} =
     SkillTestSource
       skillTestInvestigator
-      skillTestSkillType
+      skillTestType
       skillTestSource
       skillTestAction
   isSource _ SkillTestSource {} = True

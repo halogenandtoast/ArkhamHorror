@@ -15,6 +15,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.ScenarioLogKey
+import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Target
 
@@ -54,7 +55,7 @@ instance RunMessage ArkhamAsylum where
                   leadInvestigatorId
                   [ targetLabel
                       iid
-                      [ BeginSkillTest
+                      [ beginSkillTest
                           iid
                           (toSource attrs)
                           (toTarget attrs)
@@ -75,7 +76,7 @@ instance RunMessage ArkhamAsylum where
            ]
         )
       pure a
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} st _
+    FailedSkillTest _ _ source SkillTestInitiatorTarget{} (SkillSkillTest st) _
       | isSource attrs source -> do
         replaceMessageMatching
           (== SkillTestApplyResultsAfter)

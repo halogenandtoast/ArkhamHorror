@@ -36,7 +36,7 @@ instance RunMessage TheRitualBegins where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       iids <- getInvestigatorIds
       pushAll
-        $ [ BeginSkillTest
+        $ [ beginSkillTest
               iid
               (toSource attrs)
               (InvestigatorTarget iid)

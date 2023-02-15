@@ -17,7 +17,6 @@ import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Helpers.SkillTest
 import Arkham.Keyword (Keyword(Retaliate, Aloof))
 import Arkham.Matcher hiding ( EventCard )
 import Arkham.Message

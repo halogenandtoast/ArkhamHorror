@@ -38,7 +38,7 @@ instance HasAbilities RivertownAbandonedWarehouse where
           $ restrictedAbility attrs 1 Here
           $ ActionAbility Nothing
           $ Costs
-              [ActionCost 1, HandDiscardCost 1 $ CardWithSkill SkillWillpower]
+              [ActionCost 1, HandDiscardCost 1 $ CardWithSkillIcon #willpower]
         | locationRevealed attrs
         ]
 

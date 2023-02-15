@@ -8,8 +8,10 @@ import Arkham.Prelude
 
 import Arkham.Act.Types as X
 import Arkham.Act.Sequence as X
-import Arkham.Classes
 import Arkham.Cost as X
+import Arkham.Helpers.SkillTest as X
+
+import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding ( FastPlayerWindow )

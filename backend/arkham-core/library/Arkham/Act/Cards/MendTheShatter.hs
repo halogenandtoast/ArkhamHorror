@@ -58,7 +58,7 @@ instance RunMessage MendTheShatter where
         iid
         [ SkillLabel
             skillType
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)

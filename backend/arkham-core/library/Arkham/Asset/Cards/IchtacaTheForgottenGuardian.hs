@@ -16,7 +16,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Enemy.Types
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection

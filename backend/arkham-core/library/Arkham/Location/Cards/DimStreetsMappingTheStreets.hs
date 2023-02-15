@@ -54,7 +54,7 @@ instance RunMessage DimStreetsMappingTheStreets where
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 1)
       pushAll
-        [ BeginSkillTest
+        [ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

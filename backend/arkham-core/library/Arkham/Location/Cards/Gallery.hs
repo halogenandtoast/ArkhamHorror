@@ -37,7 +37,7 @@ instance HasAbilities Gallery where
 instance RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (BeginSkillTest
+      (beginSkillTest
         iid
         source
         (InvestigatorTarget iid)

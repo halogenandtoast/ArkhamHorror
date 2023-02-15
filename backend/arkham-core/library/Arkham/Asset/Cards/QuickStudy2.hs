@@ -10,9 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
-import Arkham.SkillTest
 import Arkham.Target
 
 newtype QuickStudy2 = QuickStudy2 AssetAttrs
@@ -33,9 +31,6 @@ instance HasAbilities QuickStudy2 where
 instance RunMessage QuickStudy2 where
   runMessage msg a@(QuickStudy2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      skillType <- skillTestSkillType <$> getJustSkillTest
-      push $ skillTestModifier attrs (InvestigatorTarget iid) $ SkillModifier
-        skillType
-        3
+      push $ skillTestModifier attrs (InvestigatorTarget iid) $ AnySkillValue 3
       pure a
     _ -> QuickStudy2 <$> runMessage msg attrs

@@ -59,6 +59,7 @@ import Arkham.Query
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Skill.Types ( Field (..) )
 import Arkham.SkillTest.Base
+import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
@@ -1724,14 +1725,14 @@ windowMatches iid source window' = \case
       isWindowMatch skillTestResultMatcher
   Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher skillValueMatcher
     -> case window' of
-      Window t (Window.InitiatedSkillTest who maction skillType difficulty)
+      Window t (Window.InitiatedSkillTest who maction (SkillSkillTest skillType) difficulty)
         | t == whenMatcher -> andM
           [ matchWho iid who whoMatcher
           , skillTestValueMatches
             iid
             difficulty
             maction
-            skillType
+            (SkillSkillTest skillType)
             skillValueMatcher
           , pure $ skillTypeMatches skillType skillTypeMatcher
           ]
@@ -2142,15 +2143,19 @@ skillTestValueMatches
   => InvestigatorId
   -> Int
   -> Maybe Action
-  -> SkillType
+  -> SkillTestType
   -> Matcher.SkillTestValueMatcher
   -> m Bool
-skillTestValueMatches iid n maction skillType = \case
+skillTestValueMatches iid n maction skillTestType = \case
   Matcher.AnySkillTestValue -> pure True
   Matcher.SkillTestGameValue valueMatcher -> gameValueMatches n valueMatcher
-  Matcher.GreaterThanBaseValue -> do
-    baseSkill <- baseSkillValueFor skillType maction [] iid
-    pure $ n > baseSkill
+  Matcher.GreaterThanBaseValue -> case skillTestType of
+    SkillSkillTest skillType -> do
+      baseSkill <- baseSkillValueFor skillType maction [] iid
+      pure $ n > baseSkill
+    ResourceSkillTest -> do
+      resources <- field InvestigatorResources iid
+      pure $ n > resources
 
 targetTraits :: (HasCallStack, HasGame m) => Target -> m (HashSet Trait)
 targetTraits = \case
@@ -2528,7 +2533,9 @@ skillTestMatches iid source st = \case
       _ -> pure False
     _ -> pure False
   Matcher.SkillTestWithSkill sk -> selectAny sk
-  Matcher.SkillTestWithSkillType sType -> pure $ skillTestSkillType st == sType
+  Matcher.SkillTestWithSkillType sType -> pure $ case skillTestType st of
+    SkillSkillTest sType' -> sType' == sType
+    ResourceSkillTest -> False
   Matcher.SkillTestAtYourLocation -> do
     mlid1 <- field InvestigatorLocation iid
     mlid2 <- field InvestigatorLocation $ skillTestInvestigator st

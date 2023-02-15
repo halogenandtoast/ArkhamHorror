@@ -75,7 +75,7 @@ instance RunMessage MedicoDellaPeste where
         )
         (\case
           BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
-            -> [ BeginSkillTest
+            -> [ beginSkillTest
                    iid'
                    source'
                    target'
@@ -84,7 +84,7 @@ instance RunMessage MedicoDellaPeste where
                    difficulty'
                ]
           Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
-            -> [ BeginSkillTest
+            -> [ beginSkillTest
                    iid'
                    source'
                    target'

@@ -42,7 +42,7 @@ instance RunMessage DreamsOfRlyeh where
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest iid source (InvestigatorTarget iid) Nothing SkillWillpower 3
+      push $ beginSkillTest iid source (InvestigatorTarget iid) Nothing SkillWillpower 3
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard (toSource attrs) $ toTarget attrs)

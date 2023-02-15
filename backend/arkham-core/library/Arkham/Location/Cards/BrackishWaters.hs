@@ -58,7 +58,7 @@ instance RunMessage BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
-        (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3)
+        (beginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         fishingNet <- PlayerCard <$> genPlayerCard Assets.fishingNet

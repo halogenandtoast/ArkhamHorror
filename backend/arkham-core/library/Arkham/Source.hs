@@ -13,7 +13,7 @@ import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.SkillTest.Type
 import Arkham.Token
 import Arkham.Trait
 
@@ -46,7 +46,7 @@ data Source
   | ResourceSource
   | ScenarioSource
   | SkillSource SkillId
-  | SkillTestSource InvestigatorId SkillType Source (Maybe Action)
+  | SkillTestSource InvestigatorId SkillTestType Source (Maybe Action)
   | StorySource CardCode
   | TestSource (HashSet Trait)
   | TokenEffectSource TokenFace

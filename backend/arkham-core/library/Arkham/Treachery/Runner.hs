@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Types as X
 import Arkham.Placement as X
 import Arkham.Helpers.Message as X
+import Arkham.Helpers.SkillTest as X
 
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue

@@ -37,7 +37,7 @@ instance RunMessage DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        (BeginSkillTest
+        (beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

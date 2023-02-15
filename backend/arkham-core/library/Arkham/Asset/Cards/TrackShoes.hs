@@ -37,25 +37,16 @@ instance HasAbilities TrackShoes where
 
 instance RunMessage TrackShoes where
   runMessage msg a@(TrackShoes attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a
-        <$ push
-             (BeginSkillTest
-               iid
-               source
-               (InvestigatorTarget iid)
-               Nothing
-               SkillAgility
-               3
-             )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ beginSkillTest iid source (InvestigatorTarget iid) Nothing SkillAgility 3
+      pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         accessibleLocationIds <- selectList AccessibleLocation
-        a <$ push
-          (chooseOne
-            iid
-            [ TargetLabel (LocationTarget lid) [MoveAction iid lid Free False]
-            | lid <- accessibleLocationIds
-            ]
-          )
+        push $ chooseOne
+          iid
+          [ TargetLabel (LocationTarget lid) [MoveAction iid lid Free False]
+          | lid <- accessibleLocationIds
+          ]
+        pure a
     _ -> TrackShoes <$> runMessage msg attrs

@@ -13,9 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
-import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 
@@ -37,10 +35,8 @@ instance HasAbilities HighRoller2 where
 instance RunMessage HighRoller2 where
   runMessage msg a@(HighRoller2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      skillType <- skillTestSkillType <$> getJustSkillTest
       pushAll
-        [ skillTestModifier attrs (InvestigatorTarget iid)
-            $ SkillModifier skillType 2
+        [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
         , createCardEffect Cards.highRoller2 Nothing (toSource attrs) (InvestigatorTarget iid)
         ]
       pure a

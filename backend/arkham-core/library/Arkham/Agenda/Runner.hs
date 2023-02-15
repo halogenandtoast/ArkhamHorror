@@ -5,11 +5,13 @@ module Arkham.Agenda.Runner
 
 import Arkham.Prelude
 
-import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence as X
 import Arkham.Agenda.Types as X
 import Arkham.Agenda.Helpers as X
 import Arkham.Helpers.Message as X
+import Arkham.Helpers.SkillTest as X
+
+import Arkham.Agenda.AdvancementReason
 import Arkham.Classes
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message

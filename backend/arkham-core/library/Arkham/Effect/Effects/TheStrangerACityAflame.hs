@@ -41,17 +41,9 @@ instance HasAbilities TheStrangerACityAflame where
 
 instance RunMessage TheStrangerACityAflame where
   runMessage msg e@(TheStrangerACityAflame attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source ->
-      e
-        <$ push
-             (BeginSkillTest
-               iid
-               source
-               (InvestigatorTarget iid)
-               Nothing
-               SkillAgility
-               3
-             )
+    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
+      push $ beginSkillTest iid source (InvestigatorTarget iid) Nothing SkillAgility 3
+      pure e
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
       | isSource attrs source
       -> e <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)

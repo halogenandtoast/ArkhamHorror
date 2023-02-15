@@ -27,7 +27,7 @@ instance RunMessage VortexOfTime where
       sentinelHills <- selectList $ LocationWithTrait SentinelHill
       investigatorsAtSentinelHills <- concatMapM' (selectList . InvestigatorAt . LocationWithId) sentinelHills
       t <$ pushAll
-        ([ BeginSkillTest
+        ([ beginSkillTest
              iid
              source
              (InvestigatorTarget iid)

@@ -45,7 +45,7 @@ instance RunMessage EndlessCaverns where
           iid
           [ SkillLabel
             SkillCombat
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)
@@ -55,7 +55,7 @@ instance RunMessage EndlessCaverns where
             ]
           , SkillLabel
             SkillAgility
-            [ BeginSkillTest
+            [ beginSkillTest
                 iid
                 (toSource attrs)
                 (toTarget attrs)

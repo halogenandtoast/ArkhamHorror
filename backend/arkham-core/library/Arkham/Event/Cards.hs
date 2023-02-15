@@ -128,6 +128,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , denyExistence
   , devilsLuck
   , dodge
+  , dodge2
   , drawnToTheFlame
   , dumbLuck
   , dumbLuck2
@@ -270,6 +271,7 @@ onTheLam = (event "01010" "On the Lam" 1 Neutral)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [#intellect, #agility, #wild, #wild]
   , cdFastWindow = Just (TurnBegins Timing.After You)
+  , cdAlternateCardCodes = ["01510"]
   }
 
 darkMemory :: CardDef
@@ -277,6 +279,7 @@ darkMemory = (event "01013" "Dark Memory" 2 Neutral)
   { cdCardTraits = setFromList [Spell]
   , cdCardSubType = Just Weakness
   , cdCardInHandEffects = True
+  , cdAlternateCardCodes = ["01513"]
   }
 
 evidence :: CardDef
@@ -1670,6 +1673,17 @@ scroungeForSupplies = (event "06165" "Scrounge for Supplies" 0 Survivor)
     $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithLevel 0)
   }
 
+dodge2 :: CardDef
+dodge2 = (event "08026" "Dodge" 0 Guardian)
+  { cdSkills = [#willpower, #agility, #agility]
+  , cdCardTraits = setFromList [Tactic]
+  , cdFastWindow = Just
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack
+    $ EnemyWithoutModifier AttacksCannotBeCancelled
+    )
+  , cdLevel = 2
+  }
+
 unearthTheAncients2 :: CardDef
 unearthTheAncients2 = (event "08039" "Unearth the Ancients" 0 Seeker)
   { cdSkills = [#intellect, #intellect, #agility]
@@ -1981,6 +1995,7 @@ seekingAnswers2 = (event "60227" "Seeking Answers" 1 Seeker)
   , cdActions = [Action.Investigate]
   , cdCardTraits = singleton Insight
   , cdLevel = 2
+  , cdAlternateCardCodes = ["01685"]
   }
 
 willToSurvive :: CardDef

@@ -10,10 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -46,27 +44,24 @@ instance HasAbilities GrannyOrne3 where
 instance RunMessage GrannyOrne3 where
   runMessage msg a@(GrannyOrne3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mSkillType <- fmap skillTestSkillType <$> getSkillTest
-      case mSkillType of
-        Nothing -> error "invalid call"
-        Just skillType -> push $ chooseOne
-          iid
-          [ Label
-            "Get +1 skill value"
-            [ skillTestModifier
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              (SkillModifier skillType 1)
-            , RerunSkillTest
-            ]
-          , Label
-            "Get -1 skill value"
-            [ skillTestModifier
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              (SkillModifier skillType (-1))
-            , RerunSkillTest
-            ]
+      push $ chooseOne
+        iid
+        [ Label
+          "Get +1 skill value"
+          [ skillTestModifier
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            (AnySkillValue 1)
+          , RerunSkillTest
           ]
+        , Label
+          "Get -1 skill value"
+          [ skillTestModifier
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            (AnySkillValue (-1))
+          , RerunSkillTest
+          ]
+        ]
       pure a
     _ -> GrannyOrne3 <$> runMessage msg attrs

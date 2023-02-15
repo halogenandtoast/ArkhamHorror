@@ -442,7 +442,7 @@ data CardMatcher
   | CardWithLevel Int
   | CardWithoutKeyword Keyword
   | CardWithClass ClassSymbol
-  | CardWithSkill SkillType
+  | CardWithSkillIcon SkillIcon
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
   | CardWithPrintedLocationConnection LocationSymbol

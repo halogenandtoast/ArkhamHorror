@@ -35,7 +35,7 @@ instance HasAbilities Ichtaca where
 instance RunMessage Ichtaca where
   runMessage msg e@(Ichtaca attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest
+      push $ beginSkillTest
         iid
         source
         (toTarget attrs)

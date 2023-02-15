@@ -49,7 +49,7 @@ instance RunMessage PastPresentAndFuture where
            Nothing
            (CardWithType LocationType)
          ]
-        <> [ BeginSkillTest
+        <> [ beginSkillTest
                iid
                (toSource attrs)
                (InvestigatorTarget iid)

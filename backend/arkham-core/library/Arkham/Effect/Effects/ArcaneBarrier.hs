@@ -21,16 +21,9 @@ arcaneBarrier = ArcaneBarrier . uncurry4 (baseAttrs "02102")
 
 instance RunMessage ArcaneBarrier where
   runMessage msg e@(ArcaneBarrier attrs@EffectAttrs {..}) = case msg of
-    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId ->
-      e <$ push
-        (BeginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          Nothing
-          SkillWillpower
-          4
-        )
+    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId -> do
+      push $ beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) Nothing SkillWillpower 4
+      pure e
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         let

@@ -47,6 +47,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Base
+import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
@@ -213,13 +214,13 @@ data Message
   | AttachStoryTreacheryTo Card Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealTokens
-  | BeforeSkillTest InvestigatorId SkillType Int
+  | BeforeSkillTest InvestigatorId SkillTestType Int
   | -- Game State Control
     BeginGame
   | Begin Phase
   | BeginRound
-  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
-  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int
+  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillTestType Int
+  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillTestType Int
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
   | Blanked Message
@@ -349,7 +350,7 @@ data Message
   | Exhaust Target
   | FailSkillTest
   | FailedAttackEnemy InvestigatorId EnemyId
-  | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
+  | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
   | FightEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | FindAndDrawEncounterCard InvestigatorId CardMatcher
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
@@ -449,7 +450,7 @@ data Message
   | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
   | Noop
   | PassSkillTest
-  | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
+  | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
   | -- | Bool is to check if we should ignore additional costs
     PayAbilityCost Source InvestigatorId (Maybe Action) Bool Cost
   | PayAbilityCostFinished EffectId Source InvestigatorId

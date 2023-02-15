@@ -59,7 +59,7 @@ instance RunMessage ExpeditionIntoTheWild where
         $ [ ShuffleEncounterDiscardBackIn
           , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
           ]
-        <> [ BeginSkillTest
+        <> [ beginSkillTest
                iid
                (toSource attrs)
                (InvestigatorTarget iid)

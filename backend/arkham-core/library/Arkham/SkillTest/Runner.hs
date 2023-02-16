@@ -31,11 +31,12 @@ import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
 
 getCurrentSkillValue :: SkillTest -> GameT Int
-getCurrentSkillValue st = case skillTestType st of
-  SkillSkillTest sType -> do
+getCurrentSkillValue st = case skillTestBaseValue st of
+  SkillBaseValue sType -> do
     stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
     pure $ statsSkillValue stats sType
-  ResourceSkillTest -> field InvestigatorResources (skillTestInvestigator st)
+  HalfResources -> fieldMap InvestigatorResources (`div` 2) (skillTestInvestigator st)
+  StaticBaseValue n -> pure n
 
 skillIconCount :: SkillTest -> GameT Int
 skillIconCount SkillTest {..} = do

@@ -15,9 +15,17 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
+data SkillTestBaseValue
+  = SkillBaseValue SkillType
+  | HalfResources
+  | StaticBaseValue Int
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (Hashable, ToJSON, FromJSON)
+
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
   , skillTestType :: SkillTestType
+  , skillTestBaseValue :: SkillTestBaseValue
   , skillTestDifficulty :: Int
   , skillTestSetAsideTokens :: [Token]
   , skillTestRevealedTokens :: [Token] -- tokens may change from physical representation
@@ -78,21 +86,23 @@ initSkillTest ::
   SkillType ->
   Int ->
   SkillTest
-initSkillTest iid source target skillType' difficulty' =
-  buildSkillTest iid source target (SkillSkillTest skillType') difficulty'
+initSkillTest iid source target skillType =
+  buildSkillTest iid source target (SkillSkillTest skillType) (SkillBaseValue skillType)
 
 buildSkillTest ::
   InvestigatorId ->
   Source ->
   Target ->
   SkillTestType ->
+  SkillTestBaseValue ->
   Int ->
   SkillTest
-buildSkillTest iid source target skillTestType' difficulty' =
+buildSkillTest iid source target stType bValue difficulty =
   SkillTest
     { skillTestInvestigator = iid
-    , skillTestType = skillTestType'
-    , skillTestDifficulty = difficulty'
+    , skillTestType = stType
+    , skillTestBaseValue = bValue
+    , skillTestDifficulty = difficulty
     , skillTestSetAsideTokens = mempty
     , skillTestRevealedTokens = mempty
     , skillTestResolvedTokens = mempty

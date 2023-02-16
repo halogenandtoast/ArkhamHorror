@@ -1355,6 +1355,15 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.WouldTriggerTokenRevealEffectOnCard whoMatcher _cardMatcher tokens ->
+    case window' of
+      Window timing' wType | timing' == Timing.AtIf -> case wType of
+        Window.RevealToken who token -> andM
+          [ matchWho iid who whoMatcher
+          , pure $ tokenFace token `elem` tokens
+          ]
+        _ -> pure False
+      _ -> pure False
   Matcher.GameBegins timing -> pure $ case window' of
     Window timing' Window.GameBegins -> timing == timing'
     _ -> False

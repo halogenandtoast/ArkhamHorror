@@ -580,6 +580,7 @@ data WindowMatcher
   | CancelledOrIgnoredCardOrGameEffect SourceMatcher
   | LostResources Timing Who SourceMatcher
   | LostActions Timing Who SourceMatcher
+  | WouldTriggerTokenRevealEffectOnCard Who CardMatcher [TokenFace]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

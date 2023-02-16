@@ -1,6 +1,7 @@
 module Arkham.Matcher.Patterns where
 
 import Arkham.Card.CardType
+import Arkham.ClassSymbol
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Types
@@ -227,6 +228,10 @@ pattern IsAlly :: CardMatcher
 pattern IsAlly <-
   CardMatches [CardWithType AssetType, CardWithTrait Ally] where
   IsAlly = CardMatches [CardWithType AssetType, CardWithTrait Ally]
+
+pattern MysticCard :: CardMatcher
+pattern MysticCard <- CardWithClass Mystic where
+  MysticCard = CardWithClass Mystic
 
 -- ** Value Patterns **
 

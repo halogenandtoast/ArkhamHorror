@@ -126,6 +126,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , delayTheInevitable
   , delveTooDeep
   , denyExistence
+  , denyExistence5
   , devilsLuck
   , dodge
   , dodge2
@@ -1641,6 +1642,29 @@ denyExistence = (event "05032" "Deny Existence" 0 Mystic)
     , InvestigatorWouldTakeDamage Timing.When You source
     , InvestigatorWouldTakeHorror Timing.When You source
     ]
+  }
+ where
+  source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
+
+eldritchInspiration :: CardDef
+eldritchInspiration = (event "05033" "Eldritch Inspiration" 0 Mystic)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = setFromList [Spell, Spirit]
+  , cdFastWindow = Just $ WouldTriggerTokenRevealEffectOnCard You MysticCard [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing, Token.AutoFail]
+  }
+
+denyExistence5 :: CardDef
+denyExistence5 = (event "05280" "Deny Existence" 0 Mystic)
+  { cdSkills = [#wild]
+  , cdCardTraits = setFromList [Spell, Paradox]
+  , cdFastWindow = Just $ OrWindowMatcher
+    [ Discarded Timing.When You source AnyCard
+    , LostResources Timing.When You source
+    , LostActions Timing.When You source
+    , InvestigatorWouldTakeDamage Timing.When You source
+    , InvestigatorWouldTakeHorror Timing.When You source
+    ]
+  , cdLevel = 5
   }
  where
   source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]

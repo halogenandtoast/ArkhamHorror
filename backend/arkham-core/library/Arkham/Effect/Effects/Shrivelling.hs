@@ -11,6 +11,7 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Token
 import Arkham.Window (Window)
+import Arkham.Window qualified as Window
 
 newtype Shrivelling = Shrivelling EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -28,12 +29,13 @@ instance RunMessage Shrivelling where
   runMessage msg e@(Shrivelling attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       let damage = maybe 1 intFromMetadata effectMetadata
-      e <$ when
+      when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll
+        (push $ If (Window.RevealToken iid token)
           [ InvestigatorAssignDamage iid effectSource DamageAny 0 damage
           , DisableEffect effectId
           ]
         )
+      pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> Shrivelling <$> runMessage msg attrs

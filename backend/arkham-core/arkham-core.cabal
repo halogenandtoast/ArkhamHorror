@@ -940,6 +940,7 @@ library
       Arkham.Event.Cards.DelayTheInevitable
       Arkham.Event.Cards.DelveTooDeep
       Arkham.Event.Cards.DenyExistence
+      Arkham.Event.Cards.DenyExistence5
       Arkham.Event.Cards.DevilsLuck
       Arkham.Event.Cards.Dodge
       Arkham.Event.Cards.Dodge2
@@ -952,6 +953,7 @@ library
       Arkham.Event.Cards.EatLead2
       Arkham.Event.Cards.Eavesdrop
       Arkham.Event.Cards.EideticMemory3
+      Arkham.Event.Cards.EldritchInspiration
       Arkham.Event.Cards.Elusive
       Arkham.Event.Cards.EmergencyAid
       Arkham.Event.Cards.EmergencyCache

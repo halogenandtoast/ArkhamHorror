@@ -51,10 +51,10 @@ instance RunMessage InTheKnow1 where
         [ targetLabel
             location
             [ SetLocationAsIf iid location
-            , UseAbility iid investigate windows'
+            , UseAbility iid investigateAbility windows'
             , SetLocationAsIf iid investigatorLocation
             ]
-        | (location, investigate) <- locationsWithInvestigate
+        | (location, investigateAbility) <- locationsWithInvestigate
         ]
       pure a
     _ -> InTheKnow1 <$> runMessage msg attrs

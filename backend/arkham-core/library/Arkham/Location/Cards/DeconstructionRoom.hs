@@ -43,7 +43,6 @@ instance RunMessage DeconstructionRoom where
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)
-        Nothing
         SkillCombat
         (4 + n)
       pure l

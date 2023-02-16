@@ -6,16 +6,13 @@ module Arkham.SkillTest (
 
 import Arkham.Prelude
 
-import Arkham.Action (Action)
 import Arkham.SkillTestResult
 import Arkham.SkillTest.Base as X
 import Arkham.SkillTest.Type as X
 import Arkham.Helpers.SkillTest as X
-import Arkham.SkillType
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
-import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
@@ -48,39 +45,3 @@ typeL = lens skillTestType $ \m x -> m {skillTestType = x}
 valueModifierL :: Lens' SkillTest Int
 valueModifierL =
   lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}
-
-initSkillTest ::
-  InvestigatorId ->
-  Source ->
-  Target ->
-  Maybe Action ->
-  SkillType ->
-  Int ->
-  SkillTest
-initSkillTest iid source target maction skillType' difficulty' =
-  buildSkillTest iid source target maction (SkillSkillTest skillType') difficulty'
-
-buildSkillTest ::
-  InvestigatorId ->
-  Source ->
-  Target ->
-  Maybe Action ->
-  SkillTestType ->
-  Int ->
-  SkillTest
-buildSkillTest iid source target maction skillTestType' difficulty' =
-  SkillTest
-    { skillTestInvestigator = iid
-    , skillTestType = skillTestType'
-    , skillTestDifficulty = difficulty'
-    , skillTestSetAsideTokens = mempty
-    , skillTestRevealedTokens = mempty
-    , skillTestResolvedTokens = mempty
-    , skillTestValueModifier = 0
-    , skillTestResult = Unrun
-    , skillTestCommittedCards = mempty
-    , skillTestSource = source
-    , skillTestTarget = target
-    , skillTestAction = maction
-    , skillTestSubscribers = [InvestigatorTarget iid]
-    }

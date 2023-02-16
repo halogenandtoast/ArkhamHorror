@@ -46,7 +46,6 @@ instance RunMessage GreatLibrary where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillIntellect
         3
       pure l

@@ -51,7 +51,7 @@ instance RunMessage Overgrowth where
       let
         target = toTarget attrs
         chooseSkillTest sType =
-          SkillLabel sType [beginSkillTest iid source target Nothing sType 4]
+          SkillLabel sType [beginSkillTest iid source target sType 4]
       push $ chooseOne iid $ map chooseSkillTest [SkillCombat, SkillIntellect]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

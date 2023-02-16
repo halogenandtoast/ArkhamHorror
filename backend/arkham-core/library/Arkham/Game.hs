@@ -3932,30 +3932,21 @@ runGameMessage msg g = case msg of
     pushAll . (: [EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
-  BeginSkillTest iid source target maction skillTestType difficulty -> do
+  BeginSkillTest skillTest -> do
     windows' <- windows
-      [Window.InitiatedSkillTest iid maction skillTestType difficulty]
-    let defaultCase = windows' <> [ BeginSkillTestAfterFast iid source target maction skillTestType difficulty ]
+      [Window.InitiatedSkillTest skillTest]
+    let
+      defaultCase = windows' <> [ BeginSkillTestAfterFast skillTest ]
 
-    msgs <- case skillTestType of
+    msgs <- case skillTestType skillTest of
       ResourceSkillTest -> pure defaultCase
       SkillSkillTest skillType -> do
-        availableSkills <- getAvailableSkillsFor skillType iid
+        availableSkills <- getAvailableSkillsFor skillType (skillTestInvestigator skillTest)
         pure $ if HashSet.size availableSkills < 2 then defaultCase else
             [ chooseOne
-                iid
-                [ SkillLabel
-                    skillType'
-                    (windows'
-                    <> [ BeginSkillTestAfterFast
-                           iid
-                           source
-                           target
-                           maction
-                           (SkillSkillTest skillType')
-                           difficulty
-                       ]
-                    )
+                (skillTestInvestigator skillTest)
+                [ SkillLabel skillType'
+                  $ windows' <> [ BeginSkillTestAfterFast $ skillTest { skillTestType = SkillSkillTest skillType } ]
                 | skillType' <- setToList availableSkills
                 ]
             ]
@@ -3965,22 +3956,14 @@ runGameMessage msg g = case msg of
       Nothing -> pushAll msgs
       Just _ -> insertAfterMatching msgs (== EndSkillTestWindow)
     pure g
-  BeforeSkillTest iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
-  BeginSkillTestAfterFast iid source target maction skillType difficulty -> do
+  BeforeSkillTest skillTest -> pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest
+  BeginSkillTestAfterFast skillTest -> do
     windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
     pushAll
-      [windowMsg, BeforeSkillTest iid skillType difficulty, EndSkillTestWindow]
+      [windowMsg, BeforeSkillTest skillTest, EndSkillTestWindow]
     pure
       $ g
-      & (skillTestL
-        ?~ buildSkillTest
-             iid
-             source
-             target
-             maction
-             skillType
-             difficulty
-        )
+      & (skillTestL ?~ skillTest)
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
     g <$ push (CreateAssetAt cardCode $ AtLocation lid)
@@ -4181,7 +4164,6 @@ runGameMessage msg g = case msg of
         iid
         (TreacherySource tid)
         (InvestigatorTarget iid)
-        Nothing
         skillType
         difficulty
       ]

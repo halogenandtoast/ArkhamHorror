@@ -42,11 +42,10 @@ instance RunMessage Interrogate where
               iid
               [ targetLabel
                   enemy
-                  [ beginSkillTest
+                  [ parley
                       iid
                       (toSource attrs)
                       (EnemyTarget enemy)
-                      Nothing
                       SkillCombat
                       (3 + damage)
                   ]

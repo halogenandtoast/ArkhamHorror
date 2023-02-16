@@ -43,7 +43,6 @@ instance RunMessage LaboratoryOfTheGreatRace where
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)
-        Nothing
         SkillAgility
         3
       pure l

@@ -44,7 +44,6 @@ instance RunMessage RelicOfAgesRepossessThePast where
             iid
             (toSource attrs)
             (InvestigatorTarget iid)
-            Nothing
             skillType
             4
         push $ chooseOne

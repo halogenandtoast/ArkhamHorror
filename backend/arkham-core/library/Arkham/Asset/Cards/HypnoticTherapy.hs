@@ -48,7 +48,6 @@ instance RunMessage HypnoticTherapy where
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)
-        Nothing
         SkillIntellect
         2
       pure a

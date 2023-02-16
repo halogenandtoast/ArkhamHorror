@@ -58,7 +58,7 @@ instance RunMessage FoulSwamp where
           attrs
           (InvestigatorTarget iid)
           (SkillModifier SkillWillpower n)
-        , beginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 7
+        , beginSkillTest iid source (toTarget attrs) SkillWillpower 7
         ]
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l <$ push (Remember FoundAnAncientBindingStone)

@@ -29,7 +29,6 @@ instance RunMessage UmordhothsWrath where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         5
       )

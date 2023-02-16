@@ -53,7 +53,6 @@ instance RunMessage Run where
                     iid
                     (toSource attrs)
                     (toTarget attrs)
-                    Nothing
                     SkillAgility
                     3
                 ]
@@ -63,7 +62,6 @@ instance RunMessage Run where
                     iid
                     (toSource attrs)
                     (toTarget attrs)
-                    Nothing
                     SkillCombat
                     3
                 ]

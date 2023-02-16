@@ -43,7 +43,6 @@ instance RunMessage Eavesdrop where
           iid
           (toSource attrs)
           (toTarget attrs)
-          Nothing
           SkillIntellect
           n
         pure e

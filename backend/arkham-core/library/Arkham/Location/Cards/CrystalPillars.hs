@@ -42,7 +42,6 @@ instance RunMessage CrystalPillars where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         (1 + n)
       pure l

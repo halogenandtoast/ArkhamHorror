@@ -59,11 +59,10 @@ instance RunMessage JazzMulligan where
         iid
       a <$ push (PlaceAsset assetId $ AtLocation lid)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
+      push $ parley
         iid
         source
         (toTarget attrs)
-        (Just Parley)
         SkillIntellect
         3
       pure a

@@ -38,7 +38,7 @@ instance HasAbilities TheStrangerTheShoresOfHali where
 instance RunMessage TheStrangerTheShoresOfHali where
   runMessage msg e@(TheStrangerTheShoresOfHali attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid source (InvestigatorTarget iid) Nothing SkillAgility 2
+      push $ beginSkillTest iid source (InvestigatorTarget iid) SkillAgility 2
       pure e
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
       | isSource attrs source

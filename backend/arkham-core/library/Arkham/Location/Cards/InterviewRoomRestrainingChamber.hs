@@ -44,21 +44,19 @@ instance RunMessage InterviewRoomRestrainingChamber where
         iid
         [ Label
           "Use {intellect}"
-          [ beginSkillTest
+          [ parley
               iid
               (toSource attrs)
               (InvestigatorTarget iid)
-              (Just Action.Parley)
               SkillIntellect
               4
           ]
         , Label
           "Use {combat}"
-          [ beginSkillTest
+          [ parley
               iid
               (toSource attrs)
               (InvestigatorTarget iid)
-              (Just Action.Parley)
               SkillIntellect
               4
           ]

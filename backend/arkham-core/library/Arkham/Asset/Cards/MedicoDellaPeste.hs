@@ -13,6 +13,7 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -74,24 +75,10 @@ instance RunMessage MedicoDellaPeste where
           _ -> False
         )
         (\case
-          BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
-            -> [ beginSkillTest
-                   iid'
-                   source'
-                   target'
-                   maction'
-                   SkillWillpower
-                   difficulty'
-               ]
-          Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
-            -> [ beginSkillTest
-                   iid'
-                   source'
-                   target'
-                   maction'
-                   SkillWillpower
-                   difficulty'
-               ]
+          BeginSkillTestAfterFast skillTest
+            -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillWillpower } ]
+          Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _))
+            -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillWillpower } ]
           _ -> error "invalid match"
         )
       pure a

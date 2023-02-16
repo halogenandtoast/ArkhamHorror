@@ -5,7 +5,6 @@ module Arkham.Effect.Effects.JeremiahPierce
 
 import Arkham.Prelude
 
-import Arkham.Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
@@ -23,11 +22,10 @@ instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       pushAll
-        [ beginSkillTest
+        [ parley
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          (Just Parley)
           SkillWillpower
           4
         , DisableEffect $ effectId attrs

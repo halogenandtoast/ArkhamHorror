@@ -59,7 +59,6 @@ instance RunMessage DimStreetsTheKingsParade where
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          Nothing
           SkillCombat
           2
         , ReplaceLocation (toId attrs) otherDimStreets

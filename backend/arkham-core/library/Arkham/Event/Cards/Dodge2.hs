@@ -31,7 +31,7 @@ instance RunMessage Dodge2 where
       enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
         PerformEnemyAttack _ enemyId _ _ : _ -> enemyId
         _ -> error "unhandled"
-      pushAll [CancelNext (toSource attrs) AttackMessage, beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) Nothing SkillAgility 1]
+      pushAll [CancelNext (toSource attrs) AttackMessage, beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillAgility 1]
       pure $ Dodge2 (attrs `with` Metadata (Just enemyId))
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
       for_ (selectedEnemy meta) $ \enemyId -> 

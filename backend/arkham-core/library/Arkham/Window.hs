@@ -102,7 +102,7 @@ data WindowType
   | Healed DamageType Target Source Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
-  | InitiatedSkillTest InvestigatorId (Maybe Action) SkillTestType Int
+  | InitiatedSkillTest SkillTest
   | InvestigatorDefeated Source DefeatedBy InvestigatorId
   | InvestigatorWouldBeDefeated Source DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId

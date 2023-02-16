@@ -45,8 +45,7 @@ instance RunMessage Garden where
       (beginSkillTest
         iid
         source
-        (LocationTarget $ toId attrs)
-        Nothing
+        (toTarget attrs)
         SkillAgility
         2
       )

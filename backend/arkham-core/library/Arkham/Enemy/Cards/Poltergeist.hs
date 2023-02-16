@@ -48,11 +48,10 @@ instance HasModifiersFor Poltergeist where
 instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ push
-      (beginSkillTest
+      (parley
         iid
         source
         (toTarget attrs)
-        (Just Action.Parley)
         SkillIntellect
         3
       )

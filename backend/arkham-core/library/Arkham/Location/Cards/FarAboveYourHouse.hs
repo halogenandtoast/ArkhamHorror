@@ -40,7 +40,6 @@ instance RunMessage FarAboveYourHouse where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         4
       )

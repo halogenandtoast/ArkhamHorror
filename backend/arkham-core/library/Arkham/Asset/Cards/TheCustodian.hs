@@ -51,13 +51,7 @@ instance RunMessage TheCustodian where
         push drawing
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ beginSkillTest
-        iid
-        (toAbilitySource attrs 2)
-        (toTarget attrs)
-        (Just Action.Parley)
-        SkillIntellect
-        3
+      push $ parley iid (toAbilitySource attrs 2) (toTarget attrs) SkillIntellect 3
       pure a
     PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
       -> do

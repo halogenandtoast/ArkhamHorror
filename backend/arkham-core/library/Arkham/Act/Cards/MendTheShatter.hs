@@ -62,7 +62,6 @@ instance RunMessage MendTheShatter where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 skillType
                 3
             ]

@@ -56,7 +56,7 @@ instance RunMessage LockedDoor where
       let
         target = toTarget attrs
         chooseSkillTest sType =
-          SkillLabel sType [beginSkillTest iid source target Nothing sType 4]
+          SkillLabel sType [beginSkillTest iid source target sType 4]
       t <$ push (chooseOne iid $ map chooseSkillTest [SkillCombat, SkillAgility])
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard (toSource attrs) $ toTarget attrs)

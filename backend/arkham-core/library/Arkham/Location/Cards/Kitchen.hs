@@ -45,8 +45,7 @@ instance RunMessage Kitchen where
       (beginSkillTest
         iid
         source
-        (LocationTarget $ toId attrs)
-        Nothing
+        (toTarget attrs)
         SkillWillpower
         2
       )

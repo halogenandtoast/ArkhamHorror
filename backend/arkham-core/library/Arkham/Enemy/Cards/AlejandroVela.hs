@@ -55,11 +55,10 @@ instance RunMessage AlejandroVela where
           Nothing
           (toSource attrs)
           SkillTestTarget
-        , beginSkillTest
+        , parley
           iid
           (toSource attrs)
           (toTarget attrs)
-          (Just Action.Parley)
           SkillIntellect
           5
         ]

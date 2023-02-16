@@ -14,6 +14,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Message
+import Arkham.SkillTest
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -28,11 +29,11 @@ againstAllOdds2 = event AgainstAllOdds2 Cards.againstAllOdds2
 
 instance RunMessage AgainstAllOdds2 where
   runMessage msg e@(AgainstAllOdds2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.InitiatedSkillTest _ maction skillTestType difficulty)] _
+    InvestigatorPlayEvent iid eid _ [Window _ (Window.InitiatedSkillTest st)] _
       | eid == toId attrs
       -> do
-        base <- getBaseValueForSkillTestType iid maction skillTestType
-        let n = difficulty - base
+        base <- getBaseValueForSkillTestType iid (skillTestAction st) (skillTestType st)
+        let n = skillTestDifficulty st - base
         ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         pushAll $
           [ CreateWindowModifierEffect

@@ -28,13 +28,7 @@ instance RunMessage RuinAndDestruction where
         selectList $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle
           broodTitle
       pushAll $
-        [ beginSkillTest
-             iid'
-             source
-             (InvestigatorTarget iid')
-             Nothing
-             SkillAgility
-             3
+        [ beginSkillTest iid' source (InvestigatorTarget iid') SkillAgility 3
          | iid' <- targetInvestigators
          ]
         <> [ Surge iid source | null targetInvestigators ]

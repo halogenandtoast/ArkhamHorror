@@ -60,7 +60,6 @@ instance RunMessage ParadiseLost where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 skillType
                 3
             ]

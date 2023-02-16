@@ -41,7 +41,6 @@ instance RunMessage DeepBelowYourHouse where
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          Nothing
           SkillAgility
           3
         )

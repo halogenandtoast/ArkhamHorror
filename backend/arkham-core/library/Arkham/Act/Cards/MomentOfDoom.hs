@@ -61,7 +61,6 @@ instance RunMessage MomentOfDoom where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 skill
                 4
             ]

@@ -41,7 +41,6 @@ instance RunMessage Gallery where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         2
       )

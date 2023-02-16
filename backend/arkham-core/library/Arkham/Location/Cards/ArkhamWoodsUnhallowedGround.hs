@@ -43,7 +43,6 @@ instance RunMessage ArkhamWoodsUnhallowedGround where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         4
       )

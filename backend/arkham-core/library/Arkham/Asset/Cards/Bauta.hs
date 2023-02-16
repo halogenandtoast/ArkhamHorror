@@ -12,6 +12,8 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
+import Arkham.SkillTest.Base
+import Arkham.SkillTest.Type
 import Arkham.Timing qualified as Timing
 
 newtype Bauta = Bauta AssetAttrs
@@ -51,24 +53,10 @@ instance RunMessage Bauta where
           _ -> False
         )
         (\case
-          BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
-            -> [ beginSkillTest
-                   iid'
-                   source'
-                   target'
-                   maction'
-                   SkillCombat
-                   difficulty'
-               ]
-          Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
-            -> [ beginSkillTest
-                   iid'
-                   source'
-                   target'
-                   maction'
-                   SkillCombat
-                   difficulty'
-               ]
+          BeginSkillTestAfterFast skillTest
+            -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillCombat } ]
+          Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _))
+            -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillCombat } ]
           _ -> error "invalid match"
         )
       pure a

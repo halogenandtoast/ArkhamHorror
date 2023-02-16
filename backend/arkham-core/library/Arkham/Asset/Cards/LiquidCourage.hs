@@ -52,7 +52,6 @@ instance RunMessage LiquidCourage where
               iid'
               source
               (idToTarget iid')
-              Nothing
               SkillWillpower
               2
             ]

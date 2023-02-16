@@ -32,13 +32,7 @@ instance HasAbilities HarlanEarnstone where
 instance RunMessage HarlanEarnstone where
   runMessage msg a@(HarlanEarnstone attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
-        iid
-        source
-        (toTarget attrs)
-        (Just Action.Parley)
-        SkillWillpower
-        4
+      push $ parley iid source (toTarget attrs) SkillWillpower 4
       pure a
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

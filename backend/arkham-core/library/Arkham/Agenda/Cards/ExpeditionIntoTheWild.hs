@@ -63,7 +63,6 @@ instance RunMessage ExpeditionIntoTheWild where
                iid
                (toSource attrs)
                (InvestigatorTarget iid)
-               Nothing
                SkillWillpower
                3
            | iid <- iids

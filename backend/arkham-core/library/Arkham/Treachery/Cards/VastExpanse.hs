@@ -32,7 +32,6 @@ instance RunMessage VastExpanse where
             iid
             source
             (InvestigatorTarget iid)
-            Nothing
             SkillWillpower
             (min 5 extradimensionalCount)
       t <$ push revelationMsg

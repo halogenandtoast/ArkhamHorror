@@ -35,11 +35,10 @@ instance HasAbilities HenryDeveau where
 instance RunMessage HenryDeveau where
   runMessage msg a@(HenryDeveau attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
+      push $ parley
         iid
         source
         (toTarget attrs)
-        (Just Action.Parley)
         SkillIntellect
         3
       pure a

@@ -70,7 +70,6 @@ instance RunMessage MadnessCoils where
                           iid
                           (toSource attrs)
                           (toTarget attrs)
-                          Nothing
                           sk
                           4
                       ]

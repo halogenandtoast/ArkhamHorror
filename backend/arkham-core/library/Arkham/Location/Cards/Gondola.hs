@@ -50,7 +50,6 @@ instance RunMessage Gondola where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 SkillCombat
                 2
             ]
@@ -60,7 +59,6 @@ instance RunMessage Gondola where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 SkillAgility
                 2
             ]

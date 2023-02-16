@@ -31,7 +31,6 @@ instance RunMessage VortexOfTime where
              iid
              source
              (InvestigatorTarget iid)
-             Nothing
              SkillWillpower
              4
          | iid <- investigatorsAtSentinelHills

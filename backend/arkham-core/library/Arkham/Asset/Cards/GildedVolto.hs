@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
+import Arkham.SkillTest
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -49,24 +50,10 @@ instance RunMessage GildedVolto where
             _ -> False
           )
           (\case
-            BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
-              -> [ beginSkillTest
-                     iid'
-                     source'
-                     target'
-                     maction'
-                     SkillAgility
-                     difficulty'
-                 ]
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
-              -> [ beginSkillTest
-                     iid'
-                     source'
-                     target'
-                     maction'
-                     SkillAgility
-                     difficulty'
-                 ]
+            BeginSkillTestAfterFast skillTest
+              -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillAgility } ]
+            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _))
+              -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillAgility } ]
             _ -> error "invalid match"
           )
         pure a

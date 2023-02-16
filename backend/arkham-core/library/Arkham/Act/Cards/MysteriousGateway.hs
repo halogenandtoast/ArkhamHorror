@@ -44,7 +44,6 @@ instance RunMessage MysteriousGateway where
                  iid'
                  (ActSource aid)
                  (InvestigatorTarget iid')
-                 Nothing
                  SkillWillpower
                  4
                ]

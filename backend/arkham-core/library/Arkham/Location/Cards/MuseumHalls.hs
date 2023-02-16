@@ -70,7 +70,6 @@ instance RunMessage MuseumHalls where
             iid
             source
             (LocationTarget museumEntrance)
-            Nothing
             SkillCombat
             5
           )

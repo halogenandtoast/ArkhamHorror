@@ -78,7 +78,6 @@ instance RunMessage BidingItsTime where
               iid
               source
               (EnemyTarget enemyId)
-              Nothing
               SkillAgility
               4
           | iid <- investigatorIds

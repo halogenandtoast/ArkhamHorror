@@ -39,7 +39,6 @@ instance RunMessage FeedTheMind3 where
         iid
         (toAbilitySource attrs 1)
         (InvestigatorTarget iid)
-        Nothing
         SkillIntellect
         0
       pure a

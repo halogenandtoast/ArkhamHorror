@@ -53,11 +53,10 @@ instance RunMessage ScholarFromYith where
       pushAll [RandomDiscard iid (toSource attrs) AnyCard, RandomDiscard iid (toSource attrs) AnyCard]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ beginSkillTest
+      push $ parley
         iid
         (toAbilitySource attrs 2)
         (InvestigatorTarget iid)
-        (Just Action.Parley)
         SkillIntellect
         3
       pure e

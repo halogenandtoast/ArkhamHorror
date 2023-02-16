@@ -40,24 +40,10 @@ instance RunMessage Kidnapped where
         iid
         [ Label
           "Test {willpower} (4)"
-          [ beginSkillTest
-              iid
-              (toSource attrs)
-              (toTarget attrs)
-              Nothing
-              SkillWillpower
-              4
-          ]
+          [ beginSkillTest iid (toSource attrs) (toTarget attrs) SkillWillpower 4 ]
         , Label
           "Test {agility} (4)"
-          [ beginSkillTest
-              iid
-              (toSource attrs)
-              (toTarget attrs)
-              Nothing
-              SkillAgility
-              4
-          ]
+          [ beginSkillTest iid (toSource attrs) (toTarget attrs) SkillAgility 4 ]
         ]
       pure t
     FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _

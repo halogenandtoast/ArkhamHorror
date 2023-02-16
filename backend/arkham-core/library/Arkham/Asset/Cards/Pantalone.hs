@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
+import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -49,24 +50,10 @@ instance RunMessage Pantalone where
             _ -> False
           )
           (\case
-            BeginSkillTestAfterFast iid' source' target' maction' _ difficulty'
-              -> [ beginSkillTest
-                     iid'
-                     source'
-                     target'
-                     maction'
-                     SkillIntellect
-                     difficulty'
-                 ]
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast iid' source' target' maction' _ difficulty' : _) : _))
-              -> [ beginSkillTest
-                     iid'
-                     source'
-                     target'
-                     maction'
-                     SkillIntellect
-                     difficulty'
-                 ]
+            BeginSkillTestAfterFast skillTest
+              -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillIntellect } ]
+            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _))
+              -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillIntellect } ]
             _ -> error "invalid match"
           )
         pure a

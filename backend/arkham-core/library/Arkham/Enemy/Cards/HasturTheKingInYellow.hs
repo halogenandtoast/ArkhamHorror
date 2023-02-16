@@ -56,7 +56,7 @@ instance RunMessage HasturTheKingInYellow where
       pure e
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       x <- field EnemyFight (toId attrs)
-      push $ beginSkillTest iid source (toTarget attrs) Nothing SkillWillpower x
+      push $ beginSkillTest iid source (toTarget attrs) SkillWillpower x
       pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

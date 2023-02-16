@@ -70,7 +70,6 @@ instance RunMessage CandlelitTunnels where
         iid
         (toSource attrs)
         (toTarget attrs)
-        Nothing
         SkillIntellect
         3
       pure l

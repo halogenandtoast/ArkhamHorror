@@ -47,7 +47,7 @@ instance RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
-        (beginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3)
+        (beginSkillTest iid source (toTarget attrs) SkillAgility 3)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l <$ replaceMessageMatching
         (\case

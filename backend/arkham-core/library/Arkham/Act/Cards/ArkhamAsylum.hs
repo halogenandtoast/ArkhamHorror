@@ -59,7 +59,6 @@ instance RunMessage ArkhamAsylum where
                           iid
                           (toSource attrs)
                           (toTarget attrs)
-                          Nothing
                           sk
                           4
                       ]

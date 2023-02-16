@@ -81,12 +81,11 @@ instance RunMessage LocationAttrs where
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
         shroudValue' <- getModifiedShroudValueFor a
-        push $ beginSkillTest
+        push $ investigate
           iid
           source
           (maybe (LocationTarget lid) (ProxyTarget (LocationTarget lid)) mTarget
           )
-          (Just Action.Investigate)
           skillType
           shroudValue'
       pure a

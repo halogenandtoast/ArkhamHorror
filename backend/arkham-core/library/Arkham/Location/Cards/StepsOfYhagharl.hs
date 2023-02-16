@@ -57,7 +57,6 @@ instance RunMessage StepsOfYhagharl where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         2
       pure l

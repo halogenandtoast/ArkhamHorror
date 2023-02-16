@@ -176,6 +176,7 @@ allEvents = mapFrom
   , SomeEventCard interrogate
   , SomeEventCard delayTheInevitable
   , SomeEventCard connectTheDots
+  , SomeEventCard moneyTalks
   , SomeEventCard denyExistence
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite
@@ -184,6 +185,7 @@ allEvents = mapFrom
   , SomeEventCard scroungeForSupplies
   , SomeEventCard dodge2
   , SomeEventCard unearthTheAncients2
+  , SomeEventCard moneyTalks2
   , SomeEventCard dynamiteBlast2
   , SomeEventCard barricade3
   , SomeEventCard hotStreak2

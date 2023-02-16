@@ -58,7 +58,6 @@ instance RunMessage DimStreetsMappingTheStreets where
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          Nothing
           SkillIntellect
           3
         , EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n

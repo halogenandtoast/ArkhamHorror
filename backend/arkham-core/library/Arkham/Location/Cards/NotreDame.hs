@@ -45,7 +45,7 @@ instance RunMessage NotreDame where
   runMessage msg l@(NotreDame attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ push
-        (beginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 6)
+        (beginSkillTest iid source (toTarget attrs) SkillWillpower 6)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         agenda <- selectJust AnyAgenda

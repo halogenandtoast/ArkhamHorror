@@ -26,7 +26,6 @@ instance RunMessage TheYellowSign where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         4
       )

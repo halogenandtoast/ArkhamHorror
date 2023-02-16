@@ -43,11 +43,10 @@ instance HasAbilities InnocentReveler where
 instance RunMessage InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
+      push $ parley
         iid
         source
         (toTarget attrs)
-        (Just Parley)
         SkillIntellect
         2
       pure a

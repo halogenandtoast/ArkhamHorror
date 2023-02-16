@@ -49,7 +49,7 @@ instance HasAbilities TrappersCabin where
 instance RunMessage TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (beginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
+      (beginSkillTest iid source (toTarget attrs) SkillIntellect 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         bearTrap <- PlayerCard <$> genPlayerCard Assets.bearTrap

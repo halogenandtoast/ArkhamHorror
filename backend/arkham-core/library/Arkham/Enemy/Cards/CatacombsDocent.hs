@@ -39,11 +39,10 @@ instance HasAbilities CatacombsDocent where
 instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest
+      push $ parley
         iid
         (toSource attrs)
         (toTarget attrs)
-        (Just Action.Parley)
         SkillIntellect
         4
       pure e

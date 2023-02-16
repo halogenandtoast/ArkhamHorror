@@ -35,7 +35,6 @@ instance RunMessage ExposeWeakness1 where
                 iid
                 (toSource attrs)
                 (EnemyTarget enemy)
-                Nothing
                 SkillIntellect
                 enemyFight
             ]

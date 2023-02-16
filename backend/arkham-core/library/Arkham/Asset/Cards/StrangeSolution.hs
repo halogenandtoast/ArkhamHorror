@@ -32,7 +32,6 @@ instance RunMessage StrangeSolution where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillIntellect
         4
       )

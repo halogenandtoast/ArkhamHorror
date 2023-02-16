@@ -32,13 +32,7 @@ instance HasAbilities MariaDeSilva where
 instance RunMessage MariaDeSilva where
   runMessage msg a@(MariaDeSilva attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
-        iid
-        source
-        (toTarget attrs)
-        (Just Action.Parley)
-        SkillIntellect
-        3
+      push $ parley iid source (toTarget attrs) SkillIntellect 3
       pure a
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

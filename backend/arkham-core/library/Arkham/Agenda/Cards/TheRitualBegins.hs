@@ -40,7 +40,6 @@ instance RunMessage TheRitualBegins where
               iid
               (toSource attrs)
               (InvestigatorTarget iid)
-              Nothing
               SkillWillpower
               6
           | iid <- iids

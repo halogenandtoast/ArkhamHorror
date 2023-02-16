@@ -41,7 +41,6 @@ instance RunMessage CrumblingPrecipice where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         4
       pure l
@@ -50,7 +49,6 @@ instance RunMessage CrumblingPrecipice where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillAgility
         3
       pure l
@@ -59,7 +57,6 @@ instance RunMessage CrumblingPrecipice where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillCombat
         2
       pure l

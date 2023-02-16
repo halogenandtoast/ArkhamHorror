@@ -214,14 +214,14 @@ data Message
   | AttachStoryTreacheryTo Card Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealTokens
-  | BeforeSkillTest InvestigatorId SkillTestType Int
+  | BeforeSkillTest SkillTest
   | ChangeSkillTestType SkillTestType
   | -- Game State Control
     BeginGame
   | Begin Phase
   | BeginRound
-  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillTestType Int
-  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillTestType Int
+  | BeginSkillTest SkillTest
+  | BeginSkillTestAfterFast SkillTest
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
   | Blanked Message

@@ -74,14 +74,7 @@ instance RunMessage NoTurningBack where
         $ chooseOrRunOne iid
         $ Label
             "Test {combat} (3)"
-            [ beginSkillTest
-                iid
-                (toSource attrs)
-                (toTarget attrs)
-                Nothing
-                SkillCombat
-                3
-            ]
+            [ beginSkillTest iid (toSource attrs) (toTarget attrs) SkillCombat 3 ]
         : [ Label "Check your supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
           | hasPickaxe
           ]

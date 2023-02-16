@@ -14,7 +14,7 @@ import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.SkillType
+import Arkham.SkillType ()
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -56,16 +56,9 @@ instance RunMessage SpectralMist where
         | target <- targets
         ]
       SpectralMist <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) 1 _ _ | tid == treacheryId ->
-      t <$ push
-        (beginSkillTest
-          iid
-          (TreacherySource treacheryId)
-          (TreacheryTarget treacheryId)
-          Nothing
-          SkillIntellect
-          2
-        )
+    UseCardAbility iid (TreacherySource tid) 1 _ _ | tid == treacheryId -> do
+      push $ beginSkillTest iid (toSource attrs) (toTarget attrs) #intellect 2
+      pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> SpectralMist <$> runMessage msg attrs

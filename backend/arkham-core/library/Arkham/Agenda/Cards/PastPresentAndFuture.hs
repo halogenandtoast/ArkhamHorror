@@ -53,7 +53,6 @@ instance RunMessage PastPresentAndFuture where
                iid
                (toSource attrs)
                (InvestigatorTarget iid)
-               Nothing
                SkillWillpower
                sacrificedToYogSothoth
            | sacrificedToYogSothoth > 0

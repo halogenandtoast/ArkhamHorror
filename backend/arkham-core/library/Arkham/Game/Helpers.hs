@@ -1725,17 +1725,18 @@ windowMatches iid source window' = \case
       isWindowMatch skillTestResultMatcher
   Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher skillValueMatcher
     -> case window' of
-      Window t (Window.InitiatedSkillTest who maction (SkillSkillTest skillType) difficulty)
-        | t == whenMatcher -> andM
-          [ matchWho iid who whoMatcher
+      Window t (Window.InitiatedSkillTest st)
+        | t == whenMatcher -> case skillTestType st of
+        SkillSkillTest skillType | skillTypeMatches skillType skillTypeMatcher -> andM
+          [ matchWho iid (skillTestInvestigator st) whoMatcher
           , skillTestValueMatches
             iid
-            difficulty
-            maction
-            (SkillSkillTest skillType)
+            (skillTestDifficulty st)
+            (skillTestAction st)
+            (skillTestType st)
             skillValueMatcher
-          , pure $ skillTypeMatches skillType skillTypeMatcher
           ]
+        _ -> pure False
       _ -> pure False
   Matcher.SkillTestEnded whenMatcher whoMatcher skillTestMatcher ->
     case window' of

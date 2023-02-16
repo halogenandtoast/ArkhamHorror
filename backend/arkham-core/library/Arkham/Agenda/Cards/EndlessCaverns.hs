@@ -49,7 +49,6 @@ instance RunMessage EndlessCaverns where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 SkillCombat
                 5
             ]
@@ -59,7 +58,6 @@ instance RunMessage EndlessCaverns where
                 iid
                 (toSource attrs)
                 (toTarget attrs)
-                Nothing
                 SkillAgility
                 5
             ]

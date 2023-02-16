@@ -35,11 +35,10 @@ instance HasAbilities Ichtaca where
 instance RunMessage Ichtaca where
   runMessage msg e@(Ichtaca attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
+      push $ parley
         iid
         source
         (toTarget attrs)
-        (Just Action.Parley)
         SkillIntellect
         4
       pure e

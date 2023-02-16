@@ -44,7 +44,7 @@ instance HasAbilities IshimaruHaruko where
 instance RunMessage IshimaruHaruko where
   runMessage msg a@(IshimaruHaruko attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (beginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 2)
+      (beginSkillTest iid source (toTarget attrs) SkillWillpower 2)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         modifiers <- getModifiers (InvestigatorTarget iid)

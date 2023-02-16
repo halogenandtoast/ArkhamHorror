@@ -440,11 +440,10 @@ instance RunMessage EnemyAttrs where
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight a
-      push $ beginSkillTest
+      push $ fight
         iid
         source
         (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
-        (Just Action.Fight)
         skillType
         enemyFight'
       pure a
@@ -520,11 +519,10 @@ instance RunMessage EnemyAttrs where
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- modifiedEnemyEvade a
       case mEnemyEvade' of
-        Just n -> push $ beginSkillTest
+        Just n -> push $ evade
           iid
           source
           (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
-          (Just Action.Evade)
           skillType
           n
         Nothing -> error "No evade value"

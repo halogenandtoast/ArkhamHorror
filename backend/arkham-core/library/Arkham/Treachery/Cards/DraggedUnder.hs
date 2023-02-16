@@ -44,7 +44,6 @@ instance RunMessage DraggedUnder where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillAgility
         3
       pure t

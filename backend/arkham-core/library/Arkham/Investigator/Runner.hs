@@ -1891,19 +1891,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         cards
     pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
-  BeforeSkillTest iid skillTestType skillDifficulty | iid == investigatorId -> do
+  BeforeSkillTest skillTest | skillTestInvestigator skillTest == investigatorId -> do
+    let iid = skillTestInvestigator skillTest
     modifiers' <- getModifiers (toTarget a)
-    skillTest <- fromJustNote "missing skill test" <$> getSkillTest
     committedCards <- field InvestigatorCommittedCards iid
     allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
     let
+      skillDifficulty = skillTestDifficulty skillTest
       onlyCardComittedToTestCommitted = any
         (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
         allCommittedCards
       committedCardCodes =
         map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
           skillTest
-    let window = Window Timing.When (Window.SkillTest skillTestType)
+    let window = Window Timing.When (Window.SkillTest $ skillTestType skillTest)
     actions <- getActions iid window
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- field LocationClues investigatorLocation
@@ -1917,7 +1918,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [ StartSkillTestButton investigatorId
         | CannotPerformSkillTest `notElem` skillTestModifiers'
         ]
-      beginMessage = BeforeSkillTest iid skillTestType skillDifficulty
+      beginMessage = BeforeSkillTest skillTest
     committableCards <- if cannotCommitCards || onlyCardComittedToTestCommitted
       then pure []
       else do
@@ -1939,7 +1940,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ScenarioAbility -> pure isScenarioAbility
                 SelfCanCommitWhen matcher ->
                   notNull <$> select (You <> matcher)
-                MinSkillTestValueDifference n -> case skillTestType of
+                MinSkillTestValueDifference n -> case skillTestType skillTest of
                   SkillSkillTest skillType -> do
                     baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
                     pure $ (skillDifficulty - baseValue) >= n
@@ -1998,16 +1999,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         iid
         triggerMessage
     pure a
-  BeforeSkillTest iid skillTestType skillDifficulty | iid /= investigatorId -> do
+  BeforeSkillTest skillTest | skillTestInvestigator skillTest /= investigatorId -> do
+    let iid = skillTestInvestigator skillTest
     locationId <- getJustLocation iid
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- field LocationClues locationId
     canCommit <- canCommitToAnotherLocation a
-    skillTest <- fromJustNote "missing skill test" <$> getSkillTest
     when (locationId == investigatorLocation || canCommit) $ do
       committedCards <- field InvestigatorCommittedCards iid
       allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
       let
+        skillDifficulty = skillTestDifficulty skillTest
         onlyCardComittedToTestCommitted = any
           (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
           allCommittedCards
@@ -2017,7 +2019,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             $ skillTestCommittedCards skillTest
       modifiers' <- getModifiers (toTarget a)
       skillIcons <- getSkillTestMatchingSkillIcons
-      let beginMessage = BeforeSkillTest iid skillTestType skillDifficulty
+      let beginMessage = BeforeSkillTest skillTest
       committableCards <-
         if notNull committedCards || onlyCardComittedToTestCommitted
           then pure []
@@ -2047,7 +2049,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       ScenarioAbility -> pure isScenarioAbility
                       SelfCanCommitWhen matcher ->
                         notNull <$> select (You <> matcher)
-                      MinSkillTestValueDifference n -> case skillTestType of
+                      MinSkillTestValueDifference n -> case skillTestType skillTest of
                         SkillSkillTest skillType -> do
                           baseValue <- baseSkillValueFor
                             skillType

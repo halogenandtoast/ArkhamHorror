@@ -42,11 +42,10 @@ instance RunMessage Persuasion where
               iid
               [ targetLabel
                   enemy
-                  [ beginSkillTest
+                  [ parley
                       iid
                       (toSource attrs)
                       (EnemyTarget enemy)
-                      Nothing
                       SkillIntellect
                       (3 + horror)
                   ]

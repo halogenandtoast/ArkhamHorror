@@ -42,7 +42,6 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
             iid
             (toSource attrs)
             (InvestigatorTarget iid)
-            Nothing
             skillType
             4
         push $ chooseOne

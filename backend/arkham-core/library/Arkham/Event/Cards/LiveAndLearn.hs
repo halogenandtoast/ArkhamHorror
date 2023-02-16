@@ -29,11 +29,8 @@ instance RunMessage LiveAndLearn where
         e <$ pushAll
           [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
           , BeginSkillTest
-            iid
-            (skillTestSource st)
-            (skillTestTarget st)
-            (skillTestAction st)
-            (skillTestType st)
-            (skillTestDifficulty st)
+            $ (buildSkillTest iid (skillTestSource st) (skillTestTarget st) (skillTestType st) (skillTestDifficulty st))
+                { skillTestAction = skillTestAction st
+                }
           ]
     _ -> LiveAndLearn <$> runMessage msg attrs

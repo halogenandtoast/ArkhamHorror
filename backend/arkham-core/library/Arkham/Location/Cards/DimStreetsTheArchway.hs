@@ -60,7 +60,6 @@ instance RunMessage DimStreetsTheArchway where
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          Nothing
           SkillIntellect
           3
         , ReplaceLocation (toId attrs) otherDimStreets

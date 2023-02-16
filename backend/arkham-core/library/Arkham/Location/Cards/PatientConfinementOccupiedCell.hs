@@ -41,7 +41,7 @@ instance RunMessage PatientConfinementOccupiedCell where
   runMessage msg l@(PatientConfinementOccupiedCell attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
-        (beginSkillTest iid source (toTarget attrs) Nothing SkillCombat 2)
+        (beginSkillTest iid source (toTarget attrs) SkillCombat 2)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l <$ push (Remember ReleasedADangerousPatient)
     _ -> PatientConfinementOccupiedCell <$> runMessage msg attrs

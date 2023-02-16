@@ -6,7 +6,7 @@ module Arkham.Investigator.Cards.MinhThiPhan
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card hiding ( CommittedCard )
+import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id

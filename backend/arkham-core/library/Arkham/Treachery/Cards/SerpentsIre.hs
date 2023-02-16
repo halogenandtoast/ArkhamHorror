@@ -67,8 +67,8 @@ instance RunMessage SerpentsIre where
       spawned <- selectAny $ EnemyWithId eid
       if spawned
         then do
-          fight <- field EnemyFight eid
-          push $ RevelationSkillTest iid (toSource attrs) SkillAgility fight
+          fightValue <- field EnemyFight eid
+          push $ RevelationSkillTest iid (toSource attrs) SkillAgility fightValue
           pure . SerpentsIre $ attrs `with` Metadata (Just eid)
         else pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _

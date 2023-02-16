@@ -39,7 +39,6 @@ instance RunMessage MedicalTexts where
                 iid
                 source
                 (InvestigatorTarget iid')
-                Nothing
                 SkillIntellect
                 2
             ]

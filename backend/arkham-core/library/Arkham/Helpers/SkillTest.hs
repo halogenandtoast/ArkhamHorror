@@ -55,8 +55,20 @@ getIsBeingInvestigated lid = do
   mAction <- getSkillTestAction
   pure $ mAction == Just Investigate && mTarget == Just (LocationTarget lid)
 
-beginSkillTest :: InvestigatorId -> Source -> Target -> Maybe Action -> SkillType -> Int -> Message
-beginSkillTest iid source target mAction sType n = BeginSkillTest iid source target mAction (SkillSkillTest sType) n
+beginSkillTest :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
+beginSkillTest iid source target sType n = BeginSkillTest $ initSkillTest iid source target sType n
+
+parley :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
+parley iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Parley }
+
+fight :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
+fight iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Fight }
+
+evade :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
+evade iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Evade }
+
+investigate :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
+investigate iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Investigate }
 
 getIsScenarioAbility :: HasGame m => m Bool
 getIsScenarioAbility = do
@@ -72,4 +84,3 @@ getIsScenarioAbility = do
       ActSource _ -> pure True
       _ -> pure False
     _ -> pure False
-

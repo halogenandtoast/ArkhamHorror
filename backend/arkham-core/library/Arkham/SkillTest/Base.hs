@@ -10,6 +10,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTestResult
 import Arkham.SkillTest.Type
+import Arkham.SkillType (SkillType)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -70,3 +71,36 @@ data SkillTestResultsData = SkillTestResultsData
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+initSkillTest ::
+  InvestigatorId ->
+  Source ->
+  Target ->
+  SkillType ->
+  Int ->
+  SkillTest
+initSkillTest iid source target skillType' difficulty' =
+  buildSkillTest iid source target (SkillSkillTest skillType') difficulty'
+
+buildSkillTest ::
+  InvestigatorId ->
+  Source ->
+  Target ->
+  SkillTestType ->
+  Int ->
+  SkillTest
+buildSkillTest iid source target skillTestType' difficulty' =
+  SkillTest
+    { skillTestInvestigator = iid
+    , skillTestType = skillTestType'
+    , skillTestDifficulty = difficulty'
+    , skillTestSetAsideTokens = mempty
+    , skillTestRevealedTokens = mempty
+    , skillTestResolvedTokens = mempty
+    , skillTestValueModifier = 0
+    , skillTestResult = Unrun
+    , skillTestCommittedCards = mempty
+    , skillTestSource = source
+    , skillTestTarget = target
+    , skillTestAction = Nothing
+    , skillTestSubscribers = [InvestigatorTarget iid]
+    }

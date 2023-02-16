@@ -36,7 +36,6 @@ instance RunMessage Graveyard where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         3
       )

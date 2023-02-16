@@ -57,14 +57,7 @@ instance RunMessage CreepingDarkness where
         $ chooseOrRunOne iid
         $ Label
             "Test {willpower} (3)"
-            [ beginSkillTest
-                iid
-                (toSource attrs)
-                (toTarget attrs)
-                Nothing
-                SkillWillpower
-                3
-            ]
+            [ beginSkillTest iid (toSource attrs) (toTarget attrs) SkillWillpower 3 ]
         : [ Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches ]
       pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _

@@ -32,7 +32,6 @@ instance RunMessage PassageIntoTheVeil where
           iid
           source
           (InvestigatorTarget iid)
-          Nothing
           SkillWillpower
           (if huntingHorrorAtYourLocation then 5 else 3)
       pure t

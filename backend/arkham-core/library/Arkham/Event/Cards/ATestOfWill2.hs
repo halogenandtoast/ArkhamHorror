@@ -28,7 +28,6 @@ instance RunMessage ATestOfWill2 where
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          Nothing
           SkillWillpower
           3
         ]

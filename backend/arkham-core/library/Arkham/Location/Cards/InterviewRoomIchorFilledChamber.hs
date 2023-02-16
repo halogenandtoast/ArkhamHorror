@@ -44,7 +44,6 @@ instance RunMessage InterviewRoomIchorFilledChamber where
         iid
         (toSource attrs)
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         3
       pure l

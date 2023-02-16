@@ -63,11 +63,10 @@ instance RunMessage AllIn where
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> a <$ push
-            (beginSkillTest
+            (parley
               iid
               source
               (AssetTarget aid)
-              (Just Parley)
               SkillWillpower
               3
             )

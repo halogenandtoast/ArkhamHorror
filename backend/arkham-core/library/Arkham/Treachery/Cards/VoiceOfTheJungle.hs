@@ -50,7 +50,6 @@ instance RunMessage VoiceOfTheJungle where
         iid
         source
         (InvestigatorTarget iid)
-        Nothing
         SkillWillpower
         3
       pure t

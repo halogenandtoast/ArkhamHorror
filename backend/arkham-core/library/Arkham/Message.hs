@@ -54,7 +54,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window ( Window )
+import Arkham.Window ( Window, WindowType )
 import Arkham.Zone
 import Control.Exception
 import Data.Aeson.TH
@@ -298,7 +298,7 @@ data Message
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherToken InvestigatorId
-  | DrawCards CardDraw
+  | DrawCards CardDraw -- use drawCards
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrawToken InvestigatorId Token
   | DrewPlayerEnemy InvestigatorId Card
@@ -662,6 +662,7 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
+  | If WindowType [Message]
   | -- Commit
     Do Message
   deriving stock (Show, Eq)

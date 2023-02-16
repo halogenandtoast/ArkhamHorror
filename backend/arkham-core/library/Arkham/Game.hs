@@ -2911,6 +2911,10 @@ createActiveCostForAdditionalCardCosts iid card = do
 runGameMessage :: Message -> Game -> GameT Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
+  If wType _ -> do
+    window <- checkWindows [Window Timing.AtIf wType]
+    g <$ pushAll [window, Do msg]
+  Do (If _ msgs) -> g <$ pushAll msgs
   BeginAction ->
     pure
       $ g

@@ -21,9 +21,9 @@ roachSwarm = enemy RoachSwarm Cards.roachSwarm (0, Static 2, 3) (1, 0)
 
 instance HasModifiersFor RoachSwarm where
   getModifiersFor target (RoachSwarm a) | isTarget a target = do
-    fight <- getSum
+    fightValue <- getSum
       <$> selectAgg Sum LocationShroud (locationWithEnemy $ toId a)
-    pure $ toModifiers a [Modifier.EnemyFight fight]
+    pure $ toModifiers a [Modifier.EnemyFight fightValue]
   getModifiersFor _ _ = pure []
 
 instance RunMessage RoachSwarm where

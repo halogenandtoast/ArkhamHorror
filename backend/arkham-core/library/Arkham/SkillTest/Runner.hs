@@ -35,7 +35,7 @@ getCurrentSkillValue st = case skillTestBaseValue st of
   SkillBaseValue sType -> do
     stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
     pure $ statsSkillValue stats sType
-  HalfResources -> fieldMap InvestigatorResources (`div` 2) (skillTestInvestigator st)
+  HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
   StaticBaseValue n -> pure n
 
 skillIconCount :: SkillTest -> GameT Int
@@ -587,6 +587,6 @@ instance RunMessage SkillTest where
               (modifiedSkillTestDifficulty - modifiedSkillValue')
             )
           & (valueModifierL .~ totaledTokenValues)
-    ChangeSkillTestType newSkillTestType ->
-      pure $ s & typeL .~ newSkillTestType
+    ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->
+      pure $ s & typeL .~ newSkillTestType & baseValueL .~ newSkillTestBaseValue
     _ -> pure s

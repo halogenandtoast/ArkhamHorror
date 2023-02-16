@@ -197,6 +197,8 @@ allPlayerEventCards = mapFromList $ concatMap
   , mindWipe1
   , mindWipe3
   , momentOfRespite3
+  , moneyTalks
+  , moneyTalks2
   , monsterSlayer
   , monsterSlayer5
   , moonlightRitual
@@ -1622,6 +1624,12 @@ connectTheDots = (event "05025" "Connect the Dots" 4 Seeker)
   , cdCriteria = Just $ Criteria.LocationExists $ LocationWithLowerShroudThan YourLocation <> LocationWithDiscoverableCluesBy You
   }
 
+moneyTalks :: CardDef
+moneyTalks = (event "05029" "Money Talks" 0 Rogue)
+  { cdCardTraits = setFromList [Favor, Gambit]
+  , cdFastWindow = Just $ InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue
+  }
+
 denyExistence :: CardDef
 denyExistence = (event "05032" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]
@@ -1692,6 +1700,14 @@ unearthTheAncients2 = (event "08039" "Unearth the Ancients" 0 Seeker)
   , cdCriteria =
     Just $ Criteria.ExtendedCardExists $ InHandOf You <> BasicCardMatch
       (CardWithClass Seeker <> CardWithType AssetType)
+  , cdLevel = 2
+  }
+
+moneyTalks2 :: CardDef
+moneyTalks2 = (event "08054" "Money Talks" 0 Rogue)
+  { cdSkills = [#wild]
+  , cdCardTraits = setFromList [Favor, Gambit]
+  , cdFastWindow = Just $ InitiatedSkillTest Timing.When (InvestigatorAt Anywhere) AnySkillType AnySkillTestValue
   , cdLevel = 2
   }
 

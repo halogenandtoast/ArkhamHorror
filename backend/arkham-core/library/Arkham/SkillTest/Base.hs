@@ -17,7 +17,7 @@ import Arkham.Token
 
 data SkillTestBaseValue
   = SkillBaseValue SkillType
-  | HalfResources
+  | HalfResourcesOf InvestigatorId
   | StaticBaseValue Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable, ToJSON, FromJSON)

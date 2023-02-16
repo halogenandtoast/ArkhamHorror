@@ -42,6 +42,9 @@ resultL = lens skillTestResult $ \m x -> m {skillTestResult = x}
 typeL :: Lens' SkillTest SkillTestType
 typeL = lens skillTestType $ \m x -> m {skillTestType = x}
 
+baseValueL :: Lens' SkillTest SkillTestBaseValue
+baseValueL = lens skillTestBaseValue $ \m x -> m {skillTestBaseValue = x}
+
 valueModifierL :: Lens' SkillTest Int
 valueModifierL =
   lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}

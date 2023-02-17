@@ -57,10 +57,9 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
           , AddDirectConnection townHall blackCave
           ]
         Nothing -> do
-          townHall <- getSetAsideCard Locations.townHall
-          let townHallId = toLocationId townHall
+          (townHallId, placeTownHall) <- placeSetAsideLocation Locations.townHall
           pure
-            [ PlaceLocation townHall
+            [ placeTownHall
             , Remember $ IchtacasDestination townHallId
             , AddDirectConnection blackCave townHallId
             , AddDirectConnection townHallId blackCave

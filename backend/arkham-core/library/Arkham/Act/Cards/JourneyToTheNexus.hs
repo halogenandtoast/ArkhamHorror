@@ -10,7 +10,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
@@ -19,7 +18,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher hiding ( InvestigatorDefeated )
+import Arkham.Matcher hiding ( InvestigatorDefeated, LocationCard )
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
@@ -93,6 +92,7 @@ instance RunMessage JourneyToTheNexus where
               [] -> error "no locations"
               (x : xs) -> pure (x, xs)
           newExplorationDeck <- shuffleM (stepsOfYothCard : rest)
+          (newStartId, placeNewStart) <- placeLocation newStart
           pushAll
             $ map (InvestigatorDefeated (toSource attrs)) defeated
             <> map InvestigatorDiscardAllClues defeated
@@ -101,11 +101,11 @@ instance RunMessage JourneyToTheNexus where
                  (RemoveAllDoom . LocationTarget)
                  (stepsOfYoth : otherLocations)
             <> map RemoveLocation otherLocations
-            <> [ PlaceLocation newStart
-               , MoveAllTo (toSource attrs) (toLocationId newStart)
+            <> [ placeNewStart
+               , MoveAllTo (toSource attrs) newStartId
                , RemoveLocation stepsOfYoth
                , SetScenarioDeck ExplorationDeck newExplorationDeck
-               , SetScenarioMeta $ toMeta (toLocationId newStart)
+               , SetScenarioMeta $ toMeta newStartId
                , RevertAct $ toId attrs
                ]
       pure a

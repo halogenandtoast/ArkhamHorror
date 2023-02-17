@@ -10,11 +10,9 @@ import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
@@ -55,10 +53,10 @@ instance RunMessage VengeanceAwaits where
       umordhoth <- getSetAsideCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
         then do
-          ritualSite <- getSetAsideCard Locations.ritualSite
+          (ritualSiteId, placeRitualSite) <- placeSetAsideLocation Locations.ritualSite
           pushAll
-            [ PlaceLocation ritualSite
-            , CreateEnemyAt umordhoth (LocationId $ toCardId ritualSite) Nothing
+            [ placeRitualSite
+            , CreateEnemyAt umordhoth ritualSiteId Nothing
             ]
         else do
           ritualSiteId <- getJustLocationIdByName "Ritual Site"

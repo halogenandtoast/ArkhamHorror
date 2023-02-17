@@ -9,6 +9,7 @@ import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Game.Helpers
 import Arkham.GameEnv
+import Arkham.Helpers.Message
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types
@@ -119,15 +120,15 @@ explore iid source cardMatcher exploreRule matchCount = do
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
 
-          (locationAction, lid) <- case exploreRule of
-            PlaceExplored -> pure (PlaceLocation x, toLocationId x)
+          (lid, locationAction) <- case exploreRule of
+            PlaceExplored -> placeLocation x
             ReplaceExplored -> do
               let
                 lSymbol = fromJustNote "no location symbol"
                   $ cdLocationRevealedSymbol (toCardDef x)
               mLocationToReplace <- selectOne $ LocationWithSymbol lSymbol
               case mLocationToReplace of
-                Just lid -> pure (ReplaceLocation lid x, lid)
+                Just lid -> pure (lid, ReplaceLocation lid x)
                 Nothing -> error "no location found"
 
           afterPutIntoPlayWindow <- checkWindows
@@ -164,10 +165,11 @@ explore iid source cardMatcher exploreRule matchCount = do
     xs -> do
       -- we assume only locations, triggered by forked path
       -- This can only be PlaceExplored
-      msgs <- do
+      msgs :: [Message] <- do
+        placements <- traverse placeLocation xs
         let
           historyItem = mempty { historySuccessfulExplore = True }
-          locationIds = map toLocationId xs
+          locationIds = map fst placements
 
         afterPutIntoPlayWindow <- checkWindows
           [ Window Timing.After (Window.PutLocationIntoPlay iid lid)
@@ -179,7 +181,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           ]
 
         pure
-          $ map PlaceLocation xs
+          $ map snd placements
           <> [ chooseOne
                  iid
                  [ targetLabel lid [Move source iid lid] | lid <- locationIds ]

@@ -282,12 +282,17 @@ instance RunMessage APhantomOfTruth where
         <$> getRecordSet VIPsInterviewed
       investigatorIds <- allInvestigatorIds
 
+      (montparnasseId, placeMontparnasse) <- placeLocation montparnasse
+      (gareDOrsayId, placeGareDOrsay) <- placeLocation gareDOrsay
+
       let
         startingLocation =
-          if jordanInterviewed then montparnasse else gareDOrsay
+          if jordanInterviewed then montparnasseId else gareDOrsayId
 
-      pushAll
-        ([ story investigatorIds dream11 | n == 11 ]
+      otherPlacements <- traverse placeLocation_ [montmartre, operaGarnier, leMarais, grandGuignol, canalSaintMartin, pereLachaiseCemetery, notreDame, gardensOfLuxembourg]
+
+      pushAll $
+        [ story investigatorIds dream11 | n == 11 ]
         <> [ story investigatorIds dream12 | n == 12 ]
         <> [ RecordCount Doubt (doubt + 1) | n == 12 ]
         <> [story investigatorIds dream13, story investigatorIds awakening]
@@ -299,19 +304,9 @@ instance RunMessage APhantomOfTruth where
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation montmartre
-           , PlaceLocation operaGarnier
-           , PlaceLocation leMarais
-           , PlaceLocation montparnasse
-           , PlaceLocation gareDOrsay
-           , PlaceLocation grandGuignol
-           , PlaceLocation canalSaintMartin
-           , PlaceLocation pereLachaiseCemetery
-           , PlaceLocation notreDame
-           , PlaceLocation gardensOfLuxembourg
-           , MoveAllTo (toSource attrs) (toLocationId startingLocation)
            ]
-        )
+        <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
+        <>  [ MoveAllTo (toSource attrs) startingLocation ]
 
       APhantomOfTruth <$> runMessage
         msg

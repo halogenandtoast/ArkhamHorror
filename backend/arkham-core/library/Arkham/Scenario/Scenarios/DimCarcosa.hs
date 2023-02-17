@@ -169,8 +169,8 @@ instance RunMessage DimCarcosa where
         , EncounterSet.StrikingFear
         ]
 
-      shoresOfHali <- genCard Locations.shoresOfHali
-      darkSpires <- genCard Locations.darkSpires
+      (shoresOfHaliId, placeShoresOfHali) <- placeLocationCard Locations.shoresOfHali
+      (darkSpiresId, placeDarkSpires) <- placeLocationCard Locations.darkSpires
       palaceOfTheKing <- genCard Locations.palaceOfTheKing
 
       (bleakPlains, setAsideBleakPlains) <- sampleWithRest =<< traverse
@@ -198,11 +198,13 @@ instance RunMessage DimCarcosa where
         :| [Locations.depthsOfDemheTheHeightOfTheDepths]
         )
 
+      placeRest <- traverse placeLocation_ [bleakPlains, ruinsOfCarcosa, dimStreets, depthsOfDemhe, palaceOfTheKing]
+
       openedThePathBelow <- getHasRecord YouOpenedThePathBelow
       let
         (intro, startingLocation) = if openedThePathBelow
-          then (intro1, shoresOfHali)
-          else (intro2, darkSpires)
+          then (intro1, shoresOfHaliId)
+          else (intro2, darkSpiresId)
 
       theManInThePallidMask <- getCampaignStoryCard
         Enemies.theManInThePallidMask
@@ -215,21 +217,16 @@ instance RunMessage DimCarcosa where
         , Enemies.beastOfAldebaran
         ]
 
-      pushAll
+      pushAll $
         [ story investigatorIds intro
         , SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation bleakPlains
-        , PlaceLocation ruinsOfCarcosa
-        , PlaceLocation dimStreets
-        , PlaceLocation depthsOfDemhe
-        , PlaceLocation palaceOfTheKing
-        , PlaceLocation darkSpires
-        , PlaceLocation shoresOfHali
-        , MoveAllTo (toSource attrs) (toLocationId startingLocation)
-        , RemoveFromBearersDeckOrDiscard theManInThePallidMask
         ]
+        <> (placeDarkSpires : placeShoresOfHali : placeRest)
+        <> [ MoveAllTo (toSource attrs) startingLocation
+           , RemoveFromBearersDeckOrDiscard theManInThePallidMask
+           ]
       DimCarcosa <$> runMessage
         msg
         (attrs

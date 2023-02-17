@@ -73,9 +73,9 @@ instance RunMessage BeginnersLuck where
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      darkenedHall <- getSetAsideCard Locations.darkenedHall
+      placeDarkenedHall <- placeSetAsideLocation_ Locations.darkenedHall
       a <$ pushAll
-        [ PlaceLocation darkenedHall
+        [ placeDarkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
           Nothing

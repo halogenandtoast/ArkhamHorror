@@ -2,11 +2,13 @@ module Arkham.Helpers.Message where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Entity
 import Arkham.Draw.Types
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Message
@@ -66,3 +68,23 @@ dealAdditionalDamage iid amount additionalMessages = do
           _ -> error "impossible"
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured"
+
+placeLocation :: MonadRandom m => Card -> m (LocationId, Message)
+placeLocation c = do
+  locationId <- getRandom
+  pure (locationId, PlaceLocation locationId c)
+
+placeLocation_ :: MonadRandom m => Card -> m Message
+placeLocation_ = fmap snd . placeLocation
+
+placeSetAsideLocation :: CardDef -> GameT (LocationId, Message)
+placeSetAsideLocation = placeLocation <=< getSetAsideCard
+
+placeSetAsideLocation_ :: CardDef -> GameT Message
+placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
+
+placeLocationCard :: CardDef -> GameT (LocationId, Message)
+placeLocationCard = placeLocation <=< genCard
+
+placeLocationCard_ :: CardDef -> GameT Message
+placeLocationCard_ = placeLocation_ <=< genCard

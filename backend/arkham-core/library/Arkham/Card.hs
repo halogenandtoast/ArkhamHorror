@@ -60,9 +60,6 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
 
-toLocationId :: IsCard a => a -> LocationId
-toLocationId = LocationId . toCardId
-
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard

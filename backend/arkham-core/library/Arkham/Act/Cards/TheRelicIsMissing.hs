@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
@@ -28,9 +27,9 @@ theRelicIsMissing =
 instance RunMessage TheRelicIsMissing where
   runMessage msg a@(TheRelicIsMissing attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      eztliExhibit <- genCard Locations.eztliExhibit
+      placeEztliExhibit <- placeLocationCard_ Locations.eztliExhibit
       pushAll
-        [ PlaceLocation eztliExhibit
+        [ placeEztliExhibit
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

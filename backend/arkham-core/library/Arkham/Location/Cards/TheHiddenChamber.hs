@@ -44,7 +44,7 @@ instance RunMessage TheHiddenChamber where
       connectedLocation <- getJustLocation iid
       name <- field LocationName connectedLocation
       pushAll
-        [ PlaceLocation (toCard attrs)
+        [ PlaceLocation (toId attrs) (toCard attrs)
         , AddDirectConnection (toId attrs) connectedLocation
         , AddDirectConnection connectedLocation (toId attrs)
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"

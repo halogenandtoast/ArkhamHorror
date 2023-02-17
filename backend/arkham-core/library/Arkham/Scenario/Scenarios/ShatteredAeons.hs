@@ -190,7 +190,7 @@ instance RunMessage ShatteredAeons where
           ]
         <> additionalSets
 
-      nexusOfNKai <- genCard Locations.nexusOfNKai
+      (nexusOfNKaiId, placeNexusOfNKai) <- placeLocationCard Locations.nexusOfNKai
 
       let
         encounterDeck' = removeEachFromDeck
@@ -236,8 +236,8 @@ instance RunMessage ShatteredAeons where
         <> [ SetEncounterDeck encounterDeck'
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation nexusOfNKai
-           , MoveAllTo (toSource attrs) (toLocationId nexusOfNKai)
+           , placeNexusOfNKai
+           , MoveAllTo (toSource attrs) nexusOfNKaiId
            ]
         <> map RemovePlayerCardFromGame cardsToAddToVictory
 

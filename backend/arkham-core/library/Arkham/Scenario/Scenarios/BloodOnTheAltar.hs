@@ -18,7 +18,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( PlaceUnderneath, RevealLocation )
@@ -193,9 +192,14 @@ instance RunMessage BloodOnTheAltar where
           <$> genEncounterCard Locations.villageCommons
 
         let
-          locationCardPairs = zip locations cardsToPutUnderneath
           potentialSacrifices = [zebulonWhateley, earlSawyer] <> catMaybes
             [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
+
+        (villageCommonsId, placeVillageCommons) <- placeLocation villageCommons
+
+        otherPlacements <- for (zip locations cardsToPutUnderneath) $ \(location, card) -> do
+          (locationId, placement) <- placeLocation location
+          pure [placement, PlaceUnderneath (LocationTarget locationId) [card]]
 
         pushAll
           $ [ story investigatorIds intro
@@ -203,17 +207,10 @@ instance RunMessage BloodOnTheAltar where
             , SetAgendaDeck
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
-          <> [SetActDeck, PlaceLocation villageCommons]
-          <> concat
-               [ [ PlaceLocation location
-                 , PlaceUnderneath
-                   (LocationTarget $ toLocationId location)
-                   [card]
-                 ]
-               | (location, card) <- locationCardPairs
-               ]
-          <> [ RevealLocation Nothing (LocationId $ toCardId villageCommons)
-             , MoveAllTo (toSource attrs) (LocationId $ toCardId villageCommons)
+          <> [SetActDeck]
+          <> (placeVillageCommons : concat otherPlacements)
+          <> [ RevealLocation Nothing villageCommonsId
+             , MoveAllTo (toSource attrs) villageCommonsId
              ]
 
         setAsideCards <- traverse

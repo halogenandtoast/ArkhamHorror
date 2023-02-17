@@ -68,14 +68,13 @@ instance RunMessage TheGathering where
         , EncounterSet.AncientEvils
         , EncounterSet.ChillingCold
         ]
-      study <- genCard Locations.study
-      let studyId = toLocationId study
+      (studyId, placeStudy) <- placeLocationCard Locations.study
 
       pushAll
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation study
+        , placeStudy
         , RevealLocation Nothing studyId
         , MoveAllTo (toSource attrs) studyId
         , story investigatorIds theGatheringIntro

@@ -20,7 +20,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
 import Arkham.Helpers.Scenario
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
@@ -115,15 +114,12 @@ instance RunMessage TheEssexCountyExpress where
       Setup -> do
         investigatorIds <- allInvestigatorIds
 
-        let toLocationCard = fmap EncounterCard . genEncounterCard
-
-        engineCar <- toLocationCard =<< sample
+        engineCar <- sample
           (Locations.engineCar_175
           :| [Locations.engineCar_176, Locations.engineCar_177]
           )
-        let engineCarId = LocationId $ toCardId engineCar
 
-        trainCars <- traverse toLocationCard . take 6 =<< shuffleM
+        trainCars <- take 6 <$> shuffleM
           [ Locations.passengerCar_167
           , Locations.passengerCar_168
           , Locations.passengerCar_169
@@ -142,18 +138,21 @@ instance RunMessage TheEssexCountyExpress where
           , EncounterSet.DarkCult
           ]
 
+        (engineCarId, placeEngineCar) <- placeLocationCard engineCar
+        placeTrainCars <- for (zip [6, 5 ..] trainCars) $ \(idx, car) -> do
+          (locationId, placement) <- placeLocationCard car
+          pure (locationId, [placement, SetLocationLabel locationId ("trainCar" <> tshow @Int idx)])
+
         let
-          start =
-            LocationId . toCardId . fromJustNote "No train cars?" $ headMay
-              trainCars
-          end = LocationId . toCardId . fromJustNote "No train cars?" $ headMay
-            (reverse trainCars)
-          allCars = trainCars <> [engineCar]
+          start = fst . fromJustNote "No train cars?" $ headMay placeTrainCars
+          end = fst . fromJustNote "No train cars?" $ headMay (reverse placeTrainCars)
+          allCars = map fst placeTrainCars <> [engineCarId]
           token = case scenarioDifficulty of
             Easy -> MinusTwo
             Standard -> MinusThree
             Hard -> MinusFour
             Expert -> MinusFive
+
 
         pushAll
           $ [ story investigatorIds intro
@@ -162,21 +161,11 @@ instance RunMessage TheEssexCountyExpress where
             , SetAgendaDeck
             , SetActDeck
             ]
-          <> concat
-               [ [ PlaceLocation card
-                 , SetLocationLabel
-                   (LocationId $ toCardId card)
-                   ("trainCar" <> tshow @Int n)
-                 ]
-               | (n, card) <- zip [6, 5 ..] trainCars
-               ]
-          <> [ PlacedLocationDirection
-                 (LocationId $ toCardId l1)
-                 LeftOf
-                 (LocationId $ toCardId l2)
+          <> concatMap snd placeTrainCars
+          <> [ PlacedLocationDirection l1 LeftOf l2
              | (l1, l2) <- zip allCars (drop 1 allCars)
              ]
-          <> [ PlaceLocation engineCar
+          <> [ placeEngineCar
              , PlacedLocationDirection engineCarId RightOf end
              , CreateWindowModifierEffect
                EffectSetupWindow

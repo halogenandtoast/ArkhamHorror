@@ -33,17 +33,12 @@ instance RunMessage AtTheStationTrainTracks where
   runMessage msg a@(AtTheStationTrainTracks attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide D attrs -> do
       trainTracks <- genCard Locations.trainTracks
+      (locationId, placeTrainTracks) <- placeLocation trainTracks
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       pushAll
-        [ PlaceLocation trainTracks
-        , CreateAssetAt
-          alejandroVela
-          (AttachedToLocation $ toLocationId trainTracks)
-        , AdvanceToAct
-          (actDeckId attrs)
-          Acts.alejandrosPrison
-          C
-          (toSource attrs)
+        [ placeTrainTracks
+        , CreateAssetAt alejandroVela (AttachedToLocation locationId)
+        , AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)
         ]
       pure a
     _ -> AtTheStationTrainTracks <$> runMessage msg attrs

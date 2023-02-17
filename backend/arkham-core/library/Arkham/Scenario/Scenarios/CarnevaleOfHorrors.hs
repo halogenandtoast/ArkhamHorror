@@ -134,7 +134,7 @@ instance RunMessage CarnevaleOfHorrors where
 
       -- Locations
       let locationLabels = [ "location" <> tshow @Int n | n <- [1 .. 8] ]
-      randomLocations <- traverse genCard . drop 1 =<< shuffleM
+      randomLocations <- traverse placeLocationCard . drop 1 =<< shuffleM
         [ Locations.streetsOfVenice
         , Locations.rialtoBridge
         , Locations.venetianGarden
@@ -143,13 +143,12 @@ instance RunMessage CarnevaleOfHorrors where
         , Locations.accademiaBridge
         , Locations.theGuardian
         ]
-      canalSide <- genCard Locations.canalSide
-      sanMarcoBasilica <- genCard Locations.sanMarcoBasilica
+      canalSide <- placeLocationCard Locations.canalSide
+      sanMarcoBasilica@(sanMarcoBasilicaId, _) <- placeLocationCard Locations.sanMarcoBasilica
 
       let
         unshuffled = canalSide : randomLocations
-        nonSanMarcoBasilicaLocationIds = map (LocationId . toCardId) unshuffled
-        sanMarcoBasilicaId = LocationId $ toCardId sanMarcoBasilica
+        nonSanMarcoBasilicaLocationIds = map fst unshuffled
 
       locationIdsWithMaskedCarnevaleGoers <-
         zip nonSanMarcoBasilicaLocationIds
@@ -169,23 +168,18 @@ instance RunMessage CarnevaleOfHorrors where
       -- Assets
       abbess <- genCard Assets.abbessAllegriaDiBiase
 
+      let
+        placeLocations = flip map (zip locationLabels (toList locations)) $ \(label, (locationId, placement)) ->
+          (locationId, [placement, SetLocationLabel locationId label])
+        locationIds = fromJustNote "was empty" . nonEmpty $ map fst $ toList locations
+
       pushAll
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> [ PlaceLocation cardDef | cardDef <- toList locations ]
-        <> [ SetLocationLabel (LocationId $ toCardId location) label
-           | (label, location) <- zip locationLabels (toList locations)
+        <> concatMap snd placeLocations
+        <> [ PlacedLocationDirection l2 RightOf l1
+           | (l1, l2) <- zip (toList locationIds) (drop 1 $ toList locationIds)
            ]
-        <> [ PlacedLocationDirection
-               (LocationId $ toCardId l2)
-               RightOf
-               (LocationId $ toCardId l1)
-           | (l1, l2) <- zip (toList locations) (drop 1 $ toList locations)
-           ]
-        <> [ PlacedLocationDirection
-               (LocationId . toCardId $ NE.head locations)
-               RightOf
-               (LocationId . toCardId $ NE.last locations)
-           ]
+        <> [ PlacedLocationDirection (NE.head locationIds) RightOf (NE.last locationIds) ]
         <> [ CreateAssetAt asset (AtLocation locationId)
            | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers
            ]

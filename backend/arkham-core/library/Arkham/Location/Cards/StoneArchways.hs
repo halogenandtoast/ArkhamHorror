@@ -74,7 +74,7 @@ instance RunMessage StoneArchways where
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          msgs <- placeAtDirection RightOf attrs <*> pure card
+          msgs <- placeAtDirection RightOf attrs >>= \f -> f card
           pushAll msgs
         [] -> pure ()
         _ -> error "wrong number of cards drawn"

@@ -147,10 +147,12 @@ instance RunMessage UndimensionedAndUnseen where
       devilsHopYard <- genCard =<< sample
         (Locations.devilsHopYard_252 :| [Locations.devilsHopYard_253])
 
-      let
-        dunwichVillageId = toLocationId dunwichVillage
-        coldSpringGlenId = toLocationId coldSpringGlen
-        blastedHeathId = toLocationId blastedHeath
+      (dunwichVillageId, placeDunwichVillage) <- placeLocation dunwichVillage
+      (coldSpringGlenId, placeColdSpringGlen) <- placeLocation coldSpringGlen
+      (blastedHeathId, placeBlastedHeath) <- placeLocation blastedHeath
+      placeTenAcreMeadow <- placeLocation_ tenAcreMeadow
+      placeWhateleyRuins <- placeLocation_ whateleyRuins
+      placeDevilsHopYard <- placeLocation_ devilsHopYard
 
       sacrificedToYogSothoth <- if standalone
         then pure 3
@@ -194,16 +196,6 @@ instance RunMessage UndimensionedAndUnseen where
 
       setAsideCards <- replicateM 4 (genCard Assets.esotericFormula)
 
-      let
-        locations =
-          [ dunwichVillage
-          , coldSpringGlen
-          , tenAcreMeadow
-          , blastedHeath
-          , whateleyRuins
-          , devilsHopYard
-          ]
-
       pushAll
         $ [ story investigatorIds (if n == 1 then introPart1 else introPart2)
           , Record
@@ -211,8 +203,13 @@ instance RunMessage UndimensionedAndUnseen where
           , SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
+          , placeDunwichVillage
+          , placeColdSpringGlen
+          , placeTenAcreMeadow
+          , placeBlastedHeath
+          , placeWhateleyRuins
+          , placeDevilsHopYard
           ]
-        <> [ PlaceLocation location | location <- locations ]
         <> [ RevealLocation Nothing dunwichVillageId
            , MoveAllTo (toSource attrs) dunwichVillageId
            ]

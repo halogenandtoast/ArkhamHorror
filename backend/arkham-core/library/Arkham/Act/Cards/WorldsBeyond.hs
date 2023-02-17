@@ -69,18 +69,20 @@ instance RunMessage WorldsBeyond where
                 [UnfocusCards, ShuffleDeck (ScenarioDeckByKey ExplorationDeck)]
             ]
           ]
-        (x : _) -> pushAll
-          [ FocusCards (nonMatched <> [x])
-          , chooseOne
-            lead
-            [ TargetLabel
-                (CardIdTarget $ toCardId x)
-                [ RemoveCardFromScenarioDeck ExplorationDeck x
-                , PlaceLocation x
-                , UnfocusCards
-                , ShuffleDeck (ScenarioDeckByKey ExplorationDeck)
-                ]
+        (x : _) -> do
+          placement <- placeLocation_ x
+          pushAll
+            [ FocusCards (nonMatched <> [x])
+            , chooseOne
+              lead
+              [ TargetLabel
+                  (CardIdTarget $ toCardId x)
+                  [ RemoveCardFromScenarioDeck ExplorationDeck x
+                  , placement
+                  , UnfocusCards
+                  , ShuffleDeck (ScenarioDeckByKey ExplorationDeck)
+                  ]
+              ]
             ]
-          ]
       pure a
     _ -> WorldsBeyond <$> runMessage msg attrs

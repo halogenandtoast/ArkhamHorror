@@ -66,7 +66,6 @@ instance RunMessage CryptOfTheSepulchralLamp where
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placements <- mapMaybeM (toMaybePlacement attrs) [Above, RightOf]
-      pushAll $ concat $ zipWith ($) placements cards
+      placeDrawnLocations attrs cards [Above, RightOf]
       pure l
     _ -> CryptOfTheSepulchralLamp <$> runMessage msg attrs

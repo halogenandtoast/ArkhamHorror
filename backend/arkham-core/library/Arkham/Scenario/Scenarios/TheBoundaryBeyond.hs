@@ -25,7 +25,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (LocationCard, LocationName) )
-import Arkham.Matcher
+import Arkham.Matcher hiding ( LocationCard )
 import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Name
 import Arkham.Projection
@@ -160,12 +160,12 @@ instance RunMessage TheBoundaryBeyond where
           removeEachFromDeck encounterDeck' explorationDeckTreacheries
 
 
-      metropolitanCathedral <- genCard Locations.metropolitanCathedral
-      zocalo <- genCard Locations.zocalo
-      templeRuins <- genCard Locations.templeRuins
-      xochimilco <- genCard Locations.xochimilco
-      chapultepecPark <- genCard Locations.chapultepecPark
-      coyoacan <- genCard Locations.coyoacan
+      placeMetropolitanCathedral <- placeLocationCard_ Locations.metropolitanCathedral
+      (zocaloId, placeZocalo) <- placeLocationCard Locations.zocalo
+      placeTempleRuins <- placeLocationCard_ Locations.templeRuins
+      placeXochimilco <- placeLocationCard_ Locations.xochimilco
+      placeChapultepecPark <- placeLocationCard_ Locations.chapultepecPark
+      (coyoacanId, placeCoyoacan) <- placeLocationCard Locations.coyoacan
 
       explorationDeck <- shuffleM =<< traverse
         genCard
@@ -202,18 +202,17 @@ instance RunMessage TheBoundaryBeyond where
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation metropolitanCathedral
-           , PlaceLocation zocalo
-           , PlaceLocation templeRuins
-           , PlaceLocation xochimilco
-           , PlaceLocation chapultepecPark
-           , PlaceLocation coyoacan
+           , placeMetropolitanCathedral
+           , placeZocalo
+           , placeTempleRuins
+           , placeXochimilco
+           , placeChapultepecPark
+           , placeCoyoacan
            ]
         <> [ chooseOne
                iid
                [ targetLabel lid [MoveTo (toSource attrs) iid lid]
-               | l <- [zocalo, coyoacan]
-               , let lid = toLocationId l
+               | lid <- [zocaloId, coyoacanId]
                ]
            | iid <- iids
            ]

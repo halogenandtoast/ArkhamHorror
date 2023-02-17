@@ -17,7 +17,9 @@ import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -74,13 +76,14 @@ gatherTheMidnightMasks = traverse
   , Cards.huntingShadow
   ]
 
-placeAndLabelLocations :: Text -> [Card] -> [Message]
-placeAndLabelLocations prefix locations = concat
-  [ [ PlaceLocation location
-    , SetLocationLabel (toLocationId location) (prefix <> tshow @Int n)
-    ]
-  | (location, n) <- zip locations [1 ..]
-  ]
+placeAndLabelLocations :: Text -> [Card] -> GameT [(LocationId, [Message])]
+placeAndLabelLocations prefix locations =
+  for (withIndex1 locations) $ \(idx, location) -> do 
+    (locationId, placement) <- placeLocation location
+    pure $
+      (locationId, [ placement
+      , SetLocationLabel locationId (prefix <> tshow idx)
+      ])
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =
@@ -150,9 +153,13 @@ instance RunMessage EchoesOfThePast where
         , Locations.historicalSocietyRecordOffice_138
         ]
 
-      entryHall <- genCard Locations.entryHall
-      quietHalls1 <- genCard Locations.quietHalls_131
-      quietHalls2 <- genCard Locations.quietHalls_135
+      (entryHallId, placeEntryHall) <- placeLocationCard Locations.entryHall
+      (quietHalls1Id, placeQuietHalls1) <- placeLocationCard Locations.quietHalls_131
+      (quietHalls2Id, placeQuietHalls2) <- placeLocationCard Locations.quietHalls_135
+
+      groundFloorPlacements <- shuffleM =<< placeAndLabelLocations "groundloor" groundFloor
+      secondFloorPlacements <- shuffleM =<< placeAndLabelLocations "secondFloor" secondFloor
+      thirdFloorPlacements <- shuffleM =<< placeAndLabelLocations "thirdFloor" thirdFloor
 
       let
         spawnMessages = case length seekersToSpawn of
@@ -170,8 +177,8 @@ instance RunMessage EchoesOfThePast where
             | seeker <- seekersToSpawn
             ]
           _ ->
-            [ CreateEnemyAt (EncounterCard card) (toLocationId location) Nothing
-            | (location, card) <- zip thirdFloor seekersToSpawn
+            [ CreateEnemyAt (EncounterCard card) locationId Nothing
+            | ((locationId, _), card) <- zip thirdFloorPlacements seekersToSpawn
             ]
 
       sebastienInterviewed <-
@@ -188,21 +195,21 @@ instance RunMessage EchoesOfThePast where
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation entryHall
+           , placeEntryHall
            ]
-        <> [ PlaceClues (LocationTarget $ toLocationId entryHall) 1
+        <> [ PlaceClues (LocationTarget entryHallId) 1
            | sebastienInterviewed
            ]
-        <> [ PlaceLocation quietHalls1
-           , SetLocationLabel (toLocationId quietHalls1) "quietHalls1"
-           , PlaceLocation quietHalls2
-           , SetLocationLabel (toLocationId quietHalls2) "quietHalls2"
+        <> [ placeQuietHalls1
+           , SetLocationLabel quietHalls1Id "quietHalls1"
+           , placeQuietHalls2
+           , SetLocationLabel quietHalls2Id "quietHalls2"
            ]
-        <> placeAndLabelLocations "groundFloor" groundFloor
-        <> placeAndLabelLocations "secondFloor" secondFloor
-        <> placeAndLabelLocations "thirdFloor" thirdFloor
+        <> concatMap snd groundFloorPlacements
+        <> concatMap snd secondFloorPlacements
+        <> concatMap snd thirdFloorPlacements
         <> spawnMessages
-        <> [MoveAllTo (toSource attrs) (toLocationId entryHall)]
+        <> [MoveAllTo (toSource attrs) entryHallId]
         <> if fledTheDinnerParty
              then
                [ CreateWindowModifierEffect

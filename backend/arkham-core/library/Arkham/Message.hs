@@ -471,7 +471,7 @@ data Message
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId
   | PlaceEnemy EnemyId Placement
-  | PlaceLocation Card
+  | PlaceLocation LocationId Card
   | PlaceLocationMatching CardMatcher
   | PlaceResources Target Int
   | RemoveResources Target Int

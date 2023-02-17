@@ -23,7 +23,7 @@ import Arkham.Id
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher
+import Arkham.Matcher hiding ( LocationCard )
 import Arkham.Message hiding ( Label )
 import Arkham.Projection
 import Arkham.Scenario.Deck

@@ -61,10 +61,9 @@ instance RunMessage TheGateToHell where
   runMessage msg l@(TheGateToHell attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- countM (directionEmpty attrs) [Above, Below]
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
+      push $ DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placements <- mapMaybeM (toMaybePlacement attrs) [Above, Below]
-      pushAll $ concat $ zipWith ($) placements cards
+      placeDrawnLocations attrs cards [Above, Below]
       pure l
     _ -> TheGateToHell <$> runMessage msg attrs

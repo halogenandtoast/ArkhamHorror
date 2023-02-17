@@ -32,20 +32,14 @@ instance RunMessage InvestigatingTheTrail where
       mRitualSiteId <- getLocationIdByName "Ritual Site"
       mainPathId <- getJustLocationIdByName "Main Path"
       when (isNothing mRitualSiteId) $ do
-        ritualSite <- getSetAsideCard Locations.ritualSite
-        push (PlaceLocation ritualSite)
-      cultistsWhoGotAwayDefs <-
-        mapMaybe
-            (\case
-              Recorded cCode -> Just $ lookupEncounterCardDef cCode
-              CrossedOut _ -> Nothing
-            )
-          <$> getRecordSet CultistsWhoGotAway
-      cultistsWhoGotAway <- traverse genEncounterCard cultistsWhoGotAwayDefs
-      a <$ pushAll
-        ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing
-         | card <- cultistsWhoGotAway
-         ]
+        placeRitualSite <- placeSetAsideLocation_ Locations.ritualSite
+        push placeRitualSite
+      cultistsWhoGotAway <- traverse (genCard . lookupEncounterCardDef)
+        =<< getRecordedCardCodes CultistsWhoGotAway
+      pushAll $
+        [ CreateEnemyAt card mainPathId Nothing
+        | card <- cultistsWhoGotAway
+        ]
         <> [AdvanceActDeck actDeckId (toSource attrs)]
-        )
+      pure a
     _ -> InvestigatingTheTrail <$> runMessage msg attrs

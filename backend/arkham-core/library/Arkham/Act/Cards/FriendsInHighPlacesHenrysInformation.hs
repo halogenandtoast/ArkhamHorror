@@ -54,24 +54,14 @@ instance RunMessage FriendsInHighPlacesHenrysInformation where
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       mTownHall <- selectOne $ locationIs Locations.townHall
       createAssetMessages <- case mTownHall of
-        Just townHall ->
-          pure [CreateAssetAt alejandroVela (AttachedToLocation townHall)]
+        Just townHallId -> pure [CreateAssetAt alejandroVela (AttachedToLocation townHallId)]
         Nothing -> do
           townHall <- genCard Locations.townHall
-          pure
-            $ PlaceLocation townHall
-            : [ CreateAssetAt
-                  alejandroVela
-                  (AttachedToLocation $ toLocationId townHall)
-              ]
+          (townHallId, placeTownHall) <- placeLocation townHall
+          pure [placeTownHall , CreateAssetAt alejandroVela (AttachedToLocation townHallId)]
 
       pushAll
         $ createAssetMessages
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.alejandrosPrison
-               C
-               (toSource attrs)
-           ]
+        <> [AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)]
       pure a
     _ -> FriendsInHighPlacesHenrysInformation <$> runMessage msg attrs

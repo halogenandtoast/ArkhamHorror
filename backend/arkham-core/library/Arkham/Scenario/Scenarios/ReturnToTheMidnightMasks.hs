@@ -49,29 +49,31 @@ instance RunMessage ReturnToTheMidnightMasks where
         -- we will spawn these disciples of the devourer
 
 
-        yourHouse <- genCard Locations.yourHouse
-        rivertown <- genCard =<< sample
+        (yourHouseId, placeYourHouse) <- placeLocationCard Locations.yourHouse
+        (rivertownId, placeRivertown) <- placeLocationCard =<< sample
           (Locations.rivertown :| [Locations.rivertownAbandonedWarehouse])
-        southside <- genCard =<< sample
+        (southsideId, placeSouthside) <- placeLocationCard =<< sample
           (Locations.southsideHistoricalSociety
           :| [Locations.southsideMasBoardingHouse]
           )
-        stMarysHospital <- genCard Locations.stMarysHospital
-        miskatonicUniversity <- genCard =<< sample
-          (Locations.miskatonicUniversity
-          :| [Locations.miskatonicUniversityMiskatonicMuseum]
-          )
-        downtown <-
-          genCard
+        (downtownId, placeDowntown) <-
+          placeLocationCard
             =<< sample
                   (Locations.downtownFirstBankOfArkham
                   :| [Locations.downtownArkhamAsylum]
                   )
-        easttown <- genCard =<< sample
+
+        (graveyardId, placeGraveyard) <- placeLocationCard Locations.graveyard
+
+        placeStMarysHospital <- placeLocationCard_ Locations.stMarysHospital
+        placeMiskatonicUniversity <- placeLocationCard_ =<< sample
+          (Locations.miskatonicUniversity
+          :| [Locations.miskatonicUniversityMiskatonicMuseum]
+          )
+        placeEasttown <- placeLocationCard_ =<< sample
           (Locations.easttown :| [Locations.easttownArkhamPoliceStation])
-        graveyard <- genCard Locations.graveyard
-        northside <-
-          genCard =<< sample
+        placeNorthside <-
+          placeLocationCard_ =<< sample
             (Locations.northside :| [Locations.northsideTrainStation])
 
         predatorOrPrey <-
@@ -90,20 +92,19 @@ instance RunMessage ReturnToTheMidnightMasks where
         let
           startingLocationMessages = if houseBurnedDown
             then
-              [ RevealLocation Nothing $ toLocationId rivertown
-              , MoveAllTo (toSource attrs) $ toLocationId rivertown
+              [ RevealLocation Nothing rivertownId
+              , MoveAllTo (toSource attrs) rivertownId
               ]
             else
-              [ PlaceLocation yourHouse
-              , RevealLocation Nothing $ toLocationId yourHouse
-              , MoveAllTo (toSource attrs) $ toLocationId yourHouse
+              [ placeYourHouse
+              , RevealLocation Nothing yourHouseId
+              , MoveAllTo (toSource attrs) yourHouseId
               ]
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
           spawnAcolyteMessages =
             [ CreateEnemyAt (EncounterCard c) l Nothing
-            | (c, l) <- zip acolytes
-              $ map toLocationId [southside, downtown, graveyard]
+            | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
             ]
           intro1or2 = if litaForcedToFindOthersToHelpHerCause
             then TheMidnightMasksIntroOne
@@ -122,14 +123,14 @@ instance RunMessage ReturnToTheMidnightMasks where
             , SetEncounterDeck encounterDeck
             , SetAgendaDeck
             , SetActDeck
-            , PlaceLocation rivertown
-            , PlaceLocation southside
-            , PlaceLocation stMarysHospital
-            , PlaceLocation miskatonicUniversity
-            , PlaceLocation downtown
-            , PlaceLocation easttown
-            , PlaceLocation graveyard
-            , PlaceLocation northside
+            , placeRivertown
+            , placeSouthside
+            , placeStMarysHospital
+            , placeMiskatonicUniversity
+            , placeDowntown
+            , placeEasttown
+            , placeGraveyard
+            , placeNorthside
             ]
           <> startingLocationMessages
           <> ghoulPriestMessages

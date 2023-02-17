@@ -6,7 +6,6 @@ module Arkham.Location.Cards.BasementHall
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
@@ -47,14 +46,10 @@ instance RunMessage BasementHall where
       patientConfinements <- shuffleM
         =<< getSetAsideCardsMatching (CardWithTitle "Patient Confinement")
 
-      l <$ pushAll
-        (map PlaceLocation patientConfinements
-        <> [ SetLocationLabel (toLocationId patientConfinement)
-             $ "patientConfinement"
-             <> tshow idx
-           | (idx, patientConfinement) <- zip
-             [1 :: Int ..]
-             patientConfinements
-           ]
-        )
+      placements <- for (withIndex1 patientConfinements) $ \(idx, confinement) -> do
+        (locationId, locationPlacement) <- placeLocation confinement
+        pure [locationPlacement, SetLocationLabel locationId $ "patientConfinement" <> tshow idx]
+
+      pushAll $ concat placements
+      pure l
     _ -> BasementHall <$> runMessage msg attrs

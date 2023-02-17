@@ -87,7 +87,6 @@ instance RunMessage CandlelitTunnels where
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placements <- mapMaybeM (toMaybePlacement attrs) [LeftOf, RightOf]
-      pushAll $ concat $ zipWith ($) placements cards
+      placeDrawnLocations attrs cards [LeftOf, RightOf]
       pure l
     _ -> CandlelitTunnels <$> runMessage msg attrs

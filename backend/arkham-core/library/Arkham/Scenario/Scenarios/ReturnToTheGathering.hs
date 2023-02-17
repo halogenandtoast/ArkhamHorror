@@ -55,25 +55,20 @@ instance RunMessage ReturnToTheGathering where
           , EncounterSet.ChillingCold
           ]
 
-        studyAberrantGateway <- genCard Locations.studyAberrantGateway
-        let studyId = toLocationId studyAberrantGateway
+        (studyId, placeStudy) <- placeLocationCard Locations.studyAberrantGateway
+        placeRest <- traverse placeLocationCard_ [Locations.guestHall, Locations.bedroom, Locations.bathroom]
 
-        guestHall <- genCard Locations.guestHall
-        bedroom <- genCard Locations.bedroom
-        bathroom <- genCard Locations.bathroom
-
-        pushAll
+        pushAll $
           [ SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
-          , PlaceLocation studyAberrantGateway
-          , PlaceLocation guestHall
-          , PlaceLocation bedroom
-          , PlaceLocation bathroom
-          , RevealLocation Nothing studyId
-          , MoveAllTo (toSource attrs) studyId
-          , story investigatorIds theGatheringIntro
+          , placeStudy
           ]
+          <> placeRest
+          <> [ RevealLocation Nothing studyId
+             , MoveAllTo (toSource attrs) studyId
+             , story investigatorIds theGatheringIntro
+             ]
 
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]
         cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]

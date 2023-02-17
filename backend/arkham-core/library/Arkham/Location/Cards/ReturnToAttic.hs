@@ -36,6 +36,7 @@ instance HasAbilities ReturnToAttic where
 instance RunMessage ReturnToAttic where
   runMessage msg l@(ReturnToAttic attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      farAboveYourHouse <- getSetAsideCard Cards.farAboveYourHouse
-      l <$ push (PlaceLocation farAboveYourHouse)
+      placeFarAboveYourHouse <- placeSetAsideLocation_ Cards.farAboveYourHouse
+      push placeFarAboveYourHouse
+      pure l
     _ -> ReturnToAttic <$> runMessage msg attrs

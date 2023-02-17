@@ -90,8 +90,8 @@ instance RunMessage NarrowShaft where
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          placeAbove <- placeAtDirection Above attrs <*> pure card
-          placeRight <- placeAtDirection RightOf attrs <*> pure card
+          placeAbove <- placeAtDirection Above attrs >>= \f -> f card
+          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
           push

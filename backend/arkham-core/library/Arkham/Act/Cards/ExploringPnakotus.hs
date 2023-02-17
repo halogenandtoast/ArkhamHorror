@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
@@ -40,17 +39,16 @@ instance HasModifiersFor ExploringPnakotus where
 instance RunMessage ExploringPnakotus where
   runMessage msg a@(ExploringPnakotus attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      locations <- getSetAsideCardsMatching $ CardWithType LocationType
+      locations <- getSetAsideCardsMatching LocationCard
       custodian <- getSetAsideCard Assets.theCustodian
       yithianObservers <- selectList $ enemyIs Enemies.yithianObserver
-
-      spawnLocation <- maybe (error "no locations") sample
-        $ NE.nonEmpty locations
+      placements <- traverse placeLocation locations
+      spawnLocation <- maybe (error "no locations") (fmap fst . sample) $ NE.nonEmpty placements
 
       pushAll
         $ map EnemyCheckEngagement yithianObservers
-        <> map PlaceLocation locations
-        <> [ CreateAssetAt custodian $ AtLocation $ toLocationId spawnLocation
+        <> map snd placements
+        <> [ CreateAssetAt custodian $ AtLocation spawnLocation
            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]
 

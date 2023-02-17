@@ -122,12 +122,8 @@ instance RunMessage TheLastKing where
         , EncounterSet.AncientEvils
         ]
 
-      foyer <- genCard Locations.foyer
-      courtyard <- genCard Locations.courtyard
-      livingRoom <- genCard Locations.livingRoom
-      ballroom <- genCard Locations.ballroom
-      diningRoom <- genCard Locations.diningRoom
-      gallery <- genCard Locations.gallery
+      (foyerId, placeFoyer) <- placeLocationCard Locations.foyer
+      otherPlacements <- traverse placeLocationCard [Locations.courtyard, Locations.livingRoom, Locations.ballroom, Locations.diningRoom, Locations.gallery]
 
       totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
 
@@ -140,30 +136,22 @@ instance RunMessage TheLastKing where
         , Assets.ashleighClarke
         ]
 
-      destinations <- shuffleM $ map
-        toLocationId
-        [courtyard, livingRoom, ballroom, diningRoom, gallery]
-
+      destinations <- shuffleM $ map fst otherPlacements
       investigatorIds <- allInvestigatorIds
 
-      pushAll
-        ([ story investigatorIds intro
-         , SetEncounterDeck encounterDeck
-         , SetAgendaDeck
-         , SetActDeck
-         , PlaceLocation foyer
-         , PlaceLocation courtyard
-         , PlaceLocation livingRoom
-         , PlaceLocation ballroom
-         , PlaceLocation diningRoom
-         , PlaceLocation gallery
-         , MoveAllTo (toSource attrs) (toLocationId foyer)
-         ]
+      pushAll $
+        [ story investigatorIds intro
+        , SetEncounterDeck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        , placeFoyer
+        ]
+        <> map snd otherPlacements
+        <> [MoveAllTo (toSource attrs) foyerId]
         <> zipWith CreateAssetAt bystanders (map AtLocation destinations)
         <> map
-             ((`PlaceClues` totalClues) . AssetTarget . AssetId . toCardId)
-             bystanders
-        )
+            ((`PlaceClues` totalClues) . AssetTarget . AssetId . toCardId)
+            bystanders
 
       setAsideEncounterCards <- traverse genCard [Enemies.dianneDevine]
 

@@ -12,6 +12,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
@@ -70,13 +71,12 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
         (EnemySpawnAtLocationMatching Nothing Nowhere eid)
     Just locations -> do
       x <- sample locations
-      windows' <-
-        windows
-          [Window.EnemyAttemptsToSpawnAt eid (LocationWithId $ toLocationId x)]
-      pushAll $ PlaceLocation x : windows' <> resolve
+      (locationId, locationPlacement) <- placeLocation x
+      windows' <- windows [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
+      pushAll $ locationPlacement : windows' <> resolve
         (EnemySpawnAtLocationMatching
           Nothing
-          (LocationWithId $ toLocationId x)
+          (LocationWithId locationId)
           eid
         )
 

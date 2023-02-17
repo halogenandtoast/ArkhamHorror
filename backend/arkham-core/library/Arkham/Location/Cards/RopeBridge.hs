@@ -46,18 +46,16 @@ instance RunMessage RopeBridge where
         mRiverCanyon <-
           find ((== "River Canyon") . nameTitle . cdName . toCardDef)
             <$> getExplorationDeck
-        riverCanyonId <-
-          fromMaybe (toLocationId $ fromJustNote "no river canyon" mRiverCanyon)
-            <$> (selectOne $ LocationWithTitle "River Canyon")
+        (riverCanyonId, mPlacement) <- case mRiverCanyon of
+          Just riverCanyon -> second Just <$> placeLocation riverCanyon
+          Nothing -> (, Nothing) <$> selectJust (LocationWithTitle "River Canyon")
         pushAll
           $ [ CancelNext (toSource attrs) ExploreMessage
             , InvestigatorAssignDamage iid source DamageAny 2 0
             , SetActions iid source 0
             , ChooseEndTurn iid
             ]
-          <> [ PlaceLocation riverCanyon
-             | riverCanyon <- maybeToList mRiverCanyon
-             ]
+          <> maybeToList mPlacement
           <> [MoveTo source iid riverCanyonId]
         pure l
     _ -> RopeBridge <$> runMessage msg attrs

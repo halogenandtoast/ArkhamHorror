@@ -82,6 +82,7 @@ import Arkham.Matcher hiding
   , FastPlayerWindow
   , InvestigatorDefeated
   , InvestigatorEliminated
+  , LocationCard
   , PlayCard
   , RevealLocation
   , SkillCard
@@ -3157,11 +3158,10 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
-  PlaceLocation card ->
-    if isNothing $ g ^. entitiesL . locationsL . at (toLocationId card)
+  PlaceLocation lid card ->
+    if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
         let
-          lid = toLocationId card
           location = lookupLocation (toCardCode card) lid
         push (PlacedLocation (toName location) (toCardCode card) lid)
         pure $ g & entitiesL . locationsL . at lid ?~ location

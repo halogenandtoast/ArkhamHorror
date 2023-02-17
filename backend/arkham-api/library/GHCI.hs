@@ -7,6 +7,7 @@ import Import.NoFoundation as X
 
 import Api.Arkham.Helpers
 import Application
+import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Message
 import Control.Monad.Logger
@@ -32,7 +33,7 @@ runGameMessage gameUUID msg = do
   ArkhamGame {..} <- dbGhci $ get404 gameId
   let Game { gameSeed } = arkhamGameCurrentData
   gameRef <- newIORef arkhamGameCurrentData
-  queueRef <- newIORef [msg]
+  queueRef <- newQueue [msg]
   genRef <- newIORef (mkStdGen gameSeed)
   runGameApp
     (GameApp gameRef queueRef genRef $ pure . const ())

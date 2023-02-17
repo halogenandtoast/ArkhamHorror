@@ -6,6 +6,7 @@ import Import hiding ( on, (==.) )
 
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
+import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator
@@ -38,14 +39,14 @@ putApiV1ArkhamPendingGameR gameId = do
   let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef arkhamGameCurrentData
-  queueRef <- newIORef currentQueue
+  queueRef <- newQueue currentQueue
   genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
     addInvestigator (lookupInvestigator iid) decklist
     runMessages Nothing
 
   updatedGame <- readIORef gameRef
-  updatedQueue <- readIORef queueRef
+  updatedQueue <- readIORef (queueActual queueRef)
   let updatedMessages = []
 
   writeChannel <- getChannel gameId

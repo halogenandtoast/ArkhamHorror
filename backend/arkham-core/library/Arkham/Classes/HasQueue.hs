@@ -4,19 +4,37 @@ module Arkham.Classes.HasQueue
 
 import Arkham.Prelude
 
+data Queue msg = Queue
+  { queueInbox :: IORef [msg]
+  , queueActual :: IORef [msg]
+  }
+
 class HasQueue msg m | m -> msg where
-  messageQueue :: m (IORef [msg])
+  messageQueue :: m (Queue msg)
+
+newQueue :: MonadIO m => [msg] -> m (Queue msg)
+newQueue msgs = Queue <$> newIORef [] <*> newIORef msgs
 
 withQueue :: (MonadIO m, HasQueue msg m) => ([msg] -> ([msg], r)) -> m r
 withQueue body = do
-  ref <- messageQueue
-  liftIO $ atomicModifyIORef' ref body
+  queue <- messageQueue
+  liftIO $ atomicModifyIORef' (queueActual queue) body
+
+withInbox :: (MonadIO m, HasQueue msg m) => ([msg] -> ([msg], r)) -> m r
+withInbox body = do
+  queue <- messageQueue
+  liftIO $ atomicModifyIORef' (queueInbox queue) body
 
 withQueue_ :: (MonadIO m, HasQueue msg m) => ([msg] -> [msg]) -> m ()
 withQueue_ body = withQueue ((, ()) . body)
 
 fromQueue :: (MonadIO m, HasQueue msg m) => ([msg] -> r) -> m r
-fromQueue f = f <$> (readIORef =<< messageQueue)
+fromQueue f = f <$> (readIORef . queueActual =<< messageQueue)
+
+flushQueue :: (MonadIO m, HasQueue msg m) => m ()
+flushQueue = do
+  msgs <- withInbox $ \inbox -> (inbox, [])
+  withQueue_ $ \q -> foldr (:) q msgs
 
 findFromQueue :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m (Maybe msg)
 findFromQueue f = fromQueue (find f)

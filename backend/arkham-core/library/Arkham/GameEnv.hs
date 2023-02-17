@@ -40,7 +40,7 @@ runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 
 data GameEnv = GameEnv
   { gameEnvGame :: Game
-  , gameEnvQueue :: IORef [Message]
+  , gameEnvQueue :: Queue Message
   , gameRandomGen :: IORef StdGen
   , gameLogger :: Text -> IO ()
   }

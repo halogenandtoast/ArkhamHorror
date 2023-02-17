@@ -76,29 +76,20 @@ instance RunMessage ExtracurricularActivity where
         , EncounterSet.AgentsOfYogSothoth
         ]
 
-      miskatonicQuad <- genCard Locations.miskatonicQuad
-      humanitiesBuilding <- genCard Locations.humanitiesBuilding
-      orneLibrary <- genCard Locations.orneLibrary
-      studentUnion <- genCard Locations.studentUnion
-      scienceBuilding <- genCard Locations.scienceBuilding
-      administrationBuilding <- genCard Locations.administrationBuilding
+      (miskatonicQuadId, placeMiskatonicQuad) <- placeLocationCard Locations.miskatonicQuad
+      placeOtherLocations <- traverse placeLocationCard_ [Locations.humanitiesBuilding, Locations.orneLibrary, Locations.studentUnion, Locations.scienceBuilding, Locations.administrationBuilding]
 
-      let miskatonicQuadId = toLocationId miskatonicQuad
-
-      pushAll
+      pushAll $
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation miskatonicQuad
-        , PlaceLocation orneLibrary
-        , PlaceLocation humanitiesBuilding
-        , PlaceLocation studentUnion
-        , PlaceLocation scienceBuilding
-        , PlaceLocation administrationBuilding
-        , RevealLocation Nothing miskatonicQuadId
-        , MoveAllTo (toSource attrs) miskatonicQuadId
-        , story investigatorIds intro
+        , placeMiskatonicQuad
         ]
+        <> placeOtherLocations
+        <> [ RevealLocation Nothing miskatonicQuadId
+           , MoveAllTo (toSource attrs) miskatonicQuadId
+           , story investigatorIds intro
+           ]
 
       setAsideCards <- traverse
         genCard

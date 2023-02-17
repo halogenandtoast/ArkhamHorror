@@ -35,9 +35,9 @@ instance HasAbilities OutOfThisWorld where
 instance RunMessage OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      theEdgeOfTheUniverse <- getSetAsideCard Locations.theEdgeOfTheUniverse
+      placeTheEdgeOfTheUniverse <- placeSetAsideLocation_ Locations.theEdgeOfTheUniverse
       pushAll
-        [ PlaceLocation theEdgeOfTheUniverse
+        [ placeTheEdgeOfTheUniverse
         , AdvanceActDeck actDeckId (toSource attrs)
         ]
       pure a

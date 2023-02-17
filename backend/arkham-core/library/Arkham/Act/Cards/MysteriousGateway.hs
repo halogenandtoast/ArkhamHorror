@@ -6,10 +6,8 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Types
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -33,19 +31,14 @@ instance RunMessage MysteriousGateway where
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- selectList $ InvestigatorAt $ LocationWithTitle "Guest Hall"
-      holeInTheWall <- getSetAsideCard Locations.holeInTheWall
+      (holeInTheWallId, placeHoleInTheWall) <- placeSetAsideLocation Locations.holeInTheWall
       pushAll
-        [ PlaceLocation holeInTheWall
+        [ placeHoleInTheWall
         , chooseOne
             leadInvestigatorId
             [ targetLabel iid'
-               [ MoveTo (toSource attrs) iid' $ LocationId $ toCardId holeInTheWall
-               , beginSkillTest
-                 iid'
-                 (ActSource aid)
-                 (InvestigatorTarget iid')
-                 SkillWillpower
-                 4
+               [ MoveTo (toSource attrs) iid' holeInTheWallId
+               , beginSkillTest iid' (ActSource aid) (InvestigatorTarget iid') SkillWillpower 4
                ]
             | iid' <- investigatorIds
             ]

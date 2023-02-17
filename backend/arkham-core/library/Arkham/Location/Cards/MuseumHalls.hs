@@ -75,8 +75,9 @@ instance RunMessage MuseumHalls where
           )
     UseCardAbility iid source 1 _ _ | isSource attrs source && revealed attrs ->
       l <$ push (DrawFromScenarioDeck iid ExhibitDeck (toTarget attrs) 1)
-    DrewFromScenarioDeck _ _ target cards | isTarget attrs target ->
-      l <$ pushAll (map PlaceLocation cards)
+    DrewFromScenarioDeck _ _ target cards | isTarget attrs target -> do
+      placements <- traverse placeLocation_ cards
+      l <$ pushAll placements
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         actId <- selectJust AnyAct

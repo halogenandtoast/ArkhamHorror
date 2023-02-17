@@ -65,23 +65,19 @@ instance RunMessage TheHouseAlwaysWins where
         ]
 
       cloverClubPitBoss <- genCard Enemies.cloverClubPitBoss
-      laBellaLuna <- genCard Locations.laBellaLuna
-      cloverClubLounge <- genCard Locations.cloverClubLounge
-      cloverClubBar <- genCard Locations.cloverClubBar
-      cloverClubCardroom <- genCard Locations.cloverClubCardroom
-
-      let
-        laBellaLunaId = toLocationId laBellaLuna
-        cloverClubLoungeId = toLocationId cloverClubLounge
+      (laBellaLunaId, placeLaBellaLuna) <- placeLocationCard Locations.laBellaLuna
+      (cloverClubLoungeId, placeCloverClubLounge) <- placeLocationCard Locations.cloverClubLounge
+      placeCloverClubBar <- placeLocationCard_ Locations.cloverClubBar
+      placeCloverClubCardroom <- placeLocationCard_ Locations.cloverClubCardroom
 
       pushAll
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation laBellaLuna
-        , PlaceLocation cloverClubLounge
-        , PlaceLocation cloverClubBar
-        , PlaceLocation cloverClubCardroom
+        , placeLaBellaLuna
+        , placeCloverClubLounge
+        , placeCloverClubBar
+        , placeCloverClubCardroom
         , RevealLocation Nothing laBellaLunaId
         , MoveAllTo (toSource attrs) laBellaLunaId
         , CreateEnemyAt cloverClubPitBoss cloverClubLoungeId Nothing

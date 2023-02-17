@@ -9,7 +9,6 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
@@ -49,10 +48,11 @@ instance RunMessage AtTheExhibitTheRelicsLocation where
             )
         Nothing -> do
           townHall <- getSetAsideCard Locations.townHall
+          locationId <- getRandom
           pure
-            ( toLocationId townHall
-            , PlaceLocation townHall
-              : [ PlaceClues (LocationTarget $ toLocationId townHall) n
+            ( locationId
+            , PlaceLocation locationId townHall
+              : [ PlaceClues (LocationTarget locationId) n
                 | deckCount <= 2
                 ]
             )

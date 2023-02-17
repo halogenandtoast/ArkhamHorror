@@ -41,6 +41,15 @@ selectRandom matcher = do
   results <- selectList matcher
   maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
 
+selectRandomJust
+  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  => String
+  -> a
+  -> m (QueryElement a)
+selectRandomJust err matcher = do
+  results <- selectList matcher
+  maybe (error err) sample (nonEmpty results)
+
 selectListMap
   :: (HasCallStack, Query a, HasGame m)
   => (QueryElement a -> b)

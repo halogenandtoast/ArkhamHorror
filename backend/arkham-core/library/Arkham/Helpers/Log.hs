@@ -32,6 +32,13 @@ getRecordSet k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
+getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
+getRecordedCardCodes k = mapMaybe recorded <$> getRecordSet k
+  where
+    recorded = \case
+      Recorded cCode -> Just cCode
+      CrossedOut _ -> Nothing
+
 remembered :: HasGame m => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 

@@ -5,11 +5,8 @@ import Arkham.Prelude
 import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Query
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (LocationMatcher(..), enemyAt)
 import Arkham.Message
@@ -29,18 +26,16 @@ instance RunMessage Trapped where
       studyId <- selectJust $ LocationWithTitle "Study"
       enemyIds <- selectList $ enemyAt studyId
 
-      hallway <- getSetAsideCard Locations.hallway
-      cellar <- getSetAsideCard Locations.cellar
-      attic <- getSetAsideCard Locations.attic
-      parlor <- getSetAsideCard Locations.parlor
-
-      let hallwayId = LocationId $ toCardId hallway
+      (hallwayId, placeHallway) <- placeSetAsideLocation Locations.hallway
+      placeCellar <- placeSetAsideLocation_ Locations.cellar
+      placeAttic <- placeSetAsideLocation_ Locations.attic
+      placeParlor <- placeSetAsideLocation_ Locations.parlor
 
       pushAll $
-        [ PlaceLocation hallway
-        , PlaceLocation cellar
-        , PlaceLocation attic
-        , PlaceLocation parlor
+        [ placeHallway
+        , placeCellar
+        , placeAttic
+        , placeParlor
         ]
        <> map (Discard (toSource attrs) . EnemyTarget) enemyIds
        <> [ RevealLocation Nothing hallwayId

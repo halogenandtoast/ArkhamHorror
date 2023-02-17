@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -61,11 +60,11 @@ instance RunMessage Backstage where
             )
       msgs <- concat <$> for
         backstageDoorways
-        \(idx, backstageDoorway) -> pure
-          [ PlaceLocation backstageDoorway
-          , SetLocationLabel (LocationId $ toCardId backstageDoorway)
-          $ "backstageDoorway"
-          <> tshow (idx + 1)
-          ]
+        \(idx, backstageDoorway) -> do
+          (locationId, placement) <- placeLocation backstageDoorway
+          pure
+            [ placement
+            , SetLocationLabel locationId $ "backstageDoorway" <> tshow (idx + 1)
+            ]
       l <$ pushAll msgs
     _ -> Backstage <$> runMessage msg attrs

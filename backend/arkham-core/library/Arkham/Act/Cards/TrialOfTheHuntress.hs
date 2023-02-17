@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
@@ -28,9 +27,9 @@ trialOfTheHuntress =
 instance RunMessage TrialOfTheHuntress where
   runMessage msg a@(TrialOfTheHuntress attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
-      blackCave <- genCard Locations.blackCave
+      placeBlackCave <- placeLocationCard_ Locations.blackCave
       pushAll
-        [ PlaceLocation blackCave
+        [ placeBlackCave
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

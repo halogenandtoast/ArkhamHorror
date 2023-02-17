@@ -155,6 +155,7 @@ instance RunMessage TheDepthsOfYoth where
         setAsideLocations = drop 4 rest
       explorationDeck <- shuffleM $ stepsOfYoth : take 4 rest
 
+      (startLocationId, placeStartLocation) <- placeLocation startLocation
 
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       ichtacasFaithIsRestored <- getHasRecord IchtacasFaithIsRestored
@@ -195,8 +196,8 @@ instance RunMessage TheDepthsOfYoth where
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation startLocation
-           , MoveAllTo (toSource attrs) (toLocationId startLocation)
+           , placeStartLocation
+           , MoveAllTo (toSource attrs) startLocationId
            ]
         <> [ CreateEnemyWithPlacement harbingerOfValusia Pursuit
            | startsOnAgenda5
@@ -229,7 +230,7 @@ instance RunMessage TheDepthsOfYoth where
           )
         & (actStackL . at 1 ?~ [Acts.journeyToTheNexus])
         & (setAsideCardsL .~ setAsideCards <> setAsideLocations)
-        & (metaL .~ toMeta (toLocationId startLocation))
+        & (metaL .~ toMeta startLocationId)
         & (countsL .~ mapFromList [(CurrentDepth, 1)])
         )
     ResolveAmounts _ (getChoiceAmount "Fury" -> n) ScenarioTarget -> do

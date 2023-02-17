@@ -80,8 +80,8 @@ instance RunMessage ShiveringPools where
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          placeBelow <- placeAtDirection Below attrs <*> pure card
-          placeRight <- placeAtDirection RightOf attrs <*> pure card
+          placeBelow <- placeAtDirection Below attrs >>= \f -> f card
+          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
           push

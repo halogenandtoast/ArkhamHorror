@@ -60,9 +60,9 @@ instance RunMessage BaseOfTheHill where
       | isSource attrs source -> do
         divergingPaths <- getSetAsideCardsMatching
           $ CardWithTitle "Diverging Path"
-        case nonEmpty divergingPaths of
-          Just ne -> do
-            card <- sample ne
-            l <$ push (PlaceLocation card)
-          Nothing -> pure l
+        for_ (nonEmpty divergingPaths) $ \ne -> do
+          card <- sample ne
+          placement <- placeLocation_ card
+          push placement
+        pure l
     _ -> BaseOfTheHill <$> runMessage msg attrs

@@ -29,8 +29,9 @@ instance RunMessage MissingPersons where
   runMessage msg a@(MissingPersons attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide D attrs -> do
       arkhamPoliceStation <- genCard Locations.arkhamPoliceStation
+      placeArkhamPoliceStation <- placeLocation_ arkhamPoliceStation
       pushAll
-        [ PlaceLocation arkhamPoliceStation
+        [ placeArkhamPoliceStation
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

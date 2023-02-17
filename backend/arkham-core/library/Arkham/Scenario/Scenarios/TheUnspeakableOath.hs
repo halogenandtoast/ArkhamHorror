@@ -124,22 +124,17 @@ instance RunMessage TheUnspeakableOath where
         , EncounterSet.AgentsOfHastur
         ]
 
-      westernPatientWing <- genCard =<< sample
+      westernPatientWing <- sample
         (Locations.asylumHallsWesternPatientWing_168
         :| [Locations.asylumHallsWesternPatientWing_169]
         )
 
-      easternPatientWing <- genCard =<< sample
+      easternPatientWing <- sample
         (Locations.asylumHallsEasternPatientWing_170
         :| [Locations.asylumHallsEasternPatientWing_171]
         )
 
-      messHall <- genCard Locations.messHall
-      kitchen <- genCard Locations.kitchen
-      yard <- genCard Locations.yard
-      garden <- genCard Locations.garden
-      infirmary <- genCard Locations.infirmary
-      basementHall <- genCard Locations.basementHall
+      placeOtherLocations <- traverse placeLocationCard_ [Locations.messHall, Locations.kitchen, Locations.yard, Locations.garden, Locations.infirmary, Locations.basementHall]
 
       setAsideCards <- traverse
         genCard
@@ -185,14 +180,17 @@ instance RunMessage TheUnspeakableOath where
       theFollowersOfTheSignHaveFoundTheWayForward <- getHasRecord
         TheFollowersOfTheSignHaveFoundTheWayForward
 
+      (easternPatientWingId, placeEasternPatientWing) <- placeLocationCard easternPatientWing
+      (westernPatientWingId, placeWesternPatientWing) <- placeLocationCard westernPatientWing
+
       let
         spawnMessages = map
           (\iid -> chooseOne
             iid
             [ TargetLabel
-                (LocationTarget $ toLocationId location)
-                [MoveTo (toSource attrs) iid (toLocationId location)]
-            | location <- [westernPatientWing, easternPatientWing]
+                (LocationTarget location)
+                [MoveTo (toSource attrs) iid location]
+            | location <- [westernPatientWingId, easternPatientWingId]
             ]
           )
           investigatorIds
@@ -205,6 +203,7 @@ instance RunMessage TheUnspeakableOath where
           Hard -> MinusFour
           Expert -> MinusFive
 
+
       pushAll
         $ [story investigatorIds intro1Or2, story investigatorIds intro3]
         <> [ story investigatorIds constancesInformation
@@ -214,22 +213,13 @@ instance RunMessage TheUnspeakableOath where
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation westernPatientWing
-           , SetLocationLabel
-             (toLocationId westernPatientWing)
-             "asylumHallsWesternPatientWing"
-           , PlaceLocation easternPatientWing
-           , SetLocationLabel
-             (toLocationId easternPatientWing)
-             "asylumHallsEasternPatientWing"
-           , PlaceLocation messHall
-           , PlaceLocation kitchen
-           , PlaceLocation yard
-           , PlaceLocation garden
-           , PlaceLocation infirmary
-           , PlaceLocation basementHall
-           , AddToken tokenToAdd
+           , placeWesternPatientWing
+           , SetLocationLabel westernPatientWingId "asylumHallsWesternPatientWing"
+           , placeEasternPatientWing
+           , SetLocationLabel easternPatientWingId "asylumHallsEasternPatientWing"
            ]
+        <> placeOtherLocations
+        <> [ AddToken tokenToAdd ]
         <> spawnMessages
 
       tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp

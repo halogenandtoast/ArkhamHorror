@@ -6,12 +6,10 @@ module Arkham.Location.Cards.Lobby
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -50,15 +48,11 @@ instance RunMessage Lobby where
         <$> (shuffleM =<< selectList
               (SetAsideCardMatch $ CardWithTitle "Lobby Doorway")
             )
-      msgs <- concat <$> for
-        lobbyDoorways
-        \(idx, lobbyDoorway) -> pure
-          [ PlaceLocation lobbyDoorway
-          , SetLocationLabel (LocationId $ toCardId lobbyDoorway)
-          $ "lobbyDoorway"
-          <> tshow (idx + 1)
-          ]
-      l <$ pushAll msgs
+      msgs <- for lobbyDoorways \(idx, lobbyDoorway) -> do
+        (locationId, placement) <- placeLocation lobbyDoorway
+        pure [placement, SetLocationLabel locationId $ "lobbyDoorway" <> tshow (idx + 1)]
+      pushAll $ concat msgs
+      pure l
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       drawing <- drawCards iid attrs 3
       push drawing

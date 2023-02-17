@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher
+import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Trait ( Trait (Ancient) )

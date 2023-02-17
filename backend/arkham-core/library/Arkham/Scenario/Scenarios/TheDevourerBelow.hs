@@ -77,8 +77,7 @@ instance RunMessage TheDevourerBelow where
         cultistsWhoGotAwayMessages =
           replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
 
-      mainPath <- genCard Locations.mainPath
-      let mainPathId = toLocationId mainPath
+      (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
 
       arkhamWoods <- traverse
         genCard
@@ -110,18 +109,19 @@ instance RunMessage TheDevourerBelow where
         , randomSet
         ]
 
+      placeWoods <- for (zip woodsLabels woodsLocations) $ \(label, location) -> do
+        (locationId, placement) <- placeLocation location
+        pure [placement, SetLocationLabel locationId label]
+
       pushAll
         $ [ story investigatorIds intro
           , SetEncounterDeck encounterDeck
           , AddToken ElderThing
           , SetAgendaDeck
           , SetActDeck
-          , PlaceLocation mainPath
+          , placeMainPath
           ]
-        <> [ PlaceLocation card | card <- woodsLocations ]
-        <> [ SetLocationLabel (LocationId $ toCardId card) label
-           | (label, card) <- zip woodsLabels woodsLocations
-           ]
+        <> concat placeWoods
         <> [ RevealLocation Nothing mainPathId
            , MoveAllTo (toSource attrs) mainPathId
            ]

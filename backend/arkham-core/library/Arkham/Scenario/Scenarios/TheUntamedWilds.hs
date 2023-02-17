@@ -79,7 +79,7 @@ instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      expeditionCamp <- genCard Locations.expeditionCamp
+      (expeditionCampId, placeExpeditionCamp) <- placeLocationCard Locations.expeditionCamp
 
       explorationDeck <- shuffleM =<< traverse
         genCard
@@ -141,8 +141,8 @@ instance RunMessage TheUntamedWilds where
           , SetEncounterDeck encounterDeck'
           , SetAgendaDeck
           , SetActDeck
-          , PlaceLocation expeditionCamp
-          , MoveAllTo (toSource attrs) (toLocationId expeditionCamp)
+          , placeExpeditionCamp
+          , MoveAllTo (toSource attrs) expeditionCampId
           ]
       TheUntamedWilds <$> runMessage
         msg

@@ -86,8 +86,7 @@ instance RunMessage BoneFilledCaverns where
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placements <- mapMaybeM (toMaybePlacement attrs) [Below, RightOf]
-      pushAll $ concat $ zipWith ($) placements cards
+      placeDrawnLocations attrs cards [Below, RightOf]
       pure l
     SkillTestEnds _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
     _ -> BoneFilledCaverns . (`with` metadata) <$> runMessage msg attrs

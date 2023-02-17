@@ -137,7 +137,7 @@ instance RunMessage TurnBackTime where
           ]
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-      entryway <- genCard Locations.entryway
+      (entrywayId, placeEntryway) <- placeLocationCard Locations.entryway
 
       pushAll
         $ story iids intro
@@ -145,8 +145,8 @@ instance RunMessage TurnBackTime where
         <> [ SetEncounterDeck encounterDeck'
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation entryway
-           , RevealLocation Nothing (toLocationId entryway)
+           , placeEntryway
+           , RevealLocation Nothing entrywayId
            , AddToken ElderThing
            ]
       TurnBackTime <$> runMessage

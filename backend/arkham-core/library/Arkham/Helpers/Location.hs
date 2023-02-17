@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Location.Types ( Field (..) )
 import Arkham.LocationSymbol
-import Arkham.Matcher
+import Arkham.Matcher hiding (LocationCard)
 import Arkham.Projection
 import Arkham.Target
 

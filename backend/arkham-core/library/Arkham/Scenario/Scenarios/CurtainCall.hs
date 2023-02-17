@@ -69,10 +69,9 @@ instance RunMessage CurtainCall where
         , EncounterSet.Rats
         ]
 
-      theatre <- genCard Locations.theatre
-      lobby <- genCard Locations.lobby
-      balcony <- genCard Locations.balcony
-      backstage <- genCard Locations.backstage
+      (theatreId, placeTheater) <- placeLocationCard Locations.theatre
+      (backstageId, placeBackstage) <- placeLocationCard Locations.backstage
+      placeRest <- traverse placeLocationCard_ [Locations.lobby, Locations.balcony]
 
       investigatorIds <- allInvestigatorIds
       mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
@@ -80,26 +79,24 @@ instance RunMessage CurtainCall where
         theatreInvestigatorIds =
           maybe investigatorIds (`deleteFirst` investigatorIds) mLolaId
         theatreMoveTo = map
-          (\iid -> MoveTo (toSource attrs) iid (toLocationId theatre))
+          (\iid -> MoveTo (toSource attrs) iid theatreId)
           theatreInvestigatorIds
         backstageMoveTo =
-          [ MoveTo (toSource attrs) lolaId (toLocationId backstage)
+          [ MoveTo (toSource attrs) lolaId backstageId
           | lolaId <- maybeToList mLolaId
           ]
 
-      pushAll
-        ([ story investigatorIds intro
-         , SetEncounterDeck encounterDeck
-         , SetAgendaDeck
-         , SetActDeck
-         , PlaceLocation theatre
-         , PlaceLocation lobby
-         , PlaceLocation balcony
-         , PlaceLocation backstage
-         ]
+      pushAll $
+        [ story investigatorIds intro
+        , SetEncounterDeck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        , placeTheater
+        , placeBackstage
+        ]
+        <> placeRest
         <> theatreMoveTo
         <> backstageMoveTo
-        )
 
       setAsideCards <- traverse
         genCard

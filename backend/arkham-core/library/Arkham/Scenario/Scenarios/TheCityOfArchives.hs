@@ -153,8 +153,8 @@ instance RunMessage TheCityOfArchives where
             ]
 
       yithianObserver <- genCard Enemies.yithianObserver
-      remainingLocations <- traverse
-        genCard
+      placeRemainingLocations <- traverse
+        placeLocationCard_
         [ Locations.hallsOfPnakotusNorthernCorridors
         , Locations.hallsOfPnakotusEasternCorridors
         , Locations.hallsOfPnakotusWesternCorridors
@@ -177,22 +177,24 @@ instance RunMessage TheCityOfArchives where
           then id
           else victoryDisplayL %~ (yithianObserver :)
 
+      (interviewRoomId, placeInterviewRoom) <- placeLocation interviewRoom
+      placeOtherRooms <- for (zip [2..] otherRooms) $ \(idx, location) -> do
+        (locationId, placement) <- placeLocation location
+        pure [placement, SetLocationLabel locationId ("interviewRoom" <> tshow @Int idx)]
+
       pushAll
         $ [ SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
-          , PlaceLocation interviewRoom
-          , SetLocationLabel (toLocationId interviewRoom) "interviewRoom1"
-          , MoveAllTo (toSource attrs) (toLocationId interviewRoom)
+          , placeInterviewRoom
+          , SetLocationLabel interviewRoomId "interviewRoom1"
+          , MoveAllTo (toSource attrs) interviewRoomId
           ]
-        <> map PlaceLocation otherRooms
-        <> [ SetLocationLabel (toLocationId l) ("interviewRoom" <> tshow @Int n)
-           | (l, n) <- zip otherRooms [2 ..]
-           ]
-        <> [ CreateEnemyAt yithianObserver (toLocationId interviewRoom) Nothing
+        <> concat placeOtherRooms
+        <> [ CreateEnemyAt yithianObserver interviewRoomId Nothing
            | cooperatedWithTheYithians
            ]
-        <> map PlaceLocation remainingLocations
+        <> placeRemainingLocations
       pure
         . TheCityOfArchives
         $ attrs

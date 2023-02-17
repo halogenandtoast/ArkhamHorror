@@ -243,3 +243,9 @@ breakM p xs@(x : xs') = do
 (<$$>) :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
 (<$$>) = fmap . fmap
 infixl 4 <$$>
+
+withIndex :: [a] -> [(Int, a)]
+withIndex = zip [0..]
+
+withIndex1 :: [a] -> [(Int, a)]
+withIndex1 = zip [1..]

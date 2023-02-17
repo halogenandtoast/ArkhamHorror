@@ -30,14 +30,15 @@ instance RunMessage BetweenWorlds where
           lookupEncounterCard Locations.betweenWorlds (toCardId attrs)
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       useLabel2 <- selectAny $ LocationWithLabel $ mkLabel "betweenWorlds1"
+      locationId <- getRandom
       pushAll
-        [ PlaceLocation (EncounterCard asLocation)
+        [ PlaceLocation locationId (EncounterCard asLocation)
         , SetLocationLabel
-          (toLocationId asLocation)
+          locationId
           (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
-        , AddDirectConnection (toLocationId asLocation) nexus
-        , AddDirectConnection nexus (toLocationId asLocation)
-        , MoveTo (toSource attrs) iid (toLocationId asLocation)
+        , AddDirectConnection locationId nexus
+        , AddDirectConnection nexus locationId
+        , MoveTo (toSource attrs) iid locationId
         ]
       pure t
     After (Revelation _ source) | isSource attrs source -> do

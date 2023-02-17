@@ -193,7 +193,7 @@ instance RunMessage TheDoomOfEztli where
           ]
 
       -- Put entryway into play investigators start there
-      entryway <- genCard Locations.entryway
+      (entrywayId, placeEntryway) <- placeLocationCard Locations.entryway
       -- | Messages
 
       explorationDeck <- shuffleM =<< traverse
@@ -225,15 +225,15 @@ instance RunMessage TheDoomOfEztli where
           , SetEncounterDeck encounterDeck'
           , SetAgendaDeck
           , SetActDeck
-          , PlaceLocation entryway
-          , RevealLocation Nothing (toLocationId entryway)
+          , placeEntryway
+          , RevealLocation Nothing entrywayId
           ]
         <> [ PlaceDoom
-               (LocationTarget $ toLocationId entryway)
+               (LocationTarget entrywayId)
                (resolution4Count metadata)
            | resolution4Count metadata > 0
            ]
-        <> [MoveAllTo (toSource attrs) (toLocationId entryway)]
+        <> [MoveAllTo (toSource attrs) entrywayId]
 
       TheDoomOfEztli . (`with` metadata) <$> runMessage
         msg

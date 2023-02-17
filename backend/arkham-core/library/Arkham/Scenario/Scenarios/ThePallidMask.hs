@@ -192,6 +192,8 @@ instance RunMessage ThePallidMask where
             _ -> error "invalid setup"
         else (theGateToHell, ) <$> shuffleM otherCatacombs
 
+      (startingLocationId, placeStartingLocation) <- placeLocation startingLocation
+
       theManInThePallidMask <- getCampaignStoryCard
         Enemies.theManInThePallidMask
 
@@ -206,12 +208,10 @@ instance RunMessage ThePallidMask where
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
-           , PlaceLocation startingLocation
-           , SetLocationLabel
-             (toLocationId startingLocation)
-             (unLabel $ positionToLabel startPosition)
-           , PlaceResources (LocationTarget $ toLocationId startingLocation) 1
-           , MoveAllTo (toSource attrs) (toLocationId startingLocation)
+           , placeStartingLocation
+           , SetLocationLabel startingLocationId (unLabel $ positionToLabel startPosition)
+           , PlaceResources (LocationTarget startingLocationId) 1
+           , MoveAllTo (toSource attrs) startingLocationId
            , SetupStep (toTarget attrs) 1
            , RemoveFromBearersDeckOrDiscard theManInThePallidMask
            ]

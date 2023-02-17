@@ -68,6 +68,7 @@ instance RunMessage AscendingPath where
         case nonEmpty alteredPaths of
           Just ne -> do
             card <- sample ne
-            l <$ push (PlaceLocation card)
+            placement <- placeLocation_ card
+            l <$ push placement
           Nothing -> pure l
     _ -> AscendingPath <$> runMessage msg attrs

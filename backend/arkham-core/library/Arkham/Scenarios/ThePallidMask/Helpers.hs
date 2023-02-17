@@ -5,12 +5,14 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Label
 import Arkham.Matcher
 import Arkham.Message hiding (Label)
 import Arkham.Direction
 import Arkham.Location.Types
+import Control.Monad (zipWithM)
 
 posLabelToPosition :: Label -> (Int, Int)
 posLabelToPosition lbl = case drop 3 (unpack . unLabel $ lbl) of
@@ -44,7 +46,7 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | otherwise = show n
 
 
-placeAtDirection :: HasGame m => Direction -> LocationAttrs -> m (Card -> [Message])
+placeAtDirection :: Direction -> LocationAttrs -> GameT (Card -> GameT [Message])
 placeAtDirection direction attrs = do
   -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
   let placedPosition = newPos direction (posLabelToPosition . mkLabel $ locationLabel attrs)
@@ -54,24 +56,24 @@ placeAtDirection direction attrs = do
   mAboveLocation <- selectOne $ LocationWithLabel $ positionToLabel $ newPos Above placedPosition
   mBelowLocation <- selectOne $ LocationWithLabel $ positionToLabel $ newPos Below placedPosition
 
-  pure $ \card ->
-    [ PlaceLocation card
-    , SetLocationLabel
-      (toLocationId card)
-      (unLabel $ positionToLabel placedPosition)
-    ]
-    <> case mLeftLocation of
-         Just lid -> [ PlacedLocationDirection (toLocationId card) LeftOf lid]
-         Nothing -> []
-    <> case mRightLocation of
-         Just lid -> [ PlacedLocationDirection (toLocationId card) RightOf lid]
-         Nothing -> []
-    <> case mAboveLocation of
-         Just lid -> [ PlacedLocationDirection (toLocationId card) Above lid]
-         Nothing -> []
-    <> case mBelowLocation of
-         Just lid -> [ PlacedLocationDirection (toLocationId card) Below lid]
-         Nothing -> []
+  pure $ \card -> do
+    (locationId, placement) <- placeLocation card
+    pure $
+      [ placement
+      , SetLocationLabel locationId (unLabel $ positionToLabel placedPosition)
+      ]
+      <> case mLeftLocation of
+           Just lid -> [ PlacedLocationDirection locationId LeftOf lid]
+           Nothing -> []
+      <> case mRightLocation of
+           Just lid -> [ PlacedLocationDirection locationId RightOf lid]
+           Nothing -> []
+      <> case mAboveLocation of
+           Just lid -> [ PlacedLocationDirection locationId Above lid]
+           Nothing -> []
+      <> case mBelowLocation of
+           Just lid -> [ PlacedLocationDirection locationId Below lid]
+           Nothing -> []
  where
    newPos dir (x, y) = case dir of
               Above -> (x, y + 1)
@@ -82,9 +84,15 @@ placeAtDirection direction attrs = do
 directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
 directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)
 
-toMaybePlacement :: HasGame m => LocationAttrs -> Direction -> m (Maybe (Card -> [Message]))
+toMaybePlacement :: LocationAttrs -> Direction -> GameT (Maybe (Card -> GameT [Message]))
 toMaybePlacement attrs dir = do
   isEmpty <- directionEmpty attrs dir
   if isEmpty
     then Just <$> placeAtDirection dir attrs
     else pure Nothing
+
+placeDrawnLocations :: LocationAttrs -> [Card] -> [Direction] -> GameT ()
+placeDrawnLocations attrs cards directions = do
+  placements <- mapMaybeM (toMaybePlacement attrs) directions
+  msgs <- concat <$> zipWithM ($) placements cards
+  pushAll msgs

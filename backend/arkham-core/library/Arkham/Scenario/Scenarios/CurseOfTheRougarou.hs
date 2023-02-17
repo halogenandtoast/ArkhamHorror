@@ -16,7 +16,6 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Resolution
@@ -83,19 +82,20 @@ instance RunMessage CurseOfTheRougarou where
         [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
 
       let
-        bayou =
+        ((bayouLabel, bayou), others) =
           case break (elem Bayou . toTraits . snd) startingLocationsWithLabel of
-            (_, (_, x) : _) -> x
+            (as, x : bs) -> (x, as <> bs)
             _ -> error "handled"
-        bayouId = LocationId $ toCardId bayou
+
+      (bayouId, placeBayou) <- placeLocation bayou
+      otherPlacements <- for others $ \(label, card) -> do
+        (locationId, placement) <- placeLocation card
+        pure [placement, SetLocationLabel locationId label]
+
       pushAll
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> concat
-             [ [ PlaceLocation card
-               , SetLocationLabel (LocationId $ toCardId card) label
-               ]
-             | (label, card) <- startingLocationsWithLabel
-             ]
+        <> [placeBayou, SetLocationLabel bayouId bayouLabel]
+        <> concat otherPlacements
         <> [ RevealLocation Nothing bayouId
            , MoveAllTo (toSource attrs) bayouId
            , story investigatorIds intro

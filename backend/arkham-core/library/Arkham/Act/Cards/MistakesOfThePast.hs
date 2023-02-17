@@ -33,15 +33,15 @@ instance RunMessage MistakesOfThePast where
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <- selectList $ RevealedLocation <> LocationWithTitle
         "Historical Society"
-      hiddenLibrary <- getSetAsideCard Locations.hiddenLibrary
       mrPeabody <- getSetAsideCard Assets.mrPeabody
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       playerCount <- getPlayerCount
-      a <$ pushAll
-        ([ PlaceCluesUpToClueValue location playerCount
-         | location <- locations
-         ]
+      placeHiddenLibrary <- placeSetAsideLocation_ Locations.hiddenLibrary
+      pushAll $
+        [ PlaceCluesUpToClueValue location playerCount
+        | location <- locations
+        ]
         <> [ chooseOne
              leadInvestigatorId
              [ TargetLabel
@@ -49,8 +49,8 @@ instance RunMessage MistakesOfThePast where
                  [TakeControlOfSetAsideAsset iid mrPeabody]
              | iid <- investigatorIds
              ]
-           , PlaceLocation hiddenLibrary
+           , placeHiddenLibrary
            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]
-        )
+      pure a
     _ -> MistakesOfThePast <$> runMessage msg attrs

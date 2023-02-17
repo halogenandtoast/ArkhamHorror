@@ -135,13 +135,8 @@ instance RunMessage ThreadsOfFate where
         ]
       encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
-      northside <- genCard Locations.northside
-      downtown <- genCard Locations.downtownFirstBankOfArkham
-      easttown <- genCard Locations.easttown
-      miskatonicUniversity <- genCard Locations.miskatonicUniversity
-      rivertown <- genCard Locations.rivertown
-      velmasDiner <- genCard Locations.velmasDiner
-      curiositieShoppe <- genCard Locations.curiositieShoppe
+      (rivertownId, placeRivertown) <- placeLocationCard Locations.rivertown
+      placeOtherLocations <- traverse placeLocationCard_ [Locations.northside, Locations.downtownFirstBankOfArkham, Locations.easttown, Locations.miskatonicUniversity, Locations.velmasDiner, Locations.curiositieShoppe]
 
       gaveCustodyToHarlan <- getHasRecord
         TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
@@ -227,7 +222,7 @@ instance RunMessage ThreadsOfFate where
         , Assets.alejandroVela
         ]
 
-      pushAll
+      pushAll $
         [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
         , RemoveCampaignCard Assets.alejandroVela
         , SetEncounterDeck encounterDeck
@@ -240,15 +235,11 @@ instance RunMessage ThreadsOfFate where
           ]
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation northside
-        , PlaceLocation downtown
-        , PlaceLocation easttown
-        , PlaceLocation miskatonicUniversity
-        , PlaceLocation rivertown
-        , PlaceLocation velmasDiner
-        , PlaceLocation curiositieShoppe
-        , MoveAllTo (toSource attrs) (toLocationId rivertown)
+        , placeRivertown
         ]
+        <> placeOtherLocations
+        <> [MoveAllTo (toSource attrs) rivertownId]
+
       ThreadsOfFate <$> runMessage
         Setup
         (attrs

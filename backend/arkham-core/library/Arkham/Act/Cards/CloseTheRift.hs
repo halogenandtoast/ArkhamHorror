@@ -45,12 +45,11 @@ instance RunMessage CloseTheRift where
       theEdgeOfTheUniverseId <- getJustLocationIdByName
         "The Edge of the Universe"
       tearThroughTime <- getSetAsideCard Locations.tearThroughTime
-      a <$ pushAll
-        (resolve (RemoveLocation theEdgeOfTheUniverseId)
-        <> [ PlaceLocation tearThroughTime
-           , AdvanceActDeck actDeckId (toSource attrs)
-           ]
-        )
+      locationPlacement <- placeLocation_ tearThroughTime
+      pushAll
+        $ resolve (RemoveLocation theEdgeOfTheUniverseId)
+        <> [locationPlacement, AdvanceActDeck actDeckId (toSource attrs)]
+      pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
       unless (null locationCards) $ pushAll

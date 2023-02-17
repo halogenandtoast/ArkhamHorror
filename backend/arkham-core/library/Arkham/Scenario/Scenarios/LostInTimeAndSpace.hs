@@ -18,7 +18,6 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
@@ -128,17 +127,14 @@ instance RunMessage LostInTimeAndSpace where
         , EncounterSet.AgentsOfYogSothoth
         ]
 
-      anotherDimension <- EncounterCard
-        <$> genEncounterCard Locations.anotherDimension
-
-      let anotherDimensionId = LocationId $ toCardId anotherDimension
+      (anotherDimensionId, placeAnotherDimension) <- placeLocationCard Locations.anotherDimension
 
       pushAll
         [ story investigatorIds intro
         , SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation anotherDimension
+        , placeAnotherDimension
         , RevealLocation Nothing anotherDimensionId
         , MoveAllTo (toSource attrs) anotherDimensionId
         ]
@@ -201,9 +197,10 @@ instance RunMessage LostInTimeAndSpace where
             Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
         _ -> pure ()
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
+      (locationId, placement) <- placeLocation (EncounterCard card)
       pushAll
-        [ PlaceLocation (EncounterCard card)
-        , MoveTo (toSource attrs) iid (LocationId $ toCardId card)
+        [ placement
+        , MoveTo (toSource attrs) iid locationId
         ]
       pure s
     ScenarioResolution NoResolution -> do

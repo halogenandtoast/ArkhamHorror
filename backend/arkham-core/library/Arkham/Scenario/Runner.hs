@@ -108,9 +108,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       matches = filter
         (`cardMatch` (Matcher.CardWithType LocationType <> cardMatcher))
         scenarioSetAsideCards
+    locationId <- getRandom
     a <$ case matches of
       [] -> error "There were no locations with that name"
-      (card : _) -> push (PlaceLocation card)
+      (card : _) -> push (PlaceLocation locationId card)
   PlaceDoomOnAgenda -> do
     agendaIds <- selectList Matcher.AnyAgenda
     case agendaIds of
@@ -355,7 +356,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         randomLocationId <- sample lids
         msgs <- windows [Window.ChosenRandomLocation randomLocationId]
         a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
-  PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
+  PlaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card
   CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do

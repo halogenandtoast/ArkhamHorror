@@ -191,6 +191,9 @@ instance RunMessage BlackStarsRise where
 
       isStandalone <- getIsStandalone
 
+      (porteDeLAvanceeId, placePorteDeLAvancee) <- placeLocation porteDeLAvancee
+      otherPlacements <- traverse placeLocation_ [northTower, outerWall, brokenSteps, grandRue, abbeyChurch]
+
       pushAll
         $ [story investigatorIds intro]
         <> [ story investigatorIds ashleighsInformation | ashleighInterviewed ]
@@ -209,14 +212,10 @@ instance RunMessage BlackStarsRise where
         <> [ AddToken tokenToAdd
            , SetAgendaDeck
            , SetEncounterDeck encounterDeck
-           , PlaceLocation porteDeLAvancee
-           , PlaceLocation northTower
-           , PlaceLocation outerWall
-           , PlaceLocation brokenSteps
-           , PlaceLocation grandRue
-           , PlaceLocation abbeyChurch
-           , MoveAllTo (toSource attrs) (toLocationId porteDeLAvancee)
            ]
+        <> (placePorteDeLAvancee : otherPlacements)
+        <> [MoveAllTo (toSource attrs) porteDeLAvanceeId]
+
       BlackStarsRise <$> runMessage
         msg
         (attrs

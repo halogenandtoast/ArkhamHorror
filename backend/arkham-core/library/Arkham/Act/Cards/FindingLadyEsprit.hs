@@ -16,7 +16,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
@@ -42,9 +41,8 @@ instance RunMessage FindingLadyEsprit where
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       ladyEspritSpawnLocation <-
         fromJust . headMay . setToList <$> bayouLocations
-      ladyEsprit <- PlayerCard <$> genPlayerCard Assets.ladyEsprit
-      setAsideLocations <- selectList $ SetAsideCardMatch $ CardWithType
-        LocationType
+      ladyEsprit <- genCard Assets.ladyEsprit
+      setAsideLocations <- selectList $ SetAsideCardMatch LocationCard
 
       let
         traits =
@@ -54,30 +52,24 @@ instance RunMessage FindingLadyEsprit where
                           [NewOrleans, Riverside, Wilderness, Unhallowed]
         locationsFor t = filter (member t . toTraits) setAsideLocations
 
-      setAsideLocationsWithLabels <-
-        concat
-          <$> traverse (\t -> locationsWithLabels t (locationsFor t)) traits
+      setAsideLocationsWithLabels <- concatMapM (\t -> locationsWithLabels t (locationsFor t)) traits
+      placements <- for setAsideLocationsWithLabels $ \(label, card) -> do
+        (locationId, locationPlacement) <- placeLocation card
+        pure [locationPlacement, SetLocationLabel locationId label]
 
-      a <$ pushAll
-        ([CreateAssetAt ladyEsprit (AtLocation ladyEspritSpawnLocation)]
-        <> concat
-             [ [ PlaceLocation card
-               , SetLocationLabel (LocationId $ toCardId card) label
-               ]
-             | (label, card) <- setAsideLocationsWithLabels
-             ]
+      pushAll $ [CreateAssetAt ladyEsprit (AtLocation ladyEspritSpawnLocation)]
+        <> concat placements
         <> [NextAdvanceActStep aid 2]
-        )
+      pure a
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       curseOfTheRougarouSet <- map EncounterCard <$> gatherEncounterSet
         EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
-      theRougarou <- EncounterCard <$> genEncounterCard Enemies.theRougarou
-      curseOfTheRougarou <- PlayerCard
-        <$> genPlayerCard Treacheries.curseOfTheRougarou
-      a <$ pushAll
-        ([ chooseOne
+      theRougarou <- genCard Enemies.theRougarou
+      curseOfTheRougarou <- genCard Treacheries.curseOfTheRougarou
+      pushAll $
+         [ chooseOne
              leadInvestigatorId
              [ targetLabel lid [CreateEnemyAt theRougarou lid Nothing]
              | lid <- rougarouSpawnLocations
@@ -91,5 +83,5 @@ instance RunMessage FindingLadyEsprit where
            , CreateWeaknessInThreatArea curseOfTheRougarou leadInvestigatorId
            , AdvanceActDeck actDeckId (toSource attrs)
            ]
-        )
+      pure a
     _ -> FindingLadyEsprit <$> runMessage msg attrs

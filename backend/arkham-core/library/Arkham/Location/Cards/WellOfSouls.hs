@@ -82,9 +82,9 @@ instance RunMessage WellOfSouls where
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          placeAbove <- placeAtDirection Above attrs <*> pure card
-          placeBelow <- placeAtDirection Below attrs <*> pure card
-          placeRight <- placeAtDirection RightOf attrs <*> pure card
+          placeAbove <- placeAtDirection Above attrs >>= \f -> f card
+          placeBelow <- placeAtDirection Below attrs >>= \f -> f card
+          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf

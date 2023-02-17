@@ -130,11 +130,11 @@ instance RunMessage TheMiskatonicMuseum where
         , EncounterSet.LockedDoors
         ]
 
-      museumEntrance <- genCard Locations.museumEntrance
-      museumHalls <- genCard Locations.museumHalls
-      securityOffice <- genCard =<< sample
+      (museumEntranceId, placeMuseumEntrance) <- placeLocationCard Locations.museumEntrance
+      placeMuseumHalls <- placeLocationCard_ Locations.museumHalls
+      placeSecurityOffice <- placeLocationCard_ =<< sample
         (Locations.securityOffice_128 :| [Locations.securityOffice_129])
-      administrationOffice <- genCard =<< sample
+      placeAdministrationOffice <- placeLocationCard_ =<< sample
         (Locations.administrationOffice_130
         :| [Locations.administrationOffice_131]
         )
@@ -145,12 +145,12 @@ instance RunMessage TheMiskatonicMuseum where
         , SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
-        , PlaceLocation securityOffice
-        , PlaceLocation administrationOffice
-        , PlaceLocation museumEntrance
-        , PlaceLocation museumHalls
-        , RevealLocation Nothing $ toLocationId museumEntrance
-        , MoveAllTo (toSource attrs) $ toLocationId museumEntrance
+        , placeSecurityOffice
+        , placeAdministrationOffice
+        , placeMuseumEntrance
+        , placeMuseumHalls
+        , RevealLocation Nothing museumEntranceId
+        , MoveAllTo (toSource attrs) museumEntranceId
         ]
 
       setAsideCards <- traverse

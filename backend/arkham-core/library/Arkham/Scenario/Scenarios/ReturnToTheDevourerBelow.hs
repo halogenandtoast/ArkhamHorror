@@ -8,7 +8,6 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher (CardMatcher(..))
@@ -65,8 +64,7 @@ instance RunMessage ReturnToTheDevourerBelow where
             ((length cultistsWhoGotAway + 1) `div` 2)
             PlaceDoomOnAgenda
 
-        mainPath <- toLocationCard Locations.mainPath
-        let mainPathId = LocationId $ toCardId mainPath
+        (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
 
         arkhamWoods <- traverse
           toLocationCard
@@ -103,18 +101,19 @@ instance RunMessage ReturnToTheDevourerBelow where
           , randomSet
           ]
 
+        placeWoods <- for (zip woodsLabels woodsLocations) $ \(label, location) -> do
+          (locationId, placement) <- placeLocation location
+          pure [placement, SetLocationLabel locationId label]
+
         pushAll
           $ [ story investigatorIds intro
             , SetEncounterDeck encounterDeck
             , AddToken ElderThing
             , SetAgendaDeck
             , SetActDeck
-            , PlaceLocation mainPath
+            , placeMainPath
             ]
-          <> [ PlaceLocation card | card <- woodsLocations ]
-          <> [ SetLocationLabel (LocationId $ toCardId location) label
-             | (label, location) <- zip woodsLabels woodsLocations
-             ]
+          <> concat placeWoods
           <> [ RevealLocation Nothing mainPathId
              , MoveAllTo (toSource attrs) mainPathId
              ]

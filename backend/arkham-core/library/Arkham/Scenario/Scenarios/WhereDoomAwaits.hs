@@ -152,9 +152,9 @@ instance RunMessage WhereDoomAwaits where
       silasBishopPutOutOfMisery <- getHasRecord
         TheInvestigatorsPutSilasBishopOutOfHisMisery
 
-      baseOfTheHill <- genCard Locations.baseOfTheHill
-      ascendingPath <- genCard Locations.ascendingPath
-      sentinelPeak <- genCard Locations.sentinelPeak
+      (baseOfTheHillId, placeBaseOfTheHill) <- placeLocationCard Locations.baseOfTheHill
+      (ascendingPathId, placeAscendingPath) <- placeLocationCard Locations.ascendingPath
+      placeSentinelPeak <- placeLocationCard_ Locations.sentinelPeak
 
       silasMsgs <- if silasBishopPutOutOfMisery
         then do
@@ -165,7 +165,7 @@ instance RunMessage WhereDoomAwaits where
           pure
             [ SpawnEnemyAt
               (EncounterCard conglomerationOfSpheres)
-              (toLocationId ascendingPath)
+              ascendingPathId
             , ShuffleCardsIntoDeck Deck.EncounterDeck $ map EncounterCard rest
             ]
         else pure []
@@ -185,7 +185,6 @@ instance RunMessage WhereDoomAwaits where
         ]
 
       let
-        inPlayLocations = [baseOfTheHill, ascendingPath, sentinelPeak]
         token = case scenarioDifficulty attrs of
           Easy -> MinusThree
           Standard -> MinusFive
@@ -202,10 +201,10 @@ instance RunMessage WhereDoomAwaits where
            , SetActDeck
            ]
         <> replicate broodEscapedCount PlaceDoomOnAgenda
-        <> [ PlaceLocation card | card <- inPlayLocations ]
+        <> [ placeBaseOfTheHill, placeAscendingPath, placeSentinelPeak]
         <> silasMsgs
-        <> [ RevealLocation Nothing $ toLocationId baseOfTheHill
-           , MoveAllTo (toSource attrs) $ toLocationId baseOfTheHill
+        <> [ RevealLocation Nothing baseOfTheHillId
+           , MoveAllTo (toSource attrs) baseOfTheHillId
            ]
 
       setAsideCards <- traverse genCard [Enemies.silasBishop]

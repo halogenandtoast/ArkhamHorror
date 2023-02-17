@@ -66,23 +66,23 @@ instance RunMessage TheMidnightMasks where
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
 
-      yourHouse <- genCard Locations.yourHouse
-      rivertown <- genCard Locations.rivertown
-      southside <- genCard =<< sample
+      (yourHouseId, placeYourHouse) <- placeLocationCard Locations.yourHouse
+      (rivertownId, placeRivertown) <- placeLocationCard Locations.rivertown
+      (southsideId, placeSouthside) <- placeLocationCard =<< sample
         (Locations.southsideHistoricalSociety
         :| [Locations.southsideMasBoardingHouse]
         )
-      stMarysHospital <- genCard Locations.stMarysHospital
-      miskatonicUniversity <- genCard Locations.miskatonicUniversity
-      downtown <-
-        genCard
+      (downtownId, placeDowntown) <-
+        placeLocationCard
           =<< sample
                 (Locations.downtownFirstBankOfArkham
                 :| [Locations.downtownArkhamAsylum]
                 )
-      easttown <- genCard Locations.easttown
-      graveyard <- genCard Locations.graveyard
-      northside <- genCard Locations.northside
+      (graveyardId, placeGraveyard) <- placeLocationCard Locations.graveyard
+      placeEasttown <- placeLocationCard_ Locations.easttown
+      placeMiskatonicUniversity <- placeLocationCard_ Locations.miskatonicUniversity
+      placeNorthside <- placeLocationCard_ Locations.northside
+      placeStMarysHospital <- placeLocationCard_ Locations.stMarysHospital
 
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
@@ -97,21 +97,19 @@ instance RunMessage TheMidnightMasks where
       let
         startingLocationMessages = if houseBurnedDown
           then
-            [ RevealLocation Nothing $ toLocationId rivertown
-            , MoveAllTo (toSource attrs) $ toLocationId rivertown
+            [ RevealLocation Nothing rivertownId
+            , MoveAllTo (toSource attrs) rivertownId
             ]
           else
-            [ PlaceLocation yourHouse
-            , RevealLocation Nothing $ toLocationId yourHouse
-            , MoveAllTo (toSource attrs) $ toLocationId yourHouse
+            [ placeYourHouse
+            , RevealLocation Nothing yourHouseId
+            , MoveAllTo (toSource attrs) yourHouseId
             ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         spawnAcolyteMessages =
           [ CreateEnemyAt (EncounterCard c) l Nothing
-          | (c, l) <- zip
-            acolytes
-            (map toLocationId [southside, downtown, graveyard])
+          | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
           ]
 
       encounterDeck <- buildEncounterDeckWith
@@ -133,14 +131,14 @@ instance RunMessage TheMidnightMasks where
           , SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
-          , PlaceLocation rivertown
-          , PlaceLocation southside
-          , PlaceLocation stMarysHospital
-          , PlaceLocation miskatonicUniversity
-          , PlaceLocation downtown
-          , PlaceLocation easttown
-          , PlaceLocation graveyard
-          , PlaceLocation northside
+          , placeRivertown
+          , placeSouthside
+          , placeStMarysHospital
+          , placeMiskatonicUniversity
+          , placeDowntown
+          , placeEasttown
+          , placeGraveyard
+          , placeNorthside
           ]
         <> startingLocationMessages
         <> ghoulPriestMessages

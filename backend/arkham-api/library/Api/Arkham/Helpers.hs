@@ -37,7 +37,7 @@ newtype GameAppT a = GameAppT { unGameAppT :: ReaderT GameApp IO a }
 
 data GameApp = GameApp
   { appGame :: IORef Game
-  , appQueue :: IORef [Message]
+  , appQueue :: Queue Message
   , appGen :: IORef StdGen
   , appLogger :: Text -> IO ()
   }
@@ -45,7 +45,7 @@ data GameApp = GameApp
 newApp :: MonadIO m => Game -> (Text -> IO ()) -> [Message] -> m GameApp
 newApp g logger msgs = do
   gameRef <- newIORef g
-  queueRef <- newIORef msgs
+  queueRef <- newQueue msgs
   genRef <- newIORef (mkStdGen (gameSeed g))
   pure $ GameApp gameRef queueRef genRef logger
 

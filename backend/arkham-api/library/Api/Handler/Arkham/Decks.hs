@@ -10,6 +10,7 @@ import Import hiding ( delete, on, update, (=.), (==.) )
 
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
+import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Helpers
 import Arkham.Id
@@ -99,7 +100,7 @@ putApiV1ArkhamGameDecksR gameId = do
           pure $ UpgradeDeck investigatorId (Deck cards)
 
   gameRef <- newIORef arkhamGameCurrentData
-  queueRef <- newIORef $ msg : currentQueue
+  queueRef <- newQueue $ msg : currentQueue
   genRef <- newIORef $ mkStdGen gameSeed
   runGameApp
     (GameApp gameRef queueRef genRef $ pure . const ())
@@ -108,7 +109,7 @@ putApiV1ArkhamGameDecksR gameId = do
 
   let
     diffDown = diff ge arkhamGameCurrentData
-  updatedQueue <- readIORef queueRef
+  updatedQueue <- readIORef (queueActual queueRef)
   let updatedMessages = []
   writeChannel <- getChannel gameId
   atomically $ writeTChan

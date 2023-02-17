@@ -17,6 +17,7 @@ import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
 import Arkham.Classes.Entity
+import Arkham.Classes.HasQueue
 import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Id
@@ -224,7 +225,7 @@ postApiV1ArkhamGamesR = do
         (GameApp gameRef queueRef genRef $ pure . const ())
         (runMessages Nothing)
       ge <- readIORef gameRef
-      updatedQueue <- readIORef queueRef
+      updatedQueue <- readIORef (queueActual queueRef)
       key <- runDB $ do
         gameId <- insert $ ArkhamGame
           campaignName
@@ -258,7 +259,7 @@ postApiV1ArkhamGamesR = do
           (runMessages Nothing)
         ge <- readIORef gameRef
         let diffDown = diff ge game
-        updatedQueue <- readIORef queueRef
+        updatedQueue <- readIORef (queueActual queueRef)
         key <- runDB $ do
           gameId <- insert $ ArkhamGame
             campaignName
@@ -335,7 +336,7 @@ putApiV1ArkhamGameR gameId = do
     currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef gameJson
-  queueRef <- newIORef (messages <> currentQueue)
+  queueRef <- newQueue (messages <> currentQueue)
   logRef <- newIORef []
   genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
@@ -345,7 +346,7 @@ putApiV1ArkhamGameR gameId = do
   ge <- readIORef gameRef
   let diffDown = diff ge arkhamGameCurrentData
 
-  updatedQueue <- readIORef queueRef
+  updatedQueue <- readIORef (queueActual queueRef)
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   now <- liftIO getCurrentTime
   void $ runDB $ do
@@ -391,7 +392,7 @@ putApiV1ArkhamGameRawR gameId = do
     message = gameMessage response
     currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
   gameRef <- newIORef gameJson
-  queueRef <- newIORef (message : currentQueue)
+  queueRef <- newQueue (message : currentQueue)
   logRef <- newIORef []
   genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
@@ -399,7 +400,7 @@ putApiV1ArkhamGameRawR gameId = do
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     (runMessages Nothing)
   ge <- readIORef gameRef
-  updatedQueue <- readIORef queueRef
+  updatedQueue <- readIORef (queueActual queueRef)
   let diffDown = diff ge arkhamGameCurrentData
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   atomically $ writeTChan

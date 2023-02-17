@@ -170,7 +170,7 @@ newCampaign
   -> Int
   -> [(Investigator, [PlayerCard])]
   -> Difficulty
-  -> m (IORef [Message], Game)
+  -> m (Queue Message, Game)
 newCampaign = newGame . Right
 
 newScenario
@@ -180,7 +180,7 @@ newScenario
   -> Int
   -> [(Investigator, [PlayerCard])]
   -> Difficulty
-  -> m (IORef [Message], Game)
+  -> m (Queue Message, Game)
 newScenario = newGame . Left
 
 newGame
@@ -190,12 +190,12 @@ newGame
   -> Int
   -> [(Investigator, [PlayerCard])]
   -> Difficulty
-  -> m (IORef [Message], Game)
+  -> m (Queue Message, Game)
 newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
   let
     state =
       if length investigatorsMap /= playerCount then IsPending else IsActive
-  ref <- newIORef $ if state == IsActive
+  ref <- newQueue $ if state == IsActive
     then
       map (uncurry InitDeck . bimap toId Deck) investigatorsList
         <> [StartCampaign]
@@ -295,7 +295,7 @@ addInvestigator i d = do
     investigatorsList' = investigatorsList <> [(i, d)]
 
   when (gameState == IsActive) $ atomicWriteIORef
-    queueRef
+    (queueActual queueRef)
     (map (uncurry InitDeck . bimap toId Deck) investigatorsList'
     <> [StartCampaign]
     )

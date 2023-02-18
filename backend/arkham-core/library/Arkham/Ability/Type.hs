@@ -14,9 +14,9 @@ import Arkham.SkillType
 data AbilityType
   = FastAbility { cost :: Cost }
   | ReactionAbility { window :: WindowMatcher, cost :: Cost }
-  | ActionAbility { action :: (Maybe Action), cost :: Cost }
-  | ActionAbilityWithSkill { action :: (Maybe Action), skillType :: SkillType, cost ::  Cost }
-  | ActionAbilityWithBefore { action :: (Maybe Action), actionBefore :: (Maybe Action), cost :: Cost } -- Action is first type, before is second
+  | ActionAbility { action :: Maybe Action, cost :: Cost }
+  | ActionAbilityWithSkill { action :: Maybe Action, skillType :: SkillType, cost ::  Cost }
+  | ActionAbilityWithBefore { action :: Maybe Action, actionBefore :: Maybe Action, cost :: Cost } -- Action is first type, before is second
   | SilentForcedAbility { window :: WindowMatcher }
   | ForcedAbility { window :: WindowMatcher }
   | ForcedAbilityWithCost { window :: WindowMatcher, cost :: Cost }

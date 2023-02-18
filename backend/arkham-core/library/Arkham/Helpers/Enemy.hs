@@ -19,7 +19,8 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message ( Message (EnemySpawnAtLocationMatching, PlaceEnemy, PlaceLocation), resolve )
+import Arkham.Message
+  ( Message (EnemySpawnAtLocationMatching, PlaceEnemy), resolve )
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Projection
@@ -72,13 +73,10 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
     Just locations -> do
       x <- sample locations
       (locationId, locationPlacement) <- placeLocation x
-      windows' <- windows [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
+      windows' <- windows
+        [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
       pushAll $ locationPlacement : windows' <> resolve
-        (EnemySpawnAtLocationMatching
-          Nothing
-          (LocationWithId locationId)
-          eid
-        )
+        (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
 
 modifiedEnemyFight :: HasGame m => EnemyAttrs -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
@@ -101,8 +99,7 @@ modifiedEnemyEvade EnemyAttrs {..} = case enemyEvade of
   applyModifier (Modifier.EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getModifiedDamageAmount
-  :: HasGame m => EnemyAttrs -> Bool -> Int -> m Int
+getModifiedDamageAmount :: HasGame m => EnemyAttrs -> Bool -> Int -> m Int
 getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
   let updatedAmount = foldr applyModifier baseAmount modifiers'
@@ -113,8 +110,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords
-  :: HasGame m => EnemyAttrs -> m (HashSet Keyword)
+getModifiedKeywords :: HasGame m => EnemyAttrs -> m (HashSet Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
   pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
@@ -130,8 +126,7 @@ canEnterLocation eid lid = do
     Modifier.CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-getFightableEnemyIds
-  :: HasGame m => InvestigatorId -> Source -> m [EnemyId]
+getFightableEnemyIds :: HasGame m => InvestigatorId -> Source -> m [EnemyId]
 getFightableEnemyIds iid source = do
   fightAnywhereEnemyIds <- selectList AnyEnemy >>= filterM \eid -> do
     modifiers' <- getModifiers (EnemyTarget eid)
@@ -144,7 +139,7 @@ getFightableEnemyIds iid source = do
   let
     potentials = setToList
       (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
-  fightableEnemyIds <- flip filterM potentials $ \eid -> do
+  flip filterM potentials $ \eid -> do
     modifiers' <- getModifiers (EnemyTarget eid)
     not
       <$> anyM
@@ -156,10 +151,8 @@ getFightableEnemyIds iid source = do
               _ -> pure False
             )
             modifiers'
-  pure $ fightableEnemyIds
 
-getEnemyAccessibleLocations
-  :: HasGame m => EnemyId -> m [LocationId]
+getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location

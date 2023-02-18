@@ -6,17 +6,14 @@ module Arkham.Act.Cards.AllIn
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
-import Arkham.Asset.Types ( Field(..) )
-import Arkham.Scenario.Types ( Field(..) )
-import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -36,10 +33,7 @@ instance HasAbilities AllIn where
   getAbilities (AllIn x) = withBaseAbilities x $ if onSide A x
     then
       [ restrictedAbility
-        (ProxySource
-          (AssetMatcherSource $ assetIs Cards.drFrancisMorgan)
-          (toSource x)
-        )
+        (toProxySource x $ AssetMatcherSource $ assetIs Assets.drFrancisMorgan)
         1
         (Uncontrolled <> OnSameLocation)
         (ActionAbility (Just Parley) $ ActionCost 1)
@@ -51,35 +45,28 @@ instance HasAbilities AllIn where
 
 instance RunMessage AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      resignedWithDrFrancisMorgan <- scenarioFieldMap ScenarioResignedCardCodes (elem "02080")
+      resignedWithDrFrancisMorgan <- resignedWith Assets.drFrancisMorgan
       let resolution = if resignedWithDrFrancisMorgan then 2 else 1
-      a <$ push (ScenarioResolution $ Resolution resolution)
+      push $ ScenarioResolution $ Resolution resolution
+      pure a
     UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && onSide A attrs -> do
-        maid <- selectOne (assetIs Cards.drFrancisMorgan)
-        case maid of
-          Nothing -> error "this ability should not be able to be used"
-          Just aid -> a <$ push
-            (parley
-              iid
-              source
-              (AssetTarget aid)
-              SkillWillpower
-              3
-            )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source && onSide A attrs -> do
-        maid <- selectOne (assetIs Cards.drFrancisMorgan)
-        case maid of
-          Nothing -> error "this ability should not be able to be used"
-          Just aid -> do
-            currentClueCount <- field AssetClues aid
-            requiredClueCount <- getPlayerCountValue (PerPlayer 1)
-            push (PlaceClues (AssetTarget aid) 1)
-            a <$ when
-              (currentClueCount + 1 >= requiredClueCount)
-              (push $ TakeControlOfAsset iid aid)
+        aid <- selectJust (assetIs Assets.drFrancisMorgan)
+        push $ parley iid source (AssetTarget aid) SkillWillpower 3
+        pure a
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      | onSide A attrs
+      -> do
+        aid <- selectJust $ assetIs Assets.drFrancisMorgan
+        currentClueCount <- field AssetClues aid
+        requiredClueCount <- perPlayer 1
+        push $ PlaceClues (AssetTarget aid) 1
+        when
+          (currentClueCount + 1 >= requiredClueCount)
+          (push $ TakeControlOfAsset iid aid)
+        pure a
     _ -> AllIn <$> runMessage msg attrs

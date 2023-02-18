@@ -143,14 +143,13 @@ instance RunMessage TheCityOfArchives where
           else Locations.interviewRoomArrivalChamber
         ]
 
-      encounterDeck' <-
-        buildEncounterDeckExcluding []
-          $ [ EncounterSet.TheCityOfArchives
-            , EncounterSet.AgentsOfYogSothoth
-            , EncounterSet.LockedDoors
-            , EncounterSet.ChillingCold
-            , EncounterSet.StrikingFear
-            ]
+      encounterDeck' <- buildEncounterDeck
+        [ EncounterSet.TheCityOfArchives
+        , EncounterSet.AgentsOfYogSothoth
+        , EncounterSet.LockedDoors
+        , EncounterSet.ChillingCold
+        , EncounterSet.StrikingFear
+        ]
 
       yithianObserver <- genCard Enemies.yithianObserver
       placeRemainingLocations <- traverse
@@ -178,9 +177,12 @@ instance RunMessage TheCityOfArchives where
           else victoryDisplayL %~ (yithianObserver :)
 
       (interviewRoomId, placeInterviewRoom) <- placeLocation interviewRoom
-      placeOtherRooms <- for (zip [2..] otherRooms) $ \(idx, location) -> do
+      placeOtherRooms <- for (zip [2 ..] otherRooms) $ \(idx, location) -> do
         (locationId, placement) <- placeLocation location
-        pure [placement, SetLocationLabel locationId ("interviewRoom" <> tshow @Int idx)]
+        pure
+          [ placement
+          , SetLocationLabel locationId ("interviewRoom" <> tshow @Int idx)
+          ]
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
@@ -224,7 +226,10 @@ instance RunMessage TheCityOfArchives where
           push $ InvestigatorPlaceCluesOnLocation iid 1
         Tablet -> do
           let discardCount = if isEasyStandard attrs then 1 else n
-          pushAll $ replicate discardCount $ RandomDiscard iid (TokenEffectSource Tablet) AnyCard
+          pushAll $ replicate discardCount $ RandomDiscard
+            iid
+            (TokenEffectSource Tablet)
+            AnyCard
         _ -> pure ()
       pure s
     ScenarioResolution r -> do
@@ -246,9 +251,7 @@ instance RunMessage TheCityOfArchives where
             , RealizedWhatYearItIs
             , ActivatedTheDevice
             ]
-          resignedWithTheCustodian <- scenarioFieldMap
-            ScenarioResignedCardCodes
-            (elem "04256")
+          resignedWithTheCustodian <- resignedWith Assets.theCustodian
 
           let
             totalTasks =

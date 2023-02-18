@@ -27,8 +27,7 @@ alejandrosPlight = act (3, C) AlejandrosPlight Cards.alejandrosPlight Nothing
 
 instance HasModifiersFor AlejandrosPlight where
   getModifiersFor (EnemyTarget lid) (AlejandrosPlight a) = do
-    isModified <- lid
-      <=~> EnemyWithAsset (assetIs Assets.alejandroVela)
+    isModified <- lid <=~> EnemyWithAsset (assetIs Assets.alejandroVela)
     pure $ toModifiers a [ HealthModifier 2 | isModified ]
   getModifiersFor _ _ = pure []
 
@@ -55,7 +54,9 @@ instance RunMessage AlejandrosPlight where
       let
         takeControlMessage = chooseOrRunOne
           leadInvestigatorId
-          [ targetLabel iid [TakeControlOfAsset iid alejandroVela] | iid <- iids ]
+          [ targetLabel iid [TakeControlOfAsset iid alejandroVela]
+          | iid <- iids
+          ]
         nextMessage = if deckCount <= 1
           then ScenarioResolution $ Resolution 1
           else RemoveFromGame (ActTarget $ toId attrs)

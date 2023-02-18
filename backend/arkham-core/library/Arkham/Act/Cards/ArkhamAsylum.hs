@@ -5,10 +5,8 @@ module Arkham.Act.Cards.ArkhamAsylum
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
--- import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
@@ -47,7 +45,7 @@ instance RunMessage ArkhamAsylum where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       push
-        (chooseOne leadInvestigatorId
+        $ chooseOne leadInvestigatorId
         $ map
             (\sk -> Label
               ("Any investigator tests " <> tshow sk)
@@ -73,19 +71,19 @@ instance RunMessage ArkhamAsylum where
                , AdvanceActDeck (actDeckId attrs) (toSource attrs)
                ]
            ]
-        )
+
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} (SkillSkillTest st) _
       | isSource attrs source -> do
-        replaceMessageMatching
+        insertAfterMatching
+          [AdvanceAct (toId attrs) source AdvancedWithClues]
           (== SkillTestApplyResultsAfter)
-          (\m -> [m, AdvanceAct (toId attrs) source AdvancedWithClues])
         pure $ ArkhamAsylum $ attrs `with` Metadata
           (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        replaceMessageMatching
+        insertAfterMatching
+          [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
           (== SkillTestApplyResultsAfter)
-          (\m -> [m, AdvanceActDeck (actDeckId attrs) (toSource attrs)])
         pure a
     _ -> ArkhamAsylum . (`with` metadata) <$> runMessage msg attrs

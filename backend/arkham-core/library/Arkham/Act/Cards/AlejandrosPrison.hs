@@ -27,8 +27,7 @@ alejandrosPrison = act (3, C) AlejandrosPrison Cards.alejandrosPrison Nothing
 
 instance HasModifiersFor AlejandrosPrison where
   getModifiersFor (LocationTarget lid) (AlejandrosPrison a) = do
-    isModified <- lid
-      <=~> LocationWithAsset (assetIs Assets.alejandroVela)
+    isModified <- lid <=~> LocationWithAsset (assetIs Assets.alejandroVela)
     pure $ toModifiers a [ ShroudModifier 2 | isModified ]
   getModifiersFor _ _ = pure []
 
@@ -60,11 +59,12 @@ instance RunMessage AlejandrosPrison where
       let
         takeControlMessage = chooseOrRunOne
           leadInvestigatorId
-          [ targetLabel iid [TakeControlOfAsset iid alejandroVela] | iid <- iids ]
-        nextMessage =
-          if deckCount <= 1
-            then ScenarioResolution $ Resolution 1
-            else RemoveFromGame (ActTarget $ toId attrs)
+          [ targetLabel iid [TakeControlOfAsset iid alejandroVela]
+          | iid <- iids
+          ]
+        nextMessage = if deckCount <= 1
+          then ScenarioResolution $ Resolution 1
+          else RemoveFromGame (ActTarget $ toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> AlejandrosPrison <$> runMessage msg attrs

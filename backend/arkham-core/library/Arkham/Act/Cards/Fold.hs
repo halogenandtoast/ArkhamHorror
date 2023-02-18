@@ -6,13 +6,13 @@ module Arkham.Act.Cards.Fold
 import Arkham.Prelude hiding ( fold )
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Act.Types
 import Arkham.Action
-import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
@@ -51,37 +51,27 @@ instance HasAbilities Fold where
 
 instance RunMessage Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      resignedWithPeterClover <- scenarioFieldMap
-        ScenarioResignedCardCodes
-        (elem "02079")
+      resignedWithPeterClover <- resignedWith Cards.peterClover
       let resolution = if resignedWithPeterClover then 3 else 1
-      a <$ push (ScenarioResolution $ Resolution resolution)
+      push $ ScenarioResolution $ Resolution resolution
+      pure a
     UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do
-        maid <- selectOne (assetIs Cards.peterClover)
-        case maid of
-          Nothing -> error "this ability should not be able to be used"
-          Just aid -> a <$ push
-            (parley
-              iid
-              source
-              (AssetTarget aid)
-              SkillWillpower
-              3
-            )
+        aid <- selectJust (assetIs Cards.peterClover)
+        push $ parley iid source (AssetTarget aid) SkillWillpower 3
+        pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do
-        maid <- selectOne (assetIs Cards.peterClover)
-        case maid of
-          Nothing -> error "this ability should not be able to be used"
-          Just aid -> do
-            currentClueCount <- field AssetClues aid
-            requiredClueCount <- getPlayerCountValue (PerPlayer 1)
-            push (PlaceClues (AssetTarget aid) 1)
-            a <$ when
-              (currentClueCount + 1 >= requiredClueCount)
-              (push $ TakeControlOfAsset iid aid)
+        aid <- selectJust (assetIs Cards.peterClover)
+        currentClueCount <- field AssetClues aid
+        requiredClueCount <- perPlayer 1
+        push $ PlaceClues (AssetTarget aid) 1
+        when
+          (currentClueCount + 1 >= requiredClueCount)
+          (push $ TakeControlOfAsset iid aid)
+        pure a
     _ -> Fold <$> runMessage msg attrs

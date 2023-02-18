@@ -20,24 +20,25 @@ getCampaignLog = withStandalone
 getHasRecord :: HasGame m => CampaignLogKey -> m Bool
 getHasRecord k = do
   campaignLog <- getCampaignLog
-  pure $ k `member` (campaignLogRecorded campaignLog) || k `member` (campaignLogRecordedCounts campaignLog)
+  pure $ or
+    [ k `member` campaignLogRecorded campaignLog
+    , k `member` campaignLogRecordedCounts campaignLog
+    ]
 
 getRecordCount :: HasGame m => CampaignLogKey -> m Int
-getRecordCount k = do
-  campaignLog <- getCampaignLog
-  pure $ findWithDefault 0 k (campaignLogRecordedCounts campaignLog)
+getRecordCount k =
+  findWithDefault 0 k . campaignLogRecordedCounts <$> getCampaignLog
 
 getRecordSet :: HasGame m => CampaignLogKey -> m [Recorded CardCode]
-getRecordSet k = do
-  campaignLog <- getCampaignLog
-  pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
+getRecordSet k =
+  findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
 
 getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
-getRecordedCardCodes k = mapMaybe recorded <$> getRecordSet k
-  where
-    recorded = \case
-      Recorded cCode -> Just cCode
-      CrossedOut _ -> Nothing
+getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
+ where
+  onlyRecorded = \case
+    Recorded cCode -> Just cCode
+    CrossedOut _ -> Nothing
 
 remembered :: HasGame m => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered

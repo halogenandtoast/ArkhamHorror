@@ -2,8 +2,8 @@ module Arkham.Ability.Limit where
 
 import Arkham.Prelude
 
-import Arkham.Trait
 import Arkham.Card.CardDef
+import Arkham.Trait
 
 data AbilityLimit
   = PerInvestigatorLimit AbilityLimitType Int

@@ -33,7 +33,7 @@ fromQueue f = f <$> (readIORef . queueActual =<< messageQueue)
 
 flushQueue :: (MonadIO m, HasQueue msg m) => m ()
 flushQueue = do
-  msgs <- withInbox $ \inbox -> (inbox, [])
+  msgs <- withInbox ([], )
   withQueue_ $ \q -> foldr (:) q msgs
 
 findFromQueue :: (MonadIO m, HasQueue msg m) => (msg -> Bool) -> m (Maybe msg)
@@ -65,7 +65,7 @@ push :: (MonadIO m, HasQueue msg m) => msg -> m ()
 push = pushAll . pure
 
 pushAll :: (MonadIO m, HasQueue msg m) => [msg] -> m ()
-pushAll msgs = withQueue \queue -> (msgs <> queue, ())
+pushAll msgs = withInbox \inbox -> (msgs <> inbox, ())
 
 replaceMessage :: (MonadIO m, HasQueue msg m, Eq msg) => msg -> [msg] -> m ()
 replaceMessage msg replacement =

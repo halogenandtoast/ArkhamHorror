@@ -19,7 +19,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message ( Message (EnemySpawnAtLocationMatching, PlaceEnemy, PlaceLocation), resolve )
+import Arkham.Message ( Message (EnemySpawnAtLocationMatching, PlaceEnemy), resolve )
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Projection

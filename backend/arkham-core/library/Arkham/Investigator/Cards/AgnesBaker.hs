@@ -35,14 +35,13 @@ agnesBaker = investigator
 
 instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
-    [ limitedAbility (PlayerLimit PerPhase 1)
-        $ restrictedAbility
-            x
-            1
-            (Self <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-        $ ReactionAbility
-            (PlacedCounter Timing.When You HorrorCounter (AtLeast $ Static 1))
-            Free
+    [ limitedReaction
+        (PlayerLimit PerPhase 1)
+        x
+        1
+        (Self <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        Free
+        (PlacedCounter Timing.When You HorrorCounter (AtLeast $ Static 1))
     ]
 
 instance HasTokenValue AgnesBaker where

@@ -15,7 +15,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers hiding ( matches )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.RequestedTokenStrategy
@@ -41,8 +41,8 @@ getCurrentSkillValue st = case skillTestBaseValue st of
 skillIconCount :: SkillTest -> GameT Int
 skillIconCount SkillTest {..} = do
   totalIcons <- length . filter matches <$> concatMapM
-      (iconsForCard . snd)
-      (toList skillTestCommittedCards)
+    (iconsForCard . snd)
+    (toList skillTestCommittedCards)
   case skillTestType of
     SkillSkillTest sType -> do
       investigatorModifiers <- getModifiers
@@ -125,26 +125,26 @@ instance RunMessage SkillTest where
               TreatRevealedTokenAs t -> Just t
               _ -> Nothing
           if null tokensTreatedAsRevealed
-            then s <$ push (RunSkillTest iid)
+            then push (RunSkillTest iid)
             else do
-              pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
               for_ tokensTreatedAsRevealed $ \tokenFace -> do
                 t <- getRandom
                 pushAll
                   $ resolve (RevealToken (toSource s) iid (Token t tokenFace))
-              pure s
+              pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
         else if SkillTestAutomaticallySucceeds `elem` modifiers'
-          then s <$ push PassSkillTest
+          then push PassSkillTest
           else do
             let
               applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
               applyRevealStategyModifier n _ = n
               revealStrategy =
                 foldl' applyRevealStategyModifier (Reveal 1) modifiers'
-            s <$ pushAll
+            pushAll
               [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
               , RunSkillTest iid
               ]
+      pure s
     DrawAnotherToken iid -> do
       withQueue_ $ filter $ \case
         Will FailedSkillTest{} -> False
@@ -168,8 +168,18 @@ instance RunMessage SkillTest where
         push (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do
           let
-            revealMsg = RevealToken (SkillTestSource siid skillType source maction) iid tokenFace
-          pushAll [When revealMsg, CheckWindow [iid] [Window Timing.AtIf (Window.RevealToken iid tokenFace)], revealMsg, After revealMsg]
+            revealMsg = RevealToken
+              (SkillTestSource siid skillType source maction)
+              iid
+              tokenFace
+          pushAll
+            [ When revealMsg
+            , CheckWindow
+              [iid]
+              [Window Timing.AtIf (Window.RevealToken iid tokenFace)]
+            , revealMsg
+            , After revealMsg
+            ]
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
     RevealToken SkillTestSource{} iid token -> do
       push
@@ -440,7 +450,7 @@ instance RunMessage SkillTest where
                      n
                    )
                ]
-            <> (cycleN
+            <> cycleN
                  successTimes
                  ([ PassedSkillTest
                       skillTestInvestigator
@@ -460,7 +470,6 @@ instance RunMessage SkillTest where
                         n
                     ]
                  )
-               )
         FailedBy _ n -> pushAll
           ([ When
                (FailedSkillTest

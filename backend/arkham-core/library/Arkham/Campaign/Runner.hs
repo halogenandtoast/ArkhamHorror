@@ -22,7 +22,7 @@ import Data.HashMap.Strict qualified as HashMap
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
-    StartCampaign -> a <$ push (CampaignStep campaignStep)
+    StartCampaign -> a <$ push (traceShowId $ CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ push GameOver -- TODO: move to generic
     CampaignStep (Just (ScenarioStep sid)) -> do
       a <$ pushAll [ResetGame, StartScenario sid]
@@ -106,7 +106,15 @@ instance RunMessage CampaignAttrs where
         & (logL . recordedSets %~ deleteMap key)
         & (logL . recordedCounts %~ deleteMap key)
         & (logL . orderedKeys %~ removeOrderedKey)
-    Record key -> pure $ a & logL . recorded %~ insertSet key & logL . orderedKeys %~ (<> [key])
+    Record key ->
+      pure
+        $ a
+        & logL
+        . recorded
+        %~ insertSet key
+        & logL
+        . orderedKeys
+        %~ (<> [key])
     RecordSet key cardCodes ->
       pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
     RecordSetInsert key cardCodes ->

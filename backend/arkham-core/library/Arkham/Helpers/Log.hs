@@ -33,9 +33,9 @@ getRecordSet k = do
   pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
 getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
-getRecordedCardCodes k = mapMaybe recorded <$> getRecordSet k
+getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
   where
-    recorded = \case
+    onlyRecorded = \case
       Recorded cCode -> Just cCode
       CrossedOut _ -> Nothing
 

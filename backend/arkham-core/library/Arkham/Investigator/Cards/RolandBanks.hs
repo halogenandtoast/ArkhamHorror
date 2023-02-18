@@ -36,13 +36,13 @@ rolandBanks = investigator
 
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks a) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-        $ reaction
-            a
-            1
-            (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-            Free
-        $ EnemyDefeated Timing.After You AnyEnemy
+    [ limitedReaction
+        (PlayerLimit PerRound 1)
+        a
+        1
+        (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
+        Free
+        (EnemyDefeated Timing.After You AnyEnemy)
     ]
 
 instance HasTokenValue RolandBanks where
@@ -54,6 +54,6 @@ instance HasTokenValue RolandBanks where
 instance RunMessage RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of
     UseCardAbility _ (isSource a -> True) 1 _ _ -> do
-      push $ InvestigatorDiscoverClues (toId a) (investigatorLocation a) 1 Nothing
+      push $ InvestigatorDiscoverCluesAtTheirLocation (toId a) 1 Nothing
       pure rb
     _ -> RolandBanks <$> runMessage msg a

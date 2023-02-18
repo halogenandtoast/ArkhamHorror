@@ -58,11 +58,10 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
           $ InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
           : [ chooseOne
                 iid
-                (Label "No evasion" []
+                $ Label "No evasion" []
                 : [ targetLabel enemy [EnemyEvaded iid enemy]
                   | enemy <- enemies
                   ]
-                )
             | notNull enemies
             ]
         pure a

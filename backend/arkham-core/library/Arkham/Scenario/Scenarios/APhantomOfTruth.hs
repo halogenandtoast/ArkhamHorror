@@ -109,7 +109,6 @@ cultistEffect = do
     minDistance :: Int = fromJustNote "error" . minimumMay $ map
       (unDistance . fst . snd)
       byakheePairs
-  let
     hset = concatMap (snd . snd)
       $ filter ((== minDistance) . unDistance . fst . snd) byakheePairs
   push $ chooseOneAtATime
@@ -120,15 +119,6 @@ cultistEffect = do
     | (eid, _) <- byakheePairs
     ]
  where
-  -- investigatorsNearestToByakhee :: EnemyId -> GameT (HashSet InvestigatorId)
-  -- investigatorsNearestToByakhee eid = do
-  --   mappings :: [(InvestigatorId, Distance)] <- getList (EnemyWithId eid)
-  --   let minDistance :: Int =
-  --         fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-  --   pure . setFromList . map fst $
-  --     filter
-  --       ((== minDistance) . unDistance . snd)
-  --       mappings
   moveTowardMessages leadId eid hset = case hset of
     [] -> []
     [x] -> [moveToward eid x]
@@ -289,24 +279,35 @@ instance RunMessage APhantomOfTruth where
         startingLocation =
           if jordanInterviewed then montparnasseId else gareDOrsayId
 
-      otherPlacements <- traverse placeLocation_ [montmartre, operaGarnier, leMarais, grandGuignol, canalSaintMartin, pereLachaiseCemetery, notreDame, gardensOfLuxembourg]
+      otherPlacements <- traverse
+        placeLocation_
+        [ montmartre
+        , operaGarnier
+        , leMarais
+        , grandGuignol
+        , canalSaintMartin
+        , pereLachaiseCemetery
+        , notreDame
+        , gardensOfLuxembourg
+        ]
 
-      pushAll $
-        [ story investigatorIds dream11 | n == 11 ]
+      pushAll
+        $ [ story investigatorIds dream11 | n == 11 ]
         <> [ story investigatorIds dream12 | n == 12 ]
         <> [ RecordCount Doubt (doubt + 1) | n == 12 ]
         <> [story investigatorIds dream13, story investigatorIds awakening]
         <> [ story investigatorIds jordansInformation | jordanInterviewed ]
-        <> [ CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingResources 3]) (toSource attrs) (InvestigatorTarget iid)
+        <> [ CreateWindowModifierEffect
+               EffectSetupWindow
+               (EffectModifiers $ toModifiers attrs [StartingResources 3])
+               (toSource attrs)
+               (InvestigatorTarget iid)
            | jordanInterviewed
            , iid <- investigatorIds
            ]
-        <> [ SetEncounterDeck encounterDeck
-           , SetAgendaDeck
-           , SetActDeck
-           ]
+        <> [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
-        <>  [ MoveAllTo (toSource attrs) startingLocation ]
+        <> [MoveAllTo (toSource attrs) startingLocation]
 
       APhantomOfTruth <$> runMessage
         msg
@@ -334,7 +335,8 @@ instance RunMessage APhantomOfTruth where
       _ -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ n -> case tokenFace token of
       Cultist | isEasyStandard attrs -> s <$ cultistEffect
-      ElderThing -> s <$ push (LoseResources iid (TokenEffectSource ElderThing) n)
+      ElderThing ->
+        s <$ push (LoseResources iid (TokenEffectSource ElderThing) n)
       _ -> pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds

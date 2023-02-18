@@ -54,7 +54,7 @@ instance RunMessage AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mduke <- selectOne $ assetIs Assets.duke
-      for_ mduke $ \duke -> push $ Ready (AssetTarget duke)
+      for_ mduke $ push . Ready . AssetTarget
       pure i
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap

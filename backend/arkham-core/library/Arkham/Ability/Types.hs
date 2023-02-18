@@ -93,6 +93,17 @@ doesNotProvokeAttacksOfOpportunity =
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l
 
+limitedReaction
+  :: SourceEntity a
+  => AbilityLimit
+  -> a
+  -> Int
+  -> Criterion
+  -> Cost
+  -> WindowMatcher
+  -> Ability
+limitedReaction l a n c cost wm = limitedAbility l $ reaction a n c cost wm
+
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 

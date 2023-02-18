@@ -3,8 +3,8 @@ module Arkham.Helpers.Message where
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Classes.HasQueue
 import Arkham.Classes.Entity
+import Arkham.Classes.HasQueue
 import Arkham.Draw.Types
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
@@ -12,6 +12,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Message
+import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..), WindowType )
 
@@ -35,13 +36,12 @@ drawCardsAction i source n = do
   drawing <- newCardDraw i source n
   pure $ DrawCards $ asDrawAction drawing
 
-resolveWithWindow
-  :: HasGame m => Message -> WindowType -> m [Message]
+resolveWithWindow :: HasGame m => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do
   whenWindow <- checkWindows [Window Timing.When window']
   atIfWindow <- checkWindows [Window Timing.AtIf window']
   afterWindow <- checkWindows [Window Timing.After window']
-  pure $ [When msg, whenWindow, atIfWindow, msg, After msg, afterWindow]
+  pure [When msg, whenWindow, atIfWindow, msg, After msg, afterWindow]
 
 dealAdditionalDamage :: InvestigatorId -> Int -> [Message] -> GameT ()
 dealAdditionalDamage iid amount additionalMessages = do
@@ -55,8 +55,8 @@ dealAdditionalDamage iid amount additionalMessages = do
         newMsg = case damageMsg of
           InvestigatorDamage _ source' n horror ->
             InvestigatorDamage iid source' (n + amount) horror
-          InvestigatorDoAssignDamage _ source' strategy matcher n horror [] [] ->
-            InvestigatorDoAssignDamage
+          InvestigatorDoAssignDamage _ source' strategy matcher n horror [] []
+            -> InvestigatorDoAssignDamage
               iid
               source'
               strategy
@@ -88,3 +88,7 @@ placeLocationCard = placeLocation <=< genCard
 
 placeLocationCard_ :: CardDef -> GameT Message
 placeLocationCard_ = placeLocation_ <=< genCard
+
+scenarioResolution :: Int -> Message
+scenarioResolution = ScenarioResolution . Resolution
+

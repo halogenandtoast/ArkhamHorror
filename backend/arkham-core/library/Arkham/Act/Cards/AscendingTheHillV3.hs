@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -40,18 +39,19 @@ instance HasAbilities AscendingTheHillV3 where
 
 instance RunMessage AscendingTheHillV3 where
   runMessage msg a@(AscendingTheHillV3 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      sentinelPeak <- fromJustNote "must exist"
-        <$> selectOne (LocationWithTitle "Sentinel Peak")
-      sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop
-      a <$ pushAll
+      sentinelPeak <- selectJust $ LocationWithTitle "Sentinel Peak"
+      sethBishop <- genCard Enemies.sethBishop
+      pushAll
         [ CreateEnemyAt sethBishop sentinelPeak (Just $ toTarget attrs)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
-      damage <- getPlayerCountValue (PerPlayer 1)
+      damage <- perPlayer 1
       push $ PlaceDamage (EnemyTarget eid) damage
       pure a
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

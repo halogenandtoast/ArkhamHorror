@@ -6,7 +6,6 @@ module Arkham.Act.Cards.CloseTheRift
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -39,7 +38,11 @@ instance HasAbilities CloseTheRift where
 instance RunMessage CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ DiscardTopOfEncounterDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
+      push $ DiscardTopOfEncounterDeck
+        iid
+        3
+        (toSource attrs)
+        (Just $ toTarget attrs)
       pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getJustLocationIdByName

@@ -1,6 +1,4 @@
-module Arkham.Resolution
-  ( module Arkham.Resolution
-  ) where
+module Arkham.Resolution where
 
 import Arkham.Prelude
 

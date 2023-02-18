@@ -9,18 +9,14 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Act.Types
 import Arkham.Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Resolution
-import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -52,26 +48,25 @@ instance HasAbilities Fold where
 instance RunMessage Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       resignedWithPeterClover <- resignedWith Cards.peterClover
-      let resolution = if resignedWithPeterClover then 3 else 1
-      push $ ScenarioResolution $ Resolution resolution
+      push $ scenarioResolution $ if resignedWithPeterClover then 3 else 1
       pure a
     UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do
-        aid <- selectJust (assetIs Cards.peterClover)
+        aid <- selectJust $ assetIs Cards.peterClover
         push $ parley iid source (AssetTarget aid) SkillWillpower 3
         pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do
-        aid <- selectJust (assetIs Cards.peterClover)
+        aid <- selectJust $ assetIs Cards.peterClover
         currentClueCount <- field AssetClues aid
         requiredClueCount <- perPlayer 1
         push $ PlaceClues (AssetTarget aid) 1
-        when
-          (currentClueCount + 1 >= requiredClueCount)
-          (push $ TakeControlOfAsset iid aid)
+        when (currentClueCount + 1 >= requiredClueCount)
+          $ push
+          $ TakeControlOfAsset iid aid
         pure a
     _ -> Fold <$> runMessage msg attrs

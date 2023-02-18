@@ -37,8 +37,9 @@ instance HasAbilities BreakingAndEntering where
 
 instance RunMessage BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
@@ -66,10 +67,7 @@ instance RunMessage BreakingAndEntering where
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            [ FromEncounterDeck
-            , FromEncounterDiscard
-            , FromVoid
-            ]
+            [FromEncounterDeck, FromEncounterDiscard, FromVoid]
             (cardIs Enemies.huntingHorror)
           ]
       pure a

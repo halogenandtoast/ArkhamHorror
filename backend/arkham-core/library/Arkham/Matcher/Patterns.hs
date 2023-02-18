@@ -54,8 +54,10 @@ pattern InvestigatorWithAnyResources <-
     InvestigatorWithResources (GreaterThan (Static 0))
 
 pattern InvestigatorCanGainResources :: InvestigatorMatcher
-pattern InvestigatorCanGainResources <- InvestigatorWithoutModifier CannotGainResources where
-  InvestigatorCanGainResources = InvestigatorWithoutModifier CannotGainResources
+pattern InvestigatorCanGainResources <-
+  InvestigatorWithoutModifier CannotGainResources where
+  InvestigatorCanGainResources =
+    InvestigatorWithoutModifier CannotGainResources
 
 -- placeholder in case a modifier prevents spending resources
 pattern InvestigatorCanSpendResources :: GameValue -> InvestigatorMatcher
@@ -237,6 +239,10 @@ pattern MysticCard :: CardMatcher
 pattern MysticCard <- CardWithClass Mystic where
   MysticCard = CardWithClass Mystic
 
+pattern PlayerTreachery :: CardMatcher
+pattern PlayerTreachery <- CardWithType PlayerTreacheryType where
+  PlayerTreachery = CardWithType PlayerTreacheryType
+
 -- ** Value Patterns **
 
 pattern AtLeast :: GameValue -> ValueMatcher
@@ -256,5 +262,6 @@ pattern AgendaWithAnyDoom <- AgendaWithDoom (GreaterThan (Static 0)) where
 -- ** Treachery Patterns **
 
 pattern TreacheryWithAnyDoom :: TreacheryMatcher
-pattern TreacheryWithAnyDoom <- TreacheryWithDoom (GreaterThan (Static 0)) where
+pattern TreacheryWithAnyDoom <-
+  TreacheryWithDoom (GreaterThan (Static 0)) where
   TreacheryWithAnyDoom = TreacheryWithDoom (GreaterThan (Static 0))

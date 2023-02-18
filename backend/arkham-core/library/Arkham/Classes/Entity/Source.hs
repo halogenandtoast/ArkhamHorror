@@ -1,14 +1,21 @@
 module Arkham.Classes.Entity.Source where
 
-import Arkham.Prelude hiding (to)
+import Arkham.Prelude hiding ( to )
 
-import Arkham.Source
 import Arkham.Id
+import Arkham.Source
 
 class SourceEntity a where
   toSource :: a -> Source
   isSource :: a -> Source -> Bool
   isSource = (==) . toSource
+
+isProxySource :: SourceEntity a => a -> Source -> Bool
+isProxySource a (ProxySource _ source) = isSource a source
+isProxySource _ _ = False
+
+toProxySource :: SourceEntity a => a -> Source -> Source
+toProxySource a source = ProxySource source (toSource a)
 
 isSkillTestSource :: SourceEntity a => a -> Source -> Bool
 isSkillTestSource a = \case

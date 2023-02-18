@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Criteria
@@ -49,9 +50,8 @@ instance HasAbilities EscapeTheRuins where
 instance RunMessage EscapeTheRuins where
   runMessage msg a@(EscapeTheRuins attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      resignedWithRelicOfAges <- scenarioFieldMap
-        ScenarioResignedCardCodes
-        (elem "04061")
+      resignedWithRelicOfAges <- resignedWith
+        Assets.relicOfAgesADeviceOfSomeSort
       let resolution = if resignedWithRelicOfAges then 1 else 3
       push $ ScenarioResolution $ Resolution resolution
       pure a

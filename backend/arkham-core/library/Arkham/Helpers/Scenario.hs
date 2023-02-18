@@ -61,3 +61,7 @@ withStandalone
   :: HasGame m => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
 withStandalone cf sf =
   maybe (sf =<< selectJust TheScenario) cf =<< selectOne TheCampaign
+
+resignedWith :: HasGame m => CardDef -> m Bool
+resignedWith cDef =
+  scenarioFieldMap ScenarioResignedCardCodes (elem (toCardCode cDef))

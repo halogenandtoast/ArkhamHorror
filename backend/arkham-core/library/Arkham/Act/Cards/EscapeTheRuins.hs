@@ -52,8 +52,7 @@ instance RunMessage EscapeTheRuins where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       resignedWithRelicOfAges <- resignedWith
         Assets.relicOfAgesADeviceOfSomeSort
-      let resolution = if resignedWithRelicOfAges then 1 else 3
-      push $ ScenarioResolution $ Resolution resolution
+      push $ scenarioResolution $ if resignedWithRelicOfAges then 1 else 3
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther

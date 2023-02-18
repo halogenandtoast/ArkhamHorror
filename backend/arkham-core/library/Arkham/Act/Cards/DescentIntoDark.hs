@@ -15,7 +15,6 @@ import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Resolution
 
 newtype DescentIntoDark = DescentIntoDark ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -47,6 +46,6 @@ instance RunMessage DescentIntoDark where
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
-      push $ ScenarioResolution $ Resolution $ if rescuedAlejandro then 1 else 2
+      push $ scenarioResolution $ if rescuedAlejandro then 1 else 2
       pure a
     _ -> DescentIntoDark <$> runMessage msg attrs

@@ -60,27 +60,29 @@ instance HasAbilities CurtainCall where
 
 instance RunMessage CurtainCall where
   runMessage msg a@(CurtainCall attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source ->
-      a <$ push (Resign iid)
+    UseCardAbility iid (ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
+      push $ Resign iid
+      pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       targets <-
         selectListMap LocationTarget
         $ LocationWithoutHorror
         <> AccessibleTo LocationWithAnyHorror
-      a <$ pushAll (map (`PlaceHorror` 1) targets)
-    UseCardAbility _ source 3 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      pushAll $ map (`PlaceHorror` 1) targets
+      pure a
+    UseCardAbility _ source 3 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Label
-            "We have to warn the police about what's going on! (-> R1)"
-            [ScenarioResolution $ Resolution 1]
-          , Label
-            "The police won't believe us. We have to solve this mystery on our own. (-> R2)"
-            [ScenarioResolution $ Resolution 2]
-          ]
-        )
+      push $ chooseOne
+        leadInvestigatorId
+        [ Label
+          "We have to warn the police about what's going on! (-> R1)"
+          [ScenarioResolution $ Resolution 1]
+        , Label
+          "The police won't believe us. We have to solve this mystery on our own. (-> R2)"
+          [ScenarioResolution $ Resolution 2]
+        ]
+      pure a
     _ -> CurtainCall <$> runMessage msg attrs

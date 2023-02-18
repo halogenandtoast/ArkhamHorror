@@ -36,7 +36,7 @@ instance RunMessage AtTheExhibitTheRelicsLocation where
       mTownHall <- selectOne $ LocationWithTitle "Town Hall"
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
-      n <- getPlayerCountValue (PerPlayer 1)
+      n <- perPlayer 1
       (townHallId, msgs) <- case mTownHall of
         Just townHall -> do
           pure
@@ -52,9 +52,7 @@ instance RunMessage AtTheExhibitTheRelicsLocation where
           pure
             ( locationId
             , PlaceLocation locationId townHall
-              : [ PlaceClues (LocationTarget locationId) n
-                | deckCount <= 2
-                ]
+              : [ PlaceClues (LocationTarget locationId) n | deckCount <= 2 ]
             )
 
       pushAll

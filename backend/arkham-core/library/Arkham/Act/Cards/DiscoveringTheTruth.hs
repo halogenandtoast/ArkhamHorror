@@ -6,9 +6,9 @@ module Arkham.Act.Cards.DiscoveringTheTruth
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Act.Types
 import Arkham.Classes
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
@@ -30,11 +30,9 @@ instance HasAbilities DiscoveringTheTruth where
 
 instance RunMessage DiscoveringTheTruth where
   runMessage msg a@(DiscoveringTheTruth attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clueCount <- field InvestigatorClues iid
-      a
-        <$ pushAll
-             [ InvestigatorDiscardAllClues iid
-             , PlaceClues (toTarget attrs) clueCount
-             ]
+      pushAll
+        [InvestigatorDiscardAllClues iid, PlaceClues (toTarget attrs) clueCount]
+      pure a
     _ -> DiscoveringTheTruth <$> runMessage msg attrs

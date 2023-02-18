@@ -70,11 +70,12 @@ instance RunMessage BeginnersLuck where
           , Remember Cheated
           ]
         pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId a) source AdvancedWithClues
+      pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       placeDarkenedHall <- placeSetAsideLocation_ Locations.darkenedHall
-      a <$ pushAll
+      pushAll
         [ placeDarkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
@@ -82,8 +83,9 @@ instance RunMessage BeginnersLuck where
           (CardWithType EnemyType <> CardWithTrait Criminal)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
-      darkenedHallId <- fromJustNote "missing darkened hall"
-        <$> selectOne (LocationWithTitle "Darkened Hall")
-      a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
+      darkenedHallId <- selectJust $ LocationWithTitle "Darkened Hall"
+      push $ SpawnEnemyAt (EncounterCard ec) darkenedHallId
+      pure a
     _ -> BeginnersLuck <$> runMessage msg attrs

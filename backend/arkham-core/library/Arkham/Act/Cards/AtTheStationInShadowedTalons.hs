@@ -43,7 +43,11 @@ instance RunMessage AtTheStationInShadowedTalons where
           [FromEncounterDeck, FromEncounterDiscard, FromVictoryDisplay]
           (cardIs Enemies.huntingNightgaunt)
         , NextAdvanceActStep aid 1
-        , AdvanceToAct (actDeckId attrs) Acts.alejandrosPlight C (toSource attrs)
+        , AdvanceToAct
+          (actDeckId attrs)
+          Acts.alejandrosPlight
+          C
+          (toSource attrs)
         ]
       pure a
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
@@ -54,12 +58,18 @@ instance RunMessage AtTheStationInShadowedTalons where
       deckCount <- getActDecksInPlayCount
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       pushAll
-        $ map ((`HealAllDamage` (toSource attrs)) . EnemyTarget) huntingNightgaunts
+        $ map
+            ((`HealAllDamage` toSource attrs) . EnemyTarget)
+            huntingNightgaunts
         <> [ chooseOrRunOne
                leadInvestigatorId
                [ targetLabel huntingNightgaunt
-                 $ CreateAssetAt alejandroVela (AttachedToEnemy huntingNightgaunt)
-                 : [ PlaceDoom (EnemyTarget huntingNightgaunt) 1 | deckCount <= 2 ]
+                 $ CreateAssetAt
+                     alejandroVela
+                     (AttachedToEnemy huntingNightgaunt)
+                 : [ PlaceDoom (EnemyTarget huntingNightgaunt) 1
+                   | deckCount <= 2
+                   ]
                | huntingNightgaunt <- farthestHuntingNightGaunts
                ]
            ]

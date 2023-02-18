@@ -28,8 +28,11 @@ newtype CrossingTheThreshold = CrossingTheThreshold (ActAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crossingTheThreshold :: ActCard CrossingTheThreshold
-crossingTheThreshold =
-  act (1, A) (CrossingTheThreshold . (`with` Metadata Nothing)) Cards.crossingTheThreshold Nothing
+crossingTheThreshold = act
+  (1, A)
+  (CrossingTheThreshold . (`with` Metadata Nothing))
+  Cards.crossingTheThreshold
+  Nothing
 
 instance HasAbilities CrossingTheThreshold where
   getAbilities (CrossingTheThreshold (a `With` _)) =
@@ -47,28 +50,27 @@ instance RunMessage CrossingTheThreshold where
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure . CrossingTheThreshold $ attrs `with` Metadata (Just iid)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      case advancingInvestigator metadata of
-        Nothing -> error "no advancing investigator"
-        Just iid -> do
-          pushAll
-            [ beginSkillTest
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              SkillWillpower
-              4
-            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-            ]
+      let
+        iid = fromJustNote "no advancing investigator"
+          $ advancingInvestigator metadata
+      pushAll
+        [ beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillWillpower
+          4
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
         push
           $ SearchCollectionForRandom iid (toSource attrs)
-          $ CardWithType PlayerTreacheryType
+          $ PlayerTreachery
           <> CardWithOneOf (map CardWithTrait [Madness, Injury])
         pure a
-    RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
-      for_ mcard $ \card -> push
-        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+    RequestedPlayerCard iid (isSource attrs -> True) (Just card) -> do
+      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure a
     _ -> CrossingTheThreshold . (`with` metadata) <$> runMessage msg attrs

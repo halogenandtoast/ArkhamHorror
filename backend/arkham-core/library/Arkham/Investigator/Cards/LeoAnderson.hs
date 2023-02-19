@@ -18,7 +18,6 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Arkham.Zone
 
 newtype Metadata = Metadata { responseCard :: Maybe Card }
   deriving stock (Show, Eq, Generic)

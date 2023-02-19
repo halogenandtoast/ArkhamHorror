@@ -29,7 +29,7 @@ instance HasAbilities Knife where
       $ restrictedAbility a 2 ControlsThis
       $ ActionAbility
           (Just Fight)
-          (Costs [ActionCost 1, DiscardCost (toTarget a)])
+          (Costs [ActionCost 1, DiscardCost FromPlay (toTarget a)])
     ]
 
 instance RunMessage Knife where

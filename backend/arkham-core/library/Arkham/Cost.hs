@@ -1,8 +1,11 @@
 module Arkham.Cost
   ( module Arkham.Cost
+  , module X
   ) where
 
 import Arkham.Prelude
+
+import Arkham.Zone as X
 
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -59,7 +62,7 @@ data Payment
   | DoomPayment Int
   | ResourcePayment Int
   | CardPayment Card
-  | DiscardPayment [Target]
+  | DiscardPayment [(Zone, Card)]
   | DiscardCardPayment [Card]
   | ExhaustPayment [Target]
   | RemovePayment [Target]
@@ -95,7 +98,7 @@ data Cost
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | DiscardTopOfDeckCost Int
-  | DiscardCost Target
+  | DiscardCost Zone Target
   | DiscardCardCost Card
   | DiscardFromCost Int CostZone CardMatcher
   | DiscardDrawnCardCost
@@ -166,7 +169,7 @@ displayCostType = \case
   DamageCost _ _ n -> tshow n <> " Damage"
   DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
-  DiscardCost _ -> "Discard"
+  DiscardCost zone _ -> "Discard from" <> tshow zone
   DiscardCardCost _ -> "Discard Card"
   DiscardFromCost n _ _ -> "Discard " <> tshow n
   DiscardDrawnCardCost -> "Discard Drawn Card"

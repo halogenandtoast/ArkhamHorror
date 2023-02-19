@@ -47,7 +47,7 @@ instance HasAbilities MedicoDellaPeste where
         (NotSkillType SkillWillpower)
         AnySkillTestValue
       )
-      (DiscardCost $ toTarget a)
+      (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage MedicoDellaPeste where

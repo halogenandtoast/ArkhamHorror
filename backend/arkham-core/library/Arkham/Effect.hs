@@ -23,7 +23,8 @@ import Arkham.Window ( Window )
 import Arkham.Act.Acts ( theYithianRelicEffect )
 import Arkham.Agenda.Agendas ( lostMemoriesEffect, theRedDepthsEffect )
 import Arkham.Asset.Assets
-  ( fence1Effect
+  ( aceOfRods1Effect
+  , fence1Effect
   , highRoller2Effect
   , libraryDocent1Effect
   , miskatonicArchaeologyFunding4Effect
@@ -37,7 +38,8 @@ import Arkham.Asset.Assets
   )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect )
 import Arkham.Event.Events
-  ( exposeWeakness3Effect
+  ( actOfDesperationEffect
+  , exposeWeakness3Effect
   , imDoneRunninEffect
   , marksmanship1Effect
   , mindOverMatter2Effect
@@ -216,6 +218,8 @@ allEffects = mapFromList
   , ("05016", SomeEffect imDoneRunninEffect)
   , ("05018", SomeEffect mystifyingSongEffect)
   , ("05028", SomeEffect wellConnectedEffect)
+  , ("05037", SomeEffect actOfDesperationEffect)
+  , ("05040", SomeEffect aceOfRods1Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

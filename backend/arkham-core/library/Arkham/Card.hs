@@ -110,6 +110,7 @@ cardMatch a = \case
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->
     elem sym . cdLocationRevealedConnections $ toCardDef a
+  CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
 
 instance IsCard PlayerCard where
   toCardId = pcId

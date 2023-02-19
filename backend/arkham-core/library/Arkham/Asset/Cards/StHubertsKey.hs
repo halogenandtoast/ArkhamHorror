@@ -42,7 +42,7 @@ instance HasAbilities StHubertsKey where
             (InvestigatorDefeated Timing.When AnySource ByHorror
             $ HealableInvestigator (toSource a) HorrorType You
             )
-        $ DiscardCost
+        $ DiscardCost FromPlay
         $ toTarget a
     ]
 

@@ -457,6 +457,7 @@ data CardMatcher
   | NonExceptional
   | AnyCard
   | CardWithVengeance
+  | CardFillsSlot SlotType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -30,7 +30,7 @@ instance HasAbilities MysteriousRaven where
             (You <> InvestigatorCanDiscoverCluesAt YourLocation)
           )
         $ FastAbility
-        $ DiscardCost (toTarget a)
+        $ DiscardCost FromPlay (toTarget a)
         <> DamageCost (toSource a) YouTarget 1
     ]
 

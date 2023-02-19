@@ -33,7 +33,7 @@ instance HasAbilities GravediggersShovel where
           (You <> InvestigatorCanDiscoverCluesAt YourLocation)
         )
       $ ActionAbility Nothing
-      $ Costs [ActionCost 1, DiscardCost (toTarget x)]
+      $ Costs [ActionCost 1, DiscardCost FromPlay (toTarget x)]
     ]
 
 instance RunMessage GravediggersShovel where

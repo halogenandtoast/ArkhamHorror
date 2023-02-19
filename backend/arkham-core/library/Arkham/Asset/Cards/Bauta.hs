@@ -36,7 +36,7 @@ instance HasAbilities Bauta where
         (NotSkillType SkillCombat)
         AnySkillTestValue
       )
-      (DiscardCost $ toTarget a)
+      (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage Bauta where

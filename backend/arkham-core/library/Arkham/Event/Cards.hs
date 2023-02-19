@@ -20,6 +20,7 @@ import Arkham.Modifier ( ModifierType (..) )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.SkillType ()
+import Arkham.SlotType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Timing qualified as Timing
@@ -82,6 +83,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , aTestOfWill1
   , aTestOfWill2
   , aceInTheHole3
+  , actOfDesperation
   , againstAllOdds2
   , ambush1
   , anatomicalDiagrams
@@ -1653,6 +1655,13 @@ eldritchInspiration = (event "05033" "Eldritch Inspiration" 0 Mystic)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Spell, Spirit]
   , cdFastWindow = Just $ WouldTriggerTokenRevealEffectOnCard You MysticCard [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing, Token.AutoFail]
+  }
+
+actOfDesperation :: CardDef
+actOfDesperation = (event "05037" "Act of Desperation" 0 Survivor)
+  { cdSkills = [#combat, #combat]
+  , cdCardTraits = setFromList [Tactic, Gambit]
+  , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (CardWithTrait Item <> CardFillsSlot HandSlot)
   }
 
 denyExistence5 :: CardDef

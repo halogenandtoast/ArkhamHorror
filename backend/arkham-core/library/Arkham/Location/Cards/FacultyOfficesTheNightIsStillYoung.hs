@@ -20,7 +20,6 @@ import Arkham.Message hiding ( RevealLocation )
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Zone
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
   deriving anyclass IsLocation

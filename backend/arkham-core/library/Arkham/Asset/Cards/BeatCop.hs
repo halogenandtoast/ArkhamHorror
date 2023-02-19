@@ -33,7 +33,7 @@ instance HasAbilities BeatCop where
           x
           1
           (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-        $ FastAbility (DiscardCost $ toTarget x)
+        $ FastAbility (DiscardCost FromPlay $ toTarget x)
     ]
 
 instance RunMessage BeatCop where

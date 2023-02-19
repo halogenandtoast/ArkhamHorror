@@ -55,7 +55,6 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Window ( Window, WindowType )
-import Arkham.Zone
 import Control.Exception
 import Data.Aeson.TH
 

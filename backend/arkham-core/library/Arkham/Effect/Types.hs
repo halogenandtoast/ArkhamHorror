@@ -23,6 +23,7 @@ import Data.Typeable
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EffectId, EntityAttrs a ~ EffectAttrs) => IsEffect a
 
 data instance Field Effect :: Type -> Type where
+  EffectCardCode :: Field Effect CardCode
   EffectAbilities :: Field Effect [Ability]
 
 cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a

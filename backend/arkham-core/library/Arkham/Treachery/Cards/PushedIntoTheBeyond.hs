@@ -35,7 +35,7 @@ instance RunMessage PushedIntoTheBeyond where
             [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
             , CreateEffect
               (CardCode "02100")
-              (Just (EffectCardCode cardCode))
+              (Just (EffectCardCodes [cardCode]))
               (toSource attrs)
               (InvestigatorTarget iid)
             ]

@@ -13,7 +13,7 @@ data EffectMetadata window a
   = EffectInt Int
   | EffectMessages [a]
   | EffectModifiers [Modifier]
-  | EffectCardCode CardCode
+  | EffectCardCodes [CardCode]
   | EffectMetaTarget Target
   | EffectAbility (Ability, [window])
   | FailedByEffectModifiers [Modifier]

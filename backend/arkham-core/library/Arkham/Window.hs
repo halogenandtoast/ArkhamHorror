@@ -6,7 +6,7 @@ import Arkham.Ability.Types
 import Arkham.Action ( Action )
 import Arkham.Agenda.AdvancementReason ( AgendaAdvancementReason )
 import Arkham.Attack
-import Arkham.Card ( Card, CardCode )
+import Arkham.Card ( Card )
 import Arkham.Damage
 import Arkham.DamageEffect ( DamageEffect )
 import Arkham.Deck
@@ -133,7 +133,8 @@ data WindowType
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
-  | RevealTokenEffect InvestigatorId Token CardCode
+  | RevealTokenEffect InvestigatorId Token EffectId
+  | RevealTokenEventEffect InvestigatorId [Token] EventId
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | WouldPerformRevelationSkillTest InvestigatorId
   | SkillTest SkillTestType

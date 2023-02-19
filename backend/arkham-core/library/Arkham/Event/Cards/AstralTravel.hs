@@ -16,6 +16,7 @@ import Arkham.RequestedTokenStrategy
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Arkham.Window qualified as Window
 
 newtype AstralTravel = AstralTravel EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -40,11 +41,17 @@ instance RunMessage AstralTravel where
       when (any ((`elem` faces) . tokenFace) tokens) $ do
         targets <- selectList
           $ AssetOneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
-        case targets of
-          [] -> push
-            $ InvestigatorAssignDamage (eventOwner attrs) source DamageAny 1 0
-          xs -> push $ chooseOne
-            (eventOwner attrs)
-            [ targetLabel x [Discard (toSource attrs) $ AssetTarget x] | x <- xs ]
+        push $ If
+          (Window.RevealTokenEventEffect (eventOwner attrs) tokens (toId attrs))
+          [ case targets of
+              [] ->
+                InvestigatorAssignDamage (eventOwner attrs) source DamageAny 1 0
+              xs -> chooseOne
+                (eventOwner attrs)
+                [ targetLabel x [Discard (toSource attrs) $ AssetTarget x]
+                | x <- xs
+                ]
+          ]
       pure e
     _ -> AstralTravel <$> runMessage msg attrs
+

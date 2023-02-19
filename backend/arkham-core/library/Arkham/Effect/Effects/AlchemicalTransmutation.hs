@@ -10,6 +10,7 @@ import Arkham.Effect.Runner
 import Arkham.Message
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype AlchemicalTransmutation = AlchemicalTransmutation EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -26,9 +27,10 @@ instance RunMessage AlchemicalTransmutation where
         when
           (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
           )
-          (push $ If
-            (Window.RevealTokenEffect iid token "03032")
-            [ InvestigatorAssignDamage iid effectSource DamageAny 1 0
+          (pushAll
+            [ If
+              (Window.RevealTokenEffect iid token effectId)
+              [InvestigatorAssignDamage iid effectSource DamageAny 1 0]
             , DisableEffect effectId
             ]
           )

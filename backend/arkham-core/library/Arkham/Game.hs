@@ -2586,6 +2586,7 @@ instance Projection Effect where
     e <- getEffect eid
     case fld of
       EffectAbilities -> pure $ getAbilities e
+      EffectCardCode -> pure $ effectCardCode $ toAttrs e
 
 instance Projection Event where
   field fld eid = do

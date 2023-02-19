@@ -19,8 +19,6 @@ import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Resolution
-import Arkham.Scenario.Types
 import Arkham.Target
 import Arkham.Trait
 

@@ -3,24 +3,24 @@ module Arkham.Window where
 import Arkham.Prelude
 
 import Arkham.Ability.Types
+import Arkham.Action ( Action )
+import Arkham.Agenda.AdvancementReason ( AgendaAdvancementReason )
 import Arkham.Attack
-import Arkham.Action (Action)
-import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
-import Arkham.SkillTest.Base
-import Arkham.SkillTest.Type
-import Arkham.Card (Card)
+import Arkham.Card ( Card, CardCode )
 import Arkham.Damage
-import Arkham.DamageEffect (DamageEffect)
+import Arkham.DamageEffect ( DamageEffect )
 import Arkham.Deck
 import Arkham.DefeatedBy
 import Arkham.Id
-import Arkham.Matcher (LocationMatcher)
-import Arkham.Phase (Phase)
-import Arkham.Source (Source)
-import Arkham.Target (Target)
-import Arkham.Timing (Timing)
+import Arkham.Matcher ( LocationMatcher )
+import Arkham.Phase ( Phase )
+import Arkham.SkillTest.Base
+import Arkham.SkillTest.Type
+import Arkham.Source ( Source )
+import Arkham.Target ( Target )
+import Arkham.Timing ( Timing )
 import Arkham.Timing qualified as Timing
-import Arkham.Token (Token)
+import Arkham.Token ( Token )
 
 data Result b a = Success a | Failure b
   deriving stock (Show, Eq, Generic)
@@ -42,7 +42,7 @@ defaultWindows iid =
 
 hasEliminatedWindow :: [Window] -> Bool
 hasEliminatedWindow = any $ \case
-  Window _ (InvestigatorEliminated {}) -> True
+  Window _ (InvestigatorEliminated{}) -> True
   _ -> False
 
 data WindowType
@@ -133,6 +133,7 @@ data WindowType
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
+  | RevealTokenEffect InvestigatorId Token CardCode
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | WouldPerformRevelationSkillTest InvestigatorId
   | SkillTest SkillTestType

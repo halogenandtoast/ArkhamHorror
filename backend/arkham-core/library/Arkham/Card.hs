@@ -25,13 +25,22 @@ import Arkham.SkillType
 import Arkham.Trait
 import Data.Text qualified as T
 
-lookupCard :: HasCallStack => CardCode -> CardId -> Card
-lookupCard cardCode cardId =
+lookupCard
+  :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
+lookupCard (toCardCode -> cardCode) cardId =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
     (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
     (Just def, _) -> EncounterCard $ lookupEncounterCard def cardId
     -- we prefer encounter cards over player cards to handle cases like straitjacket
     (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
+
+lookupCardDef :: HasCallStack => CardCode -> CardDef
+lookupCardDef cardCode =
+  case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
+    (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
+    (Just def, _) -> def
+    -- we prefer encounter cards over player cards to handle cases like straitjacket
+    (Nothing, Just def) -> def
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
@@ -80,7 +89,8 @@ cardMatch a = \case
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
-  CardWithSkillIcon skillIcon -> skillIcon `member` setFromList @(HashSet SkillIcon) (cdSkills $ toCardDef a)
+  CardWithSkillIcon skillIcon ->
+    skillIcon `member` setFromList @(HashSet SkillIcon) (cdSkills $ toCardDef a)
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title

@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
@@ -72,10 +71,15 @@ instance RunMessage TheDevourerBelow where
         woodsLabels = [ "woods" <> tshow @Int n | n <- [1 .. 4] ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
-        pastMidnightMessages =
-          if pastMidnight then [AllRandomDiscard (toSource attrs) AnyCard, AllRandomDiscard (toSource attrs) AnyCard] else []
-        cultistsWhoGotAwayMessages =
-          replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
+        pastMidnightMessages = if pastMidnight
+          then
+            [ AllRandomDiscard (toSource attrs) AnyCard
+            , AllRandomDiscard (toSource attrs) AnyCard
+            ]
+          else []
+        cultistsWhoGotAwayMessages = replicate
+          ((length cultistsWhoGotAway + 1) `div` 2)
+          PlaceDoomOnAgenda
 
       (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
 
@@ -109,9 +113,10 @@ instance RunMessage TheDevourerBelow where
         , randomSet
         ]
 
-      placeWoods <- for (zip woodsLabels woodsLocations) $ \(label, location) -> do
-        (locationId, placement) <- placeLocation location
-        pure [placement, SetLocationLabel locationId label]
+      placeWoods <-
+        for (zip woodsLabels woodsLocations) $ \(label, location) -> do
+          (locationId, placement) <- placeLocation location
+          pure [placement, SetLocationLabel locationId label]
 
       pushAll
         $ [ story investigatorIds intro

@@ -139,6 +139,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , eatLead2
   , eavesdrop
   , eideticMemory3
+  , eldritchInspiration
   , elusive
   , emergencyAid
   , emergencyCache

@@ -6,7 +6,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Resolution
 
 newtype CampusSafety = CampusSafety ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

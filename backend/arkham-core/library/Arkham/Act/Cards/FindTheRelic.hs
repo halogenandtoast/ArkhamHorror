@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Target
 
@@ -61,10 +60,9 @@ instance RunMessage FindTheRelic where
         takeControlMessage = chooseOrRunOne
           leadInvestigatorId
           [ targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids ]
-        nextMessage =
-          if deckCount <= 1
-            then ScenarioResolution $ Resolution 1
-            else RemoveFromGame (ActTarget $ toId attrs)
+        nextMessage = if deckCount <= 1
+          then scenarioResolution 1
+          else RemoveFromGame (toTarget attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> FindTheRelic <$> runMessage msg attrs

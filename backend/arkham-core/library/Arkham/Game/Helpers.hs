@@ -28,6 +28,7 @@ import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
+import Arkham.Card.Id
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.ClassSymbol
@@ -72,6 +73,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )
 import Data.HashSet qualified as HashSet
+import Data.UUID ( nil )
 
 replaceThisCard :: Card -> Source -> Source
 replaceThisCard c = \case
@@ -1368,11 +1370,15 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
-  Matcher.WouldTriggerTokenRevealEffectOnCard whoMatcher _cardMatcher tokens ->
+  Matcher.WouldTriggerTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
     case window' of
       Window timing' wType | timing' == Timing.AtIf -> case wType of
-        Window.RevealToken who token -> andM
-          [matchWho iid who whoMatcher, pure $ tokenFace token `elem` tokens]
+        Window.RevealTokenEffect who token cardCode -> do
+          andM
+            [ matchWho iid who whoMatcher
+            , pure $ tokenFace token `elem` tokens
+            , pure $ lookupCard cardCode (CardId nil) `cardMatch` cardMatcher
+            ]
         _ -> pure False
       _ -> pure False
   Matcher.GameBegins timing -> pure $ case window' of

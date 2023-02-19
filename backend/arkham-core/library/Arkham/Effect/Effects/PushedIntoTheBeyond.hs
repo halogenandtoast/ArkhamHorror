@@ -25,7 +25,7 @@ instance RunMessage PushedIntoTheBeyond where
       e <$ push (DiscardTopOfDeck iid 3 effectSource (Just $ EffectTarget eid))
     DiscardedTopOfDeck iid cards _ (EffectTarget eid) | eid == effectId ->
       case effectMetadata of
-        Just (EffectCardCode x) -> e <$ when
+        Just (EffectCardCodes [x]) -> e <$ when
           (x `elem` map (cdCardCode . toCardDef) cards)
           (push (InvestigatorAssignDamage iid effectSource DamageAny 0 2))
         _ -> throwIO (InvalidState "Must have one card as the target")

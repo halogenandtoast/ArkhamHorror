@@ -39,6 +39,7 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck hiding ( InvestigatorDeck, InvestigatorDiscard )
 import Arkham.DefeatedBy
+import Arkham.Effect.Types ( Field (..) )
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game
@@ -1373,11 +1374,19 @@ windowMatches iid source window' = \case
   Matcher.WouldTriggerTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
     case window' of
       Window timing' wType | timing' == Timing.AtIf -> case wType of
-        Window.RevealTokenEffect who token cardCode -> do
+        Window.RevealTokenEffect who token effectId -> do
+          cardCode <- field EffectCardCode effectId
           andM
             [ matchWho iid who whoMatcher
             , pure $ tokenFace token `elem` tokens
             , pure $ lookupCard cardCode (CardId nil) `cardMatch` cardMatcher
+            ]
+        Window.RevealTokenEventEffect who tokens' eventId -> do
+          card <- field EventCard eventId
+          andM
+            [ matchWho iid who whoMatcher
+            , pure $ any ((`elem` tokens) . tokenFace) tokens'
+            , pure $ card `cardMatch` cardMatcher
             ]
         _ -> pure False
       _ -> pure False

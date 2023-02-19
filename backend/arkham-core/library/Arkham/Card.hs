@@ -34,13 +34,13 @@ lookupCard (toCardCode -> cardCode) cardId =
     -- we prefer encounter cards over player cards to handle cases like straitjacket
     (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
 
-lookupCardDef :: HasCallStack => CardCode -> CardDef
+lookupCardDef :: CardCode -> Maybe CardDef
 lookupCardDef cardCode =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
-    (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
-    (Just def, _) -> def
+    (Nothing, Nothing) -> Nothing
+    (Just def, _) -> Just def
     -- we prefer encounter cards over player cards to handle cases like straitjacket
-    (Nothing, Just def) -> def
+    (Nothing, Just def) -> Just def
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode

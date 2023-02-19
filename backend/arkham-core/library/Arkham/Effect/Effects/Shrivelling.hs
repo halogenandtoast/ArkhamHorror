@@ -31,9 +31,10 @@ instance RunMessage Shrivelling where
       let damage = maybe 1 intFromMetadata effectMetadata
       when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (push $ If
-          (Window.RevealTokenEffect iid token "01060")
-          [ InvestigatorAssignDamage iid effectSource DamageAny 0 damage
+        (pushAll
+          [ If
+            (Window.RevealTokenEffect iid token effectId)
+            [InvestigatorAssignDamage iid effectSource DamageAny 0 damage]
           , DisableEffect effectId
           ]
         )

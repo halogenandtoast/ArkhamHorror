@@ -10,7 +10,7 @@ import Arkham.Effect.Runner
 import Arkham.Message
 import Arkham.Target
 import Arkham.Token
-import Arkham.Window (Window)
+import Arkham.Window ( Window )
 import Arkham.Window qualified as Window
 
 newtype Shrivelling = Shrivelling EffectAttrs
@@ -31,7 +31,8 @@ instance RunMessage Shrivelling where
       let damage = maybe 1 intFromMetadata effectMetadata
       when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (push $ If (Window.RevealToken iid token)
+        (push $ If
+          (Window.RevealTokenEffect iid token "01060")
           [ InvestigatorAssignDamage iid effectSource DamageAny 0 damage
           , DisableEffect effectId
           ]

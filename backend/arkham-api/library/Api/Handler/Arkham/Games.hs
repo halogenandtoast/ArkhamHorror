@@ -185,16 +185,14 @@ postApiV1ArkhamGamesImportR = do
         ArkhamGameExportData {..} = aeCampaignData export
         investigatorIds = aeCampaignPlayers export
       key <- runDB $ do
-        gameId <- insert $ ArkhamGame
-          agedName
-          agedCurrentData
-          agedStep
-          agedLog
-          Solo
-          now
-          now
+        gameId <- insert
+          $ ArkhamGame agedName agedCurrentData agedStep agedLog Solo now now
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
-        traverse_ (\s -> insert_ $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s)) agedSteps
+        traverse_
+          (\s -> insert_
+            $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s)
+          )
+          agedSteps
         pure gameId
       pure $ toPublicGame $ Entity
         key
@@ -225,30 +223,16 @@ postApiV1ArkhamGamesR = do
         (GameApp gameRef queueRef genRef $ pure . const ())
         (runMessages Nothing)
       ge <- readIORef gameRef
-      updatedQueue <- readIORef (queueActual queueRef)
+      updatedQueue <- readIORef (queueToRef queueRef)
       key <- runDB $ do
-        gameId <- insert $ ArkhamGame
-          campaignName
-          ge
-          0
-          []
-          multiplayerVariant
-          now
-          now
+        gameId <- insert
+          $ ArkhamGame campaignName ge 0 [] multiplayerVariant now now
         insert_ $ ArkhamPlayer userId gameId investigatorId
         insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0
         pure gameId
       pure $ toPublicGame $ Entity
         key
-        (ArkhamGame
-          campaignName
-          ge
-          0
-          []
-          multiplayerVariant
-          now
-          now
-        )
+        (ArkhamGame campaignName ge 0 [] multiplayerVariant now now)
     Nothing -> case scenarioId of
       Just sid -> do
         (queueRef, game) <- liftIO
@@ -259,30 +243,16 @@ postApiV1ArkhamGamesR = do
           (runMessages Nothing)
         ge <- readIORef gameRef
         let diffDown = diff ge game
-        updatedQueue <- readIORef (queueActual queueRef)
+        updatedQueue <- readIORef (queueToRef queueRef)
         key <- runDB $ do
-          gameId <- insert $ ArkhamGame
-            campaignName
-            ge
-            0
-            []
-            multiplayerVariant
-            now
-            now
+          gameId <- insert
+            $ ArkhamGame campaignName ge 0 [] multiplayerVariant now now
           insert_ $ ArkhamPlayer userId gameId investigatorId
           insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0
           pure gameId
         pure $ toPublicGame $ Entity
           key
-          (ArkhamGame
-            campaignName
-            ge
-            0
-            []
-            multiplayerVariant
-            now
-            now
-          )
+          (ArkhamGame campaignName ge 0 [] multiplayerVariant now now)
       Nothing -> error "missing either campaign id or scenario id"
 
 data Answer
@@ -333,7 +303,8 @@ putApiV1ArkhamGameR gameId = do
       (coerce arkhamPlayerInvestigatorId)
       (answerInvestigator response)
     messages = handleAnswer gameJson investigatorId response
-    currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+    currentQueue =
+      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef gameJson
   queueRef <- newQueue (messages <> currentQueue)
@@ -346,7 +317,7 @@ putApiV1ArkhamGameR gameId = do
   ge <- readIORef gameRef
   let diffDown = diff ge arkhamGameCurrentData
 
-  updatedQueue <- readIORef (queueActual queueRef)
+  updatedQueue <- readIORef (queueToRef queueRef)
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   now <- liftIO getCurrentTime
   void $ runDB $ do
@@ -358,7 +329,8 @@ putApiV1ArkhamGameR gameId = do
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now
-    insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+    insert_
+      $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
     case arkhamGameMultiplayerVariant of
       Solo -> replace pid $ arkhamPlayer
         { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
@@ -390,7 +362,8 @@ putApiV1ArkhamGameRawR gameId = do
   let
     gameJson@Game {..} = arkhamGameCurrentData
     message = gameMessage response
-    currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+    currentQueue =
+      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
   gameRef <- newIORef gameJson
   queueRef <- newQueue (message : currentQueue)
   logRef <- newIORef []
@@ -400,7 +373,7 @@ putApiV1ArkhamGameRawR gameId = do
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     (runMessages Nothing)
   ge <- readIORef gameRef
-  updatedQueue <- readIORef (queueActual queueRef)
+  updatedQueue <- readIORef (queueToRef queueRef)
   let diffDown = diff ge arkhamGameCurrentData
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   atomically $ writeTChan

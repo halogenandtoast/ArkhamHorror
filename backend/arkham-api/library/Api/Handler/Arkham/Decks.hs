@@ -16,12 +16,12 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
-import Entity.Arkham.Step
 import Control.Monad.Random ( mkStdGen )
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding ( isNothing )
+import Entity.Arkham.Step
 import Json hiding ( Success )
 import Network.HTTP.Conduit ( simpleHttp )
 import Network.HTTP.Types
@@ -88,7 +88,8 @@ putApiV1ArkhamGameDecksR gameId = do
   let
     Game {..} = arkhamGameCurrentData
     investigatorId = udpInvestigatorId postData
-    currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+    currentQueue =
+      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
   msg <- case udpDeckUrl postData of
     Nothing -> pure $ Run []
     Just deckUrl -> do
@@ -107,9 +108,8 @@ putApiV1ArkhamGameDecksR gameId = do
     (runMessages Nothing)
   ge <- readIORef gameRef
 
-  let
-    diffDown = diff ge arkhamGameCurrentData
-  updatedQueue <- readIORef (queueActual queueRef)
+  let diffDown = diff ge arkhamGameCurrentData
+  updatedQueue <- readIORef (queueToRef queueRef)
   let updatedMessages = []
   writeChannel <- getChannel gameId
   atomically $ writeTChan
@@ -125,7 +125,8 @@ putApiV1ArkhamGameDecksR gameId = do
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now
-    insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+    insert_
+      $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

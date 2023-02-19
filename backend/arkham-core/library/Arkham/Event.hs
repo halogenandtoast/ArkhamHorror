@@ -178,6 +178,7 @@ allEvents = mapFrom
   , SomeEventCard connectTheDots
   , SomeEventCard moneyTalks
   , SomeEventCard denyExistence
+  , SomeEventCard eldritchInspiration
   , SomeEventCard denyExistence5
   , SomeEventCard trialByFire
   , SomeEventCard bloodRite

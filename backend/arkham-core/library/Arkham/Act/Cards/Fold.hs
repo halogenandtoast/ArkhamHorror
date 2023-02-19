@@ -32,10 +32,7 @@ instance HasAbilities Fold where
   getAbilities (Fold x) = withBaseAbilities x $ if onSide A x
     then
       [ restrictedAbility
-        (ProxySource
-          (AssetMatcherSource $ assetIs Cards.peterClover)
-          (toSource x)
-        )
+        (toProxySource x $ AssetMatcherSource $ assetIs Cards.peterClover)
         1
         (Uncontrolled <> OnSameLocation)
         (ActionAbility (Just Parley) $ ActionCost 1)

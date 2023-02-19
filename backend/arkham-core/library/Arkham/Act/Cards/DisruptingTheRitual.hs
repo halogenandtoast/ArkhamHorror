@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Act.Types
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue

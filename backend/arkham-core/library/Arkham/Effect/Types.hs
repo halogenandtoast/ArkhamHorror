@@ -9,8 +9,8 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Effect.Window
-import Arkham.Id
 import Arkham.EffectMetadata
+import Arkham.Id
 import Arkham.Json
 import Arkham.Message
 import Arkham.Projection
@@ -137,5 +137,5 @@ instance SourceEntity Effect where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-data SomeEffect = forall a. IsEffect a => SomeEffect (EffectArgs -> a)
+data SomeEffect = forall a . IsEffect a => SomeEffect (EffectArgs -> a)
 

@@ -10,11 +10,11 @@ import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator
-import Entity.Arkham.Step
 import Control.Monad.Random ( mkStdGen )
 import Data.Aeson
 import Data.HashMap.Strict qualified as HashMap
 import Data.Time.Clock
+import Entity.Arkham.Step
 import Safe ( fromJustNote )
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
@@ -36,7 +36,9 @@ putApiV1ArkhamPendingGameR gameId = do
   runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)
 
   mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
-  let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+  let
+    currentQueue =
+      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue currentQueue
@@ -46,7 +48,7 @@ putApiV1ArkhamPendingGameR gameId = do
     runMessages Nothing
 
   updatedGame <- readIORef gameRef
-  updatedQueue <- readIORef (queueActual queueRef)
+  updatedQueue <- readIORef (queueToRef queueRef)
   let updatedMessages = []
 
   writeChannel <- getChannel gameId
@@ -67,7 +69,8 @@ putApiV1ArkhamPendingGameR gameId = do
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now
-    insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1)
+    insert_
+      $ ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1)
 
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName

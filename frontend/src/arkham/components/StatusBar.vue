@@ -148,21 +148,6 @@ const title = computed(() => {
         </template>
       </div>
 
-      <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">
-        <div class="label-choices">
-          <template v-for="(choice, index) in question.question.choices" :key="index">
-            <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-              <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
-            </template>
-            <template v-if="choice.tag === 'PortraitLabel'">
-              <a href='#' @click.prevent="choose(index)">
-                <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
-              </a>
-            </template>
-          </template>
-        </div>
-      </div>
-
       <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
         <p
           v-for="(paragraph, index) in question.flavorText.body"
@@ -173,6 +158,14 @@ const title = computed(() => {
 
       <div v-if="showChoices" class="choices">
         <template v-for="(choice, index) in choices" :key="index">
+          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+            <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
+          </template>
+          <template v-if="choice.tag === 'PortraitLabel'">
+            <a href='#' @click.prevent="choose(index)">
+              <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
+            </a>
+          </template>
           <div v-if="choice.tag === MessageType.DONE">
             <button @click="choose(index)">{{choice.label}}</button>
           </div>

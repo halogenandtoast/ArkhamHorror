@@ -23,13 +23,15 @@ instance RunMessage AlchemicalTransmutation where
   runMessage msg e@(AlchemicalTransmutation attrs@EffectAttrs {..}) =
     case msg of
       RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
-        e <$ when
+        when
           (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
           )
-          (pushAll
+          (push $ If
+            (Window.RevealTokenEffect iid token "03032")
             [ InvestigatorAssignDamage iid effectSource DamageAny 1 0
             , DisableEffect effectId
             ]
           )
+        pure e
       SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
       _ -> AlchemicalTransmutation <$> runMessage msg attrs

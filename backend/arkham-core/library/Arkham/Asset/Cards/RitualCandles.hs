@@ -14,6 +14,8 @@ import Arkham.Matcher
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype RitualCandles = RitualCandles AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,24 +26,23 @@ ritualCandles = asset RitualCandles Cards.ritualCandles
 
 instance HasAbilities RitualCandles where
   getAbilities (RitualCandles x) =
-    [ restrictedAbility
-        x
-        1
-        ControlsThis
-        (ReactionAbility
-          (RevealChaosToken
-            Timing.When
-            You
-            (TokenMatchesAny
-            $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing]
-            )
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
+        (RevealChaosToken
+          Timing.When
+          You
+          (TokenMatchesAny
+          $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing]
           )
-          Free
         )
+        Free
     ]
 
 instance RunMessage RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
-      [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1)]
+    UseCardAbility iid source 1 (Window.revealedTokens -> tokens) _
+      | isSource attrs source -> do
+        push $ If
+          (Window.RevealTokenAssetAbilityEffect iid tokens (toId attrs))
+          [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1)]
+        pure a
     _ -> RitualCandles <$> runMessage msg attrs

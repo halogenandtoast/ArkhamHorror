@@ -140,6 +140,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , eavesdrop
   , eideticMemory3
   , eldritchInspiration
+  , eldritchInspiration1
   , elusive
   , emergencyAid
   , emergencyCache
@@ -2037,6 +2038,14 @@ seekingAnswers2 = (event "60227" "Seeking Answers" 1 Seeker)
   , cdCardTraits = singleton Insight
   , cdLevel = 2
   , cdAlternateCardCodes = ["01685"]
+  }
+
+eldritchInspiration1 :: CardDef
+eldritchInspiration1 = (event "60420" "Eldritch Inspiration" 0 Mystic)
+  { cdSkills = [#willpower, #intellect, #intellect]
+  , cdCardTraits = setFromList [Spell, Spirit]
+  , cdFastWindow = Just $ WouldTriggerTokenRevealEffectOnCard You MysticCard [minBound ..]
+  , cdLevel = 1
   }
 
 willToSurvive :: CardDef

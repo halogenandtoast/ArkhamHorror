@@ -78,6 +78,7 @@ data InvestigatorMatcher
   | InvestigatorWithHighestSkill SkillType
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
+  | ActiveInvestigator
   | LeadInvestigator
   | NoDamageDealtThisTurn
   | NoSuccessfulExploreThisTurn

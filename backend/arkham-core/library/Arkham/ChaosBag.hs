@@ -302,8 +302,8 @@ replaceDecidingList steps replacement = case steps of
 instance RunMessage ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     ForceTokenDraw face -> do
-      leadInvestigatorIdL <- getLeadInvestigatorId -- TODO: active
-      push $ StartSkillTest leadInvestigatorIdL
+      activeInvestigatorId <- getActiveInvestigatorId
+      push $ StartSkillTest activeInvestigatorId
       pure $ c & forceDrawL ?~ face
     SetTokens tokens' -> do
       tokens'' <- traverse createToken tokens'

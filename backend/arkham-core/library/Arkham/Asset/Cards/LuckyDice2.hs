@@ -33,7 +33,7 @@ instance HasAbilities LuckyDice2 where
 
 instance RunMessage LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 [Window _ (Window.RevealToken _ token)] _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedTokens -> [token])_ -> do
       ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll
         [ CreateEffect "02230" Nothing (toSource attrs) (TokenTarget token)

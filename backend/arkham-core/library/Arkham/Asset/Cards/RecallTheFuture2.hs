@@ -16,6 +16,7 @@ import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata { chosenToken :: Maybe TokenFace }
   deriving stock (Show, Eq, Generic)
@@ -54,13 +55,18 @@ instance RunMessage RecallTheFuture2 where
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (TokenFaceTarget t) -> do
       pure . RecallTheFuture2 $ attrs `with` Metadata (Just t)
-    When (RevealToken _ _ (Token _ t)) | Just t == chosenToken metadata -> do
-      unless (assetExhausted attrs) $
-        for_ (assetController attrs) $ \iid -> do
-          pushAll
-            [ Exhaust (toTarget attrs)
-            , skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
-            ]
+    When (RevealToken _ _ token@(Token _ t)) | Just t == chosenToken metadata -> do
+      unless (assetExhausted attrs) $ for_ (assetController attrs) $ \iid -> do
+        push $ If
+          (Window.RevealTokenAssetAbilityEffect iid [token] (toId attrs))
+          [ ExhaustThen
+              (toTarget attrs)
+              [ skillTestModifier
+                  attrs
+                  (InvestigatorTarget iid)
+                  (AnySkillValue 2)
+              ]
+          ]
       pure a
     SkillTestEnds _ _ ->
       pure . RecallTheFuture2 $ attrs `with` Metadata Nothing

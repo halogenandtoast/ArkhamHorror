@@ -1388,6 +1388,13 @@ windowMatches iid source window' = \case
             , pure $ any ((`elem` tokens) . tokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher
             ]
+        Window.RevealTokenAssetAbilityEffect who tokens' assetId -> do
+          card <- field AssetCard assetId
+          andM
+            [ matchWho iid who whoMatcher
+            , pure $ any ((`elem` tokens) . tokenFace) tokens'
+            , pure $ card `cardMatch` cardMatcher
+            ]
         _ -> pure False
       _ -> pure False
   Matcher.GameBegins timing -> pure $ case window' of

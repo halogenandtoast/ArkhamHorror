@@ -50,11 +50,13 @@ instance HasAbilities WendyAdams where
 
 instance RunMessage WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 [Window _ (Window.RevealToken _ token)] _
+    UseCardAbility _ (isSource attrs -> True) 1 (Window.revealedTokens -> [token]) _
       -> do
         cancelToken token
         i <$ pushAll
-          [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawTokenMessage, RevealTokenMessage]
+          [ CancelEachNext
+            (toSource attrs)
+            [RunWindowMessage, DrawTokenMessage, RevealTokenMessage]
           , ReturnTokens [token]
           , UnfocusTokens
           , DrawAnotherToken (toId attrs)

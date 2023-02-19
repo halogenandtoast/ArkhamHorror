@@ -198,6 +198,9 @@ instance RunMessage AssetAttrs where
     ShuffleCardsIntoDeck _ cards ->
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
+    ExhaustThen target msgs | a `isTarget` target -> do
+      unless assetExhausted $ pushAll msgs
+      pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetPlacement of
       InPlayArea iid -> do
         modifiers <- getModifiers (InvestigatorTarget iid)

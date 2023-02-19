@@ -629,6 +629,7 @@ getInvestigatorsMatching matcher = do
  where
   includeEliminated Anyone = True
   includeEliminated TurnInvestigator = True
+  includeEliminated ActiveInvestigator = True
   includeEliminated ResignedInvestigator = True
   includeEliminated DefeatedInvestigator = True
   includeEliminated AliveInvestigator = True
@@ -766,6 +767,7 @@ getInvestigatorsMatching matcher = do
       pure $ you /= i
     Anyone -> pure . const True
     TurnInvestigator -> \i -> (== Just i) <$> getTurnInvestigator
+    ActiveInvestigator -> \i -> (== toId i) . gameActiveInvestigatorId <$> getGame
     YetToTakeTurn -> \i -> andM
       [ (/= i) <$> getActiveInvestigator
       , pure $ not $ investigatorEndedTurn $ toAttrs i
@@ -1950,13 +1952,16 @@ newtype MissingEntity = MissingEntity Text
 instance Exception MissingEntity
 
 getAsset :: HasGame m => AssetId -> m Asset
-getAsset aid = do
+getAsset aid = fromMaybe (throw missingAsset) <$> maybeAsset aid
+  where missingAsset = MissingEntity $ "Unknown asset: " <> tshow aid
+
+maybeAsset :: HasGame m => AssetId -> m (Maybe Asset)
+maybeAsset aid = do
   g <- getGame
-  maybe (throw missingAsset) pure
+  pure
     $ preview (entitiesL . assetsL . ix aid) g
     <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
     <|> getInDiscardEntity assetsL aid g
-  where missingAsset = MissingEntity $ "Unknown asset: " <> tshow aid
 
 getTreachery :: HasGame m => TreacheryId -> m Treachery
 getTreachery tid =
@@ -3369,12 +3374,14 @@ runGameMessage msg g = case msg of
     push $ AddToHand iid card
     pure $ g & entitiesL . skillsL %~ deleteMap skillId
   ReturnToHand iid (AssetTarget assetId) -> do
-    asset <- getAsset assetId
-    card <- field AssetCard assetId
-    if assetIsStory $ toAttrs asset
-      then push $ Discard GameSource $ AssetTarget assetId
-      else do
-        pushAll [RemoveFromPlay (AssetSource assetId), AddToHand iid card]
+    -- If we try to return to hand but the asset is gone, then do nothing
+    mAsset <- maybeAsset assetId
+    for_ mAsset $ \asset -> do
+      card <- field AssetCard assetId
+      if assetIsStory $ toAttrs asset
+        then push $ Discard GameSource $ AssetTarget assetId
+        else do
+          pushAll [RemoveFromPlay (AssetSource assetId), AddToHand iid card]
     pure g
   PlaceEnemy enemyId Pursuit -> do
     push $ SetOutOfPlay (EnemyTarget enemyId)

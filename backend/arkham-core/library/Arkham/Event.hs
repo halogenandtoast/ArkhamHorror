@@ -220,6 +220,7 @@ allEvents = mapFrom
   , SomeEventCard iveGotAPlan2
   , SomeEventCard mindOverMatter2
   , SomeEventCard seekingAnswers2
+  , SomeEventCard eldritchInspiration
   , SomeEventCard willToSurvive
   , SomeEventCard aTestOfWill
   , SomeEventCard gritYourTeeth

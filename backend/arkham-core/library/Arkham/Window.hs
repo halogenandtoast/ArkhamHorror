@@ -45,6 +45,11 @@ hasEliminatedWindow = any $ \case
   Window _ (InvestigatorEliminated{}) -> True
   _ -> False
 
+revealedTokens :: [Window] -> [Token]
+revealedTokens [] = []
+revealedTokens (Window _ (RevealToken _ token) : rest) = token : revealedTokens rest
+revealedTokens (_ : rest) = revealedTokens rest
+
 data WindowType
   = ActAdvance ActId
   | ActivateAbility InvestigatorId Ability
@@ -135,6 +140,7 @@ data WindowType
   | RevealToken InvestigatorId Token
   | RevealTokenEffect InvestigatorId Token EffectId
   | RevealTokenEventEffect InvestigatorId [Token] EventId
+  | RevealTokenAssetAbilityEffect InvestigatorId [Token] AssetId
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | WouldPerformRevelationSkillTest InvestigatorId
   | SkillTest SkillTestType

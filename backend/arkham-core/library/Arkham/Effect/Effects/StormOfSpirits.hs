@@ -11,6 +11,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype StormOfSpirits = StormOfSpirits EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -25,11 +26,18 @@ instance RunMessage StormOfSpirits where
       e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         do
-          iids <- selectList $ InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid
+          iids <-
+            selectList
+            $ InvestigatorAt
+            $ LocationWithInvestigator
+            $ InvestigatorWithId iid
           pushAll
-            $ [ InvestigatorAssignDamage iid' (effectSource attrs) DamageAny 1 0
+            [ If
+              (Window.RevealTokenEffect iid token (toId attrs))
+              [ InvestigatorAssignDamage iid' (effectSource attrs) DamageAny 1 0
               | iid' <- iids
               ]
-            <> [DisableEffect $ toId attrs]
+            , DisableEffect $ toId attrs
+            ]
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> StormOfSpirits <$> runMessage msg attrs

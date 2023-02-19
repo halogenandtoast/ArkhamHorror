@@ -349,6 +349,7 @@ data Message
   | EngageEnemy InvestigatorId EnemyId Bool
   | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
+  | ExhaustThen Target [Message]
   | FailSkillTest
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int

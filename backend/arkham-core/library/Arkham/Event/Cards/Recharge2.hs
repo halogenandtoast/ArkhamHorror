@@ -17,6 +17,7 @@ import Arkham.RequestedTokenStrategy
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
+import Arkham.Window qualified as Window
 
 newtype Meta = Meta { chosenAsset :: Maybe AssetId }
   deriving stock (Show, Eq, Generic)
@@ -44,9 +45,7 @@ instance RunMessage Recharge2 where
         ]
       pure e
     ResolveEvent iid eid (Just (AssetTarget aid)) _ | eid == toId attrs -> do
-      pushAll
-        [ RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
-        ]
+      pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
       pure $ Recharge2 $ attrs `with` Meta (Just aid)
     RequestedTokens source _ tokens | isSource attrs source ->
       case chosenAsset meta of
@@ -57,7 +56,15 @@ instance RunMessage Recharge2 where
               . tokenFace
               )
               tokens
-            then push (Discard (toSource attrs) $ AssetTarget aid)
+            then push
+              (If
+                (Window.RevealTokenEventEffect
+                  (eventOwner attrs)
+                  tokens
+                  (toId attrs)
+                )
+                [Discard (toSource attrs) $ AssetTarget aid]
+              )
             else push (AddUses aid Charge 3)
           pure e
     _ -> Recharge2 . (`with` meta) <$> runMessage msg attrs

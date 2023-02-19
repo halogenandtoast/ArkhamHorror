@@ -22,6 +22,7 @@ import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype MistsOfRlyeh2 = MistsOfRlyeh2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -66,7 +67,13 @@ instance RunMessage MistsOfRlyeh2Effect where
     RevealToken _ iid token -> case effectTarget of
       InvestigatorTarget iid' | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (push $ ChooseAndDiscardCard iid effectSource)
+        (pushAll
+          [ If
+            (Window.RevealTokenEffect iid token effectId)
+            [ChooseAndDiscardCard iid effectSource]
+          , DisableEffect effectId
+          ]
+        )
       _ -> pure e
     SkillTestEnds _ _ -> do
       case effectTarget of

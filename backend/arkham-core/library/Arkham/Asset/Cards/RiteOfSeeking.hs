@@ -38,8 +38,18 @@ instance RunMessage RiteOfSeeking where
       lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
-        [ createCardEffect Cards.riteOfSeeking Nothing source (InvestigationTarget iid lid)
-        , Investigate iid lid source Nothing (if skillType == SkillIntellect then SkillWillpower else skillType) False
+        [ createCardEffect
+          Cards.riteOfSeeking
+          Nothing
+          source
+          (InvestigationTarget iid lid)
+        , Investigate
+          iid
+          lid
+          source
+          Nothing
+          (if skillType == SkillIntellect then SkillWillpower else skillType)
+          False
         ]
       pure a
     _ -> RiteOfSeeking <$> runMessage msg attrs

@@ -1,6 +1,6 @@
-module Arkham.Event.Cards.EldritchInspiration
-  ( eldritchInspiration
-  , EldritchInspiration(..)
+module Arkham.Event.Cards.EldritchInspiration1
+  ( eldritchInspiration1
+  , EldritchInspiration1(..)
   ) where
 
 import Arkham.Prelude
@@ -18,15 +18,15 @@ import Arkham.Timing
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
-newtype EldritchInspiration = EldritchInspiration EventAttrs
+newtype EldritchInspiration1 = EldritchInspiration1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-eldritchInspiration :: EventCard EldritchInspiration
-eldritchInspiration = event EldritchInspiration Cards.eldritchInspiration
+eldritchInspiration1 :: EventCard EldritchInspiration1
+eldritchInspiration1 = event EldritchInspiration1 Cards.eldritchInspiration1
 
-instance RunMessage EldritchInspiration where
-  runMessage msg e@(EldritchInspiration attrs) = case msg of
+instance RunMessage EldritchInspiration1 where
+  runMessage msg e@(EldritchInspiration1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       mmsg <- fromQueue $ find
         (\case
@@ -81,4 +81,4 @@ instance RunMessage EldritchInspiration where
           _ -> False
         )
       pure e
-    _ -> EldritchInspiration <$> runMessage msg attrs
+    _ -> EldritchInspiration1 <$> runMessage msg attrs

@@ -22,7 +22,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window
+import Arkham.Window qualified as Window
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -47,7 +47,7 @@ instance HasAbilities BeginnersLuck where
 
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
-    UseCardAbility iid source 1 [Window Timing.When (RevealToken _ token)] _
+    UseCardAbility iid source 1 (Window.revealedTokens -> [token]) _
       | isSource attrs source -> do
         tokensInBag <- getOnlyTokensInBag
         pushAll

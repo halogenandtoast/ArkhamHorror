@@ -21,7 +21,6 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype FatherMateo = FatherMateo InvestigatorAttrs
@@ -68,7 +67,7 @@ instance RunMessage FatherMateo where
           , PassSkillTest
           ]
         pure i
-    UseCardAbility _ source 1 [Window _ (Window.RevealToken _ token)] _
+    UseCardAbility _ source 1 (Window.revealedTokens -> [token]) _
       | isSource attrs source -> do
         push $ CreateTokenEffect
           (EffectModifiers $ toModifiers attrs [TokenFaceModifier [ElderSign]])

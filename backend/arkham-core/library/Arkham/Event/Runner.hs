@@ -39,6 +39,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
   Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
+  ExhaustThen (isTarget a -> True) msgs -> do
+    unless eventExhausted $ pushAll msgs
+    pure $ a & exhaustedL .~ True
   PayCardCost _ card _ | toCardId a == toCardId card ->
     pure $ a & beingPaidForL .~ True
   CardEnteredPlay _ card | toCardId a == toCardId card ->

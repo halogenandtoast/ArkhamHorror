@@ -11,6 +11,7 @@ import Arkham.Effect.Runner
 import Arkham.Message
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -24,11 +25,12 @@ instance RunMessage RiteOfSeeking4 where
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (push $ CreateEffect
-          "02028"
-          Nothing
-          (toSource attrs)
-          (InvestigatorTarget iid)
+        (pushAll
+          [ If
+            (Window.RevealTokenEffect iid token effectId)
+            [SetActions iid effectSource 0, ChooseEndTurn iid]
+          , DisableEffect effectId
+          ]
         )
       _ -> pure e
     SkillTestEnds _ _ -> e <$ case effectTarget of

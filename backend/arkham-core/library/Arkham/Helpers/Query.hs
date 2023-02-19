@@ -17,7 +17,7 @@ getLeadInvestigatorId :: HasGame m => m InvestigatorId
 getLeadInvestigatorId = selectJust $ Anyone <> LeadInvestigator
 
 getActiveInvestigatorId :: HasGame m => m InvestigatorId
-getActiveInvestigatorId = selectJust TurnInvestigator
+getActiveInvestigatorId = selectJust ActiveInvestigator
 
 getInvestigatorIds :: HasGame m => m [InvestigatorId]
 getInvestigatorIds = selectList UneliminatedInvestigator

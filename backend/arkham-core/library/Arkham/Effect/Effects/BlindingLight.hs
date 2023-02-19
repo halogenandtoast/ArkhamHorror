@@ -13,6 +13,7 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype BlindingLight = BlindingLight EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -26,7 +27,13 @@ instance RunMessage BlindingLight where
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll [LoseActions iid (toSource attrs) 1, DisableEffect effectId])
+        (pushAll
+          [ If
+            (Window.RevealTokenEffect iid token effectId)
+            [LoseActions iid (toSource attrs) 1]
+          , DisableEffect effectId
+          ]
+        )
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
       -> e <$ pushAll

@@ -954,6 +954,7 @@ library
       Arkham.Event.Cards.Eavesdrop
       Arkham.Event.Cards.EideticMemory3
       Arkham.Event.Cards.EldritchInspiration
+      Arkham.Event.Cards.EldritchInspiration1
       Arkham.Event.Cards.Elusive
       Arkham.Event.Cards.EmergencyAid
       Arkham.Event.Cards.EmergencyCache

@@ -10,8 +10,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Token
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype TheChthonianStone = TheChthonianStone AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -30,7 +32,10 @@ instance HasAbilities TheChthonianStone where
 
 instance RunMessage TheChthonianStone where
   runMessage msg a@(TheChthonianStone attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ ReturnToHand iid (toTarget attrs)
-      pure a
+    UseCardAbility iid source 1 (Window.revealedTokens -> tokens) _
+      | isSource attrs source -> do
+        push $ If
+          (Window.RevealTokenAssetAbilityEffect iid tokens (toId attrs))
+          [ReturnToHand iid (toTarget attrs)]
+        pure a
     _ -> TheChthonianStone <$> runMessage msg attrs

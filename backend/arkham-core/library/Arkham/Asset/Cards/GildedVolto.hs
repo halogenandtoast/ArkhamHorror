@@ -31,7 +31,7 @@ instance HasAbilities GildedVolto where
           Free
     , restrictedAbility a 2 ControlsThis $ ReactionAbility
       (InitiatedSkillTest Timing.When You (NotSkillType SkillAgility) AnySkillTestValue)
-      (DiscardCost $ toTarget a)
+      (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage GildedVolto where

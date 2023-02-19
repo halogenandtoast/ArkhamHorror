@@ -441,6 +441,8 @@ allAssets = mapFrom
   --- survivor [tcu]
   , SomeAssetCard trackShoes
   , SomeAssetCard fiveOfPentacles1
+  --- neutral [tcu]
+  , SomeAssetCard aceOfRods1
   -- The Secret Name
   --- survivor [tsn]
   , SomeAssetCard meatCleaver

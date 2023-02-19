@@ -12,7 +12,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype SealOfTheSeventhSign5 = SealOfTheSeventhSign5 AssetAttrs

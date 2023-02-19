@@ -30,7 +30,7 @@ instance HasAbilities AstoundingRevelation where
         $ mkAbility x 1
         $ ReactionAbility
             (AmongSearchedCards You)
-            (DiscardCost $ SearchedCardTarget $ toCardId x)
+            (DiscardCost FromDeck $ SearchedCardTarget $ toCardId x)
     ]
 
 instance RunMessage AstoundingRevelation where

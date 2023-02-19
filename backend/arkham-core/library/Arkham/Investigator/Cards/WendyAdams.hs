@@ -15,7 +15,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( RevealToken )
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs

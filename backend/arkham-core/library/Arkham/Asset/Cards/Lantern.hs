@@ -34,7 +34,7 @@ instance HasAbilities Lantern where
         2
         (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
       $ ActionAbility Nothing
-      $ DiscardCost
+      $ DiscardCost FromPlay
       $ toTarget x
     ]
 

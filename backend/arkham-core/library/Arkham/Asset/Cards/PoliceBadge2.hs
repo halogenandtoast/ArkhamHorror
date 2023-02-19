@@ -28,7 +28,7 @@ instance HasModifiersFor PoliceBadge2 where
 
 instance HasAbilities PoliceBadge2 where
   getAbilities (PoliceBadge2 a) =
-    [restrictedAbility a 1 criteria $ FastAbility $ DiscardCost (toTarget a)]
+    [restrictedAbility a 1 criteria $ FastAbility $ DiscardCost FromPlay (toTarget a)]
    where
     criteria = ControlsThis
       <> InvestigatorExists (TurnInvestigator <> InvestigatorAt YourLocation)

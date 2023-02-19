@@ -21,21 +21,26 @@ import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Event.Types ( Field (..) )
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding ( AssetCard, PlayCard )
+import Arkham.Location.Types ( Field (..) )
+import Arkham.Matcher hiding ( AssetCard, EventCard, PlayCard, SkillCard, LocationCard )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
+import Arkham.Skill.Types ( Field (..) )
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -349,9 +354,10 @@ instance RunMessage ActiveCost where
             selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
           push $ UseSupply iid' supply
           withPayment $ SupplyPayment supply
-        DiscardCost target -> do
+        DiscardCost zone target -> do
+          card <- targetToCard target
           pushAll [DiscardedCost target, Discard (activeCostSource c) target]
-          withPayment $ DiscardPayment [target]
+          withPayment $ DiscardPayment [(zone, card)]
         DiscardCardCost card -> do
           push $ DiscardCard iid (activeCostSource c) (toCardId card)
           withPayment $ DiscardCardPayment [card]
@@ -648,10 +654,10 @@ instance RunMessage ActiveCost where
           let
             getCards = \case
               FromHandOf whoMatcher ->
-                selectList (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
+                selectListMap (FromHand,) (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
               FromPlayAreaOf whoMatcher -> do
                 assets <- selectList $ AssetControlledBy whoMatcher
-                traverse (field AssetCard) assets
+                map (FromPlay,) . filter (`cardMatch` cardMatcher) <$> traverse (field AssetCard) assets
               CostZones zs -> concatMapM getCards zs
           cards <- getCards zone
           c <$ push
@@ -664,9 +670,9 @@ instance RunMessage ActiveCost where
                       acId
                       iid
                       skipAdditionalCosts
-                      (DiscardCost $ CardIdTarget $ toCardId card)
+                      (DiscardCost zone' $ CardIdTarget $ toCardId card)
                   ]
-              | card <- cards
+              | (zone', card) <- cards
               ]
             )
         SkillIconCost x skillTypes -> do
@@ -795,3 +801,13 @@ instance RunMessage ActiveCost where
           [ SealedToken token card | token <- activeCostSealedTokens c ]
       pure c
     _ -> pure c
+
+targetToCard :: HasGame m => Target -> m Card
+targetToCard = \case
+  AssetTarget aid -> field AssetCard aid
+  EventTarget aid -> field EventCard aid
+  SkillTarget aid -> field SkillCard aid
+  EnemyTarget aid -> field EnemyCard aid
+  TreacheryTarget aid -> field TreacheryCard aid
+  LocationTarget aid -> field LocationCard aid
+  _ -> error "unhandled"

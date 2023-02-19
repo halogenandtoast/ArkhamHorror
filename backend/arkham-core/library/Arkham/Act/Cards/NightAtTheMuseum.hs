@@ -18,7 +18,6 @@ import Arkham.Message
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Zone
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

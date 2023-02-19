@@ -30,7 +30,7 @@ instance HasAbilities Pantalone where
           Free
     , restrictedAbility a 2 ControlsThis $ ReactionAbility
       (InitiatedSkillTest Timing.When You (NotSkillType SkillIntellect) AnySkillTestValue)
-      (DiscardCost $ toTarget a)
+      (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage Pantalone where

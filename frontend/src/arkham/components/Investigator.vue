@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 export interface Props {
   choices: Message[]
@@ -42,6 +44,36 @@ const investigatorAction = computed(() => {
   }
 
   return activateAbilityAction.value
+})
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+function isAbility(v: Message) {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
+    return false
+  }
+
+  const { tag } = v.ability.source;
+
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'InvestigatorSource') {
+    return v.ability.source.contents === id.value
+  }
+
+  return false
+}
+
+const abilities = computed(() => {
+  return choices
+    .value
+    .reduce<number[]>((acc, v, i) => {
+      if (isAbility(v)) {
+        return [...acc, i];
+      }
+
+      return acc;
+    }, []);
 })
 
 function canAdjustHealth(c: Message): boolean {
@@ -205,6 +237,12 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       <template v-if="debug">
         <button @click="debugChoose({tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
       </template>
+      <AbilityButton
+        v-for="ability in abilities"
+        :key="ability"
+        :ability="choices[ability]"
+        @click="choose(ability)"
+        />
       <button
         :disabled="endTurnAction === -1"
         @click="$emit('choose', endTurnAction)"

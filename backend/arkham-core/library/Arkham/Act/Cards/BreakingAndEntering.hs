@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Zone
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

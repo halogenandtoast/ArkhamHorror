@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Target
-import Arkham.Zone
 
 newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

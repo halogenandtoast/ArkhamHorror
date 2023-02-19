@@ -32,7 +32,7 @@ instance HasAbilities Relentless where
       $ toTarget a
     , restrictedAbility a 2 (ControlsThis <> AnyDamageOnThis)
       $ FastAbility
-      $ DiscardCost
+      $ DiscardCost FromPlay
       $ toTarget a
     ]
 

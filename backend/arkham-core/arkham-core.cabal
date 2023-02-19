@@ -251,6 +251,7 @@ library
       Arkham.Asset.Assets
       Arkham.Asset.Cards
       Arkham.Asset.Cards.AbbessAllegriaDiBiase
+      Arkham.Asset.Cards.AceOfRods1
       Arkham.Asset.Cards.AceOfSwords1
       Arkham.Asset.Cards.AdamLynch
       Arkham.Asset.Cards.Adaptable1
@@ -893,6 +894,7 @@ library
       Arkham.Event.Cards.AceInTheHole3
       Arkham.Event.Cards.AChanceEncounter
       Arkham.Event.Cards.AChanceEncounter2
+      Arkham.Event.Cards.ActOfDesperation
       Arkham.Event.Cards.AgainstAllOdds2
       Arkham.Event.Cards.AlterFate3
       Arkham.Event.Cards.Ambush1

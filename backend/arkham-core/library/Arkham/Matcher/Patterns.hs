@@ -102,6 +102,10 @@ pattern EventWithAnyDoom <- EventWithDoom (GreaterThan (Static 0)) where
 
 -- ** Asset Patterns **
 
+pattern ItemAsset :: AssetMatcher
+pattern ItemAsset <- AssetWithTrait Item where
+  ItemAsset = AssetWithTrait Item
+
 pattern AllyAsset :: AssetMatcher
 pattern AllyAsset <- AssetWithTrait Ally where
   AllyAsset = AssetWithTrait Ally

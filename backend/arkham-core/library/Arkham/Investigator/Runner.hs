@@ -58,7 +58,6 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
 import Control.Monad.Extra ( findM )
 import Data.HashMap.Strict qualified as HashMap

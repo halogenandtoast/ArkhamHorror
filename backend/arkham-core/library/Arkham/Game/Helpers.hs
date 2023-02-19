@@ -481,7 +481,7 @@ getCanAffordCost iid source mAction windows' = \case
           traverse (field AssetCard) assets
         CostZones zs -> concatMapM getCards zs
     (> n) . length <$> getCards zone
-  DiscardCost _ -> pure True -- TODO: Make better
+  DiscardCost _ _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
   DiscardDrawnCardCost -> pure True -- TODO: Make better
   ExileCost _ -> pure True -- TODO: Make better

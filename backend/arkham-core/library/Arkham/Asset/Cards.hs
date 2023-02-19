@@ -108,6 +108,7 @@ allPlayerAssetCards :: HashMap CardCode CardDef
 allPlayerAssetCards = mapFromList $ concatMap
   toCardCodePairs
   [ abbessAllegriaDiBiase
+  , aceOfRods1
   , aceOfSwords1
   , adaptable1
   , alchemicalTransmutation
@@ -2635,6 +2636,13 @@ fourOfCups1 = (asset "05035" ("Four of Cups" <:> "Chalice of the Heart") 3 Mysti
   , cdCardInHandEffects = True
   }
 
+trackShoes :: CardDef
+trackShoes = (asset "05036" "Track Shoes" 3 Survivor)
+  { cdCardTraits = setFromList [Item, Clothing, Footwear]
+  , cdSkills = [#agility]
+  , cdLimits = [LimitPerTrait Footwear 1]
+  }
+
 fiveOfPentacles1 :: CardDef
 fiveOfPentacles1 = (asset "05039" ("Five of Pentacles" <:> "From the Brink") 3 Survivor)
   { cdCardTraits = singleton Tarot
@@ -2643,11 +2651,12 @@ fiveOfPentacles1 = (asset "05039" ("Five of Pentacles" <:> "From the Brink") 3 S
   , cdCardInHandEffects = True
   }
 
-trackShoes :: CardDef
-trackShoes = (asset "05036" "Track Shoes" 3 Survivor)
-  { cdCardTraits = setFromList [Item, Clothing, Footwear]
-  , cdSkills = [#agility]
-  , cdLimits = [LimitPerTrait Footwear 1]
+aceOfRods1 :: CardDef
+aceOfRods1 = (asset "05040" ("Ace of Rods" <:> "The Fateful Step") 3 Neutral)
+  { cdCardTraits = singleton Tarot
+  , cdSlots = [TarotSlot]
+  , cdLevel = 1
+  , cdCardInHandEffects = True
   }
 
 meatCleaver :: CardDef

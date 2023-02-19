@@ -11,7 +11,6 @@ import Arkham.Matcher
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Zone
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

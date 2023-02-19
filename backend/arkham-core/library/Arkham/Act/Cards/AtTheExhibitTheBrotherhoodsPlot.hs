@@ -18,7 +18,6 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Target
-import Arkham.Zone
 
 newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Trait
-import Arkham.Zone
 
 newtype SkinGame = SkinGame ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -2750,3 +2750,4 @@ additionalActionCovers
 additionalActionCovers source maction = \case
   TraitRestrictedAdditionalAction t _ -> member t <$> sourceTraits source
   ActionRestrictedAdditionalAction a -> pure $ maction == Just a
+  EffectAction  _ _ -> pure False

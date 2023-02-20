@@ -159,6 +159,13 @@ function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) 
   return modified
 }
 
+function useEffectAction(action) {
+  const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
+  if (choice !== -1) {
+    emit('choose', choice)
+  }
+}
+
 const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value))
 const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value))
 const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value))
@@ -232,7 +239,12 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       </template>
       <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
       <span v-if="player.additionalActions.length > 0">
-        <i class="action" :class="`${player.class.toLowerCase()}Action`" v-for="n in player.additionalActions" :key="n"></i>
+        <template v-for="action in player.additionalActions" :key="action">
+          <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]">
+            <i class="action" :class="`${player.class.toLowerCase()}Action`"></i>
+          </button>
+          <i v-else class="action" :class="`${player.class.toLowerCase()}Action`"></i>
+        </template>
       </span>
       <template v-if="debug">
         <button @click="debugChoose({tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>

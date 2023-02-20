@@ -40,6 +40,7 @@ data UI msg
   | StartSkillTestButton { investigatorId :: InvestigatorId }
   | SkillTestApplyResultsButton
   | TokenGroupChoice { source :: Source, investigatorId :: InvestigatorId, step :: ChaosBagStep }
+  | EffectActionButton { tooltip :: Tooltip, effectId :: EffectId, messages :: [msg] }
   | Done { label :: Text }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

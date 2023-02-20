@@ -365,6 +365,7 @@ data Message
   | FoundEnemyInVoid InvestigatorId Target EnemyId
   | GainActions InvestigatorId Source Int
   | GainAdditionalAction InvestigatorId Source AdditionalAction
+  | UseEffectAction InvestigatorId EffectId [Window]
   | GainClues InvestigatorId Int
   | GainXP InvestigatorId Int
   | SpendXP InvestigatorId Int
@@ -691,6 +692,7 @@ uiToRun = \case
   StartSkillTestButton iid -> Run [StartSkillTest iid]
   SkillTestApplyResultsButton -> Run [SkillTestApplyResults]
   TokenGroupChoice source iid step -> Run [ChooseTokenGroups source iid step]
+  EffectActionButton _ _ msgs -> Run msgs
   Done _ -> Run []
 
 chooseOrRunOne :: InvestigatorId -> [UI Message] -> Message

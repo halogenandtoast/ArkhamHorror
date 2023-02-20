@@ -28,5 +28,10 @@ instance HasModifiersFor ExpeditionJournal where
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExpeditionJournal where
-  runMessage msg (ExpeditionJournal attrs) =
-    ExpeditionJournal <$> runMessage msg attrs
+  runMessage msg a@(ExpeditionJournal attrs) = case msg of
+    InvestigatorPlayAsset iid assetId | toId attrs == assetId -> do
+      push
+        $ GainAdditionalAction iid (toSource attrs)
+        $ ActionRestrictedAdditionalAction Action.Explore
+      pure a
+    _ -> ExpeditionJournal <$> runMessage msg attrs

@@ -19,6 +19,7 @@ import Arkham.Trait as X hiding ( Cultist )
 import Arkham.Ability
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
+import Arkham.Action.Additional
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -2157,6 +2158,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case mAdditionalAction of
       Nothing -> pure $ a & remainingActionsL %~ max 0 . subtract n
       Just aa -> pure $ a & additionalActionsL %~ deleteFirst aa
+  UseEffectAction iid eid _ | iid == investigatorId -> do
+    let
+      isEffectAction = \case
+        EffectAction _ eid' -> eid == eid'
+        _ -> False
+    pure $ a & additionalActionsL %~ filter (not . isEffectAction)
   LoseActions iid source n | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows
       [Window Timing.When (Window.LostActions iid source n)]
@@ -2606,6 +2613,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           usesAction = not isAdditional
           drawCardsF = if usesAction then drawCardsAction else drawCards
+          effectActions = flip mapMaybe investigatorAdditionalActions $ \case
+            EffectAction tooltip effectId -> Just $ EffectActionButton (Tooltip tooltip) effectId [UseEffectAction iid effectId windows]
+            _ -> Nothing
 
         playableCards <- getPlayableCards a UnpaidCost windows
         drawing <- drawCardsF iid a 1
@@ -2632,6 +2642,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              | c <- playableCards ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
           <> map ((\f -> f windows []) . AbilityLabel iid) actions
+          <> effectActions
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
     let

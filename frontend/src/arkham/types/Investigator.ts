@@ -19,12 +19,17 @@ export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
   JsonDecoder.isExactly('Neutral'),
 ], 'ClassSymbol');
 
+type AdditionalActionContents = [string, string]
+
 interface AdditionalAction {
   tag: string
+  contents?: AdditionalActionContents
 }
 
+export const additionalActionContentsDecoder = JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.string], 'AdditionalActionContents')
+
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
-  { tag: JsonDecoder.string}, 'AdditionalAction')
+  { tag: JsonDecoder.string, contents: JsonDecoder.optional(additionalActionContentsDecoder)}, 'AdditionalAction')
 
 export interface Investigator {
   deckSize?: number;

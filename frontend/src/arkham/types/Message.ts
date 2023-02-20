@@ -20,6 +20,7 @@ export enum MessageType {
   EVADE_LABEL = 'EvadeLabel',
   DONE = 'Done',
   TOKEN_GROUP_CHOICE = 'TokenGroupChoice',
+  EFFECT_ACTION_BUTTON = 'EffectActionButton'
 }
 
 export interface Done {
@@ -192,7 +193,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice | EffectActionButton;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -250,6 +251,19 @@ export const tokenGroupChoiceDecoder = JsonDecoder.object<TokenGroupChoice>(
     step: chaosBagStepDecoder
   }, 'TokenGroupChoice')
 
+export interface EffectActionButton {
+  tag: MessageType.EFFECT_ACTION_BUTTON
+  effectId: string
+  tooltip: string
+}
+
+export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.EFFECT_ACTION_BUTTON),
+    effectId: JsonDecoder.string,
+    tooltip: JsonDecoder.string
+  }, 'EffectActionButton')
+
 
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
@@ -268,6 +282,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     evadeLabelDecoder,
     doneDecoder,
     tokenGroupChoiceDecoder,
+    effectActionButtonDecoder,
   ],
   'Message',
 );

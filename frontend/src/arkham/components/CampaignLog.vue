@@ -35,8 +35,13 @@ const findCard = (cardCode: string): CardDef => {
 
 const cardCodeToTitle = (cardCode: string): string => {
   const card = findCard(cardCode)
+
   if (card) {
     return fullName(card.name)
+  }
+
+  if(cardCode == "c01121b") {
+    return "The Masked Hunter"
   }
 
   return "unknown"

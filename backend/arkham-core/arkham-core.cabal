@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -111,6 +111,7 @@ library
       Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark
       Arkham.Act.Cards.TheChamberOfStillRemains
       Arkham.Act.Cards.TheChamberOfTheBeast
+      Arkham.Act.Cards.TheDisappearance
       Arkham.Act.Cards.TheGateOpens
       Arkham.Act.Cards.TheGuardedRuins
       Arkham.Act.Cards.TheGuardiansInquiry
@@ -179,6 +180,7 @@ library
       Arkham.Agenda.Cards.HumanityFading
       Arkham.Agenda.Cards.InEveryShadow
       Arkham.Agenda.Cards.Intruders
+      Arkham.Agenda.Cards.JudgementXX
       Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
       Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
       Arkham.Agenda.Cards.LockedInside
@@ -598,6 +600,7 @@ library
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
+      Arkham.Campaign.Campaigns.TheCircleUndone
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.ThePathToCarcosa
@@ -609,6 +612,10 @@ library
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
       Arkham.Campaigns.NightOfTheZealot.FlavorText
       Arkham.Campaigns.NightOfTheZealot.Import
+      Arkham.Campaigns.TheCircleUndone.CampaignSteps
+      Arkham.Campaigns.TheCircleUndone.ChaosBag
+      Arkham.Campaigns.TheCircleUndone.FlavorText
+      Arkham.Campaigns.TheCircleUndone.Import
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
       Arkham.Campaigns.TheDunwichLegacy.FlavorText
@@ -1140,6 +1147,7 @@ library
       Arkham.Investigator.Cards.DianaStanley
       Arkham.Investigator.Cards.FatherMateo
       Arkham.Investigator.Cards.FinnEdwards
+      Arkham.Investigator.Cards.GavriellaMizrah
       Arkham.Investigator.Cards.HarveyWalters
       Arkham.Investigator.Cards.JennyBarnes
       Arkham.Investigator.Cards.JimCulver
@@ -1538,6 +1546,7 @@ library
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
       Arkham.Scenario.Scenarios.DimCarcosa
+      Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate
       Arkham.Scenario.Scenarios.EchoesOfThePast
       Arkham.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Scenario.Scenarios.HeartOfTheElders
@@ -1578,6 +1587,7 @@ library
       Arkham.Scenarios.CurtainCall.Story
       Arkham.Scenarios.DimCarcosa.Helpers
       Arkham.Scenarios.DimCarcosa.Story
+      Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.ExtracurricularActivity.FlavorText
       Arkham.Scenarios.HeartOfTheElders.Story

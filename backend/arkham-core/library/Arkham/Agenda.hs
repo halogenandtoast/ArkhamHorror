@@ -154,6 +154,9 @@ allAgendas = mapFrom
   , SomeAgendaCard threadsOfTime
   , SomeAgendaCard pendolousThreads
   , SomeAgendaCard snappedThreads
+  -- The Circle Undone
+  -- Disappearance at the Twilight Estate
+  , SomeAgendaCard judgementXX
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

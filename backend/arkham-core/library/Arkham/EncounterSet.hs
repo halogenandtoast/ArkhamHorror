@@ -76,6 +76,25 @@ data EncounterSet
   | TheDepthsOfYoth
   | ShatteredAeons
   | TurnBackTime
+  | DisappearanceAtTheTwilightEstate
+  | TheWitchingHour
+  | AtDeathsDoorstep
+  | TheWatcher
+  | AgentsOfAzathoth
+  | AnettesCoven
+  | Witchcraft
+  | SilverTwilightLodge
+  | CityOfSins
+  | SpectralPredators
+  | TrappedSpirits
+  | RealmOfDeath
+  | InexorableFate
+  | TheSecretName
+  | TheWagesOfSin
+  | ForTheGreaterGood
+  | UnionAndDisillusion
+  | InTheClutchesOfChaos
+  | BeforeTheBlackThrone
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

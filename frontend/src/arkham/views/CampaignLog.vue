@@ -23,7 +23,7 @@ fetchGame(props.gameId, false).then(({ game: newGame }) => {
 
 <template>
   <div>
-    <router-link :to="`/games/${game.id}`">Back</router-link>
+    <router-link :to="{ name: 'Game', params: { gameId }}" class="link">Back</router-link>
     <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
   </div>
 </template>
@@ -42,5 +42,25 @@ h1 {
   margin-top: 20px;
   background-color: rgba(255,255,255, 0.5);
   font-size: 1.8em;
+}
+
+.link {
+  display: block;
+  border-radius: 3px;
+  outline: 0;
+  padding: 10px 15px;
+  background: #6E8640;
+  text-transform: uppercase;
+  color: white;
+  border: 0;
+  width: 80vw;
+  margin: 0 auto;
+  margin-top: 20px;
+  text-decoration: none;
+  text-align: center;
+
+  &:hover {
+    background: darken(#6E8640, 20%);
+  }
 }
 </style>

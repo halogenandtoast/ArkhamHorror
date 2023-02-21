@@ -90,6 +90,7 @@ allAgendaCards = mapFromList $ map
   , humanityFading
   , intruders
   , inEveryShadow
+  , judgementXX
   , letTheStormRageTheFloodBelow
   , letTheStormRageTheVortexAbove
   , lockedInside
@@ -423,6 +424,9 @@ pendolousThreads = agenda "04316" "Pendolous Threads" 2 ShatteredAeons
 
 snappedThreads :: CardDef
 snappedThreads = agenda "04317" "Snapped Threads" 3 ShatteredAeons
+
+judgementXX :: CardDef
+judgementXX = agenda "05044" "JUDGEMENT • XX" 1 DisappearanceAtTheTwilightEstate
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

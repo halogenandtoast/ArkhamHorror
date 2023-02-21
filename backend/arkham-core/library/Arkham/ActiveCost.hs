@@ -670,7 +670,7 @@ instance RunMessage ActiveCost where
                       acId
                       iid
                       skipAdditionalCosts
-                      (DiscardCost zone' $ CardIdTarget $ toCardId card)
+                      (DiscardCost zone' $ CardTarget card)
                   ]
               | (zone', card) <- cards
               ]
@@ -810,4 +810,5 @@ targetToCard = \case
   EnemyTarget aid -> field EnemyCard aid
   TreacheryTarget aid -> field TreacheryCard aid
   LocationTarget aid -> field LocationCard aid
-  _ -> error "unhandled"
+  CardTarget c -> pure c
+  unknown -> error $ "unhandled: " <> show unknown

@@ -60,6 +60,7 @@ skill cardCode name icons classSymbol = CardDef
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
+  , cdCanReplace = True
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef
@@ -137,7 +138,7 @@ opportunist :: CardDef
 opportunist = (skill "01053" "Opportunist" [#wild] Rogue)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [OnlyYourTest]
-  , cdAlternateCardCodes = ["01553"]
+  , cdAlternateCardCodes = ["01553", "60319"]
   }
 
 fearless :: CardDef
@@ -206,6 +207,7 @@ deduction2 = (skill "02150" "Deduction" [#intellect, #intellect] Seeker
 defiance :: CardDef
 defiance = (skill "02190" "Defiance" [#wild] Mystic)
   { cdCardTraits = singleton Innate
+  , cdAlternateCardCodes = ["60418"]
   }
 
 riseToTheOccasion :: CardDef

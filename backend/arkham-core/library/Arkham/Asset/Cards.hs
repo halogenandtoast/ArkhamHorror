@@ -102,6 +102,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
+  , cdCanReplace = True
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
@@ -306,6 +307,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , newspaper2
   , occultLexicon
   , oldBookOfLore
+  , oldBookOfLore3
   , oldHuntingRifle3
   , oldKeyring
   , oliveMcBride
@@ -396,6 +398,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , theRedGlovedMan5
   , theSkeletonKey2
   , theTatteredCloak
+  , theTowerXVI
   , thermos
   , thirtyTwoColt
   , timewornBrand5
@@ -662,7 +665,7 @@ switchblade = fast $ (asset "01044" "Switchblade" 1 Rogue)
   { cdSkills = [#agility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
   , cdSlots = [HandSlot]
-  , cdAlternateCardCodes = ["01544"]
+  , cdAlternateCardCodes = ["01544", "60307"]
   }
 
 burglary :: CardDef
@@ -974,6 +977,7 @@ ritualCandles = (asset "02029" "Ritual Candles" 1 Mystic)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Item
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["60405"]
   }
 
 clarityOfMind :: CardDef
@@ -2193,6 +2197,7 @@ luckyCigaretteCase = (asset "04107" "Lucky Cigarette Case" 2 Rogue)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["60308"]
   }
 
 fence1 :: CardDef
@@ -2659,6 +2664,15 @@ aceOfRods1 = (asset "05040" ("Ace of Rods" <:> "The Fateful Step") 3 Neutral)
   , cdCardInHandEffects = True
   }
 
+theTowerXVI :: CardDef
+theTowerXVI =
+  (weakness "05042" ("The Tower • XVI" <:> "Circumstances Beyond Your Control"))
+    { cdCardTraits = setFromList [Omen, Tarot]
+    , cdSlots = [TarotSlot]
+    , cdCardInHandEffects = True
+    , cdCanReplace = False
+    }
+
 meatCleaver :: CardDef
 meatCleaver = (asset "05114" "Meat Cleaver" 3 Survivor)
   { cdSkills = [#willpower]
@@ -2690,6 +2704,16 @@ scrollOfProphecies = (asset "06116" "Scroll of Prophecies" 3 Mystic)
   , cdCardTraits = setFromList [Item, Tome]
   , cdUses = Uses Secret 4
   , cdSlots = [HandSlot]
+  }
+
+oldBookOfLore3 :: CardDef
+oldBookOfLore3 = (asset "06279" "Old Book of Lore" 2 Seeker)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01531"]
+  , cdUses = Uses Secret 2
+  , cdLevel = 3
   }
 
 keenEye :: CardDef

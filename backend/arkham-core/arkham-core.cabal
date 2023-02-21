@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -468,6 +468,7 @@ library
       Arkham.Asset.Cards.Newspaper2
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OldBookOfLore
+      Arkham.Asset.Cards.OldBookOfLore3
       Arkham.Asset.Cards.OldHuntingRifle3
       Arkham.Asset.Cards.OldKeyring
       Arkham.Asset.Cards.OliveMcBride
@@ -564,6 +565,7 @@ library
       Arkham.Asset.Cards.Thermos
       Arkham.Asset.Cards.TheSkeletonKey2
       Arkham.Asset.Cards.TheTatteredCloak
+      Arkham.Asset.Cards.TheTowerXVI
       Arkham.Asset.Cards.ThirtyTwoColt
       Arkham.Asset.Cards.TimewornBrand5
       Arkham.Asset.Cards.ToothOfEztli
@@ -1837,6 +1839,7 @@ library
       Arkham.Treachery.Cards.StrangeSigns
       Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond
+      Arkham.Treachery.Cards.The13thVision
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
       Arkham.Treachery.Cards.TheCultsSearch

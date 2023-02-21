@@ -281,6 +281,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (CardIdTarget $ toCardId card)
               [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
+          , cdCanReplace (toCardDef card)
           ]
     pure a
   BeginTrade iid _source (AssetTarget aid) iids | iid == investigatorId -> a <$ push
@@ -2176,6 +2177,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SetActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL .~ n
   GainActions iid _ n | iid == investigatorId ->
+    -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
     pure $ a & remainingActionsL +~ n
   GainAdditionalAction iid _ n | iid == investigatorId ->
     pure $ a & additionalActionsL %~ (n :)

@@ -298,7 +298,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
   go 0 (d, h, cs) = (d, h, cs)
   go _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, c : cs) = if isJust (cdCardSubType $ toCardDef c)
+  go m (d, h, c : cs) = if isJust (cdCardSubType $ toCardDef c) && cdCanReplace (toCardDef c)
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 

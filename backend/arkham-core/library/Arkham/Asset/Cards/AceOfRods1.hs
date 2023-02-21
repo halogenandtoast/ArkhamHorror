@@ -84,7 +84,7 @@ instance RunMessage AceOfRods1Effect where
         push $ GainActions iid (toSource attrs) 1
         pure $ AceOfRods1Effect (attrs `with` Meta True)
       FinishAction-> do
-        push $ DisableEffect effectId
+        when (active meta) $ push $ DisableEffect effectId
         pure e
       EndTurn iid | InvestigatorTarget iid == effectTarget -> do
         push $ DisableEffect effectId

@@ -46,7 +46,6 @@ library:
     - relude
     - conduit
     - containers
-    - data-default
     - directory
     - errors
     - esqueleto

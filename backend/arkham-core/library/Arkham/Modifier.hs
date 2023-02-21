@@ -152,6 +152,7 @@ data ModifierType
   | EnemyEvade Int
   | EnemyFight Int
   | AsIfEnemyFight Int
+  | FailTies
   | FewerSlots SlotType Int
   | ForcedTokenChange TokenFace [TokenFace]
   | HandSize Int

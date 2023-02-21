@@ -22,10 +22,10 @@ module Application (
   db,
 ) where
 
+import Network.Wai.Middleware.Gzip (gzip, def)
 import Config
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.CaseInsensitive (mk)
-import Data.Default (def)
 import Database.Persist.Postgresql
   (SqlBackend, createPostgresqlPool, pgConnStr, pgPoolSize)
 import Import hiding (sendResponse)
@@ -128,7 +128,7 @@ makeApplication foundation =
 makeMiddleware :: App -> IO Middleware
 makeMiddleware foundation = do
   logWare <- makeLogWare foundation
-  pure $ logWare . handleOptions . addCORSHeaders
+  pure $ gzip def . logWare . handleOptions . addCORSHeaders
 
 corsResponseHeaders :: ByteString -> [(ByteString, ByteString)]
 corsResponseHeaders origin =

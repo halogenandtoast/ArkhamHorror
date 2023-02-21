@@ -75,6 +75,7 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsTokensValue :: Int
   , skillTestResultsDifficulty :: Int
   , skillTestResultsResultModifiers :: Maybe Int
+  , skillTestResultsSuccess :: Bool
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -176,7 +176,9 @@ allActs = mapFrom
   , SomeActCard intoTheRuinsOnceAgain
   , SomeActCard theChamberOfStillRemains
   , SomeActCard momentOfDoom
-  --- Turn Back Time
+  -- The Circle Undone
+  --- Disappearance at the Twilight Estate
+  , SomeActCard theDisappearance
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

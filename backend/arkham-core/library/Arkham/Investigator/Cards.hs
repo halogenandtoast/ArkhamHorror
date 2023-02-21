@@ -88,6 +88,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , dianaStanley
   , ritaYoung
   , marieLambeau
+  , gavriellaMizrah
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -259,6 +260,13 @@ marieLambeau = investigator
   ("Marie Lambeau" <:> "The Entertainer")
   Mystic
   [Performer, Sorcerer]
+
+gavriellaMizrah :: CardDef
+gavriellaMizrah = investigator
+  "05046"
+  ("Gavriella Mizrah" <:> "Private Security")
+  Neutral
+  [Veteran]
 
 normanWithers :: CardDef
 normanWithers = investigator

@@ -33,5 +33,6 @@ allCampaigns = mapFromList
   , ("02", SomeCampaign theDunwichLegacy)
   , ("03", SomeCampaign thePathToCarcosa)
   , ("04", SomeCampaign theForgottenAge)
+  , ("06", SomeCampaign theCircleUndone)
   , ("50", SomeCampaign returnToNightOfTheZealot)
   ]

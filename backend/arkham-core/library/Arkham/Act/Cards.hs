@@ -153,6 +153,7 @@ allActCards = mapFromList $ map
   , theCaveOfDarknessTunnelsInTheDark
   , theChamberOfStillRemains
   , theChamberOfTheBeast
+  , theDisappearance
   , theGateOpens
   , theGuardedRuins
   , theGuardiansInquiry
@@ -535,6 +536,9 @@ theChamberOfStillRemains = (act "04346" "The Chamber of Still Remains" 2 TurnBac
 
 momentOfDoom :: CardDef
 momentOfDoom = act "04347" "Moment of Doom" 3 TurnBackTime
+
+theDisappearance :: CardDef
+theDisappearance = act "05045" "The Disappearance" 1 DisappearanceAtTheTwilightEstate
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

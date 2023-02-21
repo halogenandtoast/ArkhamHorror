@@ -81,9 +81,9 @@ instance RunMessage AceOfRods1Effect where
           $ toId attrs
         pure e
       UseEffectAction iid eid _ | eid == effectId -> do
-        push $ PlayerWindow iid [] True
+        push $ GainActions iid (toSource attrs) 1
         pure $ AceOfRods1Effect (attrs `with` Meta True)
-      PlayerWindow iid _ False | InvestigatorTarget iid == effectTarget -> do
+      FinishAction-> do
         push $ DisableEffect effectId
         pure e
       EndTurn iid | InvestigatorTarget iid == effectTarget -> do

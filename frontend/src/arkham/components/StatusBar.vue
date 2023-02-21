@@ -70,7 +70,7 @@ const focusedCards = computed(() => {
   return props.game.focusedCards
 })
 
-const showChoices = computed(() => focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL }) || (applyResultsAction.value !== -1))
+const showChoices = computed(() => focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag == MessageType.PORTRAIT_LABEL }) || (applyResultsAction.value !== -1))
 
 const title = computed(() => {
   if (focusedCards.value.length > 0) {
@@ -129,7 +129,7 @@ const title = computed(() => {
           <dt>Modified Difficulty:</dt>
           <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>
           <dt>Result:</dt>
-          <dd v-if="testResult >= 0">
+          <dd v-if="skillTestResults.skillTestResultsSuccess">
             Succeed by {{testResult}}
           </dd>
           <dd v-else>

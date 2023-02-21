@@ -25,6 +25,6 @@ instance RunMessage DaringManeuver where
       [ skillTestModifier
         (toSource attrs)
         (InvestigatorTarget iid)
-        (AnySkillValue 2)
+        (AnySkillValue 2), RecalculateSkillTestResults
       ]
     _ -> DaringManeuver <$> runMessage msg attrs

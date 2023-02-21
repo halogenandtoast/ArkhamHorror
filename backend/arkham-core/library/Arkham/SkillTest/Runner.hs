@@ -284,6 +284,13 @@ instance RunMessage SkillTest where
         )
     SkillTestResults{} -> do
       modifiers' <- getModifiers (toTarget s)
+      -- We may be recalculating so we want to remove all windows an buttons to apply
+      removeAllMessagesMatching $ \case
+        Will (PassedSkillTest{}) -> True
+        Will (FailedSkillTest{}) -> True
+        Ask _ (ChooseOne [ SkillTestApplyResultsButton ]) -> True
+        _ -> False
+
       push (chooseOne skillTestInvestigator [SkillTestApplyResultsButton])
       let
         modifiedSkillTestResult =
@@ -536,16 +543,25 @@ instance RunMessage SkillTest where
         then pure 0
         else skillIconCount s
       currentSkillValue <- getCurrentSkillValue s
+      tokenValues <- sum <$> for
+        (skillTestRevealedTokens <> skillTestResolvedTokens)
+        (getModifiedTokenValue s)
       let
         addResultModifier n (SkillTestResultValueModifier m) = n + m
         addResultModifier n _ = n
         resultValueModifiers = foldl' addResultModifier 0 modifiers'
+        totaledTokenValues = tokenValues + skillTestValueModifier
+        modifiedSkillValue' =
+          max 0 (currentSkillValue + totaledTokenValues + iconCount)
+        op = if FailTies `elem` modifiers' then (>) else (>=)
+        isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
       push $ SkillTestResults $ SkillTestResultsData
         currentSkillValue
         iconCount
         skillTestValueModifier
         modifiedSkillTestDifficulty
         (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+        isSuccess
       pure s
     RunSkillTest _ -> do
       modifiers' <- getModifiers SkillTestTarget
@@ -564,13 +580,17 @@ instance RunMessage SkillTest where
         addResultModifier n (SkillTestResultValueModifier m) = n + m
         addResultModifier n _ = n
         resultValueModifiers = foldl' addResultModifier 0 modifiers'
+      let
+        op = if FailTies `elem` modifiers' then (>) else (>=)
+        isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
       push $ SkillTestResults $ SkillTestResultsData
         currentSkillValue
         iconCount
         totaledTokenValues
         modifiedSkillTestDifficulty
         (resultValueModifiers <$ guard (resultValueModifiers /= 0))
-      if modifiedSkillValue' >= modifiedSkillTestDifficulty
+        isSuccess
+      if isSuccess
         then
           pure
           $ s

@@ -66,6 +66,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
+  , cdCanReplace = True
   }
 
 weakness :: CardCode -> Name -> CardDef
@@ -125,6 +126,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , smiteTheWicked
   , starsOfHyades
   , terribleSecret
+  , the13thVision
   , theBellTolls
   , theHarbinger
   , thePriceOfFailure
@@ -1202,6 +1204,11 @@ rationalThought = (weakness "05008" "Rational Thought")
 terribleSecret :: CardDef
 terribleSecret = (weakness "05015" "Terrible Secret")
   { cdCardTraits = singleton Madness
+  }
+
+the13thVision :: CardDef
+the13thVision = (basicWeakness "05041" "The 13th Vision")
+  { cdCardTraits = singleton Omen
   }
 
 theHarbinger :: CardDef

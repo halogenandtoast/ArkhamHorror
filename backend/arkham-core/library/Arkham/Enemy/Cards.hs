@@ -63,6 +63,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
+  , cdCanReplace = True
   }
 
 weakness :: CardCode -> Name -> CardDef

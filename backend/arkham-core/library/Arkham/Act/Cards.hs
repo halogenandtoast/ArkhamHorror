@@ -54,6 +54,7 @@ act cardCode name stage encounterSet = CardDef
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
+  , cdCanReplace = True
   }
 
 allActCards :: HashMap CardCode CardDef

@@ -443,6 +443,8 @@ allAssets = mapFrom
   , SomeAssetCard fiveOfPentacles1
   --- neutral [tcu]
   , SomeAssetCard aceOfRods1
+  --- weakness [tcu]
+  , SomeAssetCard theTowerXVI
   -- The Secret Name
   --- survivor [tsn]
   , SomeAssetCard meatCleaver
@@ -458,6 +460,9 @@ allAssets = mapFrom
   -- The Search for Kadath
   --- mystic [sfk]
   , SomeAssetCard scrollOfProphecies
+  -- Where the Gods Dwell
+  --- seeker [sfk]
+  , SomeAssetCard oldBookOfLore3
   -- Devil Reef
   --- guardian [def]
   , SomeAssetCard keenEye

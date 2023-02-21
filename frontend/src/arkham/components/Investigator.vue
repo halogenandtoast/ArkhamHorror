@@ -166,6 +166,11 @@ function useEffectAction(action) {
   }
 }
 
+function isActiveEffectAction(action) {
+  const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
+  return choice !== -1
+}
+
 const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value))
 const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value))
 const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value))
@@ -240,8 +245,8 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
       <span v-if="player.additionalActions.length > 0">
         <template v-for="action in player.additionalActions" :key="action">
-          <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]">
-            <i class="action" :class="`${player.class.toLowerCase()}Action`"></i>
+          <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${player.class.toLowerCase()}ActionButton`]">
+            <i class="action"></i>
           </button>
           <i v-else class="action" :class="`${player.class.toLowerCase()}Action`"></i>
         </template>
@@ -310,12 +315,70 @@ i.action {
   height: $card-width;
 }
 
+.guardianAction {
+  color: $guardian !important;
+}
+
+.survivorAction {
+  color: $survivor !important;
+}
+
+.mysticAction {
+  color: $mystic !important;
+}
+
 .seekerAction {
   color: $seeker !important;
 }
 
 .rogueAction {
   color: $rogue !important;
+}
+
+.neutralAction {
+  color: $neutral !important;
+}
+
+.guardianActionButton {
+  background-color: $guardian !important;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 2px;
+}
+
+.seekerActionButton {
+  background-color: $seeker !important;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 2px;
+}
+
+.rogueActionButton {
+  background-color: $rogue !important;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 2px;
+}
+
+.mysticActionButton {
+  background-color: $mystic !important;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 2px;
+}
+
+.survivorActionButton {
+  background-color: $survivor !important;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 2px;
+}
+
+.neutralActionButton {
+  background-color: $neutral !important;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 2px;
 }
 
 .player-card {
@@ -367,5 +430,9 @@ i.action {
   color: white;
   text-align: center;
   border-top-right-radius: 5px;
+}
+
+.activeButton {
+  border: 1px solid #FF00FF;
 }
 </style>

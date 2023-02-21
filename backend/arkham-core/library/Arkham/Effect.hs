@@ -31,6 +31,7 @@ import Arkham.Asset.Assets
   , mistsOfRlyeh4Effect
   , mistsOfRlyeh2Effect
   , mistsOfRlyehEffect
+  , oldBookOfLore3Effect
   , pnakoticManuscripts5Effect
   , wellConnectedEffect
   , wellConnected3Effect
@@ -221,6 +222,7 @@ allEffects = mapFromList
   , ("05037", SomeEffect actOfDesperationEffect)
   , ("05040", SomeEffect aceOfRods1Effect)
   , ("05114", SomeEffect meatCleaver)
+  , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)
   , ("50044", SomeEffect jeremiahPierce)

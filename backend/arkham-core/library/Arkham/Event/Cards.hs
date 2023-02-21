@@ -72,6 +72,7 @@ event cardCode name cost classSymbol = CardDef
   , cdLocationConnections = []
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
+  , cdCanReplace = True
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
@@ -706,6 +707,7 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
     (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack
     $ EnemyWithoutModifier AttacksCannotBeCancelled
     )
+  , cdAlternateCardCodes = ["60414"]
   }
 
 lure1 :: CardDef
@@ -903,6 +905,7 @@ daringManeuver = (event "03030" "Daring Maneuver" 0 Rogue)
   , cdFastWindow =
     Just $ WouldHaveSkillTestResult Timing.When You AnySkillTest $ SuccessResult
       AnyValue
+  , cdAlternateCardCodes = ["60313"]
   }
 
 uncageTheSoul :: CardDef
@@ -924,6 +927,7 @@ astralTravel = (event "03034" "Astral Travel" 3 Mystic)
   , cdActions = [Action.Move]
   , cdCriteria = Just
     (Criteria.LocationExists $ RevealedLocation <> Unblocked <> NotYourLocation)
+  , cdAlternateCardCodes = ["60413"]
   }
 
 hidingSpot :: CardDef
@@ -1068,6 +1072,7 @@ cheapShot = (event "03194" "Cheap Shot" 2 Rogue)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Trick]
   , cdActions = [Action.Fight]
+  , cdAlternateCardCodes = ["60312"]
   }
 
 quantumFlux :: CardDef
@@ -1326,6 +1331,7 @@ darkProphecy = (event "04032" "Dark Prophecy" 1 Mystic)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = singleton Augury
   , cdFastWindow = Just $ WouldRevealChaosToken Timing.When You
+  , cdAlternateCardCodes = ["60417"]
   }
 
 improvisedWeapon :: CardDef
@@ -1479,6 +1485,7 @@ slipAway = (event "04232" "Against All Odds" 2 Rogue)
   { cdCardTraits = singleton Trick
   , cdSkills = [#intellect, #agility]
   , cdActions = [Action.Evade]
+  , cdAlternateCardCodes = ["60314"]
   }
 
 payDay1 :: CardDef
@@ -1655,6 +1662,7 @@ eldritchInspiration = (event "05033" "Eldritch Inspiration" 0 Mystic)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Spell, Spirit]
   , cdFastWindow = Just $ WouldTriggerTokenRevealEffectOnCard You MysticCard [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing, Token.AutoFail]
+  , cdAlternateCardCodes = ["60420"]
   }
 
 actOfDesperation :: CardDef

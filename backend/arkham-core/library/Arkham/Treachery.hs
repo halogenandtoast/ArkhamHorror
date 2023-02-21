@@ -278,6 +278,8 @@ allTreacheries = mapFrom
   -- signature
   , SomeTreacheryCard rationalThought
   , SomeTreacheryCard terribleSecret
+  -- weaknesses
+  , SomeTreacheryCard the13thVision
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

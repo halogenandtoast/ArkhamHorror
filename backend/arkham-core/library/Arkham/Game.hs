@@ -3533,10 +3533,7 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       eid = toId enemy
-    pushAll
-      $ [SetBearer (toTarget enemy) iid, RemoveCardFromHand iid (toCardId card)]
-      <> [ Revelation iid (toSource enemy) | cdRevelation (toCardDef card) ]
-      <> [InvestigatorDrawEnemy iid eid]
+    pushAll [SetBearer (toTarget enemy) iid, RemoveCardFromHand iid (toCardId card), InvestigatorDrawEnemy iid eid]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelEachNext source msgTypes -> do
     push =<< checkWindows
@@ -3959,6 +3956,9 @@ runGameMessage msg g = case msg of
     windows' <- windows [Window.InitiatedSkillTest skillTest]
     let defaultCase = windows' <> [BeginSkillTestAfterFast skillTest]
 
+    performRevelationSkillTestWindow <- checkWindows
+      [Window Timing.When (Window.WouldPerformRevelationSkillTest (skillTestInvestigator skillTest))]
+
     msgs <- case skillTestType skillTest of
       ResourceSkillTest -> pure defaultCase
       SkillSkillTest skillType -> do
@@ -3980,10 +3980,21 @@ runGameMessage msg g = case msg of
                 ]
             ]
 
-    mSkillTest <- getSkillTest
-    case mSkillTest of
-      Nothing -> pushAll msgs
-      Just _ -> insertAfterMatching msgs (== EndSkillTestWindow)
+    msgs' <- if skillTestIsRevelation skillTest
+      then do
+        mAfterRevelation1 <- popMessageMatching $ \case
+          After (Revelation _ source) -> source == skillTestSource skillTest
+          _ -> False
+        mAfterRevelation2 <- popMessageMatching $ \case
+          AfterRevelation _ tid -> TreacherySource tid == skillTestSource skillTest
+          _ -> False
+        pure $ performRevelationSkillTestWindow : msgs <> maybeToList mAfterRevelation1 <> maybeToList mAfterRevelation2
+      else pure msgs 
+    inSkillTestWindow <- fromQueue $ any (== EndSkillTestWindow)
+
+    if inSkillTestWindow
+      then insertAfterMatching msgs' (== EndSkillTestWindow)
+      else pushAll msgs'
     pure g
   BeforeSkillTest skillTest ->
     pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest
@@ -4185,18 +4196,9 @@ runGameMessage msg g = case msg of
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
     card <- field TreacheryCard tid
 
-    performRevelationSkillTestWindow <- checkWindows
-      [Window Timing.When (Window.WouldPerformRevelationSkillTest iid)]
-
-    pushAll
-      [ performRevelationSkillTestWindow
-      , beginSkillTest
-        iid
-        (TreacherySource tid)
-        (InvestigatorTarget iid)
-        skillType
-        difficulty
-      ]
+    let
+      skillTest = (initSkillTest iid (TreacherySource tid) (InvestigatorTarget iid) skillType difficulty) { skillTestIsRevelation = True }
+    push $ BeginSkillTest skillTest
     pure $ g & (activeCardL ?~ card)
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do

@@ -37,7 +37,7 @@ instance RunMessage VortexOfTime where
          ]
         <> [Discard (toSource attrs) $ toTarget attrs]
         )
-    FailedSkillTest iid _ source SkillTestTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t
       <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> VortexOfTime <$> runMessage msg attrs

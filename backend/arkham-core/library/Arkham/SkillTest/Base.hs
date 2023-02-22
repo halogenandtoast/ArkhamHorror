@@ -37,6 +37,7 @@ data SkillTest = SkillTest
   , skillTestTarget :: Target
   , skillTestAction :: Maybe Action
   , skillTestSubscribers :: [Target]
+  , skillTestIsRevelation :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -52,7 +53,22 @@ instance ToJSON SkillTest where
   toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
 
 instance FromJSON SkillTest where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
+  parseJSON = withObject "SkillTest" $ \o -> SkillTest
+    <$> o .: "investigator"
+    <*> o .: "type"
+    <*> o .: "baseValue"
+    <*> o .: "difficulty"
+    <*> o .: "setAsideTokens"
+    <*> o .: "revealedTokens"
+    <*> o .: "resolvedTokens"
+    <*> o .: "valueModifier"
+    <*> o .: "result"
+    <*> o .: "committedCards"
+    <*> o .: "source"
+    <*> o .: "target"
+    <*> o .: "action"
+    <*> o .: "subscribers"
+    <*> o .:? "isRevelation" .!= False
 
 instance TargetEntity SkillTest where
   toTarget _ = SkillTestTarget
@@ -114,4 +130,5 @@ buildSkillTest iid source target stType bValue difficulty =
     , skillTestTarget = target
     , skillTestAction = Nothing
     , skillTestSubscribers = [InvestigatorTarget iid]
+    , skillTestIsRevelation = False
     }

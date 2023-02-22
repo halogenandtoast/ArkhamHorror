@@ -31,7 +31,7 @@ instance RunMessage TimelineDestabilization where
       n <- selectCount $ LocationWithTrait Ancient
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (1 + n)
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestTarget{} _ _ -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
       card <- field TreacheryCard (toId attrs)
       pushAll
         [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1

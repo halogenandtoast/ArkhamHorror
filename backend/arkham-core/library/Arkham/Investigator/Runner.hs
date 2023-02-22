@@ -488,6 +488,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Discard source (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
     <$ push (DiscardCard investigatorId source cardId)
+  Discard source (CardTarget card) | card `elem` investigatorHand -> a
+    <$ push (DiscardCard investigatorId source (toCardId card))
   DiscardHand iid source | iid == investigatorId -> do
     pushAll $ map (DiscardCard iid source . toCardId) investigatorHand
     pure a

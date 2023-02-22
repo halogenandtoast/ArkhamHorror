@@ -26,7 +26,18 @@ const id = computed(() => props.act.id)
 const image = computed(() => {
   const side = props.act.sequence.side.toLowerCase().replace('a', '')
   const sidePart = id.value.endsWith(side) ? "" : side
-  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${sidePart}.jpg`
+
+  let newId = id.value.replace(/^c/, '')
+
+  if (sidePart == 'd') {
+    newId = newId.replace(/c$/, '')
+  }
+
+  if (sidePart == 'f') {
+    newId = newId.replace(/e$/, '')
+  }
+
+  return `${baseUrl}/img/arkham/cards/${newId}${sidePart}.jpg`
 })
 
 const imageForCard = (card: Card) => {

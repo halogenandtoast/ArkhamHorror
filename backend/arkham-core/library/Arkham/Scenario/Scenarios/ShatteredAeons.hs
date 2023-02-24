@@ -352,26 +352,30 @@ instance RunMessage ShatteredAeons where
             (5 + sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations)
             )
           pushAll
-            $ Record TheInvestigatorsMendedTheTearInTheFabricOfTime
+            $ story iids resolution1
+            : Record TheInvestigatorsMendedTheTearInTheFabricOfTime
             : [ SufferTrauma iid 2 2 | iid <- iids ]
             <> xp
             <> [EndOfGame Nothing]
           pure . ShatteredAeons $ attrs & victoryDisplayL %~ (locations <>)
         Resolution 2 -> do
           pushAll
-            [ Record TheInvestigatorsSavedTheCivilizationOfTheSerpents
+            [ story iids resolution2
+            , Record TheInvestigatorsSavedTheCivilizationOfTheSerpents
             , EndOfGame Nothing
             ]
           pure s
         Resolution 3 -> do
           pushAll
-            [ Record TheInvestigatorsSavedTheCivilizationOfTheYithians
+            [ story iids resolution3
+            , Record TheInvestigatorsSavedTheCivilizationOfTheYithians
             , EndOfGame Nothing
             ]
           pure s
         Resolution 4 -> do
           pushAll
-            $ Record TheFabricOfTimeIsUnwoven
+            $ story iids resolution4
+            : Record TheFabricOfTimeIsUnwoven
             : map DrivenInsane iids
             <> [GameOver]
           pure s
@@ -386,7 +390,8 @@ instance RunMessage ShatteredAeons where
           xp <- map (uncurry GainXP) <$> getXpWithBonus
             (sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations))
           pushAll
-            $ Record TheInvestigatorsTurnedBackTime
+            $ story iids resolution5
+            : Record TheInvestigatorsTurnedBackTime
             : xp
             <> [EndOfGame $ Just EpilogueStep]
           pure s

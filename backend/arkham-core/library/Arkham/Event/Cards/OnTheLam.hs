@@ -11,7 +11,6 @@ import Arkham.Helpers.Event
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype OnTheLam = OnTheLam EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
-import Arkham.Target
 import Arkham.Trait
 
 newtype TheReallyBadOnesV2 = TheReallyBadOnesV2 ActAttrs

@@ -9,7 +9,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window

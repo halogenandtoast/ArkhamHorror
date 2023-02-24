@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Gondola = Gondola LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

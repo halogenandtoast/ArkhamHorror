@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.SkillType
-import Arkham.Target
 
 newtype BeatCop2 = BeatCop2 AssetAttrs
   deriving anyclass IsAsset

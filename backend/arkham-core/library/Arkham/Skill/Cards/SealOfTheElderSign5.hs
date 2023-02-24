@@ -11,7 +11,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.Strategy
-import Arkham.Target
 import Arkham.Token
 
 newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs

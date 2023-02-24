@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype ToothOfEztli = ToothOfEztli AssetAttrs

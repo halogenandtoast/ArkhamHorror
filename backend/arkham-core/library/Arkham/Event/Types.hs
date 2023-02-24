@@ -139,7 +139,7 @@ instance Entity EventAttrs where
 instance Named EventAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity EventAttrs where
+instance Targetable EventAttrs where
   toTarget = EventTarget . toId
   isTarget EventAttrs {eventId} (EventTarget eid) = eventId == eid
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
@@ -182,7 +182,7 @@ instance Entity Event where
   toAttrs (Event a) = toAttrs a
   overAttrs f (Event a) = Event $ overAttrs f a
 
-instance TargetEntity Event where
+instance Targetable Event where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

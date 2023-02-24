@@ -13,7 +13,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype MoonlightRitual = MoonlightRitual EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

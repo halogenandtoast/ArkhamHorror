@@ -20,7 +20,6 @@ import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype IchtacaTheForgottenGuardian = IchtacaTheForgottenGuardian AssetAttrs

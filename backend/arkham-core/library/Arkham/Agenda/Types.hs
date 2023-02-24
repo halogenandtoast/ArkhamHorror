@@ -85,7 +85,7 @@ instance Entity AgendaAttrs where
 instance Named AgendaAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity AgendaAttrs where
+instance Targetable AgendaAttrs where
   toTarget = AgendaTarget . toId
   isTarget AgendaAttrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
@@ -161,7 +161,7 @@ instance Entity Agenda where
   toAttrs (Agenda a) = toAttrs a
   overAttrs f (Agenda a) = Agenda $ overAttrs f a
 
-instance TargetEntity Agenda where
+instance Targetable Agenda where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

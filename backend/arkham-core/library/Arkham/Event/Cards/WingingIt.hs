@@ -14,7 +14,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Zone qualified as Zone
 
 newtype WingingIt = WingingIt EventAttrs

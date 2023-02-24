@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TemplesOfTenochtitlan_177 = TemplesOfTenochtitlan_177 LocationAttrs

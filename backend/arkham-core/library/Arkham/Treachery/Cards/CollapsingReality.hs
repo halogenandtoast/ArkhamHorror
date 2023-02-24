@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Runner
 import Arkham.Investigator.Types ( Field(..) )

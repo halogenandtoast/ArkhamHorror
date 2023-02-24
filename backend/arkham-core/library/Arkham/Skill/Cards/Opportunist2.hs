@@ -9,7 +9,6 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype Opportunist2 = Opportunist2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

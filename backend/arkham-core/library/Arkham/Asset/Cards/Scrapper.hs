@@ -14,7 +14,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Scrapper = Scrapper AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

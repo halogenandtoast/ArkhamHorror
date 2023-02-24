@@ -16,7 +16,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorEliminated )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype PendolousThreads = PendolousThreads AgendaAttrs

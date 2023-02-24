@@ -10,7 +10,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving anyclass IsAsset

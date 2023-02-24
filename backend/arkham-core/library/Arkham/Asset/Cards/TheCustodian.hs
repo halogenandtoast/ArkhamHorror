@@ -11,12 +11,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheCustodian = TheCustodian AssetAttrs
@@ -56,7 +54,7 @@ instance RunMessage TheCustodian where
     PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
       -> do
         clueCount <- field AssetClues (toId a)
-        takeControl <- (clueCount >=) <$> getPlayerCountValue (PerPlayer 1)
+        takeControl <- (clueCount + 1 >=) <$> perPlayer 1
         pushAll
           $ [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]
           <> [ TakeControlOfAsset iid (toId a) | takeControl ]

@@ -16,7 +16,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs

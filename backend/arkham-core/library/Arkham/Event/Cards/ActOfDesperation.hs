@@ -18,7 +18,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype ActOfDesperation = ActOfDesperation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

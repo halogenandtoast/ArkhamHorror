@@ -14,7 +14,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq AssetAttrs

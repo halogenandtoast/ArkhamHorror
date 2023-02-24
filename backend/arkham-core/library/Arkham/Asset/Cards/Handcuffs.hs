@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Placement
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait ( Trait (Humanoid) )
 
 newtype Handcuffs = Handcuffs AssetAttrs

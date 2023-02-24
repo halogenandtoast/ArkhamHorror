@@ -10,7 +10,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner

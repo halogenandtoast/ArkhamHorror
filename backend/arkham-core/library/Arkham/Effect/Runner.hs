@@ -7,6 +7,7 @@ import Arkham.Effect.Types as X
 import Arkham.Effect.Window as X
 import Arkham.EffectMetadata as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Target as X
 
 import Arkham.Classes.RunMessage
 import Arkham.Classes.HasQueue

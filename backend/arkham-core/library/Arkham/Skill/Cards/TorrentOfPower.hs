@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType
-import Arkham.Target
 
 newtype TorrentOfPower = TorrentOfPower SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

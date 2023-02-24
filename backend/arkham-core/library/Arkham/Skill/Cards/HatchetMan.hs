@@ -15,7 +15,6 @@ import Arkham.Helpers.SkillTest
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype HatchetMan = HatchetMan SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

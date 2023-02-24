@@ -19,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata { affectedInvestigator :: Maybe InvestigatorId }

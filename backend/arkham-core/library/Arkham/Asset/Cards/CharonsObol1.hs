@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype CharonsObol1 = CharonsObol1 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

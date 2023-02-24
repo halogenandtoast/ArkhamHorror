@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Source
-import Arkham.Target
 
 newtype Shortcut2 = Shortcut2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

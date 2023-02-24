@@ -15,7 +15,6 @@ import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Projection
 import Arkham.Skill.Runner
 import Arkham.SkillTest
-import Arkham.Target
 
 newtype TheHomeFront = TheHomeFront SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

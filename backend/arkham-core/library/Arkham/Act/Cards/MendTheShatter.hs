@@ -20,7 +20,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait ( Trait (Shattered) )
 
 newtype MendTheShatter = MendTheShatter ActAttrs

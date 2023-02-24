@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Plucky1 = Plucky1 AssetAttrs
   deriving anyclass IsAsset

@@ -23,7 +23,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
-import Arkham.Target
 
 newtype Metadata = Metadata { mariaDeSilvasLocation :: Maybe LocationId }
   deriving stock (Show, Eq, Generic)

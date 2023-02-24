@@ -15,7 +15,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Projection
-import Arkham.Target
 
 newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

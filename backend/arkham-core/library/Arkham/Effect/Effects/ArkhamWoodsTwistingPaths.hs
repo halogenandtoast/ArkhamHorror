@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Name
 import Arkham.Source
-import Arkham.Target
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

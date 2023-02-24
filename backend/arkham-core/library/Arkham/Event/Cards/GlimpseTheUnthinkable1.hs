@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype GlimpseTheUnthinkable1 = GlimpseTheUnthinkable1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

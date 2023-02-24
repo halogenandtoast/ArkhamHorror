@@ -19,7 +19,6 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 import Arkham.Matcher
-import Arkham.Target
 
 newtype OldBookOfLore3 = OldBookOfLore3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

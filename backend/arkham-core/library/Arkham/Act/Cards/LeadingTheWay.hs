@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 
 newtype LeadingTheWay = LeadingTheWay ActAttrs
   deriving anyclass IsAct

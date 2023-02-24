@@ -14,7 +14,6 @@ import Arkham.Criteria hiding ( DuringTurn )
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window

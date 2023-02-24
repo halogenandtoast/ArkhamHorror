@@ -11,7 +11,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

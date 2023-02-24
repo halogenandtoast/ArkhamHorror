@@ -13,7 +13,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 
 newtype BindMonster2 = BindMonster2 EffectAttrs

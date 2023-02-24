@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding ( EnemyDefeated )
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait ( Trait (Elite) )
 
 newtype TimewornBrand5 = TimewornBrand5 AssetAttrs

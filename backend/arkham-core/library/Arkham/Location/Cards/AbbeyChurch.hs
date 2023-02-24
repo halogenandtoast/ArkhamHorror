@@ -16,7 +16,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype AbbeyChurch = AbbeyChurch LocationAttrs

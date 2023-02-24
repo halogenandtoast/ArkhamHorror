@@ -10,7 +10,6 @@ import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype QuickThinking = QuickThinking SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

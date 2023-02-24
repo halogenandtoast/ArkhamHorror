@@ -19,7 +19,6 @@ import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Trait
 
 newtype EscapeTheRuins = EscapeTheRuins ActAttrs

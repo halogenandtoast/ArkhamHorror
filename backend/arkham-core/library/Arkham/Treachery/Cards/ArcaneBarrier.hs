@@ -12,7 +12,6 @@ import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -28,7 +27,7 @@ instance RunMessage ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mLocation <- field InvestigatorLocation iid
-      for_ mLocation $ push . AttachTreachery (toId attrs) . idToTarget
+      for_ mLocation $ push . AttachTreachery (toId attrs) . toTarget
       pure t
     Will (MoveTo _ iid lid) -> do
       shouldCostAdditional <-
@@ -41,6 +40,6 @@ instance RunMessage ArcaneBarrier where
           (toCardCode attrs)
           (Just $ EffectMessages [moveFromMessage, moveToMessage])
           (toSource attrs)
-          (idToTarget iid)
+          (toTarget iid)
       pure t
     _ -> ArcaneBarrier <$> runMessage msg attrs

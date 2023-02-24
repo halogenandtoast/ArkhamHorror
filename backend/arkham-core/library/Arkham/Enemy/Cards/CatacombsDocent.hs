@@ -15,7 +15,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype CatacombsDocent = CatacombsDocent EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

@@ -70,7 +70,7 @@ instance FromJSON SkillTest where
     <*> o .: "subscribers"
     <*> o .:? "isRevelation" .!= False
 
-instance TargetEntity SkillTest where
+instance Targetable SkillTest where
   toTarget _ = SkillTestTarget
   isTarget _ SkillTestTarget = True
   isTarget _ _ = False

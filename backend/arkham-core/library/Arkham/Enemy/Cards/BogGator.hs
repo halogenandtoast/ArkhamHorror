@@ -11,7 +11,6 @@ import Arkham.Enemy.Runner hiding ( EnemyEvade )
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype BogGator = BogGator EnemyAttrs

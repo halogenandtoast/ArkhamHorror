@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillTest.Type
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Metadata = Metadata { chosenSkills :: HashSet SkillType }
   deriving stock Generic

@@ -14,7 +14,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Zone
 

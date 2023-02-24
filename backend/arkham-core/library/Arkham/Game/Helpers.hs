@@ -248,6 +248,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
           Action.Parley -> case abilitySource of
             EnemySource _ -> pure True
             AssetSource _ -> pure True
+            LocationSource _ -> pure True
             _ -> notNull <$> select (Matcher.CanParleyEnemy iid)
           Action.Investigate -> case abilitySource of
             LocationSource _ -> pure True
@@ -558,7 +559,7 @@ getActionsWith iid window f = do
         _ -> Nothing
       )
       modifiersForFilter
-  unfilteredActions <- traceShowId . map f . nub <$> getAllAbilities
+  unfilteredActions <- map f . nub <$> getAllAbilities
   actions' <- if null abilityFilters
     then pure unfilteredActions
     else do

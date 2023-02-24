@@ -11,6 +11,7 @@ import Arkham.Act.Sequence as X
 import Arkham.Cost as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Helpers.Message as X
+import Arkham.Target as X
 
 import Arkham.Classes
 import Arkham.Game.Helpers
@@ -18,7 +19,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
@@ -62,12 +62,14 @@ instance RunMessage ActAttrs where
         [Window Timing.When AllUndefeatedInvestigatorsResigned]
       afterMsg <- checkWindows
         [Window Timing.When AllUndefeatedInvestigatorsResigned]
-      a <$ when
+      when
         (null investigatorIds)
         (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
-    UseCardAbility iid source 999 _ _ | isSource a source ->
+      pure a
+    UseCardAbility iid source 999 _ _ | isSource a source -> do
       -- This is assumed to be advancement via spending clues
-      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+      push $ AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues
+      pure a
     PlaceClues (ActTarget aid) n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a { actClues = totalClues }

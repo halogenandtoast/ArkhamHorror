@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

@@ -147,7 +147,7 @@ instance Entity ScenarioAttrs where
 instance Named ScenarioAttrs where
   toName = scenarioName
 
-instance TargetEntity ScenarioAttrs where
+instance Targetable ScenarioAttrs where
   toTarget _ = ScenarioTarget
   isTarget _ ScenarioTarget = True
   isTarget _ _ = False

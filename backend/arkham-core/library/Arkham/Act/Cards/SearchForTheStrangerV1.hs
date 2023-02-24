@@ -17,7 +17,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype SearchForTheStrangerV1 = SearchForTheStrangerV1 ActAttrs
   deriving anyclass IsAct

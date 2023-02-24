@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Message
-import Arkham.Target
 
 newtype Improvisation = Improvisation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

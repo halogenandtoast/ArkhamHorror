@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window qualified as Window

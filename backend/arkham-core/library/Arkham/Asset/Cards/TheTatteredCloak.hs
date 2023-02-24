@@ -10,7 +10,6 @@ import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype TheTatteredCloak = TheTatteredCloak AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

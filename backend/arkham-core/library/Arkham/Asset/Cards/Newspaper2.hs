@@ -17,7 +17,6 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata { active :: Bool }

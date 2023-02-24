@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 
 newtype TheGuardedRuins = TheGuardedRuins ActAttrs
   deriving anyclass IsAct

@@ -22,11 +22,11 @@ getModifiers' target =
   findWithDefault [] target <$> getAllModifiers
 
 hasModifier
-  :: (HasGame m, TargetEntity a) => a -> ModifierType -> m Bool
+  :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 hasModifier a m = (m `elem`) <$> getModifiers (toTarget a)
 
 withoutModifier
-  :: (HasGame m, TargetEntity a) => a -> ModifierType -> m Bool
+  :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
 toModifier :: SourceEntity a => a -> ModifierType -> Modifier
@@ -36,7 +36,7 @@ toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
 skillTestModifier
-  :: (SourceEntity source, TargetEntity target)
+  :: (SourceEntity source, Targetable target)
   => source
   -> target
   -> ModifierType
@@ -45,7 +45,7 @@ skillTestModifier source target modifier =
   skillTestModifiers source target [modifier]
 
 skillTestModifiers
-  :: (SourceEntity source, TargetEntity target)
+  :: (SourceEntity source, Targetable target)
   => source
   -> target
   -> [ModifierType]

@@ -18,7 +18,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

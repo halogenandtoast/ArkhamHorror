@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype AncientStoneMindsInHarmony4 = AncientStoneMindsInHarmony4 AssetAttrs

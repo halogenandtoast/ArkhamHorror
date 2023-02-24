@@ -16,7 +16,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

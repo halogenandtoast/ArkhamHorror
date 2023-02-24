@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

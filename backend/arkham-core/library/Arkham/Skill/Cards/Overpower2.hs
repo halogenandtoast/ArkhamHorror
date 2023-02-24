@@ -10,7 +10,6 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype Overpower2 = Overpower2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

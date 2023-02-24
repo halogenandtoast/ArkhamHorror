@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype MetropolitanCathedral = MetropolitanCathedral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

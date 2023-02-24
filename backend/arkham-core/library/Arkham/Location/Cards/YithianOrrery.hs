@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.ScenarioLogKey
-import Arkham.Target
 
 newtype YithianOrrery = YithianOrrery LocationAttrs
   deriving anyclass IsLocation

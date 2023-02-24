@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SearchForTheRuins = SearchForTheRuins ActAttrs

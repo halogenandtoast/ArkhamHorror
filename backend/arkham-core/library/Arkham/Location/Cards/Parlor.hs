@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype Parlor = Parlor LocationAttrs
   deriving anyclass IsLocation

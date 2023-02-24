@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Projection
-import Arkham.Target
 
 newtype WellPrepared2 = WellPrepared2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

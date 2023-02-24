@@ -15,7 +15,6 @@ import Arkham.Matcher hiding ( ChosenRandomLocation )
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs

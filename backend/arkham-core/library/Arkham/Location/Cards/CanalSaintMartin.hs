@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype CanalSaintMartin = CanalSaintMartin LocationAttrs

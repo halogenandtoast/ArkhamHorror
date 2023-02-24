@@ -11,7 +11,6 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

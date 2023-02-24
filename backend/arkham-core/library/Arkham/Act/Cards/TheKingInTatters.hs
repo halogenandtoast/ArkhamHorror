@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheKingInTatters = TheKingInTatters ActAttrs

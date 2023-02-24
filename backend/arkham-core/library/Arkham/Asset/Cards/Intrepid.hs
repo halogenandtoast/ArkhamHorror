@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Intrepid = Intrepid AssetAttrs

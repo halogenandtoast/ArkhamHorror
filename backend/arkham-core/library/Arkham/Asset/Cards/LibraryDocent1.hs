@@ -17,7 +17,6 @@ import Arkham.Effect.Types
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Tome) )
 import Arkham.Window

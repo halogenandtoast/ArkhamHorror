@@ -17,7 +17,6 @@ import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Source
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 
 newtype BleakPlainsStarsOfAldebaran = BleakPlainsStarsOfAldebaran LocationAttrs
   deriving anyclass IsLocation

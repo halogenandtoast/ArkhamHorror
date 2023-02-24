@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Target
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
   deriving anyclass IsAsset

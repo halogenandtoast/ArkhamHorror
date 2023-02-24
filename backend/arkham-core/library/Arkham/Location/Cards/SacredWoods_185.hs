@@ -11,7 +11,6 @@ import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype SacredWoods_185 = SacredWoods_185 LocationAttrs
   deriving anyclass IsLocation

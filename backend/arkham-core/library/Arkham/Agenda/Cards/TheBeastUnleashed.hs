@@ -18,7 +18,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs

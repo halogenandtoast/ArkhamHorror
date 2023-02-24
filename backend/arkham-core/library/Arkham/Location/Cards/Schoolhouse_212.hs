@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards ( schoolhouse_212 )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving anyclass IsLocation

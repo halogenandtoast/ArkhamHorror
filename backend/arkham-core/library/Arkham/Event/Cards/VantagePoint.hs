@@ -15,7 +15,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher hiding ( RevealLocation, PutLocationIntoPlay )
 import Arkham.Message hiding ( RevealLocation )
-import Arkham.Target
 import Arkham.Window hiding ( EndTurn )
 
 newtype VantagePoint = VantagePoint EventAttrs

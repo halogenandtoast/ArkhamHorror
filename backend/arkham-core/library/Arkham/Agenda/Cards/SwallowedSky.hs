@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Trait
 
 newtype SwallowedSky = SwallowedSky AgendaAttrs

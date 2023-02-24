@@ -58,7 +58,7 @@ liftAssetCard f (SomeAssetCard a) = f a
 someAssetCardCode :: SomeAssetCard -> CardCode
 someAssetCardCode = liftAssetCard cbCardCode
 
-instance TargetEntity Asset where
+instance Targetable Asset where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
@@ -344,7 +344,7 @@ instance Entity AssetAttrs where
 instance Named AssetAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity AssetAttrs where
+instance Targetable AssetAttrs where
   toTarget = AssetTarget . toId
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId

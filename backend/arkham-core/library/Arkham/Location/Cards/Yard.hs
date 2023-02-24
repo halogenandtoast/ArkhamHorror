@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Target
 
 newtype Yard = Yard LocationAttrs
   deriving anyclass IsLocation

@@ -57,38 +57,43 @@ data Target
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
-class IdToTarget a where
-  idToTarget :: a -> Target
+class Targetable a where
+  toTarget :: a -> Target
+  isTarget :: a -> Target -> Bool
+  isTarget = (==) . toTarget
 
-instance IdToTarget ActId where
-  idToTarget = ActTarget
+instance Targetable Target where
+  toTarget = id
 
-instance IdToTarget AgendaId where
-  idToTarget = AgendaTarget
+instance Targetable ActId where
+  toTarget = ActTarget
 
-instance IdToTarget CardId where
-  idToTarget = CardIdTarget
+instance Targetable AgendaId where
+  toTarget = AgendaTarget
 
-instance IdToTarget LocationId where
-  idToTarget = LocationTarget
+instance Targetable CardId where
+  toTarget = CardIdTarget
 
-instance IdToTarget EnemyId where
-  idToTarget = EnemyTarget
+instance Targetable LocationId where
+  toTarget = LocationTarget
 
-instance IdToTarget TreacheryId where
-  idToTarget = TreacheryTarget
+instance Targetable EnemyId where
+  toTarget = EnemyTarget
 
-instance IdToTarget InvestigatorId where
-  idToTarget = InvestigatorTarget
+instance Targetable TreacheryId where
+  toTarget = TreacheryTarget
 
-instance IdToTarget AssetId where
-  idToTarget = AssetTarget
+instance Targetable InvestigatorId where
+  toTarget = InvestigatorTarget
 
-instance IdToTarget EventId where
-  idToTarget = EventTarget
+instance Targetable AssetId where
+  toTarget = AssetTarget
 
-instance IdToTarget SkillId where
-  idToTarget = SkillTarget
+instance Targetable EventId where
+  toTarget = EventTarget
+
+instance Targetable SkillId where
+  toTarget = SkillTarget
 
 toActionTarget :: Target -> Target
 toActionTarget (ProxyTarget _ actionTarget) = actionTarget

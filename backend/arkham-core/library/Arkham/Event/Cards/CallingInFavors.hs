@@ -16,7 +16,6 @@ import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 
 newtype CallingInFavors = CallingInFavors EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

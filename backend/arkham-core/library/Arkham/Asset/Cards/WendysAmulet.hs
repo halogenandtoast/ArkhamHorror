@@ -7,7 +7,6 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Event.Types (Field(..))
 import Arkham.Projection
-import Arkham.Target
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

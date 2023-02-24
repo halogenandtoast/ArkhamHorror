@@ -16,7 +16,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

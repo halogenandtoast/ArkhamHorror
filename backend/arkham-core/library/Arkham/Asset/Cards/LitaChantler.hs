@@ -10,7 +10,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window ( Window (..) )

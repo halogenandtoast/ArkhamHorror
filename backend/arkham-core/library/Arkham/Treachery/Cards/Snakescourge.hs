@@ -14,7 +14,6 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Item) )
 import Arkham.Treachery.Cards qualified as Cards

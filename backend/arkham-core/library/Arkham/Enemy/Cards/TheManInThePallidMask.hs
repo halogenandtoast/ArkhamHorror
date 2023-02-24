@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

@@ -9,7 +9,6 @@ import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Metadata = Metadata { selectedEnemy :: Maybe EnemyId }
   deriving stock (Show, Eq, Generic)

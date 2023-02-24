@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype RopeBridge = RopeBridge LocationAttrs

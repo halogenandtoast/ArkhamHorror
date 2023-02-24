@@ -10,7 +10,6 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding ( PlayCard )
-import Arkham.Target
 import Arkham.Window (defaultWindows)
 
 newtype ThePallidMask = ThePallidMask AssetAttrs

@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype HemisphericMap2 = HemisphericMap2 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

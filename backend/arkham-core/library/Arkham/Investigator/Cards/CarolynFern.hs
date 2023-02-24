@@ -16,7 +16,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )

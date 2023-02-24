@@ -14,7 +14,6 @@ import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

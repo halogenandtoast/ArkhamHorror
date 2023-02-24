@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Eavesdrop = Eavesdrop EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

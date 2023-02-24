@@ -15,7 +15,6 @@ import Arkham.Direction
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs

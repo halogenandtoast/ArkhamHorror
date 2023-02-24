@@ -10,11 +10,10 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype StandTogether3 = StandTogether3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, Targetable)
 
 standTogether3 :: EventCard StandTogether3
 standTogether3 = event StandTogether3 Cards.standTogether3

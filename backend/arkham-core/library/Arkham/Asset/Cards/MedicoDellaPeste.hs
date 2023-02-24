@@ -15,7 +15,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.SkillTest
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype MedicoDellaPeste = MedicoDellaPeste AssetAttrs

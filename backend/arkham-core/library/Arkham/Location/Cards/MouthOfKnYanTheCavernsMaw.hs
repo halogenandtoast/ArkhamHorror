@@ -19,7 +19,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Target
 
 newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

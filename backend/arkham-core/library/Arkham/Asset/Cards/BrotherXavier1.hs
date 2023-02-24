@@ -16,7 +16,6 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs

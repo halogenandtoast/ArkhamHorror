@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype Resourceful = Resourceful SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

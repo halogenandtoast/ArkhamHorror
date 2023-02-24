@@ -11,8 +11,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
 import Arkham.Message
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
@@ -41,7 +39,7 @@ instance HasTokenValue DisappearanceAtTheTwilightEstate where
       otherFace -> getTokenValue iid otherFace attrs
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
-  runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = case msg of
+  runMessage msg (DisappearanceAtTheTwilightEstate attrs) = case msg of
     Setup -> do
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeck

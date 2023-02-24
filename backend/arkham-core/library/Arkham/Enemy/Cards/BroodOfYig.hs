@@ -11,7 +11,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Runner hiding (EnemyFight)
 import Arkham.Helpers.Modifiers
-import Arkham.Target
 
 newtype BroodOfYig = BroodOfYig EnemyAttrs
   deriving anyclass IsEnemy

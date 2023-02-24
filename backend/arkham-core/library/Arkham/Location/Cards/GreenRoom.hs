@@ -16,7 +16,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype GreenRoom = GreenRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

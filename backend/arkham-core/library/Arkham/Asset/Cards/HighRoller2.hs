@@ -15,7 +15,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher
 import Arkham.Source
-import Arkham.Target
 
 newtype HighRoller2 = HighRoller2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

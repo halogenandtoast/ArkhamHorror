@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Shrivelling5 = Shrivelling5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

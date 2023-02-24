@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Cards ( devilsHopYard_253 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs

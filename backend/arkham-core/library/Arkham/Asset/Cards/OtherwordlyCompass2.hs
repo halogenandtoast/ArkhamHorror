@@ -15,7 +15,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 
 newtype OtherwordlyCompass2 = OtherwordlyCompass2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

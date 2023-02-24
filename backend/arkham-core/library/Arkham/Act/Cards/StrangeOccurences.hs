@@ -23,7 +23,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
-import Arkham.Target
 import Arkham.Treachery.Types
 
 newtype StrangeOccurences = StrangeOccurences ActAttrs

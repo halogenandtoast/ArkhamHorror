@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype Montmartre209 = Montmartre209 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

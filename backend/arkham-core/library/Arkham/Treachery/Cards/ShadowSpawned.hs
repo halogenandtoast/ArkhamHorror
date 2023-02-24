@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs

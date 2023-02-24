@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -29,7 +28,7 @@ instance RunMessage AncestralFear where
         $ chooseOrRunOne iid
         $ [ Label
               "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display)."
-              [PlaceDoom (idToTarget lid) 1]
+              [PlaceDoom (toTarget lid) 1]
           | lid <- maybeToList mLocation
           ]
         <> [ Label

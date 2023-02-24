@@ -10,7 +10,6 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype ATestOfWill = ATestOfWill EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

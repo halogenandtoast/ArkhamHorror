@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Target
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

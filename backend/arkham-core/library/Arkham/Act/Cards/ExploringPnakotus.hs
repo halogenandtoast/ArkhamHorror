@@ -16,7 +16,6 @@ import Arkham.Keyword ( Keyword (Aloof) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Target
 import Data.List.NonEmpty qualified as NE
 
 newtype ExploringPnakotus = ExploringPnakotus ActAttrs

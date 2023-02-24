@@ -15,7 +15,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

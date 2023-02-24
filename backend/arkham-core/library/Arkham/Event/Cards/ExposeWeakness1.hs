@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

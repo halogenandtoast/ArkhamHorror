@@ -13,7 +13,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -45,14 +44,14 @@ instance HasAbilities Entombed where
 instance RunMessage Entombed where
   runMessage msg t@(Entombed (attrs `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ AttachTreachery (toId attrs) (idToTarget iid)
+      push $ AttachTreachery (toId attrs) (toTarget iid)
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         difficulty = max 0 (4 - difficultyReduction metadata)
         testChoice sType = SkillLabel
           sType
-          [beginSkillTest iid source (idToTarget iid) sType difficulty]
+          [beginSkillTest iid source (toTarget iid) sType difficulty]
       push $ chooseOne iid [testChoice SkillAgility, testChoice SkillCombat]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

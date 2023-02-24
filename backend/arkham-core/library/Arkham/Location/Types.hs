@@ -231,7 +231,7 @@ instance Entity LocationAttrs where
   toAttrs = id
   overAttrs f = f
 
-instance TargetEntity LocationAttrs where
+instance Targetable LocationAttrs where
   toTarget = LocationTarget . toId
   isTarget LocationAttrs { locationId } (LocationTarget lid) =
     locationId == lid
@@ -394,7 +394,7 @@ instance Named Location where
 instance Named (Unrevealed Location) where
   toName (Unrevealed l) = toName . Unrevealed $ toAttrs l
 
-instance TargetEntity Location where
+instance Targetable Location where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

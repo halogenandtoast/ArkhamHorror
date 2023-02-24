@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Target
 import Arkham.Token
 import qualified Arkham.Window as Window
 

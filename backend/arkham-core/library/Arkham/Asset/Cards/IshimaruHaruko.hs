@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype IshimaruHaruko = IshimaruHaruko AssetAttrs

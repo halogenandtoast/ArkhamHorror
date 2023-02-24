@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

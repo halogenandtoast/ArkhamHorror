@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Message hiding ( Run )
 import Arkham.SkillTest.Type
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata { advancingInvestigator :: Maybe InvestigatorId }

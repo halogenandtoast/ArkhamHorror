@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Target
 
 newtype Coyoacan = Coyoacan LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

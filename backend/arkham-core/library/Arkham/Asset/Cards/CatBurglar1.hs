@@ -14,7 +14,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass IsAsset

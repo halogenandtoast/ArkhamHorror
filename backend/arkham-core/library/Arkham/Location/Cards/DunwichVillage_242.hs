@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards ( dunwichVillage_242 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs

@@ -15,7 +15,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait ( Trait (Serpent) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

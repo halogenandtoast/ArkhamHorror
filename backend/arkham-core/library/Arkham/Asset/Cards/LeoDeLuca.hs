@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Source
-import Arkham.Target
 
 newtype LeoDeLuca = LeoDeLuca AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

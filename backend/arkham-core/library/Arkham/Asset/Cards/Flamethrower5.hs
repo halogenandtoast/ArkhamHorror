@@ -17,7 +17,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Projection
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Flamethrower5 = Flamethrower5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

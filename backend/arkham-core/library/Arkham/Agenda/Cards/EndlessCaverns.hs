@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Message
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.SkillType
-import Arkham.Target
 
 newtype EndlessCaverns = EndlessCaverns AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

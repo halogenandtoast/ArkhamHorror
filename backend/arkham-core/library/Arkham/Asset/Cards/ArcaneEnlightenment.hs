@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Target
 import Arkham.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs

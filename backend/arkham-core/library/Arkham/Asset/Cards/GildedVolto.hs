@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.SkillTest
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype GildedVolto = GildedVolto AssetAttrs

@@ -10,7 +10,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Target
 
 newtype DonLagorio = DonLagorio EnemyAttrs
   deriving anyclass IsEnemy

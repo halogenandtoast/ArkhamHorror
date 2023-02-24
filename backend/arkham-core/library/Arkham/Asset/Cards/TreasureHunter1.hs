@@ -12,7 +12,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TreasureHunter1 = TreasureHunter1 AssetAttrs

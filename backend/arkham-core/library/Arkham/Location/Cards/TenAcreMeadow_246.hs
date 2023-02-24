@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Cards ( tenAcreMeadow_246 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs

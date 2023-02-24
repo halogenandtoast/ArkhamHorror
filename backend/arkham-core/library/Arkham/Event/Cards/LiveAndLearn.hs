@@ -11,7 +11,6 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.SkillTest
-import Arkham.Target
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 

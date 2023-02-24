@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
   deriving anyclass IsAsset

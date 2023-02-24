@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Kukri = Kukri AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

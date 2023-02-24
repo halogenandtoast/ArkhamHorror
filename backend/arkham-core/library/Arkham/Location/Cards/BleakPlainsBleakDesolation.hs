@@ -16,7 +16,6 @@ import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Source
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 
 newtype BleakPlainsBleakDesolation = BleakPlainsBleakDesolation LocationAttrs
   deriving anyclass IsLocation

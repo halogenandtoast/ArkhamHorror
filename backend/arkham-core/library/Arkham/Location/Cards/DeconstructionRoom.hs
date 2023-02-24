@@ -16,7 +16,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 
 newtype DeconstructionRoom = DeconstructionRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

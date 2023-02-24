@@ -18,7 +18,6 @@ import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher hiding ( EnemyDefeated )
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Projection
 import Arkham.Trait ( Trait (Tool, Insight) )
 

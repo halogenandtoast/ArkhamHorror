@@ -8,7 +8,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Runner
 

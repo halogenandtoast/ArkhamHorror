@@ -11,7 +11,6 @@ import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards

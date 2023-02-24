@@ -10,7 +10,6 @@ import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype FightOrFlight = FightOrFlight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

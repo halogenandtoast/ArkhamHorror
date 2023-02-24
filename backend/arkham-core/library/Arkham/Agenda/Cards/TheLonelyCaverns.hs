@@ -20,7 +20,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheLonelyCaverns = TheLonelyCaverns AgendaAttrs

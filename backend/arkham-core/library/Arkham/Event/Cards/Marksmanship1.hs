@@ -21,7 +21,6 @@ import Arkham.Keyword (Keyword(Retaliate, Aloof))
 import Arkham.Matcher hiding ( EventCard )
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window

@@ -11,7 +11,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

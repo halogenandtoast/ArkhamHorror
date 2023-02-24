@@ -17,7 +17,6 @@ import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Timing qualified as Timing
 import Arkham.Window

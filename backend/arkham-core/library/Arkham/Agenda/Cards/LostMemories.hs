@@ -18,7 +18,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Target
 
 newtype LostMemories = LostMemories AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

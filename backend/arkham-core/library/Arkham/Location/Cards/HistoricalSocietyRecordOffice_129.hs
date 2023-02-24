@@ -13,7 +13,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyRecordOffice_129 = HistoricalSocietyRecordOffice_129 LocationAttrs

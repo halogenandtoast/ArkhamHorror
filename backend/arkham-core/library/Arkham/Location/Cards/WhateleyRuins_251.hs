@@ -19,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillType
-import Arkham.Target
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving anyclass IsLocation

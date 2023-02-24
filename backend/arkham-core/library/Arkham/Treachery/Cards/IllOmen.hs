@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -28,7 +27,7 @@ instance RunMessage IllOmen where
         iid
         [ targetLabel
             lid
-            (PlaceDoom (idToTarget lid) 1
+            (PlaceDoom (toTarget lid) 1
             : map
                 (\i ->
                   InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1

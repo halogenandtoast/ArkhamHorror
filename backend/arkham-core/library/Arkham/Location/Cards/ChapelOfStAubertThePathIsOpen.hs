@@ -19,7 +19,6 @@ import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Target
 
 newtype ChapelOfStAubertThePathIsOpen = ChapelOfStAubertThePathIsOpen LocationAttrs
   deriving anyclass IsLocation

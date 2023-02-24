@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.SkillType
-import Arkham.Target
 
 newtype BloodPact3 = BloodPact3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

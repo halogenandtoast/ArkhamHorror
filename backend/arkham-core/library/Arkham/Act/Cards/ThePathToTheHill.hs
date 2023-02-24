@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Target
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype PeterSylvestre2 = PeterSylvestre2 AssetAttrs

@@ -17,7 +17,6 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 
 newtype PalaceOfTheKing = PalaceOfTheKing LocationAttrs
   deriving anyclass IsLocation

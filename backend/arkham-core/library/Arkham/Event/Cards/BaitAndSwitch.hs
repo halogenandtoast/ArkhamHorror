@@ -9,7 +9,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

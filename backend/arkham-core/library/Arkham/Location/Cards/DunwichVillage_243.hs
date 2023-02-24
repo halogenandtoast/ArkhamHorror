@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Target
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

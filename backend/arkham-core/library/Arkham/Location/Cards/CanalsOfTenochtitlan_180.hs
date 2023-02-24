@@ -10,7 +10,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
   deriving anyclass IsLocation

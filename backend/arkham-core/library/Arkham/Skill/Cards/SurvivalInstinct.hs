@@ -13,7 +13,6 @@ import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

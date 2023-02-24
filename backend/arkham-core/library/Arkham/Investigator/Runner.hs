@@ -6,6 +6,7 @@ module Arkham.Investigator.Runner
 
 import Arkham.Prelude
 
+import Arkham.Target as X
 import Arkham.Classes as X
 import Arkham.ClassSymbol as X
 import Arkham.Helpers.Investigator as X
@@ -54,7 +55,6 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )

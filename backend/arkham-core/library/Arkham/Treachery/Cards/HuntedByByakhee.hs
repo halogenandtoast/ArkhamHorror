@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

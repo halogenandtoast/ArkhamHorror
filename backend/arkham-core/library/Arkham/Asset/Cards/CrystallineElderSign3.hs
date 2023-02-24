@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.SkillType
-import Arkham.Target
 
 newtype CrystallineElderSign3 = CrystallineElderSign3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

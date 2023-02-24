@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Source
-import Arkham.Target
 
 newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving anyclass IsEnemy

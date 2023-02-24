@@ -11,7 +11,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Target
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

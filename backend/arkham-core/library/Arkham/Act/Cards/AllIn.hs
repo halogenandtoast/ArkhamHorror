@@ -20,7 +20,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype AllIn = AllIn ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

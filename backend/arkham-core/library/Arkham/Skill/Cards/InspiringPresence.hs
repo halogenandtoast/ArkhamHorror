@@ -14,7 +14,6 @@ import Arkham.Message hiding ( AssetDamage )
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype InspiringPresence = InspiringPresence SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

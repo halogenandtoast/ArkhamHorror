@@ -18,7 +18,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

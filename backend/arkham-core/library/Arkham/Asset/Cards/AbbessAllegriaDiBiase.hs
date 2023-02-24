@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
-import Arkham.Target
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

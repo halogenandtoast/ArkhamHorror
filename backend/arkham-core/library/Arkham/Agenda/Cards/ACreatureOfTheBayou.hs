@@ -14,7 +14,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Target
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

@@ -12,7 +12,6 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 -- Ruling by MJ states the enemy gains to be a lasting effect, while the card
 -- draw is not, so we must create a window effect rather than use

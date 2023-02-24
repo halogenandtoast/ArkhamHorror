@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
   deriving anyclass IsEnemy

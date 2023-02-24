@@ -11,7 +11,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype LogicalReasoning = LogicalReasoning EventAttrs

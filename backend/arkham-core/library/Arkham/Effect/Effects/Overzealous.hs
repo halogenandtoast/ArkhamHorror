@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
-import Arkham.Target
 
 newtype Overzealous = Overzealous EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

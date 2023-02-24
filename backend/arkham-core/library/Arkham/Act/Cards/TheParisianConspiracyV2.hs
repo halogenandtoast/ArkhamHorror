@@ -15,7 +15,6 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding (When)
-import Arkham.Target
 import Arkham.Timing
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs

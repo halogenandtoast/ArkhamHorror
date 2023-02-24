@@ -14,7 +14,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

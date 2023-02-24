@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

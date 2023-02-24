@@ -10,7 +10,6 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Target
 import Arkham.Helpers.Investigator
 import Arkham.SkillType
 import Arkham.Treachery.Runner

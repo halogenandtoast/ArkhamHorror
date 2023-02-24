@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 
 newtype LaboratoryOfTheGreatRace = LaboratoryOfTheGreatRace LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

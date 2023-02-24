@@ -16,7 +16,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window (Window(..))

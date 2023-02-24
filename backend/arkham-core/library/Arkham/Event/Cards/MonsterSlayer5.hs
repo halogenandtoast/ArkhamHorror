@@ -13,7 +13,6 @@ import Arkham.Enemy.Types ( Field(..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype MonsterSlayer5 = MonsterSlayer5 EventAttrs

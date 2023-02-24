@@ -12,7 +12,6 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 
 newtype CallingInFavors = CallingInFavors EffectAttrs

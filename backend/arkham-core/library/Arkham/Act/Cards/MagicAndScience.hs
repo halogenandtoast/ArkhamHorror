@@ -27,7 +27,6 @@ import Arkham.Matcher hiding ( LocationCard )
 import Arkham.Message hiding ( Label )
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Target
 import Control.Monad.Extra ( findM )
 import Data.Function ( on )
 import Data.Monoid ( Last (..) )

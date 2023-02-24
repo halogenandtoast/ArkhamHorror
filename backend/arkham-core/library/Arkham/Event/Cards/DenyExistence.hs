@@ -11,7 +11,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message hiding (Discarded)
-import Arkham.Target
 import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs

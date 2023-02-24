@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Resolution
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 
 newtype NoAsylum = NoAsylum ActAttrs

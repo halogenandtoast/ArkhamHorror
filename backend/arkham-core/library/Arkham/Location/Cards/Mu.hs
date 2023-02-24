@@ -11,7 +11,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.SkillTest.Base
-import Arkham.Target
 import Arkham.Token
 
 newtype Mu = Mu LocationAttrs

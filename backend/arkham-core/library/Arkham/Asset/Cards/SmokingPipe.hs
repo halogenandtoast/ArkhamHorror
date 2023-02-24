@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding ( FastPlayerWindow )
-import Arkham.Target
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Target
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

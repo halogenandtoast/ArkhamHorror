@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Helpers.Message as X
 import Arkham.Scenario.Types as X
 
+import Arkham.Classes.GameLogger
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types ( Field (..) )
 import Arkham.Agenda.Sequence qualified as Agenda
@@ -280,7 +281,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       , CheckForRemainingInvestigators
       , afterMsg
       ]
-  Remember logKey -> pure $ a & logL %~ insertSet logKey
+  Remember logKey -> do
+    send $ "Remember that you \"" <> format logKey <> "\""
+    pure $ a & logL %~ insertSet logKey
   ScenarioCountIncrementBy logKey n ->
     pure $ a & countsL %~ HashMap.alter (Just . maybe n (+ n)) logKey
   ScenarioCountDecrementBy logKey n ->
@@ -295,10 +298,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     standalone <- getIsStandalone
     push $ if standalone
       then GameOver
-      else maybe
-        (NextCampaignStep Nothing)
-        (CampaignStep . Just)
-        mNextCampaignStep
+      else NextCampaignStep mNextCampaignStep
     pure a
   ScenarioResolution _ ->
     error "The scenario should specify what to do for no resolution"

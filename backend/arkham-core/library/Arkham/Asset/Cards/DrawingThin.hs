@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DrawingThin = DrawingThin AssetAttrs

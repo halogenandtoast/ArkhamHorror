@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Ichtaca = Ichtaca EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

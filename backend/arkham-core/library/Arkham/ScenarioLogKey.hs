@@ -1,8 +1,10 @@
 module Arkham.ScenarioLogKey where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (toLower)
 
+import Data.Char (isUpper, toLower)
 import Arkham.Id
+import Arkham.Classes.GameLogger
 
 data ScenarioLogKey
   = HadADrink InvestigatorId
@@ -58,3 +60,15 @@ data ScenarioLogKey
 data ScenarioCountKey = CurrentDepth | PlaceholderCountKey
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+
+instance ToGameLoggerFormat ScenarioLogKey where
+  format = pack . go . show
+    where
+      go :: String -> String
+      go [] = []
+      go (x:xs) = toLower x : go' xs
+
+      go' :: String -> String
+      go' [] = []
+      go' (x:xs) | isUpper x = ' ' : toLower x : go' xs
+      go' (x:xs) = x : go' xs

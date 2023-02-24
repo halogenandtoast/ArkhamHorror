@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)

@@ -14,7 +14,6 @@ import Arkham.Game.Helpers
 import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window ( Window (..) )

@@ -11,7 +11,6 @@ import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
 import Arkham.Message
-import Arkham.Target
 
 newtype SecondWind = SecondWind EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Matcher
-import Arkham.Target
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving anyclass IsAsset

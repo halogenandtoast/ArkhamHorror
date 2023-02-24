@@ -15,7 +15,6 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message hiding (InvestigatorEliminated)
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Treachery.Runner

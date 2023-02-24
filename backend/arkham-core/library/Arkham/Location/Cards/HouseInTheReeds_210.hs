@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards ( houseInTheReeds_210 )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
   deriving anyclass IsLocation

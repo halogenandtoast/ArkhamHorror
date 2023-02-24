@@ -12,7 +12,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Target
 
 newtype Trusted = Trusted EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

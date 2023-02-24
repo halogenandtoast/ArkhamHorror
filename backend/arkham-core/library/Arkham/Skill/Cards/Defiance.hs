@@ -13,7 +13,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window (Window(..))

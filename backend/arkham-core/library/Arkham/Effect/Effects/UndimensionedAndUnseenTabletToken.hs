@@ -15,7 +15,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Target
 import Arkham.Token
 
 newtype UndimensionedAndUnseenTabletToken = UndimensionedAndUnseenTabletToken EffectAttrs

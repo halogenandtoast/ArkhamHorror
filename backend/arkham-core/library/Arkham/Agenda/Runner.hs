@@ -10,13 +10,13 @@ import Arkham.Agenda.Types as X
 import Arkham.Agenda.Helpers as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Target as X
 
 import Arkham.Agenda.AdvancementReason
 import Arkham.Classes
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window

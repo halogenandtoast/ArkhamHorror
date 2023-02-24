@@ -18,7 +18,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 
 newtype PatientConfinementFamiliarCell = PatientConfinementFamiliarCell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

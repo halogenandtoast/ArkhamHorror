@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype SlipAway = SlipAway EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

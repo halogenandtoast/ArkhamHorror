@@ -12,7 +12,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype FightOrFlight = FightOrFlight EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

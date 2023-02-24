@@ -19,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype UnsolvedCase = UnsolvedCase EventAttrs

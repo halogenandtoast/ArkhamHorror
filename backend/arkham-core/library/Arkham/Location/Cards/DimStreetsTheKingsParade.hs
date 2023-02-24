@@ -16,7 +16,6 @@ import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DimStreetsTheKingsParade = DimStreetsTheKingsParade LocationAttrs

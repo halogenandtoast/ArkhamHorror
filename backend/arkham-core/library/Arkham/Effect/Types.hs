@@ -94,7 +94,7 @@ instance Entity EffectAttrs where
   toAttrs = id
   overAttrs f = f
 
-instance TargetEntity EffectAttrs where
+instance Targetable EffectAttrs where
   toTarget = EffectTarget . toId
   isTarget EffectAttrs { effectId } (EffectTarget eid) = effectId == eid
   isTarget _ _ = False
@@ -130,7 +130,7 @@ instance Entity Effect where
   toAttrs (Effect a) = toAttrs a
   overAttrs f (Effect a) = Effect $ overAttrs f a
 
-instance TargetEntity Effect where
+instance Targetable Effect where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

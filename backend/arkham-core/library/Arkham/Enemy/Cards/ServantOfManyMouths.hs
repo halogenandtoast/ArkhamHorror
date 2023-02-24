@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs

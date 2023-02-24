@@ -10,7 +10,6 @@ import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype Shortcut = Shortcut EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

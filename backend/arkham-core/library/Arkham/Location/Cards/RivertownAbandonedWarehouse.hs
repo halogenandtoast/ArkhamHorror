@@ -17,7 +17,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs

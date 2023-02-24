@@ -15,7 +15,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

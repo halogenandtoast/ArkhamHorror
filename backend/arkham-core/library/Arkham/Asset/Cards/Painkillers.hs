@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Matcher hiding ( FastPlayerWindow )
-import Arkham.Target
 
 newtype Painkillers = Painkillers AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

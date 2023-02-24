@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

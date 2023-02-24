@@ -14,7 +14,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype SeekerOfCarcosa = SeekerOfCarcosa EnemyAttrs

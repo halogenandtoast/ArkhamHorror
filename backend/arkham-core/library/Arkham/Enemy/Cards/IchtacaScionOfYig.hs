@@ -26,7 +26,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait(Serpent))
 

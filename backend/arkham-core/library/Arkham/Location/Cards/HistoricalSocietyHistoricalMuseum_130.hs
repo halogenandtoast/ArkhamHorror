@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyHistoricalMuseum_130 = HistoricalSocietyHistoricalMuseum_130 LocationAttrs

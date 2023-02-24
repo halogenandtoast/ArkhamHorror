@@ -11,7 +11,6 @@ import Arkham.DamageEffect
 import Arkham.Effect.Runner
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Window qualified as Window
 

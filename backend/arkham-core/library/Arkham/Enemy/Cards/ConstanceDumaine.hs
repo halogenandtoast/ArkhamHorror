@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Modifier qualified as Modifier
-import Arkham.Target
 
 newtype ConstanceDumaine = ConstanceDumaine EnemyAttrs
   deriving anyclass IsEnemy

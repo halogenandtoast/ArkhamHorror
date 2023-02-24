@@ -24,6 +24,7 @@ import Arkham.Json
 import Arkham.Location
 import Arkham.Skill ()
 import Arkham.Skill.Types (Skill)
+import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 
@@ -157,10 +158,10 @@ instance HasAbilities Entities where
 
 data SomeEntity
   = forall e
-  . (Show e, TargetEntity e, Entity e, HasModifiersFor e) =>
+  . (Show e, Targetable e, Entity e, HasModifiersFor e) =>
     SomeEntity e
 
-instance TargetEntity SomeEntity where
+instance Targetable SomeEntity where
   toTarget (SomeEntity e) = toTarget e
 
 instance Show SomeEntity where

@@ -8,7 +8,6 @@ import Arkham.Message
 import Arkham.Helpers.Modifiers
 import Arkham.Skill.Runner
 import qualified Arkham.Skill.Cards as Cards
-import Arkham.Target
 
 newtype Deduction = Deduction SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

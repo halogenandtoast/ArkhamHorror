@@ -18,7 +18,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs

@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -47,11 +46,11 @@ instance RunMessage LiquidCourage where
         iid
         [ targetLabel
             iid'
-            [ HealHorrorWithAdditional (idToTarget iid') (toSource attrs) 1
+            [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
             , beginSkillTest
               iid'
               source
-              (idToTarget iid')
+              (toTarget iid')
               SkillWillpower
               2
             ]

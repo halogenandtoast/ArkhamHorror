@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
-import Arkham.Target
 
 newtype TheNecronomiconPetrusDeDaciaTranslation5 = TheNecronomiconPetrusDeDaciaTranslation5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

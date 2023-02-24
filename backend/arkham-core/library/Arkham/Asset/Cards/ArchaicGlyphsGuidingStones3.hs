@@ -15,7 +15,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 
 newtype ArchaicGlyphsGuidingStones3 = ArchaicGlyphsGuidingStones3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.SkillType
-import Arkham.Target
 
 newtype KeenEye = KeenEye AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

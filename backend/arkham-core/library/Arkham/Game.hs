@@ -368,7 +368,7 @@ getCampaign :: HasGame m => m (Maybe Campaign)
 getCampaign = modeCampaign . view modeL <$> getGame
 
 -- Todo: this is rough because it won't currently work, we need to calc modifiers outside of GameT
-withModifiers :: (HasGame m, TargetEntity a) => a -> m (With a ModifierData)
+withModifiers :: (HasGame m, Targetable a) => a -> m (With a ModifierData)
 withModifiers a = do
   modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'
@@ -417,7 +417,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
         pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator
-  deriving newtype TargetEntity
+  deriving newtype Targetable
 
 instance ToJSON WithDeckSize where
   toJSON (WithDeckSize i) = case toJSON i of
@@ -428,7 +428,7 @@ instance ToJSON WithDeckSize where
     _ -> error "failed to serialize investigator"
 
 withSkillTestModifiers
-  :: (HasGame m, TargetEntity a) => a -> m (With a ModifierData)
+  :: (HasGame m, Targetable a) => a -> m (With a ModifierData)
 withSkillTestModifiers a = do
   modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'

@@ -14,7 +14,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Encyclopedia2 = Encyclopedia2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -52,7 +52,7 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBrotherhoodIsRevealed where
-  getAbilities (TheBrotherhoodIsRevealed (a `With` _)) =
+  getAbilities (TheBrotherhoodIsRevealed (a `With` _)) | onSide E a =
     [ restrictedAbility
           a
           1
@@ -60,6 +60,7 @@ instance HasAbilities TheBrotherhoodIsRevealed where
         $ Objective
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage TheBrotherhoodIsRevealed where
   runMessage msg a@(TheBrotherhoodIsRevealed (attrs `With` metadata)) =
@@ -70,7 +71,7 @@ instance RunMessage TheBrotherhoodIsRevealed where
       AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
         leadInvestigatorId <- getLeadInvestigatorId
         deckCount <- getActDecksInPlayCount
-        ichtaca <- selectJust $ assetIs Assets.ichtacaTheForgottenGuardian
+        ichtaca <- getSetAsideCard Assets.ichtacaTheForgottenGuardian
         lid <- maybe
           (selectJust $ locationIs Locations.blackCave)
           pure
@@ -80,7 +81,7 @@ instance RunMessage TheBrotherhoodIsRevealed where
         let
           takeControlMessage = chooseOrRunOne
             leadInvestigatorId
-            [ targetLabel iid [TakeControlOfAsset iid ichtaca] | iid <- iids ]
+            [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca] | iid <- iids ]
           nextMessage = if deckCount <= 1
             then ScenarioResolution $ Resolution 1
             else RemoveFromGame (ActTarget $ toId attrs)

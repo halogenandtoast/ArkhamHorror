@@ -25,7 +25,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Control.Monad.Extra ( orM )
 import Data.Foldable ( foldrM )
 import Data.UUID ( nil )
 

@@ -251,7 +251,10 @@ instance RunMessage TheCityOfArchives where
             , RealizedWhatYearItIs
             , ActivatedTheDevice
             ]
-          resignedWithTheCustodian <- resignedWith Assets.theCustodian
+          resignedWithTheCustodian <- orM
+            [ resignedWith Assets.theCustodian
+            , selectAny (assetIs Assets.theCustodian)
+            ]
 
           let
             totalTasks =

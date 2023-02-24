@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

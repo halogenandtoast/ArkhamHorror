@@ -16,7 +16,6 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window

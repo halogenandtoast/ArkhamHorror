@@ -14,7 +14,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Target
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

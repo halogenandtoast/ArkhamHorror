@@ -18,7 +18,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Lockpicks1 = Lockpicks1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

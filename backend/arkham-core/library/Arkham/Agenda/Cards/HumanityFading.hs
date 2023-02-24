@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding ( InvestigatorDefeated )
 import Arkham.Message
-import Arkham.Target
 
 newtype HumanityFading = HumanityFading AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

@@ -2,6 +2,7 @@
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
@@ -215,6 +216,14 @@ const title = computed(() => {
           @choose="$emit('choose', $event)"
         />
       </div>
+
+      <div v-if="showChoices" class="choices">
+        <template v-for="(choice, index) in choices" :key="index">
+          <div v-if="choice.tag === MessageType.LABEL">
+            <button @click="$emit('choose', index)">{{choice.label}}</button>
+          </div>
+        </template>
+      </div>
     </div>
     <div v-else-if="paymentAmountsLabel" class="modal amount-modal">
       <div class="modal-contents amount-contents">
@@ -297,6 +306,25 @@ const title = computed(() => {
     margin-left: 50px;
     &:nth-of-type(1) {
       margin-left: 0;
+    }
+  }
+}
+
+.choices {
+  padding-bottom: 20px;
+  text-align: center;
+  button {
+    transition: all 0.3s ease-in;
+    border: 0;
+    padding: 10px;
+    text-transform: uppercase;
+    background-color: #532e61;
+    font-weight: bold;
+    border-radius: 0.6em;
+    color: #EEE;
+    font: Arial, sans-serif;
+    &:hover {
+      background-color: #311b3e;
     }
   }
 }

@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype CheapShot = CheapShot EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

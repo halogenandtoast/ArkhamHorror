@@ -17,7 +17,6 @@ import Arkham.Location.Cards qualified as Cards ( coldSpringGlen_244 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs

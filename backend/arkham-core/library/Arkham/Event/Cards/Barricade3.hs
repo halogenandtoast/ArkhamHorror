@@ -15,7 +15,6 @@ import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Barricade3 = Barricade3 EventAttrs

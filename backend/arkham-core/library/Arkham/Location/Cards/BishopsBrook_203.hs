@@ -10,7 +10,6 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( bishopsBrook_203 )
 import Arkham.Location.Runner
-import Arkham.Target
 
 newtype BishopsBrook_203 = BishopsBrook_203 LocationAttrs
   deriving anyclass IsLocation

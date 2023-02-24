@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 
 newtype OpeningTheMaw = OpeningTheMaw ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

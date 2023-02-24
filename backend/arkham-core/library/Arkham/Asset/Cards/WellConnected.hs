@@ -17,7 +17,6 @@ import Arkham.Effect.Types
 import Arkham.Matcher
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Projection
-import Arkham.Target
 
 newtype WellConnected = WellConnected AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

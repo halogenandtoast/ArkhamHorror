@@ -7,7 +7,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype Fearless = Fearless SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

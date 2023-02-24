@@ -10,7 +10,6 @@ import qualified Arkham.Investigator.Cards as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor, HasAbilities)

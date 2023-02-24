@@ -233,7 +233,7 @@ instance Entity EnemyAttrs where
 instance Named EnemyAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity EnemyAttrs where
+instance Targetable EnemyAttrs where
   toTarget = EnemyTarget . toId
   isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
   isTarget attrs (CardCodeTarget cardCode) = toCardCode attrs == cardCode
@@ -280,7 +280,7 @@ instance Entity VoidEnemy where
   toAttrs (VoidEnemy (Enemy a)) = toAttrs a
   overAttrs f (VoidEnemy (Enemy a)) = VoidEnemy . Enemy $ overAttrs f a
 
-instance TargetEntity Enemy where
+instance Targetable Enemy where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

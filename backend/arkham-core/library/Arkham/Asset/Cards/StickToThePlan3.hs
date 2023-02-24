@@ -15,7 +15,6 @@ import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher hiding ( PlaceUnderneath )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait qualified as Trait
 

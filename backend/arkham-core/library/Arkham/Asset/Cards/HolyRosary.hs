@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.SkillType
-import Arkham.Target
 
 newtype HolyRosary = HolyRosary AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

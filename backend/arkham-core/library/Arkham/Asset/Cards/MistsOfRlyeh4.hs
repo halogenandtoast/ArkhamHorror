@@ -20,7 +20,6 @@ import Arkham.Matcher hiding ( MoveAction )
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Token
 import Arkham.Window qualified as Window
 

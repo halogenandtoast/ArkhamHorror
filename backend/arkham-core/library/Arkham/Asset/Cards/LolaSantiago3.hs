@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype LolaSantiago3 = LolaSantiago3 AssetAttrs
   deriving anyclass IsAsset

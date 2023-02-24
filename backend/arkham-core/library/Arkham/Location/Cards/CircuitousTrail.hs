@@ -16,7 +16,6 @@ import Arkham.Investigator.Types
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 import Data.Semigroup
 
 newtype CircuitousTrail = CircuitousTrail LocationAttrs

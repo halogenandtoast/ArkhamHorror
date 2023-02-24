@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq EffectAttrs

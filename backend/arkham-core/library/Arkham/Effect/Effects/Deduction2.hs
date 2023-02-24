@@ -9,7 +9,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype Deduction2 = Deduction2 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

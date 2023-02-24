@@ -11,7 +11,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Target
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

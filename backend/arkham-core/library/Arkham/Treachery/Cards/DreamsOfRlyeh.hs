@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

@@ -271,7 +271,8 @@ instance RunMessage TheCityOfArchives where
               else Nothing
 
           pushAll
-            $ Record logEntry
+            $ story iids resolution1
+            : Record logEntry
             : gainXp
             <> [EndOfGame (Just $ InterludeStep 4 interludeResult)]
         _ -> error "Invalid resolution"

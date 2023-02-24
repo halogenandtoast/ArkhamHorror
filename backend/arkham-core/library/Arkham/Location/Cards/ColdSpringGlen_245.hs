@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Message hiding ( ChosenRandomLocation )
 import Arkham.Message qualified as Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs

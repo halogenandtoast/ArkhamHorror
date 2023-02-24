@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 
 newtype PatientConfinementDrearyCell = PatientConfinementDrearyCell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

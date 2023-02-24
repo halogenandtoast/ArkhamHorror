@@ -15,7 +15,6 @@ import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TryAndTryAgain1 = TryAndTryAgain1 AssetAttrs

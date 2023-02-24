@@ -11,7 +11,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs

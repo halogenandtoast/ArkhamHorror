@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Projection
-import Arkham.Target
 
 newtype OldKeyring = OldKeyring AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

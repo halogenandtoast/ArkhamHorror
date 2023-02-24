@@ -14,7 +14,6 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
 import Arkham.Window qualified as Window

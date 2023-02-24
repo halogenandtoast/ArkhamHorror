@@ -12,7 +12,6 @@ import Arkham.Id
 import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait ( Trait (Shattered) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Matcher
-import Arkham.Target
 
 newtype StrangeSolutionRestorativeConcoction4 = StrangeSolutionRestorativeConcoction4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

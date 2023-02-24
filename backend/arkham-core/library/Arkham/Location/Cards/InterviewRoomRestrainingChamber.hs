@@ -16,7 +16,6 @@ import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 
 newtype InterviewRoomRestrainingChamber = InterviewRoomRestrainingChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -42,24 +41,8 @@ instance RunMessage InterviewRoomRestrainingChamber where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ chooseOne
         iid
-        [ Label
-          "Use {intellect}"
-          [ parley
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              SkillIntellect
-              4
-          ]
-        , Label
-          "Use {combat}"
-          [ parley
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              SkillIntellect
-              4
-          ]
+        [ SkillLabel SkillIntellect [ parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4 ]
+        , SkillLabel SkillCombat [ parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4 ]
         ]
       pure l
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _

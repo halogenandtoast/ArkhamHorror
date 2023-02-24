@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Cards ( theEdgeOfTheUniverse )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Target
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving anyclass IsLocation

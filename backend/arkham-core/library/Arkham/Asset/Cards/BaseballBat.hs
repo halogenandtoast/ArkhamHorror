@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving anyclass IsAsset

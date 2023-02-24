@@ -18,7 +18,6 @@ import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving anyclass IsLocation

@@ -12,7 +12,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HiredMuscle1 = HiredMuscle1 AssetAttrs

@@ -12,7 +12,6 @@ import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.SkillType
-import Arkham.Target
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

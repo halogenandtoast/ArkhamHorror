@@ -15,7 +15,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype IveGotAPlan = IveGotAPlan EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

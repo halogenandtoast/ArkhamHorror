@@ -20,7 +20,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window

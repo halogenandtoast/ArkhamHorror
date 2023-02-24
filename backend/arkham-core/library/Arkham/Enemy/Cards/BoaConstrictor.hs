@@ -17,7 +17,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyAttacks )
 import Arkham.Phase
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype BoaConstrictor = BoaConstrictor EnemyAttrs

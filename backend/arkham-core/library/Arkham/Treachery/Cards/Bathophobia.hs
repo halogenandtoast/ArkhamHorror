@@ -9,7 +9,6 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Classes
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

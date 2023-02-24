@@ -12,7 +12,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Zone
 

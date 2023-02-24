@@ -11,7 +11,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype CalvinWright = CalvinWright InvestigatorAttrs
   deriving anyclass IsInvestigator

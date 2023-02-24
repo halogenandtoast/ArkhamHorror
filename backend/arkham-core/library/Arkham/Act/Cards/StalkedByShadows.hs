@@ -18,7 +18,6 @@ import Arkham.GameValue
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.Scenarios.APhantomOfTruth.Helpers
-import Arkham.Target
 
 newtype StalkedByShadows = StalkedByShadows ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

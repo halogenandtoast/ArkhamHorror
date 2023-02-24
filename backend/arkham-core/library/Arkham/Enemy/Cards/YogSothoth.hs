@@ -14,7 +14,6 @@ import Arkham.EffectMetadata
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype YogSothoth = YogSothoth EnemyAttrs

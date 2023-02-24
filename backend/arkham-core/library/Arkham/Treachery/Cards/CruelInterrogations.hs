@@ -16,7 +16,6 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

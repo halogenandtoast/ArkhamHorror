@@ -10,7 +10,6 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 
 newtype YogSothoth = YogSothoth EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

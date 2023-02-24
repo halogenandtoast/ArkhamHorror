@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Target
 
 newtype EideticMemory3 = EideticMemory3 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

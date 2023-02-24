@@ -17,7 +17,6 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 
 newtype Reliable1 = Reliable1 EventAttrs

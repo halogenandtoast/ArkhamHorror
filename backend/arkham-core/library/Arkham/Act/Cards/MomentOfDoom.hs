@@ -21,7 +21,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype MomentOfDoom = MomentOfDoom ActAttrs

@@ -15,7 +15,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 LocationAttrs

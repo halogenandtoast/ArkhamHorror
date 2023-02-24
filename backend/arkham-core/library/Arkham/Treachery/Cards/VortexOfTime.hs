@@ -11,7 +11,6 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype VortexOfTime = VortexOfTime TreacheryAttrs

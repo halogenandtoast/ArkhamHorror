@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Target
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

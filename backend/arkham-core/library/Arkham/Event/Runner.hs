@@ -3,6 +3,7 @@ module Arkham.Event.Runner
   ( module X
   ) where
 
+import Arkham.Target as X
 import Arkham.Event.Types as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
@@ -14,7 +15,6 @@ import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Placement
 
 instance RunMessage EventAttrs where

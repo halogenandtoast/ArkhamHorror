@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Target
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

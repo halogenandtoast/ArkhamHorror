@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Scenarios.CurtainCall.Helpers
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait

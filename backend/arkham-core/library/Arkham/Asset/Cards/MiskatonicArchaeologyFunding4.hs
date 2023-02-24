@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Miskatonic) )
 

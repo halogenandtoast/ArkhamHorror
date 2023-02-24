@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Chainsaw4 = Chainsaw4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Target
 
 newtype UntilTheEndOfTime = UntilTheEndOfTime AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

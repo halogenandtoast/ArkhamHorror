@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata { chosenSkills :: [SkillType] }

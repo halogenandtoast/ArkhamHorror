@@ -17,7 +17,6 @@ import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Cloister = Cloister LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

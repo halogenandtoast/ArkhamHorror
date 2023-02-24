@@ -18,7 +18,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Target
 
 newtype CavernOfTheForgottenAge = CavernOfTheForgottenAge ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Target
 import Arkham.Trait ( Trait (Item) )
 
 newtype CityOfTheGreatRace = CityOfTheGreatRace AgendaAttrs

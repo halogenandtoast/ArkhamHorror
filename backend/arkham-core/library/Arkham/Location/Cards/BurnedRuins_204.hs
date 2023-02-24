@@ -10,7 +10,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( burnedRuins_204 )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Target
 
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
   deriving anyclass IsLocation

@@ -11,7 +11,6 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype MonsterSlayer = MonsterSlayer EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

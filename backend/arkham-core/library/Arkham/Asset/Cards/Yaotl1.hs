@@ -19,7 +19,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Yaotl1 = Yaotl1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

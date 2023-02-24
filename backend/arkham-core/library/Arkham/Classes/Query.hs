@@ -58,10 +58,10 @@ selectListMap
 selectListMap f = selectListMapM (pure . f)
 
 selectTargets
-  :: (HasCallStack, Query a, HasGame m, IdToTarget (QueryElement a))
+  :: (HasCallStack, Query a, HasGame m, Targetable (QueryElement a))
   => a
   -> m [Target]
-selectTargets = selectListMap idToTarget
+selectTargets = selectListMap toTarget
 
 selectListMapM
   :: (HasCallStack, Query a, HasGame m)

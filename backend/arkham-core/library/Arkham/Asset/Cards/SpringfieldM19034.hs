@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

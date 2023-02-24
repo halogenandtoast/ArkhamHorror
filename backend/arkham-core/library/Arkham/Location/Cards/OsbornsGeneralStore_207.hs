@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards ( osbornsGeneralStore_207 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs

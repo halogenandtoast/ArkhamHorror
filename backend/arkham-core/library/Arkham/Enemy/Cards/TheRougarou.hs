@@ -16,7 +16,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }

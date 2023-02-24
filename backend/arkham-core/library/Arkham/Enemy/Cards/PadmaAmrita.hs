@@ -13,7 +13,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyAttacks )
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Ancient) )
 

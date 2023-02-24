@@ -16,7 +16,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows, Window(..))
 import Arkham.Window qualified as Window

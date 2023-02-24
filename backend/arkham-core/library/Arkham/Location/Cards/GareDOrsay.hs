@@ -15,7 +15,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype GareDOrsay = GareDOrsay LocationAttrs

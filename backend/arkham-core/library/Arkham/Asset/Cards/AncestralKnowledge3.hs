@@ -15,7 +15,6 @@ import Arkham.Helpers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype AncestralKnowledge3 = AncestralKnowledge3 AssetAttrs

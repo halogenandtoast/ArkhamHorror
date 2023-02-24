@@ -9,7 +9,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype BlindingLight = BlindingLight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

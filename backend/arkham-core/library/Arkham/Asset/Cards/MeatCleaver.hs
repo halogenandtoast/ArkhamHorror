@@ -15,7 +15,6 @@ import Arkham.Criteria
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype MeatCleaver = MeatCleaver AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

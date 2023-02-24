@@ -15,7 +15,6 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Target
 
 newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
   deriving anyclass IsEnemy

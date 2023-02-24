@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding ( PlaceUnderneath )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 

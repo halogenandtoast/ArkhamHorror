@@ -15,7 +15,6 @@ import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
-import Arkham.Target
 
 newtype ImDoneRunnin = ImDoneRunnin EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

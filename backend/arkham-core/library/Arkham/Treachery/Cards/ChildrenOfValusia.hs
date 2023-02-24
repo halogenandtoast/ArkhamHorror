@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Serpent) )
 import Arkham.Treachery.Cards qualified as Cards

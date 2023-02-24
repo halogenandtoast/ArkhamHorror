@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype ViciousBlow = ViciousBlow SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

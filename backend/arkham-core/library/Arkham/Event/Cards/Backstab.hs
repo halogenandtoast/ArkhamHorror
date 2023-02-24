@@ -10,7 +10,6 @@ import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype Backstab = Backstab EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

@@ -17,7 +17,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype ChoeurGothique_292 = ChoeurGothique_292 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

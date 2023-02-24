@@ -15,7 +15,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

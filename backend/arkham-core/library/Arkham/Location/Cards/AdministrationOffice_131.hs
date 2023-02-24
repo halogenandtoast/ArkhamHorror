@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards ( administrationOffice_131 )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Projection
-import Arkham.Target
 
 newtype AdministrationOffice_131 = AdministrationOffice_131 LocationAttrs
   deriving anyclass IsLocation

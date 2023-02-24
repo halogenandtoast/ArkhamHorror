@@ -15,7 +15,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 
 newtype Thermos = Thermos AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

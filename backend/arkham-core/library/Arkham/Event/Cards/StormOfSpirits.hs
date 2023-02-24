@@ -14,7 +14,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher hiding ( AttackDamageEffect )
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype StormOfSpirits = StormOfSpirits EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

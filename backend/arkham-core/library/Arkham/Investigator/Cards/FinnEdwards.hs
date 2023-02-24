@@ -13,7 +13,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype FinnEdwards = FinnEdwards InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

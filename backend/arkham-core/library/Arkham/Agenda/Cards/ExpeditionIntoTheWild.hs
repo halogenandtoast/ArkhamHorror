@@ -24,7 +24,6 @@ import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.SkillType
-import Arkham.Target
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

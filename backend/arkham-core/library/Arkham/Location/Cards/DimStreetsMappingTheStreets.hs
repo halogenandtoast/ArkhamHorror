@@ -18,7 +18,6 @@ import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DimStreetsMappingTheStreets = DimStreetsMappingTheStreets LocationAttrs

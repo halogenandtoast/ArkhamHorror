@@ -26,7 +26,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype JourneyToTheNexus = JourneyToTheNexus ActAttrs

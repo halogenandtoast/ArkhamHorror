@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype PhysicalTraining4 = PhysicalTraining4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

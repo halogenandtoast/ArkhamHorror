@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Target
 
 newtype FishingNet = FishingNet AssetAttrs
   deriving anyclass IsAsset

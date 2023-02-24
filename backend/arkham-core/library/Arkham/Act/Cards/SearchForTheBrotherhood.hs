@@ -23,7 +23,6 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Hex, Shattered) )
 
@@ -54,8 +53,8 @@ instance RunMessage SearchForTheBrotherhood where
       iids <- getInvestigatorIds
       relicIsMissing <- getHasRecord TheRelicIsMissing
       mRelic <- if relicIsMissing
-        then pure Nothing
-        else Just <$> getSetAsideCard Assets.relicOfAgesUnleashTheTimestream
+        then Just <$> getSetAsideCard Assets.relicOfAgesUnleashTheTimestream
+        else pure Nothing
       aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
       pushAll
         $ [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) shattered]

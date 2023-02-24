@@ -166,7 +166,7 @@ instance HasCardDef InvestigatorAttrs where
 instance Named InvestigatorAttrs where
   toName = investigatorName
 
-instance TargetEntity InvestigatorAttrs where
+instance Targetable InvestigatorAttrs where
   toTarget = InvestigatorTarget . toId
   isTarget InvestigatorAttrs { investigatorId } (InvestigatorTarget iid) =
     iid == investigatorId
@@ -358,7 +358,7 @@ instance Entity Investigator where
   toAttrs (Investigator a) = toAttrs a
   overAttrs f (Investigator a) = Investigator $ overAttrs f a
 
-instance TargetEntity Investigator where
+instance Targetable Investigator where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

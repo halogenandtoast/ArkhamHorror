@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Matcher hiding (treacheryInHandOf)
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner

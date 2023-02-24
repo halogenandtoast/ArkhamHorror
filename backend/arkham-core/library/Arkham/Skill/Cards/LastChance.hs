@@ -13,7 +13,6 @@ import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType
-import Arkham.Target
 
 newtype LastChance = LastChance SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

@@ -16,7 +16,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message hiding ( EnemyAttacks )
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype ScholarFromYith = ScholarFromYith EnemyAttrs

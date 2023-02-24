@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Target
 
 newtype FirstAid3 = FirstAid3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype FindingANewWay = FindingANewWay ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

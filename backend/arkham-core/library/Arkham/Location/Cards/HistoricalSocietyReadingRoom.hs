@@ -18,7 +18,6 @@ import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyReadingRoom = HistoricalSocietyReadingRoom LocationAttrs

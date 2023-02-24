@@ -12,7 +12,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 
 newtype MindWipe1 = MindWipe1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

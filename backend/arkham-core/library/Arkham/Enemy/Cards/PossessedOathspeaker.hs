@@ -14,7 +14,6 @@ import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Phase
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype PossessedOathspeaker = PossessedOathspeaker EnemyAttrs

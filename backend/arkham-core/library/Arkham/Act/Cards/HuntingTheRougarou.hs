@@ -20,7 +20,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window ( Window (..) )

@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype OccultInvocation = OccultInvocation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

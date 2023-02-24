@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Placement
-import Arkham.Target
 
 newtype TheSkeletonKey2 = TheSkeletonKey2 AssetAttrs
   deriving anyclass IsAsset

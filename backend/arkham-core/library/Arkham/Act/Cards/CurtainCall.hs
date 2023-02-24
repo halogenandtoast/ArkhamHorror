@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype CurtainCall = CurtainCall ActAttrs

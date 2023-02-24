@@ -10,7 +10,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 

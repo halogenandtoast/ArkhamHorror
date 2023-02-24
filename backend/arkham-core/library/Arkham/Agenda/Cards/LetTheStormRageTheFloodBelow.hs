@@ -17,7 +17,6 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LetTheStormRageTheFloodBelow = LetTheStormRageTheFloodBelow AgendaAttrs

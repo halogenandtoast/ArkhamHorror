@@ -9,7 +9,6 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Placement
 
 newtype TheTowerXVI = TheTowerXVI AssetAttrs

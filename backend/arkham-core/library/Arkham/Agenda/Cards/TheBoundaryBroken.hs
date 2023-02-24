@@ -15,7 +15,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype TheBoundaryBroken = TheBoundaryBroken AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

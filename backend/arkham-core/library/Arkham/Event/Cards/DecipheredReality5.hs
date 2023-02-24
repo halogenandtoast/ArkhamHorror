@@ -15,7 +15,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
   deriving anyclass (IsEvent, HasAbilities, HasModifiersFor)

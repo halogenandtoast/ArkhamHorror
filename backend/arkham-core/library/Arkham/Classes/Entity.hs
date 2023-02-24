@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Classes.Entity
   ( module Arkham.Classes.Entity
   , module X
@@ -19,15 +20,6 @@ class Entity a where
 patchEntity :: Entity a => a -> EntityAttrs a -> a
 patchEntity a attrs = overAttrs (const attrs) a
 
-class TargetEntity a where
-  toTarget :: a -> Target
-  isTarget :: a -> Target -> Bool
-  isTarget = (==) . toTarget
-
-instance TargetEntity Target where
-  toTarget = id
-  isTarget = (==)
-
 instance Entity a => Entity (a `With` b) where
   type EntityId (a `With` b) = EntityId a
   type EntityAttrs (a `With` b) = EntityAttrs a
@@ -35,7 +27,7 @@ instance Entity a => Entity (a `With` b) where
   toAttrs (a `With` _) = toAttrs a
   overAttrs f (a `With` b) = With (overAttrs f a) b
 
-instance TargetEntity a => TargetEntity (a `With` b) where
+instance Targetable a => Targetable (a `With` b) where
   toTarget (a `With` _) = toTarget a
   isTarget (a `With` _) = isTarget a
 
@@ -43,7 +35,7 @@ insertEntity
   :: (Entity v, EntityId v ~ k, Hashable k) => v -> HashMap k v -> HashMap k v
 insertEntity a = insertMap (toId a) a
 
-instance TargetEntity Token where
+instance Targetable Token where
   toTarget = TokenTarget
   isTarget t (TokenTarget t') = t == t'
   isTarget _ _ = False

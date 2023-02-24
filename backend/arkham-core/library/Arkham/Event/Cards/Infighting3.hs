@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype Infighting3 = Infighting3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

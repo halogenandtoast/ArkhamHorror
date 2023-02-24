@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Keyword qualified as Keyword
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype Knuckleduster = Knuckleduster AssetAttrs
   deriving anyclass IsAsset

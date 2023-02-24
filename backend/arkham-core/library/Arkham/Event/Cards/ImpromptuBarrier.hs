@@ -15,7 +15,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Zone
 
 newtype Metadata = Metadata { fromDiscard :: Bool }

@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 
 newtype MinhThiPhan = MinhThiPhan EffectAttrs

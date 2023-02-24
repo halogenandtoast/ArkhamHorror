@@ -13,7 +13,6 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheCityFloods = TheCityFloods AgendaAttrs

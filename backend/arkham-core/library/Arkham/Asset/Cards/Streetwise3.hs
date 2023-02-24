@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Streetwise3 = Streetwise3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

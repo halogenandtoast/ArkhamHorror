@@ -12,7 +12,6 @@ import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype SleightOfHand = SleightOfHand EventAttrs

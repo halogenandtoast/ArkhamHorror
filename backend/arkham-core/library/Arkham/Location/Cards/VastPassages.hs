@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Target
 
 newtype VastPassages = VastPassages LocationAttrs
   deriving anyclass IsLocation

@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Target
 
 newtype LockedInside = LockedInside AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

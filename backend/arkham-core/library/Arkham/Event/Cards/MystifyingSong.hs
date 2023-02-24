@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.Target
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 

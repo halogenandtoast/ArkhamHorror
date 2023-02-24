@@ -8,7 +8,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( orneLibrary )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Target
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving anyclass IsLocation

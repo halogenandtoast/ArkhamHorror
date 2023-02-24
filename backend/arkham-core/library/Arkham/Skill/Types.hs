@@ -76,7 +76,7 @@ instance Entity SkillAttrs where
 instance Named SkillAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity SkillAttrs where
+instance Targetable SkillAttrs where
   toTarget = SkillTarget . skillId
   isTarget SkillAttrs { skillId } (SkillTarget sid) = skillId == sid
   isTarget _ _ = False
@@ -139,7 +139,7 @@ instance Entity Skill where
 instance Named Skill where
   toName = toName . toAttrs
 
-instance TargetEntity Skill where
+instance Targetable Skill where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

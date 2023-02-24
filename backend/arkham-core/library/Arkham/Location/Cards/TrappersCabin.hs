@@ -18,7 +18,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving anyclass IsLocation

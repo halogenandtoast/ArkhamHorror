@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype MedicalTexts = MedicalTexts AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

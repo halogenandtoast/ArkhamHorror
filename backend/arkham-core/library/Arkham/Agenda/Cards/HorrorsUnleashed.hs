@@ -18,7 +18,6 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 

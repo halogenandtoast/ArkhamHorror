@@ -21,7 +21,6 @@ import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype TwilightBlade = TwilightBlade AssetAttrs
   deriving anyclass IsAsset

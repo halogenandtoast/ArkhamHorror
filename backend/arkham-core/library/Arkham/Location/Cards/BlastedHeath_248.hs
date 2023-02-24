@@ -17,7 +17,6 @@ import Arkham.Location.Cards qualified as Cards ( blastedHeath_248 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs

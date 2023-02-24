@@ -11,7 +11,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 import Arkham.Trait
 
 newtype CuriositieShoppe = CuriositieShoppe LocationAttrs

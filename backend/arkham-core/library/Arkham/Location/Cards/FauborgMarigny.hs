@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards ( fauborgMarigny )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Target
 
 newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving anyclass IsLocation

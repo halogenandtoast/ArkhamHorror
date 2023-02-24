@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Metadata = Metadata { successTriggered :: Bool }
   deriving stock (Show, Eq, Generic)

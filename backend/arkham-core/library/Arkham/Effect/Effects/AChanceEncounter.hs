@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype AChanceEncounter = AChanceEncounter EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

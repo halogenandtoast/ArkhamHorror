@@ -10,7 +10,6 @@ import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import Arkham.Trait
 
 newtype MrPeabody = MrPeabody EffectAttrs

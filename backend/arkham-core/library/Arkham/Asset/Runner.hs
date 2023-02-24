@@ -12,6 +12,7 @@ import Arkham.Classes as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Message as X hiding ( AssetDamage )
+import Arkham.Target as X
 
 import Arkham.Card
 import Arkham.Damage
@@ -22,7 +23,6 @@ import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window

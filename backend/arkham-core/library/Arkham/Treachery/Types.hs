@@ -127,7 +127,7 @@ instance Entity TreacheryAttrs where
 instance Named TreacheryAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity TreacheryAttrs where
+instance Targetable TreacheryAttrs where
   toTarget = TreacheryTarget . toId
   isTarget TreacheryAttrs { treacheryId } (TreacheryTarget tid) =
     treacheryId == tid
@@ -254,7 +254,7 @@ instance Entity Treachery where
   toAttrs (Treachery a) = toAttrs a
   overAttrs f (Treachery a) = Treachery $ overAttrs f a
 
-instance TargetEntity Treachery where
+instance Targetable Treachery where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

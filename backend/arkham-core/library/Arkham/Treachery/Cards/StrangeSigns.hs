@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Runner
 
 newtype StrangeSigns = StrangeSigns TreacheryAttrs

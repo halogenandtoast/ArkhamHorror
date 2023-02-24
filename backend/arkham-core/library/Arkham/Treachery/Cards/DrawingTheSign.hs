@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Target
 import Arkham.Treachery.Runner
 
 newtype DrawingTheSign = DrawingTheSign TreacheryAttrs

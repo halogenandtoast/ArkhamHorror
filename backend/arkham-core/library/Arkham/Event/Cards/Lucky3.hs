@@ -9,7 +9,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.SkillTest.Base
-import Arkham.Target
 
 newtype Lucky3 = Lucky3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

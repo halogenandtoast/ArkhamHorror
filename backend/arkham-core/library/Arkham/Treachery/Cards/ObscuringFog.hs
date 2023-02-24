@@ -8,7 +8,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Target
 import qualified Arkham.Timing as Timing
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Treachery.Helpers

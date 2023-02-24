@@ -12,7 +12,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.SkillType
-import Arkham.Target
 
 newtype MariaDeSilva = MariaDeSilva AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

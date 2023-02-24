@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
-import Arkham.Target
 
 newtype AlejandrosPrison = AlejandrosPrison ActAttrs
   deriving anyclass IsAct

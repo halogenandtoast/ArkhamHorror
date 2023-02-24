@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
   deriving anyclass IsAsset

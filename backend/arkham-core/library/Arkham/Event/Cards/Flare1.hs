@@ -11,12 +11,11 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Window ( defaultWindows )
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity, SourceEntity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, Targetable, SourceEntity)
 
 flare1 :: EventCard Flare1
 flare1 = event Flare1 Cards.flare1

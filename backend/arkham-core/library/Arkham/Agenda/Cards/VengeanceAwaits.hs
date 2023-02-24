@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs

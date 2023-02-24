@@ -8,7 +8,6 @@ import Arkham.Location.Cards qualified as Cards
   ( arkhamWoodsCorpseRiddenClearing )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Target
 
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
   deriving anyclass IsLocation

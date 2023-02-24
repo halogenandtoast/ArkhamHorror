@@ -100,7 +100,7 @@ instance Entity ActAttrs where
 instance Named ActAttrs where
   toName = toName . toCardDef
 
-instance TargetEntity ActAttrs where
+instance Targetable ActAttrs where
   toTarget = ActTarget . toId
   isTarget ActAttrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
@@ -150,7 +150,7 @@ instance Entity Act where
   toAttrs (Act a) = toAttrs a
   overAttrs f (Act a) = Act $ overAttrs f a
 
-instance TargetEntity Act where
+instance Targetable Act where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 

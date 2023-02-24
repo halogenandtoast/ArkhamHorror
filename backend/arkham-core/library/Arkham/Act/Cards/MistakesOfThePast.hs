@@ -15,7 +15,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype MistakesOfThePast = MistakesOfThePast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

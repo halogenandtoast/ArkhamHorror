@@ -16,7 +16,6 @@ import Arkham.Helpers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 
 newtype LivreDeibon = LivreDeibon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

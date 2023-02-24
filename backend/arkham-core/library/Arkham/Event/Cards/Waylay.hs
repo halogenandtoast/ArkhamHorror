@@ -12,7 +12,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype Waylay = Waylay EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

@@ -9,7 +9,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs

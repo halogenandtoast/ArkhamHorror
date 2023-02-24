@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Projection
-import Arkham.Target
 
 newtype TrueGrit = TrueGrit AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

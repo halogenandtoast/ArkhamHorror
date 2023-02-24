@@ -15,7 +15,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 
 newtype Lantern = Lantern AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

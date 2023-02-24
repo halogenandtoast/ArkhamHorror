@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait (Trait(Item))
 
 newtype AbleBodied = AbleBodied SkillAttrs

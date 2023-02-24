@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Fanatic = Fanatic EnemyAttrs

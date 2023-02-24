@@ -26,7 +26,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheYithianRelic = TheYithianRelic ActAttrs
@@ -52,7 +51,7 @@ instance HasAbilities TheYithianRelic where
         , restrictedAbility
           a
           2
-          (AssetExists $ AssetAt YourLocation <> AssetWithTitle "Relic of Ages")
+          (AssetExists $ AssetAt (YourLocation <> LocationWithoutClues) <> AssetWithTitle "Relic of Ages")
         $ ActionAbility Nothing
         $ ActionCost 1
         , restrictedAbility
@@ -91,6 +90,7 @@ instance RunMessage TheYithianRelic where
     UseCardAbility _ (isSource attrs -> True) 3 _ _ -> do
       a <$ push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
       whenM (getHasRecord IchtacaIsSetAgainstYou) $ do
         nexus <- selectJust $ locationIs Locations.nexusOfNKai
         ichtaca <- getSetAsideCard Enemies.ichtacaScionOfYig
@@ -104,6 +104,7 @@ instance RunMessage TheYithianRelic where
         Nothing
         (toSource attrs)
         ScenarioTarget
+
       pure a
     _ -> TheYithianRelic <$> runMessage msg attrs
 

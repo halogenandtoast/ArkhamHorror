@@ -14,7 +14,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype FeedTheMind3 = FeedTheMind3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

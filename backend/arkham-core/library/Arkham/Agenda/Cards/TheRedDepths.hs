@@ -19,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheRedDepths = TheRedDepths AgendaAttrs

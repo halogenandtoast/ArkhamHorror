@@ -20,7 +20,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Target
 
 newtype AbbeyTowerThePathIsOpen = AbbeyTowerThePathIsOpen LocationAttrs
   deriving anyclass IsLocation

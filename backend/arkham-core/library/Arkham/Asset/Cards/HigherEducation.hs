@@ -13,7 +13,6 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype HigherEducation = HigherEducation AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

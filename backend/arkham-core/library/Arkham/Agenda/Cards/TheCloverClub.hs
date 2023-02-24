@@ -15,7 +15,6 @@ import Arkham.Helpers.Campaign
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 

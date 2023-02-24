@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype SpiritAthame1 = SpiritAthame1 AssetAttrs

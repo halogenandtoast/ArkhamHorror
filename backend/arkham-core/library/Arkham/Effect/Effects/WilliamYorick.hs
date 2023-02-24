@@ -12,7 +12,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

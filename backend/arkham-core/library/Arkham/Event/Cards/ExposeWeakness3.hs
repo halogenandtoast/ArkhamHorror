@@ -17,7 +17,6 @@ import Arkham.Helpers.Modifiers hiding ( EnemyFight )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype ExposeWeakness3 = ExposeWeakness3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

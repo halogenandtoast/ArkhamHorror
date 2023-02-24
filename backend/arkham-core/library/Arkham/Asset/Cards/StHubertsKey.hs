@@ -15,7 +15,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype StHubertsKey = StHubertsKey AssetAttrs

@@ -15,7 +15,6 @@ import Arkham.Deck
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Target
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

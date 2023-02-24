@@ -10,7 +10,6 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Projection
-import Arkham.Target
 
 newtype SavioCorvi = SavioCorvi EnemyAttrs
   deriving anyclass IsEnemy

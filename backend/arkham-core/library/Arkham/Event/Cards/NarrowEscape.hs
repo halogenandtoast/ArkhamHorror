@@ -12,7 +12,6 @@ import Arkham.Event.Helpers
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype NarrowEscape = NarrowEscape EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

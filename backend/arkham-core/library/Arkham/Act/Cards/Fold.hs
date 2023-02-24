@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype Fold = Fold ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

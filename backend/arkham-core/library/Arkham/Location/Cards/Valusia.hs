@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( DiscoverClues )
 import Arkham.Message
-import Arkham.Target
 import Arkham.Token
 
 newtype Valusia = Valusia LocationAttrs

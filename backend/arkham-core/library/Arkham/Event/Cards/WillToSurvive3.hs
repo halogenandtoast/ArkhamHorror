@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype WillToSurvive3 = WillToSurvive3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

@@ -15,7 +15,6 @@ import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype Persuasion = Persuasion EventAttrs

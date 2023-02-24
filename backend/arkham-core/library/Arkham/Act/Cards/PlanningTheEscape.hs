@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype PlanningTheEscape = PlanningTheEscape ActAttrs

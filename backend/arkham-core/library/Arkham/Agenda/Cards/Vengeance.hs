@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorDefeated )
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Data.List ( cycle )
 

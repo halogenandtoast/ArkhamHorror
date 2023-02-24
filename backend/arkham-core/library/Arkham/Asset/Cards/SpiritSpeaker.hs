@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Projection
-import Arkham.Target
 
 newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

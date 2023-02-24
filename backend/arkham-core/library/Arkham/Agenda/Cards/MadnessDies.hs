@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 
 newtype MadnessDies = MadnessDies AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

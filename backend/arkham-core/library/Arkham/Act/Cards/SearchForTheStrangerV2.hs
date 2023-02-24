@@ -15,7 +15,6 @@ import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Target
 import qualified Arkham.Timing as Timing
 
 newtype SearchForTheStrangerV2 = SearchForTheStrangerV2 ActAttrs

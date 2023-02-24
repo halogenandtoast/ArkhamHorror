@@ -10,7 +10,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Target
 
 newtype Eureka = Eureka SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

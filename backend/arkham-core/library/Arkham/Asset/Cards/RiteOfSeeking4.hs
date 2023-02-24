@@ -16,7 +16,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

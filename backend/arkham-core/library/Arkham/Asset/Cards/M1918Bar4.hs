@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype M1918Bar4 = M1918Bar4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

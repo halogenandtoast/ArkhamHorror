@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Target
 
 newtype MrPeabody = MrPeabody AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

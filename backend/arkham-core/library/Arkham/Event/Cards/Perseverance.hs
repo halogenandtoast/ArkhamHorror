@@ -12,7 +12,6 @@ import Arkham.Investigator.Types
 import Arkham.Helpers.Window
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 import Arkham.Window (Window(..))

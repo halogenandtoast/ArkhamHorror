@@ -9,7 +9,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Source
-import Arkham.Target
 
 newtype FineClothes = FineClothes AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

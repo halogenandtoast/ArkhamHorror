@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.Target
 import Arkham.Trait
 
 newtype TheReallyBadOnesV1 = TheReallyBadOnesV1 ActAttrs

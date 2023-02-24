@@ -20,7 +20,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
-import Arkham.Target
 
 newtype SanMarcoBasilica = SanMarcoBasilica LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

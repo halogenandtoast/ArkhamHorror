@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Target
 
 newtype OrnateBow3 = OrnateBow3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

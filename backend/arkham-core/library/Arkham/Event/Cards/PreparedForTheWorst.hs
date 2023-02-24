@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype PreparedForTheWorst = PreparedForTheWorst EventAttrs

@@ -12,6 +12,7 @@ import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Target as X
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -31,7 +32,6 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window ( Window (..) )

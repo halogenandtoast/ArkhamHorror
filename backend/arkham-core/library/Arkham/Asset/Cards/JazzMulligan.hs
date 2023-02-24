@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Trait
 
 newtype JazzMulligan = JazzMulligan AssetAttrs

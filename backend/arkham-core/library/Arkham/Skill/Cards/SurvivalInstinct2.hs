@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Matcher hiding (MoveAction, EnemyEvaded)
 import Arkham.Message
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype SurvivalInstinct2 = SurvivalInstinct2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

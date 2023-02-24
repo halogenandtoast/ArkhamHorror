@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Window qualified as Window

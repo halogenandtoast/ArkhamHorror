@@ -15,7 +15,6 @@ import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype Machete = Machete AssetAttrs
   deriving anyclass IsAsset

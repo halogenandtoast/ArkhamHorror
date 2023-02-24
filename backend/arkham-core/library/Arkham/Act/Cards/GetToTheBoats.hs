@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype GetToTheBoats = GetToTheBoats ActAttrs

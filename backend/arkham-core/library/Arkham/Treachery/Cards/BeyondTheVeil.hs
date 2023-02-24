@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message hiding ( DeckHasNoCards )
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards

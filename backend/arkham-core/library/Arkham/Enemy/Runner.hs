@@ -7,6 +7,7 @@ module Arkham.Enemy.Runner
 
 import Arkham.Prelude
 
+import Arkham.Target as X
 import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
@@ -45,7 +46,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType ()
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window ( Window (..) )

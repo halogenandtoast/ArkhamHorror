@@ -14,7 +14,6 @@ import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import qualified Arkham.Timing as Timing
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Treachery.Runner

@@ -18,7 +18,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.APhantomOfTruth.Helpers
-import Arkham.Target
 import qualified Arkham.Timing as Timing
 
 newtype PursuingShadows = PursuingShadows ActAttrs

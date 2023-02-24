@@ -212,7 +212,7 @@ allEffects = mapFromList
   , ("04283", SomeEffect theRedDepthsEffect)
   , ("04306", SomeEffect vantagePointEffect)
   , ("04307", SomeEffect pnakoticManuscripts5Effect)
-  , ("04321", SomeEffect theYithianRelicEffect)
+  , ("04320", SomeEffect theYithianRelicEffect)
   , ("04325", SomeEffect ichtacaScionOfYigEffect)
   , ("04326", SomeEffect alejandroVelaEffect)
   , ("05005", SomeEffect ritaYoungElderSignEffect)

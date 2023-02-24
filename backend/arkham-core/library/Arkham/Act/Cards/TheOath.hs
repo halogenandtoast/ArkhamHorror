@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Target
 import Arkham.Trait
 
 newtype TheOath = TheOath ActAttrs

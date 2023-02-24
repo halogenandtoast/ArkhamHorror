@@ -17,7 +17,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Target
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

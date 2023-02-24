@@ -9,7 +9,6 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.SkillType
-import Arkham.Target
 
 newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

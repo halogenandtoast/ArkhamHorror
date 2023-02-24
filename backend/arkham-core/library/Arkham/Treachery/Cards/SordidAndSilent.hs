@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Investigator.Types ( Field(..) )
 import Arkham.Treachery.Runner

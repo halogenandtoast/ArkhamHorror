@@ -13,7 +13,6 @@ import Arkham.Matcher hiding ( PlaceUnderneath, treacheryInHandOf )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Scenario.Deck
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers

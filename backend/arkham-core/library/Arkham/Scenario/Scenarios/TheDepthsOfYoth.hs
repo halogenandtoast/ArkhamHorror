@@ -297,6 +297,7 @@ instance RunMessage TheDepthsOfYoth where
             <> [ RecordCount TheHarbingerIsStillAlive damage | not inVictory ]
             <> [RecordCount YigsFury (yigsFury + vengeance)]
             <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "Unknown Resolution"
       pure s
     ScenarioResolutionStep 1 (Resolution 1) -> do

@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.Target
 
 newtype TakeHeart = TakeHeart SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

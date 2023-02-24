@@ -17,7 +17,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype GreatLibrary = GreatLibrary LocationAttrs

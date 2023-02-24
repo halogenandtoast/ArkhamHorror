@@ -21,7 +21,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Target
 
 newtype Entryway = Entryway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

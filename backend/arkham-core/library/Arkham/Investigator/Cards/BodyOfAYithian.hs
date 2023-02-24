@@ -9,7 +9,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype YithianMetadata = YithianMetadata { original :: Value }
   deriving stock (Show, Eq, Generic)

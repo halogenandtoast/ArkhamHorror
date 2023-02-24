@@ -11,7 +11,6 @@ import Arkham.Enemy.Types (Field(EnemyClues, EnemyDoom))
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 
 newtype TheKingsEdict = TheKingsEdict EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

@@ -12,7 +12,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Phase
 import Arkham.Projection
-import Arkham.Target
 
 newtype AshleighClarke = AshleighClarke EnemyAttrs
   deriving anyclass IsEnemy

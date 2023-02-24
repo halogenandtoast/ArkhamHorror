@@ -14,7 +14,6 @@ import Arkham.Location.Cards qualified as Cards ( securityOffice_128 )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Message
-import Arkham.Target
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

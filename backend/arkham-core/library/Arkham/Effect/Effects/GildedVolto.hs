@@ -11,7 +11,6 @@ import Arkham.Effect.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 
 newtype GildedVolto = GildedVolto EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

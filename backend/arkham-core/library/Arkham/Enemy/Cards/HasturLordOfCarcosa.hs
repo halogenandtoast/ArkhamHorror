@@ -14,7 +14,6 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Strategy
-import Arkham.Target
 import Arkham.Token qualified as Token
 
 newtype HasturLordOfCarcosa = HasturLordOfCarcosa EnemyAttrs

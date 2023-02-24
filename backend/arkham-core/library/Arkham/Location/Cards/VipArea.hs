@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( vipArea )
 import Arkham.Location.Runner
 import Arkham.Phase
-import Arkham.Target
 
 newtype VipArea = VipArea LocationAttrs
   deriving anyclass IsLocation

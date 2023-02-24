@@ -15,7 +15,6 @@ import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Trait
 import Arkham.Window ( defaultWindows )
 

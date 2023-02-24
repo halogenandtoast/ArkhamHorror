@@ -13,7 +13,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Message
-import Arkham.Target
 
 newtype Metadata = Metadata { playedFromTopOfDeck :: Bool }
   deriving stock (Show, Generic, Eq)

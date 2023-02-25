@@ -61,7 +61,7 @@ instance RunMessage FindTheRelic where
           [ targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids ]
         nextMessage = if deckCount <= 1
           then scenarioResolution 1
-          else RemoveFromGame (toTarget attrs)
+          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> FindTheRelic <$> runMessage msg attrs

@@ -80,7 +80,7 @@ instance RunMessage StrangeOccurences where
           ]
         nextMessage = if deckCount <= 1
           then ScenarioResolution $ Resolution 1
-          else RemoveFromGame (ActTarget $ toId attrs)
+          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> StrangeOccurences <$> runMessage msg attrs

@@ -244,6 +244,7 @@ data Message
   | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
   | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
   | ChooseLeadInvestigator
+  | PreScenarioSetup
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
@@ -524,6 +525,7 @@ data Message
   | RemoveFromDiscard InvestigatorId CardId
   | RemoveFromEncounterDiscard EncounterCard
   | RemoveFromGame Target
+  | RemoveCompletedActFromGame Int ActId
   | RemovedFromGame Card
   | RemoveLocation LocationId
   | RemovedLocation LocationId

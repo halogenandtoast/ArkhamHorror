@@ -504,12 +504,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure a
   AddCampaignCardToDeck iid cardDef -> do
     standalone <- getIsStandalone
+    card <- genPlayerCard cardDef
+    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
     if standalone
-      then do
-        card <- genPlayerCard cardDef
-        push
-          (ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card])
-        pure $ a & storyCardsL %~ insertWith
+      then pure $ a & storyCardsL %~ insertWith
           (<>)
           iid
           [card { pcOwner = Just iid }]

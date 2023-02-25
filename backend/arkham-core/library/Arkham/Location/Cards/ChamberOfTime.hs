@@ -44,10 +44,13 @@ instance HasAbilities ChamberOfTime where
 instance RunMessage ChamberOfTime where
   runMessage msg l@(ChamberOfTime attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
-      pushAll
-        [ CreateAssetAt relicOfAges (AttachedToLocation $ toId attrs)
-        , PlaceDoom (toTarget attrs) 1
-        ]
+      mRelicOfAges <- listToMaybe <$> getSetAsideCardsMatching (CardWithOneOf [cardIs Assets.relicOfAgesRepossessThePast, cardIs Assets.relicOfAgesADeviceOfSomeSort])
+      case mRelicOfAges of
+        Nothing -> error "Missing relic of ages"
+        Just relicOfAges -> do
+          pushAll
+            [ CreateAssetAt relicOfAges (AttachedToLocation $ toId attrs)
+            , PlaceDoom (toTarget attrs) 1
+            ]
       pure l
     _ -> ChamberOfTime <$> runMessage msg attrs

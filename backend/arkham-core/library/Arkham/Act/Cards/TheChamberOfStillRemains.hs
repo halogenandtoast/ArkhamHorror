@@ -55,7 +55,7 @@ instance RunMessage TheChamberOfStillRemains where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
-      relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+      relicOfAges <- selectJust $ assetIs Assets.relicOfAgesRepossessThePast
       investigators <- selectList $ investigatorAt chamberOfTime
       yig <- genCard Enemies.yig
       pushAll

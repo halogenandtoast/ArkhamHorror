@@ -147,6 +147,7 @@ instance RunMessage TurnBackTime where
            , SetActDeck
            , placeEntryway
            , RevealLocation Nothing entrywayId
+           , MoveAllTo (toSource attrs) entrywayId
            , AddToken ElderThing
            ]
       TurnBackTime <$> runMessage
@@ -192,5 +193,12 @@ instance RunMessage TurnBackTime where
             : gainXp
             <> [GameOver]
         _ -> error "Unknown Resolution"
+      pure s
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored 1
       pure s
     _ -> TurnBackTime <$> runMessage msg attrs

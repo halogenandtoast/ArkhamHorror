@@ -1391,6 +1391,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       )
       (a & assetsUpdate)
       slotTypes
+  RemoveCampaignCard cardDef -> do
+    pure
+      $ a
+      & (deckL %~ Deck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     for_ investigatorAssets $ \assetId -> do
       cardCode' <- field AssetCardCode assetId

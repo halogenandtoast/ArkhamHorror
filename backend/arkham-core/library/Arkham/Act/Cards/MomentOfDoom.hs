@@ -84,6 +84,8 @@ instance RunMessage MomentOfDoom where
             | iid' <- iids
             ]
         pure a
+    UseCardAbility iid source 2 _ _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       push $ ScenarioResolution $ Resolution 1
       pure a

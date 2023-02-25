@@ -814,8 +814,12 @@ instance RunMessage TheForgottenAge where
           Provisions -> push $ UseSupply iid Provisions
           _ -> pure ()
       pure c
-    NextCampaignStep _ -> do
-      let step = nextStep attrs
+    CampaignStep (Just EpilogueStep) -> do
+      -- We can only get here if we've turned back time, but may want to check
+      push $ NextCampaignStep (Just $ ScenarioStep "04344")
+      pure c
+    NextCampaignStep mOverrideStep -> do
+      let step = mOverrideStep <|> nextStep attrs
       push (CampaignStep step)
       pure
         . TheForgottenAge

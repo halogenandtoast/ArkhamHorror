@@ -147,6 +147,7 @@ import Data.HashSet qualified as HashSet
 import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
 import Data.Sequence qualified as Seq
+import Data.Text qualified as T
 import Data.These
 import Data.These.Lens
 import Data.UUID ( nil )
@@ -1951,9 +1952,9 @@ newtype MissingEntity = MissingEntity Text
 
 instance Exception MissingEntity
 
-getAsset :: HasGame m => AssetId -> m Asset
+getAsset :: (HasCallStack, HasGame m) => AssetId -> m Asset
 getAsset aid = fromMaybe (throw missingAsset) <$> maybeAsset aid
-  where missingAsset = MissingEntity $ "Unknown asset: " <> tshow aid
+  where missingAsset = MissingEntity $ "Unknown asset: " <> tshow aid <> "\n" <> T.pack (prettyCallStack callStack)
 
 maybeAsset :: HasGame m => AssetId -> m (Maybe Asset)
 maybeAsset aid = do
@@ -2999,7 +3000,8 @@ runGameMessage msg g = case msg of
         (g ^. modeL)
       standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll
-      $ [ StandaloneSetup | standalone ]
+      $ PreScenarioSetup
+      : [ StandaloneSetup | standalone ]
       <> [ ChooseLeadInvestigator
          , SetupInvestigators
          , SetTokensForScenario -- (chaosBagOf campaign')
@@ -4344,23 +4346,25 @@ runGameMessage msg g = case msg of
   ResolvedAbility _ -> pure $ g & activeAbilitiesL %~ drop 1
   Discarded (AssetTarget aid) _ (EncounterCard _) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid
-  Discarded (AssetTarget aid) _ _ ->
-    flip catch (\(_ :: MissingEntity) -> pure g) $ do
-      asset <- getAsset aid
-      let
-        discardLens = if gameInAction g
-          then case assetOwner (toAttrs asset) of
-            Nothing -> id
-            Just iid ->
-              let
-                dEntities = fromMaybe defaultEntities
-                  $ view (inDiscardEntitiesL . at iid) g
-              in
-                inDiscardEntitiesL
-                . at iid
-                ?~ (dEntities & assetsL . at aid ?~ asset)
-          else id
-      pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
+  Discarded (AssetTarget aid) _ _ -> do
+    mAsset <- maybeAsset aid
+    case mAsset of
+      Nothing -> pure g
+      Just asset -> do
+        let
+          discardLens = if gameInAction g
+            then case assetOwner (toAttrs asset) of
+              Nothing -> id
+              Just iid ->
+                let
+                  dEntities = fromMaybe defaultEntities
+                    $ view (inDiscardEntitiesL . at iid) g
+                in
+                  inDiscardEntitiesL
+                  . at iid
+                  ?~ (dEntities & assetsL . at aid ?~ asset)
+            else id
+        pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
   DiscardedCost (AssetTarget aid) -> do
     -- When discarded as a cost, the entity may still need to be in the environment to handle ability resolution
     asset <- getAsset aid

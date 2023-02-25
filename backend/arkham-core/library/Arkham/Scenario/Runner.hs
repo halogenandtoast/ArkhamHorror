@@ -197,7 +197,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & setAsideCardsL
       %~ filter (`notElem` stack)
   AdvanceToAct n act newActSide _ -> do
-    actStack' <- case lookup n scenarioActStack of
+    let
+      completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
+    (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : ys) -> do
         let
           fromActId = ActId (toCardCode x)
@@ -206,14 +208,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           (newActSide == Act.B)
           (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
         push (ReplaceAct fromActId toActId)
-        pure $ filter
+        pure (x, filter
           (\c ->
             (cdStage c /= cdStage act)
               || (cdCardCode c `cardCodeExactEq` cdCardCode act)
           )
-          ys
+          ys)
       _ -> error "Can not advance act deck"
-    pure $ a & actStackL . at n ?~ actStack'
+    pure $ a
+      & (actStackL . at n ?~ actStack')
+      & (completedActStackL . at n ?~ oldAct : completedActStack)
   ResetActDeckToStage n -> do
     case lookup n scenarioCompletedActStack of
       Just xs -> do
@@ -857,4 +861,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure a
   SetScenarioMeta v -> do
     pure $ a & metaL .~ v
+  RemoveCompletedActFromGame n actId -> do
+    let
+      completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
+    (oldAct, actStack') <- case lookup n scenarioActStack of
+      Just xs -> do
+        let mFromAct = find ((== actId) . ActId . toCardCode) xs
+        case mFromAct of
+          Nothing -> error "Could not remove act"
+          Just fromAct -> do
+            push $ RemoveFromGame (ActTarget actId)
+            pure (fromAct, filter (/= fromAct) xs)
+      _ -> error "Can not advance act deck"
+    pure
+      $ a
+      & (actStackL . at n ?~ actStack')
+      & (completedActStackL . at n ?~ (oldAct : completedActStack))
   _ -> pure a

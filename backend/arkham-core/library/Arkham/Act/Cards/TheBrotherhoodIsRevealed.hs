@@ -84,7 +84,7 @@ instance RunMessage TheBrotherhoodIsRevealed where
             [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca] | iid <- iids ]
           nextMessage = if deckCount <= 1
             then ScenarioResolution $ Resolution 1
-            else RemoveFromGame (ActTarget $ toId attrs)
+            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
         pushAll [takeControlMessage, nextMessage]
         pure a
       RemoveEnemy eid -> do

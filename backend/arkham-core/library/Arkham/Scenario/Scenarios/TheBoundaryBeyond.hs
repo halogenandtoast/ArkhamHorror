@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -14,10 +15,13 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Effect.Window
+import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types ( Field (EnemyDamage) )
 import Arkham.Helpers.Act
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
@@ -95,16 +99,41 @@ standaloneTokens =
 
 instance RunMessage TheBoundaryBeyond where
   runMessage msg s@(TheBoundaryBeyond attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
-      pure s
-    Setup -> do
+    PreScenarioSetup -> do
       iids <- allInvestigatorIds
       forgedABondWithIchtaca <- getHasRecord
         TheInvestigatorsForgedABondWithIchtaca
       foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
       rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
       withGasoline <- headMay <$> getInvestigatorsWithSupply Gasoline
+      mRelicOwner <- getOwner Assets.relicOfAgesADeviceOfSomeSort
+      isStandalone <- getIsStandalone
+
+      if isStandalone
+         then pushAll [story iids introPart1, story iids introPart2]
+         else pushAll $
+           [story iids introPart1]
+           <> (if forgedABondWithIchtaca
+                then [ story iids ichtacasQuest ]
+                else story iids silentJourney : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingHand (-2)]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids])
+           <> (if foundTheMissingRelic
+                then
+                  story iids arcaneThrumming : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort : [AddCampaignCardToDeck ownerId Assets.relicOfAgesForestallingTheFuture | ownerId <- maybeToList mRelicOwner]
+                else [ story iids growingConcern ])
+           <> (if rescuedAlejandro
+                then story iids alejandrosThoughts : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingResources 2]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids]
+                else [ story iids anEmptySeat ])
+           <> (if isNothing withGasoline
+                 then story iids outOfGas : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [CannotMulligan]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids]
+                 else [])
+           <> [ UseSupply iid Gasoline | iid <- maybeToList withGasoline ]
+           <> [story iids introPart2]
+      pure s
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+      pure s
+    Setup -> do
+      iids <- allInvestigatorIds
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       tokens <- getBagTokens
@@ -176,39 +205,17 @@ instance RunMessage TheBoundaryBeyond where
         $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-      isStandalone <- getIsStandalone
-
-      pushAll
-        $ [story iids introPart1]
-        <> [ story iids
-               $ if forgedABondWithIchtaca then ichtacasQuest else silentJourney
-           | not isStandalone
-           ]
-        <> [ story iids $ if foundTheMissingRelic
-               then arcaneThrumming
-               else growingConcern
-           | not isStandalone
-           ]
-        <> [ story iids
-               $ if rescuedAlejandro then alejandrosThoughts else anEmptySeat
-           | not isStandalone
-           ]
-        <> [ story iids outOfGas | not isStandalone && isNothing withGasoline ]
-        <> [ UseSupply iid Gasoline
-           | not isStandalone
-           , iid <- maybeToList withGasoline
-           ]
-        <> [story iids introPart2]
-        <> [ SetEncounterDeck encounterDeck
-           , SetAgendaDeck
-           , SetActDeck
-           , placeMetropolitanCathedral
-           , placeZocalo
-           , placeTempleRuins
-           , placeXochimilco
-           , placeChapultepecPark
-           , placeCoyoacan
-           ]
+      pushAll $
+        [ SetEncounterDeck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        , placeMetropolitanCathedral
+        , placeZocalo
+        , placeTempleRuins
+        , placeXochimilco
+        , placeChapultepecPark
+        , placeCoyoacan
+        ]
         <> [ chooseOne
                iid
                [ targetLabel lid [MoveTo (toSource attrs) iid lid]

@@ -6,6 +6,8 @@ module Arkham.Scenario.Scenarios.ThreadsOfFate
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Sequence qualified as Act
+import Arkham.Act.Types (Field(..))
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -19,9 +21,11 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
@@ -31,6 +35,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
+import Data.IntMap.Strict qualified as IntMap
 
 newtype ThreadsOfFate = ThreadsOfFate ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -334,16 +339,26 @@ instance RunMessage ThreadsOfFate where
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do
+      -- because we have multiple acts we might have an act that triggered the
+      -- resolution and would not be counted so we need to determine that as
+      -- well
+
+      let actPairs = mapToList (scenarioActStack attrs)
+
+      actPairCount <- for actPairs $ \(n, acts) -> do
+        c <- flip countM acts $ \actDef -> do
+          fieldMap ActSequence ((`elem` [Act.B, Act.D, Act.F]) . Act.actSide) (ActId $ toCardCode actDef)
+        pure (n, c)
+
       let
-        act3bCompleted = (== 3) . length . fromMaybe [] $ lookup
-          1
+        actPairCountMap = IntMap.fromList actPairCount
+        completedStack n = (== 3) . (+ findWithDefault 0 n actPairCountMap) . length . fromMaybe [] $ lookup
+          n
           (scenarioCompletedActStack attrs)
-        act3dCompleted = (== 3) . length . fromMaybe [] $ lookup
-          2
-          (scenarioCompletedActStack attrs)
-        act3fCompleted = (== 3) . length . fromMaybe [] $ lookup
-          3
-          (scenarioCompletedActStack attrs)
+
+        act3bCompleted = completedStack 1
+        act3dCompleted = completedStack 2
+        act3fCompleted = completedStack 3
         act1sCompleted = length $ keys (scenarioCompletedActStack attrs)
 
       iids <- allInvestigatorIds

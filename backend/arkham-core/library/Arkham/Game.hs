@@ -2829,11 +2829,9 @@ runPreGameMessage msg g = case msg of
   ResetGame ->
     pure
       $ g
-      & modifiersL
-      .~ mempty
-      & entitiesL
-      . investigatorsL
-      %~ map returnToBody
+      & (modifiersL .~ mempty)
+      & (entitiesL . investigatorsL %~ map returnToBody)
+      & (removedFromPlayL .~ [])
   Setup -> pure $ g & inSetupL .~ True
   StartScenario _ -> pure $ g & inSetupL .~ True
   EndSetup -> pure $ g & inSetupL .~ False

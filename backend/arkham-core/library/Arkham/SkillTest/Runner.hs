@@ -30,6 +30,34 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
 
+calculateSkillTestResultsData :: SkillTest -> GameT SkillTestResultsData
+calculateSkillTestResultsData s = do
+  modifiers' <- getModifiers SkillTestTarget
+  modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
+  iconCount <- if CancelSkills `elem` modifiers'
+    then pure 0
+    else skillIconCount s
+  currentSkillValue <- getCurrentSkillValue s
+  tokenValues <- sum <$> for
+    (skillTestRevealedTokens s <> skillTestResolvedTokens s)
+    (getModifiedTokenValue s)
+  let
+    addResultModifier n (SkillTestResultValueModifier m) = n + m
+    addResultModifier n _ = n
+    resultValueModifiers = foldl' addResultModifier 0 modifiers'
+    totaledTokenValues = tokenValues + (skillTestValueModifier s)
+    modifiedSkillValue' =
+      max 0 (currentSkillValue + totaledTokenValues + iconCount)
+    op = if FailTies `elem` modifiers' then (>) else (>=)
+    isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
+  pure $ SkillTestResultsData
+    currentSkillValue
+    iconCount
+    (skillTestValueModifier s)
+    modifiedSkillTestDifficulty
+    (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+    isSuccess
+
 getCurrentSkillValue :: SkillTest -> GameT Int
 getCurrentSkillValue st = case skillTestBaseValue st of
   SkillBaseValue sType -> do
@@ -189,7 +217,7 @@ instance RunMessage SkillTest where
       pure
         $ s
         & (subscribersL
-          %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
+          %~ (nub . (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ]))
           )
     PassSkillTest -> do
       currentSkillValue <- getCurrentSkillValue s
@@ -238,7 +266,7 @@ instance RunMessage SkillTest where
         <> [windowMsg, TriggerSkillTest skillTestInvestigator]
         )
     InvestigatorCommittedSkill _ skillId ->
-      pure $ s & subscribersL %~ (SkillTarget skillId :)
+      pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
     PutCardIntoPlay _ card _ _ -> do
       pure $ s & committedCardsL %~ deleteMap (toCardId card)
     SkillTestCommitCard iid card -> do
@@ -497,7 +525,7 @@ instance RunMessage SkillTest where
                  target
                  skillTestType
                  n
-             | target <- skillTestSubscribers
+             | target <- traceShowId skillTestSubscribers
              ]
           <> [ FailedSkillTest
                  skillTestInvestigator
@@ -537,66 +565,30 @@ instance RunMessage SkillTest where
           (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
     RecalculateSkillTestResults -> do
-      modifiers' <- getModifiers SkillTestTarget
-      modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-      iconCount <- if CancelSkills `elem` modifiers'
-        then pure 0
-        else skillIconCount s
-      currentSkillValue <- getCurrentSkillValue s
-      tokenValues <- sum <$> for
-        (skillTestRevealedTokens <> skillTestResolvedTokens)
-        (getModifiedTokenValue s)
-      let
-        addResultModifier n (SkillTestResultValueModifier m) = n + m
-        addResultModifier n _ = n
-        resultValueModifiers = foldl' addResultModifier 0 modifiers'
-        totaledTokenValues = tokenValues + skillTestValueModifier
-        modifiedSkillValue' =
-          max 0 (currentSkillValue + totaledTokenValues + iconCount)
-        op = if FailTies `elem` modifiers' then (>) else (>=)
-        isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
-      push $ SkillTestResults $ SkillTestResultsData
-        currentSkillValue
-        iconCount
-        skillTestValueModifier
-        modifiedSkillTestDifficulty
-        (resultValueModifiers <$ guard (resultValueModifiers /= 0))
-        isSuccess
+      results <- calculateSkillTestResultsData s
+      push $ SkillTestResults results
       pure s
     RunSkillTest _ -> do
-      modifiers' <- getModifiers SkillTestTarget
+      results <- calculateSkillTestResultsData s
+      push $ SkillTestResults results
+      -- TODO: We should be able to get all of this from the results data, but
+      -- there is a discrepancy between totaledTokenValues and the info stored
+      -- in the result data, this may be incorrect, need to investigate
       tokenValues <- sum <$> for
         (skillTestRevealedTokens <> skillTestResolvedTokens)
         (getModifiedTokenValue s)
-      modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-      iconCount <- if CancelSkills `elem` modifiers'
-        then pure 0
-        else skillIconCount s
-      currentSkillValue <- getCurrentSkillValue s
       let
-        totaledTokenValues = tokenValues + skillTestValueModifier
         modifiedSkillValue' =
-          max 0 (currentSkillValue + totaledTokenValues + iconCount)
-        addResultModifier n (SkillTestResultValueModifier m) = n + m
-        addResultModifier n _ = n
-        resultValueModifiers = foldl' addResultModifier 0 modifiers'
-      let
-        op = if FailTies `elem` modifiers' then (>) else (>=)
-        isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
-      push $ SkillTestResults $ SkillTestResultsData
-        currentSkillValue
-        iconCount
-        totaledTokenValues
-        modifiedSkillTestDifficulty
-        (resultValueModifiers <$ guard (resultValueModifiers /= 0))
-        isSuccess
-      if isSuccess
+          max 0 (skillTestResultsSkillValue results + totaledTokenValues + skillTestResultsIconValue results)
+
+        totaledTokenValues = tokenValues + skillTestValueModifier
+      if skillTestResultsSuccess results
         then
           pure
           $ s
           & (resultL .~ SucceededBy
               False
-              (modifiedSkillValue' - modifiedSkillTestDifficulty)
+              (modifiedSkillValue' - skillTestResultsDifficulty results)
             )
           & (valueModifierL .~ totaledTokenValues)
         else
@@ -604,7 +596,7 @@ instance RunMessage SkillTest where
           $ s
           & (resultL .~ FailedBy
               False
-              (modifiedSkillTestDifficulty - modifiedSkillValue')
+              (skillTestResultsDifficulty results - modifiedSkillValue')
             )
           & (valueModifierL .~ totaledTokenValues)
     ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->

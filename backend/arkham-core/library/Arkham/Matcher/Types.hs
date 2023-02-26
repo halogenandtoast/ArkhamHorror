@@ -330,6 +330,15 @@ data LocationMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+class IsLocationMatcher a where
+  toLocationMatcher :: a -> LocationMatcher
+
+instance IsLocationMatcher LocationMatcher where
+  toLocationMatcher = id
+
+instance IsLocationMatcher LocationId where
+  toLocationMatcher = LocationWithId
+
 instance Semigroup LocationMatcher where
   Nowhere <> _ = Nowhere
   _ <> Nowhere = Nowhere

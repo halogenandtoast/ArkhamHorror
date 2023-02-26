@@ -25,6 +25,9 @@ getHasRecord k = do
     , k `member` campaignLogRecordedCounts campaignLog
     ]
 
+whenHasRecord :: HasGame m => CampaignLogKey -> m () -> m ()
+whenHasRecord k = whenM (getHasRecord k)
+
 getRecordCount :: HasGame m => CampaignLogKey -> m Int
 getRecordCount k =
   findWithDefault 0 k . campaignLogRecordedCounts <$> getCampaignLog

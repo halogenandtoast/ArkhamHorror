@@ -29,7 +29,7 @@ instance RunMessage AfterHours where
       pushAll
         [ AddToEncounterDeck jazzMulligan
         , ShuffleEncounterDiscardBackIn
-        , AdvanceActDeck actDeckId (toSource attrs)
+        , advanceActDeck attrs
         ]
       pure a
     _ -> AfterHours <$> runMessage msg attrs

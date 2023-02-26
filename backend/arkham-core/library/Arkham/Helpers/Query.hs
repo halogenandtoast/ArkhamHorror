@@ -73,3 +73,6 @@ getLocationIdByName name = selectOne matcher
   matcher = case (nameTitle name, nameSubtitle name) of
     (title, Just subtitle) -> LocationWithFullTitle title subtitle
     (title, Nothing) -> LocationWithTitle title
+
+enemiesAt :: (HasGame m, IsLocationMatcher locationMatcher) => locationMatcher -> m [EnemyId]
+enemiesAt = selectList . EnemyAt . toLocationMatcher

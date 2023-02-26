@@ -22,6 +22,9 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
+advanceActDeck :: ActAttrs -> Message
+advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
+
 advanceActSideA
   :: HasGame m => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do

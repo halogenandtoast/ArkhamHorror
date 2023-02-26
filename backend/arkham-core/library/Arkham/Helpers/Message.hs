@@ -13,6 +13,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Message
 import Arkham.Resolution
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..), WindowType )
 
@@ -92,3 +93,5 @@ placeLocationCard_ = placeLocation_ <=< genCard
 scenarioResolution :: Int -> Message
 scenarioResolution = ScenarioResolution . Resolution
 
+toDiscard :: (SourceEntity source, Targetable target) => source -> target -> Message
+toDiscard source target = Discard (toSource source) (toTarget target)

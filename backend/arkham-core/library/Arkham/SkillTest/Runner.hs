@@ -525,7 +525,7 @@ instance RunMessage SkillTest where
                  target
                  skillTestType
                  n
-             | target <- traceShowId skillTestSubscribers
+             | target <- skillTestSubscribers
              ]
           <> [ FailedSkillTest
                  skillTestInvestigator

@@ -76,7 +76,7 @@ data instance Field Location :: Type -> Type where
   LocationTreacheries :: Field Location (HashSet TreacheryId)
   LocationInvestigateSkill :: Field Location SkillType
   -- virtual
-  LocationCardDef :: Field Location CardDef
+  LocationCardDef :: Field Location (CardDef 'LocationType)
   LocationCard :: Field Location Card
   LocationAbilities :: Field Location [Ability]
   LocationPrintedSymbol :: Field Location LocationSymbol
@@ -252,7 +252,7 @@ instance HasCardCode LocationAttrs where
 
 instance HasCardDef LocationAttrs where
   toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards) of
-    Just def -> def
+    Just def -> SomeCardDef SLocationType def
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)
 
@@ -264,7 +264,7 @@ revealed = locationRevealed
 
 location
   :: (LocationAttrs -> a)
-  -> CardDef
+  -> CardDef 'LocationType
   -> Int
   -> GameValue
   -> CardBuilder LocationId a
@@ -281,7 +281,7 @@ symbolLabel = fmap
 
 locationWith
   :: (LocationAttrs -> a)
-  -> CardDef
+  -> CardDef 'LocationType
   -> Int
   -> GameValue
   -> (LocationAttrs -> LocationAttrs)
@@ -425,12 +425,12 @@ someLocationCardCode (SomeLocationCard a) = cbCardCode a
 
 instance Named LocationAttrs where
   toName l = if locationRevealed l
-    then fromMaybe baseName (cdRevealedName $ toCardDef l)
+    then fromMaybe baseName (withCardDef cdRevealedName l)
     else baseName
-    where baseName = toName (toCardDef l)
+    where baseName = withCardDef toName l
 
 instance Named (Unrevealed LocationAttrs) where
-  toName (Unrevealed l) = toName (toCardDef l)
+  toName (Unrevealed l) = withCardDef toName l
 
 instance IsCard LocationAttrs where
   toCardId = unLocationId . locationId

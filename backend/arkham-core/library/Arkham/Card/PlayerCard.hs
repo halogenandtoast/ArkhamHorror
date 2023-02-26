@@ -37,10 +37,10 @@ instance HasCardCode PlayerCard where
   toCardCode = pcCardCode
 
 instance HasSkillIcons PlayerCard where
-  getSkillIcons = cdSkills . toCardDef
+  getSkillIcons = withCardDef cdSkills . toCardDef
 
 instance HasCost PlayerCard where
-  getCost c = case cdCost (toCardDef c) of
+  getCost c = case withCardDef cdCost (toCardDef c) of
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
     Nothing -> 0
@@ -54,7 +54,7 @@ instance HasCardDef PlayerCard where
 instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode
 
-lookupPlayerCard :: CardDef -> CardId -> PlayerCard
+lookupPlayerCard :: HasCardCode a => a -> CardId -> PlayerCard
 lookupPlayerCard cardDef cardId = MkPlayerCard
   { pcId = cardId
   , pcCardCode = toCardCode cardDef

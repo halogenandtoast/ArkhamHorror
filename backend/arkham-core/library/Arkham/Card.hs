@@ -30,11 +30,11 @@ lookupCard
 lookupCard (toCardCode -> cardCode) cardId =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
     (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
-    (Just def, _) -> EncounterCard $ lookupEncounterCard def cardId
+    (Just def, _) -> EncounterCard $ (withCardDef lookupEncounterCard def) cardId
     -- we prefer encounter cards over player cards to handle cases like straitjacket
-    (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
+    (Nothing, Just def) -> PlayerCard $ (withCardDef lookupPlayerCard def) cardId
 
-lookupCardDef :: CardCode -> Maybe CardDef
+lookupCardDef :: CardCode -> Maybe SomeCardDef
 lookupCardDef cardCode =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
     (Nothing, Nothing) -> Nothing
@@ -63,7 +63,7 @@ instance IsCard Card where
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: HasCallStack => a -> Card
-  toCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
+  toCard a = case lookupCard (withCardDef cdCardCode a) (toCardId a) of
     PlayerCard pc -> PlayerCard $ pc { pcOwner = toCardOwner a }
     ec -> ec
   toCardId :: a -> CardId
@@ -74,43 +74,42 @@ class MonadRandom m => CardGen m where
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
 
 instance CardGen IO where
-  genEncounterCard a = lookupEncounterCard (toCardDef a) <$> getRandom
-  genPlayerCard a = lookupPlayerCard (toCardDef a) <$> getRandom
+  genEncounterCard a = withCardDef lookupEncounterCard a <$> getRandom
+  genPlayerCard a = withCardDef lookupPlayerCard a <$> getRandom
 
 genCard :: (HasCardDef a, CardGen m) => a -> m Card
-genCard a = if cdCardType def `elem` encounterCardTypes
-  then EncounterCard <$> genEncounterCard def
-  else PlayerCard <$> genPlayerCard def
-  where def = toCardDef a
+genCard a = if toCardType a `elem` encounterCardTypes
+  then EncounterCard <$> genEncounterCard a
+  else PlayerCard <$> genPlayerCard a
 
 cardMatch :: IsCard a => a -> CardMatcher -> Bool
 cardMatch a = \case
   AnyCard -> True
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
-  CardIsUnique -> cdUnique $ toCardDef a
+  CardIsUnique -> withCardDef cdUnique a
   CardWithType cardType' -> toCardType a == cardType'
   CardWithSkillIcon skillIcon ->
-    skillIcon `member` setFromList @(HashSet SkillIcon) (cdSkills $ toCardDef a)
+    skillIcon `member` setFromList @(HashSet SkillIcon) (withCardDef cdSkills a)
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithId cardId -> toCardId a == cardId
-  CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
+  CardWithTitle title -> (nameTitle $ withCardDef cdName a) == title
   CardWithTrait trait -> trait `member` toTraits a
-  CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
-  CardWithLevel n -> cdLevel (toCardDef a) == n
-  FastCard -> isJust $ cdFastWindow (toCardDef a)
+  CardWithClass role -> role `member` withCardDef cdClassSymbols a
+  CardWithLevel n -> withCardDef cdLevel a == n
+  FastCard -> isJust $ withCardDef cdFastWindow a
   CardMatches ms -> all (cardMatch a) ms
-  CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
+  CardWithVengeance -> isJust $ withCardDef cdVengeancePoints a
   CardWithOneOf ms -> any (cardMatch a) ms
-  CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
-  NonWeakness -> isNothing . cdCardSubType $ toCardDef a
-  WeaknessCard -> isJust . cdCardSubType $ toCardDef a
-  NonExceptional -> not . cdExceptional $ toCardDef a
+  CardWithoutKeyword k -> k `notMember` withCardDef cdKeywords a
+  NonWeakness -> isNothing $ withCardDef cdCardSubType a
+  WeaknessCard -> isJust $ withCardDef cdCardSubType a
+  NonExceptional -> not $ withCardDef cdExceptional a
   NotCard m -> not (cardMatch a m)
   CardWithPrintedLocationSymbol sym ->
-    (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
+    (== Just sym) $ withCardDef cdLocationRevealedSymbol a
   CardWithPrintedLocationConnection sym ->
-    elem sym . cdLocationRevealedConnections $ toCardDef a
-  CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
+    elem sym $ withCardDef cdLocationRevealedConnections a
+  CardFillsSlot slot -> elem slot $ withCardDef cdSlots a
 
 instance IsCard PlayerCard where
   toCardId = pcId
@@ -145,7 +144,7 @@ _EncounterCard f (EncounterCard pc) = EncounterCard <$> f pc
 _EncounterCard _ other = pure other
 
 instance Named Card where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance HasCardDef Card where
   toCardDef = \case
@@ -184,15 +183,14 @@ instance HasCost Card where
   getCost (VengeanceCard _) = 0
 
 isDynamic :: Card -> Bool
-isDynamic (PlayerCard card) = case cdCost (toCardDef card) of
+isDynamic (PlayerCard card) = case withCardDef cdCost card of
   Just DynamicCost -> True
   _ -> False
 isDynamic (EncounterCard _) = False
 isDynamic (VengeanceCard _) = False
 
 isFastCard :: Card -> Bool
-isFastCard (PlayerCard card) =
-  let CardDef {..} = toCardDef card in isJust cdFastWindow
+isFastCard (PlayerCard card) = isJust $ withCardDef cdFastWindow card
 isFastCard (EncounterCard _) = False
 isFastCard (VengeanceCard _) = False
 
@@ -208,11 +206,11 @@ toEncounterCard (VengeanceCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
-cardIsWeakness (PlayerCard pc) = isJust $ cdCardSubType (toCardDef pc)
+cardIsWeakness (PlayerCard pc) = isJust $ withCardDef cdCardSubType pc
 cardIsWeakness (VengeanceCard _) = False
 
 filterCardType :: HasCardDef a => CardType -> [a] -> [a]
-filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)
+filterCardType cardType' = filter ((== cardType') . toCardType)
 
 filterLocations :: HasCardDef a => [a] -> [a]
 filterLocations = filterCardType LocationType

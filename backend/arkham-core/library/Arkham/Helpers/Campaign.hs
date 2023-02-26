@@ -30,10 +30,10 @@ getCompletedScenarios = do
         ScenarioStep scenarioId -> Just scenarioId
         _ -> Nothing
 
-getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
+getOwner :: (HasGame m, HasCardDef a) => a -> m (Maybe InvestigatorId)
 getOwner cardDef = do
   campaignStoryCards <- getCampaignStoryCards
-  pure $ findKey (any ((== cardDef) . toCardDef)) campaignStoryCards
+  pure $ findKey (any ((== toCardDef cardDef) . toCardDef)) campaignStoryCards
 
 getCampaignStoryCards :: HasGame m => m (HashMap InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
@@ -42,12 +42,12 @@ getCampaignStoryCards = do
     Just campaignId -> field CampaignStoryCards campaignId
     Nothing -> scenarioField ScenarioStoryCards
 
-getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m PlayerCard
+getCampaignStoryCard :: (HasCallStack, HasGame m, HasCardDef a) => a -> m PlayerCard
 getCampaignStoryCard def = do
   cards <- concat . HashMap.elems <$> getCampaignStoryCards
-  pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards
+  pure . fromJustNote "missing card" $ find ((== toCardDef def) . toCardDef) cards
 
-getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
+getIsAlreadyOwned :: (HasGame m, HasCardDef a) => a -> m Bool
 getIsAlreadyOwned cDef = do
   campaignStoryCards <- getCampaignStoryCards
-  pure $ any ((== cDef) . toCardDef) $ concat (toList campaignStoryCards)
+  pure $ any ((== toCardDef cDef) . toCardDef) $ concat (toList campaignStoryCards)

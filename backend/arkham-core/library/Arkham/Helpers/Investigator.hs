@@ -181,14 +181,14 @@ getAttrStats InvestigatorAttrs {..} = Stats
 
 investigatorWith
   :: (InvestigatorAttrs -> a)
-  -> CardDef
+  -> CardDef 'InvestigatorType
   -> Stats
   -> (InvestigatorAttrs -> InvestigatorAttrs)
   -> CardBuilder () a
 investigatorWith f cardDef stats g = investigator (f . g) cardDef stats
 
 investigator
-  :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder () a
+  :: (InvestigatorAttrs -> a) -> CardDef 'InvestigatorType -> Stats -> CardBuilder () a
 investigator f cardDef Stats {..} =
   let iid = InvestigatorId (cdCardCode cardDef)
   in
@@ -297,7 +297,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
   go 0 (d, h, cs) = (d, h, cs)
   go _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, c : cs) = if isJust (cdCardSubType $ toCardDef c) && cdCanReplace (toCardDef c)
+  go m (d, h, c : cs) = if isJust (withCardDef cdCardSubType c) && withCardDef cdCanReplace c
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 

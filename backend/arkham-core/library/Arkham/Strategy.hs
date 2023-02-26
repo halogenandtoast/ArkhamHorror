@@ -9,7 +9,7 @@ import Arkham.Zone
 data DamageStrategy
   = DamageAny
   | DamageAssetsFirst
-  | DamageFirst CardDef
+  | DamageFirst SomeCardDef
   | SingleTarget
   | DamageEvenly
   -- Hastur has specific damage rules

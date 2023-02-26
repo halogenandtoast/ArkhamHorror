@@ -38,7 +38,7 @@ instance ToJSON EncounterCard where
 instance FromJSON EncounterCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
 
-lookupEncounterCard :: CardDef -> CardId -> EncounterCard
+lookupEncounterCard :: CardDef k -> CardId -> EncounterCard
 lookupEncounterCard cardDef cardId = MkEncounterCard
   { ecId = cardId
   , ecCardCode = toCardCode cardDef

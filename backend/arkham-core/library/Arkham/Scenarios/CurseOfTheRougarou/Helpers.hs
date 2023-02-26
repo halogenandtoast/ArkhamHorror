@@ -36,7 +36,7 @@ locationsWithLabels trait locationSet = do
     , pack (camelCase $ show trait) <> "2"
     ]
 
-locationsByTrait :: HashMap Trait [CardDef]
+locationsByTrait :: HashMap Trait [CardDef 'LocationType]
 locationsByTrait = mapFromList
   [ ( NewOrleans
     , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]

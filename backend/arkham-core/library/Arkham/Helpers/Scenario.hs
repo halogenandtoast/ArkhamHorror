@@ -29,16 +29,16 @@ getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [SomeCardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
     (unDeck deck)
     \card -> do
       when
-        (toCardDef card == randomWeakness)
+        (toCardDef card == SomeCardDef SPlayerTreacheryType randomWeakness)
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
-      pure $ toCardDef card /= randomWeakness
+      pure $ toCardDef card /= SomeCardDef SPlayerTreacheryType randomWeakness
 
 toTokenValue :: ScenarioAttrs -> TokenFace -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
@@ -62,6 +62,6 @@ withStandalone
 withStandalone cf sf =
   maybe (sf =<< selectJust TheScenario) cf =<< selectOne TheCampaign
 
-resignedWith :: HasGame m => CardDef -> m Bool
+resignedWith :: HasGame m => SomeCardDef -> m Bool
 resignedWith cDef =
-  scenarioFieldMap ScenarioResignedCardCodes (elem (toCardCode cDef))
+  scenarioFieldMap ScenarioResignedCardCodes (elem (withCardDef toCardCode cDef))

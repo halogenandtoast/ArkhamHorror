@@ -60,7 +60,7 @@ instance RunMessage CampaignAttrs where
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
       let
         mentalTrauma = getSum $ foldMap
-          (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+          (Sum . fromMaybe 0 . withCardDef cdPurchaseMentalTrauma)
           (unDeck deck')
       pushAll
         $ map (AddCampaignCardToDeck iid) randomWeaknesses
@@ -75,7 +75,7 @@ instance RunMessage CampaignAttrs where
           (unDeck deck)
           (unDeck oldDeck)
         mentalTrauma = getSum $ foldMap
-          (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+          (Sum . fromMaybe 0 . withCardDef cdPurchaseMentalTrauma)
           deckDiff
       -- We remove the random weakness if the upgrade deck still has it listed
       -- since this will have been added at the beginning of the campaign

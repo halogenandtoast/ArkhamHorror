@@ -48,14 +48,14 @@ getPlayerCount = selectCount Anyone
 --
 -- This logic is a bit too generous and we may want to specify
 -- on double sided cards which card code is on the other side.
-getSetAsideCard :: HasGame m => CardDef -> m Card
+getSetAsideCard :: HasGame m => CardDef k -> m Card
 getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
   pure $ if cardCodeExactEq (toCardCode card) (toCardCode def)
     then card
     else lookupCard (toCardCode def) (toCardId card)
 
-getSetAsideEncounterCard :: HasGame m => CardDef -> m EncounterCard
+getSetAsideEncounterCard :: HasGame m => CardDef k -> m EncounterCard
 getSetAsideEncounterCard =
   fmap (fromJustNote "must be encounter card" . preview _EncounterCard)
     . getSetAsideCard

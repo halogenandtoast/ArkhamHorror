@@ -26,7 +26,7 @@ data instance Field Effect :: Type -> Type where
   EffectCardCode :: Field Effect CardCode
   EffectAbilities :: Field Effect [Ability]
 
-cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a
+cardEffect :: (EffectAttrs -> a) -> CardDef k -> EffectArgs -> a
 cardEffect f def = f . uncurry4 (baseAttrs (toCardCode def))
 
 data EffectAttrs = EffectAttrs

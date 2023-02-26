@@ -9,7 +9,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Id
 import Arkham.Projection
 
-lookupEffectCard :: EffectId -> GameT (Maybe CardDef)
+lookupEffectCard :: EffectId -> GameT (Maybe SomeCardDef)
 lookupEffectCard eid = do
   cardCode <- field EffectCardCode eid
   pure $ lookupCardDef cardCode

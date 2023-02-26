@@ -9,7 +9,7 @@ import Arkham.Card.CardType
 import Arkham.EncounterSet
 import Arkham.Name
 
-story :: CardCode -> Name -> EncounterSet -> CardDef
+story :: CardCode -> Name -> EncounterSet -> CardDef 'StoryType
 story cardCode name encounterSet = CardDef
   { cdCardCode = cardCode
   , cdName = name
@@ -17,7 +17,6 @@ story cardCode name encounterSet = CardDef
   , cdCost = Nothing
   , cdAdditionalCost = Nothing
   , cdLevel = 0
-  , cdCardType = StoryType
   , cdCardSubType = Nothing
   , cdClassSymbols = mempty
   , cdSkills = mempty
@@ -57,9 +56,9 @@ story cardCode name encounterSet = CardDef
   , cdCanReplace = True
   }
 
-allStoryCards :: HashMap CardCode CardDef
-allStoryCards = mapFromList $ map
-  (toCardCode &&& id)
+allStoryCards :: HashMap CardCode (CardDef 'StoryType)
+allStoryCards = mapFrom
+  toCardCode
   [ sickeningReality_65
   , sickeningReality_66
   , sickeningReality_67
@@ -86,75 +85,75 @@ allStoryCards = mapFromList $ map
   , yigsMercy
   ]
 
-sickeningReality_65 :: CardDef
+sickeningReality_65 :: CardDef 'StoryType
 sickeningReality_65 = story "03065" "Sickening Reality" TheLastKing
 
-sickeningReality_66 :: CardDef
+sickeningReality_66 :: CardDef 'StoryType
 sickeningReality_66 = story "03066" "Sickening Reality" TheLastKing
 
-sickeningReality_67 :: CardDef
+sickeningReality_67 :: CardDef 'StoryType
 sickeningReality_67 = story "03067" "Sickening Reality" TheLastKing
 
-sickeningReality_68 :: CardDef
+sickeningReality_68 :: CardDef 'StoryType
 sickeningReality_68 = story "03068" "Sickening Reality" TheLastKing
 
-sickeningReality_69 :: CardDef
+sickeningReality_69 :: CardDef 'StoryType
 sickeningReality_69 = story "03069" "Sickening Reality" TheLastKing
 
-engramsOath :: CardDef
+engramsOath :: CardDef 'StoryType
 engramsOath = story "03076b" "Engram's Oath" TheLastKing
 
-langneauPerdu :: CardDef
+langneauPerdu :: CardDef 'StoryType
 langneauPerdu = story "03077b" "L'angneau Perdu" TheLastKing
 
-thePattern :: CardDef
+thePattern :: CardDef 'StoryType
 thePattern = story "03078b" "The Pattern" TheLastKing
 
-theFirstShow :: CardDef
+theFirstShow :: CardDef 'StoryType
 theFirstShow = story "03079b" "The First Show" TheLastKing
 
-aboveAndBelow :: CardDef
+aboveAndBelow :: CardDef 'StoryType
 aboveAndBelow = story "03080b" "Above and Below" TheLastKing
 
-songsThatTheHyadesShallSing :: CardDef
+songsThatTheHyadesShallSing :: CardDef 'StoryType
 songsThatTheHyadesShallSing =
   story "03325c" "Songs That the Hyades Shall Sing" DimCarcosa
 
-starsOfAldebaran :: CardDef
+starsOfAldebaran :: CardDef 'StoryType
 starsOfAldebaran = story "03326c" "Stars of Aldebaran" DimCarcosa
 
-bleakDesolation :: CardDef
+bleakDesolation :: CardDef 'StoryType
 bleakDesolation = story "03326e" "Bleak Desolation" DimCarcosa
 
-inhabitantOfCarcosa :: CardDef
+inhabitantOfCarcosa :: CardDef 'StoryType
 inhabitantOfCarcosa = story "03327c" "Inhabitant of Carcosa" DimCarcosa
 
-aMomentsRest :: CardDef
+aMomentsRest :: CardDef 'StoryType
 aMomentsRest = story "03327e" "A Moment's Rest" DimCarcosa
 
-theCoffin :: CardDef
+theCoffin :: CardDef 'StoryType
 theCoffin = story "03327g" "The Coffin" DimCarcosa
 
-mappingTheStreets :: CardDef
+mappingTheStreets :: CardDef 'StoryType
 mappingTheStreets = story "03328c" "Mapping the Streets" DimCarcosa
 
-theKingsParade :: CardDef
+theKingsParade :: CardDef 'StoryType
 theKingsParade = story "03328e" "The King's Parade" DimCarcosa
 
-theArchway :: CardDef
+theArchway :: CardDef 'StoryType
 theArchway = story "03328g" "The Archway" DimCarcosa
 
-theHeightOfTheDepths :: CardDef
+theHeightOfTheDepths :: CardDef 'StoryType
 theHeightOfTheDepths = story "03329c" "The Height of the Deapths" DimCarcosa
 
-stepsOfThePalace :: CardDef
+stepsOfThePalace :: CardDef 'StoryType
 stepsOfThePalace = story "03329e" "Steps of the Palace" DimCarcosa
 
-theFall :: CardDef
+theFall :: CardDef 'StoryType
 theFall = story "03330c" "The Fall" DimCarcosa
 
-hastursEnd :: CardDef
+hastursEnd :: CardDef 'StoryType
 hastursEnd = story "03331c" "Hastur's End" DimCarcosa
 
-yigsMercy :: CardDef
+yigsMercy :: CardDef 'StoryType
 yigsMercy = story "04325b" "Yig's Mercy" ShatteredAeons

@@ -15,7 +15,7 @@ isDiscardable :: Card -> Bool
 isDiscardable = not . isWeakness
  where
   isWeakness = \case
-    PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
+    PlayerCard pc -> isJust $ withCardDef cdCardSubType pc
     EncounterCard _ -> True -- maybe?
     VengeanceCard _ -> False -- should be an error
 

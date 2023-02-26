@@ -22,6 +22,7 @@ import Arkham.Target
 import Arkham.Token ( Token )
 import Arkham.Trait ( Trait )
 import Data.Constraint
+import Data.HashMap.Strict qualified as HashMap
 import Data.Typeable
 
 data Asset = forall a . IsAsset a => Asset a
@@ -98,7 +99,7 @@ data instance Field Asset :: Type -> Type where
   -- virtual
   AssetClasses :: Field Asset (HashSet ClassSymbol)
   AssetTraits :: Field Asset (HashSet Trait)
-  AssetCardDef :: Field Asset CardDef
+  AssetCardDef :: Field Asset (CardDef 'AssetType)
   AssetCard :: Field Asset Card
   AssetAbilities :: Field Asset [Ability]
 
@@ -107,7 +108,7 @@ deriving stock instance Show (Field Asset typ)
 instance ToJSON (Field Asset typ) where
   toJSON = toJSON . show
 
-instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability], c [Card]) => FieldDict c Asset where
+instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c (CardDef 'AssetType), c Card, c [Ability], c [Card]) => FieldDict c Asset where
   getDict = \case
     AssetName -> Dict
     AssetCost -> Dict
@@ -250,9 +251,10 @@ originalCardCodeL :: Lens' AssetAttrs CardCode
 originalCardCodeL =
   lens assetOriginalCardCode $ \m x -> m { assetOriginalCardCode = x }
 
-allAssetCards :: HashMap CardCode CardDef
-allAssetCards =
-  allPlayerAssetCards <> allEncounterAssetCards <> allSpecialPlayerAssetCards
+allAssetCards :: HashMap CardCode SomeCardDef
+allAssetCards = HashMap.map (SomeCardDef SAssetType) allPlayerAssetCards
+  <> HashMap.map (SomeCardDef SEncounterAssetType) allEncounterAssetCards
+  <> HashMap.map (SomeCardDef SAssetType) allSpecialPlayerAssetCards
 
 instance HasCardCode AssetAttrs where
   toCardCode = assetCardCode
@@ -277,20 +279,20 @@ instance IsCard AssetAttrs where
 
 asset
   :: (AssetAttrs -> a)
-  -> CardDef
+  -> CardDef 'AssetType
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
 asset f cardDef = assetWith f cardDef id
 
 ally
   :: (AssetAttrs -> a)
-  -> CardDef
+  -> CardDef 'AssetType
   -> (Int, Int)
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
 ally f cardDef stats = allyWith f cardDef stats id
 
 allyWith
   :: (AssetAttrs -> a)
-  -> CardDef
+  -> CardDef 'AssetType
   -> (Int, Int)
   -> (AssetAttrs -> AssetAttrs)
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
@@ -304,7 +306,7 @@ allyWith f cardDef (health, sanity) g = assetWith
 
 assetWith
   :: (AssetAttrs -> a)
-  -> CardDef
+  -> CardDef 'AssetType
   -> (AssetAttrs -> AssetAttrs)
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
 assetWith f cardDef g = CardBuilder
@@ -342,13 +344,13 @@ instance Entity AssetAttrs where
   overAttrs f = f
 
 instance Named AssetAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable AssetAttrs where
   toTarget = AssetTarget . toId
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
-    CardCodeTarget cardCode -> cdCardCode (toCardDef attrs) == cardCode
+    CardCodeTarget cardCode -> withCardDef cdCardCode attrs == cardCode
     CardIdTarget cardId -> cardId == unAssetId assetId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False

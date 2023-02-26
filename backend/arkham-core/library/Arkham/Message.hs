@@ -103,12 +103,12 @@ pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)
 
 createCardEffect
-  :: CardDef
+  :: SomeCardDef
   -> (Maybe (EffectMetadata Window Message))
   -> Source
   -> Target
   -> Message
-createCardEffect def = CreateEffect (toCardCode def)
+createCardEffect def = CreateEffect (withCardDef cdCardCode def)
 
 data AbilityRef = AbilityRef Source Int
   deriving stock (Show, Eq, Generic)
@@ -123,29 +123,29 @@ data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL
   | -- Story Card Messages
-    ReadStory InvestigatorId CardDef
-  | ResolveStory InvestigatorId CardDef
-  | ResolveStoryStep InvestigatorId CardDef Int
+    ReadStory InvestigatorId (CardDef 'StoryType)
+  | ResolveStory InvestigatorId (CardDef 'StoryType)
+  | ResolveStoryStep InvestigatorId (CardDef 'StoryType) Int
   | -- Handle discard costs
     DiscardedCost Target
   | -- Act Deck Messages
     SetActDeck
-  | SetActDeckRefs Int [CardDef]
-  | AddAct Int CardDef
+  | SetActDeckRefs Int [CardDef 'ActType]
+  | AddAct Int (CardDef 'ActType)
   | AdvanceAct ActId Source AdvancementMethod
   | NextAdvanceActStep ActId Int
   | ReplaceAct ActId ActId
   | RevertAct ActId
   | ResetActDeckToStage Int
   | AdvanceActDeck Int Source
-  | AdvanceToAct Int CardDef ActSide Source
+  | AdvanceToAct Int (CardDef 'ActType) ActSide Source
   | SetCurrentActDeck Int [Card]
   | -- Agenda Deck Messages
     SetAgendaDeck
-  | AddAgenda Int CardDef
+  | AddAgenda Int (CardDef 'AgendaType)
   | SetCurrentAgendaDeck Int [Card]
   | AdvanceAgenda AgendaId
-  | AdvanceToAgenda Int CardDef AgendaSide Source
+  | AdvanceToAgenda Int (CardDef 'AgendaType) AgendaSide Source
   | NextAdvanceAgendaStep AgendaId Int
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgendaDeck Int Source
@@ -161,7 +161,7 @@ data Message
   | CheckForRemainingInvestigators
   | AddDirectConnection LocationId LocationId
   | SetConnections LocationId [LocationMatcher]
-  | AddCampaignCardToDeck InvestigatorId CardDef
+  | AddCampaignCardToDeck InvestigatorId SomeCardDef
   | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
   | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
@@ -236,7 +236,7 @@ data Message
   | CancelAssignedDamage Target Int Int
   | CheckHandSize InvestigatorId
   | CheckWindow [InvestigatorId] [Window]
-  | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
+  | ChooseOneRewardByEachPlayer [SomeCardDef] [InvestigatorId]
   | RunWindow InvestigatorId [Window]
   | ChooseAndDiscardAsset InvestigatorId Source AssetMatcher
   | ChooseAndDiscardCard InvestigatorId Source
@@ -486,7 +486,7 @@ data Message
   | CardEnteredPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
-  | PutCampaignCardIntoPlay InvestigatorId CardDef
+  | PutCampaignCardIntoPlay InvestigatorId SomeCardDef
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
@@ -510,8 +510,8 @@ data Message
   | RemoveAllClues Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers
   | RemoveAllDoom Target
-  | RemoveCampaignCard CardDef
-  | RemoveCampaignCardFromDeck InvestigatorId CardDef
+  | RemoveCampaignCard SomeCardDef
+  | RemoveCampaignCardFromDeck InvestigatorId SomeCardDef
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId
   | RemoveClues Target Int

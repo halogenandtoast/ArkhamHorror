@@ -34,6 +34,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
+import Data.HashMap.Strict qualified as HashMap
 import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EnemyId, EntityAttrs a ~ EnemyAttrs) => IsEnemy a
@@ -134,8 +135,8 @@ cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 resourcesL :: Lens' EnemyAttrs Int
 resourcesL = lens enemyResources $ \m x -> m { enemyResources = x }
 
-allEnemyCards :: HashMap CardCode CardDef
-allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards
+allEnemyCards :: HashMap CardCode SomeCardDef
+allEnemyCards = HashMap.map (SomeCardDef SPlayerEnemyType) allPlayerEnemyCards <> HashMap.map (SomeCardDef SEnemyType) allEncounterEnemyCards <> HashMap.map (SomeCardDef SEnemyType) allSpecialEnemyCards
 
 instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId
@@ -151,7 +152,7 @@ instance HasCardDef EnemyAttrs where
 
 enemy
   :: (EnemyAttrs -> a)
-  -> CardDef
+  -> CardDef 'EnemyType
   -> (Int, GameValue, Int)
   -> (Int, Int)
   -> CardBuilder EnemyId a
@@ -159,7 +160,7 @@ enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
 
 enemyWith
   :: (EnemyAttrs -> a)
-  -> CardDef
+  -> CardDef 'EnemyType
   -> (Int, GameValue, Int)
   -> (Int, Int)
   -> (EnemyAttrs -> EnemyAttrs)
@@ -231,7 +232,7 @@ instance Entity EnemyAttrs where
   overAttrs f = f
 
 instance Named EnemyAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable EnemyAttrs where
   toTarget = EnemyTarget . toId

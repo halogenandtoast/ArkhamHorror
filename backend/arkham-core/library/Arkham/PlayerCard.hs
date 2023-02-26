@@ -19,30 +19,31 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.Name
+import Data.HashMap.Strict qualified as HashMap
 
 lookupPlayerCardName :: CardCode -> Name
-lookupPlayerCardName = cdName . lookupPlayerCardDef
+lookupPlayerCardName = withCardDef cdName . lookupPlayerCardDef
 
-lookupPlayerCardDef :: CardCode -> CardDef
+lookupPlayerCardDef :: CardCode -> SomeCardDef
 lookupPlayerCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
     $ lookup cardCode allPlayerCards
 
-allBasicWeaknesses :: [CardDef]
+allBasicWeaknesses :: [SomeCardDef]
 allBasicWeaknesses =
-  filter ((== Just BasicWeakness) . cdCardSubType) . toList $ allPlayerCards
+  filter ((== Just BasicWeakness) . withCardDef cdCardSubType) . toList $ allPlayerCards
 
-allPlayerCards :: HashMap CardCode CardDef
+allPlayerCards :: HashMap CardCode SomeCardDef
 allPlayerCards =
-  allPlayerEnemyCards
-    <> allPlayerTreacheryCards
-    <> allPlayerAssetCards
-    <> allSpecialPlayerAssetCards
-    <> allPlayerEventCards
-    <> allPlayerSkillCards
-    <> singletonMap "01000" randomWeakness
+  HashMap.map (SomeCardDef SPlayerEnemyType) allPlayerEnemyCards
+    <> HashMap.map (SomeCardDef SPlayerTreacheryType) allPlayerTreacheryCards
+    <> HashMap.map (SomeCardDef SAssetType) allPlayerAssetCards
+    <> HashMap.map (SomeCardDef SAssetType) allSpecialPlayerAssetCards
+    <> HashMap.map (SomeCardDef SEventType) allPlayerEventCards
+    <> HashMap.map (SomeCardDef SSkillType) allPlayerSkillCards
+    <> singletonMap "01000" (SomeCardDef SPlayerTreacheryType randomWeakness)
 
-randomWeakness :: CardDef
+randomWeakness :: CardDef 'PlayerTreacheryType
 randomWeakness = CardDef
   { cdCardCode = "01000"
   , cdName = "Random Basic Weakness"
@@ -50,7 +51,6 @@ randomWeakness = CardDef
   , cdCost = Nothing
   , cdAdditionalCost = Nothing
   , cdLevel = 0
-  , cdCardType = PlayerTreacheryType
   , cdCardSubType = Just Weakness
   , cdClassSymbols = singleton Neutral
   , cdSkills = mempty

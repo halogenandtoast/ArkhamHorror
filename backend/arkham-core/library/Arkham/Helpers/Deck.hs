@@ -18,9 +18,9 @@ withDeck f (Deck xs) = Deck (f xs)
 withDeckM :: Functor f => ([a] -> f [a]) -> Deck a -> f (Deck a)
 withDeckM f (Deck xs) = Deck <$> f xs
 
-removeEachFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
+removeEachFromDeck :: (HasCardDef a, HasCardDef b) => Deck a -> [b] -> Deck a
 removeEachFromDeck deck removals = flip withDeck deck $ \cards ->
-  foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards removals
+  foldl' (\cs m -> deleteFirstMatch ((== toCardDef m) . toCardDef) cs) cards removals
 
 getDeck :: HasGame m => Deck.DeckSignifier -> m [Card]
 getDeck = \case

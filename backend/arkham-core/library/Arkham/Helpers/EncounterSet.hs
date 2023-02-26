@@ -13,5 +13,5 @@ gatherEncounterSet encounterSet = concat <$> for
     $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
  where
   defs =
-    filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards
+    filter ((== Just encounterSet) . withCardDef cdEncounterSet) $ toList allEncounterCards
 

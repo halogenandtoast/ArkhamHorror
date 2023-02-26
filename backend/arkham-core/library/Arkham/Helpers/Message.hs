@@ -78,16 +78,16 @@ placeLocation c = do
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
-placeSetAsideLocation :: CardDef -> GameT (LocationId, Message)
+placeSetAsideLocation :: CardDef 'LocationType -> GameT (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
-placeSetAsideLocation_ :: CardDef -> GameT Message
+placeSetAsideLocation_ :: CardDef 'LocationType -> GameT Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
 
-placeLocationCard :: CardDef -> GameT (LocationId, Message)
+placeLocationCard :: CardDef 'LocationType -> GameT (LocationId, Message)
 placeLocationCard = placeLocation <=< genCard
 
-placeLocationCard_ :: CardDef -> GameT Message
+placeLocationCard_ :: CardDef 'LocationType -> GameT Message
 placeLocationCard_ = placeLocation_ <=< genCard
 
 scenarioResolution :: Int -> Message

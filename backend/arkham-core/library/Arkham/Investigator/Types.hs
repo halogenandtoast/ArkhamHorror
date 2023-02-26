@@ -113,8 +113,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
-  , investigatorStartsWith :: [CardDef]
-  , investigatorStartsWithInHand :: [CardDef]
+  , investigatorStartsWith :: [SomeCardDef]
+  , investigatorStartsWithInHand :: [SomeCardDef]
   , investigatorCardsUnderneath :: [Card]
   , investigatorFoundCards :: HashMap Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
@@ -159,7 +159,7 @@ instance Entity InvestigatorAttrs where
 
 instance HasCardDef InvestigatorAttrs where
   toCardDef e = case lookup (investigatorCardCode e) allInvestigatorCards of
-    Just def -> def
+    Just def -> SomeCardDef SInvestigatorType def
     Nothing ->
       error $ "missing card def for enemy " <> show (investigatorCardCode e)
 
@@ -317,11 +317,11 @@ suppliesL = lens investigatorSupplies $ \m x -> m { investigatorSupplies = x }
 drawnCardsL :: Lens' InvestigatorAttrs [PlayerCard]
 drawnCardsL = lens investigatorDrawnCards $ \m x -> m { investigatorDrawnCards = x }
 
-startsWithL :: Lens' InvestigatorAttrs [CardDef]
+startsWithL :: Lens' InvestigatorAttrs [SomeCardDef]
 startsWithL =
   lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }
 
-startsWithInHandL :: Lens' InvestigatorAttrs [CardDef]
+startsWithInHandL :: Lens' InvestigatorAttrs [SomeCardDef]
 startsWithInHandL =
   lens investigatorStartsWithInHand $ \m x -> m { investigatorStartsWithInHand = x }
 

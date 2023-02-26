@@ -59,10 +59,10 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
   , scenarioCardsNextToActDeck :: [Card]
-  , scenarioActStack :: IntMap [CardDef]
-  , scenarioAgendaStack :: IntMap [CardDef]
-  , scenarioCompletedAgendaStack :: IntMap [CardDef]
-  , scenarioCompletedActStack :: IntMap [CardDef]
+  , scenarioActStack :: IntMap [CardDef 'ActType]
+  , scenarioAgendaStack :: IntMap [CardDef 'AgendaType]
+  , scenarioCompletedAgendaStack :: IntMap [CardDef 'AgendaType]
+  , scenarioCompletedActStack :: IntMap [CardDef 'ActType]
   , scenarioLocationLayout :: [GridTemplateRow]
   , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
@@ -185,17 +185,17 @@ cardsNextToActDeckL :: Lens' ScenarioAttrs [Card]
 cardsNextToActDeckL =
   lens scenarioCardsNextToActDeck $ \m x -> m { scenarioCardsNextToActDeck = x }
 
-actStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+actStackL :: Lens' ScenarioAttrs (IntMap [CardDef 'ActType])
 actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 
-agendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+agendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef 'AgendaType])
 agendaStackL = lens scenarioAgendaStack $ \m x -> m { scenarioAgendaStack = x }
 
-completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef 'AgendaType])
 completedAgendaStackL = lens scenarioCompletedAgendaStack
   $ \m x -> m { scenarioCompletedAgendaStack = x }
 
-completedActStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+completedActStackL :: Lens' ScenarioAttrs (IntMap [CardDef 'ActType])
 completedActStackL = lens scenarioCompletedActStack
   $ \m x -> m { scenarioCompletedActStack = x }
 
@@ -279,7 +279,7 @@ instance Entity Scenario where
 difficultyOfScenario :: Scenario -> Difficulty
 difficultyOfScenario = scenarioDifficulty . toAttrs
 
-scenarioActs :: Scenario -> [CardDef]
+scenarioActs :: Scenario -> [CardDef 'ActType]
 scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"

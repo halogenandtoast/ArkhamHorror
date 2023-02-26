@@ -27,7 +27,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Trait
 
-event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
+event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef 'EventType
 event cardCode name cost classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
@@ -35,7 +35,6 @@ event cardCode name cost classSymbol = CardDef
   , cdCost = Just (StaticCost cost)
   , cdAdditionalCost = Nothing
   , cdLevel = 0
-  , cdCardType = EventType
   , cdCardSubType = Nothing
   , cdClassSymbols = singleton classSymbol
   , cdSkills = mempty
@@ -75,7 +74,7 @@ event cardCode name cost classSymbol = CardDef
   , cdCanReplace = True
   }
 
-allPlayerEventCards :: HashMap CardCode CardDef
+allPlayerEventCards :: HashMap CardCode (CardDef 'EventType)
 allPlayerEventCards = mapFromList $ concatMap
   toCardCodePairs
   [ aChanceEncounter
@@ -274,7 +273,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , youHandleThisOne
   ]
 
-onTheLam :: CardDef
+onTheLam :: CardDef 'EventType
 onTheLam = (event "01010" "On the Lam" 1 Neutral)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [#intellect, #agility, #wild, #wild]
@@ -282,7 +281,7 @@ onTheLam = (event "01010" "On the Lam" 1 Neutral)
   , cdAlternateCardCodes = ["01510"]
   }
 
-darkMemory :: CardDef
+darkMemory :: CardDef 'EventType
 darkMemory = (event "01013" "Dark Memory" 2 Neutral)
   { cdCardTraits = setFromList [Spell]
   , cdCardSubType = Just Weakness
@@ -290,7 +289,7 @@ darkMemory = (event "01013" "Dark Memory" 2 Neutral)
   , cdAlternateCardCodes = ["01513"]
   }
 
-evidence :: CardDef
+evidence :: CardDef 'EventType
 evidence = (event "01022" "Evidence!" 1 Guardian)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = setFromList [Insight]
@@ -306,7 +305,7 @@ evidence = (event "01022" "Evidence!" 1 Guardian)
   , cdAlternateCardCodes = ["01522"]
   }
 
-dodge :: CardDef
+dodge :: CardDef 'EventType
 dodge = (event "01023" "Dodge" 1 Guardian)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Tactic]
@@ -317,14 +316,14 @@ dodge = (event "01023" "Dodge" 1 Guardian)
   , cdAlternateCardCodes = ["01523", "60113"]
   }
 
-dynamiteBlast :: CardDef
+dynamiteBlast :: CardDef 'EventType
 dynamiteBlast = (event "01024" "Dynamite Blast" 5 Guardian)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Tactic]
   , cdAlternateCardCodes = ["01524"]
   }
 
-extraAmmunition1 :: CardDef
+extraAmmunition1 :: CardDef 'EventType
 extraAmmunition1 = (event "01026" "Extra Ammunition" 2 Guardian)
   { cdSkills = [#intellect]
   , cdCardTraits = setFromList [Supply]
@@ -337,7 +336,7 @@ extraAmmunition1 = (event "01026" "Extra Ammunition" 2 Guardian)
   , cdAlternateCardCodes = ["01526"]
   }
 
-mindOverMatter :: CardDef
+mindOverMatter :: CardDef 'EventType
 mindOverMatter = (event "01036" "Mind over Matter" 1 Seeker)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Insight]
@@ -345,7 +344,7 @@ mindOverMatter = (event "01036" "Mind over Matter" 1 Seeker)
   , cdAlternateCardCodes = ["01536"]
   }
 
-workingAHunch :: CardDef
+workingAHunch :: CardDef 'EventType
 workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = setFromList [Insight]
@@ -361,14 +360,14 @@ workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   , cdAlternateCardCodes = ["01537"]
   }
 
-barricade :: CardDef
+barricade :: CardDef 'EventType
 barricade = (event "01038" "Barricade" 0 Seeker)
   { cdSkills = [#willpower, #intellect, #agility]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdAlternateCardCodes = ["01538"]
   }
 
-crypticResearch4 :: CardDef
+crypticResearch4 :: CardDef 'EventType
 crypticResearch4 = (event "01043" "Cryptic Research" 0 Seeker)
   { cdCardTraits = setFromList [Insight]
   , cdLevel = 4
@@ -376,7 +375,7 @@ crypticResearch4 = (event "01043" "Cryptic Research" 0 Seeker)
   , cdAlternateCardCodes = ["01543"]
   }
 
-elusive :: CardDef
+elusive :: CardDef 'EventType
 elusive = (event "01050" "Elusive" 2 Rogue)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Tactic
@@ -391,7 +390,7 @@ elusive = (event "01050" "Elusive" 2 Rogue)
   , cdAlternateCardCodes = ["01550"]
   }
 
-backstab :: CardDef
+backstab :: CardDef 'EventType
 backstab = (event "01051" "Backstab" 3 Rogue)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Tactic]
@@ -399,7 +398,7 @@ backstab = (event "01051" "Backstab" 3 Rogue)
   , cdAlternateCardCodes = ["01551"]
   }
 
-sneakAttack :: CardDef
+sneakAttack :: CardDef 'EventType
 sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [#intellect, #combat]
   , cdCardTraits = setFromList [Tactic]
@@ -412,7 +411,7 @@ sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   , cdAlternateCardCodes = ["01552"]
   }
 
-sureGamble3 :: CardDef
+sureGamble3 :: CardDef 'EventType
 sureGamble3 = (event "01056" "Sure Gamble" 2 Rogue)
   { cdCardTraits = setFromList [Fortune, Insight]
   , cdFastWindow = Just (RevealChaosToken Timing.When You WithNegativeModifier)
@@ -420,7 +419,7 @@ sureGamble3 = (event "01056" "Sure Gamble" 2 Rogue)
   , cdAlternateCardCodes = ["01556"]
   }
 
-hotStreak4 :: CardDef
+hotStreak4 :: CardDef 'EventType
 hotStreak4 = (event "01057" "Hot Streak" 3 Rogue)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Fortune]
@@ -428,14 +427,14 @@ hotStreak4 = (event "01057" "Hot Streak" 3 Rogue)
   , cdAlternateCardCodes = ["01557"]
   }
 
-drawnToTheFlame :: CardDef
+drawnToTheFlame :: CardDef 'EventType
 drawnToTheFlame = (event "01064" "Drawn to the Flame" 0 Mystic)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Insight]
   , cdAlternateCardCodes = ["01564"]
   }
 
-wardOfProtection :: CardDef
+wardOfProtection :: CardDef 'EventType
 wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -447,7 +446,7 @@ wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
   , cdAlternateCardCodes = ["01565"]
   }
 
-blindingLight :: CardDef
+blindingLight :: CardDef 'EventType
 blindingLight = (event "01066" "Blinding Light" 2 Mystic)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Spell]
@@ -455,7 +454,7 @@ blindingLight = (event "01066" "Blinding Light" 2 Mystic)
   , cdAlternateCardCodes = ["01566"]
   }
 
-mindWipe1 :: CardDef
+mindWipe1 :: CardDef 'EventType
 mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spell]
@@ -470,7 +469,7 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   , cdAlternateCardCodes = ["01568"]
   }
 
-blindingLight2 :: CardDef
+blindingLight2 :: CardDef 'EventType
 blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Spell]
@@ -479,7 +478,7 @@ blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
   , cdAlternateCardCodes = ["01569"]
   }
 
-cunningDistraction :: CardDef
+cunningDistraction :: CardDef 'EventType
 cunningDistraction = (event "01078" "Cunning Distraction" 5 Survivor)
   { cdSkills = [#willpower, #wild]
   , cdCardTraits = setFromList [Tactic]
@@ -487,7 +486,7 @@ cunningDistraction = (event "01078" "Cunning Distraction" 5 Survivor)
   , cdAlternateCardCodes = ["01578"]
   }
 
-lookWhatIFound :: CardDef
+lookWhatIFound :: CardDef 'EventType
 lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Fortune
@@ -508,7 +507,7 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
   , cdAlternateCardCodes = ["01579", "60517"]
   }
 
-lucky :: CardDef
+lucky :: CardDef 'EventType
 lucky = (event "01080" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
@@ -518,7 +517,7 @@ lucky = (event "01080" "Lucky!" 1 Survivor)
   , cdAlternateCardCodes = ["01580"]
   }
 
-closeCall2 :: CardDef
+closeCall2 :: CardDef 'EventType
 closeCall2 = (event "01083" "Close Call" 2 Survivor)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Fortune]
@@ -528,7 +527,7 @@ closeCall2 = (event "01083" "Close Call" 2 Survivor)
   , cdAlternateCardCodes = ["01583"]
   }
 
-lucky2 :: CardDef
+lucky2 :: CardDef 'EventType
 lucky2 = (event "01084" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
@@ -539,7 +538,7 @@ lucky2 = (event "01084" "Lucky!" 1 Survivor)
   , cdAlternateCardCodes = ["01584"]
   }
 
-willToSurvive3 :: CardDef
+willToSurvive3 :: CardDef 'EventType
 willToSurvive3 = (event "01085" "Will to Survive" 4 Survivor)
   { cdSkills = [#combat, #wild]
   , cdCardTraits = setFromList [Spirit]
@@ -548,32 +547,32 @@ willToSurvive3 = (event "01085" "Will to Survive" 4 Survivor)
   , cdAlternateCardCodes = ["01585"]
   }
 
-emergencyCache :: CardDef
+emergencyCache :: CardDef 'EventType
 emergencyCache = (event "01088" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdAlternateCardCodes = ["01588"]
   }
 
-searchForTheTruth :: CardDef
+searchForTheTruth :: CardDef 'EventType
 searchForTheTruth = (event "02008" "Search for the Truth" 1 Neutral)
   { cdSkills = [#intellect, #intellect, #wild]
   , cdCardTraits = setFromList [Insight]
   }
 
-taunt :: CardDef
+taunt :: CardDef 'EventType
 taunt = (event "02017" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just (DuringTurn You)
   , cdSkills = [#willpower, #combat]
   }
 
-teamwork :: CardDef
+teamwork :: CardDef 'EventType
 teamwork = (event "02018" "Teamwork" 0 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [#wild]
   }
 
-taunt2 :: CardDef
+taunt2 :: CardDef 'EventType
 taunt2 = (event "02019" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just (DuringTurn You)
@@ -581,7 +580,7 @@ taunt2 = (event "02019" "Taunt" 1 Guardian)
   , cdLevel = 2
   }
 
-shortcut :: CardDef
+shortcut :: CardDef 'EventType
 shortcut = (event "02022" "Shortcut" 0 Seeker)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Insight, Tactic]
@@ -592,14 +591,14 @@ shortcut = (event "02022" "Shortcut" 0 Seeker)
     )
   }
 
-seekingAnswers :: CardDef
+seekingAnswers :: CardDef 'EventType
 seekingAnswers = (event "02023" "Seeking Answers" 1 Seeker)
   { cdSkills = [#intellect, #agility]
   , cdActions = [Action.Investigate]
   , cdCardTraits = singleton Insight
   }
 
-thinkOnYourFeet :: CardDef
+thinkOnYourFeet :: CardDef 'EventType
 thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Trick
@@ -610,7 +609,7 @@ thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
     )
   }
 
-bindMonster2 :: CardDef
+bindMonster2 :: CardDef 'EventType
 bindMonster2 = (event "02031" "Bind Monster" 3 Mystic)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = singleton Spell
@@ -618,14 +617,14 @@ bindMonster2 = (event "02031" "Bind Monster" 3 Mystic)
   , cdLevel = 2
   }
 
-baitAndSwitch :: CardDef
+baitAndSwitch :: CardDef 'EventType
 baitAndSwitch = (event "02034" "Bait and Switch" 1 Survivor)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = setFromList [Trick]
   , cdActions = [Action.Evade]
   }
 
-emergencyAid :: CardDef
+emergencyAid :: CardDef 'EventType
 emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = setFromList [Insight, Science]
@@ -639,14 +638,14 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
     ]
   }
 
-iveGotAPlan :: CardDef
+iveGotAPlan :: CardDef 'EventType
 iveGotAPlan = (event "02107" "\"I've got a plan!\"" 3 Seeker)
   { cdSkills = [#intellect, #combat]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdActions = [Action.Fight]
   }
 
-contraband :: CardDef
+contraband :: CardDef 'EventType
 contraband = (event "02109" "Contraband" 4 Rogue)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Supply, Illicit]
@@ -656,13 +655,13 @@ contraband = (event "02109" "Contraband" 4 Rogue)
     )
   }
 
-delveTooDeep :: CardDef
+delveTooDeep :: CardDef 'EventType
 delveTooDeep = (event "02111" "Delve Too Deep" 1 Mystic)
   { cdCardTraits = setFromList [Insight]
   , cdVictoryPoints = Just 1
   }
 
-oops :: CardDef
+oops :: CardDef 'EventType
 oops = (event "02113" "Oops!" 2 Survivor)
   { cdSkills = [#combat, #combat]
   , cdCardTraits = singleton Fortune
@@ -675,7 +674,7 @@ oops = (event "02113" "Oops!" 2 Survivor)
   , cdAlternateCardCodes = ["60518"]
   }
 
-flare1 :: CardDef
+flare1 :: CardDef 'EventType
 flare1 = (event "02115" "Flare" 2 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Tactic
@@ -683,7 +682,7 @@ flare1 = (event "02115" "Flare" 2 Survivor)
   , cdLevel = 1
   }
 
-standTogether3 :: CardDef
+standTogether3 :: CardDef 'EventType
 standTogether3 = (event "02148" "Stand Together" 0 Guardian)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Spirit
@@ -692,14 +691,14 @@ standTogether3 = (event "02148" "Stand Together" 0 Guardian)
   , cdLevel = 3
   }
 
-imOuttaHere :: CardDef
+imOuttaHere :: CardDef 'EventType
 imOuttaHere = (event "02151" "\"I'm outta here!\"" 0 Rogue)
   { cdSkills = [#agility, #agility]
   , cdCardTraits = setFromList [Trick, Spirit]
   , cdCriteria = Just Criteria.ScenarioCardHasResignAbility
   }
 
-hypnoticGaze :: CardDef
+hypnoticGaze :: CardDef 'EventType
 hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = singleton Spell
@@ -710,20 +709,20 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   , cdAlternateCardCodes = ["60414"]
   }
 
-lure1 :: CardDef
+lure1 :: CardDef 'EventType
 lure1 = (event "02156" "Lure" 1 Survivor)
   { cdSkills = [#agility, #agility]
   , cdCardTraits = singleton Trick
   , cdLevel = 1
   }
 
-preparedForTheWorst :: CardDef
+preparedForTheWorst :: CardDef 'EventType
 preparedForTheWorst = (event "02184" "Prepared for the Worst" 1 Guardian)
   { cdSkills = [#intellect, #combat]
   , cdCardTraits = singleton Tactic
   }
 
-preposterousSketches :: CardDef
+preposterousSketches :: CardDef 'EventType
 preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = singleton Insight
@@ -731,21 +730,21 @@ preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
   , cdAlternateCardCodes = ["60218"]
   }
 
-emergencyCache2 :: CardDef
+emergencyCache2 :: CardDef 'EventType
 emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 2
   , cdAlternateCardCodes = ["01693"]
   }
 
-ifItBleeds :: CardDef
+ifItBleeds :: CardDef 'EventType
 ifItBleeds = (event "02225" "\"If it bleeds...\"" 1 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdFastWindow = Just
     (EnemyDefeated Timing.After You $ EnemyWithTrait Monster)
   }
 
-exposeWeakness1 :: CardDef
+exposeWeakness1 :: CardDef 'EventType
 exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [#intellect, #combat, #combat]
   , cdCardTraits = singleton Insight
@@ -755,7 +754,7 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   , cdLevel = 1
   }
 
-iveHadWorse4 :: CardDef
+iveHadWorse4 :: CardDef 'EventType
 iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   { cdSkills = [#willpower, #willpower, #agility]
   , cdCardTraits = singleton Spirit
@@ -765,7 +764,7 @@ iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   , cdAlternateCardCodes = ["01684"]
   }
 
-aceInTheHole3 :: CardDef
+aceInTheHole3 :: CardDef 'EventType
 aceInTheHole3 = (event "02266" "Ace in the Hole" 0 Rogue)
   { cdCardTraits = singleton Trick
   , cdFastWindow = Just (DuringTurn You)
@@ -773,14 +772,14 @@ aceInTheHole3 = (event "02266" "Ace in the Hole" 0 Rogue)
   , cdExceptional = True
   }
 
-moonlightRitual :: CardDef
+moonlightRitual :: CardDef 'EventType
 moonlightRitual = (event "02267" "Moonlight Ritual" 0 Mystic)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = setFromList [Spell, Insight]
   , cdCriteria = Just Criteria.OwnCardWithDoom
   }
 
-aChanceEncounter :: CardDef
+aChanceEncounter :: CardDef 'EventType
 aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = singleton Fortune
@@ -788,7 +787,7 @@ aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
     $ Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard [Ally]
   }
 
-momentOfRespite3 :: CardDef
+momentOfRespite3 :: CardDef 'EventType
 momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Spirit
@@ -801,7 +800,7 @@ momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   , cdLevel = 3
   }
 
-monsterSlayer5 :: CardDef
+monsterSlayer5 :: CardDef 'EventType
 monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
   { cdSkills = [#combat, #wild]
   , cdCardTraits = singleton Spirit
@@ -809,7 +808,7 @@ monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
   , cdLevel = 5
   }
 
-decipheredReality5 :: CardDef
+decipheredReality5 :: CardDef 'EventType
 decipheredReality5 = (event "02303" "Deciphered Reality" 4 Seeker)
   { cdSkills = [#intellect, #intellect, #willpower]
   , cdCardTraits = singleton Insight
@@ -817,7 +816,7 @@ decipheredReality5 = (event "02303" "Deciphered Reality" 4 Seeker)
   , cdLevel = 5
   }
 
-wardOfProtection5 :: CardDef
+wardOfProtection5 :: CardDef 'EventType
 wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   { cdSkills = [#willpower, #wild]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -829,7 +828,7 @@ wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   , cdLevel = 5
   }
 
-thePaintedWorld :: CardDef
+thePaintedWorld :: CardDef 'EventType
 thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   { cdSkills = [#willpower, #agility, #wild]
   , cdCardTraits = singleton Spell
@@ -840,7 +839,7 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   , cdCost = Nothing
   }
 
-buryThemDeep :: CardDef
+buryThemDeep :: CardDef 'EventType
 buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   { cdSkills = [#willpower, #combat, #wild]
   , cdCardTraits = singleton Task
@@ -849,14 +848,14 @@ buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   , cdVictoryPoints = Just 1
   }
 
-improvisation :: CardDef
+improvisation :: CardDef 'EventType
 improvisation = (event "03018" "Improvisation" 0 Neutral)
   { cdSkills = [#wild, #wild]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just (DuringTurn You)
   }
 
-letMeHandleThis :: CardDef
+letMeHandleThis :: CardDef 'EventType
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spirit]
@@ -869,7 +868,7 @@ letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
     EncounterDeck
   }
 
-everVigilant1 :: CardDef
+everVigilant1 :: CardDef 'EventType
 everVigilant1 = (event "03023" "Ever Vigilant" 0 Guardian)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Tactic
@@ -878,7 +877,7 @@ everVigilant1 = (event "03023" "Ever Vigilant" 0 Guardian)
     (Criteria.PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
   }
 
-noStoneUnturned :: CardDef
+noStoneUnturned :: CardDef 'EventType
 noStoneUnturned = (event "03026" "No Stone Unturned" 2 Seeker)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Insight
@@ -889,7 +888,7 @@ noStoneUnturned = (event "03026" "No Stone Unturned" 2 Seeker)
     <> InvestigatorWithoutModifier CannotManipulateDeck
   }
 
-sleightOfHand :: CardDef
+sleightOfHand :: CardDef 'EventType
 sleightOfHand = (event "03029" "Sleight of Hand" 1 Rogue)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Trick
@@ -898,7 +897,7 @@ sleightOfHand = (event "03029" "Sleight of Hand" 1 Rogue)
     (Criteria.PlayableCardExists $ BasicCardMatch (CardWithTrait Item))
   }
 
-daringManeuver :: CardDef
+daringManeuver :: CardDef 'EventType
 daringManeuver = (event "03030" "Daring Maneuver" 0 Rogue)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Gambit
@@ -908,7 +907,7 @@ daringManeuver = (event "03030" "Daring Maneuver" 0 Rogue)
   , cdAlternateCardCodes = ["60313"]
   }
 
-uncageTheSoul :: CardDef
+uncageTheSoul :: CardDef 'EventType
 uncageTheSoul = (event "03033" "Uncage the Soul" 0 Mystic)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Spirit
@@ -920,7 +919,7 @@ uncageTheSoul = (event "03033" "Uncage the Soul" 0 Mystic)
     )
   }
 
-astralTravel :: CardDef
+astralTravel :: CardDef 'EventType
 astralTravel = (event "03034" "Astral Travel" 3 Mystic)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = singleton Spell
@@ -930,14 +929,14 @@ astralTravel = (event "03034" "Astral Travel" 3 Mystic)
   , cdAlternateCardCodes = ["60413"]
   }
 
-hidingSpot :: CardDef
+hidingSpot :: CardDef 'EventType
 hidingSpot = (event "03038" "Hiding Spot" 1 Survivor)
   { cdSkills = [#agility, #agility]
   , cdCardTraits = setFromList [Tactic, Trick]
   , cdFastWindow = Just FastPlayerWindow
   }
 
-heroicRescue :: CardDef
+heroicRescue :: CardDef 'EventType
 heroicRescue = (event "03106" "Heroic Rescue" 1 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spirit, Tactic]
@@ -948,7 +947,7 @@ heroicRescue = (event "03106" "Heroic Rescue" 1 Guardian)
     NonEliteEnemy
   }
 
-anatomicalDiagrams :: CardDef
+anatomicalDiagrams :: CardDef 'EventType
 anatomicalDiagrams = (event "03108" "Anatomical Diagrams" 1 Seeker)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = singleton Insight
@@ -961,14 +960,14 @@ anatomicalDiagrams = (event "03108" "Anatomical Diagrams" 1 Seeker)
          (Criteria.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
   }
 
-ambush1 :: CardDef
+ambush1 :: CardDef 'EventType
 ambush1 = (event "03148" "Ambush" 2 Guardian)
   { cdSkills = [#intellect, #combat]
   , cdCardTraits = singleton Tactic
   , cdLevel = 1
   }
 
-forewarned1 :: CardDef
+forewarned1 :: CardDef 'EventType
 forewarned1 = (event "03150" "Forewarned" 0 Seeker)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Insight
@@ -982,7 +981,7 @@ forewarned1 = (event "03150" "Forewarned" 0 Seeker)
     EncounterDeck
   }
 
-sneakAttack2 :: CardDef
+sneakAttack2 :: CardDef 'EventType
 sneakAttack2 = (event "03152" "Sneak Attack" 2 Rogue)
   { cdSkills = [#intellect, #combat, #combat]
   , cdCardTraits = setFromList [Tactic]
@@ -995,20 +994,20 @@ sneakAttack2 = (event "03152" "Sneak Attack" 2 Rogue)
     )
   }
 
-stormOfSpirits :: CardDef
+stormOfSpirits :: CardDef 'EventType
 stormOfSpirits = (event "03153" "Storm of Spirits" 3 Mystic)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = singleton Spell
   , cdActions = [Action.Fight]
   }
 
-fightOrFlight :: CardDef
+fightOrFlight :: CardDef 'EventType
 fightOrFlight = (event "03155" "Fight or Flight" 1 Survivor)
   { cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
   }
 
-aTestOfWill1 :: CardDef
+aTestOfWill1 :: CardDef 'EventType
 aTestOfWill1 = (event "03156" "A Test of Will" 1 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Spirit
@@ -1027,7 +1026,7 @@ aTestOfWill1 = (event "03156" "A Test of Will" 1 Survivor)
   , cdLevel = 1
   }
 
-devilsLuck :: CardDef
+devilsLuck :: CardDef 'EventType
 devilsLuck = (event "03157" "Devil's Luck" 1 Survivor)
   { cdSkills = [#agility]
   , cdCardTraits = singleton Fortune
@@ -1036,21 +1035,21 @@ devilsLuck = (event "03157" "Devil's Luck" 1 Survivor)
   , cdLevel = 1
   }
 
-callingInFavors :: CardDef
+callingInFavors :: CardDef 'EventType
 callingInFavors = (event "03158" "Calling in Favors" 1 Neutral)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Favor
   , cdCriteria = Just (Criteria.AssetExists $ AssetControlledBy You)
   }
 
-illSeeYouInHell :: CardDef
+illSeeYouInHell :: CardDef 'EventType
 illSeeYouInHell = (event "03189" "\"I'll see you in hell!\"" 0 Guardian)
   { cdSkills = [#combat, #combat]
   , cdCardTraits = singleton Spirit
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
-logicalReasoning :: CardDef
+logicalReasoning :: CardDef 'EventType
 logicalReasoning = (event "03191" "Logical Reasoning" 2 Seeker)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Insight
@@ -1067,7 +1066,7 @@ logicalReasoning = (event "03191" "Logical Reasoning" 2 Seeker)
     )
   }
 
-cheapShot :: CardDef
+cheapShot :: CardDef 'EventType
 cheapShot = (event "03194" "Cheap Shot" 2 Rogue)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Trick]
@@ -1075,13 +1074,13 @@ cheapShot = (event "03194" "Cheap Shot" 2 Rogue)
   , cdAlternateCardCodes = ["60312"]
   }
 
-quantumFlux :: CardDef
+quantumFlux :: CardDef 'EventType
 quantumFlux = (event "03196" "Quantum Flux" 1 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Insight
   }
 
-recharge2 :: CardDef
+recharge2 :: CardDef 'EventType
 recharge2 = (event "03197" "Recharge" 0 Mystic)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Spell
@@ -1093,7 +1092,7 @@ recharge2 = (event "03197" "Recharge" 0 Mystic)
   , cdLevel = 2
   }
 
-snareTrap2 :: CardDef
+snareTrap2 :: CardDef 'EventType
 snareTrap2 = (event "03199" "Snare Trap" 2 Survivor)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Trap, Improvised]
@@ -1106,7 +1105,7 @@ snareTrap2 = (event "03199" "Snare Trap" 2 Survivor)
   , cdLevel = 2
   }
 
-manoAMano1 :: CardDef
+manoAMano1 :: CardDef 'EventType
 manoAMano1 = (event "03229" "Mano a Mano" 0 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spirit, Bold]
@@ -1116,7 +1115,7 @@ manoAMano1 = (event "03229" "Mano a Mano" 0 Guardian)
   , cdLevel = 1
   }
 
-shortcut2 :: CardDef
+shortcut2 :: CardDef 'EventType
 shortcut2 = (event "03232" "Shortcut" 1 Seeker)
   { cdSkills = [#willpower, #intellect, #agility]
   , cdCardTraits = setFromList [Insight, Tactic]
@@ -1124,7 +1123,7 @@ shortcut2 = (event "03232" "Shortcut" 1 Seeker)
   , cdLevel = 2
   }
 
-waylay :: CardDef
+waylay :: CardDef 'EventType
 waylay = (event "03237" "Waylay" 3 Survivor)
   { cdSkills = [#agility, #agility]
   , cdCardTraits = singleton Tactic
@@ -1136,7 +1135,7 @@ waylay = (event "03237" "Waylay" 3 Survivor)
     )
   }
 
-aChanceEncounter2 :: CardDef
+aChanceEncounter2 :: CardDef 'EventType
 aChanceEncounter2 = (event "03238" "A Chance Encounter" 0 Survivor)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = singleton Fortune
@@ -1146,27 +1145,27 @@ aChanceEncounter2 = (event "03238" "A Chance Encounter" 0 Survivor)
   , cdLevel = 2
   }
 
-emergencyCache3 :: CardDef
+emergencyCache3 :: CardDef 'EventType
 emergencyCache3 = (event "03239" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 3
   }
 
-onTheHunt :: CardDef
+onTheHunt :: CardDef 'EventType
 onTheHunt = (event "03263" "On the Hunt" 1 Guardian)
   { cdCardTraits = singleton Tactic
   , cdFastWindow = Just
     $ WouldDrawEncounterCard Timing.When You (PhaseIs MythosPhase)
   }
 
-guidance :: CardDef
+guidance :: CardDef 'EventType
 guidance = (event "03265" "Guidance" 0 Seeker)
   { cdCardTraits = singleton Insight
   , cdCriteria = Just $ Criteria.InvestigatorExists
     (NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn)
   }
 
-narrowEscape :: CardDef
+narrowEscape :: CardDef 'EventType
 narrowEscape = (event "03267" "Narrow Escape" 0 Rogue)
   { cdCardTraits = singleton Fortune
   , cdSkills = [#agility, #agility]
@@ -1179,7 +1178,7 @@ narrowEscape = (event "03267" "Narrow Escape" 0 Rogue)
     )
   }
 
-wardOfProtection2 :: CardDef
+wardOfProtection2 :: CardDef 'EventType
 wardOfProtection2 = (event "03270" "Ward of Protection" 1 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -1191,7 +1190,7 @@ wardOfProtection2 = (event "03270" "Ward of Protection" 1 Mystic)
   , cdLevel = 2
   }
 
-trueSurvivor3 :: CardDef
+trueSurvivor3 :: CardDef 'EventType
 trueSurvivor3 = (event "03273" "True Survivor" 3 Survivor)
   { cdCardTraits = singleton Spirit
   , cdCriteria = Just
@@ -1199,7 +1198,7 @@ trueSurvivor3 = (event "03273" "True Survivor" 3 Survivor)
   , cdLevel = 3
   }
 
-eatLead2 :: CardDef
+eatLead2 :: CardDef 'EventType
 eatLead2 = (event "03304" "\"Eat Lead!\"" 0 Guardian)
   { cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ ActivateAbility
@@ -1209,7 +1208,7 @@ eatLead2 = (event "03304" "\"Eat Lead!\"" 0 Guardian)
   , cdLevel = 2
   }
 
-eideticMemory3 :: CardDef
+eideticMemory3 :: CardDef 'EventType
 eideticMemory3 = (event "03306" "Eidetic Memory" 0 Seeker)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Spirit
@@ -1221,7 +1220,7 @@ eideticMemory3 = (event "03306" "Eidetic Memory" 0 Seeker)
   , cdCost = Nothing
   }
 
-noStoneUnturned5 :: CardDef
+noStoneUnturned5 :: CardDef 'EventType
 noStoneUnturned5 = (event "03307" "No Stone Unturned" 2 Seeker)
   { cdCardTraits = singleton Insight
   , cdSkills = [#wild, #intellect]
@@ -1234,7 +1233,7 @@ noStoneUnturned5 = (event "03307" "No Stone Unturned" 2 Seeker)
   , cdLevel = 5
   }
 
-cheatDeath5 :: CardDef
+cheatDeath5 :: CardDef 'EventType
 cheatDeath5 = (event "03310" "Cheat Death" 1 Rogue)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Trick, Fated]
@@ -1243,7 +1242,7 @@ cheatDeath5 = (event "03310" "Cheat Death" 1 Rogue)
   , cdLevel = 5
   }
 
-timeWarp2 :: CardDef
+timeWarp2 :: CardDef 'EventType
 timeWarp2 = (event "03311" "Time Warp" 1 Mystic)
   { cdCardTraits = setFromList [Spell, Paradox]
   , cdFastWindow = Just
@@ -1252,7 +1251,7 @@ timeWarp2 = (event "03311" "Time Warp" 1 Mystic)
   , cdLevel = 2
   }
 
-infighting3 :: CardDef
+infighting3 :: CardDef 'EventType
 infighting3 = (event "03314" "Infighting" 1 Survivor)
   { cdSkills = [#intellect, #intellect, #agility, #agility]
   , cdCardTraits = singleton Trick
@@ -1260,7 +1259,7 @@ infighting3 = (event "03314" "Infighting" 1 Survivor)
   , cdFastWindow = Just $ PhaseBegins Timing.After (PhaseIs EnemyPhase)
   }
 
-smuggledGoods :: CardDef
+smuggledGoods :: CardDef 'EventType
 smuggledGoods = (event "04010" "Smuggled Goods" 0 Neutral)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Supply, Illicit]
@@ -1273,7 +1272,7 @@ smuggledGoods = (event "04010" "Smuggled Goods" 0 Neutral)
     <> ReadyEnemy
   }
 
-trusted :: CardDef
+trusted :: CardDef 'EventType
 trusted = (event "04019" "Trusted" 1 Guardian)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Upgrade
@@ -1282,7 +1281,7 @@ trusted = (event "04019" "Trusted" 1 Guardian)
     Just $ Criteria.AssetExists $ AssetControlledBy You <> AllyAsset
   }
 
-reliable1 :: CardDef
+reliable1 :: CardDef 'EventType
 reliable1 = (event "04020" "Reliable" 1 Guardian)
   { cdSkills = [#intellect]
   , cdCardTraits = singleton Upgrade
@@ -1292,7 +1291,7 @@ reliable1 = (event "04020" "Reliable" 1 Guardian)
   , cdLevel = 1
   }
 
-unearthTheAncients :: CardDef
+unearthTheAncients :: CardDef 'EventType
 unearthTheAncients = (event "04024" "Unearth the Ancients" 1 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
@@ -1302,7 +1301,7 @@ unearthTheAncients = (event "04024" "Unearth the Ancients" 1 Seeker)
       (CardWithClass Seeker <> CardWithType AssetType)
   }
 
-eavesdrop :: CardDef
+eavesdrop :: CardDef 'EventType
 eavesdrop = (event "04027" "Eavesdrop" 1 Rogue)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = setFromList [Insight, Trick]
@@ -1314,7 +1313,7 @@ eavesdrop = (event "04027" "Eavesdrop" 1 Rogue)
     <> EnemyAt YourLocation
   }
 
-youHandleThisOne :: CardDef
+youHandleThisOne :: CardDef 'EventType
 youHandleThisOne = (event "04028" "\"You handle this one!\"" 0 Rogue)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Trick
@@ -1326,7 +1325,7 @@ youHandleThisOne = (event "04028" "\"You handle this one!\"" 0 Rogue)
     EncounterDeck
   }
 
-darkProphecy :: CardDef
+darkProphecy :: CardDef 'EventType
 darkProphecy = (event "04032" "Dark Prophecy" 1 Mystic)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = singleton Augury
@@ -1334,14 +1333,14 @@ darkProphecy = (event "04032" "Dark Prophecy" 1 Mystic)
   , cdAlternateCardCodes = ["60417"]
   }
 
-improvisedWeapon :: CardDef
+improvisedWeapon :: CardDef 'EventType
 improvisedWeapon = (event "04033" "Improvised Weapon" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdActions = [Action.Fight]
   , cdPlayableFromDiscard = True
   }
 
-dumbLuck :: CardDef
+dumbLuck :: CardDef 'EventType
 dumbLuck = (event "04034" "Dumb Luck" 2 Survivor)
   { cdSkills = [#agility, #agility]
   , cdCardTraits = singleton Fortune
@@ -1354,14 +1353,14 @@ dumbLuck = (event "04034" "Dumb Luck" 2 Survivor)
   , cdAlternateCardCodes = ["60514"]
   }
 
-darkPact :: CardDef
+darkPact :: CardDef 'EventType
 darkPact = (event "04038" "Dark Pact" 2 Neutral)
   { cdCardTraits = singleton Pact
   , cdCardSubType = Just BasicWeakness
   , cdCardInHandEffects = True
   }
 
-sceneOfTheCrime :: CardDef
+sceneOfTheCrime :: CardDef 'EventType
 sceneOfTheCrime = (event "04103" "Scene of the Crime" 2 Guardian)
   { cdSkills = [#combat, #intellect]
   , cdCardTraits = setFromList [Insight, Bold]
@@ -1369,7 +1368,7 @@ sceneOfTheCrime = (event "04103" "Scene of the Crime" 2 Guardian)
     $ Criteria.Criteria [Criteria.FirstAction, Criteria.ClueOnLocation]
   }
 
-marksmanship1 :: CardDef
+marksmanship1 :: CardDef 'EventType
 marksmanship1 = (event "04104" "Marksmanship" 2 Guardian)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = singleton Tactic
@@ -1382,7 +1381,7 @@ marksmanship1 = (event "04104" "Marksmanship" 2 Guardian)
   , cdLevel = 1
   }
 
-persuasion :: CardDef
+persuasion :: CardDef 'EventType
 persuasion = (event "04105" "Persuasion" 2 Seeker)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Insight, Trick]
@@ -1396,7 +1395,7 @@ persuasion = (event "04105" "Persuasion" 2 Seeker)
   , cdActions = [Action.Parley]
   }
 
-counterspell2 :: CardDef
+counterspell2 :: CardDef 'EventType
 counterspell2 = (event "04110" "Counterspell" 2 Mystic)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Spell, Blessed]
@@ -1407,7 +1406,7 @@ counterspell2 = (event "04110" "Counterspell" 2 Mystic)
   , cdLevel = 2
   }
 
-perseverance :: CardDef
+perseverance :: CardDef 'EventType
 perseverance = (event "04111" "Perseverance" 2 Survivor)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Spirit
@@ -1418,14 +1417,14 @@ perseverance = (event "04111" "Perseverance" 2 Survivor)
     You
   }
 
-secondWind :: CardDef
+secondWind :: CardDef 'EventType
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Spirit, Bold]
   , cdCriteria = Just $ Criteria.FirstAction <> Criteria.InvestigatorExists (HealableInvestigator ThisCard DamageType You)
   }
 
-truthFromFiction :: CardDef
+truthFromFiction :: CardDef 'EventType
 truthFromFiction = (event "04152" "Truth from Fiction" 2 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
@@ -1433,7 +1432,7 @@ truthFromFiction = (event "04152" "Truth from Fiction" 2 Seeker)
     (AssetControlledBy You <> AssetWithUseType Uses.Secret)
   }
 
-customAmmunition3 :: CardDef
+customAmmunition3 :: CardDef 'EventType
 customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Upgrade, Supply, Blessed]
@@ -1446,7 +1445,7 @@ customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
   , cdFastWindow = Just $ DuringTurn You
   }
 
-exposeWeakness3 :: CardDef
+exposeWeakness3 :: CardDef 'EventType
 exposeWeakness3 = (event "04195" "Expose Weakness" 0 Seeker)
   { cdSkills = [#intellect, #combat, #wild]
   , cdCardTraits = singleton Insight
@@ -1456,14 +1455,14 @@ exposeWeakness3 = (event "04195" "Expose Weakness" 0 Seeker)
   , cdLevel = 3
   }
 
-premonition :: CardDef
+premonition :: CardDef 'EventType
 premonition = (event "04199" "Premonition" 0 Mystic)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Augury
   , cdFastWindow = Just FastPlayerWindow
   }
 
-liveAndLearn :: CardDef
+liveAndLearn :: CardDef 'EventType
 liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Spirit
@@ -1471,7 +1470,7 @@ liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
   , cdAlternateCardCodes = ["60516"]
   }
 
-againstAllOdds2 :: CardDef
+againstAllOdds2 :: CardDef 'EventType
 againstAllOdds2 = (event "04202" "Against All Odds" 2 Survivor)
   { cdCardTraits = singleton Spirit
   , cdSkills = [#willpower, #combat, #agility]
@@ -1480,7 +1479,7 @@ againstAllOdds2 = (event "04202" "Against All Odds" 2 Survivor)
   , cdLevel = 2
   }
 
-slipAway :: CardDef
+slipAway :: CardDef 'EventType
 slipAway = (event "04232" "Against All Odds" 2 Rogue)
   { cdCardTraits = singleton Trick
   , cdSkills = [#intellect, #agility]
@@ -1488,13 +1487,13 @@ slipAway = (event "04232" "Against All Odds" 2 Rogue)
   , cdAlternateCardCodes = ["60314"]
   }
 
-payDay1 :: CardDef
+payDay1 :: CardDef 'EventType
 payDay1 = (event "04233" "Pay Day" 0 Rogue)
   { cdCardTraits = setFromList [Illicit, Fated]
   , cdLevel = 1
   }
 
-sacrifice1 :: CardDef
+sacrifice1 :: CardDef 'EventType
 sacrifice1 = (event "04234" "Sacrifice" 0 Mystic)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Ritual
@@ -1507,7 +1506,7 @@ sacrifice1 = (event "04234" "Sacrifice" 0 Mystic)
   , cdLevel = 1
   }
 
-bloodEclipse3 :: CardDef
+bloodEclipse3 :: CardDef 'EventType
 bloodEclipse3 = (event "04266" "Blood Eclipse" 1 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -1520,7 +1519,7 @@ bloodEclipse3 = (event "04266" "Blood Eclipse" 1 Guardian)
   , cdLevel = 3
   }
 
-coupDeGrace :: CardDef
+coupDeGrace :: CardDef 'EventType
 coupDeGrace = (event "04269" "Coup de Grâce" 2 Rogue)
   { cdSkills = [#combat, #combat]
   , cdCardTraits = setFromList [Tactic, Fated]
@@ -1529,14 +1528,14 @@ coupDeGrace = (event "04269" "Coup de Grâce" 2 Rogue)
     YourLocation <> EnemyCanBeDamagedBySource ThisCard
   }
 
-wingingIt :: CardDef
+wingingIt :: CardDef 'EventType
 wingingIt = (event "04272" "Winging It" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdActions = [Action.Investigate]
   , cdPlayableFromDiscard = True
   }
 
-vantagePoint :: CardDef
+vantagePoint :: CardDef 'EventType
 vantagePoint = (event "04306" "Vantage Point" 1 Seeker)
   { cdCardTraits = singleton Insight
   , cdSkills = [#intellect, #agility]
@@ -1547,14 +1546,14 @@ vantagePoint = (event "04306" "Vantage Point" 1 Seeker)
     ]
   }
 
-impromptuBarrier :: CardDef
+impromptuBarrier :: CardDef 'EventType
 impromptuBarrier = (event "04312" "Impromptu Barrier" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdActions = [Action.Evade]
   , cdPlayableFromDiscard = True
   }
 
-alterFate3 :: CardDef
+alterFate3 :: CardDef 'EventType
 alterFate3 = (event "04313" "Alter Fate" 1 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Blessed]
@@ -1563,21 +1562,21 @@ alterFate3 = (event "04313" "Alter Fate" 1 Survivor)
   , cdLevel = 3
   }
 
-unsolvedCase :: CardDef
+unsolvedCase :: CardDef 'EventType
 unsolvedCase = (event "05010" "Unsolved Case" 4 Neutral)
   { cdCardTraits = setFromList [Insight, Mystery]
   , cdCardSubType = Just Weakness
   , cdCardInHandEffects = True
   }
 
-lodgeDebts :: CardDef
+lodgeDebts :: CardDef 'EventType
 lodgeDebts = (event "05012" "\"Lodge\" Debts" 10 Neutral)
   { cdCardTraits = singleton Pact
   , cdCardSubType = Just Weakness
   , cdCardInHandEffects = True
   }
 
-darkInsight :: CardDef
+darkInsight :: CardDef 'EventType
 darkInsight = (event "05014" "Dark Insight" 2 Neutral)
   { cdCardTraits = singleton Insight
   , cdFastWindow = Just $ OrWindowMatcher
@@ -1594,21 +1593,21 @@ darkInsight = (event "05014" "Dark Insight" 2 Neutral)
     ]
   }
 
-imDoneRunnin :: CardDef
+imDoneRunnin :: CardDef 'EventType
 imDoneRunnin = (event "05016" "\"I'm done runnin'!\"" 0 Neutral)
   { cdSkills = [#combat, #agility, #wild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
   }
 
-mystifyingSong :: CardDef
+mystifyingSong :: CardDef 'EventType
 mystifyingSong = (event "05018" "Mystifying Song" 3 Neutral)
   { cdSkills = [#wild, #wild]
   , cdCardTraits = setFromList [Spell, Song]
   , cdFastWindow = Just $ AgendaWouldAdvance Timing.When DoomThreshold AnyAgenda
   }
 
-interrogate :: CardDef
+interrogate :: CardDef 'EventType
 interrogate = (event "05020" "Interrogate" 2 Guardian)
   { cdSkills = [#combat, #intellect]
   , cdCardTraits = setFromList [Tactic, Insight]
@@ -1621,14 +1620,14 @@ interrogate = (event "05020" "Interrogate" 2 Guardian)
   , cdActions = [Action.Parley]
   }
 
-delayTheInevitable :: CardDef
+delayTheInevitable :: CardDef 'EventType
 delayTheInevitable = (event "05021" "Delay the Inevitable" 2 Guardian)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Insight, Spirit, Tactic]
   , cdFastWindow = Just $ DuringTurn You
   }
 
-connectTheDots :: CardDef
+connectTheDots :: CardDef 'EventType
 connectTheDots = (event "05025" "Connect the Dots" 4 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
@@ -1636,13 +1635,13 @@ connectTheDots = (event "05025" "Connect the Dots" 4 Seeker)
   , cdCriteria = Just $ Criteria.LocationExists $ LocationWithLowerShroudThan YourLocation <> LocationWithDiscoverableCluesBy You
   }
 
-moneyTalks :: CardDef
+moneyTalks :: CardDef 'EventType
 moneyTalks = (event "05029" "Money Talks" 0 Rogue)
   { cdCardTraits = setFromList [Favor, Gambit]
   , cdFastWindow = Just $ InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue
   }
 
-denyExistence :: CardDef
+denyExistence :: CardDef 'EventType
 denyExistence = (event "05032" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Paradox]
@@ -1657,7 +1656,7 @@ denyExistence = (event "05032" "Deny Existence" 0 Mystic)
  where
   source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
 
-eldritchInspiration :: CardDef
+eldritchInspiration :: CardDef 'EventType
 eldritchInspiration = (event "05033" "Eldritch Inspiration" 0 Mystic)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -1665,14 +1664,14 @@ eldritchInspiration = (event "05033" "Eldritch Inspiration" 0 Mystic)
   , cdAlternateCardCodes = ["60420"]
   }
 
-actOfDesperation :: CardDef
+actOfDesperation :: CardDef 'EventType
 actOfDesperation = (event "05037" "Act of Desperation" 0 Survivor)
   { cdSkills = [#combat, #combat]
   , cdCardTraits = setFromList [Tactic, Gambit]
   , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (CardWithTrait Item <> CardFillsSlot HandSlot)
   }
 
-denyExistence5 :: CardDef
+denyExistence5 :: CardDef 'EventType
 denyExistence5 = (event "05280" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Spell, Paradox]
@@ -1688,21 +1687,21 @@ denyExistence5 = (event "05280" "Deny Existence" 0 Mystic)
  where
   source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
 
-trialByFire :: CardDef
+trialByFire :: CardDef 'EventType
 trialByFire = (event "05281" "Trial By Fire" 3 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
   }
 
-bloodRite :: CardDef
+bloodRite :: CardDef 'EventType
 bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [#willpower, #intellect, #combat]
   , cdCardTraits = singleton Spell
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
-astoundingRevelation :: CardDef
+astoundingRevelation :: CardDef 'EventType
 astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
   { cdSkills = [#intellect]
   , cdCardTraits = setFromList [Research]
@@ -1710,21 +1709,21 @@ astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
   , cdCardInSearchEffects = True
   }
 
-firstWatch :: CardDef
+firstWatch :: CardDef 'EventType
 firstWatch = (event "06110" "First Watch" 1 Guardian)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
   }
 
-scroungeForSupplies :: CardDef
+scroungeForSupplies :: CardDef 'EventType
 scroungeForSupplies = (event "06165" "Scrounge for Supplies" 0 Survivor)
   { cdCardTraits = singleton Fortune
   , cdCriteria = Just
     $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithLevel 0)
   }
 
-dodge2 :: CardDef
+dodge2 :: CardDef 'EventType
 dodge2 = (event "08026" "Dodge" 0 Guardian)
   { cdSkills = [#willpower, #agility, #agility]
   , cdCardTraits = setFromList [Tactic]
@@ -1735,7 +1734,7 @@ dodge2 = (event "08026" "Dodge" 0 Guardian)
   , cdLevel = 2
   }
 
-unearthTheAncients2 :: CardDef
+unearthTheAncients2 :: CardDef 'EventType
 unearthTheAncients2 = (event "08039" "Unearth the Ancients" 0 Seeker)
   { cdSkills = [#intellect, #intellect, #agility]
   , cdCardTraits = singleton Insight
@@ -1746,7 +1745,7 @@ unearthTheAncients2 = (event "08039" "Unearth the Ancients" 0 Seeker)
   , cdLevel = 2
   }
 
-moneyTalks2 :: CardDef
+moneyTalks2 :: CardDef 'EventType
 moneyTalks2 = (event "08054" "Money Talks" 0 Rogue)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Favor, Gambit]
@@ -1754,7 +1753,7 @@ moneyTalks2 = (event "08054" "Money Talks" 0 Rogue)
   , cdLevel = 2
   }
 
-dynamiteBlast2 :: CardDef
+dynamiteBlast2 :: CardDef 'EventType
 dynamiteBlast2 = (event "50002" "Dynamite Blast" 4 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Tactic]
@@ -1762,21 +1761,21 @@ dynamiteBlast2 = (event "50002" "Dynamite Blast" 4 Guardian)
   , cdLevel = 2
   }
 
-barricade3 :: CardDef
+barricade3 :: CardDef 'EventType
 barricade3 = (event "50004" "Barricade" 0 Seeker)
   { cdSkills = [#willpower, #intellect, #agility]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 3
   }
 
-hotStreak2 :: CardDef
+hotStreak2 :: CardDef 'EventType
 hotStreak2 = (event "50006" "Hot Streak" 5 Rogue)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Fortune]
   , cdLevel = 2
   }
 
-mindWipe3 :: CardDef
+mindWipe3 :: CardDef 'EventType
 mindWipe3 = (event "50008" "Mind Wipe" 1 Mystic)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spell]
@@ -1784,7 +1783,7 @@ mindWipe3 = (event "50008" "Mind Wipe" 1 Mystic)
   , cdFastWindow = Just $ PhaseBegins Timing.After AnyPhase
   }
 
-preposterousSketches2 :: CardDef
+preposterousSketches2 :: CardDef 'EventType
 preposterousSketches2 = (event "51003" "Preposterous Sketches" 0 Seeker)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = singleton Insight
@@ -1792,7 +1791,7 @@ preposterousSketches2 = (event "51003" "Preposterous Sketches" 0 Seeker)
   , cdLevel = 2
   }
 
-contraband2 :: CardDef
+contraband2 :: CardDef 'EventType
 contraband2 = (event "51005" "Contraband" 3 Rogue)
   { cdSkills = [#willpower, #intellect, #intellect]
   , cdCardTraits = setFromList [Supply, Illicit]
@@ -1803,7 +1802,7 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
     )
   }
 
-bloodEclipse1 :: CardDef
+bloodEclipse1 :: CardDef 'EventType
 bloodEclipse1 = (event "53001" "Blood Eclipse" 1 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -1812,14 +1811,14 @@ bloodEclipse1 = (event "53001" "Blood Eclipse" 1 Guardian)
   , cdLevel = 1
   }
 
-cleanThemOut :: CardDef
+cleanThemOut :: CardDef 'EventType
 cleanThemOut = (event "60111" "Clean Them Out" 0 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Fight]
   , cdSkills = [#willpower, #combat]
   }
 
-counterpunch :: CardDef
+counterpunch :: CardDef 'EventType
 counterpunch = (event "60112" "Counterpunch" 0 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Fight]
@@ -1831,7 +1830,7 @@ counterpunch = (event "60112" "Counterpunch" 0 Guardian)
 -- We need to override the action check for this card because of multiple actions,
 -- but even if we can not fight or engage the enemy, if we can move it this should
 -- still be playable
-getOverHere :: CardDef
+getOverHere :: CardDef 'EventType
 getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Engage, Action.Fight]
@@ -1848,28 +1847,28 @@ getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
   , cdOverrideActionPlayableIfCriteriaMet = True
   }
 
-glory :: CardDef
+glory :: CardDef 'EventType
 glory = (event "60115" "Glory" 1 Guardian)
   { cdCardTraits = singleton Spirit
   , cdSkills = [#intellect, #intellect]
   , cdFastWindow = Just $ EnemyDefeated Timing.After You AnyEnemy
   }
 
-monsterSlayer :: CardDef
+monsterSlayer :: CardDef 'EventType
 monsterSlayer = (event "60116" "Monster Slayer" 0 Guardian)
   { cdCardTraits = singleton Spirit
   , cdActions = [Action.Fight]
   , cdSkills = [#wild]
   }
 
-oneTwoPunch :: CardDef
+oneTwoPunch :: CardDef 'EventType
 oneTwoPunch = (event "60117" "One-Two Punch" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Fight]
   , cdSkills = [#combat]
   }
 
-standTogether :: CardDef
+standTogether :: CardDef 'EventType
 standTogether = (event "60118" "Stand Together" 0 Guardian)
   { cdCardTraits = singleton Spirit
   , cdSkills = [#willpower]
@@ -1877,7 +1876,7 @@ standTogether = (event "60118" "Stand Together" 0 Guardian)
     (Criteria.InvestigatorExists $ NotYou <> InvestigatorAt YourLocation)
   }
 
-evidence1 :: CardDef
+evidence1 :: CardDef 'EventType
 evidence1 = (event "60120" "Evidence!" 1 Guardian)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
@@ -1893,7 +1892,7 @@ evidence1 = (event "60120" "Evidence!" 1 Guardian)
   , cdLevel = 1
   }
 
-galvanize1 :: CardDef
+galvanize1 :: CardDef 'EventType
 galvanize1 = (event "60121" "Galvanize" 2 Guardian)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = singleton Spirit
@@ -1901,7 +1900,7 @@ galvanize1 = (event "60121" "Galvanize" 2 Guardian)
   , cdLevel = 1
   }
 
-counterpunch2 :: CardDef
+counterpunch2 :: CardDef 'EventType
 counterpunch2 = (event "60122" "Counterpunch" 0 Guardian)
   { cdSkills = [#combat, #combat, #agility]
   , cdCardTraits = setFromList [Spirit, Tactic]
@@ -1912,7 +1911,7 @@ counterpunch2 = (event "60122" "Counterpunch" 0 Guardian)
 -- We need to override the action check for this card because of multiple actions,
 -- but even if we can not fight or engage the enemy, if we can move it this should
 -- still be playable
-getOverHere2 :: CardDef
+getOverHere2 :: CardDef 'EventType
 getOverHere2 = (event "60123" "\"Get over here!\"" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Engage, Action.Fight]
@@ -1932,7 +1931,7 @@ getOverHere2 = (event "60123" "\"Get over here!\"" 2 Guardian)
   , cdLevel = 2
   }
 
-lessonLearned2 :: CardDef
+lessonLearned2 :: CardDef 'EventType
 lessonLearned2 = (event "60124" "Lesson Learned" 1 Guardian)
   { cdCardTraits = setFromList [Insight, Spirit]
   , cdSkills = [#willpower, #intellect, #intellect]
@@ -1947,7 +1946,7 @@ lessonLearned2 = (event "60124" "Lesson Learned" 1 Guardian)
   , cdLevel = 2
   }
 
-manoAMano2 :: CardDef
+manoAMano2 :: CardDef 'EventType
 manoAMano2 = (event "60125" "Mano a Mano" 0 Guardian)
   { cdSkills = [#willpower, #combat]
   , cdCardTraits = setFromList [Spirit, Bold]
@@ -1957,14 +1956,14 @@ manoAMano2 = (event "60125" "Mano a Mano" 0 Guardian)
   , cdLevel = 2
   }
 
-dynamiteBlast3 :: CardDef
+dynamiteBlast3 :: CardDef 'EventType
 dynamiteBlast3 = (event "60129" "Dynamite Blast" 4 Guardian)
   { cdSkills = [#willpower, #willpower, #combat, #combat]
   , cdCardTraits = setFromList [Tactic]
   , cdLevel = 3
   }
 
-taunt3 :: CardDef
+taunt3 :: CardDef 'EventType
 taunt3 = (event "60130" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just $ DuringTurn You
@@ -1972,7 +1971,7 @@ taunt3 = (event "60130" "Taunt" 1 Guardian)
   , cdLevel = 3
   }
 
-oneTwoPunch5 :: CardDef
+oneTwoPunch5 :: CardDef 'EventType
 oneTwoPunch5 = (event "60132" "One-Two Punch" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Fight]
@@ -1980,21 +1979,21 @@ oneTwoPunch5 = (event "60132" "One-Two Punch" 2 Guardian)
   , cdLevel = 5
   }
 
-burningTheMidnightOil :: CardDef
+burningTheMidnightOil :: CardDef 'EventType
 burningTheMidnightOil = (event "60214" "Burning the Midnight Oil" 0 Seeker)
   { cdSkills = [#intellect, #agility]
   , cdCardTraits = singleton Insight
   , cdActions = [Action.Investigate]
   }
 
-crypticWritings :: CardDef
+crypticWritings :: CardDef 'EventType
 crypticWritings = (event "60215" "Cryptic Writings" 0 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
   , cdCardInHandEffects = True
   }
 
-extensiveResearch :: CardDef
+extensiveResearch :: CardDef 'EventType
 extensiveResearch = (event "60216" "Extensive Research" 12 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
@@ -2007,7 +2006,7 @@ extensiveResearch = (event "60216" "Extensive Research" 12 Seeker)
     ]
   }
 
-occultInvocation :: CardDef
+occultInvocation :: CardDef 'EventType
 occultInvocation = (event "60217" "Occult Invocation" 2 Seeker)
   { cdSkills = [#combat, #intellect]
   , cdCardTraits = singleton Spell
@@ -2015,7 +2014,7 @@ occultInvocation = (event "60217" "Occult Invocation" 2 Seeker)
   , cdActions = [Action.Fight]
   }
 
-glimpseTheUnthinkable1 :: CardDef
+glimpseTheUnthinkable1 :: CardDef 'EventType
 glimpseTheUnthinkable1 = (event "60221" "Glimpse the Unthinkable" 0 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
@@ -2024,7 +2023,7 @@ glimpseTheUnthinkable1 = (event "60221" "Glimpse the Unthinkable" 0 Seeker)
     $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
   }
 
-crypticWritings2 :: CardDef
+crypticWritings2 :: CardDef 'EventType
 crypticWritings2 = (event "60224" "Cryptic Writings" 0 Seeker)
   { cdSkills = [#intellect, #wild]
   , cdCardTraits = singleton Insight
@@ -2032,7 +2031,7 @@ crypticWritings2 = (event "60224" "Cryptic Writings" 0 Seeker)
   , cdLevel = 2
   }
 
-iveGotAPlan2 :: CardDef
+iveGotAPlan2 :: CardDef 'EventType
 iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   { cdSkills = [#intellect, #intellect, #combat]
   , cdCardTraits = setFromList [Insight, Tactic]
@@ -2040,7 +2039,7 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   , cdActions = [Action.Fight]
   }
 
-mindOverMatter2 :: CardDef
+mindOverMatter2 :: CardDef 'EventType
 mindOverMatter2 = (event "60226" "Mind over Matter" 1 Seeker)
   { cdSkills = [#combat, #agility, #wild]
   , cdCardTraits = singleton Insight
@@ -2048,7 +2047,7 @@ mindOverMatter2 = (event "60226" "Mind over Matter" 1 Seeker)
   , cdLevel = 2
   }
 
-seekingAnswers2 :: CardDef
+seekingAnswers2 :: CardDef 'EventType
 seekingAnswers2 = (event "60227" "Seeking Answers" 1 Seeker)
   { cdSkills = [#intellect, #agility, #agility]
   , cdActions = [Action.Investigate]
@@ -2057,7 +2056,7 @@ seekingAnswers2 = (event "60227" "Seeking Answers" 1 Seeker)
   , cdAlternateCardCodes = ["01685"]
   }
 
-eldritchInspiration1 :: CardDef
+eldritchInspiration1 :: CardDef 'EventType
 eldritchInspiration1 = (event "60420" "Eldritch Inspiration" 0 Mystic)
   { cdSkills = [#willpower, #intellect, #intellect]
   , cdCardTraits = setFromList [Spell, Spirit]
@@ -2065,14 +2064,14 @@ eldritchInspiration1 = (event "60420" "Eldritch Inspiration" 0 Mystic)
   , cdLevel = 1
   }
 
-willToSurvive :: CardDef
+willToSurvive :: CardDef 'EventType
 willToSurvive = (event "60512" "Will to Survive" 4 Survivor)
   { cdSkills = [#combat, #wild]
   , cdCardTraits = setFromList [Spirit]
   , cdFastWindow = Just (DuringTurn You)
   }
 
-aTestOfWill :: CardDef
+aTestOfWill :: CardDef 'EventType
 aTestOfWill = (event "60513" "A Test of Will" 1 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Spirit
@@ -2090,7 +2089,7 @@ aTestOfWill = (event "60513" "A Test of Will" 1 Survivor)
     ]
   }
 
-gritYourTeeth :: CardDef
+gritYourTeeth :: CardDef 'EventType
 gritYourTeeth = (event "60515" "Grit Your Teeth" 1 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Spirit
@@ -2099,7 +2098,7 @@ gritYourTeeth = (event "60515" "Grit Your Teeth" 1 Survivor)
       AnyValue
   }
 
-aTestOfWill2 :: CardDef
+aTestOfWill2 :: CardDef 'EventType
 aTestOfWill2 = (event "60523" "A Test of Will" 0 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Spirit
@@ -2118,7 +2117,7 @@ aTestOfWill2 = (event "60523" "A Test of Will" 0 Survivor)
   , cdLevel = 2
   }
 
-lookWhatIFound2 :: CardDef
+lookWhatIFound2 :: CardDef 'EventType
 lookWhatIFound2 = (event "60524" "\"Look what I found!\"" 2 Survivor)
   { cdSkills = [#intellect, #intellect, #agility]
   , cdCardTraits = singleton Fortune
@@ -2140,7 +2139,7 @@ lookWhatIFound2 = (event "60524" "\"Look what I found!\"" 2 Survivor)
     $ Static 4
   }
 
-dumbLuck2 :: CardDef
+dumbLuck2 :: CardDef 'EventType
 dumbLuck2 = (event "60525" "Dumb Luck" 2 Survivor)
   { cdSkills = [#willpower, #agility, #agility]
   , cdCardTraits = singleton Fortune
@@ -2153,7 +2152,7 @@ dumbLuck2 = (event "60525" "Dumb Luck" 2 Survivor)
   , cdLevel = 2
   }
 
-lucky3 :: CardDef
+lucky3 :: CardDef 'EventType
 lucky3 = (event "60528" "Lucky!" 0 Survivor)
   { cdCardTraits = singleton Fortune
   , cdFastWindow = Just

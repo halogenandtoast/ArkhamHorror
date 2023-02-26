@@ -46,7 +46,7 @@ data instance Field Treachery :: Type -> Type where
   TreacheryTraits :: Field Treachery (HashSet Trait)
   TreacheryKeywords :: Field Treachery (HashSet Keyword)
   TreacheryAbilities :: Field Treachery [Ability]
-  TreacheryCardDef :: Field Treachery CardDef
+  TreacheryCardDef :: Field Treachery (CardDef 'TreacheryType)
   TreacheryCard :: Field Treachery Card
   TreacheryCanBeCommitted :: Field Treachery Bool
   TreacheryPlacement :: Field Treachery TreacheryPlacement
@@ -125,7 +125,7 @@ instance Entity TreacheryAttrs where
   overAttrs f = f
 
 instance Named TreacheryAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable TreacheryAttrs where
   toTarget = TreacheryTarget . toId
@@ -162,20 +162,20 @@ withTreacheryEnemy :: TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid
   _ ->
-    error $ show (cdName $ toCardDef attrs) <> " must be attached to an enemy"
+    error $ show (withCardDef cdName attrs) <> " must be attached to an enemy"
 
 withTreacheryLocation :: TreacheryAttrs -> (LocationId -> m a) -> m a
 withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
   Just (LocationTarget lid) -> f lid
   _ ->
-    error $ show (cdName $ toCardDef attrs) <> " must be attached to a location"
+    error $ show (withCardDef cdName attrs) <> " must be attached to a location"
 
 withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ ->
     error
-      $ show (cdName $ toCardDef attrs)
+      $ show (withCardDef cdName attrs)
       <> " must be attached to an investigator"
 
 withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
@@ -183,18 +183,18 @@ withTreacheryOwner attrs f = case treacheryOwner attrs of
   Just iid -> f iid
   _ ->
     error
-      $ show (cdName $ toCardDef attrs)
+      $ show (withCardDef cdName attrs)
       <> " must be owned by an investigator"
 
 treachery
   :: (TreacheryAttrs -> a)
-  -> CardDef
+  -> CardDef 'TreacheryType
   -> CardBuilder (InvestigatorId, TreacheryId) a
 treachery f cardDef = treacheryWith f cardDef id
 
 treacheryWith
   :: (TreacheryAttrs -> a)
-  -> CardDef
+  -> CardDef 'TreacheryType
   -> (TreacheryAttrs -> TreacheryAttrs)
   -> CardBuilder (InvestigatorId, TreacheryId) a
 treacheryWith f cardDef g = CardBuilder
@@ -218,7 +218,7 @@ treacheryWith f cardDef g = CardBuilder
 
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
-is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
+is (CardCodeTarget cardCode) t = cardCode == withCardDef cdCardCode t
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 

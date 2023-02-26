@@ -19,6 +19,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token ( Token )
 import Arkham.Trait
+import Data.HashMap.Strict qualified as HashMap
 import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EventId, EntityAttrs a ~ EventAttrs) => IsEvent a
@@ -81,8 +82,8 @@ originalCardCodeL =
 sealedTokensL :: Lens' EventAttrs [Token]
 sealedTokensL = lens eventSealedTokens $ \m x -> m { eventSealedTokens = x }
 
-allEventCards :: HashMap CardCode CardDef
-allEventCards = allPlayerEventCards
+allEventCards :: HashMap CardCode SomeCardDef
+allEventCards = HashMap.map (SomeCardDef SEventType) allPlayerEventCards
 
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
@@ -103,11 +104,11 @@ instance IsCard EventAttrs where
   toCardId = unEventId . eventId
   toCardOwner = Just . eventOwner
 
-eventWith :: (EventAttrs -> a) -> CardDef -> (EventAttrs -> EventAttrs) -> CardBuilder (InvestigatorId, EventId) a
+eventWith :: (EventAttrs -> a) -> CardDef 'EventType -> (EventAttrs -> EventAttrs) -> CardBuilder (InvestigatorId, EventId) a
 eventWith f cardDef g = Arkham.Event.Types.event (f . g) cardDef
 
 event ::
-  (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
+  (EventAttrs -> a) -> CardDef 'EventType -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
@@ -137,7 +138,7 @@ instance Entity EventAttrs where
   overAttrs f = f
 
 instance Named EventAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable EventAttrs where
   toTarget = EventTarget . toId

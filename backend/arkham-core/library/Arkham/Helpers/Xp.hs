@@ -27,7 +27,7 @@ getXpWithBonus bonus = do
       modifiers' <- getModifiers (InvestigatorTarget iid)
       victoryPileVictory <- mconcat <$> scenarioFieldMap
         ScenarioVictoryDisplay
-        (map (Sum . fromMaybe 0 . cdVictoryPoints . toCardDef))
+        (map (Sum . fromMaybe 0 . withCardDef cdVictoryPoints))
       locationVictory <-
         fmap mconcat
         . traverse

@@ -9,7 +9,7 @@ data AbilityLimit
   = PerInvestigatorLimit AbilityLimitType Int
   | PlayerLimit AbilityLimitType Int
   | GroupLimit AbilityLimitType Int
-  | PerCopyLimit CardDef AbilityLimitType Int
+  | PerCopyLimit SomeCardDef AbilityLimitType Int
   | NoLimit
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

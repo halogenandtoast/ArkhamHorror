@@ -54,7 +54,7 @@ treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 actWith
   :: (Int, AS.ActSide)
   -> (ActAttrs -> a)
-  -> CardDef
+  -> CardDef 'ActType
   -> Maybe Cost
   -> (ActAttrs -> ActAttrs)
   -> CardBuilder (Int, ActId) a
@@ -73,14 +73,14 @@ actWith (n, side) f cardDef mCost g = CardBuilder
 act
   :: (Int, AS.ActSide)
   -> (ActAttrs -> a)
-  -> CardDef
+  -> CardDef 'ActType
   -> Maybe Cost
   -> CardBuilder (Int, ActId) a
 act actSeq f cardDef mCost = actWith actSeq f cardDef mCost id
 
 instance HasCardDef ActAttrs where
   toCardDef e = case lookup (unActId $ actId e) allActCards of
-    Just def -> def
+    Just def -> SomeCardDef SActType def
     Nothing -> error $ "missing card def for act " <> show (unActId $ actId e)
 
 instance ToJSON ActAttrs where
@@ -98,7 +98,7 @@ instance Entity ActAttrs where
   overAttrs f = f
 
 instance Named ActAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable ActAttrs where
   toTarget = ActTarget . toId

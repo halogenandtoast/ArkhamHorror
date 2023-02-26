@@ -92,16 +92,16 @@ instance FromJSON CampaignAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [SomeCardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
     (unDeck deck)
     \card -> do
       when
-        (toCardDef card == randomWeakness)
+        (toCardDef card == SomeCardDef SPlayerTreacheryType randomWeakness)
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
-      pure $ toCardDef card /= randomWeakness
+      pure $ toCardDef card /= SomeCardDef SPlayerTreacheryType randomWeakness
 
 campaign
   :: (CampaignAttrs -> a)

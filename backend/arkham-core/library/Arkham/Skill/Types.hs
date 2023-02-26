@@ -17,6 +17,7 @@ import Arkham.Strategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Data.HashMap.Strict qualified as HashMap
 import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ SkillId, EntityAttrs a ~ SkillAttrs) => IsSkill a
@@ -44,8 +45,8 @@ additionalCostL = lens skillAdditionalCost $ \m x -> m { skillAdditionalCost = x
 afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
 afterPlayL = lens skillAfterPlay $ \m x -> m { skillAfterPlay = x }
 
-allSkillCards :: HashMap CardCode CardDef
-allSkillCards = allPlayerSkillCards
+allSkillCards :: HashMap CardCode SomeCardDef
+allSkillCards = HashMap.map (SomeCardDef SSkillType) allPlayerSkillCards
 
 instance HasCardCode SkillAttrs where
   toCardCode = skillCardCode
@@ -74,7 +75,7 @@ instance Entity SkillAttrs where
   overAttrs f = f
 
 instance Named SkillAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable SkillAttrs where
   toTarget = SkillTarget . skillId
@@ -87,11 +88,11 @@ instance SourceEntity SkillAttrs where
   isSource _ _ = False
 
 skillWith
-  :: (SkillAttrs -> a) -> CardDef -> (SkillAttrs -> SkillAttrs) -> CardBuilder (InvestigatorId, SkillId) a
+  :: (SkillAttrs -> a) -> CardDef 'SkillType -> (SkillAttrs -> SkillAttrs) -> CardBuilder (InvestigatorId, SkillId) a
 skillWith f cardDef g = skill (f . g) cardDef
 
 skill
-  :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
+  :: (SkillAttrs -> a) -> CardDef 'SkillType -> CardBuilder (InvestigatorId, SkillId) a
 skill f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(iid, sid) -> f $ SkillAttrs

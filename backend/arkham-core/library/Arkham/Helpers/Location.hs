@@ -15,7 +15,7 @@ import Arkham.Target
 
 toConnections :: HasGame m => LocationId -> m [LocationSymbol]
 toConnections lid =
-  fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
+  fieldMap LocationCard (withCardDef cdLocationRevealedConnections) lid
 
 getConnectedMatcher :: HasGame m => LocationId -> m LocationMatcher
 getConnectedMatcher l = do

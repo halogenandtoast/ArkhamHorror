@@ -83,7 +83,7 @@ instance Entity AgendaAttrs where
   overAttrs f = f
 
 instance Named AgendaAttrs where
-  toName = toName . toCardDef
+  toName = withCardDef toName
 
 instance Targetable AgendaAttrs where
   toTarget = AgendaTarget . toId
@@ -101,7 +101,7 @@ onSide side AgendaAttrs {..} = agendaSide agendaSequence == side
 agenda
   :: (Int, AgendaSide)
   -> (AgendaAttrs -> a)
-  -> CardDef
+  -> CardDef 'AgendaType
   -> GameValue
   -> CardBuilder (Int, AgendaId) a
 agenda agendaSeq f cardDef threshold =
@@ -110,7 +110,7 @@ agenda agendaSeq f cardDef threshold =
 agendaWith
   :: (Int, AgendaSide)
   -> (AgendaAttrs -> a)
-  -> CardDef
+  -> CardDef 'AgendaType
   -> GameValue
   -> (AgendaAttrs -> AgendaAttrs)
   -> CardBuilder (Int, AgendaId) a
@@ -131,7 +131,7 @@ agendaWith (n, side) f cardDef threshold g = CardBuilder
 
 instance HasCardDef AgendaAttrs where
   toCardDef e = case lookup (unAgendaId $ agendaId e) allAgendaCards of
-    Just def -> def
+    Just def -> SomeCardDef SAgendaType def
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 

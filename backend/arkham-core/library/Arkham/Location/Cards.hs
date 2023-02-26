@@ -23,7 +23,7 @@ locationWithUnrevealed
   -> LocationSymbol
   -> [LocationSymbol]
   -> EncounterSet
-  -> CardDef
+  -> CardDef 'LocationType
 locationWithUnrevealed cardCode unrevealedName unrevealedTraits unrevealedLocationSymbol unrevealedConnectedLocationSymbols name traits locationSymbol connectedLocationSymbols encounterSet
   = (location
       cardCode
@@ -46,7 +46,7 @@ location
   -> LocationSymbol
   -> [LocationSymbol]
   -> EncounterSet
-  -> CardDef
+  -> CardDef 'LocationType
 location cardCode name traits locationSymbol connectedLocationSymbols encounterSet
   = CardDef
     { cdCardCode = cardCode
@@ -55,7 +55,6 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdCost = Nothing
     , cdAdditionalCost = Nothing
     , cdLevel = 0
-    , cdCardType = LocationType
     , cdCardSubType = Nothing
     , cdClassSymbols = mempty
     , cdSkills = mempty
@@ -95,7 +94,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdCanReplace = True
     }
 
-allLocationCards :: HashMap CardCode CardDef
+allLocationCards :: HashMap CardCode (CardDef 'LocationType)
 allLocationCards = mapFromList $ map
   (toCardCode &&& id)
   [ aPocketInTime
@@ -429,26 +428,26 @@ allLocationCards = mapFromList $ map
   , zocalo
   ]
 
-allSpecialLocationCards :: HashMap CardCode CardDef
+allSpecialLocationCards :: HashMap CardCode (CardDef 'LocationType)
 allSpecialLocationCards =
   mapFromList $ map (toCardCode &&& id) [betweenWorlds]
 
-vengeance :: Int -> CardDef -> CardDef
+vengeance :: Int -> CardDef k -> CardDef k
 vengeance n def = def { cdVengeancePoints = Just n }
 
-victory :: Int -> CardDef -> CardDef
+victory :: Int -> CardDef k -> CardDef k
 victory n def = def { cdVictoryPoints = Just n }
 
-singleSided :: CardDef -> CardDef
+singleSided :: CardDef k -> CardDef k
 singleSided def = def { cdDoubleSided = False }
 
-quantity :: Int -> CardDef -> CardDef
+quantity :: Int -> CardDef k -> CardDef k
 quantity n def = def { cdEncounterSetQuantity = Just n }
 
-study :: CardDef
+study :: CardDef 'LocationType
 study = location "01111" "Study" mempty Circle [] TheGathering
 
-hallway :: CardDef
+hallway :: CardDef 'LocationType
 hallway = location
   "01112"
   "Hallway"
@@ -457,22 +456,22 @@ hallway = location
   [Triangle, Plus, Diamond]
   TheGathering
 
-attic :: CardDef
+attic :: CardDef 'LocationType
 attic =
   victory 1 $ location "01113" "Attic" mempty Triangle [Square] TheGathering
 
-cellar :: CardDef
+cellar :: CardDef 'LocationType
 cellar =
   victory 1 $ location "01114" "Cellar" mempty Plus [Square] TheGathering
 
-parlor :: CardDef
+parlor :: CardDef 'LocationType
 parlor = location "01115" "Parlor" mempty Diamond [Square] TheGathering
 
-yourHouse :: CardDef
+yourHouse :: CardDef 'LocationType
 yourHouse =
   location "01124" "Your House" [Arkham] Squiggle [Circle] TheMidnightMasks
 
-rivertown :: CardDef
+rivertown :: CardDef 'LocationType
 rivertown = location
   "01125"
   "Rivertown"
@@ -481,7 +480,7 @@ rivertown = location
   [Moon, Diamond, Square, Squiggle, Hourglass]
   TheMidnightMasks
 
-southsideHistoricalSociety :: CardDef
+southsideHistoricalSociety :: CardDef 'LocationType
 southsideHistoricalSociety = location
   "01126"
   ("Southside" <:> "Historical Society")
@@ -490,7 +489,7 @@ southsideHistoricalSociety = location
   [Triangle, Plus, Circle]
   TheMidnightMasks
 
-southsideMasBoardingHouse :: CardDef
+southsideMasBoardingHouse :: CardDef 'LocationType
 southsideMasBoardingHouse = location
   "01127"
   ("Southside" <:> "Ma's Boarding House")
@@ -499,7 +498,7 @@ southsideMasBoardingHouse = location
   [Triangle, Plus, Circle]
   TheMidnightMasks
 
-stMarysHospital :: CardDef
+stMarysHospital :: CardDef 'LocationType
 stMarysHospital = location
   "01128"
   "St. Mary's Hospital"
@@ -508,7 +507,7 @@ stMarysHospital = location
   [Diamond, Square]
   TheMidnightMasks
 
-miskatonicUniversity :: CardDef
+miskatonicUniversity :: CardDef 'LocationType
 miskatonicUniversity = victory 1 $ location
   "01129"
   "Miskatonic University"
@@ -517,7 +516,7 @@ miskatonicUniversity = victory 1 $ location
   [T, Plus, Circle, Square]
   TheMidnightMasks
 
-downtownFirstBankOfArkham :: CardDef
+downtownFirstBankOfArkham :: CardDef 'LocationType
 downtownFirstBankOfArkham = location
   "01130"
   ("Downtown" <:> "First Bank of Arkham")
@@ -526,7 +525,7 @@ downtownFirstBankOfArkham = location
   [Moon, T]
   TheMidnightMasks
 
-downtownArkhamAsylum :: CardDef
+downtownArkhamAsylum :: CardDef 'LocationType
 downtownArkhamAsylum = victory 1 $ location
   "01131"
   ("Downtown" <:> "Arkham Asylum")
@@ -535,15 +534,15 @@ downtownArkhamAsylum = victory 1 $ location
   [Moon, T]
   TheMidnightMasks
 
-easttown :: CardDef
+easttown :: CardDef 'LocationType
 easttown =
   location "01132" "Easttown" [Arkham] Moon [Circle, Triangle] TheMidnightMasks
 
-graveyard :: CardDef
+graveyard :: CardDef 'LocationType
 graveyard = victory 1
   $ location "01133" "Graveyard" [Arkham] Hourglass [Circle] TheMidnightMasks
 
-northside :: CardDef
+northside :: CardDef 'LocationType
 northside = victory 1 $ location
   "01134"
   "Northside"
@@ -552,11 +551,11 @@ northside = victory 1 $ location
   [Diamond, Triangle]
   TheMidnightMasks
 
-mainPath :: CardDef
+mainPath :: CardDef 'LocationType
 mainPath =
   location "01149" "Main Path" [Woods] Squiggle [Square, Plus] TheDevourerBelow
 
-arkhamWoodsUnhallowedGround :: CardDef
+arkhamWoodsUnhallowedGround :: CardDef 'LocationType
 arkhamWoodsUnhallowedGround = locationWithUnrevealed
   "01150"
   "Arkham Woods"
@@ -569,7 +568,7 @@ arkhamWoodsUnhallowedGround = locationWithUnrevealed
   [Squiggle, Hourglass, Diamond]
   TheDevourerBelow
 
-arkhamWoodsTwistingPaths :: CardDef
+arkhamWoodsTwistingPaths :: CardDef 'LocationType
 arkhamWoodsTwistingPaths = locationWithUnrevealed
   "01151"
   "Arkham Woods"
@@ -582,7 +581,7 @@ arkhamWoodsTwistingPaths = locationWithUnrevealed
   [Squiggle, Diamond, Equals]
   TheDevourerBelow
 
-arkhamWoodsOldHouse :: CardDef
+arkhamWoodsOldHouse :: CardDef 'LocationType
 arkhamWoodsOldHouse = locationWithUnrevealed
   "01152"
   "Arkham Woods"
@@ -595,7 +594,7 @@ arkhamWoodsOldHouse = locationWithUnrevealed
   [Squiggle, Triangle, T]
   TheDevourerBelow
 
-arkhamWoodsCliffside :: CardDef
+arkhamWoodsCliffside :: CardDef 'LocationType
 arkhamWoodsCliffside = locationWithUnrevealed
   "01153"
   "Arkham Woods"
@@ -608,7 +607,7 @@ arkhamWoodsCliffside = locationWithUnrevealed
   [Squiggle, Moon, Triangle]
   TheDevourerBelow
 
-arkhamWoodsTangledThicket :: CardDef
+arkhamWoodsTangledThicket :: CardDef 'LocationType
 arkhamWoodsTangledThicket = locationWithUnrevealed
   "01154"
   "Arkham Woods"
@@ -621,7 +620,7 @@ arkhamWoodsTangledThicket = locationWithUnrevealed
   [Squiggle, T, Moon]
   TheDevourerBelow
 
-arkhamWoodsQuietGlade :: CardDef
+arkhamWoodsQuietGlade :: CardDef 'LocationType
 arkhamWoodsQuietGlade = locationWithUnrevealed
   "01155"
   "Arkham Woods"
@@ -634,11 +633,11 @@ arkhamWoodsQuietGlade = locationWithUnrevealed
   [Squiggle, Equals, Hourglass]
   TheDevourerBelow
 
-ritualSite :: CardDef
+ritualSite :: CardDef 'LocationType
 ritualSite =
   location "01156" "Ritual Site" [Cave] Plus [Squiggle] TheDevourerBelow
 
-miskatonicQuad :: CardDef
+miskatonicQuad :: CardDef 'LocationType
 miskatonicQuad = location
   "02048"
   "Miskatonic Quad"
@@ -647,7 +646,7 @@ miskatonicQuad = location
   [Triangle, Hourglass, Square, Diamond, Circle]
   ExtracurricularActivity
 
-humanitiesBuilding :: CardDef
+humanitiesBuilding :: CardDef 'LocationType
 humanitiesBuilding = location
   "02049"
   "Humanities Building"
@@ -656,7 +655,7 @@ humanitiesBuilding = location
   [Plus, Triangle]
   ExtracurricularActivity
 
-orneLibrary :: CardDef
+orneLibrary :: CardDef 'LocationType
 orneLibrary = victory 1 $ location
   "02050"
   "Orne Library"
@@ -665,7 +664,7 @@ orneLibrary = victory 1 $ location
   [Plus, Square]
   ExtracurricularActivity
 
-studentUnion :: CardDef
+studentUnion :: CardDef 'LocationType
 studentUnion = location
   "02051"
   "Student Union"
@@ -674,7 +673,7 @@ studentUnion = location
   [Plus, Equals]
   ExtracurricularActivity
 
-dormitories :: CardDef
+dormitories :: CardDef 'LocationType
 dormitories = victory 1 $ location
   "02052"
   "Dormitories"
@@ -683,7 +682,7 @@ dormitories = victory 1 $ location
   [Diamond]
   ExtracurricularActivity
 
-administrationBuilding :: CardDef
+administrationBuilding :: CardDef 'LocationType
 administrationBuilding = location
   "02053"
   "Administration Building"
@@ -692,7 +691,7 @@ administrationBuilding = location
   [Plus, T]
   ExtracurricularActivity
 
-facultyOfficesTheNightIsStillYoung :: CardDef
+facultyOfficesTheNightIsStillYoung :: CardDef 'LocationType
 facultyOfficesTheNightIsStillYoung = victory 1 $ location
   "02054"
   ("Faculty Offices" <:> "The Night is Still Young")
@@ -701,7 +700,7 @@ facultyOfficesTheNightIsStillYoung = victory 1 $ location
   [Circle]
   ExtracurricularActivity
 
-facultyOfficesTheHourIsLate :: CardDef
+facultyOfficesTheHourIsLate :: CardDef 'LocationType
 facultyOfficesTheHourIsLate = location
   "02055"
   ("Faculty Offices" <:> "The Hour is Late")
@@ -710,7 +709,7 @@ facultyOfficesTheHourIsLate = location
   [Circle]
   ExtracurricularActivity
 
-scienceBuilding :: CardDef
+scienceBuilding :: CardDef 'LocationType
 scienceBuilding = location
   "02056"
   "Science Building"
@@ -719,7 +718,7 @@ scienceBuilding = location
   [Plus, Squiggle]
   ExtracurricularActivity
 
-alchemyLabs :: CardDef
+alchemyLabs :: CardDef 'LocationType
 alchemyLabs = location
   "02057"
   "Alchemy Labs"
@@ -728,11 +727,11 @@ alchemyLabs = location
   [Hourglass]
   ExtracurricularActivity
 
-laBellaLuna :: CardDef
+laBellaLuna :: CardDef 'LocationType
 laBellaLuna =
   location "02070" "La Bella Luna" [Arkham] Moon [Circle] TheHouseAlwaysWins
 
-cloverClubLounge :: CardDef
+cloverClubLounge :: CardDef 'LocationType
 cloverClubLounge = location
   "02071"
   "Clover Club Lounge"
@@ -741,7 +740,7 @@ cloverClubLounge = location
   [Moon, Square, Triangle]
   TheHouseAlwaysWins
 
-cloverClubBar :: CardDef
+cloverClubBar :: CardDef 'LocationType
 cloverClubBar = location
   "02072"
   "Clover Club Bar"
@@ -750,7 +749,7 @@ cloverClubBar = location
   [Triangle, Circle]
   TheHouseAlwaysWins
 
-cloverClubCardroom :: CardDef
+cloverClubCardroom :: CardDef 'LocationType
 cloverClubCardroom = location
   "02073"
   "Clover Club Cardroom"
@@ -759,7 +758,7 @@ cloverClubCardroom = location
   [Circle, Square, Diamond]
   TheHouseAlwaysWins
 
-darkenedHall :: CardDef
+darkenedHall :: CardDef 'LocationType
 darkenedHall = location
   "02074"
   "Darkened Hall"
@@ -768,7 +767,7 @@ darkenedHall = location
   [Triangle, T, Hourglass, Plus, Squiggle]
   TheHouseAlwaysWins
 
-artGallery :: CardDef
+artGallery :: CardDef 'LocationType
 artGallery = victory 1 $ locationWithUnrevealed
   "02075"
   "Back Hall Doorway"
@@ -781,7 +780,7 @@ artGallery = victory 1 $ locationWithUnrevealed
   [Diamond]
   TheHouseAlwaysWins
 
-vipArea :: CardDef
+vipArea :: CardDef 'LocationType
 vipArea = victory 1 $ locationWithUnrevealed
   "02076"
   "Back Hall Doorway"
@@ -794,7 +793,7 @@ vipArea = victory 1 $ locationWithUnrevealed
   [Diamond]
   TheHouseAlwaysWins
 
-backAlley :: CardDef
+backAlley :: CardDef 'LocationType
 backAlley = victory 1 $ locationWithUnrevealed
   "02077"
   "Back Hall Doorway"
@@ -807,7 +806,7 @@ backAlley = victory 1 $ locationWithUnrevealed
   [Diamond]
   TheHouseAlwaysWins
 
-museumEntrance :: CardDef
+museumEntrance :: CardDef 'LocationType
 museumEntrance = location
   "02126"
   "Museum Entrance"
@@ -816,7 +815,7 @@ museumEntrance = location
   [Square]
   TheMiskatonicMuseum
 
-museumHalls :: CardDef
+museumHalls :: CardDef 'LocationType
 museumHalls = location
   "02127"
   "Museum Halls"
@@ -825,7 +824,7 @@ museumHalls = location
   [Circle, Diamond, Triangle]
   TheMiskatonicMuseum
 
-securityOffice_128 :: CardDef
+securityOffice_128 :: CardDef 'LocationType
 securityOffice_128 = location
   "02128"
   "Security Office"
@@ -834,7 +833,7 @@ securityOffice_128 = location
   [Square]
   TheMiskatonicMuseum
 
-securityOffice_129 :: CardDef
+securityOffice_129 :: CardDef 'LocationType
 securityOffice_129 = location
   "02129"
   "Security Office"
@@ -843,7 +842,7 @@ securityOffice_129 = location
   [Square]
   TheMiskatonicMuseum
 
-administrationOffice_130 :: CardDef
+administrationOffice_130 :: CardDef 'LocationType
 administrationOffice_130 = location
   "02130"
   "Administration Office"
@@ -852,7 +851,7 @@ administrationOffice_130 = location
   [Square]
   TheMiskatonicMuseum
 
-administrationOffice_131 :: CardDef
+administrationOffice_131 :: CardDef 'LocationType
 administrationOffice_131 = location
   "02131"
   "Administration Office"
@@ -861,7 +860,7 @@ administrationOffice_131 = location
   [Square]
   TheMiskatonicMuseum
 
-exhibitHallAthabaskanExhibit :: CardDef
+exhibitHallAthabaskanExhibit :: CardDef 'LocationType
 exhibitHallAthabaskanExhibit = locationWithUnrevealed
   "02132"
   "Exhibit Hall"
@@ -874,7 +873,7 @@ exhibitHallAthabaskanExhibit = locationWithUnrevealed
   [Square]
   TheMiskatonicMuseum
 
-exhibitHallMedusaExhibit :: CardDef
+exhibitHallMedusaExhibit :: CardDef 'LocationType
 exhibitHallMedusaExhibit = victory 1 $ locationWithUnrevealed
   "02133"
   "Exhibit Hall"
@@ -887,7 +886,7 @@ exhibitHallMedusaExhibit = victory 1 $ locationWithUnrevealed
   [Square, Moon]
   TheMiskatonicMuseum
 
-exhibitHallNatureExhibit :: CardDef
+exhibitHallNatureExhibit :: CardDef 'LocationType
 exhibitHallNatureExhibit = victory 1 $ locationWithUnrevealed
   "02134"
   "Exhibit Hall"
@@ -900,7 +899,7 @@ exhibitHallNatureExhibit = victory 1 $ locationWithUnrevealed
   [Square, Squiggle]
   TheMiskatonicMuseum
 
-exhibitHallEgyptianExhibit :: CardDef
+exhibitHallEgyptianExhibit :: CardDef 'LocationType
 exhibitHallEgyptianExhibit = victory 1 $ locationWithUnrevealed
   "02135"
   "Exhibit Hall"
@@ -913,7 +912,7 @@ exhibitHallEgyptianExhibit = victory 1 $ locationWithUnrevealed
   [Square, T]
   TheMiskatonicMuseum
 
-exhibitHallHallOfTheDead :: CardDef
+exhibitHallHallOfTheDead :: CardDef 'LocationType
 exhibitHallHallOfTheDead = victory 1 $ locationWithUnrevealed
   "02136"
   "Exhibit Hall"
@@ -926,7 +925,7 @@ exhibitHallHallOfTheDead = victory 1 $ locationWithUnrevealed
   [Square, Hourglass]
   TheMiskatonicMuseum
 
-exhibitHallRestrictedHall :: CardDef
+exhibitHallRestrictedHall :: CardDef 'LocationType
 exhibitHallRestrictedHall = victory 1 $ locationWithUnrevealed
   "02137"
   "Exhibit Hall"
@@ -939,7 +938,7 @@ exhibitHallRestrictedHall = victory 1 $ locationWithUnrevealed
   [Square]
   TheMiskatonicMuseum
 
-passengerCar_167 :: CardDef
+passengerCar_167 :: CardDef 'LocationType
 passengerCar_167 = locationWithUnrevealed
   "02167"
   "Train Car"
@@ -952,7 +951,7 @@ passengerCar_167 = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-passengerCar_168 :: CardDef
+passengerCar_168 :: CardDef 'LocationType
 passengerCar_168 = locationWithUnrevealed
   "02168"
   "Train Car"
@@ -965,7 +964,7 @@ passengerCar_168 = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-passengerCar_169 :: CardDef
+passengerCar_169 :: CardDef 'LocationType
 passengerCar_169 = locationWithUnrevealed
   "02169"
   "Train Car"
@@ -978,7 +977,7 @@ passengerCar_169 = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-passengerCar_170 :: CardDef
+passengerCar_170 :: CardDef 'LocationType
 passengerCar_170 = locationWithUnrevealed
   "02170"
   "Train Car"
@@ -991,7 +990,7 @@ passengerCar_170 = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-passengerCar_171 :: CardDef
+passengerCar_171 :: CardDef 'LocationType
 passengerCar_171 = locationWithUnrevealed
   "02171"
   "Train Car"
@@ -1004,7 +1003,7 @@ passengerCar_171 = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-sleepingCar :: CardDef
+sleepingCar :: CardDef 'LocationType
 sleepingCar = locationWithUnrevealed
   "02172"
   "Train Car"
@@ -1017,7 +1016,7 @@ sleepingCar = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-diningCar :: CardDef
+diningCar :: CardDef 'LocationType
 diningCar = locationWithUnrevealed
   "02173"
   "Train Car"
@@ -1030,7 +1029,7 @@ diningCar = locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-parlorCar :: CardDef
+parlorCar :: CardDef 'LocationType
 parlorCar = victory 1 $ locationWithUnrevealed
   "02174"
   "Train Car"
@@ -1043,19 +1042,19 @@ parlorCar = victory 1 $ locationWithUnrevealed
   []
   TheEssexCountyExpress
 
-engineCar_175 :: CardDef
+engineCar_175 :: CardDef 'LocationType
 engineCar_175 = victory 1
   $ location "02175" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress
 
-engineCar_176 :: CardDef
+engineCar_176 :: CardDef 'LocationType
 engineCar_176 = victory 1
   $ location "02176" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress
 
-engineCar_177 :: CardDef
+engineCar_177 :: CardDef 'LocationType
 engineCar_177 = victory 1
   $ location "02177" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress
 
-villageCommons :: CardDef
+villageCommons :: CardDef 'LocationType
 villageCommons = location
   "02201"
   "Village Commons"
@@ -1064,7 +1063,7 @@ villageCommons = location
   [Square, Circle, Moon]
   BloodOnTheAltar
 
-bishopsBrook_202 :: CardDef
+bishopsBrook_202 :: CardDef 'LocationType
 bishopsBrook_202 = location
   "02202"
   "Bishop's Brook"
@@ -1073,7 +1072,7 @@ bishopsBrook_202 = location
   [Plus, Circle, Triangle]
   BloodOnTheAltar
 
-bishopsBrook_203 :: CardDef
+bishopsBrook_203 :: CardDef 'LocationType
 bishopsBrook_203 = location
   "02203"
   "Bishop's Brook"
@@ -1082,7 +1081,7 @@ bishopsBrook_203 = location
   [Plus, Circle, Triangle]
   BloodOnTheAltar
 
-burnedRuins_204 :: CardDef
+burnedRuins_204 :: CardDef 'LocationType
 burnedRuins_204 = location
   "02204"
   "Burned Ruins"
@@ -1091,7 +1090,7 @@ burnedRuins_204 = location
   [Square, Diamond]
   BloodOnTheAltar
 
-burnedRuins_205 :: CardDef
+burnedRuins_205 :: CardDef 'LocationType
 burnedRuins_205 = location
   "02205"
   "Burned Ruins"
@@ -1100,7 +1099,7 @@ burnedRuins_205 = location
   [Square, Diamond]
   BloodOnTheAltar
 
-osbornsGeneralStore_206 :: CardDef
+osbornsGeneralStore_206 :: CardDef 'LocationType
 osbornsGeneralStore_206 = location
   "02206"
   "Osborn's General Store"
@@ -1109,7 +1108,7 @@ osbornsGeneralStore_206 = location
   [Moon, Square]
   BloodOnTheAltar
 
-osbornsGeneralStore_207 :: CardDef
+osbornsGeneralStore_207 :: CardDef 'LocationType
 osbornsGeneralStore_207 = location
   "02207"
   "Osborn's General Store"
@@ -1118,7 +1117,7 @@ osbornsGeneralStore_207 = location
   [Moon, Square]
   BloodOnTheAltar
 
-congregationalChurch_208 :: CardDef
+congregationalChurch_208 :: CardDef 'LocationType
 congregationalChurch_208 = location
   "02208"
   "Congregational Church"
@@ -1127,7 +1126,7 @@ congregationalChurch_208 = location
   [Plus, Triangle, Squiggle]
   BloodOnTheAltar
 
-congregationalChurch_209 :: CardDef
+congregationalChurch_209 :: CardDef 'LocationType
 congregationalChurch_209 = location
   "02209"
   "Congregational Church"
@@ -1136,7 +1135,7 @@ congregationalChurch_209 = location
   [Plus, Triangle, Squiggle]
   BloodOnTheAltar
 
-houseInTheReeds_210 :: CardDef
+houseInTheReeds_210 :: CardDef 'LocationType
 houseInTheReeds_210 = location
   "02210"
   "House in the Reeds"
@@ -1145,7 +1144,7 @@ houseInTheReeds_210 = location
   [Diamond, Moon]
   BloodOnTheAltar
 
-houseInTheReeds_211 :: CardDef
+houseInTheReeds_211 :: CardDef 'LocationType
 houseInTheReeds_211 = location
   "02211"
   "House in the Reeds"
@@ -1154,7 +1153,7 @@ houseInTheReeds_211 = location
   [Diamond, Moon]
   BloodOnTheAltar
 
-schoolhouse_212 :: CardDef
+schoolhouse_212 :: CardDef 'LocationType
 schoolhouse_212 = location
   "02212"
   "Schoolhouse"
@@ -1163,7 +1162,7 @@ schoolhouse_212 = location
   [Plus, Squiggle, Moon]
   BloodOnTheAltar
 
-schoolhouse_213 :: CardDef
+schoolhouse_213 :: CardDef 'LocationType
 schoolhouse_213 = location
   "02213"
   "Schoolhouse"
@@ -1172,7 +1171,7 @@ schoolhouse_213 = location
   [Plus, Squiggle, Moon]
   BloodOnTheAltar
 
-theHiddenChamber :: CardDef
+theHiddenChamber :: CardDef 'LocationType
 theHiddenChamber = victory 2 $ location
   "02214"
   ("The Hidden Chamber" <:> "Prison of the Beast")
@@ -1181,7 +1180,7 @@ theHiddenChamber = victory 2 $ location
   []
   BloodOnTheAltar
 
-dunwichVillage_242 :: CardDef
+dunwichVillage_242 :: CardDef 'LocationType
 dunwichVillage_242 = location
   "02242"
   "Dunwich Village"
@@ -1190,7 +1189,7 @@ dunwichVillage_242 = location
   [Triangle, Square, Diamond]
   UndimensionedAndUnseen
 
-dunwichVillage_243 :: CardDef
+dunwichVillage_243 :: CardDef 'LocationType
 dunwichVillage_243 = location
   "02243"
   "Dunwich Village"
@@ -1199,7 +1198,7 @@ dunwichVillage_243 = location
   [Triangle, Square, Diamond]
   UndimensionedAndUnseen
 
-coldSpringGlen_244 :: CardDef
+coldSpringGlen_244 :: CardDef 'LocationType
 coldSpringGlen_244 = location
   "02244"
   "Cold Spring Glen"
@@ -1208,7 +1207,7 @@ coldSpringGlen_244 = location
   [Circle, Diamond, Plus]
   UndimensionedAndUnseen
 
-coldSpringGlen_245 :: CardDef
+coldSpringGlen_245 :: CardDef 'LocationType
 coldSpringGlen_245 = location
   "02245"
   "Cold Spring Glen"
@@ -1217,7 +1216,7 @@ coldSpringGlen_245 = location
   [Circle, Diamond, Plus]
   UndimensionedAndUnseen
 
-tenAcreMeadow_246 :: CardDef
+tenAcreMeadow_246 :: CardDef 'LocationType
 tenAcreMeadow_246 = location
   "02246"
   "Ten-Acre Meadow"
@@ -1226,7 +1225,7 @@ tenAcreMeadow_246 = location
   [Circle, Triangle, Plus]
   UndimensionedAndUnseen
 
-tenAcreMeadow_247 :: CardDef
+tenAcreMeadow_247 :: CardDef 'LocationType
 tenAcreMeadow_247 = location
   "02247"
   "Ten-Acre Meadow"
@@ -1235,7 +1234,7 @@ tenAcreMeadow_247 = location
   [Circle, Triangle, Plus]
   UndimensionedAndUnseen
 
-blastedHeath_248 :: CardDef
+blastedHeath_248 :: CardDef 'LocationType
 blastedHeath_248 = location
   "02248"
   "Blasted Heath"
@@ -1244,7 +1243,7 @@ blastedHeath_248 = location
   [Circle, Hourglass]
   UndimensionedAndUnseen
 
-blastedHeath_249 :: CardDef
+blastedHeath_249 :: CardDef 'LocationType
 blastedHeath_249 = location
   "02249"
   "Blasted Heath"
@@ -1253,7 +1252,7 @@ blastedHeath_249 = location
   [Circle, Hourglass]
   UndimensionedAndUnseen
 
-whateleyRuins_250 :: CardDef
+whateleyRuins_250 :: CardDef 'LocationType
 whateleyRuins_250 = location
   "02250"
   "Whateley Ruins"
@@ -1262,7 +1261,7 @@ whateleyRuins_250 = location
   [Triangle, Diamond, Hourglass]
   UndimensionedAndUnseen
 
-whateleyRuins_251 :: CardDef
+whateleyRuins_251 :: CardDef 'LocationType
 whateleyRuins_251 = location
   "02251"
   "Whateley Ruins"
@@ -1271,7 +1270,7 @@ whateleyRuins_251 = location
   [Triangle, Diamond, Hourglass]
   UndimensionedAndUnseen
 
-devilsHopYard_252 :: CardDef
+devilsHopYard_252 :: CardDef 'LocationType
 devilsHopYard_252 = location
   "02252"
   "Devil's Hop Yard"
@@ -1280,7 +1279,7 @@ devilsHopYard_252 = location
   [Square, Plus]
   UndimensionedAndUnseen
 
-devilsHopYard_253 :: CardDef
+devilsHopYard_253 :: CardDef 'LocationType
 devilsHopYard_253 = location
   "02253"
   "Devil's Hop Yard"
@@ -1289,7 +1288,7 @@ devilsHopYard_253 = location
   [Square, Plus]
   UndimensionedAndUnseen
 
-baseOfTheHill :: CardDef
+baseOfTheHill :: CardDef 'LocationType
 baseOfTheHill = location
   "02282"
   "Base of the Hill"
@@ -1298,7 +1297,7 @@ baseOfTheHill = location
   [Square, Plus, Squiggle, Hourglass]
   WhereDoomAwaits
 
-ascendingPath :: CardDef
+ascendingPath :: CardDef 'LocationType
 ascendingPath = location
   "02283"
   "Ascending Path"
@@ -1307,7 +1306,7 @@ ascendingPath = location
   [Triangle, Diamond, T, Equals, Moon]
   WhereDoomAwaits
 
-sentinelPeak :: CardDef
+sentinelPeak :: CardDef 'LocationType
 sentinelPeak = victory 2 $ location
   "02284"
   "Sentinel Peak"
@@ -1316,7 +1315,7 @@ sentinelPeak = victory 2 $ location
   [Square]
   WhereDoomAwaits
 
-slaughteredWoods :: CardDef
+slaughteredWoods :: CardDef 'LocationType
 slaughteredWoods = locationWithUnrevealed
   "02285"
   "Diverging Path"
@@ -1329,7 +1328,7 @@ slaughteredWoods = locationWithUnrevealed
   [Triangle, Hourglass]
   WhereDoomAwaits
 
-eerieGlade :: CardDef
+eerieGlade :: CardDef 'LocationType
 eerieGlade = locationWithUnrevealed
   "02286"
   "Diverging Path"
@@ -1342,7 +1341,7 @@ eerieGlade = locationWithUnrevealed
   [Triangle, Plus]
   WhereDoomAwaits
 
-destroyedPath :: CardDef
+destroyedPath :: CardDef 'LocationType
 destroyedPath = locationWithUnrevealed
   "02287"
   "Diverging Path"
@@ -1355,7 +1354,7 @@ destroyedPath = locationWithUnrevealed
   [Triangle, Equals]
   WhereDoomAwaits
 
-frozenSpring :: CardDef
+frozenSpring :: CardDef 'LocationType
 frozenSpring = locationWithUnrevealed
   "02288"
   "Diverging Path"
@@ -1368,7 +1367,7 @@ frozenSpring = locationWithUnrevealed
   [Triangle, Hourglass]
   WhereDoomAwaits
 
-dimensionalGap :: CardDef
+dimensionalGap :: CardDef 'LocationType
 dimensionalGap = locationWithUnrevealed
   "02289"
   "Altered Path"
@@ -1381,7 +1380,7 @@ dimensionalGap = locationWithUnrevealed
   [Square, Moon]
   WhereDoomAwaits
 
-aTearInThePath :: CardDef
+aTearInThePath :: CardDef 'LocationType
 aTearInThePath = locationWithUnrevealed
   "02290"
   "Altered Path"
@@ -1394,7 +1393,7 @@ aTearInThePath = locationWithUnrevealed
   [Square, Squiggle]
   WhereDoomAwaits
 
-uprootedWoods :: CardDef
+uprootedWoods :: CardDef 'LocationType
 uprootedWoods = locationWithUnrevealed
   "02291"
   "Altered Path"
@@ -1407,7 +1406,7 @@ uprootedWoods = locationWithUnrevealed
   [Square, T]
   WhereDoomAwaits
 
-lostMemories :: CardDef
+lostMemories :: CardDef 'LocationType
 lostMemories = locationWithUnrevealed
   "02292"
   "Altered Path"
@@ -1420,7 +1419,7 @@ lostMemories = locationWithUnrevealed
   [Square, Moon]
   WhereDoomAwaits
 
-anotherDimension :: CardDef
+anotherDimension :: CardDef 'LocationType
 anotherDimension = location
   "02320"
   ("Another Dimension" <:> "Unfettered by Reality")
@@ -1429,7 +1428,7 @@ anotherDimension = location
   [Square, Diamond, Triangle]
   LostInTimeAndSpace
 
-theEdgeOfTheUniverse :: CardDef
+theEdgeOfTheUniverse :: CardDef 'LocationType
 theEdgeOfTheUniverse = location
   "02321"
   "The Edge of the Universe"
@@ -1438,7 +1437,7 @@ theEdgeOfTheUniverse = location
   [Plus, Squiggle]
   LostInTimeAndSpace
 
-tearThroughTime :: CardDef
+tearThroughTime :: CardDef 'LocationType
 tearThroughTime = location
   "02322"
   "Tear Through Time"
@@ -1447,7 +1446,7 @@ tearThroughTime = location
   [Circle, Plus, Squiggle]
   LostInTimeAndSpace
 
-tearThroughSpace :: CardDef
+tearThroughSpace :: CardDef 'LocationType
 tearThroughSpace = (location
                      "02324"
                      "Tear Through Space"
@@ -1461,7 +1460,7 @@ tearThroughSpace = (location
   , cdEncounterSetQuantity = Just 4
   }
 
-prismaticCascade :: CardDef
+prismaticCascade :: CardDef 'LocationType
 prismaticCascade = (location
                      "02325"
                      "Prismatic Cascade"
@@ -1474,7 +1473,7 @@ prismaticCascade = (location
   , cdEncounterSetQuantity = Just 2
   }
 
-endlessBridge :: CardDef
+endlessBridge :: CardDef 'LocationType
 endlessBridge = (location
                   "02326"
                   "Endless Bridge"
@@ -1487,7 +1486,7 @@ endlessBridge = (location
   , cdEncounterSetQuantity = Just 2
   }
 
-stepsOfYhagharl :: CardDef
+stepsOfYhagharl :: CardDef 'LocationType
 stepsOfYhagharl = singleSided $ location
   "02327"
   "Steps of Y'hagharl"
@@ -1496,7 +1495,7 @@ stepsOfYhagharl = singleSided $ location
   [Diamond, Moon]
   LostInTimeAndSpace
 
-dimensionalDoorway :: CardDef
+dimensionalDoorway :: CardDef 'LocationType
 dimensionalDoorway = singleSided $ location
   "02328"
   "Dimensional Doorway"
@@ -1505,23 +1504,23 @@ dimensionalDoorway = singleSided $ location
   [Triangle, Moon]
   LostInTimeAndSpace
 
-theatre :: CardDef
+theatre :: CardDef 'LocationType
 theatre =
   location "03049" "Theatre" mempty Circle [Diamond, Triangle] CurtainCall
 
-lobby :: CardDef
+lobby :: CardDef 'LocationType
 lobby =
   location "03050" "Lobby" mempty Triangle [Circle, Square, Plus] CurtainCall
 
-balcony :: CardDef
+balcony :: CardDef 'LocationType
 balcony = victory 1
   $ location "03051" "Balcony" mempty Square [Circle, Triangle] CurtainCall
 
-backstage :: CardDef
+backstage :: CardDef 'LocationType
 backstage =
   location "03052" "Backstage" mempty Diamond [Circle, Moon] CurtainCall
 
-lightingBox :: CardDef
+lightingBox :: CardDef 'LocationType
 lightingBox = victory 1 $ locationWithUnrevealed
   "03053"
   "Lobby Doorway"
@@ -1534,7 +1533,7 @@ lightingBox = victory 1 $ locationWithUnrevealed
   [Triangle]
   CurtainCall
 
-boxOffice :: CardDef
+boxOffice :: CardDef 'LocationType
 boxOffice = locationWithUnrevealed
   "03054"
   "Lobby Doorway"
@@ -1547,7 +1546,7 @@ boxOffice = locationWithUnrevealed
   [Triangle]
   CurtainCall
 
-greenRoom :: CardDef
+greenRoom :: CardDef 'LocationType
 greenRoom = victory 1 $ locationWithUnrevealed
   "03055"
   "Lobby Doorway"
@@ -1560,7 +1559,7 @@ greenRoom = victory 1 $ locationWithUnrevealed
   [Triangle]
   CurtainCall
 
-dressingRoom :: CardDef
+dressingRoom :: CardDef 'LocationType
 dressingRoom = locationWithUnrevealed
   "03056"
   "Backstage Doorway"
@@ -1573,7 +1572,7 @@ dressingRoom = locationWithUnrevealed
   [Diamond]
   CurtainCall
 
-rehearsalRoom :: CardDef
+rehearsalRoom :: CardDef 'LocationType
 rehearsalRoom = victory 1 $ locationWithUnrevealed
   "03057"
   "Backstage Doorway"
@@ -1586,7 +1585,7 @@ rehearsalRoom = victory 1 $ locationWithUnrevealed
   [Diamond]
   CurtainCall
 
-trapRoom :: CardDef
+trapRoom :: CardDef 'LocationType
 trapRoom = victory 1 $ locationWithUnrevealed
   "03058"
   "Backstage Doorway"
@@ -1599,21 +1598,21 @@ trapRoom = victory 1 $ locationWithUnrevealed
   [Diamond]
   CurtainCall
 
-foyer :: CardDef
+foyer :: CardDef 'LocationType
 foyer = location "03070" "Foyer" mempty T [Circle, Square, Equals] TheLastKing
 
-ballroom :: CardDef
+ballroom :: CardDef 'LocationType
 ballroom =
   location "03071" "Ballroom" mempty Square [T, Circle, Squiggle] TheLastKing
 
-livingRoom :: CardDef
+livingRoom :: CardDef 'LocationType
 livingRoom =
   location "03072" "Living Room" mempty Equals [T, Circle, Plus] TheLastKing
 
-gallery :: CardDef
+gallery :: CardDef 'LocationType
 gallery = location "03073" "Gallery" mempty Plus [Equals, Circle] TheLastKing
 
-courtyard :: CardDef
+courtyard :: CardDef 'LocationType
 courtyard = location
   "03074"
   "Courtyard"
@@ -1622,15 +1621,15 @@ courtyard = location
   [Squiggle, Square, T, Equals, Plus]
   TheLastKing
 
-diningRoom :: CardDef
+diningRoom :: CardDef 'LocationType
 diningRoom =
   location "03075" "Dining Room" mempty Squiggle [Square, Circle] TheLastKing
 
-entryHall :: CardDef
+entryHall :: CardDef 'LocationType
 entryHall =
   location "03127" "Entry Hall" [GroundFloor] Square [Circle] EchoesOfThePast
 
-historicalSocietyMeetingRoom :: CardDef
+historicalSocietyMeetingRoom :: CardDef 'LocationType
 historicalSocietyMeetingRoom = locationWithUnrevealed
   "03128"
   "Historical Society"
@@ -1643,7 +1642,7 @@ historicalSocietyMeetingRoom = locationWithUnrevealed
   [Square]
   EchoesOfThePast
 
-historicalSocietyRecordOffice_129 :: CardDef
+historicalSocietyRecordOffice_129 :: CardDef 'LocationType
 historicalSocietyRecordOffice_129 = locationWithUnrevealed
   "03129"
   "Historical Society"
@@ -1656,7 +1655,7 @@ historicalSocietyRecordOffice_129 = locationWithUnrevealed
   [Square]
   EchoesOfThePast
 
-historicalSocietyHistoricalMuseum_130 :: CardDef
+historicalSocietyHistoricalMuseum_130 :: CardDef 'LocationType
 historicalSocietyHistoricalMuseum_130 = locationWithUnrevealed
   "03130"
   "Historical Society"
@@ -1669,7 +1668,7 @@ historicalSocietyHistoricalMuseum_130 = locationWithUnrevealed
   [Square, Hourglass]
   EchoesOfThePast
 
-quietHalls_131 :: CardDef
+quietHalls_131 :: CardDef 'LocationType
 quietHalls_131 = location
   "03131"
   "Quiet Halls"
@@ -1678,7 +1677,7 @@ quietHalls_131 = location
   [Square, Star]
   EchoesOfThePast
 
-historicalSocietyHistoricalMuseum_132 :: CardDef
+historicalSocietyHistoricalMuseum_132 :: CardDef 'LocationType
 historicalSocietyHistoricalMuseum_132 = locationWithUnrevealed
   "03132"
   "Historical Society"
@@ -1691,7 +1690,7 @@ historicalSocietyHistoricalMuseum_132 = locationWithUnrevealed
   [Circle, Heart]
   EchoesOfThePast
 
-historicalSocietyHistoricalLibrary_133 :: CardDef
+historicalSocietyHistoricalLibrary_133 :: CardDef 'LocationType
 historicalSocietyHistoricalLibrary_133 = locationWithUnrevealed
   "03133"
   "Historical Society"
@@ -1704,7 +1703,7 @@ historicalSocietyHistoricalLibrary_133 = locationWithUnrevealed
   [Circle, Squiggle]
   EchoesOfThePast
 
-historicalSocietyReadingRoom :: CardDef
+historicalSocietyReadingRoom :: CardDef 'LocationType
 historicalSocietyReadingRoom = locationWithUnrevealed
   "03134"
   "Historical Society"
@@ -1717,11 +1716,11 @@ historicalSocietyReadingRoom = locationWithUnrevealed
   [Circle]
   EchoesOfThePast
 
-quietHalls_135 :: CardDef
+quietHalls_135 :: CardDef 'LocationType
 quietHalls_135 =
   location "03135" "Quiet Halls" [ThirdFloor] Star [Circle] EchoesOfThePast
 
-historicalSocietyHistoricalLibrary_136 :: CardDef
+historicalSocietyHistoricalLibrary_136 :: CardDef 'LocationType
 historicalSocietyHistoricalLibrary_136 = locationWithUnrevealed
   "03136"
   "Historical Society"
@@ -1734,7 +1733,7 @@ historicalSocietyHistoricalLibrary_136 = locationWithUnrevealed
   [Star, Triangle]
   EchoesOfThePast
 
-historicalSocietyPeabodysOffice :: CardDef
+historicalSocietyPeabodysOffice :: CardDef 'LocationType
 historicalSocietyPeabodysOffice = locationWithUnrevealed
   "03137"
   "Historical Society"
@@ -1747,7 +1746,7 @@ historicalSocietyPeabodysOffice = locationWithUnrevealed
   [Star]
   EchoesOfThePast
 
-historicalSocietyRecordOffice_138 :: CardDef
+historicalSocietyRecordOffice_138 :: CardDef 'LocationType
 historicalSocietyRecordOffice_138 = locationWithUnrevealed
   "03138"
   "Historical Society"
@@ -1760,11 +1759,11 @@ historicalSocietyRecordOffice_138 = locationWithUnrevealed
   [Star]
   EchoesOfThePast
 
-hiddenLibrary :: CardDef
+hiddenLibrary :: CardDef 'LocationType
 hiddenLibrary = victory 2
   $ location "03139" "Hidden Library" mempty NoSymbol [] EchoesOfThePast
 
-asylumHallsWesternPatientWing_168 :: CardDef
+asylumHallsWesternPatientWing_168 :: CardDef 'LocationType
 asylumHallsWesternPatientWing_168 = location
   "03168"
   ("Asylum Halls" <:> "Western Patient Wing")
@@ -1773,7 +1772,7 @@ asylumHallsWesternPatientWing_168 = location
   [Hourglass, Triangle, Diamond]
   TheUnspeakableOath
 
-asylumHallsWesternPatientWing_169 :: CardDef
+asylumHallsWesternPatientWing_169 :: CardDef 'LocationType
 asylumHallsWesternPatientWing_169 = location
   "03169"
   ("Asylum Halls" <:> "Western Patient Wing")
@@ -1782,7 +1781,7 @@ asylumHallsWesternPatientWing_169 = location
   [Hourglass, Triangle, Diamond]
   TheUnspeakableOath
 
-asylumHallsEasternPatientWing_170 :: CardDef
+asylumHallsEasternPatientWing_170 :: CardDef 'LocationType
 asylumHallsEasternPatientWing_170 = location
   "03170"
   ("Asylum Halls" <:> "Eastern Patient Wing")
@@ -1791,7 +1790,7 @@ asylumHallsEasternPatientWing_170 = location
   [Circle, Heart, Squiggle]
   TheUnspeakableOath
 
-asylumHallsEasternPatientWing_171 :: CardDef
+asylumHallsEasternPatientWing_171 :: CardDef 'LocationType
 asylumHallsEasternPatientWing_171 = location
   "03171"
   ("Asylum Halls" <:> "Eastern Patient Wing")
@@ -1800,11 +1799,11 @@ asylumHallsEasternPatientWing_171 = location
   [Circle, Heart, Squiggle]
   TheUnspeakableOath
 
-kitchen :: CardDef
+kitchen :: CardDef 'LocationType
 kitchen =
   location "03172" "Kitchen" [ArkhamAsylum] Square [Triangle] TheUnspeakableOath
 
-messHall :: CardDef
+messHall :: CardDef 'LocationType
 messHall = victory 1 $ location
   "03173"
   "Mess Hall"
@@ -1813,7 +1812,7 @@ messHall = victory 1 $ location
   [Circle, Square]
   TheUnspeakableOath
 
-infirmary :: CardDef
+infirmary :: CardDef 'LocationType
 infirmary = victory 1 $ location
   "03174"
   "Infirmary"
@@ -1822,7 +1821,7 @@ infirmary = victory 1 $ location
   [Hourglass]
   TheUnspeakableOath
 
-yard :: CardDef
+yard :: CardDef 'LocationType
 yard = location
   "03175"
   "Yard"
@@ -1831,11 +1830,11 @@ yard = location
   [Circle, Plus]
   TheUnspeakableOath
 
-garden :: CardDef
+garden :: CardDef 'LocationType
 garden =
   location "03176" "Garden" [ArkhamAsylum] Plus [Diamond] TheUnspeakableOath
 
-basementHall :: CardDef
+basementHall :: CardDef 'LocationType
 basementHall = victory 1 $ location
   "03177"
   "Basement Hall"
@@ -1844,7 +1843,7 @@ basementHall = victory 1 $ location
   [Hourglass, Moon]
   TheUnspeakableOath
 
-patientConfinementDanielsCell :: CardDef
+patientConfinementDanielsCell :: CardDef 'LocationType
 patientConfinementDanielsCell = locationWithUnrevealed
   "03178"
   "Patient Confinement"
@@ -1857,7 +1856,7 @@ patientConfinementDanielsCell = locationWithUnrevealed
   [Squiggle]
   TheUnspeakableOath
 
-patientConfinementOccupiedCell :: CardDef
+patientConfinementOccupiedCell :: CardDef 'LocationType
 patientConfinementOccupiedCell = locationWithUnrevealed
   "03179"
   "Patient Confinement"
@@ -1870,7 +1869,7 @@ patientConfinementOccupiedCell = locationWithUnrevealed
   [Squiggle]
   TheUnspeakableOath
 
-patientConfinementDrearyCell :: CardDef
+patientConfinementDrearyCell :: CardDef 'LocationType
 patientConfinementDrearyCell = locationWithUnrevealed
   "03180"
   "Patient Confinement"
@@ -1883,7 +1882,7 @@ patientConfinementDrearyCell = locationWithUnrevealed
   [Squiggle]
   TheUnspeakableOath
 
-patientConfinementFamiliarCell :: CardDef
+patientConfinementFamiliarCell :: CardDef 'LocationType
 patientConfinementFamiliarCell = locationWithUnrevealed
   "03181"
   "Patient Confinement"
@@ -1896,7 +1895,7 @@ patientConfinementFamiliarCell = locationWithUnrevealed
   [Squiggle]
   TheUnspeakableOath
 
-montparnasse :: CardDef
+montparnasse :: CardDef 'LocationType
 montparnasse = location
   "03208"
   "Montparnasse"
@@ -1905,7 +1904,7 @@ montparnasse = location
   [Heart, Star, Plus]
   APhantomOfTruth
 
-montmartre209 :: CardDef
+montmartre209 :: CardDef 'LocationType
 montmartre209 = location
   "03209"
   "Montmartre"
@@ -1914,7 +1913,7 @@ montmartre209 = location
   [Diamond, Triangle, Equals, Moon]
   APhantomOfTruth
 
-montmartre210 :: CardDef
+montmartre210 :: CardDef 'LocationType
 montmartre210 = location
   "03210"
   "Montmartre"
@@ -1923,7 +1922,7 @@ montmartre210 = location
   [Diamond, Triangle, Equals, Moon]
   APhantomOfTruth
 
-grandGuignol :: CardDef
+grandGuignol :: CardDef 'LocationType
 grandGuignol = victory 1 $ location
   "03211"
   ("Grand Guignol" <:> "Theatre of the Great Puppet")
@@ -1932,7 +1931,7 @@ grandGuignol = victory 1 $ location
   [Diamond, Square]
   APhantomOfTruth
 
-operaGarnier212 :: CardDef
+operaGarnier212 :: CardDef 'LocationType
 operaGarnier212 = location
   "03212"
   "Opéra Garnier"
@@ -1941,7 +1940,7 @@ operaGarnier212 = location
   [Triangle, Square, Heart]
   APhantomOfTruth
 
-operaGarnier213 :: CardDef
+operaGarnier213 :: CardDef 'LocationType
 operaGarnier213 = location
   "03213"
   "Opéra Garnier"
@@ -1950,7 +1949,7 @@ operaGarnier213 = location
   [Triangle, Square, Heart]
   APhantomOfTruth
 
-gareDOrsay :: CardDef
+gareDOrsay :: CardDef 'LocationType
 gareDOrsay = location
   "03214"
   "Gare d'Orsay"
@@ -1959,7 +1958,7 @@ gareDOrsay = location
   [Diamond, Circle, Star]
   APhantomOfTruth
 
-pereLachaiseCemetery :: CardDef
+pereLachaiseCemetery :: CardDef 'LocationType
 pereLachaiseCemetery = victory 1 $ location
   "03215"
   "Père Lachaise Cemetery"
@@ -1968,7 +1967,7 @@ pereLachaiseCemetery = victory 1 $ location
   [Equals, Moon]
   APhantomOfTruth
 
-canalSaintMartin :: CardDef
+canalSaintMartin :: CardDef 'LocationType
 canalSaintMartin = victory 1 $ location
   "03216"
   "Canal Saint-Martin"
@@ -1977,7 +1976,7 @@ canalSaintMartin = victory 1 $ location
   [Square, T, Moon]
   APhantomOfTruth
 
-leMarais217 :: CardDef
+leMarais217 :: CardDef 'LocationType
 leMarais217 = location
   "03217"
   "Le Marais"
@@ -1986,7 +1985,7 @@ leMarais217 = location
   [Square, Equals, T, Plus]
   APhantomOfTruth
 
-leMarais218 :: CardDef
+leMarais218 :: CardDef 'LocationType
 leMarais218 = location
   "03218"
   "Le Marais"
@@ -1995,7 +1994,7 @@ leMarais218 = location
   [Square, Equals, T, Plus]
   APhantomOfTruth
 
-notreDame :: CardDef
+notreDame :: CardDef 'LocationType
 notreDame = location
   "03219"
   "Notre-Dame"
@@ -2004,7 +2003,7 @@ notreDame = location
   [Circle, Moon, Star]
   APhantomOfTruth
 
-gardensOfLuxembourg :: CardDef
+gardensOfLuxembourg :: CardDef 'LocationType
 gardensOfLuxembourg = victory 1 $ location
   "03220"
   "Gardens of Luxembourg"
@@ -2013,7 +2012,7 @@ gardensOfLuxembourg = victory 1 $ location
   [Circle, Heart, Plus]
   APhantomOfTruth
 
-theGateToHell :: CardDef
+theGateToHell :: CardDef 'LocationType
 theGateToHell = locationWithUnrevealed
   "03247"
   "Catacombs"
@@ -2026,7 +2025,7 @@ theGateToHell = locationWithUnrevealed
   []
   ThePallidMask
 
-stoneArchways :: CardDef
+stoneArchways :: CardDef 'LocationType
 stoneArchways = quantity 2 $ locationWithUnrevealed
   "03248"
   "Catacombs"
@@ -2039,7 +2038,7 @@ stoneArchways = quantity 2 $ locationWithUnrevealed
   []
   ThePallidMask
 
-cryptOfTheSepulchralLamp :: CardDef
+cryptOfTheSepulchralLamp :: CardDef 'LocationType
 cryptOfTheSepulchralLamp = locationWithUnrevealed
   "03249"
   "Catacombs"
@@ -2052,7 +2051,7 @@ cryptOfTheSepulchralLamp = locationWithUnrevealed
   []
   ThePallidMask
 
-boneFilledCaverns :: CardDef
+boneFilledCaverns :: CardDef 'LocationType
 boneFilledCaverns = victory 1 $ locationWithUnrevealed
   "03250"
   "Catacombs"
@@ -2065,7 +2064,7 @@ boneFilledCaverns = victory 1 $ locationWithUnrevealed
   []
   ThePallidMask
 
-wellOfSouls :: CardDef
+wellOfSouls :: CardDef 'LocationType
 wellOfSouls = victory 1 $ locationWithUnrevealed
   "03251"
   "Catacombs"
@@ -2078,7 +2077,7 @@ wellOfSouls = victory 1 $ locationWithUnrevealed
   []
   ThePallidMask
 
-candlelitTunnels :: CardDef
+candlelitTunnels :: CardDef 'LocationType
 candlelitTunnels = quantity 2 $ locationWithUnrevealed
   "03252"
   "Catacombs"
@@ -2091,7 +2090,7 @@ candlelitTunnels = quantity 2 $ locationWithUnrevealed
   []
   ThePallidMask
 
-labyrinthOfBones :: CardDef
+labyrinthOfBones :: CardDef 'LocationType
 labyrinthOfBones = quantity 2 $ locationWithUnrevealed
   "03253"
   "Catacombs"
@@ -2104,7 +2103,7 @@ labyrinthOfBones = quantity 2 $ locationWithUnrevealed
   []
   ThePallidMask
 
-narrowShaft :: CardDef
+narrowShaft :: CardDef 'LocationType
 narrowShaft = victory 1 $ locationWithUnrevealed
   "03254"
   "Catacombs"
@@ -2117,7 +2116,7 @@ narrowShaft = victory 1 $ locationWithUnrevealed
   []
   ThePallidMask
 
-shiveringPools :: CardDef
+shiveringPools :: CardDef 'LocationType
 shiveringPools = victory 1 $ locationWithUnrevealed
   "03255"
   "Catacombs"
@@ -2130,7 +2129,7 @@ shiveringPools = victory 1 $ locationWithUnrevealed
   []
   ThePallidMask
 
-blockedPassage :: CardDef
+blockedPassage :: CardDef 'LocationType
 blockedPassage = locationWithUnrevealed
   "03256"
   "Catacombs"
@@ -2143,7 +2142,7 @@ blockedPassage = locationWithUnrevealed
   []
   ThePallidMask
 
-tombOfShadows :: CardDef
+tombOfShadows :: CardDef 'LocationType
 tombOfShadows = victory 1 $ locationWithUnrevealed
   "03257"
   "Catacombs"
@@ -2156,11 +2155,11 @@ tombOfShadows = victory 1 $ locationWithUnrevealed
   []
   ThePallidMask
 
-porteDeLAvancee :: CardDef
+porteDeLAvancee :: CardDef 'LocationType
 porteDeLAvancee =
   location "03283" "Porte de l’Avancée" [] Circle [Squiggle] BlackStarsRise
 
-grandRue :: CardDef
+grandRue :: CardDef 'LocationType
 grandRue = location
   "03284"
   "Grand Rue"
@@ -2169,7 +2168,7 @@ grandRue = location
   [Circle, Triangle, Diamond, Equals]
   BlackStarsRise
 
-outerWall_285 :: CardDef
+outerWall_285 :: CardDef 'LocationType
 outerWall_285 = victory 1 $ location
   "03285"
   "Outer Wall"
@@ -2178,7 +2177,7 @@ outerWall_285 = victory 1 $ location
   [Squiggle, Diamond, Equals]
   BlackStarsRise
 
-outerWall_286 :: CardDef
+outerWall_286 :: CardDef 'LocationType
 outerWall_286 = victory 1 $ location
   "03286"
   "Outer Wall"
@@ -2187,7 +2186,7 @@ outerWall_286 = victory 1 $ location
   [Squiggle, Diamond, Equals]
   BlackStarsRise
 
-northTower_287 :: CardDef
+northTower_287 :: CardDef 'LocationType
 northTower_287 = victory 1 $ location
   "03287"
   "North Tower"
@@ -2196,7 +2195,7 @@ northTower_287 = victory 1 $ location
   [Squiggle, Triangle, Equals]
   BlackStarsRise
 
-northTower_288 :: CardDef
+northTower_288 :: CardDef 'LocationType
 northTower_288 = victory 1 $ location
   "03288"
   "North Tower"
@@ -2205,7 +2204,7 @@ northTower_288 = victory 1 $ location
   [Squiggle, Triangle, Equals]
   BlackStarsRise
 
-brokenSteps_289 :: CardDef
+brokenSteps_289 :: CardDef 'LocationType
 brokenSteps_289 = location
   "03289"
   "Broken Steps"
@@ -2214,7 +2213,7 @@ brokenSteps_289 = location
   [Squiggle, Triangle, Diamond, Square]
   BlackStarsRise
 
-brokenSteps_290 :: CardDef
+brokenSteps_290 :: CardDef 'LocationType
 brokenSteps_290 = location
   "03290"
   "Broken Steps"
@@ -2223,7 +2222,7 @@ brokenSteps_290 = location
   [Squiggle, Triangle, Diamond, Square]
   BlackStarsRise
 
-abbeyChurch :: CardDef
+abbeyChurch :: CardDef 'LocationType
 abbeyChurch = location
   "03291"
   "Abbey Church"
@@ -2232,23 +2231,23 @@ abbeyChurch = location
   [Equals, T, Heart, Hourglass, Moon]
   BlackStarsRise
 
-choeurGothique_292 :: CardDef
+choeurGothique_292 :: CardDef 'LocationType
 choeurGothique_292 =
   location "03292" "Chœur Gothique" [] T [Square, Star] BlackStarsRise
 
-choeurGothique_293 :: CardDef
+choeurGothique_293 :: CardDef 'LocationType
 choeurGothique_293 =
   location "03293" "Chœur Gothique" [] T [Square, Star] BlackStarsRise
 
-cloister :: CardDef
+cloister :: CardDef 'LocationType
 cloister =
   location "03294" "Cloister" [] Heart [Square, Hourglass] BlackStarsRise
 
-knightsHall :: CardDef
+knightsHall :: CardDef 'LocationType
 knightsHall =
   location "03295" "Knight's Hall" [] Hourglass [Square, Heart] BlackStarsRise
 
-chapelOfStAubertThePathIsOpen :: CardDef
+chapelOfStAubertThePathIsOpen :: CardDef 'LocationType
 chapelOfStAubertThePathIsOpen = locationWithUnrevealed
   "03296"
   "Chapel of St. Aubert"
@@ -2261,7 +2260,7 @@ chapelOfStAubertThePathIsOpen = locationWithUnrevealed
   [Square]
   BlackStarsRise
 
-chapelOfStAubertWatersForbidden :: CardDef
+chapelOfStAubertWatersForbidden :: CardDef 'LocationType
 chapelOfStAubertWatersForbidden = victory 2 $ locationWithUnrevealed
   "03297"
   "Chapel of St. Aubert"
@@ -2274,7 +2273,7 @@ chapelOfStAubertWatersForbidden = victory 2 $ locationWithUnrevealed
   [Square]
   BlackStarsRise
 
-abbeyTowerThePathIsOpen :: CardDef
+abbeyTowerThePathIsOpen :: CardDef 'LocationType
 abbeyTowerThePathIsOpen = locationWithUnrevealed
   "03298"
   "Abbey Tower"
@@ -2287,7 +2286,7 @@ abbeyTowerThePathIsOpen = locationWithUnrevealed
   [T]
   BlackStarsRise
 
-abbeyTowerSpiresForbidden :: CardDef
+abbeyTowerSpiresForbidden :: CardDef 'LocationType
 abbeyTowerSpiresForbidden = victory 2 $ locationWithUnrevealed
   "03299"
   "Abbey Tower"
@@ -2300,11 +2299,11 @@ abbeyTowerSpiresForbidden = victory 2 $ locationWithUnrevealed
   [T]
   BlackStarsRise
 
-shoresOfHali :: CardDef
+shoresOfHali :: CardDef 'LocationType
 shoresOfHali =
   location "03325b" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
 
-bleakPlainsStarsOfAldebaran :: CardDef
+bleakPlainsStarsOfAldebaran :: CardDef 'LocationType
 bleakPlainsStarsOfAldebaran = location
   "03326b"
   "Bleak Plains"
@@ -2313,7 +2312,7 @@ bleakPlainsStarsOfAldebaran = location
   [Circle, Triangle, Diamond]
   DimCarcosa
 
-bleakPlainsBleakDesolation :: CardDef
+bleakPlainsBleakDesolation :: CardDef 'LocationType
 bleakPlainsBleakDesolation = location
   "03326d"
   "Bleak Plains"
@@ -2322,7 +2321,7 @@ bleakPlainsBleakDesolation = location
   [Circle, Triangle, Diamond]
   DimCarcosa
 
-ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
+ruinsOfCarcosaInhabitantOfCarcosa :: CardDef 'LocationType
 ruinsOfCarcosaInhabitantOfCarcosa = location
   "03327b"
   "Ruins of Carcosa"
@@ -2331,7 +2330,7 @@ ruinsOfCarcosaInhabitantOfCarcosa = location
   [Square, Equals, Star]
   DimCarcosa
 
-ruinsOfCarcosaAMomentsRest :: CardDef
+ruinsOfCarcosaAMomentsRest :: CardDef 'LocationType
 ruinsOfCarcosaAMomentsRest = location
   "03327d"
   "Ruins of Carcosa"
@@ -2341,7 +2340,7 @@ ruinsOfCarcosaAMomentsRest = location
   DimCarcosa
 
 
-ruinsOfCarcosaTheCoffin :: CardDef
+ruinsOfCarcosaTheCoffin :: CardDef 'LocationType
 ruinsOfCarcosaTheCoffin = location
   "03327f"
   "Ruins of Carcosa"
@@ -2350,7 +2349,7 @@ ruinsOfCarcosaTheCoffin = location
   [Square, Equals, Star]
   DimCarcosa
 
-dimStreetsMappingTheStreets :: CardDef
+dimStreetsMappingTheStreets :: CardDef 'LocationType
 dimStreetsMappingTheStreets = location
   "03328b"
   "Dim Streets"
@@ -2359,7 +2358,7 @@ dimStreetsMappingTheStreets = location
   [Square, Equals, Star]
   DimCarcosa
 
-dimStreetsTheKingsParade :: CardDef
+dimStreetsTheKingsParade :: CardDef 'LocationType
 dimStreetsTheKingsParade = location
   "03328d"
   "Dim Streets"
@@ -2368,7 +2367,7 @@ dimStreetsTheKingsParade = location
   [Square, Equals, Star]
   DimCarcosa
 
-dimStreetsTheArchway :: CardDef
+dimStreetsTheArchway :: CardDef 'LocationType
 dimStreetsTheArchway = location
   "03328f"
   "Dim Streets"
@@ -2377,7 +2376,7 @@ dimStreetsTheArchway = location
   [Square, Equals, Star]
   DimCarcosa
 
-depthsOfDemheTheHeightOfTheDepths :: CardDef
+depthsOfDemheTheHeightOfTheDepths :: CardDef 'LocationType
 depthsOfDemheTheHeightOfTheDepths = location
   "03329b"
   "Depths of Demhe"
@@ -2386,7 +2385,7 @@ depthsOfDemheTheHeightOfTheDepths = location
   [Moon, Triangle, Diamond]
   DimCarcosa
 
-depthsOfDemheStepsOfThePalace :: CardDef
+depthsOfDemheStepsOfThePalace :: CardDef 'LocationType
 depthsOfDemheStepsOfThePalace = location
   "03329d"
   "Depths of Demhe"
@@ -2395,11 +2394,11 @@ depthsOfDemheStepsOfThePalace = location
   [Moon, Triangle, Diamond]
   DimCarcosa
 
-darkSpires :: CardDef
+darkSpires :: CardDef 'LocationType
 darkSpires =
   location "03330b" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
 
-palaceOfTheKing :: CardDef
+palaceOfTheKing :: CardDef 'LocationType
 palaceOfTheKing = location
   "03331b"
   "Palace of the King"
@@ -2408,7 +2407,7 @@ palaceOfTheKing = location
   [Triangle, Diamond]
   DimCarcosa
 
-expeditionCamp :: CardDef
+expeditionCamp :: CardDef 'LocationType
 expeditionCamp = location
   "04050"
   "Expedition Camp"
@@ -2417,7 +2416,7 @@ expeditionCamp = location
   [Square, Diamond, Moon]
   TheUntamedWilds
 
-ruinsOfEztli :: CardDef
+ruinsOfEztli :: CardDef 'LocationType
 ruinsOfEztli = victory 2 $ singleSided $ location
   "04053"
   "Ruins of Eztli"
@@ -2426,7 +2425,7 @@ ruinsOfEztli = victory 2 $ singleSided $ location
   [Triangle, Heart]
   TheUntamedWilds
 
-entryway :: CardDef
+entryway :: CardDef 'LocationType
 entryway = location
   "04060"
   "Entryway"
@@ -2435,7 +2434,7 @@ entryway = location
   [Square, Star]
   TheDoomOfEztli
 
-ancientHall :: CardDef
+ancientHall :: CardDef 'LocationType
 ancientHall = singleSided $ location
   "04063"
   "Ancient Hall"
@@ -2444,7 +2443,7 @@ ancientHall = singleSided $ location
   [Circle, Star, Diamond]
   TheDoomOfEztli
 
-grandChamber :: CardDef
+grandChamber :: CardDef 'LocationType
 grandChamber = victory 1 $ singleSided $ location
   "04064"
   "Grand Chamber"
@@ -2453,7 +2452,7 @@ grandChamber = victory 1 $ singleSided $ location
   [Circle, Square, Triangle]
   TheDoomOfEztli
 
-burialPit :: CardDef
+burialPit :: CardDef 'LocationType
 burialPit = victory 1 $ singleSided $ location
   "04065"
   "Burial Pit"
@@ -2462,7 +2461,7 @@ burialPit = victory 1 $ singleSided $ location
   [Star, Diamond, Squiggle]
   TheDoomOfEztli
 
-undergroundRuins :: CardDef
+undergroundRuins :: CardDef 'LocationType
 undergroundRuins = vengeance 1 $ singleSided $ location
   "04066"
   "Underground Ruins"
@@ -2471,7 +2470,7 @@ undergroundRuins = vengeance 1 $ singleSided $ location
   [Square, Triangle, Squiggle]
   TheDoomOfEztli
 
-secretPassage :: CardDef
+secretPassage :: CardDef 'LocationType
 secretPassage = victory 1 $ singleSided $ location
   "04067"
   "Secret Passage"
@@ -2480,7 +2479,7 @@ secretPassage = victory 1 $ singleSided $ location
   [Diamond, Triangle, Hourglass]
   TheDoomOfEztli
 
-chamberOfTime :: CardDef
+chamberOfTime :: CardDef 'LocationType
 chamberOfTime = victory 2 $ vengeance 2 $ singleSided $ location
   "04068"
   "Chamber of Time"
@@ -2489,7 +2488,7 @@ chamberOfTime = victory 2 $ vengeance 2 $ singleSided $ location
   [Squiggle]
   TheDoomOfEztli
 
-pathOfThorns :: CardDef
+pathOfThorns :: CardDef 'LocationType
 pathOfThorns = singleSided $ location
   "04069"
   "Path of Thorns"
@@ -2498,7 +2497,7 @@ pathOfThorns = singleSided $ location
   [Circle, Diamond, Triangle, Squiggle]
   Rainforest
 
-riverCanyon :: CardDef
+riverCanyon :: CardDef 'LocationType
 riverCanyon = singleSided $ location
   "04070"
   "River Canyon"
@@ -2507,7 +2506,7 @@ riverCanyon = singleSided $ location
   [Circle, Moon, Heart, Triangle, Square]
   Rainforest
 
-ropeBridge :: CardDef
+ropeBridge :: CardDef 'LocationType
 ropeBridge = singleSided $ location
   "04071"
   "Rope Bridge"
@@ -2516,7 +2515,7 @@ ropeBridge = singleSided $ location
   [Circle, Diamond, Heart, T]
   Rainforest
 
-serpentsHaven :: CardDef
+serpentsHaven :: CardDef 'LocationType
 serpentsHaven = victory 1 $ singleSided $ location
   "04072"
   "Serpent's Haven"
@@ -2525,7 +2524,7 @@ serpentsHaven = victory 1 $ singleSided $ location
   [Squiggle, Square, Diamond, Hourglass]
   Rainforest
 
-circuitousTrail :: CardDef
+circuitousTrail :: CardDef 'LocationType
 circuitousTrail = victory 1 $ singleSided $ location
   "04073"
   "Circuitous Trail"
@@ -2534,7 +2533,7 @@ circuitousTrail = victory 1 $ singleSided $ location
   [Hourglass, Diamond, Moon, T]
   Rainforest
 
-templeOfTheFang :: CardDef
+templeOfTheFang :: CardDef 'LocationType
 templeOfTheFang = victory 2 $ singleSided $ location
   "04074"
   "Temple of the Fang"
@@ -2543,7 +2542,7 @@ templeOfTheFang = victory 2 $ singleSided $ location
   [Square, Triangle, Equals]
   Rainforest
 
-overgrownRuins :: CardDef
+overgrownRuins :: CardDef 'LocationType
 overgrownRuins = victory 2 $ singleSided $ location
   "04075"
   "Overgrown Ruins"
@@ -2552,7 +2551,7 @@ overgrownRuins = victory 2 $ singleSided $ location
   [Moon, Heart, Equals]
   Rainforest
 
-eztliExhibit :: CardDef
+eztliExhibit :: CardDef 'LocationType
 eztliExhibit = victory 1 $ singleSided $ location
   "04117b"
   "Eztli Exhibit"
@@ -2561,19 +2560,19 @@ eztliExhibit = victory 1 $ singleSided $ location
   [Diamond]
   ThreadsOfFate
 
-velmasDiner :: CardDef
+velmasDiner :: CardDef 'LocationType
 velmasDiner =
   location "04141" "Velma's Diner" [Arkham] NoSymbol [Moon] ThreadsOfFate
 
-curiositieShoppe :: CardDef
+curiositieShoppe :: CardDef 'LocationType
 curiositieShoppe = victory 1
   $ location "04142" "Curiositie Shoppe" [Arkham] NoSymbol [T] ThreadsOfFate
 
-townHall :: CardDef
+townHall :: CardDef 'LocationType
 townHall = victory 1
   $ location "04143" "Town Hall" [Arkham] NoSymbol [Triangle] ThreadsOfFate
 
-arkhamPoliceStation :: CardDef
+arkhamPoliceStation :: CardDef 'LocationType
 arkhamPoliceStation = victory 1 $ singleSided $ location
   "04126b"
   "Arkham Police Station"
@@ -2582,11 +2581,11 @@ arkhamPoliceStation = victory 1 $ singleSided $ location
   [Moon]
   ThreadsOfFate
 
-trainTracks :: CardDef
+trainTracks :: CardDef 'LocationType
 trainTracks = singleSided
   $ location "04128b" "Train Tracks" [Arkham] NoSymbol [T] ThreadsOfFate
 
-blackCave :: CardDef
+blackCave :: CardDef 'LocationType
 blackCave = victory 1 $ singleSided $ location
   "04133f"
   "Black Cave"
@@ -2595,7 +2594,7 @@ blackCave = victory 1 $ singleSided $ location
   [Circle]
   ThreadsOfFate
 
-templeRuins :: CardDef
+templeRuins :: CardDef 'LocationType
 templeRuins = location
   "04168"
   "Temple Ruins"
@@ -2604,7 +2603,7 @@ templeRuins = location
   [Diamond, Star]
   TheBoundaryBeyond
 
-metropolitanCathedral :: CardDef
+metropolitanCathedral :: CardDef 'LocationType
 metropolitanCathedral = location
   "04169"
   "Metropolitan Cathedral"
@@ -2613,7 +2612,7 @@ metropolitanCathedral = location
   [Diamond]
   TheBoundaryBeyond
 
-chapultepecPark :: CardDef
+chapultepecPark :: CardDef 'LocationType
 chapultepecPark = location
   "04170"
   "Chapultepec Park"
@@ -2622,7 +2621,7 @@ chapultepecPark = location
   [Star]
   TheBoundaryBeyond
 
-zocalo :: CardDef
+zocalo :: CardDef 'LocationType
 zocalo = location
   "04171"
   "Zócalo"
@@ -2631,7 +2630,7 @@ zocalo = location
   [Heart, Square, Star, Circle]
   TheBoundaryBeyond
 
-xochimilco :: CardDef
+xochimilco :: CardDef 'LocationType
 xochimilco = location
   "04172"
   "Xochimilco"
@@ -2640,7 +2639,7 @@ xochimilco = location
   [Diamond, Star]
   TheBoundaryBeyond
 
-coyoacan :: CardDef
+coyoacan :: CardDef 'LocationType
 coyoacan = location
   "04173"
   "Coyoacán"
@@ -2649,7 +2648,7 @@ coyoacan = location
   [Diamond, Triangle, Circle, Heart]
   TheBoundaryBeyond
 
-temploMayor_174 :: CardDef
+temploMayor_174 :: CardDef 'LocationType
 temploMayor_174 = singleSided $ location
   "04174"
   "Templo Mayor"
@@ -2658,7 +2657,7 @@ temploMayor_174 = singleSided $ location
   [Square, Triangle]
   TheBoundaryBeyond
 
-temploMayor_175 :: CardDef
+temploMayor_175 :: CardDef 'LocationType
 temploMayor_175 = singleSided $ location
   "04175"
   "Templo Mayor"
@@ -2667,7 +2666,7 @@ temploMayor_175 = singleSided $ location
   [Square, Triangle]
   TheBoundaryBeyond
 
-templesOfTenochtitlan_176 :: CardDef
+templesOfTenochtitlan_176 :: CardDef 'LocationType
 templesOfTenochtitlan_176 = singleSided $ location
   "04176"
   "Temples of Tenochtitlán"
@@ -2676,7 +2675,7 @@ templesOfTenochtitlan_176 = singleSided $ location
   [Diamond, Circle]
   TheBoundaryBeyond
 
-templesOfTenochtitlan_177 :: CardDef
+templesOfTenochtitlan_177 :: CardDef 'LocationType
 templesOfTenochtitlan_177 = singleSided $ location
   "04177"
   "Temples of Tenochtitlán"
@@ -2685,7 +2684,7 @@ templesOfTenochtitlan_177 = singleSided $ location
   [Diamond, Circle]
   TheBoundaryBeyond
 
-chapultepecHill_178 :: CardDef
+chapultepecHill_178 :: CardDef 'LocationType
 chapultepecHill_178 = singleSided $ location
   "04178"
   "Chapultepec Hill"
@@ -2694,7 +2693,7 @@ chapultepecHill_178 = singleSided $ location
   [Star, Circle]
   TheBoundaryBeyond
 
-chapultepecHill_179 :: CardDef
+chapultepecHill_179 :: CardDef 'LocationType
 chapultepecHill_179 = singleSided $ location
   "04179"
   "Chapultepec Hill"
@@ -2703,7 +2702,7 @@ chapultepecHill_179 = singleSided $ location
   [Star, Circle]
   TheBoundaryBeyond
 
-canalsOfTenochtitlan_180 :: CardDef
+canalsOfTenochtitlan_180 :: CardDef 'LocationType
 canalsOfTenochtitlan_180 = singleSided $ location
   "04180"
   "Canals of Tenochtitlán"
@@ -2712,7 +2711,7 @@ canalsOfTenochtitlan_180 = singleSided $ location
   [Heart, Square]
   TheBoundaryBeyond
 
-canalsOfTenochtitlan_181 :: CardDef
+canalsOfTenochtitlan_181 :: CardDef 'LocationType
 canalsOfTenochtitlan_181 = singleSided $ location
   "04181"
   "Canals of Tenochtitlán"
@@ -2721,7 +2720,7 @@ canalsOfTenochtitlan_181 = singleSided $ location
   [Heart, Square]
   TheBoundaryBeyond
 
-lakeXochimilco_182 :: CardDef
+lakeXochimilco_182 :: CardDef 'LocationType
 lakeXochimilco_182 = singleSided $ location
   "04182"
   "Lake Xochimilco"
@@ -2730,7 +2729,7 @@ lakeXochimilco_182 = singleSided $ location
   [Diamond, Star]
   TheBoundaryBeyond
 
-lakeXochimilco_183 :: CardDef
+lakeXochimilco_183 :: CardDef 'LocationType
 lakeXochimilco_183 = singleSided $ location
   "04183"
   "Lake Xochimilco"
@@ -2739,7 +2738,7 @@ lakeXochimilco_183 = singleSided $ location
   [Diamond, Star]
   TheBoundaryBeyond
 
-sacredWoods_184 :: CardDef
+sacredWoods_184 :: CardDef 'LocationType
 sacredWoods_184 = singleSided $ location
   "04184"
   "Sacred Woods"
@@ -2748,7 +2747,7 @@ sacredWoods_184 = singleSided $ location
   [Heart, Triangle]
   TheBoundaryBeyond
 
-sacredWoods_185 :: CardDef
+sacredWoods_185 :: CardDef 'LocationType
 sacredWoods_185 = singleSided $ location
   "04185"
   "Sacred Woods"
@@ -2757,7 +2756,7 @@ sacredWoods_185 = singleSided $ location
   [Heart, Triangle]
   TheBoundaryBeyond
 
-mouthOfKnYanTheCavernsMaw :: CardDef
+mouthOfKnYanTheCavernsMaw :: CardDef 'LocationType
 mouthOfKnYanTheCavernsMaw = singleSided $ location
   "04206"
   ("Mouth of K'n-yan" <:> "The Cavern's Maw")
@@ -2766,7 +2765,7 @@ mouthOfKnYanTheCavernsMaw = singleSided $ location
   [Squiggle, T, Hourglass]
   HeartOfTheElders
 
-mouthOfKnYanTheDepthsBelow :: CardDef
+mouthOfKnYanTheDepthsBelow :: CardDef 'LocationType
 mouthOfKnYanTheDepthsBelow = singleSided $ location
   "04206b"
   ("Mouth of K'n-yan" <:> "The Depths Below")
@@ -2775,7 +2774,7 @@ mouthOfKnYanTheDepthsBelow = singleSided $ location
   [Circle, Triangle, Diamond]
   HeartOfTheElders
 
-timeWrackedWoods :: CardDef
+timeWrackedWoods :: CardDef 'LocationType
 timeWrackedWoods = singleSided $ location
   "04217"
   "Time-Wracked Woods"
@@ -2784,7 +2783,7 @@ timeWrackedWoods = singleSided $ location
   [Square, Diamond, Moon]
   PillarsOfJudgement
 
-stoneAltar :: CardDef
+stoneAltar :: CardDef 'LocationType
 stoneAltar = victory 1 $ singleSided $ location
   "04218"
   "Stone Altar"
@@ -2793,7 +2792,7 @@ stoneAltar = victory 1 $ singleSided $ location
   [Triangle, Heart, Equals]
   PillarsOfJudgement
 
-vastPassages :: CardDef
+vastPassages :: CardDef 'LocationType
 vastPassages = singleSided $ location
   "04222"
   "Vast Passages"
@@ -2802,7 +2801,7 @@ vastPassages = singleSided $ location
   [Equals, Triangle, Diamond, Square, Moon]
   KnYan
 
-hallOfIdolatry :: CardDef
+hallOfIdolatry :: CardDef 'LocationType
 hallOfIdolatry = victory 1 $ singleSided $ location
   "04223"
   "Hall of Idolatry"
@@ -2811,7 +2810,7 @@ hallOfIdolatry = victory 1 $ singleSided $ location
   [Heart, Triangle, Circle]
   KnYan
 
-darkHollow :: CardDef
+darkHollow :: CardDef 'LocationType
 darkHollow = victory 1 $ singleSided $ location
   "04224"
   "Dark Hollow"
@@ -2820,7 +2819,7 @@ darkHollow = victory 1 $ singleSided $ location
   [Equals, Circle, Square]
   KnYan
 
-perilousGulch :: CardDef
+perilousGulch :: CardDef 'LocationType
 perilousGulch = victory 1 $ singleSided $ location
   "04225"
   "Perilous Gulch"
@@ -2829,7 +2828,7 @@ perilousGulch = victory 1 $ singleSided $ location
   [Equals, Circle, Moon]
   KnYan
 
-crystalPillars :: CardDef
+crystalPillars :: CardDef 'LocationType
 crystalPillars = victory 1 $ singleSided $ location
   "04226"
   "Crystal Pillars"
@@ -2838,7 +2837,7 @@ crystalPillars = victory 1 $ singleSided $ location
   [Heart, Diamond, Circle]
   KnYan
 
-descentToYoth :: CardDef
+descentToYoth :: CardDef 'LocationType
 descentToYoth = victory 2 $ vengeance 2 $ singleSided $ location
   "04227"
   "Descent to Yoth"
@@ -2847,7 +2846,7 @@ descentToYoth = victory 2 $ vengeance 2 $ singleSided $ location
   [Square, Moon]
   KnYan
 
-interviewRoomArrivalChamber :: CardDef
+interviewRoomArrivalChamber :: CardDef 'LocationType
 interviewRoomArrivalChamber = locationWithUnrevealed
   "04245"
   "Interview Room"
@@ -2860,7 +2859,7 @@ interviewRoomArrivalChamber = locationWithUnrevealed
   [Diamond]
   TheCityOfArchives
 
-interviewRoomRestrainingChamber :: CardDef
+interviewRoomRestrainingChamber :: CardDef 'LocationType
 interviewRoomRestrainingChamber = locationWithUnrevealed
   "04246"
   "Interview Room"
@@ -2873,7 +2872,7 @@ interviewRoomRestrainingChamber = locationWithUnrevealed
   [Diamond]
   TheCityOfArchives
 
-interviewRoomIchorFilledChamber :: CardDef
+interviewRoomIchorFilledChamber :: CardDef 'LocationType
 interviewRoomIchorFilledChamber = locationWithUnrevealed
   "04247"
   "Interview Room"
@@ -2886,7 +2885,7 @@ interviewRoomIchorFilledChamber = locationWithUnrevealed
   [Diamond]
   TheCityOfArchives
 
-hallsOfPnakotusNorthernCorridors :: CardDef
+hallsOfPnakotusNorthernCorridors :: CardDef 'LocationType
 hallsOfPnakotusNorthernCorridors = location
   "04248"
   ("Halls of Pnakotus" <:> "Northern Corridors")
@@ -2895,7 +2894,7 @@ hallsOfPnakotusNorthernCorridors = location
   [Diamond, Square, Triangle]
   TheCityOfArchives
 
-hallsOfPnakotusEasternCorridors :: CardDef
+hallsOfPnakotusEasternCorridors :: CardDef 'LocationType
 hallsOfPnakotusEasternCorridors = location
   "04249"
   ("Halls of Pnakotus" <:> "Eastern Corridors")
@@ -2904,7 +2903,7 @@ hallsOfPnakotusEasternCorridors = location
   [Squiggle, Square, Droplet]
   TheCityOfArchives
 
-hallsOfPnakotusWesternCorridors :: CardDef
+hallsOfPnakotusWesternCorridors :: CardDef 'LocationType
 hallsOfPnakotusWesternCorridors = location
   "04250"
   ("Halls of Pnakotus" <:> "Western Corridors")
@@ -2913,7 +2912,7 @@ hallsOfPnakotusWesternCorridors = location
   [Squiggle, Diamond, Circle, Star]
   TheCityOfArchives
 
-greatLibrary :: CardDef
+greatLibrary :: CardDef 'LocationType
 greatLibrary = location
   "04251"
   "Great Library"
@@ -2922,7 +2921,7 @@ greatLibrary = location
   [Square]
   TheCityOfArchives
 
-yithianOrrery :: CardDef
+yithianOrrery :: CardDef 'LocationType
 yithianOrrery = victory 1 $ location
   "04252"
   "Yithian Orrery"
@@ -2931,7 +2930,7 @@ yithianOrrery = victory 1 $ location
   [Triangle]
   TheCityOfArchives
 
-laboratoryOfTheGreatRace :: CardDef
+laboratoryOfTheGreatRace :: CardDef 'LocationType
 laboratoryOfTheGreatRace = location
   "04253"
   "Laboratory of the Great Race"
@@ -2940,7 +2939,7 @@ laboratoryOfTheGreatRace = location
   [Squiggle, Moon, Equals]
   TheCityOfArchives
 
-deconstructionRoom :: CardDef
+deconstructionRoom :: CardDef 'LocationType
 deconstructionRoom = victory 1 $ location
   "04254"
   "Deconstruction Room"
@@ -2949,7 +2948,7 @@ deconstructionRoom = victory 1 $ location
   [Triangle]
   TheCityOfArchives
 
-towersOfPnakotus :: CardDef
+towersOfPnakotus :: CardDef 'LocationType
 towersOfPnakotus = victory 2 $ location
   "04255"
   "Towers of Pnakotus"
@@ -2958,7 +2957,7 @@ towersOfPnakotus = victory 2 $ location
   [Square]
   TheCityOfArchives
 
-stepsOfYoth :: CardDef
+stepsOfYoth :: CardDef 'LocationType
 stepsOfYoth = singleSided $ location
   "04286"
   "Steps of Yoth"
@@ -2967,7 +2966,7 @@ stepsOfYoth = singleSided $ location
   [Hourglass, Square, Triangle, Diamond, Heart]
   TheDepthsOfYoth
 
-cityOfTheSerpents :: CardDef
+cityOfTheSerpents :: CardDef 'LocationType
 cityOfTheSerpents = vengeance 2 $ singleSided $ location
   "04287"
   "City of the Serpents"
@@ -2976,7 +2975,7 @@ cityOfTheSerpents = vengeance 2 $ singleSided $ location
   [Equals, Droplet, Triangle, T, Square]
   TheDepthsOfYoth
 
-hallOfHeresy :: CardDef
+hallOfHeresy :: CardDef 'LocationType
 hallOfHeresy = vengeance 2 $ singleSided $ location
   "04288"
   "Hall of Heresy"
@@ -2985,7 +2984,7 @@ hallOfHeresy = vengeance 2 $ singleSided $ location
   [Equals, Diamond, Circle, Square, T]
   TheDepthsOfYoth
 
-crumblingPrecipice :: CardDef
+crumblingPrecipice :: CardDef 'LocationType
 crumblingPrecipice = singleSided $ location
   "04289"
   "Crumbling Precipice"
@@ -2994,7 +2993,7 @@ crumblingPrecipice = singleSided $ location
   [Equals, Squiggle, Heart, T, Droplet]
   TheDepthsOfYoth
 
-cavernsOfYoth :: CardDef
+cavernsOfYoth :: CardDef 'LocationType
 cavernsOfYoth = singleSided $ location
   "04290"
   "Caverns of Yoth"
@@ -3003,7 +3002,7 @@ cavernsOfYoth = singleSided $ location
   [Circle, Hourglass, Heart, Diamond, Squiggle]
   TheDepthsOfYoth
 
-forkedPath :: CardDef
+forkedPath :: CardDef 'LocationType
 forkedPath = singleSided $ location
   "04291"
   "Forked Path"
@@ -3012,7 +3011,7 @@ forkedPath = singleSided $ location
   [Circle, Diamond, Hourglass, Square, Triangle]
   TheDepthsOfYoth
 
-bridgeOverNKai :: CardDef
+bridgeOverNKai :: CardDef 'LocationType
 bridgeOverNKai = singleSided $ location
   "04292"
   "Bridge ver N'Kai"
@@ -3021,7 +3020,7 @@ bridgeOverNKai = singleSided $ location
   [Equals, Circle, Droplet, Hourglass, Squiggle]
   TheDepthsOfYoth
 
-brokenPassage :: CardDef
+brokenPassage :: CardDef 'LocationType
 brokenPassage = singleSided $ location
   "04293"
   "Broken Passage"
@@ -3030,7 +3029,7 @@ brokenPassage = singleSided $ location
   [Circle, Droplet, Hourglass, Square, Heart]
   TheDepthsOfYoth
 
-abandonedSite :: CardDef
+abandonedSite :: CardDef 'LocationType
 abandonedSite = singleSided $ location
   "04294"
   "Abandoned Site"
@@ -3039,7 +3038,7 @@ abandonedSite = singleSided $ location
   [Equals, Diamond, Triangle, T, Squiggle]
   TheDepthsOfYoth
 
-brightCanyon :: CardDef
+brightCanyon :: CardDef 'LocationType
 brightCanyon = singleSided $ location
   "04295"
   "Bright Canyon"
@@ -3048,7 +3047,7 @@ brightCanyon = singleSided $ location
   [Droplet, Squiggle, T, Heart, Triangle]
   TheDepthsOfYoth
 
-nexusOfNKai :: CardDef
+nexusOfNKai :: CardDef 'LocationType
 nexusOfNKai = location
   "04324"
   ("Nexus of N'kai" <:> "Unraveling the Threads")
@@ -3057,11 +3056,11 @@ nexusOfNKai = location
   [Droplet, Star]
   ShatteredAeons
 
-yuggoth :: CardDef
+yuggoth :: CardDef 'LocationType
 yuggoth = singleSided
   $ location "04327" "Yuggoth" [Otherworld] Droplet [Diamond] ShatteredAeons
 
-shoresOfRlyeh :: CardDef
+shoresOfRlyeh :: CardDef 'LocationType
 shoresOfRlyeh = singleSided $ location
   "04328"
   "Shores of R'lyeh"
@@ -3070,7 +3069,7 @@ shoresOfRlyeh = singleSided $ location
   [Diamond]
   ShatteredAeons
 
-cityOfTheUnseen :: CardDef
+cityOfTheUnseen :: CardDef 'LocationType
 cityOfTheUnseen = singleSided $ location
   "04329"
   "City of the Unseen"
@@ -3079,7 +3078,7 @@ cityOfTheUnseen = singleSided $ location
   [Diamond]
   ShatteredAeons
 
-aPocketInTime :: CardDef
+aPocketInTime :: CardDef 'LocationType
 aPocketInTime = victory 1 $ singleSided $ location
   "04330"
   "A Pocket in Time"
@@ -3088,7 +3087,7 @@ aPocketInTime = victory 1 $ singleSided $ location
   [Diamond, Equals]
   ShatteredAeons
 
-ruinsOfNewYork :: CardDef
+ruinsOfNewYork :: CardDef 'LocationType
 ruinsOfNewYork = singleSided $ location
   "04331"
   "Ruins of New York"
@@ -3097,7 +3096,7 @@ ruinsOfNewYork = singleSided $ location
   [Star]
   ShatteredAeons
 
-mu :: CardDef
+mu :: CardDef 'LocationType
 mu = victory 1 $ singleSided $ location
   "04332"
   "Mu"
@@ -3106,7 +3105,7 @@ mu = victory 1 $ singleSided $ location
   [Star]
   ShatteredAeons
 
-atlantis :: CardDef
+atlantis :: CardDef 'LocationType
 atlantis = singleSided $ location
   "04333"
   "Atlantis"
@@ -3115,7 +3114,7 @@ atlantis = singleSided $ location
   [Star]
   ShatteredAeons
 
-pnakotus :: CardDef
+pnakotus :: CardDef 'LocationType
 pnakotus = victory 1 $ singleSided $ location
   "04334"
   "Pnakotus"
@@ -3124,7 +3123,7 @@ pnakotus = victory 1 $ singleSided $ location
   [Star]
   ShatteredAeons
 
-valusia :: CardDef
+valusia :: CardDef 'LocationType
 valusia = victory 1 $ singleSided $ location
   "04335"
   "Valusia"
@@ -3133,7 +3132,7 @@ valusia = victory 1 $ singleSided $ location
   [Star]
   ShatteredAeons
 
-plateauOfLeng :: CardDef
+plateauOfLeng :: CardDef 'LocationType
 plateauOfLeng = singleSided $ location
   "04336"
   "Plateau of Leng"
@@ -3142,7 +3141,7 @@ plateauOfLeng = singleSided $ location
   [Star]
   ShatteredAeons
 
-studyAberrantGateway :: CardDef
+studyAberrantGateway :: CardDef 'LocationType
 studyAberrantGateway = location
   "50013"
   ("Study" <:> "Aberrant Gateway")
@@ -3151,7 +3150,7 @@ studyAberrantGateway = location
   [T]
   ReturnToTheGathering
 
-guestHall :: CardDef
+guestHall :: CardDef 'LocationType
 guestHall = location
   "50014"
   "Guest Hall"
@@ -3160,13 +3159,13 @@ guestHall = location
   [Circle, Heart, Star, Square]
   ReturnToTheGathering
 
-bedroom :: CardDef
+bedroom :: CardDef 'LocationType
 bedroom = location "50015" "Bedroom" mempty Heart [T] ReturnToTheGathering
 
-bathroom :: CardDef
+bathroom :: CardDef 'LocationType
 bathroom = location "50016" "Bathroom" mempty Star [T] ReturnToTheGathering
 
-holeInTheWall :: CardDef
+holeInTheWall :: CardDef 'LocationType
 holeInTheWall = locationWithUnrevealed
   "50017"
   "Hole in the Wall"
@@ -3179,7 +3178,7 @@ holeInTheWall = locationWithUnrevealed
   [T, Triangle, Plus, Diamond]
   ReturnToTheGathering
 
-returnToAttic :: CardDef
+returnToAttic :: CardDef 'LocationType
 returnToAttic = locationWithUnrevealed
   "50018"
   "Attic"
@@ -3192,7 +3191,7 @@ returnToAttic = locationWithUnrevealed
   [Square, Moon]
   ReturnToTheGathering
 
-farAboveYourHouse :: CardDef
+farAboveYourHouse :: CardDef 'LocationType
 farAboveYourHouse = victory 1 $ locationWithUnrevealed
   "50019"
   "Far Above Your House"
@@ -3205,7 +3204,7 @@ farAboveYourHouse = victory 1 $ locationWithUnrevealed
   [Triangle]
   ReturnToTheGathering
 
-returnToCellar :: CardDef
+returnToCellar :: CardDef 'LocationType
 returnToCellar = locationWithUnrevealed
   "50020"
   "Cellar"
@@ -3218,7 +3217,7 @@ returnToCellar = locationWithUnrevealed
   [Square, Squiggle]
   ReturnToTheGathering
 
-deepBelowYourHouse :: CardDef
+deepBelowYourHouse :: CardDef 'LocationType
 deepBelowYourHouse = victory 1 $ locationWithUnrevealed
   "50021"
   "Deep Below Your House"
@@ -3231,7 +3230,7 @@ deepBelowYourHouse = victory 1 $ locationWithUnrevealed
   [Plus]
   ReturnToTheGathering
 
-easttownArkhamPoliceStation :: CardDef
+easttownArkhamPoliceStation :: CardDef 'LocationType
 easttownArkhamPoliceStation = victory 1 $ locationWithUnrevealed
   "50027"
   "Easttown"
@@ -3244,7 +3243,7 @@ easttownArkhamPoliceStation = victory 1 $ locationWithUnrevealed
   [Circle, Triangle]
   ReturnToTheMidnightMasks
 
-northsideTrainStation :: CardDef
+northsideTrainStation :: CardDef 'LocationType
 northsideTrainStation = locationWithUnrevealed
   "50028"
   ("Northside" <:> "Train Station")
@@ -3257,7 +3256,7 @@ northsideTrainStation = locationWithUnrevealed
   [Diamond, Triangle]
   ReturnToTheMidnightMasks
 
-miskatonicUniversityMiskatonicMuseum :: CardDef
+miskatonicUniversityMiskatonicMuseum :: CardDef 'LocationType
 miskatonicUniversityMiskatonicMuseum = locationWithUnrevealed
   "50029"
   "Miskatonic University"
@@ -3270,7 +3269,7 @@ miskatonicUniversityMiskatonicMuseum = locationWithUnrevealed
   [T, Plus, Circle, Square]
   ReturnToTheMidnightMasks
 
-rivertownAbandonedWarehouse :: CardDef
+rivertownAbandonedWarehouse :: CardDef 'LocationType
 rivertownAbandonedWarehouse = locationWithUnrevealed
   "50030"
   "Rivertown"
@@ -3283,7 +3282,7 @@ rivertownAbandonedWarehouse = locationWithUnrevealed
   [Moon, Diamond, Square, Squiggle, Hourglass]
   ReturnToTheMidnightMasks
 
-arkhamWoodsGreatWillow :: CardDef
+arkhamWoodsGreatWillow :: CardDef 'LocationType
 arkhamWoodsGreatWillow = locationWithUnrevealed
   "50033"
   "Arkham Woods"
@@ -3296,7 +3295,7 @@ arkhamWoodsGreatWillow = locationWithUnrevealed
   [Squiggle, Star]
   ReturnToTheDevourerBelow
 
-arkhamWoodsLakeside :: CardDef
+arkhamWoodsLakeside :: CardDef 'LocationType
 arkhamWoodsLakeside = locationWithUnrevealed
   "50034"
   "Arkham Woods"
@@ -3309,7 +3308,7 @@ arkhamWoodsLakeside = locationWithUnrevealed
   [Squiggle, Heart]
   ReturnToTheDevourerBelow
 
-arkhamWoodsCorpseRiddenClearing :: CardDef
+arkhamWoodsCorpseRiddenClearing :: CardDef 'LocationType
 arkhamWoodsCorpseRiddenClearing = locationWithUnrevealed
   "50035"
   "Arkham Woods"
@@ -3322,7 +3321,7 @@ arkhamWoodsCorpseRiddenClearing = locationWithUnrevealed
   [Squiggle, Circle]
   ReturnToTheDevourerBelow
 
-arkhamWoodsWoodenBridge :: CardDef
+arkhamWoodsWoodenBridge :: CardDef 'LocationType
 arkhamWoodsWoodenBridge = locationWithUnrevealed
   "50036"
   "Arkham Woods"
@@ -3335,7 +3334,7 @@ arkhamWoodsWoodenBridge = locationWithUnrevealed
   [Squiggle, Droplet]
   ReturnToTheDevourerBelow
 
-cursedShores :: CardDef
+cursedShores :: CardDef 'LocationType
 cursedShores = location
   "81007"
   "Cursed Shores"
@@ -3344,7 +3343,7 @@ cursedShores = location
   [Plus, Triangle, Diamond, Hourglass]
   TheBayou
 
-gardenDistrict :: CardDef
+gardenDistrict :: CardDef 'LocationType
 gardenDistrict = locationWithUnrevealed
   "81008"
   "New Orleans"
@@ -3357,7 +3356,7 @@ gardenDistrict = locationWithUnrevealed
   [Square, Plus]
   TheBayou
 
-broadmoor :: CardDef
+broadmoor :: CardDef 'LocationType
 broadmoor = victory 1 $ locationWithUnrevealed
   "81009"
   "New Orleans"
@@ -3370,7 +3369,7 @@ broadmoor = victory 1 $ locationWithUnrevealed
   [Square, Plus]
   TheBayou
 
-brackishWaters :: CardDef
+brackishWaters :: CardDef 'LocationType
 brackishWaters = location
   "81010"
   "Brackish Waters"
@@ -3379,7 +3378,7 @@ brackishWaters = location
   [Squiggle, Square, Diamond, Hourglass]
   TheBayou
 
-audubonPark :: CardDef
+audubonPark :: CardDef 'LocationType
 audubonPark = victory 1 $ locationWithUnrevealed
   "81011"
   "Riverside"
@@ -3392,7 +3391,7 @@ audubonPark = victory 1 $ locationWithUnrevealed
   [Triangle, Squiggle]
   TheBayou
 
-fauborgMarigny :: CardDef
+fauborgMarigny :: CardDef 'LocationType
 fauborgMarigny = locationWithUnrevealed
   "81012"
   "Riverside"
@@ -3405,7 +3404,7 @@ fauborgMarigny = locationWithUnrevealed
   [Triangle, Squiggle]
   TheBayou
 
-forgottenMarsh :: CardDef
+forgottenMarsh :: CardDef 'LocationType
 forgottenMarsh = location
   "81013"
   "Forgotten Marsh"
@@ -3414,7 +3413,7 @@ forgottenMarsh = location
   [Moon, Square, Triangle, Hourglass]
   TheBayou
 
-trappersCabin :: CardDef
+trappersCabin :: CardDef 'LocationType
 trappersCabin = locationWithUnrevealed
   "81014"
   "Wilderness"
@@ -3427,7 +3426,7 @@ trappersCabin = locationWithUnrevealed
   [Diamond, Moon]
   TheBayou
 
-twistedUnderbrush :: CardDef
+twistedUnderbrush :: CardDef 'LocationType
 twistedUnderbrush = victory 1 $ locationWithUnrevealed
   "81015"
   "Wilderness"
@@ -3440,7 +3439,7 @@ twistedUnderbrush = victory 1 $ locationWithUnrevealed
   [Diamond, Moon]
   TheBayou
 
-foulSwamp :: CardDef
+foulSwamp :: CardDef 'LocationType
 foulSwamp = location
   "81016"
   "Foul Swamp"
@@ -3449,7 +3448,7 @@ foulSwamp = location
   [Equals, Square, Triangle, Diamond]
   TheBayou
 
-ritualGrounds :: CardDef
+ritualGrounds :: CardDef 'LocationType
 ritualGrounds = victory 1 $ locationWithUnrevealed
   "81017"
   "Unhallowed Land"
@@ -3462,7 +3461,7 @@ ritualGrounds = victory 1 $ locationWithUnrevealed
   [Hourglass, Equals]
   TheBayou
 
-overgrownCairns :: CardDef
+overgrownCairns :: CardDef 'LocationType
 overgrownCairns = locationWithUnrevealed
   "81018"
   "Unhallowed Land"
@@ -3475,23 +3474,23 @@ overgrownCairns = locationWithUnrevealed
   [Hourglass, Equals]
   TheBayou
 
-gondola :: CardDef
+gondola :: CardDef 'LocationType
 gondola =
   location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors
 
-sanMarcoBasilica :: CardDef
+sanMarcoBasilica :: CardDef 'LocationType
 sanMarcoBasilica =
   location "82008" "San Marco Basilica" [Venice] NoSymbol [] CarnevaleOfHorrors
 
-canalSide :: CardDef
+canalSide :: CardDef 'LocationType
 canalSide =
   location "82009" "Canal-side" [Venice] NoSymbol [] CarnevaleOfHorrors
 
-streetsOfVenice :: CardDef
+streetsOfVenice :: CardDef 'LocationType
 streetsOfVenice =
   location "82010" "Streets of Venice" [Venice] NoSymbol [] CarnevaleOfHorrors
 
-rialtoBridge :: CardDef
+rialtoBridge :: CardDef 'LocationType
 rialtoBridge = location
   "82011"
   "Rialto Bridge"
@@ -3500,11 +3499,11 @@ rialtoBridge = location
   []
   CarnevaleOfHorrors
 
-venetianGarden :: CardDef
+venetianGarden :: CardDef 'LocationType
 venetianGarden =
   location "82012" "Venetian Garden" [Venice] NoSymbol [] CarnevaleOfHorrors
 
-bridgeOfSighs :: CardDef
+bridgeOfSighs :: CardDef 'LocationType
 bridgeOfSighs = location
   "82013"
   "Bridge of Sighs"
@@ -3513,11 +3512,11 @@ bridgeOfSighs = location
   []
   CarnevaleOfHorrors
 
-floodedSquare :: CardDef
+floodedSquare :: CardDef 'LocationType
 floodedSquare =
   location "82014" "Flooded Square" [Venice] NoSymbol [] CarnevaleOfHorrors
 
-accademiaBridge :: CardDef
+accademiaBridge :: CardDef 'LocationType
 accademiaBridge = location
   "82015"
   "Accademia Bridge"
@@ -3526,10 +3525,10 @@ accademiaBridge = location
   []
   CarnevaleOfHorrors
 
-theGuardian :: CardDef
+theGuardian :: CardDef 'LocationType
 theGuardian =
   location "82016" "The Guardian" [Venice] NoSymbol [] CarnevaleOfHorrors
 
-betweenWorlds :: CardDef
+betweenWorlds :: CardDef 'LocationType
 betweenWorlds =
   location "xbetween" "Between Worlds" [Hex] NoSymbol [] ShatteredAeons

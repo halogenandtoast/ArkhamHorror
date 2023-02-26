@@ -11,19 +11,20 @@ import Arkham.Story.Cards
 import Arkham.Treachery.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Data.HashMap.Strict qualified as HashMap
 
-lookupEncounterCardDef :: CardCode -> CardDef
+lookupEncounterCardDef :: CardCode -> SomeCardDef
 lookupEncounterCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
     $ lookup cardCode allEncounterCards
 
-allEncounterCards :: HashMap CardCode CardDef
+allEncounterCards :: HashMap CardCode SomeCardDef
 allEncounterCards =
-  allEncounterEnemyCards
-    <> allLocationCards
-    <> allSpecialLocationCards
-    <> allEncounterTreacheryCards
-    <> allEncounterAssetCards
-    <> allStoryCards
-    <> allActCards
-    <> allAgendaCards
+  HashMap.map (SomeCardDef SEnemyType) allEncounterEnemyCards
+    <> HashMap.map (SomeCardDef SLocationType) allLocationCards
+    <> HashMap.map (SomeCardDef SLocationType) allSpecialLocationCards
+    <> HashMap.map (SomeCardDef STreacheryType) allEncounterTreacheryCards
+    <> HashMap.map (SomeCardDef SEncounterAssetType) allEncounterAssetCards
+    <> HashMap.map (SomeCardDef SStoryType) allStoryCards
+    <> HashMap.map (SomeCardDef SActType) allActCards
+    <> HashMap.map (SomeCardDef SAgendaType) allAgendaCards

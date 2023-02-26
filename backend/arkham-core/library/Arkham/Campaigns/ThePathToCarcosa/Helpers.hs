@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
-import Arkham.Card.CardDef
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Log
 import Arkham.Message
@@ -28,6 +27,6 @@ markDoubt = do
   n <- getDoubt
   pure $ RecordCount Doubt (n + 1)
 
-interviewed :: HasGame m => CardDef -> m Bool
+interviewed :: (HasGame m, HasCardCode a) => a -> m Bool
 interviewed assetDef =
   elem (Recorded $ toCardCode assetDef) <$> getRecordSet VIPsInterviewed

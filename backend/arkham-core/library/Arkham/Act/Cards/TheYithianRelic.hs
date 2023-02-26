@@ -71,11 +71,11 @@ instance RunMessage TheYithianRelic where
       mDiscard <-
         selectOne $ InDiscardOf (InvestigatorWithId iid) <> BasicCardMatch
           (CardWithTitle "Relic of Ages")
-      case mDiscard of
-        Just relic -> push $ chooseOne
+      push $ case mDiscard of
+        Just relic -> chooseOne
           iid
           [TargetLabel (CardIdTarget $ toCardId relic) [AddToHand iid relic]]
-        Nothing -> push $ Search
+        Nothing -> Search
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
@@ -88,14 +88,15 @@ instance RunMessage TheYithianRelic where
       push $ TakeControlOfAsset iid relic
       pure a
     UseCardAbility _ (isSource attrs -> True) 3 _ _ -> do
-      a <$ push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)
+      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
-      whenM (getHasRecord IchtacaIsSetAgainstYou) $ do
+      whenHasRecord IchtacaIsSetAgainstYou $ do
         nexus <- selectJust $ locationIs Locations.nexusOfNKai
         ichtaca <- getSetAsideCard Enemies.ichtacaScionOfYig
         push $ CreateEnemyAt ichtaca nexus Nothing
-      whenM (getHasRecord AlejandroIsSetAgainstYou) $ do
+      whenHasRecord AlejandroIsSetAgainstYou $ do
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         alejandro <- getSetAsideCard Enemies.alejandroVela
         push $ CreateEnemyAt alejandro aPocketInTime Nothing

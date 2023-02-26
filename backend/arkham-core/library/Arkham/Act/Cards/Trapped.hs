@@ -7,8 +7,9 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher (LocationMatcher(..), enemyAt)
+import Arkham.Matcher (LocationMatcher(..))
 import Arkham.Message
 
 newtype Trapped = Trapped ActAttrs
@@ -20,10 +21,10 @@ trapped =
   act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance RunMessage Trapped where
-  runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+  runMessage msg a@(Trapped attrs) = case msg of
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       studyId <- selectJust $ LocationWithTitle "Study"
-      enemyIds <- selectList $ enemyAt studyId
+      enemyIds <- enemiesAt studyId
 
       (hallwayId, placeHallway) <- placeSetAsideLocation Locations.hallway
       placeCellar <- placeSetAsideLocation_ Locations.cellar
@@ -36,11 +37,11 @@ instance RunMessage Trapped where
         , placeAttic
         , placeParlor
         ]
-       <> map (Discard (toSource attrs) . EnemyTarget) enemyIds
+       <> map (toDiscard attrs) enemyIds
        <> [ RevealLocation Nothing hallwayId
           , MoveAllTo (toSource attrs) hallwayId
           , RemoveLocation studyId
-          , AdvanceActDeck actDeckId (toSource attrs)
+          , advanceActDeck attrs
           ]
       pure a
     _ -> Trapped <$> runMessage msg attrs

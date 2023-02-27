@@ -110,11 +110,11 @@ instance RunMessage TheLastKing where
         <$ push
              (AddCampaignCardToDeck
                leadInvestigatorId
-               Enemies.theManInThePallidMask
+               $ toCardDef Enemies.theManInThePallidMask
              )
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.dianneDevine]
+        [toCardDef Enemies.dianneDevine]
         [ EncounterSet.TheLastKing
         , EncounterSet.HastursGift
         , EncounterSet.DecayAndFilth

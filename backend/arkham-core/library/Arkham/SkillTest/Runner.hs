@@ -84,7 +84,7 @@ skillIconCount SkillTest {..} = do
     modifiers' <- getModifiers (CardIdTarget pcId)
     pure $ foldr
       applyAfterSkillModifiers
-      (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
+      (foldr applySkillModifiers (toSkills c) modifiers')
       modifiers'
   iconsForCard _ = pure []
   matches WildIcon = True
@@ -289,7 +289,7 @@ instance RunMessage SkillTest where
         discards = mapMaybe
           (\case
             (iid, PlayerCard pc) ->
-              (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
+              (iid, pc) <$ guard (toCardType pc /= SkillType)
             (_, EncounterCard _) -> Nothing
             (_, VengeanceCard _) -> Nothing
           )

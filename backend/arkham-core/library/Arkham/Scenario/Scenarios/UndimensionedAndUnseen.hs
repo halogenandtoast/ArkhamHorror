@@ -125,7 +125,7 @@ instance RunMessage UndimensionedAndUnseen where
       standalone <- getIsStandalone
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.broodOfYogSothoth, Assets.esotericFormula]
+        [toCardDef Enemies.broodOfYogSothoth, toCardDef Assets.esotericFormula]
         [ EncounterSet.UndimensionedAndUnseen
         , EncounterSet.Whippoorwills
         , EncounterSet.BeastThralls
@@ -294,7 +294,7 @@ instance RunMessage UndimensionedAndUnseen where
         $ [ story investigatorIds resolution1
           , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
           ]
-        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
+        <> [RemoveCampaignCard $ toCardDef Assets.powderOfIbnGhazi]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
       pure s
@@ -303,7 +303,7 @@ instance RunMessage UndimensionedAndUnseen where
       xp <- getXp
       pushAll
         $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
-        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
+        <> [RemoveCampaignCard $ toCardDef Assets.powderOfIbnGhazi]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
       pure s

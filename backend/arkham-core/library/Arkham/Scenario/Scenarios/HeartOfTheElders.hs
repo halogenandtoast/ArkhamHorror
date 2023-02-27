@@ -145,21 +145,21 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           $ [ Label
                 "Let’s consult with Ichtaca."
                 [ story iids intro2
-                , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
+                , PutCampaignCardIntoPlay iid $ toCardDef Assets.ichtacaTheForgottenGuardian
                 ]
             | iid <- maybeToList mIchtacaInvestigator
             ]
           <> [ Label
                  "Let’s consult with Alejandro."
                  [ story iids intro3
-                 , PutCampaignCardIntoPlay iid Assets.alejandroVela
+                 , PutCampaignCardIntoPlay iid $ toCardDef Assets.alejandroVela
                  ]
              | iid <- maybeToList mAlejandroInvestigator
              ]
           <> [ Label
                  "Let’s consult the expedition journal."
                  [ story iids intro4
-                 , PutCampaignCardIntoPlay iid Assets.expeditionJournal
+                 , PutCampaignCardIntoPlay iid $ toCardDef Assets.expeditionJournal
                  ]
              | iid <- maybeToList mExpeditionJournalInvestigator
              ]
@@ -193,7 +193,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             ]
         encounterDeck' <-
           buildEncounterDeckExcluding
-              (explorationDeckLocations <> toList ruinsLocations)
+              (map toCardDef $ explorationDeckLocations <> toList ruinsLocations)
             $ [ EncounterSet.PillarsOfJudgement
               , EncounterSet.HeartOfTheElders
               , EncounterSet.Rainforest
@@ -218,7 +218,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           . (<> [ ruinsLocation | not mappedOutTheWayForward ])
           =<< traverse
                 genCard
-                (explorationDeckLocations <> explorationDeckTreacheries)
+                (map toCardDef explorationDeckLocations <> map toCardDef explorationDeckTreacheries)
 
         setAsidePoisonedCount <- getSetAsidePoisonedCount
 
@@ -275,7 +275,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           }
         )
     Resolution 1 -> do
-      vengeanceCards <- filter (isJust . cdVengeancePoints . toCardDef)
+      vengeanceCards <- filter (isJust . withCardDef cdVengeancePoints)
         <$> scenarioField ScenarioVictoryDisplay
       gainXP <- map (uncurry GainXP) <$> getXp
       pushAll
@@ -312,7 +312,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     let theJungleWatchesCardDefs = map toCardDef theJungleWatchesCards
 
     encounterDeck' <- buildEncounterDeckExcluding
-      explorationDeckLocations
+      (map toCardDef explorationDeckLocations)
       [ EncounterSet.KnYan
       , EncounterSet.HeartOfTheElders
       , EncounterSet.AgentsOfYig
@@ -325,19 +325,19 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     let
       encounterDeck = removeEachFromDeck
         encounterDeck'
-        (explorationDeckTreacheries <> theJungleWatchesCardDefs)
+        (map toCardDef explorationDeckTreacheries <> map toCardDef theJungleWatchesCardDefs)
 
     (mouthOfKnYanTheDepthsBelowId, placeMouthOfKnYanTheDepthsBelow) <- placeLocationCard Locations.mouthOfKnYanTheDepthsBelow
     setAsidePoisonedCount <- getSetAsidePoisonedCount
     setAsideCards <- traverse
       genCard
-      (Locations.descentToYoth
-      : replicate setAsidePoisonedCount Treacheries.poisoned
+      (toCardDef Locations.descentToYoth
+      : replicate setAsidePoisonedCount (toCardDef Treacheries.poisoned)
       )
 
     explorationDeck <- traverse
       genCard
-      (explorationDeckLocations <> explorationDeckTreacheries)
+      (map toCardDef explorationDeckLocations <> map toCardDef explorationDeckTreacheries)
 
     pushAll
       [ SetEncounterDeck encounterDeck

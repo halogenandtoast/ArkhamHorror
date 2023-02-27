@@ -104,11 +104,13 @@ canBeCommittedL =
 instance HasCardCode TreacheryAttrs where
   toCardCode = treacheryCardCode
 
-instance HasCardDef TreacheryAttrs where
-  toCardDef a = case lookup (treacheryCardCode a) allTreacheryCards of
+toTreacheryCardDef :: TreacheryAttrs -> CardDef 'TreacheryType
+toTreacheryCardDef a = case lookup (treacheryCardCode a) allTreacheryCards of
     Just def -> def
-    Nothing ->
-      error $ "missing card def for treachery " <> show (treacheryCardCode a)
+    Nothing -> error $ "missing card def for treachery " <> show (treacheryCardCode a)
+
+instance HasCardDef TreacheryAttrs where
+  toCardDef = SomeCardDef STreacheryType . toTreacheryCardDef
 
 instance ToJSON TreacheryAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "treachery"

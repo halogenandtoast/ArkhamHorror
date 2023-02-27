@@ -50,11 +50,11 @@ instance HasTokenValue TheDevourerBelow where
     ElderThing -> pure $ toTokenValue attrs ElderThing 5 7
     otherFace -> getTokenValue iid otherFace attrs
 
-actDeck :: [CardDef]
+actDeck :: [CardDef 'ActType]
 actDeck =
   [Acts.investigatingTheTrail, Acts.intoTheDarkness, Acts.disruptingTheRitual]
 
-agendaDeck :: [CardDef]
+agendaDeck :: [CardDef 'AgendaType]
 agendaDeck =
   [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
 
@@ -104,7 +104,7 @@ instance RunMessage TheDevourerBelow where
            ]
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.umordhoth]
+        [toCardDef Enemies.umordhoth]
         [ EncounterSet.TheDevourerBelow
         , EncounterSet.AncientEvils
         , EncounterSet.StrikingFear
@@ -136,7 +136,7 @@ instance RunMessage TheDevourerBelow where
 
       setAsideCards <- traverse
         genCard
-        [Locations.ritualSite, Enemies.umordhoth]
+        [toCardDef Locations.ritualSite, toCardDef Enemies.umordhoth]
 
       TheDevourerBelow <$> runMessage
         msg

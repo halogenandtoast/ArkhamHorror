@@ -248,7 +248,7 @@ instance RunMessage TheForgottenAge where
              $ Done "Do not use medicine"
              : [ CardLabel
                    (unInvestigatorId poisoned)
-                   [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
+                   [ RemoveCampaignCardFromDeck poisoned $ toCardDef Treacheries.poisoned
                    , UseSupply doctor Medicine
                    ]
                | (poisoned, doctor) <- zip withPoisoned withMedicine
@@ -299,7 +299,7 @@ instance RunMessage TheForgottenAge where
       leadInvestigatorId <- getLeadInvestigatorId
       let
         inADeckAlready =
-          any ((== Assets.alejandroVela) . toCardDef)
+          any ((== toCardDef Assets.alejandroVela) . toCardDef)
             . concat
             . toList
             $ campaignStoryCards attrs
@@ -360,7 +360,7 @@ instance RunMessage TheForgottenAge where
               [ Label
                 "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
                 [ SpendXP iid 3
-                , RemoveCampaignCardFromDeck iid Treacheries.poisoned
+                , RemoveCampaignCardFromDeck iid $ toCardDef Treacheries.poisoned
                 ]
               , Label "Do not remove poisoned weakness" []
               ]
@@ -516,7 +516,7 @@ instance RunMessage TheForgottenAge where
              $ Done "Do not use medicine"
              : [ CardLabel
                    (unInvestigatorId poisoned)
-                   [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
+                   [ RemoveCampaignCardFromDeck poisoned $ toCardDef Treacheries.poisoned
                    , UseSupply doctor Medicine
                    ]
                | (poisoned, doctor) <- zip withPoisoned withMedicine
@@ -593,7 +593,7 @@ instance RunMessage TheForgottenAge where
               results
 
           pushAll
-            [ AddCampaignCardToDeck iid Treacheries.outOfBodyExperience
+            [ AddCampaignCardToDeck iid $ toCardDef Treacheries.outOfBodyExperience
             | (iid, outOfBody, _) <- results
             , outOfBody
             ]
@@ -620,7 +620,7 @@ instance RunMessage TheForgottenAge where
         else
           [ story iids foreverLost
           , Record AlejandroIsSetAgainstYou
-          , RemoveCampaignCard Assets.alejandroVela
+          , RemoveCampaignCard $ toCardDef Assets.alejandroVela
           ]
       pure c
     CampaignStep (Just (InterludeStepPart 4 _ 3)) -> do
@@ -696,7 +696,7 @@ instance RunMessage TheForgottenAge where
             $ Done "Do not use medicine"
             : [ CardLabel
                   (unInvestigatorId poisoned)
-                  [ RemoveCampaignCardFromDeck poisoned Treacheries.poisoned
+                  [ RemoveCampaignCardFromDeck poisoned $ toCardDef Treacheries.poisoned
                   , UseSupply doctor Medicine
                   ]
               | (poisoned, doctor) <- zip withPoisoned withMedicine
@@ -778,13 +778,13 @@ instance RunMessage TheForgottenAge where
         <> [ story iids growingConcern | not foundTheMissingRelic ]
         <> [ AddToken newToken | not foundTheMissingRelic ]
         <> [ story iids finalDawning | readFinalDawning ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+        <> [ RemoveCampaignCard $ toCardDef Assets.relicOfAgesADeviceOfSomeSort
            | readFinalDawning
            ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
+        <> [ RemoveCampaignCard $ toCardDef Assets.relicOfAgesForestallingTheFuture
            | readFinalDawning
            ]
-        <> [ AddCampaignCardToDeck iid Assets.relicOfAgesRepossessThePast
+        <> [ AddCampaignCardToDeck iid $ toCardDef Assets.relicOfAgesRepossessThePast
            | readFinalDawning
            , iid <- maybeToList mRelicOfAgesOwner
            ]

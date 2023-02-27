@@ -250,11 +250,14 @@ instance SourceEntity LocationAttrs where
 instance HasCardCode LocationAttrs where
   toCardCode = locationCardCode
 
+toLocationCardDef :: LocationAttrs -> CardDef 'LocationType
+toLocationCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards) of
+  Just def -> def
+  Nothing ->
+    error $ "missing card def for location " <> show (locationCardCode a)
+
 instance HasCardDef LocationAttrs where
-  toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards) of
-    Just def -> SomeCardDef SLocationType def
-    Nothing ->
-      error $ "missing card def for location " <> show (locationCardCode a)
+  toCardDef = SomeCardDef SLocationType . toLocationCardDef
 
 unrevealed :: LocationAttrs -> Bool
 unrevealed = not . locationRevealed

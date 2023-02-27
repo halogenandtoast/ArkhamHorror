@@ -91,7 +91,7 @@ instance RunMessage ReturnToTheDevourerBelow where
              ]
 
         encounterDeck <- buildEncounterDeckExcluding
-          [Enemies.umordhoth]
+          [toCardDef Enemies.umordhoth]
           [ EncounterSet.ReturnToTheDevourerBelow
           , EncounterSet.TheDevourerBelow
           , EncounterSet.AncientEvils
@@ -123,7 +123,7 @@ instance RunMessage ReturnToTheDevourerBelow where
 
         setAsideEncounterCards <- traverse
           (fmap EncounterCard . genEncounterCard)
-          [Locations.ritualSite, Enemies.umordhoth]
+          [toCardDef Locations.ritualSite, toCardDef Enemies.umordhoth]
 
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg

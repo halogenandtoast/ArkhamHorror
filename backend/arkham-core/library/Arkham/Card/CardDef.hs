@@ -71,6 +71,12 @@ instance SingCTI 'TreacheryType where
 instance SingCTI 'EnemyType where
   singCT = SEnemyType
 
+instance SingCTI 'InvestigatorType where
+  singCT = SInvestigatorType
+
+instance SingCTI 'ScenarioType where
+  singCT = SScenarioType
+
 data SCardType :: CardType -> Type where
   SAssetType :: SCardType 'AssetType
   SEventType :: SCardType 'EventType

@@ -53,7 +53,7 @@ getVengeanceInVictoryDisplay = do
     isVengeanceCard = \case
       VengeanceCard _ -> True
       _ -> False
-    inVictoryDisplay = sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
+    inVictoryDisplay = sum $ map (fromMaybe 0 . withCardDef cdVengeancePoints) victoryDisplay
     vengeanceCards = count isVengeanceCard victoryDisplay
   locationsWithModifier <- getSum <$> selectAgg
     (Sum . fromMaybe 0)
@@ -79,7 +79,7 @@ getIsPoisoned iid =
 getSetAsidePoisoned :: HasGame m => m Card
 getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
-    . find ((== Treacheries.poisoned) . toCardDef)
+    . find ((== toCardDef Treacheries.poisoned) . toCardDef)
     <$> scenarioField ScenarioSetAsideCards
 
 data ExploreRule = PlaceExplored | ReplaceExplored
@@ -116,7 +116,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           ]
         ]
     [x] -> do
-      msgs <- if cdCardType (toCardDef x) == LocationType
+      msgs <- if toCardType x == LocationType
         then do
           let historyItem = mempty { historySuccessfulExplore = True }
 
@@ -125,7 +125,7 @@ explore iid source cardMatcher exploreRule matchCount = do
             ReplaceExplored -> do
               let
                 lSymbol = fromJustNote "no location symbol"
-                  $ cdLocationRevealedSymbol (toCardDef x)
+                  $ withCardDef cdLocationRevealedSymbol x
               mLocationToReplace <- selectOne $ LocationWithSymbol lSymbol
               case mLocationToReplace of
                 Just lid -> pure (lid, ReplaceLocation lid x)

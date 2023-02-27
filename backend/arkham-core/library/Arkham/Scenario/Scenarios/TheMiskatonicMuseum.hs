@@ -121,7 +121,7 @@ instance RunMessage TheMiskatonicMuseum where
       let exhibitDeck = top <> bottom'
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Treacheries.shadowSpawned, Assets.haroldWalsted, Assets.adamLynch]
+        [toCardDef Treacheries.shadowSpawned, toCardDef Assets.haroldWalsted, toCardDef Assets.adamLynch]
         [ EncounterSet.TheMiskatonicMuseum
         , EncounterSet.BadLuck
         , EncounterSet.Sorcery
@@ -155,10 +155,10 @@ instance RunMessage TheMiskatonicMuseum where
 
       setAsideCards <- traverse
         genCard
-        [ Assets.haroldWalsted
-        , Assets.adamLynch
-        , Assets.theNecronomiconOlausWormiusTranslation
-        , Treacheries.shadowSpawned
+        [ toCardDef Assets.haroldWalsted
+        , toCardDef Assets.adamLynch
+        , toCardDef Assets.theNecronomiconOlausWormiusTranslation
+        , toCardDef Treacheries.shadowSpawned
         ]
 
       TheMiskatonicMuseum <$> runMessage
@@ -249,7 +249,7 @@ instance RunMessage TheMiskatonicMuseum where
                       (InvestigatorTarget iid)
                       [ AddCampaignCardToDeck
                           iid
-                          Assets.theNecronomiconOlausWormiusTranslation
+                          $ toCardDef Assets.theNecronomiconOlausWormiusTranslation
                       ]
                   | iid <- investigatorIds
                   ]

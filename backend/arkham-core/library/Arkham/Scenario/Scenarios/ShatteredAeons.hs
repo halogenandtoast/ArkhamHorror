@@ -169,19 +169,19 @@ instance RunMessage ShatteredAeons where
 
       encounterDeck <-
         buildEncounterDeckExcluding
-          [ Enemies.ichtacaScionOfYig
-          , Enemies.alejandroVela
-          , Enemies.formlessSpawn
-          , Locations.yuggoth
-          , Locations.shoresOfRlyeh
-          , Locations.cityOfTheUnseen
-          , Locations.aPocketInTime
-          , Locations.ruinsOfNewYork
-          , Locations.mu
-          , Locations.atlantis
-          , Locations.pnakotus
-          , Locations.valusia
-          , Locations.plateauOfLeng
+          [ toCardDef Enemies.ichtacaScionOfYig
+          , toCardDef Enemies.alejandroVela
+          , toCardDef Enemies.formlessSpawn
+          , toCardDef Locations.yuggoth
+          , toCardDef Locations.shoresOfRlyeh
+          , toCardDef Locations.cityOfTheUnseen
+          , toCardDef Locations.aPocketInTime
+          , toCardDef Locations.ruinsOfNewYork
+          , toCardDef Locations.mu
+          , toCardDef Locations.atlantis
+          , toCardDef Locations.pnakotus
+          , toCardDef Locations.valusia
+          , toCardDef Locations.plateauOfLeng
           ]
         $ [ EncounterSet.ShatteredAeons
           , EncounterSet.PnakoticBrotherhood
@@ -195,36 +195,36 @@ instance RunMessage ShatteredAeons where
       let
         encounterDeck' = removeEachFromDeck
           encounterDeck
-          [ Treacheries.wrackedByTime
-          , Treacheries.betweenWorlds
-          , Treacheries.ancientEvils
+          [ toCardDef Treacheries.wrackedByTime
+          , toCardDef Treacheries.betweenWorlds
+          , toCardDef Treacheries.ancientEvils
           ]
 
       explorationDeck <- shuffleM =<< traverse
         genCard
-        [ Locations.yuggoth
-        , Locations.shoresOfRlyeh
-        , Locations.cityOfTheUnseen
-        , Treacheries.wrackedByTime
-        , Treacheries.betweenWorlds
-        , Treacheries.ancientEvils
+        [ toCardDef Locations.yuggoth
+        , toCardDef Locations.shoresOfRlyeh
+        , toCardDef Locations.cityOfTheUnseen
+        , toCardDef Treacheries.wrackedByTime
+        , toCardDef Treacheries.betweenWorlds
+        , toCardDef Treacheries.ancientEvils
         ]
 
       setAsideCards <- traverse
         genCard
-        [ Assets.relicOfAgesUnleashTheTimestream
-        , Enemies.ichtacaScionOfYig
-        , Enemies.alejandroVela
-        , Enemies.formlessSpawn
-        , Locations.aPocketInTime
-        , Locations.ruinsOfNewYork
-        , Locations.mu
-        , Locations.atlantis
-        , Locations.pnakotus
-        , Locations.valusia
-        , Locations.plateauOfLeng
-        , Acts.paradiseLost
-        , Acts.timelock
+        [ toCardDef Assets.relicOfAgesUnleashTheTimestream
+        , toCardDef Enemies.ichtacaScionOfYig
+        , toCardDef Enemies.alejandroVela
+        , toCardDef Enemies.formlessSpawn
+        , toCardDef Locations.aPocketInTime
+        , toCardDef Locations.ruinsOfNewYork
+        , toCardDef Locations.mu
+        , toCardDef Locations.atlantis
+        , toCardDef Locations.pnakotus
+        , toCardDef Locations.valusia
+        , toCardDef Locations.plateauOfLeng
+        , toCardDef Acts.paradiseLost
+        , toCardDef Acts.timelock
         ]
 
       pushAll
@@ -346,10 +346,10 @@ instance RunMessage ShatteredAeons where
             Nothing -> pure []
             Just relic -> fieldMap
               AssetCardsUnderneath
-              (filter (isJust . cdVictoryPoints . toCardDef))
+              (filter (isJust . withCardDef cdVictoryPoints))
               relic
           xp <- map (uncurry GainXP) <$> getXpWithBonus
-            (5 + sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations)
+            (5 + sum (map (fromMaybe 0 . withCardDef cdVictoryPoints) locations)
             )
           pushAll
             $ story iids resolution1
@@ -385,10 +385,10 @@ instance RunMessage ShatteredAeons where
             Nothing -> pure []
             Just relic -> fieldMap
               AssetCardsUnderneath
-              (filter (isJust . cdVictoryPoints . toCardDef))
+              (filter (isJust . withCardDef cdVictoryPoints))
               relic
           xp <- map (uncurry GainXP) <$> getXpWithBonus
-            (sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations))
+            (sum (map (fromMaybe 0 . withCardDef cdVictoryPoints) locations))
           pushAll
             $ story iids resolution5
             : Record TheInvestigatorsTurnedBackTime

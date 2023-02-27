@@ -63,7 +63,7 @@ lookupScenario scenarioId =
 
 data SomeScenario = forall a . IsScenario a => SomeScenario (Difficulty -> a)
 
-scenarioCard :: CardCode -> Name -> EncounterSet -> CardDef
+scenarioCard :: CardCode -> Name -> EncounterSet -> CardDef 'ScenarioType
 scenarioCard cCode name ecSet = CardDef
   { cdCardCode = cCode
   , cdName = name
@@ -71,7 +71,6 @@ scenarioCard cCode name ecSet = CardDef
   , cdCost = Nothing
   , cdAdditionalCost = Nothing
   , cdLevel = 0
-  , cdCardType = ScenarioType
   , cdCardSubType = Nothing
   , cdClassSymbols = mempty
   , cdSkills = mempty
@@ -111,7 +110,7 @@ scenarioCard cCode name ecSet = CardDef
   , cdCanReplace = True
   }
 
-allScenarioCards :: HashMap CardCode CardDef
+allScenarioCards :: HashMap CardCode (CardDef 'ScenarioType)
 allScenarioCards =
   mapFromList $ flip map (mapToList allScenarios) $ \(c, SomeScenario s) -> do
     let ecSet = fromJustNote "you forgot to add the encounter set" $ lookup c scenarioEncounterSets

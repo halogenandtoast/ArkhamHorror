@@ -17,7 +17,6 @@ import Arkham.Strategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Data.HashMap.Strict qualified as HashMap
 import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ SkillId, EntityAttrs a ~ SkillAttrs) => IsSkill a
@@ -45,16 +44,19 @@ additionalCostL = lens skillAdditionalCost $ \m x -> m { skillAdditionalCost = x
 afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
 afterPlayL = lens skillAfterPlay $ \m x -> m { skillAfterPlay = x }
 
-allSkillCards :: HashMap CardCode SomeCardDef
-allSkillCards = HashMap.map (SomeCardDef SSkillType) allPlayerSkillCards
+allSkillCards :: HashMap CardCode (CardDef 'SkillType)
+allSkillCards = allPlayerSkillCards
 
 instance HasCardCode SkillAttrs where
   toCardCode = skillCardCode
 
-instance HasCardDef SkillAttrs where
-  toCardDef a = case lookup (skillCardCode a) allSkillCards of
+toSkillCardDef :: SkillAttrs -> CardDef 'SkillType
+toSkillCardDef a = case lookup (skillCardCode a) allSkillCards of
     Just def -> def
     Nothing -> error $ "missing card def for skill " <> show (skillCardCode a)
+
+instance HasCardDef SkillAttrs where
+  toCardDef = SomeCardDef SSkillType . toSkillCardDef
 
 instance IsCard SkillAttrs where
   toCardId = unSkillId . skillId

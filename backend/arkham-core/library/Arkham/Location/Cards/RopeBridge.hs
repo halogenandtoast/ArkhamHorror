@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
@@ -43,7 +42,7 @@ instance RunMessage RopeBridge where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         mRiverCanyon <-
-          find ((== "River Canyon") . nameTitle . cdName . toCardDef)
+          find ((== "River Canyon") . nameTitle . toName)
             <$> getExplorationDeck
         (riverCanyonId, mPlacement) <- case mRiverCanyon of
           Just riverCanyon -> second Just <$> placeLocation riverCanyon

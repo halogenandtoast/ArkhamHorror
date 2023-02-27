@@ -164,13 +164,13 @@ instance RunMessage TheDoomOfEztli where
       -- | Setup
       -- -- | Gather cards
       encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.harbingerOfValusia
-        , Locations.ancientHall
-        , Locations.grandChamber
-        , Locations.undergroundRuins
-        , Locations.burialPit
-        , Locations.secretPassage
-        , Locations.chamberOfTime
+        [ toCardDef Enemies.harbingerOfValusia
+        , toCardDef Locations.ancientHall
+        , toCardDef Locations.grandChamber
+        , toCardDef Locations.undergroundRuins
+        , toCardDef Locations.burialPit
+        , toCardDef Locations.secretPassage
+        , toCardDef Locations.chamberOfTime
         ]
         [ EncounterSet.TheDoomOfEztli
         , EncounterSet.AgentsOfYig
@@ -198,27 +198,27 @@ instance RunMessage TheDoomOfEztli where
 
       explorationDeck <- shuffleM =<< traverse
         genCard
-        [ Locations.ancientHall
-        , Locations.grandChamber
-        , Locations.burialPit
-        , Locations.undergroundRuins
-        , Locations.secretPassage
-        , Treacheries.illOmen
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        , Treacheries.entombed
-        , Treacheries.cryptChill
+        [ toCardDef Locations.ancientHall
+        , toCardDef Locations.grandChamber
+        , toCardDef Locations.burialPit
+        , toCardDef Locations.undergroundRuins
+        , toCardDef Locations.secretPassage
+        , toCardDef Treacheries.illOmen
+        , toCardDef Treacheries.deepDark
+        , toCardDef Treacheries.finalMistake
+        , toCardDef Treacheries.entombed
+        , toCardDef Treacheries.cryptChill
         ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       setAsideCards <-
         traverse genCard
-        $ [ Locations.chamberOfTime
-          , Assets.relicOfAgesADeviceOfSomeSort
-          , Enemies.harbingerOfValusia
+        $ [ toCardDef Locations.chamberOfTime
+          , toCardDef Assets.relicOfAgesADeviceOfSomeSort
+          , toCardDef Enemies.harbingerOfValusia
           ]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
+        <> replicate setAsidePoisonedCount (toCardDef Treacheries.poisoned)
 
       pushAll
         $ [ story iids intro

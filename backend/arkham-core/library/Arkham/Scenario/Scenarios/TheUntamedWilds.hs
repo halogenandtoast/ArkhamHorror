@@ -83,41 +83,41 @@ instance RunMessage TheUntamedWilds where
 
       explorationDeck <- shuffleM =<< traverse
         genCard
-        [ Locations.pathOfThorns
-        , Locations.riverCanyon
-        , Locations.ropeBridge
-        , Locations.serpentsHaven
-        , Locations.circuitousTrail
-        , Treacheries.lostInTheWilds
-        , Treacheries.overgrowth
-        , Treacheries.snakeBite
-        , Treacheries.lowOnSupplies
-        , Treacheries.arrowsFromTheTrees
+        [ toCardDef Locations.pathOfThorns
+        , toCardDef Locations.riverCanyon
+        , toCardDef Locations.ropeBridge
+        , toCardDef Locations.serpentsHaven
+        , toCardDef Locations.circuitousTrail
+        , toCardDef Treacheries.lostInTheWilds
+        , toCardDef Treacheries.overgrowth
+        , toCardDef Treacheries.snakeBite
+        , toCardDef Treacheries.lowOnSupplies
+        , toCardDef Treacheries.arrowsFromTheTrees
         ]
       agentsOfYig <- map EncounterCard
         <$> gatherEncounterSet EncounterSet.AgentsOfYig
       setAsideCards <- (agentsOfYig <>) <$> traverse
         genCard
-        [ Locations.ruinsOfEztli
-        , Locations.templeOfTheFang
-        , Locations.overgrownRuins
-        , Assets.alejandroVela
-        , Enemies.ichtaca
-        , Treacheries.poisoned
-        , Treacheries.poisoned
-        , Treacheries.poisoned
-        , Treacheries.poisoned
+        [ toCardDef Locations.ruinsOfEztli
+        , toCardDef Locations.templeOfTheFang
+        , toCardDef Locations.overgrownRuins
+        , toCardDef Assets.alejandroVela
+        , toCardDef Enemies.ichtaca
+        , toCardDef Treacheries.poisoned
+        , toCardDef Treacheries.poisoned
+        , toCardDef Treacheries.poisoned
+        , toCardDef Treacheries.poisoned
         ]
       encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.ichtaca
-        , Locations.pathOfThorns
-        , Locations.riverCanyon
-        , Locations.ropeBridge
-        , Locations.serpentsHaven
-        , Locations.circuitousTrail
-        , Locations.ruinsOfEztli
-        , Locations.templeOfTheFang
-        , Locations.overgrownRuins
+        [ toCardDef Enemies.ichtaca
+        , toCardDef Locations.pathOfThorns
+        , toCardDef Locations.riverCanyon
+        , toCardDef Locations.ropeBridge
+        , toCardDef Locations.serpentsHaven
+        , toCardDef Locations.circuitousTrail
+        , toCardDef Locations.ruinsOfEztli
+        , toCardDef Locations.templeOfTheFang
+        , toCardDef Locations.overgrownRuins
         ]
         [ EncounterSet.TheUntamedWilds
         , EncounterSet.Rainforest

@@ -52,7 +52,7 @@ instance RunMessage ExpeditionIntoTheWild where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <- scenarioFieldMap
         ScenarioSetAsideCards
-        (filter ((== Just AgentsOfYig) . cdEncounterSet . toCardDef))
+        (filter ((== Just AgentsOfYig) . withCardDef cdEncounterSet))
       iids <- getInvestigatorIds
       pushAll
         $ [ ShuffleEncounterDiscardBackIn

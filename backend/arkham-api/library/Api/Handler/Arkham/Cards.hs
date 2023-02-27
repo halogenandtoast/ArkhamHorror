@@ -14,21 +14,21 @@ import Arkham.Scenario
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
 
-getApiV1ArkhamCardsR :: Handler [CardDef]
+getApiV1ArkhamCardsR :: Handler [SomeCardDef]
 getApiV1ArkhamCardsR = do
   showEncounter <- maybe False (const True)
     <$> lookupGetParam "includeEncounter"
   let
     cards = if showEncounter
       then
-        allInvestigatorCards
-        <> allPlayerCards
-        <> allEncounterCards
-        <> allScenarioCards
-        <> allEncounterInvestigatorCards
+        HashMap.map toCardDef allInvestigatorCards
+        <> HashMap.map toCardDef allPlayerCards
+        <> HashMap.map toCardDef allEncounterCards
+        <> HashMap.map toCardDef allScenarioCards
+        <> HashMap.map toCardDef allEncounterInvestigatorCards
       else
-        allInvestigatorCards
-          <> HashMap.filter (isNothing . cdEncounterSet) allPlayerCards
+        HashMap.map toCardDef allInvestigatorCards
+          <> HashMap.filter (isNothing . withCardDef cdEncounterSet) allPlayerCards
     safeBCodes = ["03047b", "03084b"]
     safeDCodes = ["03084d"]
 

@@ -51,7 +51,7 @@ instance HasTokenValue TheGathering where
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     otherFace -> getTokenValue iid otherFace attrs
 
-theGatheringAgendaDeck :: [CardDef]
+theGatheringAgendaDeck :: [CardDef 'AgendaType]
 theGatheringAgendaDeck =
   [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
@@ -60,7 +60,7 @@ instance RunMessage TheGathering where
     Setup -> do
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.ghoulPriest]
+        [toCardDef Enemies.ghoulPriest]
         [ EncounterSet.TheGathering
         , EncounterSet.Rats
         , EncounterSet.Ghouls
@@ -82,12 +82,12 @@ instance RunMessage TheGathering where
 
       setAsideCards <- traverse
         genCard
-        [ Enemies.ghoulPriest
-        , Assets.litaChantler
-        , Locations.hallway
-        , Locations.attic
-        , Locations.cellar
-        , Locations.parlor
+        [ toCardDef Enemies.ghoulPriest
+        , toCardDef Assets.litaChantler
+        , toCardDef Locations.hallway
+        , toCardDef Locations.attic
+        , toCardDef Locations.cellar
+        , toCardDef Locations.parlor
         ]
 
       TheGathering <$> runMessage
@@ -139,7 +139,7 @@ instance RunMessage TheGathering where
           leadInvestigatorId
           [ Label
             "Add Lita Chantler to your deck"
-            [AddCampaignCardToDeck leadInvestigatorId Assets.litaChantler]
+            [AddCampaignCardToDeck leadInvestigatorId $ toCardDef Assets.litaChantler]
           , Label "Do not add Lita Chantler to your deck" []
           ]
       case resolution of

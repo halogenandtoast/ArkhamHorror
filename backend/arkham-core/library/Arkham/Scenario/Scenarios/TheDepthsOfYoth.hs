@@ -132,10 +132,10 @@ instance RunMessage TheDepthsOfYoth where
           ]
 
       encounterDeck <- buildEncounterDeckExcluding
-        (Enemies.yig
-        : Locations.stepsOfYoth
-        : otherLocationCards
-        <> [ Enemies.pitWarden | yigsFury == 0 ]
+        (toCardDef Enemies.yig
+        : toCardDef Locations.stepsOfYoth
+        : map toCardDef otherLocationCards
+        <> [ toCardDef Enemies.pitWarden | yigsFury == 0 ]
         )
         [ EncounterSet.TheDepthsOfYoth
         , EncounterSet.AgentsOfYig
@@ -182,15 +182,15 @@ instance RunMessage TheDepthsOfYoth where
            ]
         <> [ story investigatorIds intro4 | isIntro2 ]
         <> [ Record IchtacaIsSetAgainstYou | isIntro2 || isIntro4 ]
-        <> [ RemoveCampaignCard Assets.ichtacaTheForgottenGuardian | isIntro4 ]
+        <> [ RemoveCampaignCard $ toCardDef Assets.ichtacaTheForgottenGuardian | isIntro4 ]
         <> [ story investigatorIds intro5 | isIntro4 && theRelicIsMissing ]
         <> [ story investigatorIds intro6 | isIntro6 ]
         <> [ story investigatorIds intro7 | isIntro6 && hasPocketknife ]
         <> [ story investigatorIds intro8 | isIntro8 ]
         <> [ CrossOutRecord TheInvestigatorsFoundTheMissingRelic | isIntro8 ]
         <> [ Record TheRelicIsMissing | isIntro8 ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort | isIntro4 ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
+        <> [ RemoveCampaignCard $ toCardDef Assets.relicOfAgesADeviceOfSomeSort | isIntro4 ]
+        <> [ RemoveCampaignCard $ toCardDef Assets.relicOfAgesForestallingTheFuture
            | isIntro4
            ]
         <> [ SetEncounterDeck encounterDeck
@@ -208,12 +208,12 @@ instance RunMessage TheDepthsOfYoth where
       theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
       setAsideCards <-
         traverse genCard
-        $ Assets.relicOfAgesRepossessThePast
-        : [ Enemies.harbingerOfValusia
+        $ toCardDef Assets.relicOfAgesRepossessThePast
+        : [ toCardDef Enemies.harbingerOfValusia
           | theHarbingerIsStillAlive && not startsOnAgenda5
           ]
-        <> [ Enemies.yig | not startsOnAgenda6 ]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
+        <> [ toCardDef Enemies.yig | not startsOnAgenda6 ]
+        <> replicate setAsidePoisonedCount (toCardDef Treacheries.poisoned)
 
       TheDepthsOfYoth <$> runMessage
         msg

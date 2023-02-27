@@ -19,7 +19,7 @@ import Arkham.Agenda
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Asset
-import Arkham.Asset.Types ( Asset, AssetAttrs (..), Field (..) )
+import Arkham.Asset.Types ( Asset, AssetAttrs (..), Field (..), toAssetCardDef )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -60,6 +60,7 @@ import Arkham.Investigator ( becomeYithian, returnToBody )
 import Arkham.Investigator.Types
   ( Field (..), Investigator, InvestigatorAttrs (..) )
 import Arkham.Investigator.Types qualified as Investigator
+import Arkham.Keyword (toKeywords)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.Types
@@ -71,6 +72,7 @@ import Arkham.Location.Types
   , noInvestigatorsAtLocation
   , toLocationLabel
   , toLocationSymbol
+  , toLocationCardDef
   )
 import Arkham.Matcher hiding
   ( AssetCard
@@ -125,6 +127,7 @@ import Arkham.Treachery.Types
   , TreacheryAttrs (..)
   , drawnFromL
   , treacheryAttachedTarget
+  , toTreacheryCardDef
   )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -872,7 +875,7 @@ getInvestigatorsMatching matcher = do
               modifiers' <- getModifiers (CardIdTarget pcId)
               pure $ foldr
                 applyAfterSkillModifiers
-                (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
+                (foldr applySkillModifiers (toSkills c) modifiers')
                 modifiers'
             iconsForCard _ = pure []
             applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
@@ -934,7 +937,7 @@ getActsMatching matcher = do
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
-getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [CardDef]
+getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [CardDef 'ActType]
 getRemainingActsMatching matcher = do
   acts <-
     scenarioActs
@@ -1136,7 +1139,7 @@ getLocationsMatching lmatcher = do
         )
         ls
     SingleSidedLocation ->
-      filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
+      filterM (fieldP LocationCard (not . withCardDef cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []
     FirstLocation xs ->
       fromMaybe []
@@ -1406,7 +1409,7 @@ getAssetsMatching matcher = do
  where
   canBeDiscarded = and . sequence
     [ assetCanLeavePlayByNormalMeans . toAttrs
-    , not . cdPermanent . toCardDef . toAttrs
+    , not . withCardDef cdPermanent . toCardDef . toAttrs
     ]
   filterMatcher as = \case
     NotAsset matcher' -> do
@@ -1419,7 +1422,7 @@ getAssetsMatching matcher = do
       pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
     AssetWithClass role ->
-      pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
+      pure $ filter (member role . withCardDef cdClassSymbols . toCardDef . toAttrs) as
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . assetDoom . toAttrs) as
@@ -1468,7 +1471,7 @@ getAssetsMatching matcher = do
       pure $ filter ((`cardMatch` CardIsUnique) . toCard . toAttrs) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
     NonWeaknessAsset ->
-      pure $ filter (isNothing . cdCardSubType . toCardDef . toAttrs) as
+      pure $ filter (isNothing . withCardDef cdCardSubType . toCardDef . toAttrs) as
     EnemyAsset eid ->
       filterM (fieldP AssetPlacement (== AttachedToEnemy eid) . toId) as
     AssetAt locationMatcher -> do
@@ -1526,8 +1529,8 @@ getAssetsMatching matcher = do
         assets <- filterMatcher as assetMatcher
         case handCards of
           [x] -> filterM
-            (fmap (/= (cdName $ toCardDef x))
-            . fieldMap AssetCard (cdName . toCardDef)
+            (fmap (/= toName x)
+            . fieldMap AssetCard toName
             . toId
             )
             assets
@@ -1605,7 +1608,7 @@ getEventsMatching matcher = do
       pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
     EventWithId eventId -> pure $ filter ((== eventId) . toId) as
     EventWithClass role ->
-      pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
+      pure $ filter (member role . withCardDef cdClassSymbols . toCardDef . toAttrs) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventCardMatch cardMatcher ->
       filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
@@ -1637,7 +1640,7 @@ getSkillsMatching matcher = do
       pure $ filter ((== Name title (Just subtitle)) . toName) as
     SkillWithId skillId -> pure $ filter ((== skillId) . toId) as
     SkillWithClass role -> filterM
-      (fmap (member role . cdClassSymbols . toCardDef) . field SkillCard . toId)
+      (fmap (member role . withCardDef cdClassSymbols . toCardDef) . field SkillCard . toId)
       as
     SkillWithTrait t -> filterM (fmap (member t) . field SkillTraits . toId) as
     SkillControlledBy investigatorMatcher -> do
@@ -1790,7 +1793,7 @@ enemyMatcherFilter = \case
   ReadyEnemy -> pure . not . enemyExhausted . toAttrs
   AnyEnemy -> pure . const True
   EnemyIs cardCode -> pure . (== cardCode) . toCardCode . toAttrs
-  NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef . toAttrs
+  NonWeaknessEnemy -> pure . isNothing . withCardDef cdCardSubType . toCardDef . toAttrs
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <-
       setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
@@ -1811,7 +1814,7 @@ enemyMatcherFilter = \case
     \enemy -> elem modifier <$> getModifiers (toTarget enemy)
   EnemyWithEvade -> fieldP EnemyEvade isJust . toId
   UnengagedEnemy -> selectNone . InvestigatorEngagedWith . EnemyWithId . toId
-  UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
+  UniqueEnemy -> pure . withCardDef cdUnique . toCardDef . toAttrs
   IsIchtacasPrey -> remembered . IchtacasPrey . toId
   MovingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
@@ -2016,10 +2019,9 @@ instance Projection Location where
           addedTraits = flip mapMaybe modifiers $ \case
             AddTrait t -> Just t
             _ -> Nothing
-          traitFunc =
-            if locationRevealed then cdRevealedCardTraits else cdCardTraits
+          traitFunc = withCardDef (if locationRevealed then cdRevealedCardTraits else cdCardTraits)
         pure . (setFromList addedTraits <>) . traitFunc $ toCardDef attrs
-      LocationKeywords -> pure . cdKeywords $ toCardDef attrs
+      LocationKeywords -> pure . toKeywords $ toCardDef attrs
       LocationUnrevealedName -> pure $ toName (Unrevealed l)
       LocationName -> pure $ toName l
       LocationConnectedMatchers -> do
@@ -2044,11 +2046,11 @@ instance Projection Location where
       LocationEvents -> pure locationEvents
       LocationTreacheries -> pure locationTreacheries
       -- virtual
-      LocationCardDef -> pure $ toCardDef attrs
+      LocationCardDef -> pure $ toLocationCardDef attrs
       LocationCard -> pure $ lookupCard locationCardCode (unLocationId lid)
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
-      LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
+      LocationVengeance -> pure $ withCardDef cdVengeancePoints $ toCardDef attrs
 
 instance Projection Asset where
   field f aid = do
@@ -2056,7 +2058,7 @@ instance Projection Asset where
     let attrs@AssetAttrs {..} = toAttrs a
     case f of
       AssetName -> pure $ toName attrs
-      AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
+      AssetCost -> pure . maybe 0 toPrintedCost . withCardDef cdCost $ toCardDef attrs
       AssetClues -> pure assetClues
       AssetResources -> pure assetResources
       AssetHorror -> pure assetHorror
@@ -2083,7 +2085,7 @@ instance Projection Asset where
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement
       AssetUses -> pure assetUses
-      AssetStartingUses -> pure . cdUses $ toCardDef attrs
+      AssetStartingUses -> pure . withCardDef cdUses $ toCardDef attrs
       AssetController -> do
         modifiers' <- getModifiers (AssetTarget aid)
         let
@@ -2110,9 +2112,9 @@ instance Projection Asset where
       AssetSealedTokens -> pure assetSealedTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual
-      AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
-      AssetTraits -> pure . cdCardTraits $ toCardDef attrs
-      AssetCardDef -> pure $ toCardDef attrs
+      AssetClasses -> pure . withCardDef cdClassSymbols $ toCardDef attrs
+      AssetTraits -> pure . toTraits $ toCardDef attrs
+      AssetCardDef -> pure $ toAssetCardDef attrs
       AssetCard -> pure $ case lookupCard assetCardCode (unAssetId aid) of
         PlayerCard pc -> PlayerCard $ pc { pcOwner = assetOwner }
         ec -> ec
@@ -2131,7 +2133,7 @@ instance Projection (DiscardedEntity Asset) where
       <$> getGame
     let attrs = toAttrs a
     case f of
-      DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
+      DiscardedAssetTraits -> pure . toTraits $ toCardDef attrs
 
 instance Projection Act where
   field f aid = do
@@ -2180,8 +2182,8 @@ getEnemyField f e = do
       pure (totalHealth - enemyDamage)
     EnemyHealthDamage -> pure enemyHealthDamage
     EnemySanityDamage -> pure enemySanityDamage
-    EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
-    EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
+    EnemyTraits -> pure $ toTraits $ toCardDef attrs
+    EnemyKeywords -> pure $ toKeywords $ toCardDef attrs
     EnemyAbilities -> pure $ getAbilities e
     EnemyCard ->
       pure $ case lookupCard enemyOriginalCardCode (unEnemyId $ toId e) of
@@ -2351,8 +2353,8 @@ instance Query ExtendedCardMatcher where
           assets <- selectList assetMatcher
           cards <- case assets of
             [x] -> do
-              assetName <- fieldMap AssetCard (cdName . toCardDef) x
-              pure $ filter ((/= assetName) . cdName . toCardDef) handCards
+              assetName <- fieldMap AssetCard toName x
+              pure $ filter ((/= assetName) . toName) handCards
             _ -> pure handCards
           pure $ c `elem` cards
       SetAsideCardMatch matcher' -> do
@@ -2388,8 +2390,8 @@ instance Query ExtendedCardMatcher where
       EligibleForCurrentSkillTest -> do
         skillIcons <- getSkillTestMatchingSkillIcons
         pure
-          (any (`member` skillIcons) (cdSkills (toCardDef c))
-          || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
+          (any (`member` skillIcons) (toSkills c)
+          || (null (toSkills c) && toCardType c == SkillType)
           )
       InDiscardOf who -> do
         iids <- selectList who
@@ -2603,7 +2605,7 @@ instance Projection Event where
     case fld of
       EventSealedTokens -> pure eventSealedTokens
       EventPlacement -> pure eventPlacement
-      EventTraits -> pure $ cdCardTraits cdef
+      EventTraits -> pure $ toTraits cdef
       EventAbilities -> pure $ getAbilities e
       EventOwner -> pure eventOwner
       EventDoom -> pure eventDoom
@@ -2644,7 +2646,7 @@ instance Projection Skill where
       attrs@SkillAttrs {..} = toAttrs s
       cdef = toCardDef attrs
     case fld of
-      SkillTraits -> pure $ cdCardTraits cdef
+      SkillTraits -> pure $ toTraits cdef
       SkillCard -> pure $ lookupCard skillCardCode (unSkillId sid)
       SkillOwner -> pure skillOwner
 
@@ -2653,7 +2655,7 @@ instance Projection Treachery where
     t <- getTreachery tid
     let
       attrs@TreacheryAttrs {..} = toAttrs t
-      cdef = toCardDef attrs
+      cdef = toTreacheryCardDef attrs
     case fld of
       TreacheryPlacement -> pure treacheryPlacement
       TreacheryDrawnBy -> pure treacheryDrawnBy
@@ -2662,7 +2664,7 @@ instance Projection Treachery where
       TreacheryResources -> pure treacheryResources
       TreacheryDoom -> pure treacheryDoom
       TreacheryAttachedTarget -> pure $ treacheryAttachedTarget attrs
-      TreacheryTraits -> pure $ cdCardTraits cdef
+      TreacheryTraits -> pure $ toTraits cdef
       TreacheryKeywords -> do
         modifiers' <- foldMapM
           getModifiers
@@ -2672,7 +2674,7 @@ instance Projection Treachery where
           applyModifier ks = \case
             AddKeyword k -> k : ks
             _ -> ks
-        pure $ cdKeywords cdef <> setFromList additionalKeywords
+        pure $ toKeywords cdef <> setFromList additionalKeywords
       TreacheryAbilities -> pure $ getAbilities t
       TreacheryCardDef -> pure cdef
       TreacheryCard -> pure $ lookupCard treacheryCardCode (unTreacheryId tid)
@@ -2872,7 +2874,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
       AdditionalCost c -> Just c
       _ -> Nothing
     sealTokenCosts =
-      flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
+      flip mapMaybe (setToList $ toKeywords card) $ \case
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
 
@@ -2880,7 +2882,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
     cost =
       mconcat
         $ [resourceCost]
-        <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
+        <> (maybe [] pure $ withCardDef cdAdditionalCost card)
         <> additionalCosts
         <> sealTokenCosts
   pure ActiveCost
@@ -2908,7 +2910,7 @@ createActiveCostForAdditionalCardCosts iid card = do
       AdditionalCost c -> Just c
       _ -> Nothing
     sealTokenCosts =
-      flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
+      flip mapMaybe (setToList $ toKeywords card) $ \case
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
     cost = mconcat $ additionalCosts <> sealTokenCosts
@@ -3456,12 +3458,12 @@ runGameMessage msg g = case msg of
       allModifiers = modifiers' <> modifiers''
       isFast = case card of
         PlayerCard pc ->
-          isJust (cdFastWindow $ toCardDef pc)
+          isJust (withCardDef cdFastWindow pc)
             || BecomesFast
             `elem` allModifiers
         _ -> False
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
-      actions = case cdActions (toCardDef card) of
+      actions = case withCardDef cdActions card of
         [] -> [ Action.Play | not isFast ]
         as -> as
     activeCost <- createActiveCostForCard iid card isPlayAction windows'
@@ -3487,7 +3489,7 @@ runGameMessage msg g = case msg of
     let cardId = toCardId card
     case card of
       PlayerCard pc -> case toCardType pc of
-        PlayerTreacheryType -> do
+        TreacheryType -> do
           let
             tid = TreacheryId cardId
             treachery = lookupTreachery (toCardCode pc) iid tid
@@ -4208,7 +4210,7 @@ runGameMessage msg g = case msg of
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
       pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
-    PlayerEnemyType -> do
+    EnemyType -> do
       let
         enemy = createEnemy card
         enemyId = toId enemy
@@ -4250,7 +4252,7 @@ runGameMessage msg g = case msg of
       TreacheryType ->
         g <$ push
           (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
-      EncounterAssetType -> do
+      AssetType -> do
         let
           asset = createAsset card
           assetId = toId asset
@@ -4322,7 +4324,7 @@ runGameMessage msg g = case msg of
     -- player treacheries will not trigger draw treachery windows
     pushAll
       $ [ RemoveCardFromHand iid (toCardId card)
-        | cdRevelation (toCardDef card)
+        | withCardDef cdRevelation card
         ]
       <> [ResolveTreachery iid treacheryId]
 
@@ -4451,10 +4453,10 @@ preloadEntities g = do
       asIfInHandCards <- getAsIfInHandCards (toId investigator')
       let
         handEffectCards =
-          (filter (cdCardInHandEffects . toCardDef) . investigatorHand $ toAttrs
+          (filter (withCardDef cdCardInHandEffects) . investigatorHand $ toAttrs
               investigator'
             )
-            <> filter (cdCardInHandEffects . toCardDef) asIfInHandCards
+            <> filter (withCardDef cdCardInHandEffects) asIfInHandCards
       if null handEffectCards
         then pure entities
         else do
@@ -4465,7 +4467,7 @@ preloadEntities g = do
           pure $ insertMap (toId investigator') handEntities entities
     foundOfElems = concat . HashMap.elems . investigatorFoundCards . toAttrs
     searchEffectCards =
-      filter (cdCardInSearchEffects . toCardDef)
+      filter (withCardDef cdCardInSearchEffects)
         $ (concat . HashMap.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getInvestigator =<< getActiveInvestigatorId

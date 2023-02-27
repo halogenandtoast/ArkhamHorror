@@ -118,7 +118,7 @@ instance RunMessage TheBoundaryBeyond where
                 else story iids silentJourney : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingHand (-2)]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids])
            <> (if foundTheMissingRelic
                 then
-                  story iids arcaneThrumming : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort : [AddCampaignCardToDeck ownerId Assets.relicOfAgesForestallingTheFuture | ownerId <- maybeToList mRelicOwner]
+                  story iids arcaneThrumming : RemoveCampaignCard (toCardDef Assets.relicOfAgesADeviceOfSomeSort) : [AddCampaignCardToDeck ownerId $ toCardDef Assets.relicOfAgesForestallingTheFuture | ownerId <- maybeToList mRelicOwner]
                 else [ story iids growingConcern ])
            <> (if rescuedAlejandro
                 then story iids alejandrosThoughts : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingResources 2]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids]
@@ -177,7 +177,7 @@ instance RunMessage TheBoundaryBeyond where
 
       encounterDeck' <-
         buildEncounterDeckExcluding
-          (Enemies.padmaAmrita : explorationDeckLocations)
+          (toCardDef Enemies.padmaAmrita : map toCardDef explorationDeckLocations)
         $ [ EncounterSet.TheBoundaryBeyond
           , EncounterSet.TemporalFlux
           , EncounterSet.Poison
@@ -198,12 +198,12 @@ instance RunMessage TheBoundaryBeyond where
 
       explorationDeck <- shuffleM =<< traverse
         genCard
-        (explorationDeckLocations <> explorationDeckTreacheries)
+        (map toCardDef explorationDeckLocations <> map toCardDef explorationDeckTreacheries)
 
       setAsideCards <-
         traverse genCard
-        $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
+        $ [toCardDef Enemies.padmaAmrita, toCardDef Acts.theReturnTrip, toCardDef Agendas.timeCollapsing]
+        <> replicate setAsidePoisonedCount (toCardDef Treacheries.poisoned)
 
       pushAll $
         [ SetEncounterDeck encounterDeck

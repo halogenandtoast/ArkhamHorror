@@ -22,7 +22,6 @@ import Arkham.Target
 import Arkham.Token ( Token )
 import Arkham.Trait ( Trait )
 import Data.Constraint
-import Data.HashMap.Strict qualified as HashMap
 import Data.Typeable
 
 data Asset = forall a . IsAsset a => Asset a
@@ -251,18 +250,21 @@ originalCardCodeL :: Lens' AssetAttrs CardCode
 originalCardCodeL =
   lens assetOriginalCardCode $ \m x -> m { assetOriginalCardCode = x }
 
-allAssetCards :: HashMap CardCode SomeCardDef
-allAssetCards = HashMap.map toCardDef allPlayerAssetCards
-  <> HashMap.map toCardDef allEncounterAssetCards
-  <> HashMap.map toCardDef allSpecialPlayerAssetCards
+allAssetCards :: HashMap CardCode (CardDef 'AssetType)
+allAssetCards = allPlayerAssetCards
+  <> allEncounterAssetCards
+  <> allSpecialPlayerAssetCards
 
 instance HasCardCode AssetAttrs where
   toCardCode = assetCardCode
 
+toAssetCardDef :: AssetAttrs -> CardDef 'AssetType
+toAssetCardDef a = case lookup (assetCardCode a) allAssetCards of
+  Just def -> def
+  Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
+
 instance HasCardDef AssetAttrs where
-  toCardDef a = case lookup (assetCardCode a) allAssetCards of
-    Just def -> def
-    Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
+  toCardDef = SomeCardDef SAssetType . toAssetCardDef
 
 instance ToJSON AssetAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"

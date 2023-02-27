@@ -119,7 +119,7 @@ instance RunMessage WhereDoomAwaits where
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.sethBishop]
+        [toCardDef Enemies.sethBishop]
         [ EncounterSet.WhereDoomAwaits
         , EncounterSet.Whippoorwills
         , EncounterSet.BeastThralls
@@ -245,7 +245,7 @@ instance RunMessage WhereDoomAwaits where
         ElderThing -> do
           let
             n = sum $ map
-              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
+              (toPrintedCost . fromMaybe (StaticCost 0) . withCardDef cdCost)
               cards
           push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()

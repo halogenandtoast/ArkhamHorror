@@ -45,7 +45,7 @@ instance RunMessage ReturnToTheGathering where
         investigatorIds <- allInvestigatorIds
 
         encounterDeck <- buildEncounterDeckExcluding
-          [Enemies.ghoulPriest]
+          [toCardDef Enemies.ghoulPriest]
           [ EncounterSet.ReturnToTheGathering
           , EncounterSet.TheGathering
           , EncounterSet.Rats
@@ -75,14 +75,14 @@ instance RunMessage ReturnToTheGathering where
 
         setAsideCards <- traverse
           genCard
-          [ Enemies.ghoulPriest
-          , Assets.litaChantler
-          , attic
-          , cellar
-          , Locations.holeInTheWall
-          , Locations.deepBelowYourHouse
-          , Locations.farAboveYourHouse
-          , Locations.parlor
+          [ toCardDef Enemies.ghoulPriest
+          , toCardDef Assets.litaChantler
+          , toCardDef attic
+          , toCardDef cellar
+          , toCardDef Locations.holeInTheWall
+          , toCardDef Locations.deepBelowYourHouse
+          , toCardDef Locations.farAboveYourHouse
+          , toCardDef Locations.parlor
           ]
 
         ReturnToTheGathering . TheGathering <$> runMessage

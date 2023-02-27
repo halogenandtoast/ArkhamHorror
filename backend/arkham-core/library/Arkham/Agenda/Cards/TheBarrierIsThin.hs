@@ -65,7 +65,7 @@ instance RunMessage TheBarrierIsThin where
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       locationSymbol <- field LocationPrintedSymbol lid
       replacements <-
-        filter ((== Just locationSymbol) . cdLocationRevealedSymbol . toCardDef)
+        filter ((== Just locationSymbol) . withCardDef cdLocationRevealedSymbol)
           <$> getExplorationDeck
       pushAll
         [ FocusCards replacements

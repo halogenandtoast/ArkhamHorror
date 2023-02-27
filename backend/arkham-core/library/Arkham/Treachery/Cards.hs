@@ -13,7 +13,6 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
 import Arkham.Trait
-import Data.HashMap.Strict qualified as HashMap
 
 baseTreachery
   :: CardCode
@@ -81,9 +80,8 @@ treachery cardCode name encounterSet encounterSetQuantity = baseTreachery
   (Just (encounterSet, encounterSetQuantity))
   Nothing
 
-allTreacheryCards :: HashMap CardCode SomeCardDef
-allTreacheryCards =
-  HashMap.map (SomeCardDef STreacheryType) allPlayerTreacheryCards <> HashMap.map (SomeCardDef STreacheryType) allEncounterTreacheryCards
+allTreacheryCards :: HashMap CardCode (CardDef 'TreacheryType)
+allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
 allPlayerTreacheryCards :: HashMap CardCode (CardDef 'TreacheryType)
 allPlayerTreacheryCards = mapFromList $ concatMap

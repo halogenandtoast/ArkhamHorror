@@ -57,7 +57,7 @@ instance RunMessage TheHouseAlwaysWins where
       investigatorIds <- allInvestigatorIds
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Assets.peterClover, Enemies.cloverClubPitBoss]
+        [toCardDef Assets.peterClover, toCardDef Enemies.cloverClubPitBoss]
         [ EncounterSet.TheHouseAlwaysWins
         , EncounterSet.BadLuck
         , EncounterSet.NaomisCrew
@@ -86,12 +86,12 @@ instance RunMessage TheHouseAlwaysWins where
 
       setAsideCards <- traverse
         genCard
-        [ Locations.darkenedHall
-        , Assets.peterClover
-        , Assets.drFrancisMorgan
-        , Locations.artGallery
-        , Locations.vipArea
-        , Locations.backAlley
+        [ toCardDef Locations.darkenedHall
+        , toCardDef Assets.peterClover
+        , toCardDef Assets.drFrancisMorgan
+        , toCardDef Locations.artGallery
+        , toCardDef Locations.vipArea
+        , toCardDef Locations.backAlley
         ]
 
       TheHouseAlwaysWins <$> runMessage
@@ -171,7 +171,7 @@ instance RunMessage TheHouseAlwaysWins where
                   leadInvestigatorId
                   [ TargetLabel
                       (InvestigatorTarget iid)
-                      [AddCampaignCardToDeck iid Assets.drFrancisMorgan]
+                      [AddCampaignCardToDeck iid $ toCardDef Assets.drFrancisMorgan]
                   | iid <- investigatorIds
                   ]
               ]

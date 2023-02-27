@@ -6,7 +6,12 @@ import Arkham.Act.Sequence qualified as Act
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Matcher
+import Arkham.Helpers.Scenario
+import Arkham.Name
+import Arkham.ScenarioLogKey
+import Arkham.Scenario.Types (Field(..))
 
 getActDecksInPlayCount :: HasGame m => m Int
 getActDecksInPlayCount = do
@@ -15,3 +20,12 @@ getActDecksInPlayCount = do
   hasDeckE <- selectAny $ ActOneOf [ActWithSide Act.E, ActWithSide Act.F]
   pure $ count id [hasDeckA, hasDeckC, hasDeckE]
 
+isIchtacasPrey :: HasGame m => EnemyId -> m Bool
+isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
+  IchtacasPrey (Labeled _ eid') -> eid == eid'
+  _ -> False
+
+isIchtacasDestination :: HasGame m => LocationId -> m Bool
+isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
+  IchtacasDestination (Labeled _ lid') -> lid == lid'
+  _ -> False

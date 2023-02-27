@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.EffectMetadata
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import {-# SOURCE #-} Arkham.GameEnv
@@ -43,7 +44,12 @@ instance RunMessage MistsOfRlyeh4 where
       a <$ pushAll
         [ createCardEffect
           Cards.mistsOfRlyeh4
-          Nothing
+          (Just $ EffectInt 1)
+          source
+          (InvestigatorTarget iid)
+        , createCardEffect
+          Cards.mistsOfRlyeh4
+          (Just $ EffectInt 2)
           source
           (InvestigatorTarget iid)
         , skillTestModifier
@@ -63,7 +69,7 @@ mistsOfRlyeh4Effect = cardEffect MistsOfRlyeh4Effect Cards.mistsOfRlyeh4
 
 instance RunMessage MistsOfRlyeh4Effect where
   runMessage msg e@(MistsOfRlyeh4Effect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token -> case effectTarget of
+    RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> case effectTarget of
       InvestigatorTarget iid' | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (pushAll
@@ -74,7 +80,7 @@ instance RunMessage MistsOfRlyeh4Effect where
           ]
         )
       _ -> pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
       case effectTarget of
         InvestigatorTarget iid -> do
           mSkillTestResult <- fmap skillTestResult <$> getSkillTest

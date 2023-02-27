@@ -7,6 +7,16 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Helpers
 
+data Labeled a = Labeled
+  { getLabel :: Name
+  , unLabel :: a
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+labeled :: Named name => name -> a -> Labeled a
+labeled (toName -> name) = Labeled name
+
 data Name = Name
   { nameTitle :: Text
   , nameSubtitle :: Maybe Text
@@ -16,6 +26,9 @@ data Name = Name
 
 class Named a where
   toName :: a -> Name
+
+instance Named Name where
+  toName = id
 
 instance Named a => Named (a `With` b) where
   toName (a `With` _) = toName a

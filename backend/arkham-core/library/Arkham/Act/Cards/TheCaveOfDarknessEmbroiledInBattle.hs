@@ -17,6 +17,7 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Name
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait
@@ -70,7 +71,7 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
       blackCave <- selectJust $ locationIs Locations.blackCave
       pushAll
         [ SpawnEnemyAt (EncounterCard ec) blackCave
-        , Remember $ IchtacasPrey $ EnemyId $ toCardId ec
+        , Remember $ IchtacasPrey $ labeled ec $ EnemyId $ toCardId ec
         ]
       pure a
     _ -> TheCaveOfDarknessEmbroiledInBattle <$> runMessage msg attrs

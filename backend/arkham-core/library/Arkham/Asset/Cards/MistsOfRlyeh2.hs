@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.EffectMetadata
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import {-# SOURCE #-} Arkham.GameEnv
@@ -40,10 +41,15 @@ instance HasAbilities MistsOfRlyeh2 where
 instance RunMessage MistsOfRlyeh2 where
   runMessage msg a@(MistsOfRlyeh2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ pushAll
+      pushAll
         [ createCardEffect
           Cards.mistsOfRlyeh2
-          Nothing
+          (Just $ EffectInt 1)
+          source
+          (InvestigatorTarget iid)
+        , createCardEffect
+          Cards.mistsOfRlyeh2
+          (Just $ EffectInt 2)
           source
           (InvestigatorTarget iid)
         , skillTestModifier
@@ -52,6 +58,7 @@ instance RunMessage MistsOfRlyeh2 where
           (SkillModifier SkillWillpower 1)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
+      pure a
     _ -> MistsOfRlyeh2 <$> runMessage msg attrs
 
 newtype MistsOfRlyeh2Effect = MistsOfRlyeh2Effect EffectAttrs
@@ -63,7 +70,7 @@ mistsOfRlyeh2Effect = cardEffect MistsOfRlyeh2Effect Cards.mistsOfRlyeh2
 
 instance RunMessage MistsOfRlyeh2Effect where
   runMessage msg e@(MistsOfRlyeh2Effect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token -> case effectTarget of
+    RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> case effectTarget of
       InvestigatorTarget iid' | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (pushAll
@@ -74,7 +81,7 @@ instance RunMessage MistsOfRlyeh2Effect where
           ]
         )
       _ -> pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
       case effectTarget of
         InvestigatorTarget iid -> do
           mSkillTestResult <- fmap skillTestResult <$> getSkillTest
@@ -92,5 +99,8 @@ instance RunMessage MistsOfRlyeh2Effect where
               pushAll [moveOptions, DisableEffect effectId]
             _ -> push (DisableEffect effectId)
         _ -> error "Invalid Target"
+      pure e
+    SkillTestEnds _ _ -> do
+      push $ DisableEffect effectId
       pure e
     _ -> MistsOfRlyeh2Effect <$> runMessage msg attrs

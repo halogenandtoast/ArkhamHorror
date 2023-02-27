@@ -19,6 +19,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
+import Arkham.Name
 import Arkham.Source
 import Arkham.ScenarioLogKey
 
@@ -64,6 +65,6 @@ instance RunMessage StrangeRelicsMariaDeSilva where
       pure a
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide B attrs -> do
       maria <- selectJust $ enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
-      pushAll [Remember $ IchtacasPrey maria]
+      pushAll [Remember $ IchtacasPrey (Labeled (toName Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn) maria)]
       pure a
     _ -> StrangeRelicsMariaDeSilva <$> runMessage msg attrs

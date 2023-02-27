@@ -1,6 +1,8 @@
 module Arkham.CampaignLogKey where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (toLower)
+import Arkham.Classes.GameLogger
+import Data.Char (isUpper, toLower)
 
 data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Generic, Eq)
@@ -167,3 +169,15 @@ data CampaignLogKey
   -- ^ Player Cards
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+
+instance ToGameLoggerFormat CampaignLogKey where
+  format = pack . go . show
+    where
+      go :: String -> String
+      go [] = []
+      go (x:xs) = toLower x : go' xs
+
+      go' :: String -> String
+      go' [] = []
+      go' (x:xs) | isUpper x = ' ' : toLower x : go' xs
+      go' (x:xs) = x : go' xs

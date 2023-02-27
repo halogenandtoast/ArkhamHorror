@@ -10,6 +10,8 @@ import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
 import Arkham.Id
+import Arkham.Name
+import Arkham.SkillType
 
 newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
 
@@ -36,8 +38,8 @@ instance FromJSON PlayerCard where
 instance HasCardCode PlayerCard where
   toCardCode = pcCardCode
 
-instance HasSkillIcons PlayerCard where
-  getSkillIcons = withCardDef cdSkills . toCardDef
+instance HasSkills PlayerCard where
+  toSkills = withCardDef toSkills
 
 instance HasCost PlayerCard where
   getCost c = case withCardDef cdCost (toCardDef c) of
@@ -50,6 +52,9 @@ instance HasCardDef PlayerCard where
     Just def -> def
     Nothing ->
       error $ "missing card def for player card " <> show (pcCardCode c)
+
+instance Named PlayerCard where
+  toName = withCardDef toName
 
 instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode

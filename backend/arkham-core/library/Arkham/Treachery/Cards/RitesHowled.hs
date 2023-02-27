@@ -44,6 +44,6 @@ instance RunMessage RitesHowled where
           discardPile <- field InvestigatorDiscard iid
           push $ ShuffleCardsIntoDeck
             (Deck.InvestigatorDeck iid)
-            (map PlayerCard $ filter (isJust . cdCardSubType . toCardDef) discardPile)
+            (map PlayerCard $ filter (isJust . withCardDef cdCardSubType) discardPile)
         )
     _ -> RitesHowled <$> runMessage msg attrs

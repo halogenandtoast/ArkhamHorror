@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Card.CardDef
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
@@ -53,7 +54,7 @@ instance RunMessage Intruders where
         $ Treacheries.poisoned
       pushAll
         $ [ InvestigatorDefeated (toSource attrs) iid | iid <- iids ]
-        <> [ AddCampaignCardToDeck iid Treacheries.poisoned
+        <> [ AddCampaignCardToDeck iid $ toCardDef Treacheries.poisoned
            | iid <- unpoisoned
            ]
       pure a

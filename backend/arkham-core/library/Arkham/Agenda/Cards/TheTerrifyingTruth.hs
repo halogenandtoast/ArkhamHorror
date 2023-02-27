@@ -10,8 +10,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
-import Arkham.Card.CardDef
-import Arkham.Card.CardType
+import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
@@ -37,16 +36,21 @@ instance HasAbilities TheTerrifyingTruth where
     | onSide A a
     ]
 
+toStoryCard :: Card -> Maybe (CardDef 'StoryType)
+toStoryCard c = case toCardDef c of
+                  (SomeCardDef SStoryType def) -> Just def
+                  _ -> Nothing
+
 instance RunMessage TheTerrifyingTruth where
   runMessage msg a@(TheTerrifyingTruth attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       storyCards <- selectList
         (UnderScenarioReferenceMatch $ CardWithType StoryType)
-      result <- case storyCards of
+      result <- case mapMaybe toStoryCard storyCards of
         [] -> pure $ AdvanceAgenda (toId attrs)
         (x : xs) -> do
           card <- sample $ x :| xs
-          pure $ ReadStory iid $ toCardDef card
+          pure $ ReadStory iid card
       a <$ pushAll [RemoveAllDoomFromPlay defaultRemoveDoomMatchers, result]
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 3)

@@ -23,7 +23,7 @@ mesmerize = Mesmerize . uncurry4 (baseAttrs "82035")
 instance RunMessage Mesmerize where
   runMessage msg e@(Mesmerize attrs) = case msg of
     Flipped _ card -> do
-      if toCardDef card == Assets.innocentReveler
+      if toCardDef card == toCardDef Assets.innocentReveler
         then do
           let aid = AssetId $ toCardId card
           case effectTarget attrs of

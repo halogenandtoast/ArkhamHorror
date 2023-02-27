@@ -36,9 +36,9 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
     (unDeck deck)
     \card -> do
       when
-        (toCardDef card == SomeCardDef SPlayerTreacheryType randomWeakness)
+        (toCardDef card == toCardDef randomWeakness)
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
-      pure $ toCardDef card /= SomeCardDef SPlayerTreacheryType randomWeakness
+      pure $ toCardDef card /= toCardDef randomWeakness
 
 toTokenValue :: ScenarioAttrs -> TokenFace -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
@@ -62,6 +62,6 @@ withStandalone
 withStandalone cf sf =
   maybe (sf =<< selectJust TheScenario) cf =<< selectOne TheCampaign
 
-resignedWith :: HasGame m => SomeCardDef -> m Bool
+resignedWith :: (HasCardCode cardDef, HasGame m) => cardDef -> m Bool
 resignedWith cDef =
-  scenarioFieldMap ScenarioResignedCardCodes (elem (withCardDef toCardCode cDef))
+  scenarioFieldMap ScenarioResignedCardCodes (elem (toCardCode cDef))

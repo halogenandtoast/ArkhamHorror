@@ -161,12 +161,12 @@ instance RunMessage TheCityOfArchives where
 
       setAsideCards <- traverse
         genCard
-        [ Locations.greatLibrary
-        , Locations.yithianOrrery
-        , Locations.laboratoryOfTheGreatRace
-        , Locations.deconstructionRoom
-        , Locations.towersOfPnakotus
-        , Assets.theCustodian
+        [ toCardDef Locations.greatLibrary
+        , toCardDef Locations.yithianOrrery
+        , toCardDef Locations.laboratoryOfTheGreatRace
+        , toCardDef Locations.deconstructionRoom
+        , toCardDef Locations.towersOfPnakotus
+        , toCardDef Assets.theCustodian
         ]
 
       let

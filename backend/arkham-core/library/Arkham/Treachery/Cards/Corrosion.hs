@@ -61,7 +61,7 @@ instance RunMessage Corrosion where
           , RevelationChoice
             iid
             source
-            (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
+            (n - maybe 0 toPrintedCost (withCardDef cdCost card))
           ]
       unless (null assets && null handAssets)
         $ push

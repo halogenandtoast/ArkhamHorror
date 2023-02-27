@@ -90,7 +90,7 @@ getRemoveNecronomicon = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
   pure
-    [ RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation
+    [ RemoveCampaignCard $ toCardDef Assets.theNecronomiconOlausWormiusTranslation
     | owner <- maybeToList mNecronomiconOwner
     , owner `elem` defeatedInvestigatorIds
     ]
@@ -129,9 +129,9 @@ instance RunMessage BloodOnTheAltar where
 
         (encounterCardsToPutUnderneath, encounterDeck) <-
           splitAt 3 . unDeck <$> buildEncounterDeckExcluding
-            [ Enemies.silasBishop
-            , Locations.theHiddenChamber
-            , Assets.keyToTheChamber
+            [ toCardDef Enemies.silasBishop
+            , toCardDef Locations.theHiddenChamber
+            , toCardDef Assets.keyToTheChamber
             ]
             ([ EncounterSet.BloodOnTheAltar
              , EncounterSet.Dunwich
@@ -215,10 +215,10 @@ instance RunMessage BloodOnTheAltar where
 
         setAsideCards <- traverse
           genCard
-          [ Enemies.silasBishop
-          , Locations.theHiddenChamber
-          , Assets.keyToTheChamber
-          , Assets.powderOfIbnGhazi
+          [ toCardDef Enemies.silasBishop
+          , toCardDef Locations.theHiddenChamber
+          , toCardDef Assets.keyToTheChamber
+          , toCardDef Assets.powderOfIbnGhazi
           ]
 
         BloodOnTheAltar . (`with` metadata) <$> runMessage

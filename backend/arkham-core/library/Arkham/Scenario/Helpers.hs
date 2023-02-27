@@ -26,12 +26,12 @@ buildEncounterDeck :: CardGen m => [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckExcluding
-  :: CardGen m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
+  :: CardGen m => [SomeCardDef] -> [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeckExcluding defs =
   buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
 
 excludeDoubleSided :: [EncounterCard] -> [EncounterCard]
-excludeDoubleSided = filter (not . cdDoubleSided . toCardDef)
+excludeDoubleSided = filter (not . withCardDef cdDoubleSided)
 
 excludeBSides :: [EncounterCard] -> [EncounterCard]
 excludeBSides = filter (not . isSuffixOf "b" . unCardCode . toCardCode)

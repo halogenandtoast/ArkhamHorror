@@ -768,8 +768,8 @@ instance RunMessage EnemyAttrs where
       afterMsg <- checkWindows
         [Window Timing.After (Window.EnemyDefeated miid eid)]
       let
-        victory = cdVictoryPoints $ toCardDef a
-        vengeance = cdVengeancePoints $ toCardDef a
+        victory = withCardDef cdVictoryPoints a
+        vengeance = withCardDef cdVengeancePoints a
         victoryMsgs =
           [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance) ]
         defeatMsgs = if isJust (victory <|> vengeance)

@@ -5,7 +5,6 @@ module Arkham.Event.Cards.CheapShot
 
 import Arkham.Prelude
 
-import Arkham.Card.CardDef
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
@@ -26,8 +25,8 @@ instance RunMessage CheapShot where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       agility <- getSkillValue SkillAgility iid
       e <$ pushAll
-        [ CreateEffect
-          (cdCardCode $ toCardDef attrs)
+        [ createCardEffect
+          Cards.cheapShot
           (Just $ EffectInt agility)
           (toSource attrs)
           (InvestigatorTarget iid)

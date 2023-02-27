@@ -242,8 +242,8 @@ instance RunMessage APhantomOfTruth where
           then Acts.stalkedByShadows
           else Acts.pursuingShadows
         excludes = if conviction > doubt
-          then [Treacheries.blackStarsRise]
-          else [Treacheries.twinSuns]
+          then [toCardDef Treacheries.blackStarsRise]
+          else [toCardDef Treacheries.twinSuns]
         theOrganist = if conviction > doubt
           then Enemies.theOrganistHopelessIDefiedHim
           else Enemies.theOrganistDrapedInMystery

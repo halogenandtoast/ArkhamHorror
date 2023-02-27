@@ -99,9 +99,9 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
     (unDeck deck)
     \card -> do
       when
-        (toCardDef card == SomeCardDef SPlayerTreacheryType randomWeakness)
+        (toCardDef card == toCardDef randomWeakness)
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
-      pure $ toCardDef card /= SomeCardDef SPlayerTreacheryType randomWeakness
+      pure $ toCardDef card /= toCardDef randomWeakness
 
 campaign
   :: (CampaignAttrs -> a)

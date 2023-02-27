@@ -92,16 +92,16 @@ readInvestigatorDefeat = do
       pure
       $ [story defeatedInvestigatorIds investigatorDefeat]
       <> [ Record TheNecronomiconWasStolen | isJust mNecronomiconOwner ]
-      <> [RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation]
+      <> [RemoveCampaignCard (toCardDef Assets.theNecronomiconOlausWormiusTranslation)]
       <> [ Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner ]
-      <> [RemoveCampaignCard Assets.drHenryArmitage]
+      <> [RemoveCampaignCard (toCardDef Assets.drHenryArmitage)]
       <> [ Record ProfessorWarrenRiceWasKidnapped
          | isJust mProfessorWarrenRiceOwner
          ]
-      <> [RemoveCampaignCard Assets.professorWarrenRice]
+      <> [RemoveCampaignCard (toCardDef Assets.professorWarrenRice)]
       <> [ Record DrFrancisMorganWasKidnapped | isJust mDrFrancisMorganOwner ]
-      <> [RemoveCampaignCard Assets.drFrancisMorgan]
-      <> [ AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
+      <> [RemoveCampaignCard (toCardDef Assets.drFrancisMorgan)]
+      <> [ AddCampaignCardToDeck iid (toCardDef Treacheries.acrossSpaceAndTime)
          | iid <- defeatedInvestigatorIds
          ]
 

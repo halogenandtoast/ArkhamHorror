@@ -62,9 +62,9 @@ instance RunMessage ExtracurricularActivity where
       investigatorIds <- allInvestigatorIds
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.theExperiment
-        , Assets.jazzMulligan
-        , Assets.alchemicalConcoction
+        [ toCardDef Enemies.theExperiment
+        , toCardDef Assets.jazzMulligan
+        , toCardDef Assets.alchemicalConcoction
         ]
         [ EncounterSet.ExtracurricularActivity
         , EncounterSet.Sorcery
@@ -93,15 +93,15 @@ instance RunMessage ExtracurricularActivity where
 
       setAsideCards <- traverse
         genCard
-        [ if completedTheHouseAlwaysWins
+        [ toCardDef $ if completedTheHouseAlwaysWins
           then Locations.facultyOfficesTheHourIsLate
           else Locations.facultyOfficesTheNightIsStillYoung
-        , Assets.jazzMulligan
-        , Assets.alchemicalConcoction
-        , Enemies.theExperiment
-        , Locations.dormitories
-        , Locations.alchemyLabs
-        , Assets.professorWarrenRice
+        , toCardDef Assets.jazzMulligan
+        , toCardDef Assets.alchemicalConcoction
+        , toCardDef Enemies.theExperiment
+        , toCardDef Locations.dormitories
+        , toCardDef Locations.alchemyLabs
+        , toCardDef Assets.professorWarrenRice
         ]
 
       ExtracurricularActivity <$> runMessage
@@ -140,7 +140,7 @@ instance RunMessage ExtracurricularActivity where
         ElderThing -> do
           let
             n = sum $ map
-              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
+              (toPrintedCost . fromMaybe (StaticCost 0) . withCardDef cdCost)
               cards
           push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
@@ -170,7 +170,7 @@ instance RunMessage ExtracurricularActivity where
               "Add Professor Warren Rice to your deck"
               [ AddCampaignCardToDeck
                   leadInvestigatorId
-                  Assets.professorWarrenRice
+                  $ toCardDef Assets.professorWarrenRice
               ]
             , Label "Do not add Professor Warren Rice to your deck" []
             ]

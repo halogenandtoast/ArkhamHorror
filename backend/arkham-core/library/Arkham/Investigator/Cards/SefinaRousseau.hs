@@ -72,7 +72,7 @@ instance RunMessage SefinaRousseau where
           (and
           . sequence
               [ (== EventType) . toCardType
-              , (/= Events.thePaintedWorld) . toCardDef
+              , (/= toCardDef Events.thePaintedWorld) . toCardDef
               ]
           )
           hand

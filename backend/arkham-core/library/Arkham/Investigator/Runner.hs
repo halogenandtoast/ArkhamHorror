@@ -54,6 +54,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest
+import Arkham.SkillType (toSkills)
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Types ( Field (..) )
@@ -153,7 +154,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pure $ a & usedAbilitiesL .~ usedAbilities'
   ResetGame ->
-    pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
+    pure $ (cbCardBuilder (investigator id (lookupInvestigatorDef a) (getAttrStats a)) ())
       { investigatorXp = investigatorXp
       , investigatorPhysicalTrauma = investigatorPhysicalTrauma
       , investigatorMentalTrauma = investigatorMentalTrauma
@@ -190,7 +191,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ([], investigatorDeck)
         investigatorStartsWith
       (permanentCards, deck'') =
-        partition (cdPermanent . toCardDef) (unDeck deck')
+        partition (withCardDef cdPermanent) (unDeck deck')
     beforeDrawingStartingHand <- checkWindows
       [Window Timing.When (Window.DrawingStartingHand investigatorId)]
     let deck''' = filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
@@ -281,7 +282,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (CardIdTarget $ toCardId card)
               [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
-          , cdCanReplace (toCardDef card)
+          , withCardDef cdCanReplace card
           ]
     pure a
   BeginTrade iid _source (AssetTarget aid) iids | iid == investigatorId -> a <$ push
@@ -468,7 +469,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [ TargetLabel
           (CardIdTarget $ toCardId card)
           [DiscardCard iid GameSource (toCardId card), CheckHandSize iid]
-      | card <- filter (isNothing . cdCardSubType . toCardDef)
+      | card <- filter (isNothing . withCardDef cdCardSubType)
         $ mapMaybe (preview _PlayerCard) investigatorHand
       ]
     pure a
@@ -547,7 +548,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Discarded (AssetTarget aid) _ (PlayerCard card)
     | aid `elem` investigatorAssets -> do
       let
-        slotTypes = cdSlots $ toCardDef card
+        slotTypes = withCardDef cdSlots card
         slots slotType = findWithDefault [] slotType investigatorSlots
         assetIds slotType = mapMaybe slotItem $ slots slotType
       pushAll
@@ -1742,18 +1743,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
                 msgs = flip mapMaybe allDrawn $ \card ->
                   case toCardType card of
-                    PlayerTreacheryType -> do
+                    TreacheryType -> do
                       guard $ not shuffleBackInEachWeakness
                       Just
                         $ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid)
                         $ PlayerCard card
-                    PlayerEnemyType -> do
+                    EnemyType -> do
                       guard $ not shuffleBackInEachWeakness
                       Just $ DrewPlayerEnemy iid $ PlayerCard card
                     other
-                      | cdRevelation (toCardDef card)
+                      | withCardDef cdRevelation card
                         && other
-                        `notElem` [PlayerTreacheryType, PlayerEnemyType]
+                        `notElem` [TreacheryType, EnemyType]
                       -> do
                         guard
                           $ ShuffleBackInEachWeakness
@@ -1906,7 +1907,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       skillDifficulty = skillTestDifficulty skillTest
       onlyCardComittedToTestCommitted = any
-        (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
+        (any (== OnlyCardCommittedToTest) . withCardDef cdCommitRestrictions)
         allCommittedCards
       committedCardCodes =
         map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
@@ -1957,18 +1958,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 modifiers'
                 \case
                   CanOnlyUseCardsInRole role -> null $ intersect
-                    (cdClassSymbols $ toCardDef card)
+                    (withCardDef cdClassSymbols card)
                     (setFromList [Neutral, role])
                   CannotCommitCards matcher -> cardMatch card matcher
                   _ -> False
             passesCommitRestrictions <- allM
               passesCommitRestriction
-              (cdCommitRestrictions $ toCardDef card)
+              (withCardDef cdCommitRestrictions card)
             pure
               $ PlayerCard card
               `notElem` committedCards
-              && (any (`member` skillIcons) (cdSkills (toCardDef card))
-                 || (null (cdSkills $ toCardDef card)
+              && (any (`member` skillIcons) (toSkills card)
+                 || (null (toSkills card)
                     && toCardType card
                     == SkillType
                     )
@@ -1978,7 +1979,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           EncounterCard card ->
             pure
               $ CommittableTreachery
-              `elem` (cdCommitRestrictions $ toCardDef card)
+              `elem` (withCardDef cdCommitRestrictions card)
           VengeanceCard _ -> error "vengeance card"
     if notNull committableCards || notNull committedCards || notNull actions
       then push
@@ -2018,10 +2019,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let
         skillDifficulty = skillTestDifficulty skillTest
         onlyCardComittedToTestCommitted = any
-          (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
+          (any (== OnlyCardCommittedToTest) . withCardDef cdCommitRestrictions)
           allCommittedCards
         committedCardNames =
-          map (cdName . toCardDef . snd)
+          map (toName . snd)
             . HashMap.elems
             $ skillTestCommittedCards skillTest
       modifiers' <- getModifiers (toTarget a)
@@ -2046,7 +2047,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       CommittableTreachery -> error "unhandled"
                       MaxOnePerTest ->
                         pure
-                          $ cdName (toCardDef card)
+                          $ toName card
                           `notElem` committedCardNames
                       OnlyCardCommittedToTest -> pure $ null committedCardNames
                       OnlyYourTest -> pure False
@@ -2070,24 +2071,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       modifiers'
                       \case
                         CanOnlyUseCardsInRole role -> null $ intersect
-                          (cdClassSymbols $ toCardDef card)
+                          (withCardDef cdClassSymbols card)
                           (setFromList [Neutral, role])
                         _ -> False
                   passesCriterias <- allM
                     passesCommitRestriction
-                    (cdCommitRestrictions $ toCardDef card)
+                    (withCardDef cdCommitRestrictions card)
                   pure
                     $ PlayerCard card
                     `notElem` committedCards
-                    && (any (`member` skillIcons) (cdSkills (toCardDef card))
-                       || (null (cdSkills (toCardDef card)) && toCardType card == SkillType)
+                    && (any (`member` skillIcons) (toSkills card)
+                       || (null (toSkills card) && toCardType card == SkillType)
                        )
                     && passesCriterias
                     && not prevented
                 EncounterCard card ->
                   pure
                     $ CommittableTreachery
-                    `elem` (cdCommitRestrictions $ toCardDef card)
+                    `elem` (withCardDef cdCommitRestrictions card)
                 VengeanceCard _ -> error "vengeance card"
       when (notNull committableCards || notNull committedCards) $ push
         (SkillTestAsk $ chooseOne
@@ -2245,11 +2246,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> do
-        when (cdRevelation (toCardDef card'))
-          $ if toCardType card' == PlayerTreacheryType
+        when (withCardDef cdRevelation card')
+          $ if toCardType card' == TreacheryType
               then push (DrewTreachery iid Nothing card)
               else push (Revelation iid $ PlayerCardSource card')
-        when (toCardType card' == PlayerEnemyType)
+        when (toCardType card' == EnemyType)
           $ push (DrewPlayerEnemy iid card)
       _ -> pure ()
     pure

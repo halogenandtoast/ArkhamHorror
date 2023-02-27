@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.ChildrenOfValusia
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
@@ -32,7 +33,7 @@ instance HasModifiersFor ChildrenOfValusia where
 
 instance HasAbilities ChildrenOfValusia where
   getAbilities (ChildrenOfValusia a) =
-    [ limitedAbility (PerCopyLimit Cards.childrenOfValusia PerRound 1)
+    [ limitedAbility (PerCopyLimit (toCardDef Cards.childrenOfValusia) PerRound 1)
         $ mkAbility a 1
         $ ForcedAbility
         $ RoundEnds Timing.When

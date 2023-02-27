@@ -30,7 +30,7 @@ instance HasModifiersFor Backstage where
   getModifiersFor (CardTarget card) (Backstage attrs)
     | maybe False (`on` attrs) (toCardOwner card) = pure $ toModifiers
       attrs
-      [ HandSizeCardCount 3 | Hidden `elem` cdKeywords (toCardDef card) ]
+      [ HandSizeCardCount 3 | Hidden `elem` toKeywords card ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Backstage where

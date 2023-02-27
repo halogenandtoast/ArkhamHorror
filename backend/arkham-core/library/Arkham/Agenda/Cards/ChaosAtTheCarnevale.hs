@@ -13,6 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
+import Arkham.Card.CardDef
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
@@ -51,7 +52,7 @@ instance RunMessage ChaosAtTheCarnevale where
             $ [ EnemyAttack
                   iid
                   cnidathquaId
-                  (DamageFirst Assets.innocentReveler)
+                  (DamageFirst $ toCardDef Assets.innocentReveler)
                   RegularAttack
               | iid <- investigatorIds
               ]

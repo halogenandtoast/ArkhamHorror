@@ -862,9 +862,7 @@ letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   , cdFastWindow = Just $ DrawCard
     Timing.After
     NotYou
-    (BasicCardMatch $ NonPeril <> CardWithOneOf
-      (map CardWithType encounterCardTypes)
-    )
+    (BasicCardMatch $ NonPeril <> IsEncounterCard)
     EncounterDeck
   }
 

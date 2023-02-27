@@ -16,6 +16,7 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
+import Arkham.Name
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Tome) )
@@ -70,7 +71,7 @@ instance RunMessage LibraryDocent1 where
           targetCards = filter
             (and . sequence
               [ (`cardMatch` (CardWithType AssetType <> CardWithTrait Tome))
-              , (/= (cdName $ toCardDef assetPayment)) . cdName . toCardDef
+              , (/= (toName assetPayment)) . toName
               ]
             )
             handCards

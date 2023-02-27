@@ -69,7 +69,7 @@ instance RunMessage UrsulaDowns where
       handCards <- field InvestigatorHand iid
       let
         investigateCards =
-          filter (elem Action.Investigate . cdActions . toCardDef) handCards
+          filter (elem Action.Investigate . withCardDef cdActions) handCards
       playableCards <- filterM
         (getIsPlayable iid (toSource attrs) UnpaidCost windows')
         investigateCards

@@ -38,18 +38,18 @@ gavriellaMizrah = investigatorWith
     , agility = 1
     }
   ((startsWithL
-   .~ [ Cards.fortyFiveAutomatic { cdUses = Uses Ammo 2 }
-      , Cards.physicalTraining
+   .~ [ toCardDef $ Cards.setUses Cards.fortyFiveAutomatic (Uses Ammo 2)
+      , toCardDef Cards.physicalTraining
       ]
    )
   . (startsWithInHandL
-    .~ [ Cards.firstAid
-       , Cards.guardDog
-       , Cards.evidence
-       , Cards.dodge
-       , Cards.extraAmmunition1
-       , Cards.delayTheInevitable
-       , Cards.delayTheInevitable
+    .~ [ toCardDef Cards.firstAid
+       , toCardDef Cards.guardDog
+       , toCardDef Cards.evidence
+       , toCardDef Cards.dodge
+       , toCardDef Cards.extraAmmunition1
+       , toCardDef Cards.delayTheInevitable
+       , toCardDef Cards.delayTheInevitable
        ]
     )
   )

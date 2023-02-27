@@ -33,6 +33,9 @@ data SkillIcon = SkillIcon SkillType | WildIcon
   deriving stock (Show, Eq, Generic, Ord)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+class HasSkills a where
+  toSkills :: a -> [SkillIcon]
+
 instance IsLabel "willpower" SkillIcon where
   fromLabel = SkillIcon SkillWillpower
 

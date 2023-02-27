@@ -30,6 +30,9 @@ storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef 'AssetType
 asset = baseAsset Nothing
 
+setUses :: CardDef k -> Uses -> CardDef k
+setUses cd u = cd { cdUses = u }
+
 permanent :: CardDef k -> CardDef k
 permanent cd = cd { cdPermanent = True, cdCost = Nothing }
 
@@ -424,7 +427,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , zoeysCross
   ]
 
-allEncounterAssetCards :: HashMap CardCode (CardDef 'EncounterAssetType)
+allEncounterAssetCards :: HashMap CardCode (CardDef 'AssetType)
 allEncounterAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ adamLynch
@@ -449,7 +452,7 @@ allSpecialPlayerAssetCards :: HashMap CardCode (CardDef 'AssetType)
 allSpecialPlayerAssetCards =
   mapFrom toCardCode [courage, intrepid]
 
-allSpecialEncounterAssetCards :: HashMap CardCode (CardDef 'EncounterAssetType)
+allSpecialEncounterAssetCards :: HashMap CardCode (CardDef 'AssetType)
 allSpecialEncounterAssetCards =
   mapFrom toCardCode [straitjacket]
 
@@ -1037,13 +1040,13 @@ drHenryArmitage = (storyAsset
   , cdSlots = [AllySlot]
   }
 
-alchemicalConcoction :: CardDef 'EncounterAssetType
+alchemicalConcoction :: CardDef 'AssetType
 alchemicalConcoction =
   (storyAsset "02059" "Alchemical Concoction" 0 ExtracurricularActivity)
     { cdCardTraits = setFromList [Item, Science]
     }
 
-jazzMulligan :: CardDef 'EncounterAssetType
+jazzMulligan :: CardDef 'AssetType
 jazzMulligan = (storyAsset
                  "02060"
                  ("\"Jazz\" Mulligan" <:> "The Head Janitor")
@@ -1067,7 +1070,7 @@ professorWarrenRice = (storyAsset
   , cdSlots = [AllySlot]
   }
 
-peterClover :: CardDef 'EncounterAssetType
+peterClover :: CardDef 'AssetType
 peterClover = (storyAsset
                 "02079"
                 ("Peter Clover" <:> "Holding All the Cards")
@@ -1145,7 +1148,7 @@ painkillers = (asset "02117" "Painkillers" 1 Neutral)
   , cdUses = Uses Supply 3
   }
 
-haroldWalsted :: CardDef 'EncounterAssetType
+haroldWalsted :: CardDef 'AssetType
 haroldWalsted = (storyAsset
                   "02138"
                   ("Harold Walsted" <:> "Curator of the Museum")
@@ -1156,7 +1159,7 @@ haroldWalsted = (storyAsset
   , cdUnique = True
   }
 
-adamLynch :: CardDef 'EncounterAssetType
+adamLynch :: CardDef 'AssetType
 adamLynch =
   (storyAsset "02139" ("Adam Lynch" <:> "Museum Security") 0 TheMiskatonicMuseum
     )
@@ -1229,7 +1232,7 @@ charisma3 = permanent $ (asset "02158" "Charisma" 0 Neutral)
   , cdAlternateCardCodes = ["01694"]
   }
 
-helplessPassenger :: CardDef 'EncounterAssetType
+helplessPassenger :: CardDef 'AssetType
 helplessPassenger =
   (storyAsset "02179" "Helpless Passenger" 0 TheEssexCountyExpress)
     { cdCardTraits = setFromList [Ally, Bystander]
@@ -1274,7 +1277,7 @@ scrapper3 = permanent $ (asset "02193" "Scrapper" 0 Survivor)
   , cdLevel = 3
   }
 
-keyToTheChamber :: CardDef 'EncounterAssetType
+keyToTheChamber :: CardDef 'AssetType
 keyToTheChamber = (storyAsset "02215" "Key to the Chamber" 0 BloodOnTheAltar)
   { cdCardTraits = setFromList [Item, Key]
   , cdUnique = True
@@ -1619,7 +1622,7 @@ gravediggersShovel = (asset "03037" "Gravedigger's Shovel" 2 Survivor)
   , cdSlots = [HandSlot]
   }
 
-constanceDumaine :: CardDef 'EncounterAssetType
+constanceDumaine :: CardDef 'AssetType
 constanceDumaine =
   (storyAsset "03076" ("Constance Dumaine" <:> "Sociable Hostess") 0 TheLastKing
     )
@@ -1629,7 +1632,7 @@ constanceDumaine =
     , cdCost = Nothing
     }
 
-jordanPerry :: CardDef 'EncounterAssetType
+jordanPerry :: CardDef 'AssetType
 jordanPerry =
   (storyAsset "03077" ("Jordan Perry" <:> "Dignified Financier") 0 TheLastKing)
     { cdCardTraits = singleton Bystander
@@ -1638,7 +1641,7 @@ jordanPerry =
     , cdCost = Nothing
     }
 
-ishimaruHaruko :: CardDef 'EncounterAssetType
+ishimaruHaruko :: CardDef 'AssetType
 ishimaruHaruko =
   (storyAsset "03078" ("Ishimaru Haruko" <:> "Costume Designer") 0 TheLastKing)
     { cdCardTraits = singleton Bystander
@@ -1647,7 +1650,7 @@ ishimaruHaruko =
     , cdCost = Nothing
     }
 
-sebastienMoreau :: CardDef 'EncounterAssetType
+sebastienMoreau :: CardDef 'AssetType
 sebastienMoreau = (storyAsset
                     "03079"
                     ("Sebastien Moreau" <:> "Impassioned Producer")
@@ -1660,7 +1663,7 @@ sebastienMoreau = (storyAsset
   , cdCost = Nothing
   }
 
-ashleighClarke :: CardDef 'EncounterAssetType
+ashleighClarke :: CardDef 'AssetType
 ashleighClarke = (storyAsset
                    "03080"
                    ("Ashleigh Clarke" <:> "Talented Entertainer")
@@ -1736,7 +1739,7 @@ plucky1 = (asset "03115" "Plucky" 1 Survivor)
   , cdLevel = 1
   }
 
-mrPeabody :: CardDef 'EncounterAssetType
+mrPeabody :: CardDef 'AssetType
 mrPeabody = (storyAsset
               "03141"
               ("Mr. Peabody" <:> "Historical Society Curator")
@@ -1810,7 +1813,7 @@ bookOfShadows1 = (asset "03154" "Book of Shadows" 3 Mystic)
   , cdSlots = [HandSlot]
   }
 
-danielChesterfield :: CardDef 'EncounterAssetType
+danielChesterfield :: CardDef 'AssetType
 danielChesterfield = (storyAsset
                        "03182a"
                        ("Daniel Chesterfield" <:> "He's Not Doing All Too Well"
@@ -1824,7 +1827,7 @@ danielChesterfield = (storyAsset
   , cdDoubleSided = True
   }
 
-straitjacket :: CardDef 'EncounterAssetType
+straitjacket :: CardDef 'AssetType
 straitjacket = (storyAsset "x03185" "Straitjacket" 0 TheUnspeakableOath)
   { cdCardTraits = setFromList [Item, Clothing]
   , cdSlots = [BodySlot, HandSlot, HandSlot]
@@ -3164,13 +3167,13 @@ ladyEsprit =
     , cdSlots = [AllySlot]
     }
 
-bearTrap :: CardDef 'EncounterAssetType
+bearTrap :: CardDef 'AssetType
 bearTrap = (storyAsset "81020" "Bear Trap" 0 TheBayou)
   { cdCardTraits = setFromList [Trap]
   , cdCost = Nothing
   }
 
-fishingNet :: CardDef 'EncounterAssetType
+fishingNet :: CardDef 'AssetType
 fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
   { cdCardTraits = setFromList [Trap]
   , cdCost = Nothing

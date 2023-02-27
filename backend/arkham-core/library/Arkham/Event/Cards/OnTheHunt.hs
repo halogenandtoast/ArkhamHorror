@@ -40,7 +40,7 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let
         enemyCards =
-          filter ((== EnemyType) . cdCardType . toCardDef)
+          filter ((== EnemyType) . toCardType)
             $ mapMaybe (preview _EncounterCard) cards
       push $ chooseOne
         iid

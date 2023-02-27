@@ -118,9 +118,9 @@ instance RunMessage EchoesOfThePast where
 
       -- generate without seekerOfCarcosa as we add based on player count
       partialEncounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.possessedOathspeaker
-        , Enemies.seekerOfCarcosa
-        , Assets.mrPeabody
+        [ toCardDef Enemies.possessedOathspeaker
+        , toCardDef Enemies.seekerOfCarcosa
+        , toCardDef Assets.mrPeabody
         ]
         [ EncounterSet.EchoesOfThePast
         , EncounterSet.CultOfTheYellowSign
@@ -224,11 +224,11 @@ instance RunMessage EchoesOfThePast where
 
       setAsideCards <- traverse
         genCard
-        [ Locations.hiddenLibrary
-        , Enemies.possessedOathspeaker
-        , Assets.mrPeabody
-        , Assets.theTatteredCloak
-        , Assets.claspOfBlackOnyx
+        [ toCardDef Locations.hiddenLibrary
+        , toCardDef Enemies.possessedOathspeaker
+        , toCardDef Assets.mrPeabody
+        , toCardDef Assets.theTatteredCloak
+        , toCardDef Assets.claspOfBlackOnyx
         ]
 
       EchoesOfThePast <$> runMessage
@@ -326,7 +326,7 @@ instance RunMessage EchoesOfThePast where
                 leadInvestigatorId
                 [ TargetLabel
                     (InvestigatorTarget iid)
-                    [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
+                    [AddCampaignCardToDeck iid $ toCardDef Assets.claspOfBlackOnyx]
                 | iid <- investigatorIds
                 ]
               ]
@@ -354,7 +354,7 @@ instance RunMessage EchoesOfThePast where
                 leadInvestigatorId
                 [ TargetLabel
                     (InvestigatorTarget iid)
-                    [AddCampaignCardToDeck iid Assets.theTatteredCloak]
+                    [AddCampaignCardToDeck iid $ toCardDef Assets.theTatteredCloak]
                 | iid <- investigatorIds
                 ]
               ]

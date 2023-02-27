@@ -129,7 +129,10 @@ instance RunMessage BlackStarsRise where
       version <- sample versions
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.beastOfAldebaran, Enemies.tidalTerror, Enemies.riftSeeker]
+        [ toCardDef Enemies.beastOfAldebaran
+        , toCardDef Enemies.tidalTerror
+        , toCardDef Enemies.riftSeeker
+        ]
         [ EncounterSet.BlackStarsRise
         , EncounterSet.EvilPortents
         , EncounterSet.Byakhee
@@ -165,18 +168,18 @@ instance RunMessage BlackStarsRise where
 
       setAsideCards <- traverse
         genCard
-        [ Enemies.tidalTerror
-        , Enemies.tidalTerror
-        , Enemies.riftSeeker
-        , Enemies.riftSeeker
-        , Acts.openThePathAbove
-        , Acts.openThePathBelow
-        , Enemies.beastOfAldebaran
-        , Locations.cloister
-        , Locations.knightsHall
-        , abbeyTower
-        , chapelOfStAubert
-        , choeurGothique
+        [ toCardDef Enemies.tidalTerror
+        , toCardDef Enemies.tidalTerror
+        , toCardDef Enemies.riftSeeker
+        , toCardDef Enemies.riftSeeker
+        , toCardDef Acts.openThePathAbove
+        , toCardDef Acts.openThePathBelow
+        , toCardDef Enemies.beastOfAldebaran
+        , toCardDef Locations.cloister
+        , toCardDef Locations.knightsHall
+        , toCardDef abbeyTower
+        , toCardDef chapelOfStAubert
+        , toCardDef choeurGothique
         ]
 
       porteDeLAvancee <- genCard Locations.porteDeLAvancee
@@ -200,7 +203,7 @@ instance RunMessage BlackStarsRise where
         <> [ SearchCollectionForRandom
                iid
                (toSource attrs)
-               (CardWithType PlayerTreacheryType <> CardWithOneOf
+               (CardWithType TreacheryType <> WeaknessCard <> CardWithOneOf
                  (map
                    CardWithTrait
                    [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]

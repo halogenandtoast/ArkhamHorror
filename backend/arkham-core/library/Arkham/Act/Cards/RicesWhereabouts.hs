@@ -57,7 +57,7 @@ instance RunMessage RicesWhereabouts where
       let
         mCard = flip firstJust windows' $ \case
           Window _ (Window.Discarded _ _ card)
-            | toCardDef card == Assets.jazzMulligan -> Just card
+            | toCardDef card == toCardDef Assets.jazzMulligan -> Just card
           _ -> Nothing
       case mCard of
         Just (EncounterCard ec) ->

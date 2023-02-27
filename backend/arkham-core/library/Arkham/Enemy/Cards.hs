@@ -65,10 +65,10 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdCanReplace = True
   }
 
-weakness :: CardCode -> Name -> CardDef 'PlayerEnemyType
+weakness :: CardCode -> Name -> CardDef 'EnemyType
 weakness cardCode name = baseEnemy cardCode name Nothing (Just Weakness)
 
-basicWeakness :: CardCode -> Name -> CardDef 'PlayerEnemyType
+basicWeakness :: CardCode -> Name -> CardDef 'EnemyType
 basicWeakness cardCode name =
   baseEnemy cardCode name Nothing (Just BasicWeakness)
 
@@ -76,7 +76,7 @@ enemy :: CardCode -> Name -> EncounterSet -> Int -> (CardDef 'EnemyType)
 enemy cardCode name encounterSet encounterSetQuantity =
   baseEnemy cardCode name (Just (encounterSet, encounterSetQuantity)) Nothing
 
-allPlayerEnemyCards :: HashMap CardCode (CardDef 'PlayerEnemyType)
+allPlayerEnemyCards :: HashMap CardCode (CardDef 'EnemyType)
 allPlayerEnemyCards = mapFromList $ concatMap
   toCardCodePairs
   [ mobEnforcer
@@ -229,21 +229,21 @@ allEncounterEnemyCards = mapFromList $ concatMap
 allSpecialEnemyCards :: HashMap CardCode (CardDef 'EnemyType)
 allSpecialEnemyCards = mapFrom toCardCode [flyingPolyp]
 
-mobEnforcer :: CardDef 'PlayerEnemyType
+mobEnforcer :: CardDef 'EnemyType
 mobEnforcer = (basicWeakness "01101" "Mob Enforcer")
   { cdCardTraits = setFromList [Humanoid, Criminal]
   , cdKeywords = setFromList [Keyword.Hunter]
   , cdAlternateCardCodes = ["01601"]
   }
 
-silverTwilightAcolyte :: CardDef 'PlayerEnemyType
+silverTwilightAcolyte :: CardDef 'EnemyType
 silverTwilightAcolyte = (basicWeakness "01102" "Silver Twilight Acolyte")
   { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
   , cdKeywords = setFromList [Keyword.Hunter]
   , cdAlternateCardCodes = ["01602"]
   }
 
-stubbornDetective :: CardDef 'PlayerEnemyType
+stubbornDetective :: CardDef 'EnemyType
 stubbornDetective = (basicWeakness "01103" "Stubborn Detective")
   { cdCardTraits = setFromList [Humanoid, Detective]
   , cdKeywords = setFromList [Keyword.Hunter]
@@ -566,20 +566,20 @@ yithianStarseeker = (enemy "02330" "Yithian Starseeker" LostInTimeAndSpace 2)
   , cdKeywords = setFromList [Keyword.Retaliate]
   }
 
-graveyardGhouls :: CardDef 'PlayerEnemyType
+graveyardGhouls :: CardDef 'EnemyType
 graveyardGhouls = (weakness "03017" "Graveyard Ghouls")
   { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
   , cdKeywords = setFromList [Keyword.Hunter]
   }
 
-theThingThatFollows :: CardDef 'PlayerEnemyType
+theThingThatFollows :: CardDef 'EnemyType
 theThingThatFollows = (basicWeakness "03042" "The Thing That Follows")
   { cdCardTraits = setFromList [Monster, Curse]
   , cdKeywords = setFromList [Keyword.Hunter]
   , cdUnique = True
   }
 
-theManInThePallidMask :: CardDef 'PlayerEnemyType
+theManInThePallidMask :: CardDef 'EnemyType
 theManInThePallidMask = (weakness "03059" "The Man in the Pallid Mask")
   { cdCardTraits = setFromList [Humanoid, Elite]
   , cdKeywords = setFromList [Keyword.Aloof]
@@ -853,7 +853,7 @@ wingedOne = (enemy "03336" "Winged One" DimCarcosa 1)
   , cdKeywords = singleton Keyword.Retaliate
   }
 
-serpentsOfYig :: CardDef 'PlayerEnemyType
+serpentsOfYig :: CardDef 'EnemyType
 serpentsOfYig = (weakness "04014" "Serpents of Yig")
   { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
   , cdKeywords = singleton Keyword.Hunter
@@ -1093,7 +1093,7 @@ temporalDevourer =
     , cdKeywords = singleton Keyword.Hunter
     }
 
-hoods :: CardDef 'PlayerEnemyType
+hoods :: CardDef 'EnemyType
 hoods = (weakness "05017" "Hoods")
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
@@ -1178,7 +1178,7 @@ almaHill = (enemy
   , cdUnique = True
   }
 
-tommyMalloy :: CardDef 'PlayerEnemyType
+tommyMalloy :: CardDef 'EnemyType
 tommyMalloy = (weakness "60103" "Tommy Malloy")
   { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
   , cdKeywords = setFromList [Keyword.Hunter]

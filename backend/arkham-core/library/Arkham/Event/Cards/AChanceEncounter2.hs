@@ -45,7 +45,7 @@ instance RunMessage AChanceEncounter2 where
         filteredDiscards = filter
           (and . sequence
             [ elem Ally . toTraits
-            , (== resources) . maybe 0 toPrintedCost . cdCost . toCardDef
+            , (== resources) . maybe 0 toPrintedCost . withCardDef cdCost
             ]
           )
           discards

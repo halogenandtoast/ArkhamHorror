@@ -230,7 +230,7 @@ instance RunMessage UndimensionedAndUnseen where
         <> [ SearchCollectionForRandom
                iid
                (toSource attrs)
-               (CardWithType PlayerTreacheryType
+               (CardWithType TreacheryType <> WeaknessCard
                <> CardWithOneOf (map CardWithTrait [Madness, Injury, Pact])
                )
            | not standalone

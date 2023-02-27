@@ -244,8 +244,8 @@ pattern MysticCard <- CardWithClass Mystic where
   MysticCard = CardWithClass Mystic
 
 pattern PlayerTreachery :: CardMatcher
-pattern PlayerTreachery <- CardWithType PlayerTreacheryType where
-  PlayerTreachery = CardWithType PlayerTreacheryType
+pattern PlayerTreachery <- CardMatches [CardWithType TreacheryType, WeaknessCard] where
+  PlayerTreachery = CardMatches [CardWithType TreacheryType, WeaknessCard]
 
 -- ** Value Patterns **
 

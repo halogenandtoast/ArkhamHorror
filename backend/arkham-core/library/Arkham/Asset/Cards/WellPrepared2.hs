@@ -8,11 +8,11 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card.CardDef
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Projection
+import Arkham.SkillType
 
 newtype WellPrepared2 = WellPrepared2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -52,8 +52,7 @@ instance RunMessage WellPrepared2 where
           AssetCard
           (length
           . filter (`member` matchingIcons)
-          . cdSkills
-          . toCardDef
+          . toSkills
           )
           aid
         pure (aid, x)

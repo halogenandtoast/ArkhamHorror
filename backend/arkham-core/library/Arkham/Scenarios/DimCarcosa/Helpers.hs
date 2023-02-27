@@ -5,12 +5,13 @@ import Arkham.GameEnv
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Card.CardDef
+import Arkham.Card.CardType
 import Arkham.Message
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 import Arkham.Timing qualified as Timing
 
-readStory :: InvestigatorId -> LocationId -> CardDef -> GameT ()
+readStory :: InvestigatorId -> LocationId -> CardDef 'StoryType -> GameT ()
 readStory iid lid storyDef = do
   whenWindowMsg <- checkWindows
     [Window Timing.When (Window.FlipLocation iid lid)]

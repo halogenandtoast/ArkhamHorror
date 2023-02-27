@@ -10,7 +10,7 @@ gatherEncounterSet :: CardGen m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet = concat <$> for
   defs
   \def -> traverse genEncounterCard
-    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
+    $ replicate (fromMaybe 0 (withCardDef cdEncounterSetQuantity def)) def
  where
   defs =
     filter ((== Just encounterSet) . withCardDef cdEncounterSet) $ toList allEncounterCards

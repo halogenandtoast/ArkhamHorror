@@ -66,7 +66,7 @@ instance HasTokenValue NormanWithers where
     let
       x = case unDeck (investigatorDeck a) of
         [] -> 0
-        c : _ -> maybe 0 toPrintedCost (cdCost $ toCardDef c)
+        c : _ -> maybe 0 toPrintedCost $ withCardDef cdCost c
     pure $ TokenValue ElderSign (PositiveModifier x)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 

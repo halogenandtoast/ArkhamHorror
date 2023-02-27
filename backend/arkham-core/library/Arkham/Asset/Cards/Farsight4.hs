@@ -48,7 +48,7 @@ instance RunMessage Farsight4 where
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       handCards <- field InvestigatorHand iid
       let
-        events = filter ((== EventType) . cdCardType . toCardDef) handCards
+        events = filter ((== EventType) . toCardType) handCards
         windows'' =
           nub
             $ windows'

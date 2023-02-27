@@ -62,7 +62,7 @@ instance RunMessage Row where
         iid
       let
         writhingAppendages =
-          filter ((== Enemies.writhingAppendage) . toCardDef) cards
+          filter ((== toCardDef Enemies.writhingAppendage) . toCardDef) cards
       a <$ pushAll
         (concat
           [ [ RemoveFromEncounterDiscard card

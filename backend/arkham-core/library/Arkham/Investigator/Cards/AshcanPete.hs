@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Cards qualified as Cards
@@ -31,7 +32,7 @@ ashcanPete = investigatorWith
     , combat = 2
     , agility = 3
     }
-  (startsWithL .~ [Assets.duke])
+  (startsWithL .~ [toCardDef Assets.duke])
 
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =

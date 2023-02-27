@@ -58,7 +58,7 @@ instance HasTokenValue CarnevaleOfHorrors where
   getTokenValue iid tokenFace (CarnevaleOfHorrors attrs) = case tokenFace of
     Skull -> do
       let
-        countInnocentRevelers = count ((== Assets.innocentReveler) . toCardDef)
+        countInnocentRevelers = count ((== toCardDef Assets.innocentReveler) . toCardDef)
         innocentRevelerCount =
           countInnocentRevelers (scenarioCardsUnderAgendaDeck attrs)
             + (if isEasyStandard attrs
@@ -71,7 +71,7 @@ instance HasTokenValue CarnevaleOfHorrors where
     ElderThing -> pure $ toTokenValue attrs ElderThing 4 6
     otherFace -> getTokenValue iid otherFace attrs
 
-masks :: [CardDef]
+masks :: [CardDef 'AssetType]
 masks =
   [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
 
@@ -81,7 +81,7 @@ sacrificesMade investigatorIds s =
     : [ SearchCollectionForRandom
           iid
           (toSource s)
-          (CardWithType PlayerTreacheryType
+          (CardWithType TreacheryType <> WeaknessCard
           <> CardWithOneOf (map CardWithTrait [Madness, Injury, Monster])
           )
       | iid <- investigatorIds
@@ -113,7 +113,7 @@ additionalRewards s = do
         then abbessSatisfied leadInvestigatorId investigatorIds
         else []
   pure
-    $ [ChooseOneRewardByEachPlayer masks investigatorIds]
+    $ [ChooseOneRewardByEachPlayer (map toCardDef masks) investigatorIds]
     <> proceedToSacrificesMade
     <> proceedToAbbessSatisfied
 
@@ -124,11 +124,11 @@ instance RunMessage CarnevaleOfHorrors where
 
       -- Encounter Deck
       encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.donLagorio
-        , Enemies.elisabettaMagro
-        , Enemies.salvatoreNeri
-        , Enemies.savioCorvi
-        , Enemies.cnidathqua
+        [ toCardDef Enemies.donLagorio
+        , toCardDef Enemies.elisabettaMagro
+        , toCardDef Enemies.salvatoreNeri
+        , toCardDef Enemies.savioCorvi
+        , toCardDef Enemies.cnidathqua
         ]
         [EncounterSet.CarnevaleOfHorrors]
 
@@ -191,11 +191,11 @@ instance RunMessage CarnevaleOfHorrors where
 
       setAsideCards <- traverse
         genCard
-        [ Enemies.cnidathqua
-        , Assets.pantalone
-        , Assets.medicoDellaPeste
-        , Assets.bauta
-        , Assets.gildedVolto
+        [ toCardDef Enemies.cnidathqua
+        , toCardDef Assets.pantalone
+        , toCardDef Assets.medicoDellaPeste
+        , toCardDef Assets.bauta
+        , toCardDef Assets.gildedVolto
         ]
 
       CarnevaleOfHorrors <$> runMessage
@@ -337,7 +337,7 @@ instance RunMessage CarnevaleOfHorrors where
             Just cnidathquaId -> push $ EnemyAttack
               iid
               cnidathquaId
-              (DamageFirst Assets.innocentReveler)
+              (DamageFirst $ toCardDef Assets.innocentReveler)
               RegularAttack
             Nothing -> pure ()
         _ -> pure ()

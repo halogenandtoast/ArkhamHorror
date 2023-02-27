@@ -123,7 +123,7 @@ instance RunMessage DimCarcosa where
         , Record pathOpened
         , AddToken token
         , AddToken token
-        , AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
+        , AddCampaignCardToDeck leadInvestigatorId (toCardDef Enemies.theManInThePallidMask)
         ]
       pure s
     Setup -> do
@@ -156,10 +156,10 @@ instance RunMessage DimCarcosa where
 
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.hasturTheKingInYellow
-        , Enemies.hasturLordOfCarcosa
-        , Enemies.hasturTheTatteredKing
-        , Enemies.beastOfAldebaran
+        [ toCardDef Enemies.hasturTheKingInYellow
+        , toCardDef Enemies.hasturLordOfCarcosa
+        , toCardDef Enemies.hasturTheTatteredKing
+        , toCardDef Enemies.beastOfAldebaran
         ]
         [ EncounterSet.DimCarcosa
         , EncounterSet.Delusions

@@ -6,6 +6,7 @@ module Arkham.Enemy.Cards.Basilisk
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
@@ -22,15 +23,15 @@ basilisk :: EnemyCard Basilisk
 basilisk =
   enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
     $ spawnAtL
-    ?~ (SpawnLocation $ LocationWithDistanceFrom
-         1
-         (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-       )
+    ?~ SpawnLocation
+         (LocationWithDistanceFrom 1
+         $ locationIs Locations.mouthOfKnYanTheCavernsMaw
+         )
 
 instance HasAbilities Basilisk where
   getAbilities (Basilisk a) = withBaseAbilities
     a
-    [ limitedAbility (PerCopyLimit Cards.basilisk PerRound 1)
+    [ limitedAbility (PerCopyLimit (toCardDef Cards.basilisk) PerRound 1)
       $ mkAbility a 1
       $ ForcedAbility
       $ PlacedCounterOnLocation

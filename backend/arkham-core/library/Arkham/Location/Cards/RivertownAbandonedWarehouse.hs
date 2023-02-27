@@ -6,7 +6,6 @@ module Arkham.Location.Cards.RivertownAbandonedWarehouse
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
@@ -43,7 +42,7 @@ instance HasAbilities RivertownAbandonedWarehouse where
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardCardPayment cards) =
-  sum $ map (count (== SkillIcon SkillWillpower) . cdSkills . toCardDef) cards
+  sum $ map (count (== SkillIcon SkillWillpower) . toSkills) cards
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 

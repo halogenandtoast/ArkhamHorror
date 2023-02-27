@@ -47,9 +47,9 @@ import Arkham.Window qualified as Window
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case activeCostTarget ac of
   ForAbility a -> [fromMaybe Action.Ability (abilityAction a)]
-  ForCard isPlayAction c -> if null (cdActions $ toCardDef c)
+  ForCard isPlayAction c -> if null (withCardDef cdActions c)
     then [ Action.Play | isPlayAction == IsPlayAction ]
-    else cdActions $ toCardDef c
+    else withCardDef cdActions c
   ForCost _ -> []
 
 addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
@@ -202,7 +202,7 @@ instance RunMessage ActiveCost where
             modifiersPreventAttackOfOpportunity =
               ActionDoesNotCauseAttacksOfOpportunity Action.Play
                 `elem` modifiers'
-            actions = case cdActions cardDef of
+            actions = case withCardDef cdActions cardDef of
               [] -> [ Action.Play | isPlayAction == IsPlayAction ]
               as -> as
           beforeWindowMsg <- checkWindows
@@ -216,9 +216,9 @@ instance RunMessage ActiveCost where
             <> [ CheckAttackOfOpportunity iid False
                | not modifiersPreventAttackOfOpportunity
                  && (DoesNotProvokeAttacksOfOpportunity
-                    `notElem` (cdAttackOfOpportunityModifiers cardDef)
+                    `notElem` (withCardDef cdAttackOfOpportunityModifiers cardDef)
                     )
-                 && (isNothing $ cdFastWindow cardDef)
+                 && (isNothing $ withCardDef cdFastWindow cardDef)
                  && (any (`notElem` nonAttackOfOpportunityActions) actions)
                ]
             <> [PayCostFinished acId]
@@ -684,8 +684,7 @@ instance RunMessage ActiveCost where
             cards = filter ((> 0) . fst) $ map
               (toFst
                 (count (`member` insertSet WildIcon skillTypes)
-                . cdSkills
-                . toCardDef
+                . withCardDef cdSkills
                 )
               )
               handCards
@@ -697,7 +696,7 @@ instance RunMessage ActiveCost where
                   , PaidAbilityCost
                     iid
                     Nothing
-                    (SkillIconPayment $ cdSkills $ toCardDef card)
+                    (SkillIconPayment $ withCardDef cdSkills card)
                   ]
                 else TargetLabel
                   (CardIdTarget $ toCardId card)
@@ -705,7 +704,7 @@ instance RunMessage ActiveCost where
                   , PaidAbilityCost
                     iid
                     Nothing
-                    (SkillIconPayment $ cdSkills $ toCardDef card)
+                    (SkillIconPayment $ withCardDef cdSkills card)
                   , PayCost
                     acId
                     iid
@@ -722,7 +721,7 @@ instance RunMessage ActiveCost where
             iid
           let
             cards =
-              map (toFst (maybe 0 toPrintedCost . cdCost . toCardDef)) handCards
+              map (toFst (maybe 0 toPrintedCost . withCardDef cdCost)) handCards
             cardMsgs = map
               (\(n, card) -> if n >= x
                 then TargetLabel

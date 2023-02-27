@@ -103,12 +103,13 @@ pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)
 
 createCardEffect
-  :: SomeCardDef
+  :: HasCardCode a
+  => a
   -> (Maybe (EffectMetadata Window Message))
   -> Source
   -> Target
   -> Message
-createCardEffect def = CreateEffect (withCardDef cdCardCode def)
+createCardEffect def = CreateEffect (toCardCode def)
 
 data AbilityRef = AbilityRef Source Int
   deriving stock (Show, Eq, Generic)

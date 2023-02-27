@@ -20,11 +20,11 @@ lookupEncounterCardDef cardCode =
 
 allEncounterCards :: HashMap CardCode SomeCardDef
 allEncounterCards =
-  HashMap.map (SomeCardDef SEnemyType) allEncounterEnemyCards
-    <> HashMap.map (SomeCardDef SLocationType) allLocationCards
-    <> HashMap.map (SomeCardDef SLocationType) allSpecialLocationCards
-    <> HashMap.map (SomeCardDef STreacheryType) allEncounterTreacheryCards
-    <> HashMap.map (SomeCardDef SEncounterAssetType) allEncounterAssetCards
-    <> HashMap.map (SomeCardDef SStoryType) allStoryCards
-    <> HashMap.map (SomeCardDef SActType) allActCards
-    <> HashMap.map (SomeCardDef SAgendaType) allAgendaCards
+  HashMap.map toCardDef allEncounterEnemyCards
+    <> HashMap.map toCardDef allLocationCards
+    <> HashMap.map toCardDef allSpecialLocationCards
+    <> HashMap.map toCardDef allEncounterTreacheryCards
+    <> HashMap.map toCardDef allEncounterAssetCards
+    <> HashMap.map toCardDef allStoryCards
+    <> HashMap.map toCardDef allActCards
+    <> HashMap.map toCardDef allAgendaCards

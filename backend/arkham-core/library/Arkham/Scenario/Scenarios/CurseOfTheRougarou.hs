@@ -221,12 +221,12 @@ instance RunMessage CurseOfTheRougarou where
       pushAll
         $ [ story iids resolution2
           , Record TheRougarouIsDestroyed
-          , RemoveCampaignCard Treacheries.curseOfTheRougarou
+          , RemoveCampaignCard $ toCardDef Treacheries.curseOfTheRougarou
           , chooseOne
             leadInvestigatorId
             [ Label
               "Add Lady Esprit to your deck"
-              [AddCampaignCardToDeck leadInvestigatorId Assets.ladyEsprit]
+              [AddCampaignCardToDeck leadInvestigatorId $ toCardDef Assets.ladyEsprit]
             , Label "Do not add Lady Esprit to your deck" []
             ]
           ]
@@ -242,7 +242,7 @@ instance RunMessage CurseOfTheRougarou where
           , Record TheRougarouEscapedAndYouEmbracedTheCurse
           , AddCampaignCardToDeck
             leadInvestigatorId
-            Assets.monstrousTransformation
+            $ toCardDef Assets.monstrousTransformation
           ]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]

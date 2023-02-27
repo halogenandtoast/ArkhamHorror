@@ -35,15 +35,15 @@ allBasicWeaknesses =
 
 allPlayerCards :: HashMap CardCode SomeCardDef
 allPlayerCards =
-  HashMap.map (SomeCardDef SPlayerEnemyType) allPlayerEnemyCards
-    <> HashMap.map (SomeCardDef SPlayerTreacheryType) allPlayerTreacheryCards
-    <> HashMap.map (SomeCardDef SAssetType) allPlayerAssetCards
-    <> HashMap.map (SomeCardDef SAssetType) allSpecialPlayerAssetCards
-    <> HashMap.map (SomeCardDef SEventType) allPlayerEventCards
-    <> HashMap.map (SomeCardDef SSkillType) allPlayerSkillCards
-    <> singletonMap "01000" (SomeCardDef SPlayerTreacheryType randomWeakness)
+  HashMap.map toCardDef allPlayerEnemyCards
+    <> HashMap.map toCardDef allPlayerTreacheryCards
+    <> HashMap.map toCardDef allPlayerAssetCards
+    <> HashMap.map toCardDef allSpecialPlayerAssetCards
+    <> HashMap.map toCardDef allPlayerEventCards
+    <> HashMap.map toCardDef allPlayerSkillCards
+    <> singletonMap "01000" (toCardDef randomWeakness)
 
-randomWeakness :: CardDef 'PlayerTreacheryType
+randomWeakness :: CardDef 'TreacheryType
 randomWeakness = CardDef
   { cdCardCode = "01000"
   , cdName = "Random Basic Weakness"

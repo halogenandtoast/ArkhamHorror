@@ -119,7 +119,7 @@ instance RunMessage LostInTimeAndSpace where
     Setup -> do
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.yogSothoth]
+        [toCardDef Enemies.yogSothoth]
         [ EncounterSet.LostInTimeAndSpace
         , EncounterSet.Sorcery
         , EncounterSet.TheBeyond
@@ -141,9 +141,9 @@ instance RunMessage LostInTimeAndSpace where
 
       setAsideCards <- traverse
         genCard
-        [ Locations.theEdgeOfTheUniverse
-        , Locations.tearThroughTime
-        , Enemies.yogSothoth
+        [ toCardDef Locations.theEdgeOfTheUniverse
+        , toCardDef Locations.tearThroughTime
+        , toCardDef Enemies.yogSothoth
         ]
 
       LostInTimeAndSpace <$> runMessage

@@ -49,7 +49,8 @@ instance RunMessage TheRitualBegins where
       | isSource attrs source -> do
         push
           $ SearchCollectionForRandom iid source
-          $ CardWithType PlayerTreacheryType
+          $ CardWithType TreacheryType
+          <> WeaknessCard
           <> CardWithTrait Madness
         pure a
     RequestedPlayerCard iid source mcard | isSource attrs source -> do

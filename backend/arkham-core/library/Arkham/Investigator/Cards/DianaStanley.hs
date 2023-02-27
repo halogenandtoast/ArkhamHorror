@@ -40,7 +40,7 @@ dianaStanley = investigatorWith
     , combat = 3
     , agility = 3
     }
-  (startsWithInHandL .~ [Events.darkInsight])
+  (startsWithInHandL .~ [toCardDef Events.darkInsight])
 
 instance HasModifiersFor DianaStanley where
   getModifiersFor target (DianaStanley a) | isTarget a target = do
@@ -96,7 +96,7 @@ instance RunMessage DianaStanley where
         canLeavePlay <- case source of
           AssetSource aid ->
             member aid <$> select AssetCanLeavePlayByNormalMeans
-          _ -> pure $ not (cdPermanent $ toCardDef card)
+          _ -> pure $ not (withCardDef cdPermanent card)
         drawing <- drawCards iid (toAbilitySource attrs 1) 1
         pushAll
           $ [ removeMsg | canLeavePlay ]

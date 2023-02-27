@@ -3,6 +3,7 @@ module Arkham.Card.CardDef where
 
 import Arkham.Prelude
 
+import Control.Monad.Fail
 import Data.Typeable
 import Arkham.Action ( Action )
 import Arkham.Asset.Uses
@@ -49,16 +50,34 @@ instance SingCTI 'AssetType where
 instance SingCTI 'LocationType where
   singCT = SLocationType
 
+instance SingCTI 'AgendaType where
+  singCT = SAgendaType
+
+instance SingCTI 'ActType where
+  singCT = SActType
+
+instance SingCTI 'StoryType where
+  singCT = SStoryType
+
+instance SingCTI 'SkillType where
+  singCT = SSkillType
+
+instance SingCTI 'EventType where
+  singCT = SEventType
+
+instance SingCTI 'TreacheryType where
+  singCT = STreacheryType
+
+instance SingCTI 'EnemyType where
+  singCT = SEnemyType
+
 data SCardType :: CardType -> Type where
   SAssetType :: SCardType 'AssetType
   SEventType :: SCardType 'EventType
   SSkillType :: SCardType 'SkillType
-  SPlayerTreacheryType :: SCardType 'PlayerTreacheryType
-  SPlayerEnemyType :: SCardType 'PlayerEnemyType
   STreacheryType :: SCardType 'TreacheryType
   SEnemyType :: SCardType 'EnemyType
   SLocationType :: SCardType 'LocationType
-  SEncounterAssetType :: SCardType 'EncounterAssetType
   SActType :: SCardType 'ActType
   SAgendaType :: SCardType 'AgendaType
   SStoryType :: SCardType 'StoryType
@@ -73,12 +92,9 @@ singCardType = \case
   SAssetType -> AssetType
   SEventType -> EventType
   SSkillType -> SkillType
-  SPlayerTreacheryType -> PlayerTreacheryType
-  SPlayerEnemyType -> PlayerEnemyType
   STreacheryType -> TreacheryType
   SEnemyType -> EnemyType
   SLocationType -> LocationType
-  SEncounterAssetType -> EncounterAssetType
   SActType -> ActType
   SAgendaType -> AgendaType
   SStoryType -> StoryType
@@ -99,17 +115,15 @@ instance FromJSON (SomeSCardType SCardType) where
     "SAssetType" -> pure $ SomeSCardType SAssetType
     "SEventType" -> pure $ SomeSCardType SEventType
     "SSkillType" -> pure $ SomeSCardType SSkillType
-    "SPlayerTreacheryType" -> pure $ SomeSCardType SPlayerTreacheryType
-    "SPlayerEnemyType" -> pure $ SomeSCardType SPlayerEnemyType
     "STreacheryType" -> pure $ SomeSCardType STreacheryType
     "SEnemyType" -> pure $ SomeSCardType SEnemyType
     "SLocationType" -> pure $ SomeSCardType SLocationType
-    "SEncounterAssetType" -> pure $ SomeSCardType SEncounterAssetType
     "SActType" -> pure $ SomeSCardType SActType
     "SAgendaType" -> pure $ SomeSCardType SAgendaType
     "SStoryType" -> pure $ SomeSCardType SStoryType
     "SInvestigatorType" -> pure $ SomeSCardType SInvestigatorType
     "SScenarioType" -> pure $ SomeSCardType SScenarioType
+    _ -> fail "No matching card type"
 
 data SomeCardDef where
   SomeCardDef :: Typeable k => SCardType k -> CardDef k -> SomeCardDef
@@ -188,6 +202,9 @@ data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
 instance Named (CardDef k) where
   toName = cdName
 
+instance Named SomeCardDef where
+  toName = withCardDef toName
+
 subTypeL :: Lens' (CardDef k) (Maybe CardSubType)
 subTypeL = lens cdCardSubType $ \m x -> m { cdCardSubType = x }
 
@@ -247,8 +264,14 @@ instance HasCardCode SomeCardDef where
 
 newtype Unrevealed a = Unrevealed a
 
+instance HasSkills SomeCardDef where
+  toSkills = withCardDef toSkills
+
+instance HasSkills (CardDef k) where
+  toSkills = cdSkills
+
 testCardDef :: SCardType k -> CardCode -> CardDef k
-testCardDef cardType cardCode = CardDef
+testCardDef _cardType cardCode = CardDef
   { cdCardCode = cardCode
   , cdName = "Test"
   , cdRevealedName = Nothing

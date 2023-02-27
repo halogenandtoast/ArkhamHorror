@@ -252,9 +252,9 @@ originalCardCodeL =
   lens assetOriginalCardCode $ \m x -> m { assetOriginalCardCode = x }
 
 allAssetCards :: HashMap CardCode SomeCardDef
-allAssetCards = HashMap.map (SomeCardDef SAssetType) allPlayerAssetCards
-  <> HashMap.map (SomeCardDef SEncounterAssetType) allEncounterAssetCards
-  <> HashMap.map (SomeCardDef SAssetType) allSpecialPlayerAssetCards
+allAssetCards = HashMap.map toCardDef allPlayerAssetCards
+  <> HashMap.map toCardDef allEncounterAssetCards
+  <> HashMap.map toCardDef allSpecialPlayerAssetCards
 
 instance HasCardCode AssetAttrs where
   toCardCode = assetCardCode

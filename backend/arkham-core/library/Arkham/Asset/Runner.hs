@@ -163,7 +163,7 @@ instance RunMessage AssetAttrs where
       -- us to bring the investigator's id into scope
       modifiers <- getModifiers (toTarget a)
       let
-        startingUses = cdUses $ toCardDef a
+        startingUses = withCardDef cdUses a
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m

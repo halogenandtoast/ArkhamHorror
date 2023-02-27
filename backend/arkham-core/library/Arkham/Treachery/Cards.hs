@@ -67,10 +67,10 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdCanReplace = True
   }
 
-weakness :: CardCode -> Name -> CardDef 'PlayerTreacheryType
+weakness :: CardCode -> Name -> CardDef 'TreacheryType
 weakness cardCode name = baseTreachery cardCode name Nothing (Just Weakness)
 
-basicWeakness :: CardCode -> Name -> CardDef 'PlayerTreacheryType
+basicWeakness :: CardCode -> Name -> CardDef 'TreacheryType
 basicWeakness cardCode name =
   baseTreachery cardCode name Nothing (Just BasicWeakness)
 
@@ -83,9 +83,9 @@ treachery cardCode name encounterSet encounterSetQuantity = baseTreachery
 
 allTreacheryCards :: HashMap CardCode SomeCardDef
 allTreacheryCards =
-  HashMap.map (SomeCardDef SPlayerTreacheryType) allPlayerTreacheryCards <> HashMap.map (SomeCardDef STreacheryType) allEncounterTreacheryCards
+  HashMap.map (SomeCardDef STreacheryType) allPlayerTreacheryCards <> HashMap.map (SomeCardDef STreacheryType) allEncounterTreacheryCards
 
-allPlayerTreacheryCards :: HashMap CardCode (CardDef 'PlayerTreacheryType)
+allPlayerTreacheryCards :: HashMap CardCode (CardDef 'TreacheryType)
 allPlayerTreacheryCards = mapFromList $ concatMap
   toCardCodePairs
   [ abandonedAndAlone
@@ -290,50 +290,50 @@ allEncounterTreacheryCards = mapFrom
   , yithianPresence
   ]
 
-coverUp :: CardDef 'PlayerTreacheryType
+coverUp :: CardDef 'TreacheryType
 coverUp = (weakness "01007" "Cover Up")
   { cdCardTraits = setFromList [Task]
   , cdAlternateCardCodes = ["01507"]
   }
 
-hospitalDebts :: CardDef 'PlayerTreacheryType
+hospitalDebts :: CardDef 'TreacheryType
 hospitalDebts =
   (weakness "01011" "Hospital Debts")
     { cdCardTraits = setFromList [Task]
     , cdAlternateCardCodes = ["01511"]
     }
 
-abandonedAndAlone :: CardDef 'PlayerTreacheryType
+abandonedAndAlone :: CardDef 'TreacheryType
 abandonedAndAlone = (weakness "01015" "Abandoned and Alone")
   { cdCardTraits = setFromList [Madness]
   , cdAlternateCardCodes = ["01515"]
   }
 
-amnesia :: CardDef 'PlayerTreacheryType
+amnesia :: CardDef 'TreacheryType
 amnesia = (basicWeakness "01096" "Amnesia")
   { cdCardTraits = setFromList [Madness]
   , cdAlternateCardCodes = ["01596"]
   }
 
-paranoia :: CardDef 'PlayerTreacheryType
+paranoia :: CardDef 'TreacheryType
 paranoia = (basicWeakness "01097" "Paranoia")
   { cdCardTraits = setFromList [Madness]
   , cdAlternateCardCodes = ["01597"]
   }
 
-haunted :: CardDef 'PlayerTreacheryType
+haunted :: CardDef 'TreacheryType
 haunted = (basicWeakness "01098" "Haunted")
   { cdCardTraits = setFromList [Curse]
   , cdAlternateCardCodes = ["01598"]
   }
 
-psychosis :: CardDef 'PlayerTreacheryType
+psychosis :: CardDef 'TreacheryType
 psychosis = (basicWeakness "01099" "Psychosis")
   { cdCardTraits = setFromList [Madness]
   , cdAlternateCardCodes = ["01599"]
   }
 
-hypochondria :: CardDef 'PlayerTreacheryType
+hypochondria :: CardDef 'TreacheryType
 hypochondria = (basicWeakness "01100" "Hypochondria")
   { cdCardTraits = setFromList [Madness]
   , cdAlternateCardCodes = ["01600"]
@@ -417,38 +417,38 @@ dreamsOfRlyeh = (treachery "01182" "Dreams of R'lyeh" AgentsOfCthulhu 2)
   { cdCardTraits = setFromList [Omen]
   }
 
-smiteTheWicked :: CardDef 'PlayerTreacheryType
+smiteTheWicked :: CardDef 'TreacheryType
 smiteTheWicked =
   (weakness "02007" "Smite the Wicked") { cdCardTraits = setFromList [Task] }
 
-rexsCurse :: CardDef 'PlayerTreacheryType
+rexsCurse :: CardDef 'TreacheryType
 rexsCurse =
   (weakness "02009" "Rex's Curse") { cdCardTraits = setFromList [Curse] }
 
-searchingForIzzie :: CardDef 'PlayerTreacheryType
+searchingForIzzie :: CardDef 'TreacheryType
 searchingForIzzie =
   (weakness "02011" "Searching for Izzie") { cdCardTraits = setFromList [Task] }
 
-finalRhapsody :: CardDef 'PlayerTreacheryType
+finalRhapsody :: CardDef 'TreacheryType
 finalRhapsody =
   (weakness "02013" "Final Rhapsody") { cdCardTraits = setFromList [Endtimes] }
 
-wrackedByNightmares :: CardDef 'PlayerTreacheryType
+wrackedByNightmares :: CardDef 'TreacheryType
 wrackedByNightmares = (weakness "02015" "Wracked by Nightmares")
   { cdCardTraits = setFromList [Madness]
   }
 
-indebted :: CardDef 'PlayerTreacheryType
+indebted :: CardDef 'TreacheryType
 indebted = (basicWeakness "02037" "Indebted")
   { cdCardTraits = singleton Flaw
   , cdPermanent = True
   }
 
-internalInjury :: CardDef 'PlayerTreacheryType
+internalInjury :: CardDef 'TreacheryType
 internalInjury =
   (basicWeakness "02038" "Internal Injury") { cdCardTraits = singleton Injury }
 
-chronophobia :: CardDef 'PlayerTreacheryType
+chronophobia :: CardDef 'TreacheryType
 chronophobia =
   (basicWeakness "02039" "Chronophobia") { cdCardTraits = singleton Madness }
 
@@ -560,7 +560,7 @@ slitheringBehindYou :: CardDef 'TreacheryType
 slitheringBehindYou =
   treachery "02146" "Slithering Behind You" TheMiskatonicMuseum 2
 
-acrossSpaceAndTime :: CardDef 'PlayerTreacheryType
+acrossSpaceAndTime :: CardDef 'TreacheryType
 acrossSpaceAndTime = (weakness "02178" "Across Space and Time")
   { cdCardTraits = setFromList [Madness]
   , cdEncounterSet = Just TheEssexCountyExpress
@@ -652,27 +652,27 @@ vastExpanse = (treachery "02333" "Vast Expanse" LostInTimeAndSpace 3)
   { cdCardTraits = setFromList [Terror]
   }
 
-shellShock :: CardDef 'PlayerTreacheryType
+shellShock :: CardDef 'TreacheryType
 shellShock =
   (weakness "03008" "Shell Shock") { cdCardTraits = setFromList [Flaw] }
 
-starsOfHyades :: CardDef 'PlayerTreacheryType
+starsOfHyades :: CardDef 'TreacheryType
 starsOfHyades =
   (weakness "03013" "Stars of Hyades") { cdCardTraits = setFromList [Curse] }
 
-angeredSpirits :: CardDef 'PlayerTreacheryType
+angeredSpirits :: CardDef 'TreacheryType
 angeredSpirits =
   (weakness "03015" "Angered Spirits") { cdCardTraits = singleton Task }
 
-crisisOfIdentity :: CardDef 'PlayerTreacheryType
+crisisOfIdentity :: CardDef 'TreacheryType
 crisisOfIdentity =
   (weakness "03019" "Crisis of Identity") { cdCardTraits = singleton Madness }
 
-overzealous :: CardDef 'PlayerTreacheryType
+overzealous :: CardDef 'TreacheryType
 overzealous =
   (basicWeakness "03040" "Overzealous") { cdCardTraits = singleton Flaw }
 
-drawingTheSign :: CardDef 'PlayerTreacheryType
+drawingTheSign :: CardDef 'TreacheryType
 drawingTheSign = (basicWeakness "03041" "Drawing the Sign")
   { cdCardTraits = setFromList [Pact, Madness]
   }
@@ -842,7 +842,7 @@ frozenInFearAPhantomOfTruth =
     { cdCardTraits = singleton Terror
     }
 
-lostSoul :: CardDef 'PlayerTreacheryType
+lostSoul :: CardDef 'TreacheryType
 lostSoul = (weakness "03227" "Lost Soul")
   { cdCardTraits = setFromList [Madness, Pact]
   , cdEncounterSet = Just APhantomOfTruth
@@ -914,35 +914,35 @@ possessionMurderous = (treachery "03342" ("Possession" <:> "Murderous") DimCarco
   , cdCardInHandEffects = True
   }
 
-boughtInBlood :: CardDef 'PlayerTreacheryType
+boughtInBlood :: CardDef 'TreacheryType
 boughtInBlood =
   (weakness "04007" "Bought in Blood") { cdCardTraits = singleton Flaw }
 
-callOfTheUnknown :: CardDef 'PlayerTreacheryType
+callOfTheUnknown :: CardDef 'TreacheryType
 callOfTheUnknown =
   (weakness "04009" "Call of the Unknown") { cdCardTraits = singleton Task }
 
-caughtRedHanded :: CardDef 'PlayerTreacheryType
+caughtRedHanded :: CardDef 'TreacheryType
 caughtRedHanded =
   (weakness "04012" "Caught Red-Handed") { cdCardTraits = singleton Blunder }
 
-voiceOfTheMessenger :: CardDef 'PlayerTreacheryType
+voiceOfTheMessenger :: CardDef 'TreacheryType
 voiceOfTheMessenger = (weakness "04016" "Voice of the Messenger")
   { cdCardTraits = setFromList [Curse, Pact]
   }
 
-thePriceOfFailure :: CardDef 'PlayerTreacheryType
+thePriceOfFailure :: CardDef 'TreacheryType
 thePriceOfFailure =
   (weakness "04039" "The Price of Failure") { cdCardTraits = singleton Pact }
 
-doomed :: CardDef 'PlayerTreacheryType
+doomed :: CardDef 'TreacheryType
 doomed = (basicWeakness "04040" "Doomed") { cdCardTraits = singleton Curse }
 
-accursedFate :: CardDef 'PlayerTreacheryType
+accursedFate :: CardDef 'TreacheryType
 accursedFate =
   (weakness "04041" "Accursed Fate") { cdCardTraits = singleton Curse }
 
-theBellTolls :: CardDef 'PlayerTreacheryType
+theBellTolls :: CardDef 'TreacheryType
 theBellTolls =
   (weakness "04042" "The Bell Tolls") { cdCardTraits = singleton Curse }
 
@@ -1058,7 +1058,7 @@ creepingPoison =
     , cdKeywords = singleton Keyword.Surge
     }
 
-poisoned :: CardDef 'PlayerTreacheryType
+poisoned :: CardDef 'TreacheryType
 poisoned =
   (weakness "04102" "Poisoned")
     { cdCardTraits = singleton Poison
@@ -1148,7 +1148,7 @@ captiveMind =
     { cdCardTraits = singleton Hex
     }
 
-outOfBodyExperience :: CardDef 'PlayerTreacheryType
+outOfBodyExperience :: CardDef 'TreacheryType
 outOfBodyExperience = (weakness "04264" "Out of Body Experience")
   { cdCardTraits = setFromList [Madness, Paradox]
   , cdEncounterSet = Just TheCityOfArchives
@@ -1195,22 +1195,22 @@ creepingDarkness = (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
   { cdCardTraits = singleton Hex
   }
 
-rationalThought :: CardDef 'PlayerTreacheryType
+rationalThought :: CardDef 'TreacheryType
 rationalThought = (weakness "05008" "Rational Thought")
   { cdCardTraits = singleton Flaw
   }
 
-terribleSecret :: CardDef 'PlayerTreacheryType
+terribleSecret :: CardDef 'TreacheryType
 terribleSecret = (weakness "05015" "Terrible Secret")
   { cdCardTraits = singleton Madness
   }
 
-the13thVision :: CardDef 'PlayerTreacheryType
+the13thVision :: CardDef 'TreacheryType
 the13thVision = (basicWeakness "05041" "The 13th Vision")
   { cdCardTraits = singleton Omen
   }
 
-theHarbinger :: CardDef 'PlayerTreacheryType
+theHarbinger :: CardDef 'TreacheryType
 theHarbinger = (weakness "08006" "The Harbinger")
   { cdCardTraits = setFromList [Omen, Endtimes]
   }
@@ -1247,26 +1247,26 @@ maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
   { cdCardTraits = setFromList [Item, Mask]
   }
 
-selfDestructive :: CardDef 'PlayerTreacheryType
+selfDestructive :: CardDef 'TreacheryType
 selfDestructive =
   (weakness "60104" "Self-Destructive") { cdCardTraits = singleton Flaw }
 
-thriceDamnedCuriosity :: CardDef 'PlayerTreacheryType
+thriceDamnedCuriosity :: CardDef 'TreacheryType
 thriceDamnedCuriosity = (weakness "60203" "Thrice-Damned Curiosity")
   { cdCardTraits = singleton Flaw
   }
 
-obsessive :: CardDef 'PlayerTreacheryType
+obsessive :: CardDef 'TreacheryType
 obsessive = (weakness "60204" "Obsessive")
   { cdCardTraits = singleton Flaw
   }
 
-calledByTheMists :: CardDef 'PlayerTreacheryType
+calledByTheMists :: CardDef 'TreacheryType
 calledByTheMists = (weakness "60503" "Called by the Mists")
   { cdCardTraits = setFromList [Curse]
   }
 
-atychiphobia :: CardDef 'PlayerTreacheryType
+atychiphobia :: CardDef 'TreacheryType
 atychiphobia = (basicWeakness "60504" "Atychiphobia")
   { cdCardTraits = setFromList [Madness]
   }
@@ -1291,7 +1291,7 @@ ripplesOnTheSurface = (treachery "81027" "Ripples on the Surface" TheBayou 3)
   { cdCardTraits = setFromList [Terror]
   }
 
-curseOfTheRougarou :: CardDef 'PlayerTreacheryType
+curseOfTheRougarou :: CardDef 'TreacheryType
 curseOfTheRougarou = (weakness "81029" "Curse of the Rougarou")
   { cdCardTraits = setFromList [Curse]
   , cdEncounterSet = Just CurseOfTheRougarou

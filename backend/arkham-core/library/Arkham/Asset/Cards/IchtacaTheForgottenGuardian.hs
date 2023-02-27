@@ -41,7 +41,7 @@ instance HasModifiersFor IchtacaTheForgottenGuardian where
             Just Action.Fight -> do
               isVictory <- fieldP
                 EnemyCard
-                (not . isNothing . cdVictoryPoints . toCardDef)
+                (not . isNothing . withCardDef cdVictoryPoints)
                 eid
               pure $ toModifiers
                 a
@@ -49,7 +49,7 @@ instance HasModifiersFor IchtacaTheForgottenGuardian where
             Just Action.Evade -> do
               isVengeance <- fieldP
                 EnemyCard
-                (not . isNothing . cdVengeancePoints . toCardDef)
+                (not . isNothing . withCardDef cdVengeancePoints)
                 eid
               pure $ toModifiers
                 a

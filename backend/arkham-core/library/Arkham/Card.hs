@@ -82,6 +82,9 @@ genCard a = if toCardType a `elem` encounterCardTypes
   then EncounterCard <$> genEncounterCard a
   else PlayerCard <$> genPlayerCard a
 
+encounterCardTypes :: [CardType]
+encounterCardTypes = [ActType, AgendaType, LocationType, StoryType, EnemyType, TreacheryType]
+
 cardMatch :: IsCard a => a -> CardMatcher -> Bool
 cardMatch a = \case
   AnyCard -> True
@@ -172,15 +175,15 @@ data CampaignStoryCard = CampaignStoryCard
 class HasCard env a where
   getCard :: (MonadReader env m, MonadIO m) => CardId -> a -> m Card
 
-instance HasSkillIcons Card where
-  getSkillIcons (PlayerCard card) = getSkillIcons card
-  getSkillIcons (EncounterCard _) = []
-  getSkillIcons (VengeanceCard _) = []
-
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost (EncounterCard _) = 0
   getCost (VengeanceCard _) = 0
+
+instance HasSkills Card where
+  toSkills (PlayerCard card) = toSkills card
+  toSkills (EncounterCard _) = []
+  toSkills (VengeanceCard _) = []
 
 isDynamic :: Card -> Bool
 isDynamic (PlayerCard card) = case withCardDef cdCost card of

@@ -220,16 +220,16 @@ instance RunMessage ThreadsOfFate where
       leadInvestigatorId <- getLeadInvestigatorId
       setAsideCards <- traverse
         genCard
-        [ Locations.townHall
-        , Assets.ichtacaTheForgottenGuardian
-        , Assets.expeditionJournal
-        , Assets.relicOfAgesADeviceOfSomeSort
-        , Assets.alejandroVela
+        [ toCardDef Locations.townHall
+        , toCardDef Assets.ichtacaTheForgottenGuardian
+        , toCardDef Assets.expeditionJournal
+        , toCardDef Assets.relicOfAgesADeviceOfSomeSort
+        , toCardDef Assets.alejandroVela
         ]
 
       pushAll $
-        [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-        , RemoveCampaignCard Assets.alejandroVela
+        [ RemoveCampaignCard (toCardDef Assets.relicOfAgesADeviceOfSomeSort)
+        , RemoveCampaignCard (toCardDef Assets.alejandroVela)
         , SetEncounterDeck encounterDeck
         , chooseOne
           leadInvestigatorId
@@ -379,7 +379,7 @@ instance RunMessage ThreadsOfFate where
                Assets.relicOfAgesADeviceOfSomeSort
            | act3bCompleted && not relicOwned
            ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+        <> [ RemoveCampaignCard (toCardDef Assets.relicOfAgesADeviceOfSomeSort)
            | not act3bCompleted
            ]
         <> [ Record if act3dCompleted
@@ -392,7 +392,7 @@ instance RunMessage ThreadsOfFate where
                Assets.alejandroVela
            | act3dCompleted && not alejandroOwned
            ]
-        <> [ RemoveCampaignCard Assets.alejandroVela | not act3dCompleted ]
+        <> [ RemoveCampaignCard (toCardDef Assets.alejandroVela) | not act3dCompleted ]
         <> [ Record if act3fCompleted
                then TheInvestigatorsForgedABondWithIchtaca
                else IchtacaIsInTheDark
@@ -409,7 +409,7 @@ instance RunMessage ThreadsOfFate where
                  "Add Expedition Journal to your deck"
                  [ AddCampaignCardToDeck
                      leadInvestigatorId
-                     Assets.expeditionJournal
+                     $ toCardDef Assets.expeditionJournal
                  ]
                , Label "Do not add Expedition Journal to your deck" []
                ]

@@ -122,10 +122,10 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
     (canPlayFromDiscard modifiers)
     (zip @_ @Int [0 ..] investigatorDiscard)
   canPlayFromDiscard modifiers (n, card) =
-    cdPlayableFromDiscard (toCardDef card)
+    withCardDef cdPlayableFromDiscard card
       || any (allowsPlayFromDiscard n card) modifiers
   allowsPlayFromDiscard 0 card (CanPlayTopOfDiscard (mcardType, traits)) =
-    maybe True (== cdCardType (toCardDef card)) mcardType
+    maybe True (== toCardType card) mcardType
       && (null traits
          || (setFromList traits `HashSet.isSubsetOf` toTraits (toCardDef card)
             )
@@ -497,7 +497,7 @@ getCanAffordCost iid source mAction windows' = \case
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     let
       total = sum $ map
-        (count (`member` insertSet WildIcon skillTypes) . cdSkills . toCardDef)
+        (count (`member` insertSet WildIcon skillTypes) . withCardDef cdSkills)
         handCards
     pure $ total >= n
   DiscardCombinedCost n -> do
@@ -506,7 +506,7 @@ getCanAffordCost iid source mAction windows' = \case
       . filter (`cardMatch` Matcher.NonWeakness)
       <$> field InvestigatorHand iid
     let
-      total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
+      total = sum $ map (maybe 0 toPrintedCost . withCardDef cdCost) handCards
     pure $ total >= n
   ShuffleDiscardCost n cardMatcher -> do
     discards <- fieldMap
@@ -723,7 +723,7 @@ sourceToTarget = \case
   CardCostSource _ -> error "not converted"
 
 addCampaignCardToDeckChoice
-  :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
+  :: HasCardDef a => InvestigatorId -> [InvestigatorId] -> a -> Message
 addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
   chooseOne
     leadInvestigatorId
@@ -733,13 +733,13 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
           leadInvestigatorId
           [ TargetLabel
               (InvestigatorTarget iid)
-              [AddCampaignCardToDeck iid cardDef]
+              [AddCampaignCardToDeck iid $ toCardDef cardDef]
           | iid <- investigatorIds
           ]
       ]
     , Label ("Do not add " <> display name <> " to any deck") []
     ]
-  where name = cdName cardDef
+  where name = toName (toCardDef cardDef)
 
 hasFightActions
   :: HasGame m
@@ -811,9 +811,9 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     additionalResources <-
       sum <$> traverse (field InvestigatorResources . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorTarget iid)
-    let title = nameTitle (cdName pcDef)
-    passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
-      (True, AssetType) -> not <$> case nameSubtitle (cdName pcDef) of
+    let title = nameTitle (toName pcDef)
+    passesUnique <- case (withCardDef cdUnique pcDef, toCardType pcDef) of
+      (True, AssetType) -> not <$> case nameSubtitle (toName pcDef) of
         Nothing -> selectAny (Matcher.AssetWithTitle title)
         Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
       _ -> pure True
@@ -834,11 +834,11 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     passesCriterias <- maybe
       (pure True)
       (passesCriteria iid (replaceThisCard c source) windows')
-      (cdCriteria pcDef)
+      (withCardDef cdCriteria pcDef)
     inFastWindow <- maybe
       (pure False)
       (cardInFastWindows iid source c windows')
-      (cdFastWindow pcDef <|> canBecomeFastWindow)
+      (withCardDef cdFastWindow pcDef <|> canBecomeFastWindow)
     canEvade <- hasEvadeActions
       iid
       (Matcher.DuringTurn Matcher.You)
@@ -849,13 +849,13 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       (Matcher.DuringTurn Matcher.You)
       source
       windows'
-    passesLimits <- allM passesLimit (cdLimits pcDef)
+    passesLimits <- allM passesLimit (withCardDef cdLimits pcDef)
     cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x
         _ -> Nothing
-      sealedTokenCost = flip mapMaybe (setToList $ cdKeywords pcDef) $ \case
+      sealedTokenCost = flip mapMaybe (setToList $ withCardDef cdKeywords pcDef) $ \case
         Keyword.Seal matcher ->
           if costStatus == PaidCost then Nothing else Just $ SealCost matcher
         _ -> Nothing
@@ -867,29 +867,29 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       <> sealedTokenCost
       )
 
-    passesSlots <- if null (cdSlots pcDef)
+    passesSlots <- if null (withCardDef cdSlots pcDef)
       then pure True
       else do
         possibleSlots <- getPotentialSlots c iid
-        pure $ null $ cdSlots pcDef \\ possibleSlots
+        pure $ null $ withCardDef cdSlots pcDef \\ possibleSlots
 
 
     pure
-      $ (cdCardType pcDef /= SkillType)
+      $ (toCardType pcDef /= SkillType)
       && ((costStatus == PaidCost)
          || (modifiedCardCost <= (availableResources + additionalResources))
          )
       && none prevents modifiers
-      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
+      && ((isNothing (withCardDef cdFastWindow pcDef) && notFastWindow) || inFastWindow)
       && (Action.Evade
-         `notElem` cdActions pcDef
+         `notElem` withCardDef cdActions pcDef
          || canEvade
-         || cdOverrideActionPlayableIfCriteriaMet pcDef
+         || withCardDef cdOverrideActionPlayableIfCriteriaMet pcDef
          )
       && (Action.Fight
-         `notElem` cdActions pcDef
+         `notElem` withCardDef cdActions pcDef
          || canFight
-         || cdOverrideActionPlayableIfCriteriaMet pcDef
+         || withCardDef cdOverrideActionPlayableIfCriteriaMet pcDef
          )
       && passesCriterias
       && passesLimits
@@ -899,7 +899,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =
-    null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
+    null $ intersect (withCardDef cdClassSymbols pcDef) (setFromList [Neutral, role])
   prevents (CannotPlay matcher) = cardMatch c matcher
   prevents _ = False
   passesLimit (LimitPerInvestigator m) = case toCardType c of
@@ -1302,12 +1302,12 @@ getModifiedCardCost iid c@(PlayerCard _) = do
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
-  startingCost = case cdCost pcDef of
+  startingCost = case withCardDef cdCost pcDef of
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
     Nothing -> 0
   -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
-  applyModifier n _ | isNothing (cdCost pcDef) = pure n
+  applyModifier n _ | isNothing (withCardDef cdCost pcDef) = pure n
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
@@ -2367,12 +2367,6 @@ sourceMatches s = \case
     SkillType -> case s of
       SkillSource _ -> True
       _ -> False
-    PlayerTreacheryType -> case s of
-      TreacherySource _ -> True
-      _ -> False
-    PlayerEnemyType -> case s of
-      EnemySource _ -> True
-      _ -> False
     TreacheryType -> case s of
       TreacherySource _ -> True
       _ -> False
@@ -2381,9 +2375,6 @@ sourceMatches s = \case
       _ -> False
     LocationType -> case s of
       LocationSource _ -> True
-      _ -> False
-    EncounterAssetType -> case s of
-      AssetSource _ -> True
       _ -> False
     ActType -> case s of
       ActSource _ -> True

@@ -132,13 +132,13 @@ instance RunMessage ThePallidMask where
     SetTokensForScenario -> do
       whenM getIsStandalone $ do
         randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        push $ SetTokens $ standaloneTokens <> [randomToken, randomToken]
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
       push $ AddCampaignCardToDeck
         leadInvestigatorId
-        Enemies.theManInThePallidMask
+        (toCardDef Enemies.theManInThePallidMask)
       pure
         . ThePallidMask
         $ attrs
@@ -324,7 +324,7 @@ instance RunMessage ThePallidMask where
                    , SearchCollectionForRandom
                      iid
                      (toSource attrs)
-                     (CardWithType PlayerTreacheryType
+                     (CardWithType TreacheryType <> WeaknessCard
                      <> CardWithOneOf (map CardWithTrait [Madness, Pact])
                      )
                    ]

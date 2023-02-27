@@ -7,9 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Cards qualified as Cards
+import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -31,23 +32,19 @@ markHarrigan = investigatorWith
     , health = 9
     , sanity = 5
     }
-  (startsWithL .~ [Assets.sophieInLovingMemory])
+  (startsWithL .~ [toCardDef Assets.sophieInLovingMemory])
 
 instance HasAbilities MarkHarrigan where
   getAbilities (MarkHarrigan attrs) =
-    [ restrictedAbility
-          attrs
-          1
-          Self
-          (ReactionAbility
+    [ limitedAbility (PlayerLimit PerPhase 1)
+        $ restrictedAbility attrs 1 Self
+        $ ReactionAbility
             (OrWindowMatcher
               [ DealtDamage Timing.When AnySource You
               , AssetDealtDamage Timing.When AnySource (AssetControlledBy You)
               ]
             )
             Free
-          )
-        & (abilityLimitL .~ PlayerLimit PerPhase 1)
     ]
 
 instance HasTokenValue MarkHarrigan where

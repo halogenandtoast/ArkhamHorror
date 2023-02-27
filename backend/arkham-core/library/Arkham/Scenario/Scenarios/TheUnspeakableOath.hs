@@ -138,11 +138,11 @@ instance RunMessage TheUnspeakableOath where
 
       setAsideCards <- traverse
         genCard
-        [ Assets.danielChesterfield
-        , Locations.patientConfinementDrearyCell
-        , Locations.patientConfinementDanielsCell
-        , Locations.patientConfinementOccupiedCell
-        , Locations.patientConfinementFamiliarCell
+        [ toCardDef Assets.danielChesterfield
+        , toCardDef Locations.patientConfinementDrearyCell
+        , toCardDef Locations.patientConfinementDanielsCell
+        , toCardDef Locations.patientConfinementOccupiedCell
+        , toCardDef Locations.patientConfinementFamiliarCell
         ]
       let
         (monsters, deck') =
@@ -321,12 +321,12 @@ instance RunMessage TheUnspeakableOath where
           claspMessages <- if youTookTheOnyxClasp
             then do
               pure
-                [ RemoveCampaignCard Assets.claspOfBlackOnyx
+                [ RemoveCampaignCard (toCardDef Assets.claspOfBlackOnyx)
                 , chooseOne
                   leadInvestigatorId
                   [ TargetLabel
                       (InvestigatorTarget iid)
-                      [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
+                      [AddCampaignCardToDeck iid $ toCardDef Assets.claspOfBlackOnyx]
                   | iid <- investigatorIds
                   ]
                 ]

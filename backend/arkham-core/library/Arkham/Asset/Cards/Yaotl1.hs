@@ -10,7 +10,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Effect.Runner ()
@@ -66,7 +65,7 @@ instance HasModifiersFor Yaotl1Effect where
         [] -> pure []
         (x : _) -> do
           let
-            skillIcons = cdSkills $ toCardDef x
+            skillIcons = toSkills x
             skillCount sk = count (== SkillIcon sk) skillIcons
           pure
             $ toModifiers a

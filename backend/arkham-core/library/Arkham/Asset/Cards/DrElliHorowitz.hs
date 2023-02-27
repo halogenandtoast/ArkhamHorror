@@ -12,6 +12,7 @@ import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Keyword (toKeywords)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
@@ -67,7 +68,7 @@ instance RunMessage DrElliHorowitz where
         validAfterSeal c = do
           let
             sealTokenMatchers =
-              flip mapMaybe (setToList $ cdKeywords $ toCardDef c) $ \case
+              flip mapMaybe (setToList $ toKeywords c) $ \case
                 Keyword.Seal matcher -> Just $ matcher
                 _ -> Nothing
           allM (\matcher -> anyM (\t -> matchToken iid t matcher) tokens) sealTokenMatchers

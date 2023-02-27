@@ -33,8 +33,8 @@ instance RunMessage HuntedByByakhee where
           ]
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let
-        isByakhee = member Byakhee . cdCardTraits . toCardDef
-        isOmen = member Omen . cdCardTraits . toCardDef
+        isByakhee = member Byakhee . toTraits
+        isOmen = member Omen . toTraits
         byakhee = filter isByakhee cards
         omens = filter isOmen cards
         byakheeMsgs = if null byakhee

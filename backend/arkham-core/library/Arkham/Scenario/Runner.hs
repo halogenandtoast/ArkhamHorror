@@ -73,6 +73,16 @@ instance RunMessage ScenarioAttrs where
   runMessage msg a =
     runScenarioAttrs msg a >>= traverseOf chaosBagL (runMessage msg)
 
+toAgendaCard :: Card -> Maybe (CardDef 'AgendaType)
+toAgendaCard c = case toCardDef c of
+                  (SomeCardDef SAgendaType def) -> Just def
+                  _ -> Nothing
+
+toActCard :: Card -> Maybe (CardDef 'ActType)
+toActCard c = case toCardDef c of
+                  (SomeCardDef SActType def) -> Just def
+                  _ -> Nothing
+
 runScenarioAttrs :: Message -> ScenarioAttrs -> GameT ScenarioAttrs
 runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResetGame -> do
@@ -99,7 +109,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         weaknesses <- traverse genPlayerCard randomWeaknesses
         let
           mentalTrauma = getSum $ foldMap
-            (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+            (Sum . fromMaybe 0 . withCardDef cdPurchaseMentalTrauma)
             (unDeck deck')
         pushAll
           $ LoadDeck iid (withDeck (<> weaknesses) deck')
@@ -173,29 +183,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       ?~ actStack'
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
   SetCurrentActDeck n stack@(current : _) -> do
-    actIds <- selectList $ Matcher.ActWithDeckId n
-    pushAll
-      $ [ Discard GameSource (ActTarget actId) | actId <- actIds ]
-      <> [AddAct n $ toCardDef current]
+    case toActCard current of
+      Nothing -> error "set stack with non-act card"
+      Just act -> do
+        actIds <- selectList $ Matcher.ActWithDeckId n
+        pushAll
+          $ [ Discard GameSource (ActTarget actId) | actId <- actIds ]
+          <> [AddAct n act]
     pure
       $ a
-      & actStackL
-      . at n
-      ?~ map toCardDef stack
-      & setAsideCardsL
-      %~ filter (`notElem` stack)
+      & (actStackL . at n ?~ mapMaybe toActCard stack)
+      & (setAsideCardsL %~ filter (`notElem` stack))
   SetCurrentAgendaDeck n stack@(current : _) -> do
-    agendaIds <- selectList $ Matcher.AgendaWithDeckId n
-    pushAll
-      $ [ Discard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds ]
-      <> [AddAgenda n $ toCardDef current]
+    case toAgendaCard current of
+      Nothing -> error "set stack with non-agenda card"
+      Just agenda -> do
+        agendaIds <- selectList $ Matcher.AgendaWithDeckId n
+        pushAll
+          $ [ Discard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds ]
+          <> [AddAgenda n agenda]
     pure
       $ a
-      & agendaStackL
-      . at n
-      ?~ map toCardDef stack
-      & setAsideCardsL
-      %~ filter (`notElem` stack)
+      & (agendaStackL . at n ?~ mapMaybe toAgendaCard stack)
+      & (setAsideCardsL %~ filter (`notElem` stack))
   AdvanceToAct n act newActSide _ -> do
     let
       completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
@@ -485,7 +495,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ReadStory iid story' -> do
     push
       (chooseOne iid [CardLabel (cdCardCode story') [ResolveStory iid story']])
-    pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
+    pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= toCardDef story') . toCardDef)
   SetActDeckRefs n refs -> do
     pure $ a & (actStackL . at n ?~ refs)
   SetActDeck -> do

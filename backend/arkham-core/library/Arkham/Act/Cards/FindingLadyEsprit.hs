@@ -79,7 +79,7 @@ instance RunMessage FindingLadyEsprit where
            , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
            , AddCampaignCardToDeck
              leadInvestigatorId
-             Treacheries.curseOfTheRougarou
+             $ toCardDef Treacheries.curseOfTheRougarou
            , CreateWeaknessInThreatArea curseOfTheRougarou leadInvestigatorId
            , AdvanceActDeck actDeckId (toSource attrs)
            ]

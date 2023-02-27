@@ -59,7 +59,7 @@ instance RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.royalEmissary]
+        [toCardDef Enemies.royalEmissary]
         [ EncounterSet.CurtainCall
         , EncounterSet.EvilPortents
         , EncounterSet.Delusions
@@ -100,14 +100,14 @@ instance RunMessage CurtainCall where
 
       setAsideCards <- traverse
         genCard
-        [ Enemies.royalEmissary
-        , Enemies.theManInThePallidMask
-        , Locations.lightingBox
-        , Locations.boxOffice
-        , Locations.greenRoom
-        , Locations.dressingRoom
-        , Locations.rehearsalRoom
-        , Locations.trapRoom
+        [ toCardDef Enemies.royalEmissary
+        , toCardDef Enemies.theManInThePallidMask
+        , toCardDef Locations.lightingBox
+        , toCardDef Locations.boxOffice
+        , toCardDef Locations.greenRoom
+        , toCardDef Locations.dressingRoom
+        , toCardDef Locations.rehearsalRoom
+        , toCardDef Locations.trapRoom
         ]
 
       CurtainCall <$> runMessage
@@ -139,7 +139,7 @@ instance RunMessage CurtainCall where
           [ Record TheStrangerIsOnToYou
           , AddCampaignCardToDeck
             leadInvestigatorId
-            Enemies.theManInThePallidMask
+            $ toCardDef Enemies.theManInThePallidMask
           ]
       s <$ case resolution of
         NoResolution ->

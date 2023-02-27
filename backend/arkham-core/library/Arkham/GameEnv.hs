@@ -26,8 +26,8 @@ newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
 instance CardGen GameT where
-  genEncounterCard a = lookupEncounterCard (toCardDef a) <$> getRandom
-  genPlayerCard a = lookupPlayerCard (toCardDef a) <$> getRandom
+  genEncounterCard a = withCardDef lookupEncounterCard a <$> getRandom
+  genPlayerCard a = withCardDef lookupPlayerCard a <$> getRandom
 
 class Monad m => HasGame m where
   getGame :: m Game

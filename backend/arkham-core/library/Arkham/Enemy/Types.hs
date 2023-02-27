@@ -136,7 +136,7 @@ resourcesL :: Lens' EnemyAttrs Int
 resourcesL = lens enemyResources $ \m x -> m { enemyResources = x }
 
 allEnemyCards :: HashMap CardCode SomeCardDef
-allEnemyCards = HashMap.map (SomeCardDef SPlayerEnemyType) allPlayerEnemyCards <> HashMap.map (SomeCardDef SEnemyType) allEncounterEnemyCards <> HashMap.map (SomeCardDef SEnemyType) allSpecialEnemyCards
+allEnemyCards = HashMap.map toCardDef allPlayerEnemyCards <> HashMap.map toCardDef allEncounterEnemyCards <> HashMap.map toCardDef allSpecialEnemyCards
 
 instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId

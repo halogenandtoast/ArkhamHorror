@@ -56,7 +56,7 @@ instance RunMessage RealmOfMadness where
           , RevelationChoice
             iid
             (toSource attrs)
-            (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
+            (n - maybe 0 toPrintedCost (withCardDef cdCost card))
           ]
       unless (null assets && null handDiscardableCards)
         $ push

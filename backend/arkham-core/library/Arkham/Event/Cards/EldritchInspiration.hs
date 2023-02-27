@@ -6,7 +6,6 @@ module Arkham.Event.Cards.EldritchInspiration
 import Arkham.Prelude
 
 import Arkham.Asset.Types ( Field (..) )
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -42,18 +41,18 @@ instance RunMessage EldritchInspiration where
         Do (If (Window.RevealTokenEffect _ _ effectId) _) -> do
           mCardDef <- lookupEffectCard effectId
           for_ mCardDef $ \cardDef ->
-            push $ questionLabel (display $ cdName cardDef) iid $ ChooseOne
+            push $ questionLabel (display $ toName cardDef) iid $ ChooseOne
               [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
               , Label "Resolve an additional time" [effectMsg]
               ]
         Do (If (Window.RevealTokenEventEffect _ _ eventId) _) -> do
-          cardName <- cdName . toCardDef <$> field EventCard eventId
+          cardName <- toName <$> field EventCard eventId
           push $ questionLabel (display cardName) iid $ ChooseOne
             [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
             , Label "Resolve an additional time" [effectMsg]
             ]
         Do (If (Window.RevealTokenAssetAbilityEffect _ _ assetId) _) -> do
-          cardName <- cdName . toCardDef <$> field AssetCard assetId
+          cardName <- toName <$> field AssetCard assetId
           push $ questionLabel (display cardName) iid $ ChooseOne
             [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
             , Label "Resolve an additional time" [effectMsg]

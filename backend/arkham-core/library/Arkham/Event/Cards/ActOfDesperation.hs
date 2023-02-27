@@ -35,7 +35,7 @@ instance RunMessage ActOfDesperation where
   runMessage msg e@(ActOfDesperation attrs) = case msg of
     PaidForCardCost iid card (getDiscards -> [(zone, discard)])
       | toCardId card == toCardId attrs -> do
-        let n = maybe 0 toPrintedCost . cdCost $ toCardDef discard
+        let n = maybe 0 toPrintedCost $ withCardDef cdCost discard
         pushAll
           $ skillTestModifiers
               (toSource attrs)

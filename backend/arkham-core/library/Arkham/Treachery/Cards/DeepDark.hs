@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.DeepDark
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Card.CardDef
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -45,7 +46,7 @@ instance HasModifiersFor DeepDark where
 
 instance HasAbilities DeepDark where
   getAbilities (DeepDark (a `With` _)) =
-    [ limitedAbility (PerCopyLimit Cards.deepDark PerRound 1)
+    [ limitedAbility (PerCopyLimit (toCardDef Cards.deepDark) PerRound 1)
         $ mkAbility a 1
         $ ForcedAbility
         $ RoundEnds Timing.When

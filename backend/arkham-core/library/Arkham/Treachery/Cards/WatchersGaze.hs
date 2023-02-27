@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.WatchersGaze
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card.CardDef
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
@@ -39,7 +40,7 @@ instance RunMessage WatchersGaze where
         push $ InvestigatorAssignDamage
           iid
           source
-          (DamageFirst Assets.innocentReveler)
+          (DamageFirst $ toCardDef Assets.innocentReveler)
           0
           1
         pure t

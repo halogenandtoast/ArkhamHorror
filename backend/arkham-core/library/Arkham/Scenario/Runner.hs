@@ -286,7 +286,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       , afterMsg
       ]
   Remember logKey -> do
-    send $ "Remember that you \"" <> format logKey <> "\""
+    send $ "Remember \"" <> format logKey <> "\""
     pure $ a & logL %~ insertSet logKey
   ScenarioCountIncrementBy logKey n ->
     pure $ a & countsL %~ HashMap.alter (Just . maybe n (+ n)) logKey

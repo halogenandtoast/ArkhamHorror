@@ -1116,8 +1116,13 @@ getLocationsMatching lmatcher = do
           highestShroud <-
             getMax0 <$> foldMapM (fieldMap LocationShroud Max . toId) ls'
           filterM (fieldMap LocationShroud (== highestShroud) . toId) ls'
-    IsIchtacasDestination ->
-      filterM (remembered . IchtacasDestination . toId) ls
+    IsIchtacasDestination -> do
+      allKeys <- toList <$> scenarioField ScenarioRemembered
+      let
+        destinations = flip mapMaybe allKeys $ \case
+          IchtacasDestination (Labeled _ lid) -> Just lid
+          _ -> Nothing
+      pure $ filter ((`elem` destinations) . toId) ls
     LocationWithLowerShroudThan higherShroudMatcher -> do
       ls' <- getLocationsMatching higherShroudMatcher
       if null ls'
@@ -1812,7 +1817,11 @@ enemyMatcherFilter = \case
   EnemyWithEvade -> fieldP EnemyEvade isJust . toId
   UnengagedEnemy -> selectNone . InvestigatorEngagedWith . EnemyWithId . toId
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
-  IsIchtacasPrey -> remembered . IchtacasPrey . toId
+  IsIchtacasPrey -> \enemy -> do
+    allKeys <- toList <$> scenarioField ScenarioRemembered
+    pure $ flip any allKeys $ \case
+      IchtacasPrey (Labeled _ eid) -> eid == toId enemy
+      _ -> False
   MovingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
   EvadingEnemy ->

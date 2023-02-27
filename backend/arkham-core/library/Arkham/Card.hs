@@ -14,7 +14,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Card.EncounterCard as X ( EncounterCard (..) )
 import Arkham.Card.Id
 import Arkham.Card.PlayerCard
-import Arkham.Card.PlayerCard as X ( DiscardedPlayerCard (..), PlayerCard (..) )
+import Arkham.Card.PlayerCard as X ( PlayerCard (..) )
 import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
 import Arkham.Id
@@ -34,13 +34,9 @@ lookupCard (toCardCode -> cardCode) cardId =
     -- we prefer encounter cards over player cards to handle cases like straitjacket
     (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
 
-lookupCardDef :: CardCode -> Maybe CardDef
-lookupCardDef cardCode =
-  case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
-    (Nothing, Nothing) -> Nothing
-    (Just def, _) -> Just def
-    -- we prefer encounter cards over player cards to handle cases like straitjacket
-    (Nothing, Just def) -> Just def
+-- we prefer encounter cards over player cards to handle cases like straitjacket
+lookupCardDef :: (HasCardCode cardCode) => cardCode -> Maybe CardDef
+lookupCardDef (toCardCode -> cardCode) = lookup cardCode allEncounterCards <|> lookup cardCode allPlayerCards
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode

@@ -7,6 +7,7 @@ import Arkham.Json
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.Id
+import Arkham.Name
 
 newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCard :: EncounterCard }
 
@@ -27,6 +28,9 @@ instance HasCardDef EncounterCard where
     Just def -> def
     Nothing ->
       error $ "missing card def for encounter card " <> show (ecCardCode c)
+
+instance Named EncounterCard where
+  toName = toName . toCardDef
 
 instance HasOriginalCardCode EncounterCard where
   toOriginalCardCode = ecOriginalCardCode

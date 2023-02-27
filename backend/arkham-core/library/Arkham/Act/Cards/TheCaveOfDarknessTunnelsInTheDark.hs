@@ -17,6 +17,7 @@ import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Name
 import Arkham.ScenarioLogKey
 
 newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark ActAttrs
@@ -52,7 +53,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
       mTownHall <- selectOne $ locationIs Locations.townHall
       townHallMessages <- case mTownHall of
         Just townHall -> pure
-          [ Remember $ IchtacasDestination townHall
+          [ Remember $ IchtacasDestination $ labeled Locations.townHall townHall
           , AddDirectConnection blackCave townHall
           , AddDirectConnection townHall blackCave
           ]
@@ -60,7 +61,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
           (townHallId, placeTownHall) <- placeSetAsideLocation Locations.townHall
           pure
             [ placeTownHall
-            , Remember $ IchtacasDestination townHallId
+            , Remember $ IchtacasDestination $ labeled Locations.townHall townHallId
             , AddDirectConnection blackCave townHallId
             , AddDirectConnection townHallId blackCave
             ]

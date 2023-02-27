@@ -18,6 +18,7 @@ import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Name
 import Arkham.ScenarioLogKey
 
 newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
@@ -54,8 +55,8 @@ instance RunMessage StrangeRelicsMariasInformation where
       rivertown <- selectJust $ locationIs Locations.rivertown
       iids <- getInvestigatorIds
       pushAll
-        $ [ Remember $ IchtacasDestination downtown
-          , Remember $ IchtacasDestination rivertown
+        $ [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
+          , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
           ]
         <> [ DiscardTopOfEncounterDeck
                iid

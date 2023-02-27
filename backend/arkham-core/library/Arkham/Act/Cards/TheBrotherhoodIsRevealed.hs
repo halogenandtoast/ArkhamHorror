@@ -21,7 +21,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype Metadata = Metadata { mariaDeSilvasLocation :: Maybe LocationId }
@@ -42,7 +41,7 @@ theBrotherhoodIsRevealed = act
 instance HasModifiersFor TheBrotherhoodIsRevealed where
   getModifiersFor (EnemyTarget eid) (TheBrotherhoodIsRevealed (a `With` _)) =
     do
-      isPrey <- remembered (IchtacasPrey eid)
+      isPrey <- isIchtacasPrey eid
       atLocationWithoutClues <-
         selectAny $ locationWithEnemy eid <> LocationWithoutClues
       n <- getPlayerCountValue (PerPlayer 1)
@@ -88,7 +87,7 @@ instance RunMessage TheBrotherhoodIsRevealed where
         pushAll [takeControlMessage, nextMessage]
         pure a
       RemoveEnemy eid -> do
-        isPrey <- remembered (IchtacasPrey eid)
+        isPrey <- isIchtacasPrey eid
         isMariaDeSilva <- eid
           <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
         if isPrey && isMariaDeSilva

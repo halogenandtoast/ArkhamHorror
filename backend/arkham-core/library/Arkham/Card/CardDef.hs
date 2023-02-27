@@ -5,6 +5,7 @@ import Arkham.Prelude
 
 import Arkham.Action ( Action )
 import Arkham.Asset.Uses
+import Arkham.Card.Class
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Cost
@@ -137,6 +138,9 @@ instance HasCardDef CardDef where
 
 instance HasCardCode CardDef where
   toCardCode = cdCardCode
+
+instance HasSkillIcons CardDef where
+  getSkillIcons = cdSkills
 
 newtype Unrevealed a = Unrevealed a
 

@@ -11,8 +11,6 @@ import Arkham.Card.Cost
 import Arkham.Card.Id
 import Arkham.Id
 
-newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
-
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
   , pcOwner :: Maybe InvestigatorId
@@ -37,7 +35,7 @@ instance HasCardCode PlayerCard where
   toCardCode = pcCardCode
 
 instance HasSkillIcons PlayerCard where
-  getSkillIcons = cdSkills . toCardDef
+  getSkillIcons = getSkillIcons . toCardDef
 
 instance HasCost PlayerCard where
   getCost c = case cdCost (toCardDef c) of

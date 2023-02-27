@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.EffectMetadata
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import {-# SOURCE #-} Arkham.GameEnv
@@ -40,14 +41,20 @@ instance HasAbilities MistsOfRlyeh where
 instance RunMessage MistsOfRlyeh where
   runMessage msg a@(MistsOfRlyeh attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ pushAll
+      pushAll
         [ createCardEffect
           Cards.mistsOfRlyeh
-          Nothing
+          (Just $ EffectInt 1)
+          source
+          (InvestigatorTarget iid)
+        , createCardEffect
+          Cards.mistsOfRlyeh
+          (Just $ EffectInt 2)
           source
           (InvestigatorTarget iid)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
+      pure a
     _ -> MistsOfRlyeh <$> runMessage msg attrs
 
 newtype MistsOfRlyehEffect = MistsOfRlyehEffect EffectAttrs
@@ -59,18 +66,14 @@ mistsOfRlyehEffect = cardEffect MistsOfRlyehEffect Cards.mistsOfRlyeh
 
 instance RunMessage MistsOfRlyehEffect where
   runMessage msg e@(MistsOfRlyehEffect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token -> case effectTarget of
-      InvestigatorTarget iid' | iid == iid' -> e <$ when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll
-          [ If
-            (Window.RevealTokenEffect iid token effectId)
-            [ChooseAndDiscardCard iid effectSource]
-          , DisableEffect effectId
-          ]
-        )
-      _ -> pure e
-    SkillTestEnds _ _ -> do
+    RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> do
+      case effectTarget of
+        InvestigatorTarget iid' | iid == iid' -> when
+          (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+          $ pushAll [ If (Window.RevealTokenEffect iid token effectId) [ChooseAndDiscardCard iid effectSource] , DisableEffect effectId ]
+        _ -> pure ()
+      pure e
+    SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
       case effectTarget of
         InvestigatorTarget iid -> do
           mSkillTestResult <- fmap skillTestResult <$> getSkillTest
@@ -80,13 +83,15 @@ instance RunMessage MistsOfRlyehEffect where
               let
                 moveOptions = chooseOrRunOne
                   iid
-                  ([Label "Do not move to a connecting location" []]
+                  $ [Label "Do not move to a connecting location" []]
                   <> [ targetLabel lid [MoveAction iid lid Free False]
                      | lid <- unblockedConnectedLocationIds
                      ]
-                  )
               pushAll [moveOptions, DisableEffect effectId]
-            _ -> push (DisableEffect effectId)
+            _ -> push $ DisableEffect effectId
         _ -> error "Invalid Target"
+      pure e
+    SkillTestEnds _ _ -> do
+      push $ DisableEffect effectId
       pure e
     _ -> MistsOfRlyehEffect <$> runMessage msg attrs

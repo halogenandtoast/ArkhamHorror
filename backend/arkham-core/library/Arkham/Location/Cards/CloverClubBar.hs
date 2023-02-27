@@ -14,7 +14,10 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( cloverClubBar )
 import Arkham.Location.Runner
 import Arkham.Message
+import Arkham.Name
+import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Investigator.Types (Field (..))
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -37,6 +40,7 @@ instance RunMessage CloverClubBar where
   runMessage msg l@(CloverClubBar attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       drawing <- drawCards iid attrs 2
-      pushAll [GainClues iid 2, drawing, Remember $ HadADrink iid]
+      name <- field InvestigatorName iid
+      pushAll [GainClues iid 2, drawing, Remember $ HadADrink $ labeled name iid]
       pure l
     _ -> CloverClubBar <$> runMessage msg attrs

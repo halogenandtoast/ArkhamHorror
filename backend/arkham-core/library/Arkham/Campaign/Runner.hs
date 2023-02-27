@@ -5,6 +5,7 @@ module Arkham.Campaign.Runner
 
 import Arkham.Prelude
 
+import Arkham.Classes.GameLogger
 import Arkham.Campaign.Types as X
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
@@ -106,7 +107,9 @@ instance RunMessage CampaignAttrs where
         & (logL . recordedSets %~ deleteMap key)
         & (logL . recordedCounts %~ deleteMap key)
         & (logL . orderedKeys %~ removeOrderedKey)
-    Record key -> pure $ a & logL . recorded %~ insertSet key & logL . orderedKeys %~ (<> [key])
+    Record key -> do
+      send $ "Record \"" <> format key <> "\""
+      pure $ a & logL . recorded %~ insertSet key & logL . orderedKeys %~ (<> [key])
     RecordSet key cardCodes ->
       pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
     RecordSetInsert key cardCodes ->

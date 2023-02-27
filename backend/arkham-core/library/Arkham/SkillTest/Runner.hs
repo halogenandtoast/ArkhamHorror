@@ -49,11 +49,11 @@ calculateSkillTestResultsData s = do
     modifiedSkillValue' =
       max 0 (currentSkillValue + totaledTokenValues + iconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
-    isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
+    isSuccess = traceShowId modifiedSkillValue' `op` traceShowId modifiedSkillTestDifficulty
   pure $ SkillTestResultsData
     currentSkillValue
     iconCount
-    (skillTestValueModifier s)
+    totaledTokenValues
     modifiedSkillTestDifficulty
     (resultValueModifiers <$ guard (resultValueModifiers /= 0))
     isSuccess

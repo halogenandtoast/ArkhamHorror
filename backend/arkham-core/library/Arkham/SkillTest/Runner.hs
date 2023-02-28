@@ -30,7 +30,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
 
-calculateSkillTestResultsData :: SkillTest -> GameT SkillTestResultsData
+calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers SkillTestTarget
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
@@ -49,7 +49,7 @@ calculateSkillTestResultsData s = do
     modifiedSkillValue' =
       max 0 (currentSkillValue + totaledTokenValues + iconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
-    isSuccess = traceShowId modifiedSkillValue' `op` traceShowId modifiedSkillTestDifficulty
+    isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
   pure $ SkillTestResultsData
     currentSkillValue
     iconCount
@@ -58,7 +58,7 @@ calculateSkillTestResultsData s = do
     (resultValueModifiers <$ guard (resultValueModifiers /= 0))
     isSuccess
 
-getCurrentSkillValue :: SkillTest -> GameT Int
+getCurrentSkillValue :: HasGame m => SkillTest -> m Int
 getCurrentSkillValue st = case skillTestBaseValue st of
   SkillBaseValue sType -> do
     stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
@@ -66,7 +66,7 @@ getCurrentSkillValue st = case skillTestBaseValue st of
   HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
   StaticBaseValue n -> pure n
 
-skillIconCount :: SkillTest -> GameT Int
+skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
   totalIcons <- length . filter matches <$> concatMapM
       (iconsForCard . snd)
@@ -97,7 +97,7 @@ skillIconCount SkillTest {..} = do
   applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
   applyAfterSkillModifiers _ ys = ys
 
-getModifiedSkillTestDifficulty :: SkillTest -> GameT Int
+getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers SkillTestTarget
   let
@@ -113,7 +113,7 @@ getModifiedSkillTestDifficulty s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedTokenValue :: SkillTest -> Token -> GameT Int
+getModifiedTokenValue :: HasGame m => SkillTest -> Token -> m Int
 getModifiedTokenValue s t = do
   tokenModifiers' <- getModifiers (TokenTarget t)
   modifiedTokenFaces' <- getModifiedTokenFaces [t]
@@ -145,7 +145,7 @@ getModifiedTokenValue s t = do
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <- getModifiers (InvestigatorTarget iid)
+      modifiers' <- getModifiers iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then do
           let
@@ -153,26 +153,26 @@ instance RunMessage SkillTest where
               TreatRevealedTokenAs t -> Just t
               _ -> Nothing
           if null tokensTreatedAsRevealed
-            then s <$ push (RunSkillTest iid)
+            then push (RunSkillTest iid)
             else do
               pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
               for_ tokensTreatedAsRevealed $ \tokenFace -> do
                 t <- getRandom
                 pushAll
                   $ resolve (RevealToken (toSource s) iid (Token t tokenFace))
-              pure s
         else if SkillTestAutomaticallySucceeds `elem` modifiers'
-          then s <$ push PassSkillTest
+          then push PassSkillTest
           else do
             let
               applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
               applyRevealStategyModifier n _ = n
               revealStrategy =
                 foldl' applyRevealStategyModifier (Reveal 1) modifiers'
-            s <$ pushAll
+            pushAll
               [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
               , RunSkillTest iid
               ]
+      pure s
     DrawAnotherToken iid -> do
       withQueue_ $ filter $ \case
         Will FailedSkillTest{} -> False
@@ -259,12 +259,12 @@ instance RunMessage SkillTest where
       pure $ s & resultL .~ FailedBy True difficulty
     StartSkillTest _ -> do
       windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
-      s <$ pushAll
-        (HashMap.foldMapWithKey
+      pushAll
+        $ HashMap.foldMapWithKey
             (\k (i, _) -> [CommitCard i k])
             skillTestCommittedCards
         <> [windowMsg, TriggerSkillTest skillTestInvestigator]
-        )
+      pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
     PutCardIntoPlay _ card _ _ -> do
@@ -300,8 +300,8 @@ instance RunMessage SkillTest where
           FailedBy _ n -> (-n)
 
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
-      s <$ pushAll
-        (ResetTokens (toSource s)
+      pushAll
+        $ ResetTokens (toSource s)
         : map (uncurry AddToDiscard) discards
         <> skillTestEndsWindows
         <> [ AfterSkillTestEnds
@@ -309,7 +309,7 @@ instance RunMessage SkillTest where
                skillTestTarget
                skillResultValue
            ]
-        )
+      pure s
     SkillTestResults{} -> do
       modifiers' <- getModifiers (toTarget s)
       -- We may be recalculating so we want to remove all windows an buttons to apply

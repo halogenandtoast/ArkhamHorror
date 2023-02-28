@@ -14,11 +14,11 @@ import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Target
 
-getModifiers :: HasGame m => Target -> m [ModifierType]
-getModifiers target = map modifierType <$> getModifiers' target
+getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
+getModifiers (toTarget -> target) = map modifierType <$> getModifiers' target
 
-getModifiers' :: HasGame m => Target -> m [Modifier]
-getModifiers' target =
+getModifiers' :: (HasGame m, Targetable a) => a -> m [Modifier]
+getModifiers' (toTarget -> target) =
   findWithDefault [] target <$> getAllModifiers
 
 hasModifier

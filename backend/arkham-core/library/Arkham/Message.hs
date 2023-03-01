@@ -719,7 +719,7 @@ chooseSome iid doneText msgs = Ask iid (ChooseSome $ Done doneText : msgs)
 chooseUpToN :: InvestigatorId -> Int -> Text -> [UI Message] -> Message
 chooseUpToN _ _ _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseUpToN iid n doneText msgs =
-  Ask iid (ChooseUpToN n $ Done doneText : msgs)
+  Ask iid (ChooseUpToN n $ Label doneText [] : msgs)
 
 chooseN :: InvestigatorId -> Int -> [UI Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"

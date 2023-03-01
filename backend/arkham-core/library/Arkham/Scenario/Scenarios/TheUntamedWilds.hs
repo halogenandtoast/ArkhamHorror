@@ -170,6 +170,9 @@ instance RunMessage TheUntamedWilds where
           push $ CreateWeaknessInThreatArea poisoned iid
         pure s
       _ -> pure s
+    ResolveToken _drawnToken token iid | token == ElderThing -> do
+      whenM (getIsPoisoned iid) $ push FailSkillTest
+      pure s
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]

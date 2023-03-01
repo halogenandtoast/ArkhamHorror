@@ -35,6 +35,9 @@ toModifier a mType = Modifier (toSource a) mType False
 toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
+toModifiersWith :: SourceEntity a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
+toModifiersWith a f xs= map (f . toModifier a) xs
+
 skillTestModifier
   :: (SourceEntity source, Targetable target)
   => source

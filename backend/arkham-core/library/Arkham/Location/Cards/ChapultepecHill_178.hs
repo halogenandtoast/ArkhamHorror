@@ -31,7 +31,7 @@ chapultepecHill_178 = locationWith
 instance HasAbilities ChapultepecHill_178 where
   getAbilities (ChapultepecHill_178 attrs) = withBaseAbilities
     attrs
-    [ mkAbility attrs 1
+    [ restrictedAbility attrs 1 (InvestigatorExists $ investigatorAt $ toId attrs)
     $ ForcedAbility
     $ PutLocationIntoPlay Timing.After Anyone
     $ LocationWithId

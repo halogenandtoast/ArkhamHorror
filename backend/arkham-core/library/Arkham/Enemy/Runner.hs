@@ -152,14 +152,13 @@ instance RunMessage EnemyAttrs where
                 [iid] -> pushAll
                   [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                 iids -> push
-                  (chooseOne
+                  $ chooseOne
                     leadInvestigatorId
                     [ targetLabel
                         iid
                         [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                     | iid <- iids
                     ]
-                  )
           else
             when (Keyword.Massive `notElem` keywords) $ push $ EnemyEntered
               eid

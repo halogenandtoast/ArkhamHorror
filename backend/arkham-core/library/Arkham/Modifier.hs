@@ -2,6 +2,7 @@ module Arkham.Modifier
   ( Modifier(..)
   , ModifierType(..)
   , ActionTarget(..)
+  , setActiveDuringSetup
   ) where
 
 import Arkham.Prelude
@@ -26,6 +27,9 @@ import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 import Arkham.Trait
+
+setActiveDuringSetup :: Modifier -> Modifier
+setActiveDuringSetup m = m { modifierActiveDuringSetup = True }
 
 data Modifier = Modifier
   { modifierSource :: Source

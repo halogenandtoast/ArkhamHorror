@@ -33,7 +33,10 @@ instance HasAbilities SacredWoods_184 where
   getAbilities (SacredWoods_184 attrs) =
     withBaseAbilities attrs $ if locationRevealed attrs
       then
-        [ mkAbility attrs 1
+        [ restrictedAbility
+          attrs
+          1
+          (InvestigatorExists $ investigatorAt $ toId attrs)
         $ ForcedAbility
         $ PutLocationIntoPlay Timing.After Anyone
         $ LocationWithId

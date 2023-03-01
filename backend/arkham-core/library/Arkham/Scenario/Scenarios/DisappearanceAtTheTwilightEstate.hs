@@ -51,6 +51,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         , EncounterSet.TheWatcher
         , EncounterSet.ChillingCold
         ]
+
       pushAll [story investigatorIds prologue
               , SetEncounterDeck encounterDeck
               , SetAgendaDeck

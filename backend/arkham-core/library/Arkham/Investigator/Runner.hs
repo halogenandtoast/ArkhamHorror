@@ -909,7 +909,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ Window
                  Timing.When
                  (Window.AssignedHorror source iid horrorTargets)
+            | notNull horrorTargets]
+          , CheckWindow [iid]
+          $ [ Window Timing.After (Window.DealtDamage source damageEffect target damage)
+            | target <- nub damageTargets
+            , let damage = count (== target) damageTargets
+            ]
+          <> [ Window Timing.After (Window.DealtHorror source target horror)
+             | target <- nub horrorTargets
+             , let horror = count (== target) horrorTargets
              ]
+          <> [ Window
+                 Timing.After
+                 (Window.AssignedHorror source iid horrorTargets)
+            | notNull horrorTargets]
           ]
       when
           (damageStrategy

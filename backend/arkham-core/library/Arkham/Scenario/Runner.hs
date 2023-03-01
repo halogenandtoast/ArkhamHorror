@@ -295,8 +295,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ a
       & countsL
       %~ HashMap.alter (Just . max 0 . maybe 0 (subtract n)) logKey
-  ResolveToken _drawnToken token _iid | token == AutoFail ->
-    a <$ push FailSkillTest
+  ResolveToken _drawnToken token iid -> do
+    TokenValue _ tokenModifier <- getTokenValue iid token ()
+    when (tokenModifier == AutoFailModifier) $ push FailSkillTest
+    pure a
   EndOfScenario mNextCampaignStep -> do
     clearQueue
     standalone <- getIsStandalone
@@ -875,4 +877,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ a
       & (actStackL . at n ?~ actStack')
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
+  RestartScenario -> do
+    pure $ a & (inResolutionL .~ False)
   _ -> pure a

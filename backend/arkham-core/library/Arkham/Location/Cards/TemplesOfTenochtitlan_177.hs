@@ -33,7 +33,7 @@ templesOfTenochtitlan_177 = locationWith
 instance HasAbilities TemplesOfTenochtitlan_177 where
   getAbilities (TemplesOfTenochtitlan_177 attrs) = withBaseAbilities
     attrs
-    [ mkAbility attrs 1
+    [ restrictedAbility attrs 1 (EnemyCriteria $ EnemyExists $ NearestEnemyToLocation (toId attrs) AnyEnemy)
     $ ForcedAbility
     $ PutLocationIntoPlay Timing.After Anyone
     $ LocationWithId

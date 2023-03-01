@@ -1944,7 +1944,7 @@ enemyMatcherFilter = \case
         mloc <- field EnemyLocation (toId $ toAttrs enemy)
         pure $ maybe False (`elem` matches') mloc
 
-getAct :: HasGame m => ActId -> m Act
+getAct :: (HasCallStack, HasGame m) => ActId -> m Act
 getAct aid =
   fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
   where missingAct = "Unknown act: " <> show aid
@@ -3204,7 +3204,9 @@ runGameMessage msg g = case msg of
           , locationTreacheries = locationTreacheries oldAttrs
           }
     -- todo: should we just run this in place?
-    push $ PlacedLocation (toName card) (toCardCode card) lid
+    iid <- getLeadInvestigatorId
+    afterPutIntoPlayWindow <- checkWindows [ Window Timing.After (Window.PutLocationIntoPlay iid lid) ]
+    pushAll [PlacedLocation (toName card) (toCardCode card) lid, afterPutIntoPlayWindow]
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveAsset aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   RemoveEvent eid -> do

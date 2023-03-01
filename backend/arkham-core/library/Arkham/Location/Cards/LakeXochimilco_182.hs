@@ -6,6 +6,7 @@ module Arkham.Location.Cards.LakeXochimilco_182
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
@@ -47,7 +48,10 @@ instance HasModifiersFor LakeXochimilco_182 where
 instance HasAbilities LakeXochimilco_182 where
   getAbilities (LakeXochimilco_182 attrs) = withBaseAbilities
     attrs
-    [ mkAbility attrs 1
+    [ restrictedAbility
+        attrs
+        1
+        (InvestigatorExists $ investigatorAt $ toId attrs)
       $ ForcedAbility
       $ PutLocationIntoPlay Timing.After Anyone
       $ LocationWithId

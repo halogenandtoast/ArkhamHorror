@@ -1054,7 +1054,9 @@ passesCriteria iid source windows' = \case
       (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid
     AssetSource aid ->
       (`gameValueMatches` valueMatcher) =<< field AssetResources aid
-    _ -> error "missing ResourcesOnThis check"
+    LocationSource aid ->
+      (`gameValueMatches` valueMatcher) =<< field LocationResources aid
+    _ -> error $ "missing ResourcesOnThis check: " <> show source
   Criteria.ResourcesOnLocation locationMatcher valueMatcher -> do
     total <- getSum <$> selectAgg Sum LocationResources locationMatcher
     gameValueMatches total valueMatcher
@@ -2018,17 +2020,33 @@ windowMatches iid source window' = \case
           | t == whenMatcher
           -> andM
             [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+        Window t (Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _)
+          | t == whenMatcher
+          -> andM
+            [ member aid <$> select (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+            , sourceMatches source' sourceMatcher
+            ]
         _ -> pure False
       _ -> pure False
   Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
     Window t (Window.DealtDamage source' _ (InvestigatorTarget iid') _)
       | t == whenMatcher -> andM
         [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+    Window t (Window.DealtDamage source' _ (AssetTarget aid) _)
+      | t == whenMatcher -> andM
+        [ member aid <$> select (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+        , sourceMatches source' sourceMatcher
+        ]
     _ -> pure False
   Matcher.DealtHorror whenMatcher sourceMatcher whoMatcher -> case window' of
     Window t (Window.DealtHorror source' (InvestigatorTarget iid') _)
       | t == whenMatcher -> andM
         [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+    Window t (Window.DealtHorror source' (AssetTarget aid) _)
+      | t == whenMatcher -> andM
+        [ member aid <$> select (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+        , sourceMatches source' sourceMatcher
+        ]
     _ -> pure False
   Matcher.AssignedHorror whenMatcher whoMatcher targetListMatcher ->
     case window' of

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { computed, ref, inject } from 'vue';
+import { computed, ref } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card';
+import CardView from '@/arkham/components/Card.vue'
 
 export interface Props {
   game: Game
@@ -11,16 +12,7 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
 const reference = computed(() => ref(props.victoryDisplay))
-
-const baseUrl = inject('baseUrl')
-const topOfVictoryDisplay = computed(() => {
-  if (props.victoryDisplay[0]) {
-    const { cardCode } = props.victoryDisplay[0].contents;
-    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-  }
-
-  return null;
-})
+const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
 
 const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Cards`)
 
@@ -29,10 +21,7 @@ const showVictoryDisplay = (e: Event) => emit('show', e, reference.value, 'Victo
 
 <template>
   <div v-if="topOfVictoryDisplay" class="victory-display">
-    <img
-      :src="topOfVictoryDisplay"
-      class="card"
-    />
+    <CardView :game="game" :card="topOfVictoryDisplay" />
 
     <button @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
   </div>

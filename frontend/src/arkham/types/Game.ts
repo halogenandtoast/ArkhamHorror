@@ -79,6 +79,8 @@ export function choices(game: Game, investigatorId: string): Message[] {
         return toContents(q.question);
       case 'Read':
         return q.readChoices;
+      case 'PickSupplies':
+        return q.choices;
       default:
         return [];
     }

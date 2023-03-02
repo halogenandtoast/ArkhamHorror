@@ -149,13 +149,7 @@ instance RunMessage TheForgottenAge where
             availableSupplies = filter availableSupply affordableSupplies
           push
             $ Ask investigatorId
-            $ QuestionLabel
-                ("Available Supplies ("
-                <> tshow remaining
-                <> " supply points remaining)"
-                )
-            $ ChooseOne
-            $ Label "Done" []
+            $ PickSupplies remaining
             : map
                 (\s -> supplyLabel
                   s

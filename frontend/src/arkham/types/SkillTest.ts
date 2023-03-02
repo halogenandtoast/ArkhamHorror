@@ -1,5 +1,4 @@
 import { JsonDecoder } from 'ts.data.json';
-import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Card, cardDecoder} from '@/arkham/types/Card';
 

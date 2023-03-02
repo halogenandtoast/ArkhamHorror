@@ -60,6 +60,7 @@ filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
 filterOutEnemyMessages eid (Ask iid q) = case q of
   QuestionLabel{} -> error "currently unhandled"
   Read{} -> error "currently unhandled"
+  PickSupplies{} -> error "currently unhandled"
   ChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseOne x)

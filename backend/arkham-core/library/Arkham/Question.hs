@@ -5,6 +5,7 @@ module Arkham.Question where
 import Arkham.Prelude
 
 import Arkham.Ability.Types
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.ChaosBagStepState
 import Arkham.Id
@@ -83,7 +84,7 @@ data Question msg
   | ChooseUpgradeDeck
   | QuestionLabel { label :: Text, question :: (Question msg) }
   | Read { flavorText :: FlavorText, readChoices :: [UI msg] }
-  | PickSupplies { pointsRemaining :: Int, choices :: [UI msg] }
+  | PickSupplies { pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg] }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

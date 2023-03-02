@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -14,6 +14,7 @@ export enum QuestionType {
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
   READ = 'Read',
+  PICK_SUPPLIES = 'PickSupplies',
 }
 
 export interface ChooseOne {
@@ -36,6 +37,11 @@ export interface Read {
   tag: QuestionType.READ
   flavorText: FlavorText
   readChoices: Message[]
+}
+
+export interface PickSupplies {
+  tag: QuestionType.PICK_SUPPLIES
+  choices: Message[]
 }
 
 export interface ChooseN {
@@ -161,6 +167,14 @@ export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
   'Read',
 );
 
+export const pickSuppliesDecoder = JsonDecoder.object<PickSupplies>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.PICK_SUPPLIES),
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+  },
+  'PickSupplies',
+);
+
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
     tag: JsonDecoder.isExactly(QuestionType.CHOOSE_ONE),
@@ -215,6 +229,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     choosePaymentAmountsDecoder,
     questionLabelDecoder,
     readDecoder,
+    pickSuppliesDecoder,
   ],
   'Question',
 );

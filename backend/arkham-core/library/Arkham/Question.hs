@@ -83,6 +83,7 @@ data Question msg
   | ChooseUpgradeDeck
   | QuestionLabel { label :: Text, question :: (Question msg) }
   | Read { flavorText :: FlavorText, readChoices :: [UI msg] }
+  | PickSupplies { pointsRemaining :: Int, choices :: [UI msg] }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

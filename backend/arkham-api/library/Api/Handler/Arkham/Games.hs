@@ -497,4 +497,7 @@ handleAnswer Game {..} investigatorId = \case
           [Done _] -> [uiToRun m']
           rest -> [uiToRun m', Ask investigatorId $ f $ ChooseSome rest]
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseSome msgs'']
+    PickSupplies remaining chosen qs -> case qs !!? qrChoice response of
+      Nothing -> [Ask investigatorId $ f $ PickSupplies remaining chosen qs]
+      Just msg -> [uiToRun msg]
     _ -> error "Wrong question type"

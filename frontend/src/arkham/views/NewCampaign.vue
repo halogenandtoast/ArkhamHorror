@@ -65,7 +65,7 @@ const campaigns = computed(() => {
     { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
     { id: '02', name: 'The Dunwich Legacy', },
     { id: '03', name: 'The Path to Carcosa', },
-    { id: '04', name: 'The Forgotten Age', beta: true },
+    { id: '04', name: 'The Forgotten Age' },
     { id: '05', name: 'The Circle Undone', beta: true },
   ].filter((c) => {
     if (c.beta) {
@@ -470,8 +470,8 @@ header {
 
 .campaigns {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+
+  grid-template-columns: repeat(auto-fill, calc(1 / 3 * 100%));
 
   img {
     width: 100%;

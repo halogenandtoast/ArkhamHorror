@@ -39,8 +39,43 @@ export interface Read {
   readChoices: Message[]
 }
 
+type Supply
+  = 'Provisions'
+  | 'Medicine'
+  | 'Rope'
+  | 'Blanket'
+  | 'Canteen'
+  | 'Torches'
+  | 'Compass'
+  | 'Map'
+  | 'Binoculars'
+  | 'Chalk'
+  | 'Pendant'
+  | 'Gasoline'
+  | 'Pocketknife'
+  | 'Pickaxe'
+
+export const supplyDecoder = JsonDecoder.oneOf<Supply>([
+  JsonDecoder.isExactly('Provisions'),
+  JsonDecoder.isExactly('Medicine'),
+  JsonDecoder.isExactly('Rope'),
+  JsonDecoder.isExactly('Blanket'),
+  JsonDecoder.isExactly('Canteen'),
+  JsonDecoder.isExactly('Torches'),
+  JsonDecoder.isExactly('Compass'),
+  JsonDecoder.isExactly('Map'),
+  JsonDecoder.isExactly('Binoculars'),
+  JsonDecoder.isExactly('Chalk'),
+  JsonDecoder.isExactly('Pendant'),
+  JsonDecoder.isExactly('Gasoline'),
+  JsonDecoder.isExactly('Pocketknife'),
+  JsonDecoder.isExactly('Pickaxe')
+], 'Supply')
+
 export interface PickSupplies {
   tag: QuestionType.PICK_SUPPLIES
+  pointsRemaining: number
+  chosenSupplies: Supply[]
   choices: Message[]
 }
 
@@ -170,6 +205,8 @@ export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
 export const pickSuppliesDecoder = JsonDecoder.object<PickSupplies>(
   {
     tag: JsonDecoder.isExactly(QuestionType.PICK_SUPPLIES),
+    pointsRemaining: JsonDecoder.number,
+    chosenSupplies: JsonDecoder.array<Supply>(supplyDecoder, 'Supply[]'),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'PickSupplies',

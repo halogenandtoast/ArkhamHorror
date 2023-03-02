@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
+import PickSupplies from '@/arkham/components/PickSupplies.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 
 export interface Props {
@@ -48,6 +49,10 @@ const choose = (idx: number) => emit('choose', idx)
         </template>
       </template>
     </div>
+  </div>
+
+  <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">
+    <PickSupplies :question="question" @choose="choose" />
   </div>
   <template v-else-if="choices.length > 0">
     <div class="choices">

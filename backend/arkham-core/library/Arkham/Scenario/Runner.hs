@@ -12,6 +12,7 @@ import Arkham.Classes.GameLogger
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types ( Field (..) )
 import Arkham.Agenda.Sequence qualified as Agenda
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.Card
@@ -422,6 +423,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (ActTarget aid) -> do
     card <- field ActCard aid
+    pure $ a & (victoryDisplayL %~ (card :))
+  AddToVictory (AgendaTarget aid) -> do
+    card <- field AgendaCard aid
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid

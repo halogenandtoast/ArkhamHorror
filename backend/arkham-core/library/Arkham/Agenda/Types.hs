@@ -26,6 +26,7 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 type AgendaCard a = CardBuilder (Int, AgendaId) a
 
 data instance Field Agenda :: Type -> Type where
+  AgendaCard :: Field Agenda Card
   AgendaSequence :: Field Agenda AS.AgendaSequence
   AgendaDoom :: Field Agenda Int
   AgendaDeckId :: Field Agenda Int

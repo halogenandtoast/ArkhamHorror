@@ -1312,7 +1312,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           }
         chosenCardMsgs = case chosenCardStrategy of
           LeaveChosenCard -> []
-          RemoveChosenCardFromGame -> [RemovePlayerCardFromGame choice]
+          RemoveChosenCardFromGame -> [RemovePlayerCardFromGame True choice]
 
       pushAll
         $ chosenCardMsgs
@@ -2482,12 +2482,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   HealTrauma iid physical mental | iid == investigatorId ->
     pure
       $ a
-      & physicalTraumaL
-      %~ max 0
-      . subtract physical
-      & mentalTraumaL
-      %~ max 0
-      . subtract mental
+      & (physicalTraumaL %~ max 0 . subtract physical)
+      & (mentalTraumaL %~ max 0 . subtract mental)
   GainXP iid amount | iid == investigatorId -> pure $ a & xpL +~ amount
   SpendXP iid amount | iid == investigatorId ->
     pure $ a & xpL %~ max 0 . subtract amount
@@ -2506,8 +2502,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (discardL %~ filter (/= card))
         & (deckL %~ Deck . filter (/= card) . unDeck)
       else pure a
-  RemovePlayerCardFromGame card -> do
-    push $ RemovedFromGame card
+  RemovePlayerCardFromGame addToRemovedFromGame card -> do
+    when addToRemovedFromGame $ push $ RemovedFromGame card
     case preview _PlayerCard card of
       Just pc ->
         pure

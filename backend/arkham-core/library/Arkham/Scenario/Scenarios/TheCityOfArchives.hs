@@ -104,8 +104,8 @@ instance RunMessage TheCityOfArchives where
       let setAsideUpdate = maybe id (over setAsideCardsL . (:)) mAlejandro
 
       pushAll
-        $ map RemovePlayerCardFromGame uniqueItemAssetCards
-        <> [ RemovePlayerCardFromGame alejandro
+        $ map (RemovePlayerCardFromGame True) uniqueItemAssetCards
+        <> [ RemovePlayerCardFromGame True alejandro
            | alejandro <- maybeToList mAlejandro
            ]
         <> map (RemoveFromGame . AssetTarget) uniqueItemAssets

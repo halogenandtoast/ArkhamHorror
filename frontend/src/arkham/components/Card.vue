@@ -29,7 +29,7 @@ const image = computed(() => {
   return `${baseUrl}/img/arkham/cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`
 })
 
-const id = computed(() => props.card.contents.id)
+const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : props.card.contents.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
@@ -80,6 +80,7 @@ const abilities = computed(() => {
       :src="image"
       @click="emit('choose', cardAction)"
     />
+    <span class="vengeance" v-if="card.tag === 'VengeanceCard'">Vengeance 1</span>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability"
@@ -124,8 +125,21 @@ const abilities = computed(() => {
   border: 1px solid #ff00ff;
 }
 
+.vengeance {
+  position: absolute;
+  top: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 0.8em;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  text-align: center;
+  padding: 5px;
+}
+
 .card-container {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 </style>

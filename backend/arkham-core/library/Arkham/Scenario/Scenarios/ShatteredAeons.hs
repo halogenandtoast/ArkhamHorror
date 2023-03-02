@@ -239,7 +239,7 @@ instance RunMessage ShatteredAeons where
            , placeNexusOfNKai
            , MoveAllTo (toSource attrs) nexusOfNKaiId
            ]
-        <> map RemovePlayerCardFromGame cardsToAddToVictory
+        <> map (RemovePlayerCardFromGame False) cardsToAddToVictory
 
       ShatteredAeons <$> runMessage
         msg

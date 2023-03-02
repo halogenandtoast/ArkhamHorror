@@ -18,7 +18,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['show'])
+const emit = defineEmits(['show', 'choose'])
 
 const id = computed(() => props.agenda.id)
 const baseUrl = inject('baseUrl')

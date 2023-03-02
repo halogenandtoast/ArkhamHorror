@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type Card = PlayerCard | EncounterCard;
+export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
 export interface CardContents {
   id: string;
@@ -18,6 +18,11 @@ export interface EncounterCardContents {
   id: string;
   cardCode: string;
   isFlipped?: boolean;
+}
+
+export interface VengeanceCard {
+  tag: 'VengeanceCard';
+  contents: PlayerCard | EncounterCard;
 }
 
 export interface PlayerCard {
@@ -64,10 +69,19 @@ export const encounterCardDecoder = JsonDecoder.object<EncounterCard>(
   'EncounterCard',
 );
 
+export const vengeanceCardDecoder = JsonDecoder.object<VengeanceCard>(
+  {
+    tag: JsonDecoder.isExactly('VengeanceCard'),
+    contents: JsonDecoder.oneOf<PlayerCard | EncounterCard>([playerCardDecoder, encounterCardDecoder], 'VengeanceCardContents')
+  },
+  'EncounterCard',
+);
+
 export const cardDecoder = JsonDecoder.oneOf<Card>(
   [
     playerCardDecoder,
     encounterCardDecoder,
+    vengeanceCardDecoder,
   ],
   'Card',
 );

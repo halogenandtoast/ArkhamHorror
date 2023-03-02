@@ -19,6 +19,11 @@ const emit = defineEmits(['choose'])
 const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
+  if (props.card.tag === 'VengeanceCard') {
+    const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter/back'
+    return `${baseUrl}/img/arkham/${back}.jpg`;
+  }
+
   const { cardCode } = props.card.contents
   const suffix = !props.revealed && props.card.contents.isFlipped ? 'b' : ''
   return `${baseUrl}/img/arkham/cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`

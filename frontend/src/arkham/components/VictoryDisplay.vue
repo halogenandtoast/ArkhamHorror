@@ -6,6 +6,7 @@ import CardView from '@/arkham/components/Card.vue'
 
 export interface Props {
   game: Game
+  investigatorId: string
   victoryDisplay: Card[]
 }
 
@@ -14,14 +15,14 @@ const emit = defineEmits(['show'])
 const reference = computed(() => ref(props.victoryDisplay))
 const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
 
-const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Cards`)
+const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Card${props.victoryDisplay.length === 1 ? '' : 's'}`)
 
 const showVictoryDisplay = (e: Event) => emit('show', e, reference.value, 'Victory Display', true)
 </script>
 
 <template>
   <div v-if="topOfVictoryDisplay" class="victory-display">
-    <CardView :game="game" :card="topOfVictoryDisplay" />
+    <CardView :game="game" :card="topOfVictoryDisplay" :investigatorId="investigatorId" />
 
     <button @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
   </div>

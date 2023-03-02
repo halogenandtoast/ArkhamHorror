@@ -2586,6 +2586,7 @@ instance Projection Agenda where
       AgendaDoom -> pure agendaDoom
       AgendaDeckId -> pure agendaDeckId
       AgendaAbilities -> pure $ getAbilities a
+      AgendaCard -> pure $ lookupCard (unAgendaId aid) (CardId nil)
 
 instance Projection Campaign where
   field fld _ = do

@@ -315,7 +315,7 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
           :key="scenarioDeck[0]"
           v-for="[,scenarioDeck] in scenarioDecks"
         />
-        <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" />
+        <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" :investigatorId="investigatorId" />
         <div v-if="topOfEncounterDiscard" class="discard">
           <img
             :src="topOfEncounterDiscard"

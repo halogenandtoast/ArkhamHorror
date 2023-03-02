@@ -73,7 +73,7 @@ instance RunMessage TurnBackTime where
         selectOne $ InDeckOf (InvestigatorWithId iid) <> BasicCardMatch
           (cardIs Assets.relicOfAgesRepossessThePast)
       pushAll
-        [ RemovePlayerCardFromGame repossessThePast
+        [ RemovePlayerCardFromGame True repossessThePast
         | repossessThePast <- maybeToList mRepossessThePast
         ]
       pure s

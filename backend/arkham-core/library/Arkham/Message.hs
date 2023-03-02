@@ -506,7 +506,7 @@ data Message
   | ScenarioCountIncrementBy ScenarioCountKey Int
   | ScenarioCountDecrementBy ScenarioCountKey Int
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
-  | RemovePlayerCardFromGame Card
+  | RemovePlayerCardFromGame Bool Card
   | RemoveAllClues Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers
   | RemoveAllDoom Target

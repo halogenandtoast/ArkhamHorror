@@ -253,7 +253,7 @@ instance RunMessage TheCityOfArchives where
             ]
           resignedWithTheCustodian <- orM
             [ resignedWith Assets.theCustodian
-            , selectAny (assetIs Assets.theCustodian)
+            , selectAny (AssetControlledBy Anyone <> assetIs Assets.theCustodian)
             ]
 
           let

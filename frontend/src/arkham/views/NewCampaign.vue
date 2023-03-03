@@ -471,7 +471,7 @@ header {
 .campaigns {
   display: grid;
 
-  grid-template-columns: repeat(auto-fill, calc(1 / 3 * 100%));
+  grid-template-columns: repeat(auto-fill, calc(1 / 4 * 100%));
 
   img {
     width: 100%;

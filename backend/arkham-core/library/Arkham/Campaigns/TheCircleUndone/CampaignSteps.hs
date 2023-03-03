@@ -7,7 +7,8 @@ import Arkham.CampaignStep
 
 nextStep :: CampaignAttrs -> Maybe CampaignStep
 nextStep a = case campaignStep a of
-  Just PrologueStep -> Just TheWitchingHour
+  Just PrologueStep -> Just DisappearanceAtTheTwilightEstate
+  Just DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
   Just TheWitchingHour -> Just (UpgradeDeckStep AtDeathsDoorstep)
   Just AtDeathsDoorstep -> Just (UpgradeDeckStep TheSecretName)
   Just (InterludeStep 2 _) -> Just TheSecretName
@@ -22,6 +23,10 @@ nextStep a = case campaignStep a of
   Just EpilogueStep -> Nothing
   Just (UpgradeDeckStep nextStep') -> Just nextStep'
   _ -> Nothing
+
+pattern DisappearanceAtTheTwilightEstate :: CampaignStep
+pattern DisappearanceAtTheTwilightEstate <- ScenarioStep "05043" where
+  DisappearanceAtTheTwilightEstate = ScenarioStep "05043"
 
 pattern TheWitchingHour :: CampaignStep
 pattern TheWitchingHour <- ScenarioStep "05050" where

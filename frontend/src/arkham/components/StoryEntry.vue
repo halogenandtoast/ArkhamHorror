@@ -1,19 +1,26 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
+import Token from '@/arkham/components/Token';
 
 export interface Props {
+  game: Game
   question: Read
+  investigatorId: string
 }
 
+const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 
-defineProps<Props>()
+const focusedTokens = computed(() => props.game.focusedTokens)
 </script>
 <template>
   <div class="intro-text">
     <div class="entry">
       <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
+      <Token v-for="(focusedToken, index) in focusedTokens" :key="index" :token="focusedToken" :investigatorId="investigatorId" :game="game" @choose="() => {}" />
       <p
         v-for="(paragraph, index) in question.flavorText.body"
         :key="index"

@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
 import Arkham.CampaignLogKey
-import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Import
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -563,6 +563,7 @@ instance RunMessage TheForgottenAge where
         then do
           results <- for iids $ \iid -> do
             tokens <- sampleN (if backfired then 1 else 2) chaosBag
+            asTokens <- traverse (\face -> Token <$> getRandom <*> pure face) tokens
             let
               outOfBody = any
                 (\t ->
@@ -573,20 +574,34 @@ instance RunMessage TheForgottenAge where
                 tokens
               stuckAsYithian =
                 any (`elem` [Cultist, Tablet, ElderThing, AutoFail]) tokens
-            pure (iid, outOfBody, stuckAsYithian)
+            pure (iid, outOfBody, stuckAsYithian, asTokens)
 
           let
             yithians = setFromList $ mapMaybe
-              (\(iid, _, stuckAsYithian) ->
+              (\(iid, _, stuckAsYithian, _) ->
                 if stuckAsYithian then Just iid else Nothing
               )
               results
 
-          pushAll
-            [ AddCampaignCardToDeck iid Treacheries.outOfBodyExperience
-            | (iid, outOfBody, _) <- results
-            , outOfBody
-            ]
+          pushAll $ concatMap
+            (\(iid, outOfBody, stuckAsYithian, tokens) ->
+              let
+                qLabel = if stuckAsYithian
+                  then
+                    "You must use the Body of a Yithian investigator card as your investigator card for the remainder of the campaign. You also gain the Out of Body Experience weakness."
+                  else if outOfBody
+                    then "You gain the Out of Body Experience weakness"
+                    else "You suffer no ill-effects"
+              in
+                [ FocusTokens tokens
+                  , Ask iid $ Read qLabel [Label "Continue" []]
+                  , UnfocusTokens
+                  ]
+                  <> [ AddCampaignCardToDeck iid Treacheries.outOfBodyExperience
+                     | outOfBody
+                     ]
+            )
+            results
           pure
             . TheForgottenAge
             $ attrs
@@ -839,4 +854,7 @@ instance RunMessage TheForgottenAge where
       pure . TheForgottenAge $ attrs `with` Metadata
         supplyMap
         (yithians metadata)
+    PreScenarioSetup -> do
+      pushAll $ map BecomeYithian $ toList $ yithians metadata
+      pure c
     _ -> TheForgottenAge . (`with` metadata) <$> runMessage msg attrs

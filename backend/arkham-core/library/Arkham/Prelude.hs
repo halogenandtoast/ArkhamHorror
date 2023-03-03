@@ -56,6 +56,7 @@ import Safe as X ( fromJustNote )
 import System.Random.Shuffle as X
 
 import Data.Foldable ( foldlM )
+import Data.List.NonEmpty qualified as NE
 
 suffixedNamer :: FieldNamer
 suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
@@ -132,7 +133,9 @@ notNull :: MonoFoldable mono => mono -> Bool
 notNull = not . null
 
 sample :: MonadRandom m => NonEmpty a -> m a
-sample = uniform
+sample xs = do
+  idx <- getRandomR (0, NE.length xs - 1)
+  pure $ xs NE.!! idx
 
 sampleWithRest :: (Eq a, MonadRandom m) => NonEmpty a -> m (a, [a])
 sampleWithRest xs = do

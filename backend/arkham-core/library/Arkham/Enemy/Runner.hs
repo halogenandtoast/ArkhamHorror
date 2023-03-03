@@ -516,6 +516,7 @@ instance RunMessage EnemyAttrs where
       let updatePlacement = if DoNotDisengageEvaded `elem` modifiers then id else placementL .~ AtLocation lid
           updateExhausted = if DoNotExhaustEvaded `elem` modifiers then id else exhaustedL .~ True
       pure $ a & updatePlacement & updateExhausted
+    Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- modifiedEnemyEvade a
       case mEnemyEvade' of

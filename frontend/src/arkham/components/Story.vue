@@ -27,6 +27,8 @@ const choose = (idx: number) => emit('choose', idx)
 <template>
   <template v-if="question && question.tag === QuestionType.READ">
     <StoryEntry
+      :game="game"
+      :investigatorId="investigatorId"
       :question="question"
       @choose="choose"
     />

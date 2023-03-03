@@ -104,6 +104,16 @@ const title = computed(() => {
   return null
 })
 
+const replaceIcons = function(body) {
+  return body.
+    replace('{action}', '<span class="action-icon"></span>').
+    replace('{fast}', '<span class="fast-icon"></span>').
+    replace('{willpower}', '<span class="willpower-icon"></span>').
+    replace('{intellect}', '<span class="intellect-icon"></span>').
+    replace('{combat}', '<span class="combat-icon"></span>').
+    replace('{agility}', '<span class="agility-icon"></span>')
+}
+
 </script>
 
 <template>
@@ -182,7 +192,7 @@ const title = computed(() => {
             <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
               Choose <i class="iconElderThing"></i>
             </button>
-            <button v-else @click="choose(index)">{{choice.label}}</button>
+            <button v-else @click="choose(index)" v-html="replaceIcons(choice.label)"></button>
           </div>
 
           <a

@@ -39,7 +39,7 @@ instance HasTokenValue DisappearanceAtTheTwilightEstate where
       otherFace -> getTokenValue iid otherFace attrs
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
-  runMessage msg (DisappearanceAtTheTwilightEstate attrs) = case msg of
+  runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = case msg of
     Setup -> do
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeck
@@ -52,8 +52,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         , EncounterSet.ChillingCold
         ]
 
-      pushAll [story investigatorIds prologue
-              , SetEncounterDeck encounterDeck
+      pushAll [ SetEncounterDeck encounterDeck
               , SetAgendaDeck
               , SetActDeck
               ]

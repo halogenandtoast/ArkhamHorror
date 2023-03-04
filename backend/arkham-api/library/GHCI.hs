@@ -45,7 +45,6 @@ runGameMessage gameUUID msg = do
       arkhamGameName
       ge
       arkhamGameStep
-      arkhamGameLog
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now

@@ -53,7 +53,7 @@ function elementDrag(el) {
 
 .draggable {
   position: absolute;
-  width: 80%;
+  /*width: 80%;*/
   top: 50%;
   left: 50%;
   background: hsl(150.9 13.6% 52.4% / 80%);

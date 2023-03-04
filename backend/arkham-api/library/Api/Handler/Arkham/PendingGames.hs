@@ -49,34 +49,29 @@ putApiV1ArkhamPendingGameR gameId = do
 
   updatedGame <- readIORef gameRef
   updatedQueue <- readIORef (queueToRef queueRef)
-  let updatedMessages = []
 
   writeChannel <- getChannel gameId
   atomically $ writeTChan writeChannel $ encode $ GameUpdate $ PublicGame
     gameId
     arkhamGameName
-    updatedMessages
+    []
     updatedGame
 
   now <- liftIO getCurrentTime
 
-  runDB $ do
-    replace gameId $ ArkhamGame
+  let
+    game' = ArkhamGame
       arkhamGameName
       updatedGame
       (arkhamGameStep + 1)
-      updatedMessages
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now
+
+
+  runDB $ do
+    replace gameId game'
     insert_
       $ ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1)
 
-  pure $ toPublicGame $ Entity gameId $ ArkhamGame
-    arkhamGameName
-    updatedGame
-    (arkhamGameStep + 1)
-    updatedMessages
-    arkhamGameMultiplayerVariant
-    arkhamGameCreatedAt
-    now
+  pure $ toPublicGame (Entity gameId game') mempty

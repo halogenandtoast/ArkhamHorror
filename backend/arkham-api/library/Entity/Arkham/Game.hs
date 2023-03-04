@@ -26,7 +26,6 @@ ArkhamGame sql=arkham_games
   name Text
   currentData Game
   step Int
-  log [Text]
   multiplayerVariant MultiplayerVariant
   createdAt UTCTime
   updatedAt UTCTime

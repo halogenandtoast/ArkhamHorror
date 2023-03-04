@@ -35,15 +35,14 @@ getApiV1ArkhamGameReplayR gameId step = do
 
   pure $ GetReplayJson
     (length choices)
-    (toPublicGame $ Entity
+    (toPublicGame (Entity
       gameId
       (ArkhamGame
         (arkhamGameName ge)
         gameJson'
         (arkhamGameStep ge)
-        []
         (arkhamGameMultiplayerVariant ge)
         (arkhamGameCreatedAt ge)
         (arkhamGameUpdatedAt ge)
       )
-    )
+    ) mempty)

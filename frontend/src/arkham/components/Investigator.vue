@@ -124,7 +124,7 @@ const image = computed(() => {
     return `${baseUrl}/img/arkham/cards/04244.jpg`;
   }
 
-  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
+  return `${baseUrl}/img/arkham/cards/${props.player.cardCode.replace('c', '')}.jpg`;
 })
 
 const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`)

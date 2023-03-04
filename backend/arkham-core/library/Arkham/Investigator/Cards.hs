@@ -88,7 +88,6 @@ allInvestigatorCards = mapFromList $ concatMap
   , dianaStanley
   , ritaYoung
   , marieLambeau
-  , gavriellaMizrah
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -99,7 +98,7 @@ allInvestigatorCards = mapFromList $ concatMap
 allEncounterInvestigatorCards :: HashMap CardCode CardDef
 allEncounterInvestigatorCards = mapFromList $ concatMap
   toCardCodePairs
-  [ bodyOfAYithian ]
+  [ bodyOfAYithian, gavriellaMizrah ]
 
 withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode def = def { cdAlternateCardCodes = [ccode] }

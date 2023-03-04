@@ -56,7 +56,7 @@ import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator ( becomeYithian, returnToBody )
+import Arkham.Investigator ( becomePrologueInvestigator, becomeYithian, returnToBody )
 import Arkham.Investigator.Types
   ( Field (..), Investigator, InvestigatorAttrs (..) )
 import Arkham.Investigator.Types qualified as Investigator
@@ -418,7 +418,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
         pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator
-  deriving newtype Targetable
+  deriving newtype (Show, Targetable)
 
 instance ToJSON WithDeckSize where
   toJSON (WithDeckSize i) = case toJSON i of
@@ -539,7 +539,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "question" .= toJSON gameQuestion
     ]
 
-getInvestigator :: HasGame m => InvestigatorId -> m Investigator
+getInvestigator :: (HasCallStack, HasGame m) => InvestigatorId -> m Investigator
 getInvestigator iid =
   fromJustNote missingInvestigator
     . preview (entitiesL . investigatorsL . ix iid)
@@ -4452,6 +4452,10 @@ runGameMessage msg g = case msg of
     original <- getInvestigator iid
     let yithian = becomeYithian original
     pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
+  BecomePrologueInvestigator iid pid -> do
+    original <- getInvestigator iid
+    let prologueInvestigator = becomePrologueInvestigator original pid
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ prologueInvestigator)
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy

@@ -38,6 +38,7 @@ export interface Investigator {
   modifiers?: Modifier[];
   name: Name;
   id: string;
+  cardCode: string;
   class: ClassSymbol;
   health: number;
   sanity: number;
@@ -77,6 +78,7 @@ export interface Investigator {
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
   name: nameDecoder,
   id: JsonDecoder.string,
+  cardCode: JsonDecoder.string,
   class: classSymbolDecoder,
   health: JsonDecoder.number,
   sanity: JsonDecoder.number,

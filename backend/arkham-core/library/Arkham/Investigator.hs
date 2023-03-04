@@ -11,6 +11,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
+import Arkham.Investigator.Runner qualified as Attrs
 import Arkham.Message
 import Data.Aeson (Result(..))
 import Data.Typeable
@@ -49,7 +50,10 @@ instance FromJSON Investigator where
 withInvestigatorCardCode
   :: CardCode -> (SomeInvestigator -> r) -> r
 withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
-  Nothing -> if cCode == "04244" then f (SomeInvestigator (Proxy @BodyOfAYithian)) else error ("invalid investigators: " <> show cCode)
+  Nothing -> case cCode of
+    "04244" -> f (SomeInvestigator (Proxy @BodyOfAYithian))
+    "05046" -> f (SomeInvestigator (Proxy @GavriellaMizrah))
+    _ -> error ("invalid investigators: " <> show cCode)
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator (Proxy @a))
 
 data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)
@@ -84,7 +88,6 @@ allInvestigators = mapFromList $ map
   , SomeInvestigatorCard dianaStanley
   , SomeInvestigatorCard ritaYoung
   , SomeInvestigatorCard marieLambeau
-  , SomeInvestigatorCard gavriellaMizrah
   , SomeInvestigatorCard normanWithers
   , SomeInvestigatorCard nathanielCho
   , SomeInvestigatorCard harveyWalters
@@ -102,12 +105,22 @@ becomeYithian (Investigator a) =
     , investigatorCombat = 2
     , investigatorAgility = 2
     , investigatorCardCode = "04244"
+    , investigatorClass = Neutral
+    , investigatorTraits = setFromList [Monster, Yithian]
     , investigatorIsYithian = True
     }
 
 returnToBody :: Investigator -> Investigator
 returnToBody (Investigator a) = case cast a of
-  Just (BodyOfAYithian (_ `With` meta)) -> case fromJSON (original meta) of
+  Just (BodyOfAYithian (_ `With` meta)) -> case fromJSON (originalBody meta) of
     Success x -> x
     _ -> error "Investigator mind is too corrupted to return to their body"
   Nothing -> Investigator a
+
+becomePrologueInvestigator :: Investigator -> InvestigatorId -> Investigator
+becomePrologueInvestigator (Investigator a) = \case
+  "05046" -> setId $ Investigator $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) ()
+  _ -> error "Not a prologue investigator"
+ where
+   setId = overAttrs (\attrs -> attrs { Attrs.investigatorId = toId a })
+

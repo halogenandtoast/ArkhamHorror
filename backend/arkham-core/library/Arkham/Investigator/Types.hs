@@ -34,6 +34,10 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type InvestigatorCard a = CardBuilder () a
 
+newtype PrologueMetadata = PrologueMetadata { original :: Value }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data instance Field Investigator :: Type -> Type where
   InvestigatorName :: Field Investigator Name
   InvestigatorRemainingActions :: Field Investigator Int
@@ -158,7 +162,7 @@ instance Entity InvestigatorAttrs where
   overAttrs f = f
 
 instance HasCardDef InvestigatorAttrs where
-  toCardDef e = case lookup (investigatorCardCode e) allInvestigatorCards of
+  toCardDef e = case lookup (investigatorCardCode e) (allInvestigatorCards <> allEncounterInvestigatorCards) of
     Just def -> def
     Nothing ->
       error $ "missing card def for enemy " <> show (investigatorCardCode e)

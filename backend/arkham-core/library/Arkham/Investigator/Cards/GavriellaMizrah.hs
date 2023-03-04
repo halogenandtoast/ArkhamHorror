@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
@@ -38,11 +37,7 @@ gavriellaMizrah meta = investigatorWith
     , combat = 4
     , agility = 1
     }
-  ((startsWithL
-   .~ [ Cards.fortyFiveAutomatic
-      , Cards.physicalTraining
-      ]
-   )
+  ((startsWithL .~ [Cards.fortyFiveAutomatic, Cards.physicalTraining])
   . (startsWithInHandL
     .~ [ Cards.firstAid
        , Cards.guardDog
@@ -66,8 +61,12 @@ instance HasModifiersFor GavriellaMizrah where
       , StartingResources (-4)
       ]
   getModifiersFor (AssetTarget aid) (GavriellaMizrah (a `With` _)) = do
-    isFortyFiveAutomatic <- selectAny $ AssetWithId aid <> assetIs Cards.fortyFiveAutomatic
-    pure $ toModifiers a [AdditionalStartingUses (-2) | isFortyFiveAutomatic]
+    isFortyFiveAutomatic <-
+      selectAny $ AssetWithId aid <> assetIs Cards.fortyFiveAutomatic
+    pure $ toModifiersWith
+      a
+      setActiveDuringSetup
+      [ AdditionalStartingUses (-2) | isFortyFiveAutomatic ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GavriellaMizrah where
@@ -78,8 +77,9 @@ instance HasAbilities GavriellaMizrah where
     ]
 
 instance HasTokenValue GavriellaMizrah where
-  getTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _)) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 1
+  getTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _))
+    | iid == toId attrs = do
+      pure $ TokenValue ElderSign $ PositiveModifier 1
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance RunMessage GavriellaMizrah where

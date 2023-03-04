@@ -291,7 +291,7 @@ getCanAfford a@InvestigatorAttrs {..} as = do
   pure $ actionCost <= investigatorRemainingActions
 
 drawOpeningHand
-  :: InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
+  :: HasCallStack => InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
  where
   go 0 (d, h, cs) = (d, h, cs)

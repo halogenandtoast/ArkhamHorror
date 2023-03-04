@@ -10,7 +10,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 
-newtype YithianMetadata = YithianMetadata { original :: Value }
+newtype YithianMetadata = YithianMetadata { originalBody :: Value }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

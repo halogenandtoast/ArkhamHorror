@@ -156,16 +156,13 @@ instance HasAbilities Entities where
     <> concatMap getAbilities (toList entitiesEffects)
     <> concatMap getAbilities (toList entitiesSkills)
 
-data SomeEntity
-  = forall e
-  . (Show e, Targetable e, Entity e, HasModifiersFor e) =>
-    SomeEntity e
+data SomeEntity where
+  SomeEntity :: (Show e, Targetable e, Entity e, HasModifiersFor e) => e -> SomeEntity
 
 instance Targetable SomeEntity where
   toTarget (SomeEntity e) = toTarget e
 
-instance Show SomeEntity where
-  show (SomeEntity e) = show e
+deriving stock instance Show SomeEntity
 
 instance HasModifiersFor SomeEntity where
   getModifiersFor target (SomeEntity e) = getModifiersFor target e

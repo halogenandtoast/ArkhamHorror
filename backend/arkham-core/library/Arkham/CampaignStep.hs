@@ -6,6 +6,7 @@ import Arkham.Id
 
 data CampaignStep
   = PrologueStep
+  | PrologueStepPart Int
   | ScenarioStep ScenarioId
   | ScenarioStepPart ScenarioId Int
   | InterludeStep Int (Maybe InterludeKey)

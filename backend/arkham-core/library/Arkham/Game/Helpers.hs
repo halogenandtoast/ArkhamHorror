@@ -132,7 +132,7 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
          )
   allowsPlayFromDiscard _ _ _ = False
 
-getAsIfInHandCards :: HasGame m => InvestigatorId -> m [Card]
+getAsIfInHandCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
 getAsIfInHandCards iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   let

@@ -665,6 +665,8 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
+  | -- The Circle Undon
+    BecomePrologueInvestigator InvestigatorId InvestigatorId
   | If WindowType [Message]
   | -- Commit
     Do Message

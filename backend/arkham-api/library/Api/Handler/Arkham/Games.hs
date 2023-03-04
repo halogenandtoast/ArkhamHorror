@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 
 module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
@@ -183,7 +184,7 @@ postApiV1ArkhamGamesImportR = do
       key <- runDB $ do
         gameId <- insert
           $ ArkhamGame agedName agedCurrentData agedStep Solo now now
-        insertMany_ agedLog
+        insertMany_ $ map (\e -> e { arkhamLogEntryArkhamGameId = gameId }) agedLog
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
         traverse_
           (\s -> insert_
@@ -396,14 +397,17 @@ putApiV1ArkhamGameRawR gameId = do
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do
   delete $ do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+  delete $ do
     steps <- from $ table @ArkhamStep
-    where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
+    where_ $ steps.arkhamGameId ==. val gameId
   delete $ do
     players <- from $ table @ArkhamPlayer
-    where_ $ players ^. ArkhamPlayerArkhamGameId ==. val gameId
+    where_ $ players.arkhamGameId ==. val gameId
   delete $ do
     games <- from $ table @ArkhamGame
-    where_ $ games ^. persistIdField ==. val gameId
+    where_ $ games.id ==. val gameId
 
 answerInvestigator :: Answer -> Maybe InvestigatorId
 answerInvestigator = \case

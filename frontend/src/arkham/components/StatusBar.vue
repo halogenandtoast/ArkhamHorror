@@ -114,6 +114,10 @@ const replaceIcons = function(body) {
     replace('{agility}', '<span class="agility-icon"></span>')
 }
 
+const label = function(body) {
+  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
+}
+
 </script>
 
 <template>
@@ -176,9 +180,7 @@ const replaceIcons = function(body) {
               <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
             </a>
           </template>
-          <div v-if="choice.tag === MessageType.DONE">
-            <button @click="choose(index)">{{choice.label}}</button>
-          </div>
+          <button v-if="choice.tag === MessageType.DONE" @click="choose(index)">{{label(choice.label)}}</button>
           <div v-if="choice.tag === MessageType.LABEL">
             <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
               Choose <i class="iconSkull"></i>
@@ -192,7 +194,7 @@ const replaceIcons = function(body) {
             <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
               Choose <i class="iconElderThing"></i>
             </button>
-            <button v-else @click="choose(index)" v-html="replaceIcons(choice.label)"></button>
+            <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
           </div>
 
           <a
@@ -311,6 +313,7 @@ section {
 }
 
 .intro-text {
+  width: 50vw;
   text-align: justify;
   background-color: #DFDAD8;
   padding: 10px;
@@ -372,9 +375,8 @@ button {
   transition: all 0.3s ease-in;
   border: 0;
   padding: 10px;
-  text-transform: uppercase;
   background-color: #532e61;
-  font-weight: bold;
+  text-align: justify;
   border-radius: 0.6em;
   color: #EEE;
   font: Arial, sans-serif;
@@ -428,5 +430,21 @@ button {
 
 .modal {
   transition: opacity 0.3s linear;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  button {
+    font-size: 1.2em;
+    width: 100%;
+    white-space: nowrap;
+    &:before {
+      font-family: "ArkhamIcons";
+      content: "\E91A";
+      margin-right: 10px;
+    }
+  }
 }
 </style>

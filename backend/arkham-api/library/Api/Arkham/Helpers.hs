@@ -1,16 +1,17 @@
+{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ViewPatterns #-}
 module Api.Arkham.Helpers where
 
-import Import hiding ( appLogger )
+import Import hiding ( appLogger, (==.), (>=.) )
 
 import Arkham.Card
-import Arkham.Classes hiding ( Entity (..) )
+import Arkham.Classes hiding ( Entity (..), select )
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
-import Control.Lens
+import Control.Lens hiding (from)
 import Control.Monad.Random ( MonadRandom (..), StdGen, mkStdGen )
 import Data.Aeson.Key ( fromText )
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -21,12 +22,42 @@ import Json
 import Text.Parsec ( char, digit, many1, sepBy, parse, ParsecT )
 import Data.IntMap qualified as IntMap
 import Text.Read (read)
+import Entity.Arkham.LogEntry
+import Database.Esqueleto.Experimental
+import Data.Time.Clock
 
 type Parser = ParsecT Text () Identity
 
-toPublicGame :: Entity ArkhamGame -> PublicGame ArkhamGameId
-toPublicGame (Entity gId ArkhamGame {..}) =
-  PublicGame gId arkhamGameName arkhamGameLog arkhamGameCurrentData
+newtype GameLog = GameLog { gameLogToLogEntries :: [Text] }
+  deriving newtype (Monoid, Semigroup)
+
+newLogEntry :: ArkhamGameId -> Int -> UTCTime -> Text -> ArkhamLogEntry
+newLogEntry gameId step now body = ArkhamLogEntry
+  { arkhamLogEntryBody = body
+  , arkhamLogEntryArkhamGameId = gameId
+  , arkhamLogEntryStep = step
+  , arkhamLogEntryCreatedAt = now
+  }
+
+getGameLog :: MonadIO m => ArkhamGameId -> Maybe Int -> SqlPersistT m GameLog
+getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
+  entries <- from $ table @ArkhamLogEntry
+  where_ $ entries.arkhamGameId ==. val gameId
+  for_ mStep $ \step ->
+    where_ $ entries.step >=. val step
+  orderBy [asc entries.createdAt]
+  pure $ entries.body
+
+getGameLogEntries :: MonadIO m => ArkhamGameId -> SqlPersistT m [ArkhamLogEntry]
+getGameLogEntries gameId = fmap (fmap entityVal) . select $ do
+  entries <- from $ table @ArkhamLogEntry
+  where_ $ entries.arkhamGameId ==. val gameId
+  orderBy [asc entries.createdAt]
+  pure entries
+
+toPublicGame :: Entity ArkhamGame -> GameLog -> PublicGame ArkhamGameId
+toPublicGame (Entity gId ArkhamGame {..}) gameLog =
+  PublicGame gId arkhamGameName (gameLogToLogEntries gameLog) arkhamGameCurrentData
 
 data ApiResponse = GameUpdate (PublicGame ArkhamGameId) | GameMessage Text
   deriving stock Generic

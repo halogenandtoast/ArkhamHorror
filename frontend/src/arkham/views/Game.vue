@@ -56,6 +56,7 @@ watch(data, (newData) => {
     Arkham.gameDecoder.decodeToPromise(msg.contents)
       .then((updatedGame) => {
         game.value = updatedGame;
+        gameLog.value = Object.freeze([...updatedGame.log])
         if (solo.value === true) {
           if (Object.keys(game.value.question).length == 1) {
             investigatorId.value = Object.keys(game.value.question)[0]

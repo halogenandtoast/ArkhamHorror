@@ -110,18 +110,16 @@ putApiV1ArkhamGameDecksR gameId = do
 
   let diffDown = diff ge arkhamGameCurrentData
   updatedQueue <- readIORef (queueToRef queueRef)
-  let updatedMessages = []
   writeChannel <- getChannel gameId
   atomically $ writeTChan
     writeChannel
-    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName mempty ge)
   now <- liftIO getCurrentTime
   runDB $ do
     replace gameId $ ArkhamGame
       arkhamGameName
       ge
       (arkhamGameStep + 1)
-      updatedMessages
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now

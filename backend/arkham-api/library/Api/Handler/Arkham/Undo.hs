@@ -1,8 +1,9 @@
+{-# LANGUAGE OverloadedRecordDot #-}
 module Api.Handler.Arkham.Undo
   ( putApiV1ArkhamGameUndoR
   ) where
 
-import Import hiding ( delete, on, (==.) )
+import Import hiding ( delete, on, (==.), (>=.), (<.) )
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
@@ -13,8 +14,9 @@ import Control.Lens ( view )
 import Data.Aeson.Patch
 import Data.Text qualified as T
 import Data.Time.Clock
-import Database.Esqueleto.Experimental ( deleteKey )
+import Database.Esqueleto.Experimental
 import Entity.Arkham.Step
+import Entity.Arkham.LogEntry
 import Json
 import Safe ( fromJustNote )
 
@@ -38,20 +40,30 @@ putApiV1ArkhamGameUndoR gameId = do
         case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of
           Error e -> error $ T.pack e
           Success ge -> do
+
+            gameLog <- fmap (fmap unValue) . runDB $ select $ do
+              entries <- from $ table @ArkhamLogEntry
+              where_ $ entries.arkhamGameId ==. val gameId
+              where_ $ entries.step <. val (arkhamGameStep - 1)
+              orderBy [desc entries.createdAt]
+              pure $ entries.body
             atomically
               $ writeTChan writeChannel
               $ encode
               $ GameUpdate
-              $ PublicGame gameId arkhamGameName arkhamGameLog ge
+              $ PublicGame gameId arkhamGameName gameLog ge
             runDB $ do
               replace gameId $ ArkhamGame
                 arkhamGameName
                 ge
                 (arkhamGameStep - 1)
-                arkhamGameLog
                 arkhamGameMultiplayerVariant
                 arkhamGameCreatedAt
                 now
+              delete $ do
+                entries <- from $ table @ArkhamLogEntry
+                where_ $ entries.arkhamGameId ==. val gameId
+                where_ $ entries.step >=. val (arkhamGameStep - 1)
               deleteKey stepId
 
               case arkhamGameMultiplayerVariant of

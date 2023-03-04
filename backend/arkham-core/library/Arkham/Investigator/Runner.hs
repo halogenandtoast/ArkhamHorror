@@ -183,11 +183,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , Deck (before <> rest)
               )
             _ -> do
-              card <- genPlayerCard cardDef
+              card <- genCard cardDef
+              let
+                setOwner = \case
+                  PlayerCard pc -> PlayerCard $ pc { pcOwner = Just investigatorId }
+                  other -> other
               pure
                 ( PutCardIntoPlay
                     investigatorId
-                    (PlayerCard $ card { pcOwner = Just investigatorId })
+                    (setOwner card)
                     Nothing
                     (Window.defaultWindows investigatorId)
                   : msgs

@@ -74,7 +74,7 @@ const fullName = (name: Name): string => {
     <ul>
       <li v-for="[setKey, setValues] in recordedSets" :key="setKey">{{toCapitalizedWords(setKey)}}
         <ul>
-          <li v-for="setValue in setValues" :key="setValue">{{cardCodeToTitle(setValue.contents)}}</li>
+          <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{cardCodeToTitle(setValue.contents)}}</li>
         </ul>
       </li>
     </ul>
@@ -98,5 +98,9 @@ h1 {
   margin-top: 20px;
   background-color: rgba(255,255,255, 0.5);
   font-size: 1.8em;
+}
+
+.crossed-out {
+  text-decoration: line-through;
 }
 </style>

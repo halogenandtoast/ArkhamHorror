@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -829,6 +829,7 @@ library
       Arkham.Enemy.Cards.MobEnforcer
       Arkham.Enemy.Cards.Mobster
       Arkham.Enemy.Cards.Narogath
+      Arkham.Enemy.Cards.NetherMist
       Arkham.Enemy.Cards.OBannionsThug
       Arkham.Enemy.Cards.PadmaAmrita
       Arkham.Enemy.Cards.PeterWarren
@@ -856,6 +857,7 @@ library
       Arkham.Enemy.Cards.ServantOfManyMouths
       Arkham.Enemy.Cards.ServantOfTheLurker
       Arkham.Enemy.Cards.SethBishop
+      Arkham.Enemy.Cards.ShadowHound
       Arkham.Enemy.Cards.SilasBishop
       Arkham.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Enemy.Cards.SlimeCoveredDhole
@@ -873,6 +875,7 @@ library
       Arkham.Enemy.Cards.TheOrganistDrapedInMystery
       Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim
       Arkham.Enemy.Cards.TheRougarou
+      Arkham.Enemy.Cards.TheSpectralWatcher
       Arkham.Enemy.Cards.TheThingThatFollows
       Arkham.Enemy.Cards.TheWingedSerpent
       Arkham.Enemy.Cards.Thrall
@@ -885,6 +888,7 @@ library
       Arkham.Enemy.Cards.WizardOfTheOrder
       Arkham.Enemy.Cards.WizardOfYogSothoth
       Arkham.Enemy.Cards.WolfManDrew
+      Arkham.Enemy.Cards.Wraith
       Arkham.Enemy.Cards.WrithingAppendage
       Arkham.Enemy.Cards.Yig
       Arkham.Enemy.Cards.YithianObserver
@@ -1150,6 +1154,7 @@ library
       Arkham.Investigator.Cards.GavriellaMizrah
       Arkham.Investigator.Cards.HarveyWalters
       Arkham.Investigator.Cards.JennyBarnes
+      Arkham.Investigator.Cards.JeromeDavids
       Arkham.Investigator.Cards.JimCulver
       Arkham.Investigator.Cards.JoeDiamond
       Arkham.Investigator.Cards.LeoAnderson
@@ -1159,6 +1164,7 @@ library
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.NathanielCho
       Arkham.Investigator.Cards.NormanWithers
+      Arkham.Investigator.Cards.PennyWhite
       Arkham.Investigator.Cards.PrestonFairmont
       Arkham.Investigator.Cards.RexMurphy
       Arkham.Investigator.Cards.RitaYoung
@@ -1167,6 +1173,7 @@ library
       Arkham.Investigator.Cards.SkidsOToole
       Arkham.Investigator.Cards.StellaClark
       Arkham.Investigator.Cards.UrsulaDowns
+      Arkham.Investigator.Cards.ValentinoRivas
       Arkham.Investigator.Cards.WendyAdams
       Arkham.Investigator.Cards.WilliamYorick
       Arkham.Investigator.Cards.ZoeySamaras
@@ -1217,12 +1224,14 @@ library
       Arkham.Location.Cards.BackAlley
       Arkham.Location.Cards.Backstage
       Arkham.Location.Cards.Balcony
+      Arkham.Location.Cards.BalconySpectral
       Arkham.Location.Cards.Ballroom
       Arkham.Location.Cards.BasementHall
       Arkham.Location.Cards.BaseOfTheHill
       Arkham.Location.Cards.Bathroom
       Arkham.Location.Cards.Bedroom
       Arkham.Location.Cards.BetweenWorlds
+      Arkham.Location.Cards.BilliardsRoomSpectral
       Arkham.Location.Cards.BishopsBrook_202
       Arkham.Location.Cards.BishopsBrook_203
       Arkham.Location.Cards.BlackCave
@@ -1309,6 +1318,7 @@ library
       Arkham.Location.Cards.EngineCar_176
       Arkham.Location.Cards.EngineCar_177
       Arkham.Location.Cards.EntryHall
+      Arkham.Location.Cards.EntryHallSpectral
       Arkham.Location.Cards.Entryway
       Arkham.Location.Cards.ExhibitHallAthabaskanExhibit
       Arkham.Location.Cards.ExhibitHallEgyptianExhibit
@@ -1379,6 +1389,7 @@ library
       Arkham.Location.Cards.Lobby
       Arkham.Location.Cards.LostMemories
       Arkham.Location.Cards.MainPath
+      Arkham.Location.Cards.MasterBedroomSpectral
       Arkham.Location.Cards.MessHall
       Arkham.Location.Cards.MetropolitanCathedral
       Arkham.Location.Cards.MiskatonicQuad
@@ -1399,6 +1410,7 @@ library
       Arkham.Location.Cards.NorthTower_287
       Arkham.Location.Cards.NorthTower_288
       Arkham.Location.Cards.NotreDame
+      Arkham.Location.Cards.OfficeSpectral
       Arkham.Location.Cards.OperaGarnier212
       Arkham.Location.Cards.OperaGarnier213
       Arkham.Location.Cards.OrneLibrary
@@ -1493,6 +1505,7 @@ library
       Arkham.Location.Cards.TrainTracks
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
+      Arkham.Location.Cards.TrophyRoomSpectral
       Arkham.Location.Cards.TwistedUnderbrush
       Arkham.Location.Cards.UndergroundRuins
       Arkham.Location.Cards.UprootedWoods
@@ -1500,6 +1513,7 @@ library
       Arkham.Location.Cards.VastPassages
       Arkham.Location.Cards.VelmasDiner
       Arkham.Location.Cards.VenetianGarden
+      Arkham.Location.Cards.VictorianHallsSpectral
       Arkham.Location.Cards.VillageCommons
       Arkham.Location.Cards.VipArea
       Arkham.Location.Cards.WellOfSouls
@@ -1760,6 +1774,7 @@ library
       Arkham.Treachery.Cards.EphemeralExhibits
       Arkham.Treachery.Cards.EyesInTheWalls
       Arkham.Treachery.Cards.FalseLead
+      Arkham.Treachery.Cards.FateOfAllFools
       Arkham.Treachery.Cards.FinalMistake
       Arkham.Treachery.Cards.FinalRhapsody
       Arkham.Treachery.Cards.FineDining
@@ -1849,6 +1864,7 @@ library
       Arkham.Treachery.Cards.StrangeSigns
       Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond
+      Arkham.Treachery.Cards.TerrorInTheNight
       Arkham.Treachery.Cards.The13thVision
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
@@ -1882,6 +1898,7 @@ library
       Arkham.Treachery.Cards.VortexOfTime
       Arkham.Treachery.Cards.WallsClosingIn
       Arkham.Treachery.Cards.WatchersGaze
+      Arkham.Treachery.Cards.WhispersInTheDark
       Arkham.Treachery.Cards.WhispersInYourHeadAnxiety
       Arkham.Treachery.Cards.WhispersInYourHeadDismay
       Arkham.Treachery.Cards.WhispersInYourHeadDoubt

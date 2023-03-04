@@ -13,6 +13,9 @@ import Arkham.Matcher.Types
 
 -- ** Investigator Helpers **
 
+investigatorIs :: HasCardCode a => a -> InvestigatorMatcher
+investigatorIs = InvestigatorIs . toCardCode
+
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
 colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 

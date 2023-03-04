@@ -280,6 +280,11 @@ allTreacheries = mapFrom
   , SomeTreacheryCard terribleSecret
   -- weaknesses
   , SomeTreacheryCard the13thVision
+  -- Spectral Predators
+  , SomeTreacheryCard whispersInTheDark
+  -- Inexorable Fate
+  , SomeTreacheryCard terrorInTheNight
+  , SomeTreacheryCard fateOfAllFools
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

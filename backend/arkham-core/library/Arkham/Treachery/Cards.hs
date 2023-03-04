@@ -184,6 +184,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , ephemeralExhibits
   , eyesInTheWalls
   , falseLead
+  , fateOfAllFools
   , finalMistake
   , fineDining
   , frozenInFear
@@ -251,6 +252,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , stalkedInTheDark
   , straitjacket
   , strangeSigns
+  , terrorInTheNight
   , terrorFromBeyond
   , theCreaturesTracks
   , theCultsSearch
@@ -279,6 +281,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , vortexOfTime
   , wallsClosingIn
   , watchersGaze
+  , whispersInTheDark
   , whispersInYourHeadAnxiety
   , whispersInYourHeadDismay
   , whispersInYourHeadDoubt
@@ -1209,6 +1212,22 @@ terribleSecret = (weakness "05015" "Terrible Secret")
 the13thVision :: CardDef
 the13thVision = (basicWeakness "05041" "The 13th Vision")
   { cdCardTraits = singleton Omen
+  }
+
+whispersInTheDark :: CardDef
+whispersInTheDark = (treachery "05102" "Whispers in the Dark" SpectralPredators 2)
+  { cdCardTraits = setFromList [Omen, Spectral]
+  }
+
+terrorInTheNight :: CardDef
+terrorInTheNight = (treachery "05107" "Terror in the Night" InexorableFate 3)
+  { cdCardTraits = setFromList [Terror, Spectral]
+  }
+
+fateOfAllFools :: CardDef
+fateOfAllFools = (treachery "05108" "Fate of All Fools" InexorableFate 3)
+  { cdCardTraits = setFromList [Omen, Spectral]
+  , cdKeywords = singleton Keyword.Peril
   }
 
 theHarbinger :: CardDef

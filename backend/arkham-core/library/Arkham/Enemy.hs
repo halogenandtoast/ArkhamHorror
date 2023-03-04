@@ -225,6 +225,13 @@ allEnemies = mapFrom
   -- The Circle Undone
   -- signature
   , SomeEnemyCard hoods
+  -- The Watcher
+  , SomeEnemyCard theSpectralWatcher
+  -- Spectral Predators
+  , SomeEnemyCard netherMist
+  , SomeEnemyCard shadowHound
+  -- Trapped Spirits
+  , SomeEnemyCard wraith
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

@@ -127,7 +127,13 @@ const image = computed(() => {
   return `${baseUrl}/img/arkham/cards/${props.player.cardCode.replace('c', '')}.jpg`;
 })
 
-const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`)
+const portraitImage = computed(() => {
+  if (props.player.isYithian) {
+    return `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`
+  }
+
+  return `${baseUrl}/img/arkham/portraits/${props.player.cardCode.replace('c', '')}.jpg`
+})
 
 
 const cardsUnderneath = computed(() => props.player.cardsUnderneath)

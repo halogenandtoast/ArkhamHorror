@@ -152,6 +152,8 @@ data CampaignLogKey
   | TheInvestigatorsTurnedBackTime
   | TheInvestigatorsSealedTheRelicOfAgesForever
   -- ^ The Forgotten Age
+  | MissingPersons
+  -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

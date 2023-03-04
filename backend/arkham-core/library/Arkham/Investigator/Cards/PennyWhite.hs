@@ -1,6 +1,6 @@
-module Arkham.Investigator.Cards.GavriellaMizrah
-  ( gavriellaMizrah
-  , GavriellaMizrah(..)
+module Arkham.Investigator.Cards.PennyWhite
+  ( pennyWhite
+  , PennyWhite(..)
   ) where
 
 import Arkham.Prelude
@@ -18,75 +18,73 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Cards qualified as Cards
 
-newtype GavriellaMizrah = GavriellaMizrah (InvestigatorAttrs `With` PrologueMetadata)
+newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
   deriving newtype Entity
 
-gavriellaMizrah :: PrologueMetadata -> InvestigatorCard GavriellaMizrah
-gavriellaMizrah meta = investigatorWith
-  (GavriellaMizrah . (`with` meta))
-  Cards.gavriellaMizrah
+pennyWhite :: PrologueMetadata -> InvestigatorCard PennyWhite
+pennyWhite meta = investigatorWith
+  (PennyWhite . (`with` meta))
+  Cards.pennyWhite
   Stats
-    { health = 8
-    , sanity = 4
-    , willpower = 3
-    , intellect = 2
-    , combat = 4
-    , agility = 1
+    { health = 7
+    , sanity = 5
+    , willpower = 4
+    , intellect = 1
+    , combat = 3
+    , agility = 2
     }
-  ((startsWithL
-   .~ [Cards.fortyFiveAutomatic, Cards.physicalTraining, Cards.fateOfAllFools]
-   )
+  ((startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
   . (startsWithInHandL
-    .~ [ Cards.firstAid
-       , Cards.guardDog
-       , Cards.evidence
-       , Cards.dodge
-       , Cards.extraAmmunition1
-       , Cards.delayTheInevitable
-       , Cards.delayTheInevitable
+    .~ [ Cards.strayCat
+       , Cards.lucky
+       , Cards.knife
+       , Cards.flashlight
+       , Cards.actOfDesperation
+       , Cards.actOfDesperation
+       , Cards.ableBodied
+       , Cards.ableBodied
        ]
     )
   )
 
-instance HasModifiersFor GavriellaMizrah where
-  getModifiersFor target (GavriellaMizrah (a `With` _)) | isTarget a target =
+instance HasModifiersFor PennyWhite where
+  getModifiersFor target (PennyWhite (a `With` _)) | isTarget a target =
     pure $ toModifiersWith
       a
       setActiveDuringSetup
       [ CannotTakeAction (IsAction Action.Draw)
       , CannotDrawCards
       , CannotManipulateDeck
-      , StartingResources (-4)
+      , StartingResources (-3)
       ]
-  getModifiersFor (AssetTarget aid) (GavriellaMizrah (a `With` _)) = do
-    isFortyFiveAutomatic <-
-      selectAny $ AssetWithId aid <> assetIs Cards.fortyFiveAutomatic
+  getModifiersFor (AssetTarget aid) (PennyWhite (a `With` _)) = do
+    isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
     pure $ toModifiersWith
       a
       setActiveDuringSetup
-      [ AdditionalStartingUses (-2) | isFortyFiveAutomatic ]
+      [ AdditionalStartingUses (-1) | isFlashlight ]
   getModifiersFor _ _ = pure []
 
-instance HasAbilities GavriellaMizrah where
-  getAbilities (GavriellaMizrah (a `With` _)) =
+instance HasAbilities PennyWhite where
+  getAbilities (PennyWhite (a `With` _)) =
     [ restrictedAbility a 1 (Self <> ClueOnLocation) $ ReactionAbility
         (EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy)
         Free
     ]
 
-instance HasTokenValue GavriellaMizrah where
-  getTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _))
+instance HasTokenValue PennyWhite where
+  getTokenValue iid ElderSign (PennyWhite (attrs `With` _))
     | iid == toId attrs = do
       pure $ TokenValue ElderSign $ PositiveModifier 1
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance RunMessage GavriellaMizrah where
-  runMessage msg i@(GavriellaMizrah (attrs `With` meta)) = case msg of
+instance RunMessage PennyWhite where
+  runMessage msg i@(PennyWhite (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
       pure i
@@ -113,4 +111,4 @@ instance RunMessage GavriellaMizrah where
       pure i
     DrawCards cardDraw | cardDrawInvestigator cardDraw == toId attrs -> do
       pure i
-    _ -> GavriellaMizrah . (`with` meta) <$> runMessage msg attrs
+    _ -> PennyWhite . (`with` meta) <$> runMessage msg attrs

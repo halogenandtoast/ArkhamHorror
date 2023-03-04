@@ -35,6 +35,7 @@ type Who = InvestigatorMatcher
 
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
+  | InvestigatorIs CardCode
   | You
   | UnengagedInvestigator
   | NoOne

@@ -6,6 +6,8 @@ module Arkham.Campaign.Campaigns.TheCircleUndone
 import Arkham.Prelude
 
 import Arkham.Campaign.Runner
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Import
 import Arkham.CampaignStep
 import Arkham.Classes
@@ -26,12 +28,17 @@ newtype TheCircleUndone = TheCircleUndone (CampaignAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theCircleUndone :: Difficulty -> TheCircleUndone
-theCircleUndone difficulty = campaign
+theCircleUndone difficulty = campaignWith
   (TheCircleUndone . (`with` Metadata mempty))
   (CampaignId "05")
   "The Circle Undone"
   difficulty
   (chaosBagContents difficulty)
+  (logL .~ mkCampaignLog
+    { campaignLogRecordedSets = singletonMap MissingPersons
+      $ map (Recorded . unInvestigatorId) allPrologueInvestigators
+    }
+  )
 
 allPrologueInvestigators :: [InvestigatorId]
 allPrologueInvestigators = ["05046", "05047", "05048", "05049"]
@@ -40,29 +47,55 @@ instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone (attrs `With` metadata)) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- allInvestigatorIds
-      pushAll $ story investigatorIds prologue
+      pushAll
+        $ story investigatorIds prologue
         : [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
-           | iid <- investigatorIds
+          | iid <- investigatorIds
+          ]
+        <> [ CampaignStep (Just $ PrologueStepPart 2)
+           , story investigatorIds intro
+           , NextCampaignStep Nothing
            ]
-        <> [CampaignStep (Just $ PrologueStepPart 2), story investigatorIds intro, NextCampaignStep Nothing]
       pure c
     CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep)) -> do
-      let availablePrologueInvestigators = filter (`notElem` toList (prologueInvestigators metadata)) allPrologueInvestigators
-      push $ questionLabel "Choose one of the following neutral investigators to control for the duration of this prologue" iid $ ChooseOne [CardLabel (unInvestigatorId pId) [BecomePrologueInvestigator iid pId] | pId <- availablePrologueInvestigators]
+      let
+        availablePrologueInvestigators = filter
+          (`notElem` toList (prologueInvestigators metadata))
+          allPrologueInvestigators
+      push
+        $ questionLabel
+            "Choose one of the following neutral investigators to control for the duration of this prologue"
+            iid
+        $ ChooseOne
+            [ CardLabel
+                (unInvestigatorId pId)
+                [BecomePrologueInvestigator iid pId]
+            | pId <- availablePrologueInvestigators
+            ]
       pure c
     BecomePrologueInvestigator iid pId -> do
-      pure . TheCircleUndone $ attrs `With` metadata { prologueInvestigators = insertMap iid pId (prologueInvestigators metadata) }
+      pure . TheCircleUndone $ attrs `With` metadata
+        { prologueInvestigators = insertMap
+          iid
+          pId
+          (prologueInvestigators metadata)
+        }
     CampaignStep (Just (PrologueStepPart 2)) -> do
       let
+        prologueInvestigatorsNotTaken =
+          map unInvestigatorId $ allPrologueInvestigators \\ toList
+            (prologueInvestigators metadata)
         readingFor = \case
           "05046" -> gavriellaIntro
           "05047" -> jeromeIntro
-          "05048" -> pennyIntro
-          "05049" -> valentinoIntro
+          "05048" -> valentinoIntro
+          "05049" -> pennyIntro
           _ -> error "Invalid prologue investigator"
         readings = map readingFor $ toList (prologueInvestigators metadata)
       investigatorIds <- getInvestigatorIds
-      pushAll $ map (story investigatorIds) readings
+      pushAll
+        $ CrossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
+        : map (story investigatorIds) readings
       pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs

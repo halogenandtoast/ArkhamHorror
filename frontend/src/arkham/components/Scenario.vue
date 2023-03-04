@@ -429,10 +429,52 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
       />
     </div>
     <div class="phases">
-      <div :class="{ 'active-phase': phase == 'MythosPhase' }">Mythos</div>
-      <div :class="{ 'active-phase': phase == 'InvestigationPhase' }">Investigation</div>
-      <div :class="{ 'active-phase': phase == 'EnemyPhase' }">Enemy</div>
-      <div :class="{ 'active-phase': phase == 'UpkeepPhase' }">Upkeep</div>
+      <div class="phase" :class="{ 'active-phase': phase == 'MythosPhase' }">
+        <div class="subphases">
+          <div v-tooltip="'Round begins. Mythos phase begins.'">1.1</div>
+          <div v-tooltip="'Place 1 doom on the current agenda.'">1.2</div>
+          <div v-tooltip="'Check doom threshold.'">1.3</div>
+          <div v-tooltip="'Each investigator draws 1 encounter card.'">1.4</div>
+          <div v-tooltip="'PLAYER WINDOW'"><i class="fast-icon" /></div>
+          <div v-tooltip="'Mythos phase ends.'">1.5</div>
+        </div>
+        <div>Mythos</div>
+      </div>
+      <div class="phase" :class="{ 'active-phase': phase == 'InvestigationPhase' }">
+        <div class="subphases">
+          <div v-tooltip="'Investigation phase begins.'">2.1</div>
+          <div v-tooltip="'PLAYER WINDOW'"><i class="fast-icon" /></div>
+          <div v-tooltip="'Next investigator\'s turn begins.'">2.2</div>
+          <div v-tooltip="'PLAYER WINDOW'"><i class="fast-icon" /></div>
+          <div v-tooltip="'Active investigator may take an action, if able. If an action was taken, return to previous player window. If no action was taken, proceed to 2.2.2.'">2.2.1</div>
+          <div v-tooltip="'Investigator\'s turn ends. If an investigator has not yet taken a turn this phase, return to 2.2. If each investigator has taken a turn this phase, proceed to 2.3.'">2.2.2</div>
+          <div v-tooltip="'Investigation phase ends.'">2.3</div>
+        </div>
+        <div>Investigation</div>
+      </div>
+      <div class="phase" :class="{ 'active-phase': phase == 'EnemyPhase' }">
+        <div class="subphases">
+          <div v-tooltip="'Enemy phase begins.'">3.1</div>
+          <div v-tooltip="'Hunter enemies move.'">3.2</div>
+          <div v-tooltip="'PLAYER WINDOW'"><i class="fast-icon" /></div>
+          <div v-tooltip="'Next investigator resolves engaged enemy attacks. If an investigator has not yet resolved enemy attacks this phase, return to previous player window. After final investigator resolves engaged enemy attacks, proceed to next player window.'">3.3</div>
+          <div v-tooltip="'PLAYER WINDOW'"><i class="fast-icon" /></div>
+          <div v-tooltip="'Enemy phase ends.'">3.4</div>
+        </div>
+        <div>Enemy</div>
+      </div>
+      <div class="phase" :class="{ 'active-phase': phase == 'UpkeepPhase' }">
+        <div class="subphases">
+          <div v-tooltip="'Upkeep phase begins.'">4.1</div>
+          <div v-tooltip="'PLAYER WINDOW'"><i class="fast-icon" /></div>
+          <div v-tooltip="'Reset actions.'">4.2</div>
+          <div v-tooltip="'Ready each exhausted card.'">4.3</div>
+          <div v-tooltip="'Each investigator draws 1 card and gains 1 resource.'">4.4</div>
+          <div v-tooltip="'Each investigator checks hand size.'">4.5</div>
+          <div v-tooltip="'Upkeep phase ends. Round ends.'">4.6</div>
+        </div>
+        <div>Upkeep</div>
+      </div>
     </div>
   </div>
 </template>
@@ -621,15 +663,56 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
 .phases {
   display: flex;
+  align-items: flex-end;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   justify-content: space-around;
   background-color: #b8c1c6;
   text-transform: uppercase;
   font-family: Arial;
-  div {
+  > div {
     flex: 1;
     text-align: center;
+  }
+}
+
+
+.phase {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.subphases {
+  font-size: 0.7em;
+  flex: 1;
+  writing-mode: lr-tb;
+  text-orientation: revert;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-around;
+  color: #b8c1c6;
+  background: #484E51;
+  text-transform: uppercase;
+  font-family: Arial;
+  > div {
+    width: 100%;
+    padding: 0 5px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    align-items: center;
+    &:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+  }
+  > div:nth-of-type(2n) {
+    background: lighten(#484E51, 10%);
+    &:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
   }
 }
 

@@ -783,6 +783,7 @@ getInvestigatorsMatching matcher = do
         else member (investigatorLocation $ toAttrs i)
           <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
+    InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
     InvestigatorWithLowestSkill skillType -> \i -> do
       lowestSkillValue <-
         getMin
@@ -3539,7 +3540,14 @@ runGameMessage msg g = case msg of
             ]
           pure $ g & entitiesL . eventsL %~ insertMap eid event'
         _ -> pure g
-      EncounterCard _ -> pure g
+      EncounterCard ec -> case toCardType ec of
+        TreacheryType -> do
+          let
+            treachery = createTreachery card iid
+            tid = toId treachery
+          push $ AttachTreachery tid (InvestigatorTarget iid)
+          pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
+        _ -> pure g
       VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do
     let

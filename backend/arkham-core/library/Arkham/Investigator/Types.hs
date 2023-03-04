@@ -376,6 +376,9 @@ instance ToGameLoggerFormat Investigator where
 data SomeInvestigatorCard
   = forall a . IsInvestigator a => SomeInvestigatorCard (InvestigatorCard a)
 
+instance HasCardCode Investigator where
+  toCardCode = investigatorCardCode . toAttrs
+
 liftInvestigatorCard
   :: (forall a . InvestigatorCard a -> b) -> SomeInvestigatorCard -> b
 liftInvestigatorCard f (SomeInvestigatorCard a) = f a

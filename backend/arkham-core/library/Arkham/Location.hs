@@ -375,6 +375,15 @@ allLocations = mapFrom
   , SomeLocationCard plateauOfLeng
   --- Special
   , SomeLocationCard betweenWorlds
+  -- The Circle Undone
+  -- At Death's Doorstep
+  , SomeLocationCard entryHallSpectral
+  , SomeLocationCard victorianHallsSpectral
+  , SomeLocationCard trophyRoomSpectral
+  , SomeLocationCard billiardsRoomSpectral
+  , SomeLocationCard masterBedroomSpectral
+  , SomeLocationCard balconySpectral
+  , SomeLocationCard officeSpectral
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

@@ -152,6 +152,7 @@ data Trait
   | Socialite
   | Song
   | Sorcerer
+  | Spectral
   | Spell
   | Spirit
   | Summon

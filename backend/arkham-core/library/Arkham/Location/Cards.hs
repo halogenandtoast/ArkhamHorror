@@ -134,11 +134,13 @@ allLocationCards = mapFromList $ map
   , backAlley
   , backstage
   , balcony
+  , balconySpectral
   , ballroom
   , baseOfTheHill
   , basementHall
   , bathroom
   , bedroom
+  , billiardsRoomSpectral
   , bishopsBrook_202
   , bishopsBrook_203
   , blackCave
@@ -225,6 +227,7 @@ allLocationCards = mapFromList $ map
   , engineCar_176
   , engineCar_177
   , entryHall
+  , entryHallSpectral
   , entryway
   , exhibitHallAthabaskanExhibit
   , exhibitHallEgyptianExhibit
@@ -295,6 +298,7 @@ allLocationCards = mapFromList $ map
   , lobby
   , lostMemories
   , mainPath
+  , masterBedroomSpectral
   , messHall
   , metropolitanCathedral
   , miskatonicQuad
@@ -315,6 +319,7 @@ allLocationCards = mapFromList $ map
   , northTower_287
   , northTower_288
   , notreDame
+  , officeSpectral
   , operaGarnier212
   , operaGarnier213
   , orneLibrary
@@ -409,6 +414,7 @@ allLocationCards = mapFromList $ map
   , trainTracks
   , trapRoom
   , trappersCabin
+  , trophyRoomSpectral
   , twistedUnderbrush
   , undergroundRuins
   , uprootedWoods
@@ -416,6 +422,7 @@ allLocationCards = mapFromList $ map
   , vastPassages
   , velmasDiner
   , venetianGarden
+  , victorianHallsSpectral
   , villageCommons
   , vipArea
   , wellOfSouls
@@ -3141,6 +3148,69 @@ plateauOfLeng = singleSided $ location
   Equals
   [Star]
   ShatteredAeons
+
+entryHallSpectral :: CardDef
+entryHallSpectral = location
+  "05078"
+  "Entry Hall"
+  [Spectral]
+  Square
+  [T]
+  AtDeathsDoorstep
+
+victorianHallsSpectral :: CardDef
+victorianHallsSpectral = location
+  "05079"
+  "Victorian Halls"
+  [Spectral]
+  T
+  [Square, Star, Triangle, Heart]
+  AtDeathsDoorstep
+
+trophyRoomSpectral :: CardDef
+trophyRoomSpectral = location
+  "05080"
+  "Trophy Room"
+  [Spectral]
+  Triangle
+  [T, Diamond]
+  AtDeathsDoorstep
+
+billiardsRoomSpectral :: CardDef
+billiardsRoomSpectral = location
+  "05081"
+  "Billiards Room"
+  [Spectral]
+  Diamond
+  [Triangle]
+  AtDeathsDoorstep
+
+masterBedroomSpectral :: CardDef
+masterBedroomSpectral = location
+  "05082"
+  "Master Bedroom"
+  [Spectral]
+  Heart
+  [T, Moon]
+  AtDeathsDoorstep
+
+balconySpectral :: CardDef
+balconySpectral = location
+  "05083"
+  "Balcony"
+  [Spectral]
+  Moon
+  [Heart]
+  AtDeathsDoorstep
+
+officeSpectral :: CardDef
+officeSpectral = location
+  "05084"
+  "Office"
+  [Spectral]
+  Star
+  [T]
+  AtDeathsDoorstep
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

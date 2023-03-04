@@ -98,7 +98,7 @@ allInvestigatorCards = mapFromList $ concatMap
 allEncounterInvestigatorCards :: HashMap CardCode CardDef
 allEncounterInvestigatorCards = mapFromList $ concatMap
   toCardCodePairs
-  [ bodyOfAYithian, gavriellaMizrah ]
+  [ bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite ]
 
 withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode def = def { cdAlternateCardCodes = [ccode] }
@@ -266,6 +266,27 @@ gavriellaMizrah = investigator
   ("Gavriella Mizrah" <:> "Private Security")
   Neutral
   [Veteran]
+
+jeromeDavids :: CardDef
+jeromeDavids = investigator
+  "05047"
+  ("Jerome Davids" <:> "Josef's Secretary")
+  Neutral
+  [Assistant, SilverTwilight]
+
+valentinoRivas :: CardDef
+valentinoRivas = investigator
+  "05048"
+  ("Valentino Rivas" <:> "Wealthy Philanthropist")
+  Neutral
+  [SilverTwilight, Socialite]
+
+pennyWhite :: CardDef
+pennyWhite = investigator
+  "05049"
+  ("Penny White" <:> "Josef's Housekeeper")
+  Neutral
+  [Assistant]
 
 normanWithers :: CardDef
 normanWithers = investigator

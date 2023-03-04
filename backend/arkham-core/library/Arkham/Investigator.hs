@@ -53,6 +53,9 @@ withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
   Nothing -> case cCode of
     "04244" -> f (SomeInvestigator (Proxy @BodyOfAYithian))
     "05046" -> f (SomeInvestigator (Proxy @GavriellaMizrah))
+    "05047" -> f (SomeInvestigator (Proxy @JeromeDavids))
+    "05048" -> f (SomeInvestigator (Proxy @ValentinoRivas))
+    "05049" -> f (SomeInvestigator (Proxy @PennyWhite))
     _ -> error ("invalid investigators: " <> show cCode)
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator (Proxy @a))
 
@@ -120,6 +123,9 @@ returnToBody (Investigator a) = case cast a of
 becomePrologueInvestigator :: Investigator -> InvestigatorId -> Investigator
 becomePrologueInvestigator (Investigator a) = \case
   "05046" -> setId $ Investigator $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) ()
+  "05047" -> setId $ Investigator $ cbCardBuilder (jeromeDavids (PrologueMetadata $ toJSON a)) ()
+  "05048" -> setId $ Investigator $ cbCardBuilder (valentinoRivas (PrologueMetadata $ toJSON a)) ()
+  "05049" -> setId $ Investigator $ cbCardBuilder (pennyWhite (PrologueMetadata $ toJSON a)) ()
   _ -> error "Not a prologue investigator"
  where
    setId = overAttrs (\attrs -> attrs { Attrs.investigatorId = toId a })

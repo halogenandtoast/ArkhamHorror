@@ -52,7 +52,7 @@ function isAbility(v: Message) {
   const { tag } = v.ability.source;
 
   if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
+    return v.ability.source.source && v.ability.source.source.contents === id.value
   } else if (tag === 'AgendaSource') {
     return v.ability.source.contents === id.value
   }

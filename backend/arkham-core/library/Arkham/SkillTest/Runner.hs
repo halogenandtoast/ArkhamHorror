@@ -16,6 +16,7 @@ import Arkham.Game.Helpers hiding ( matches )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field(..))
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.RequestedTokenStrategy
@@ -496,46 +497,48 @@ instance RunMessage SkillTest where
                     ]
                  )
                )
-        FailedBy _ n -> pushAll
-          ([ When
-               (FailedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 (SkillTestInitiatorTarget skillTestTarget)
-                 skillTestType
-                 n
-               )
-           ]
-          <> [ When
+        FailedBy _ n -> do
+          hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator skillTestInvestigator)
+          pushAll
+            $ [ When
                  (FailedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   skillTestType
+                   n
+                 )
+             ]
+            <> [ When
+                   (FailedSkillTest
+                     skillTestInvestigator
+                     skillTestAction
+                     skillTestSource
+                     target
+                     skillTestType
+                     n
+                   )
+               | target <- skillTestSubscribers
+               ]
+            <> [ FailedSkillTest
                    skillTestInvestigator
                    skillTestAction
                    skillTestSource
                    target
                    skillTestType
                    n
-                 )
-             | target <- skillTestSubscribers
-             ]
-          <> [ FailedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 target
-                 skillTestType
-                 n
-             | target <- skillTestSubscribers
-             ]
-          <> [ FailedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 (SkillTestInitiatorTarget skillTestTarget)
-                 skillTestType
-                 n
-             ]
-          )
+               | target <- skillTestSubscribers
+               ]
+            <> [ FailedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   skillTestType
+                   n
+               ]
+            <> [chooseOneAtATime skillTestInvestigator [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities] | notNull hauntedAbilities]
         Unrun -> pure ()
       pure s
     RerunSkillTest -> case skillTestResult of

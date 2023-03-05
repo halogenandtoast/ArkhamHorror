@@ -112,6 +112,9 @@ restrictedAbility
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') { abilityCriteria = Just restriction }
 
+haunted :: SourceEntity a => Text -> a -> Int -> Ability
+haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
+
 reaction
   :: SourceEntity a => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
 reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)

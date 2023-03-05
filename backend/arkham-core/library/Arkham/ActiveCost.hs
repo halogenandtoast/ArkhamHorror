@@ -123,6 +123,7 @@ startAbilityPayment activeCost@ActiveCost { activeCostId } iid window abilityTyp
       abilityDoesNotProvokeAttacksOfOpportunity
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
+    Haunted -> pure ()
     ForcedAbilityWithCost _ cost -> push (PayCost activeCostId iid False cost)
     AbilityEffect cost -> push (PayCost activeCostId iid False cost)
     FastAbility cost -> push (PayCost activeCostId iid False cost)

@@ -109,6 +109,7 @@ const isObjective = computed(() => ability.value && ability.value.type.tag === "
 const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
 const isReactionAbility = computed(() => ability.value && ability.value.type.tag === "ReactionAbility")
 const isForcedAbility = computed(() => ability.value && ability.value.type.tag === "ForcedAbility")
+const isHaunted = computed(() => ability.value && ability.value.type.tag === "Haunted")
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
@@ -138,6 +139,10 @@ const abilityLabel = computed(() => {
     if (action) {
       return action
     }
+  }
+
+  if (isHaunted.value === true) {
+    return "Haunted"
   }
 
   return ""

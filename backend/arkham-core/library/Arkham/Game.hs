@@ -1021,13 +1021,20 @@ getAbilitiesMatching
   :: (HasCallStack, HasGame m) => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
+
   case matcher of
     AnyAbility -> pure abilities
+    HauntedAbility -> pure $ filter ((== Haunted) . abilityType) abilities
     AssetAbility assetMatcher ->
       concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
-    AbilityOnLocation locationMatcher ->
-      concatMap getAbilities
-        <$> (traverse getLocation =<< selectList locationMatcher)
+    AbilityOnLocation locationMatcher -> do
+      lids <- selectList locationMatcher
+      let
+        toLocationSources ab lid = case abilitySource ab of
+          LocationSource lid' | lid == lid' -> pure $ Just ab
+          ProxySource (LocationSource lid') _ | lid == lid' -> pure $ Just ab
+          _ -> pure Nothing
+      flip concatMapM abilities (\ab -> mapMaybeM (toLocationSources ab) lids)
     AbilityIsAction action ->
       pure $ filter ((== Just action) . abilityAction) abilities
     AbilityIsActionAbility -> pure $ filter abilityIsActionAbility abilities
@@ -1089,7 +1096,7 @@ getGameAbilities = do
     filter inHandAbility . concatMap getAbilities <$> filterM
       unblanked
       (toList $ g ^. inHandEntitiesL . each . eventsL)
-  pure
+  concatMapM replaceMatcherSources
     $ enemyAbilities
     <> blankedEnemyAbilities
     <> locationAbilities
@@ -1102,6 +1109,30 @@ getGameAbilities = do
     <> agendaAbilities
     <> effectAbilities
     <> investigatorAbilities
+
+replaceMatcherSources :: HasGame m => Ability -> m [Ability]
+replaceMatcherSources ability = case abilitySource ability of
+  ProxySource (AgendaMatcherSource m) base -> do
+    sources <- selectListMap AgendaSource m
+    pure $ map
+      (\source -> ability { abilitySource = ProxySource source base })
+      sources
+  ProxySource (AssetMatcherSource m) base -> do
+    sources <- selectListMap AssetSource m
+    pure $ map
+      (\source -> ability { abilitySource = ProxySource source base })
+      sources
+  ProxySource (LocationMatcherSource m) base -> do
+    sources <- selectListMap LocationSource m
+    pure $ map
+      (\source -> ability { abilitySource = ProxySource source base })
+      sources
+  ProxySource (EnemyMatcherSource m) base -> do
+    sources <- selectListMap EnemySource m
+    pure $ map
+      (\source -> ability { abilitySource = ProxySource source base })
+      sources
+  _ -> pure [ability]
 
 getLocationsMatching
   :: (HasCallStack, HasGame m) => LocationMatcher -> m [Location]

@@ -757,6 +757,7 @@ data AbilityMatcher
   | AnyAbility
   | AbilityOnEncounterCard
   | AssetAbility AssetMatcher
+  | HauntedAbility
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

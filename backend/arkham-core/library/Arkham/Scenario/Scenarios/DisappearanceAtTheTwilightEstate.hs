@@ -5,6 +5,8 @@ module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate
 
 import Arkham.Prelude
 
+import Arkham.Helpers.SkillTest
+import Arkham.Action qualified as Action
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Card
@@ -174,5 +176,16 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         <> [ AttachStoryTreacheryTo whispersInTheDark (AgendaTarget agendaId)
            | pennyChosen
            ]
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
+        Skull -> do
+          mAction <- getSkillTestAction
+          for_ mAction $ \action ->
+            when (action `elem` [Action.Fight, Action.Evade]) $ do
+              hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator iid)
+              unless (null hauntedAbilities) $
+                push $ chooseOneAtATime iid [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+        _ -> pure ()
       pure s
     _ -> DisappearanceAtTheTwilightEstate <$> runMessage msg attrs

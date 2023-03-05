@@ -217,6 +217,7 @@ meetsActionRestrictions
 meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
+    Haunted -> pure False
     Objective aType -> go aType
     ActionAbilityWithBefore _ mBeforeAction cost ->
       go $ ActionAbility mBeforeAction cost
@@ -277,6 +278,7 @@ getCanAffordAbility iid ability window =
 
 getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> m Bool
 getCanAffordAbilityCost iid Ability {..} = case abilityType of
+  Haunted -> pure True
   ActionAbility mAction cost ->
     getCanAffordCost iid abilitySource mAction [] cost
   ActionAbilityWithSkill mAction _ cost ->
@@ -333,6 +335,7 @@ getCanAffordUse iid ability window = do
       FastAbility _ -> pure True
       AbilityEffect _ -> pure True
       Objective{} -> pure True
+      Haunted -> pure True
     PlayerLimit (PerSearch trait) n -> do
       traitMatchingUsedAbilities <- filterM
         (fmap (elem trait) . sourceTraits . abilitySource . usedAbility)

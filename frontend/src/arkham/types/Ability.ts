@@ -111,7 +111,15 @@ export const objectiveDecoder = JsonDecoder.object<Objective>({
   abilityType: JsonDecoder.lazy<AbilityType>(() => abilityTypeDecoder)
 }, 'Objective')
 
-export type AbilityType = FastAbility | ReactionAbility | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective
+export interface Haunted {
+  tag: "Haunted"
+}
+
+export const hauntedDecoder = JsonDecoder.object<Haunted>({
+  tag: JsonDecoder.isExactly("Haunted"),
+}, 'Haunted')
+
+export type AbilityType = FastAbility | ReactionAbility | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
 
 export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.oneOf<AbilityType>([
   fastAbilityDecoder,
@@ -124,6 +132,7 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   forcedAbilityWithCostDecoder,
   abilityEffectDecoder,
   objectiveDecoder,
+  hauntedDecoder,
 ], 'AbilityType')
 
 export interface Ability {

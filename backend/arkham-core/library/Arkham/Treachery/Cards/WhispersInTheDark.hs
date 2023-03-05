@@ -1,24 +1,37 @@
 module Arkham.Treachery.Cards.WhispersInTheDark
   ( whispersInTheDark
   , WhispersInTheDark(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Source
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype WhispersInTheDark = WhispersInTheDark TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whispersInTheDark :: TreacheryCard WhispersInTheDark
 whispersInTheDark = treachery WhispersInTheDark Cards.whispersInTheDark
 
+instance HasAbilities WhispersInTheDark where
+  getAbilities (WhispersInTheDark a) =
+    [ haunted
+        "Take 1 horror"
+        (ProxySource (LocationMatcherSource Anywhere) (toSource a))
+        1
+    ]
+
 instance RunMessage WhispersInTheDark where
   runMessage msg t@(WhispersInTheDark attrs) = case msg of
     Revelation _iid source | isSource attrs source -> pure t
+    UseCardAbility iid (isProxySource attrs -> True) 1 _ _ -> do
+      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+      pure t
     _ -> WhispersInTheDark <$> runMessage msg attrs

@@ -5,7 +5,7 @@ module Arkham.Treachery.Cards.Haunted
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability hiding (Haunted, haunted)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost

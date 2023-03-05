@@ -22,6 +22,7 @@ data AbilityType
   | ForcedAbilityWithCost { window :: WindowMatcher, cost :: Cost }
   | AbilityEffect { cost :: Cost }
   | Objective { abilityType :: AbilityType }
+  | Haunted
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -36,6 +37,7 @@ abilityTypeAction = \case
   SilentForcedAbility _ -> Nothing
   ForcedAbilityWithCost _ _ -> Nothing
   AbilityEffect _ -> Nothing
+  Haunted -> Nothing
   Objective aType -> abilityTypeAction aType
 
 abilityTypeCost :: AbilityType -> Cost
@@ -49,6 +51,7 @@ abilityTypeCost = \case
   ForcedAbility _ -> Free
   ForcedAbilityWithCost _ cost -> cost
   AbilityEffect cost -> cost
+  Haunted -> Free
   Objective aType -> abilityTypeCost aType
 
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
@@ -68,6 +71,7 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ForcedAbilityWithCost window cost ->
     ForcedAbilityWithCost window $ applyCostModifiers cost modifiers
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
+  Haunted -> Haunted
   Objective aType' -> Objective $ applyAbilityTypeModifiers aType' modifiers
 
 applyCostModifiers :: Cost -> [ModifierType] -> Cost
@@ -97,6 +101,7 @@ defaultAbilityWindow = \case
   ForcedAbilityWithCost window _ -> window
   ReactionAbility window _ -> window
   AbilityEffect _ -> AnyWindow
+  Haunted -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
 
 isFastAbilityType :: AbilityType -> Bool
@@ -111,6 +116,7 @@ isFastAbilityType = \case
   ActionAbilityWithSkill{} -> False
   ActionAbilityWithBefore{} -> False
   AbilityEffect{} -> False
+  Haunted{} -> False
 
 isForcedAbilityType :: AbilityType -> Bool
 isForcedAbilityType = \case
@@ -124,6 +130,7 @@ isForcedAbilityType = \case
   ActionAbilityWithSkill{} -> False
   ActionAbilityWithBefore{} -> False
   AbilityEffect{} -> False
+  Haunted{} -> True -- Maybe? we wanted this to basically never be valid but still take forced precedence
 
 isReactionAbilityType :: AbilityType -> Bool
 isReactionAbilityType = \case
@@ -137,6 +144,7 @@ isReactionAbilityType = \case
   ActionAbilityWithSkill{} -> False
   ActionAbilityWithBefore{} -> False
   AbilityEffect{} -> False
+  Haunted{} -> False
 
 isSilentForcedAbilityType :: AbilityType -> Bool
 isSilentForcedAbilityType = \case
@@ -150,6 +158,7 @@ isSilentForcedAbilityType = \case
   ActionAbilityWithSkill{} -> False
   ActionAbilityWithBefore{} -> False
   AbilityEffect{} -> False
+  Haunted{} -> False
 
 isPerWindowLimit :: AbilityLimit -> Bool
 isPerWindowLimit = \case
@@ -171,3 +180,4 @@ defaultAbilityLimit = \case
   ActionAbilityWithSkill{} -> NoLimit
   AbilityEffect _ -> NoLimit
   Objective aType -> defaultAbilityLimit aType
+  Haunted -> NoLimit

@@ -1,5 +1,6 @@
 module Arkham.Investigator.Cards.PennyWhite
   ( pennyWhite
+  , pennyWhiteEffect
   , PennyWhite(..)
   ) where
 
@@ -12,13 +13,18 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Draw.Types
+import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
+import Arkham.SkillTest.Base
+import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
@@ -72,9 +78,16 @@ instance HasModifiersFor PennyWhite where
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite (a `With` _)) =
-    [ restrictedAbility a 1 (Self <> ClueOnLocation) $ ReactionAbility
-        (EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy)
-        Free
+    [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility a 1 (Self <> ClueOnLocation)
+        $ ReactionAbility
+            (SkillTestResult
+              Timing.After
+              You
+              SkillTestFromRevelation
+              (SuccessResult AnyValue)
+            )
+            Free
     ]
 
 instance HasTokenValue PennyWhite where
@@ -89,10 +102,14 @@ instance RunMessage PennyWhite where
       push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      pushAll
-        [ HealHorror (toTarget attrs) (toSource attrs) 1
-        , HealDamage (toTarget attrs) (toSource attrs) 1
-        ]
+      mSkillTest <- getSkillTest
+      for_ mSkillTest $ \skillTest ->
+        when (skillTestIsRevelation skillTest)
+          $ push $ createCardEffect
+              Cards.pennyWhite
+              Nothing
+              (toSource attrs)
+              (toTarget attrs)
       pure i
     DrawStartingHand iid | iid == toId attrs -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
@@ -112,3 +129,20 @@ instance RunMessage PennyWhite where
     DrawCards cardDraw | cardDrawInvestigator cardDraw == toId attrs -> do
       pure i
     _ -> PennyWhite . (`with` meta) <$> runMessage msg attrs
+
+newtype PennyWhiteEffect = PennyWhiteEffect EffectAttrs
+  deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+pennyWhiteEffect :: EffectArgs -> PennyWhiteEffect
+pennyWhiteEffect = cardEffect PennyWhiteEffect Cards.pennyWhite
+
+instance RunMessage PennyWhiteEffect where
+  runMessage msg e@(PennyWhiteEffect attrs@EffectAttrs {..}) = case msg of
+    BeginTurn iid | InvestigatorTarget iid == effectTarget -> do
+      pushAll
+        [ DisableEffect effectId
+        , GainActions iid (TokenEffectSource ElderSign) 1
+        ]
+      pure e
+    _ -> PennyWhiteEffect <$> runMessage msg attrs

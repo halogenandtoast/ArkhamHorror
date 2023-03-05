@@ -2582,6 +2582,7 @@ skillTestMatches iid source st = \case
   Matcher.UsingThis -> pure $ source == skillTestSource st
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
+  Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
     Just Action.Investigate -> case skillTestTarget st of
       LocationTarget lid -> member lid <$> select locationMatcher

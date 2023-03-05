@@ -79,7 +79,7 @@ const toggleNewGame = () => {
           :no="() => deleteId = null"
         />
 
-        <template v-if="currentUser.beta === true">
+        <template v-if="currentUser && currentUser.beta === true">
           <h2>Debug Game</h2>
           <form enctype="multipart/form-data" method=POST>
             <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />

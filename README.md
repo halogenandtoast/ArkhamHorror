@@ -92,8 +92,7 @@ table statements and run them manually, you will want to specifically run the
 ### Running the server
 
 * start the backend with `cd backend && make api.watch`
-* start the frontend with `cd frontend && PORT=8081 npm run serve`
-* start the ngingx server with ``nginx -c `pwd`/local.nginxconf``
+* start the frontend with `cd frontend && npm run serve`
 
 ## Copyright Disclaimer
 

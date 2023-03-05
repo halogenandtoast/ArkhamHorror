@@ -34,7 +34,13 @@ const cardLabelImage = (cardCode: string) => {
 }
 
 const portraitLabelImage = (investigatorId: string) => {
-  return `${baseUrl}/img/arkham/portraits/${investigatorId.replace('c', '')}.jpg`;
+  const player = props.game.investigators[investigatorId]
+
+  if (player.isYithian) {
+    return `${baseUrl}/img/arkham/portraits/${investigatorId.value.replace('c', '')}.jpg`
+  }
+
+  return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
 }
 
 const cardLabels = computed(() =>

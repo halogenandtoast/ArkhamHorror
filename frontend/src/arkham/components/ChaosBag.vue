@@ -79,11 +79,23 @@ const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === Mess
 const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
-    return `${baseUrl}/img/arkham/portraits/${choice.investigatorId.replace('c', '')}.jpg`;
+    const player = props.game.investigators[choice.investigatorId]
+
+    if (player.isYithian) {
+      return `${baseUrl}/img/arkham/portraits/${choice.investigatorId.value.replace('c', '')}.jpg`
+    }
+
+    return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
   }
 
   if (props.skillTest) {
-    return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator.replace('c', '')}.jpg`;
+    const player = props.game.investigators[props.skillTest.investigator]
+
+    if (player.isYithian) {
+      return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator.value.replace('c', '')}.jpg`
+    }
+
+    return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
   }
 
   return null;

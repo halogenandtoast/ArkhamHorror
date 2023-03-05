@@ -22,7 +22,13 @@ const investigatorPortrait = computed(() => {
     return null;
   }
 
-  return `${baseUrl}/img/arkham/portraits/${props.investigatorId.replace('c', '')}.jpg`;
+  const player = props.game.investigators[props.investigatorId]
+
+  if (player.isYithian) {
+    return `${baseUrl}/img/arkham/portraits/${props.investigatorId.value.replace('c', '')}.jpg`
+  }
+
+  return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
 })
 
 const debug = inject('debug')

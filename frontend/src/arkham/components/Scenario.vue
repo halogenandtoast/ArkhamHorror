@@ -1,5 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, computed, ref, ComputedRef, reactive, inject } from 'vue';
+import {
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  ref,
+  ComputedRef,
+  reactive,
+  inject
+} from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Scenario } from '@/arkham/types/Scenario';
 import type { Card } from '@/arkham/types/Card';

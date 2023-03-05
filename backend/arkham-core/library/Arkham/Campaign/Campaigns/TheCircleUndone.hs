@@ -52,8 +52,8 @@ instance RunMessage TheCircleUndone where
         : [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
           | iid <- investigatorIds
           ]
-        <> [ CampaignStep (Just $ PrologueStepPart 2)
-           , story investigatorIds intro
+        <> [ story investigatorIds intro
+           , CampaignStep (Just $ PrologueStepPart 2)
            , NextCampaignStep Nothing
            ]
       pure c

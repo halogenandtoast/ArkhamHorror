@@ -98,4 +98,14 @@ button {
     background-color: #311b3e;
   }
 }
+
+.card {
+  border-radius: 15px;
+}
+
+.label-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 </style>

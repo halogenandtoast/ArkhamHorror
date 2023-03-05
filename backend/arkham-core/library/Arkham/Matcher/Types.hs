@@ -628,6 +628,7 @@ data SkillTestMatcher
   | SkillTestSourceMatches SourceMatcher
   | SkillTestMatches [SkillTestMatcher]
   | NotSkillTest SkillTestMatcher
+  | SkillTestFromRevelation
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

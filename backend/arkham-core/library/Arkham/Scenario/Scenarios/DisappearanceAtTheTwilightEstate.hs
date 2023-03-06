@@ -5,10 +5,11 @@ module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate
 
 import Arkham.Prelude
 
-import Arkham.Helpers.SkillTest
-import Arkham.Action qualified as Action
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Types ( Field (..) )
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -16,6 +17,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Deck
+import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -68,12 +70,10 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       (officeId, placeOffice) <- placeLocationCard Locations.officeSpectral
       (billiardsRoomId, placeBilliardsRoom) <- placeLocationCard
         Locations.billiardsRoomSpectral
-      placeTrophyRoom <- placeLocationCard_
-        Locations.trophyRoomSpectral
+      placeTrophyRoom <- placeLocationCard_ Locations.trophyRoomSpectral
       (victorianHallsId, placeVictorianHalls) <- placeLocationCard
         Locations.victorianHallsSpectral
-      placeMasterBedroom <- placeLocationCard_
-        Locations.masterBedroomSpectral
+      placeMasterBedroom <- placeLocationCard_ Locations.masterBedroomSpectral
       (balconyId, placeBalcony) <- placeLocationCard Locations.balconySpectral
       (entryHallId, placeEntryHall) <- placeLocationCard
         Locations.entryHallSpectral
@@ -183,9 +183,21 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
             when (action `elem` [Action.Fight, Action.Evade]) $ do
-              hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator iid)
-              unless (null hauntedAbilities) $
-                push $ chooseOneAtATime iid [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+              hauntedAbilities <-
+                selectList $ HauntedAbility <> AbilityOnLocation
+                  (locationWithInvestigator iid)
+              unless (null hauntedAbilities) $ push $ chooseOneAtATime
+                iid
+                [ AbilityLabel iid ab [] [] | ab <- hauntedAbilities ]
         _ -> pure ()
+      pure s
+    ScenarioResolution _ -> do
+      iids <- allInvestigatorIds
+      clues <- getSum <$> selectAgg Sum ActClues AnyAct
+      pushAll
+        [ story iids noResolution
+        , RecordCount PiecesOfEvidenceWereLeftBehind clues
+        , EndOfGame Nothing
+        ]
       pure s
     _ -> DisappearanceAtTheTwilightEstate <$> runMessage msg attrs

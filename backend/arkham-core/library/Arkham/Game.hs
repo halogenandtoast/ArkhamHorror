@@ -2240,6 +2240,7 @@ instance Projection Investigator where
     i <- getInvestigator iid
     let InvestigatorAttrs {..} = toAttrs i
     case f of
+      InvestigatorCardCode -> pure investigatorCardCode
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorAdditionalActions -> pure investigatorAdditionalActions

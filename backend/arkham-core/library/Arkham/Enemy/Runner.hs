@@ -877,7 +877,7 @@ instance RunMessage EnemyAttrs where
     DisengageEnemy iid eid | eid == enemyId -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do
         canDisengage <- iid <=~> InvestigatorCanDisengage
-        if canDisengage
+        if traceShowId canDisengage
           then do
             lid <- getJustLocation iid
             pure $ a & placementL .~ AtLocation lid

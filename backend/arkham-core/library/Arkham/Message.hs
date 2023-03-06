@@ -66,6 +66,7 @@ messageType ResolveToken{} = Just ResolveTokenMessage
 messageType EnemySpawn{} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy{} = Just DrawEnemyMessage
 messageType EnemyDefeated{} = Just EnemyDefeatedMessage
+messageType (Discard GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
 messageType RevealToken{} = Just RevealTokenMessage
 messageType InvestigatorDamage{} = Just DamageMessage
 messageType InvestigatorDoAssignDamage{} = Just DamageMessage

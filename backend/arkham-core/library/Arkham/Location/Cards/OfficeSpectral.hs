@@ -1,14 +1,16 @@
 module Arkham.Location.Cards.OfficeSpectral
   ( officeSpectral
   , OfficeSpectral(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
 
 newtype OfficeSpectral = OfficeSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,10 +20,13 @@ officeSpectral :: LocationCard OfficeSpectral
 officeSpectral = location OfficeSpectral Cards.officeSpectral 4 (PerPlayer 2)
 
 instance HasAbilities OfficeSpectral where
-  getAbilities (OfficeSpectral attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (OfficeSpectral attrs) = withBaseAbilities
+    attrs
+    [haunted "Choose and discard a card from your hand." attrs 1]
 
 instance RunMessage OfficeSpectral where
-  runMessage msg (OfficeSpectral attrs) =
-    OfficeSpectral <$> runMessage msg attrs
+  runMessage msg l@(OfficeSpectral attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ ChooseAndDiscardCard iid (toSource attrs)
+      pure l
+    _ -> OfficeSpectral <$> runMessage msg attrs

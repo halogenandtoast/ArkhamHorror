@@ -196,6 +196,7 @@ data ModifierType
   | SkipMythosPhaseStep MythosPhaseStep
   | SpawnNonEliteAtConnectingInstead
   | ForceSpawnLocation LocationMatcher
+  | CannotSpawnIn LocationMatcher
   | StartingHand Int
   | StartingResources Int
   | StartingClues Int

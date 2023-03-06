@@ -1457,6 +1457,7 @@ getAssetsMatching matcher = do
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
     AssetWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
+    AssetWithHealth -> pure $ filter (isJust . assetHealth . toAttrs) as
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . assetDoom . toAttrs) as

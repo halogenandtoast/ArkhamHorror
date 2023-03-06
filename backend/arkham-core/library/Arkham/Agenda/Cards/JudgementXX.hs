@@ -10,7 +10,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
 import Arkham.Classes
-import Arkham.DefeatedBy
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Investigator.Types ( Field (InvestigatorCardCode) )
@@ -42,7 +41,7 @@ instance HasAbilities JudgementXX where
 
 toDefeatedInfo :: [Window] -> Source
 toDefeatedInfo [] = error "Invalid call"
-toDefeatedInfo (Window _ (Window.InvestigatorDefeated source defeatedBy _) : _) =
+toDefeatedInfo (Window _ (Window.InvestigatorDefeated source _ _) : _) =
   source
 toDefeatedInfo (_ : xs) = toDefeatedInfo xs
 

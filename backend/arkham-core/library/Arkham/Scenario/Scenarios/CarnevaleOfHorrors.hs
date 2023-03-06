@@ -144,7 +144,8 @@ instance RunMessage CarnevaleOfHorrors where
         , Locations.theGuardian
         ]
       canalSide <- placeLocationCard Locations.canalSide
-      sanMarcoBasilica@(sanMarcoBasilicaId, _) <- placeLocationCard Locations.sanMarcoBasilica
+      sanMarcoBasilica@(sanMarcoBasilicaId, _) <- placeLocationCard
+        Locations.sanMarcoBasilica
 
       let
         unshuffled = canalSide : randomLocations
@@ -169,9 +170,12 @@ instance RunMessage CarnevaleOfHorrors where
       abbess <- genCard Assets.abbessAllegriaDiBiase
 
       let
-        placeLocations = flip map (zip locationLabels (toList locations)) $ \(label, (locationId, placement)) ->
-          (locationId, [placement, SetLocationLabel locationId label])
-        locationIds = fromJustNote "was empty" . nonEmpty $ map fst $ toList locations
+        placeLocations =
+          flip map (zip locationLabels (toList locations))
+            $ \(label, (locationId, placement)) ->
+                (locationId, [placement, SetLocationLabel locationId label])
+        locationIds =
+          fromJustNote "was empty" . nonEmpty $ map fst $ toList locations
 
       pushAll
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
@@ -179,7 +183,11 @@ instance RunMessage CarnevaleOfHorrors where
         <> [ PlacedLocationDirection l2 RightOf l1
            | (l1, l2) <- zip (toList locationIds) (drop 1 $ toList locationIds)
            ]
-        <> [ PlacedLocationDirection (NE.head locationIds) RightOf (NE.last locationIds) ]
+        <> [ PlacedLocationDirection
+               (NE.head locationIds)
+               RightOf
+               (NE.last locationIds)
+           ]
         <> [ CreateAssetAt asset (AtLocation locationId)
            | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers
            ]
@@ -334,11 +342,10 @@ instance RunMessage CarnevaleOfHorrors where
         ElderThing -> do
           mCnidathquaId <- getCnidathqua
           case mCnidathquaId of
-            Just cnidathquaId -> push $ EnemyAttack
-              iid
-              cnidathquaId
-              (DamageFirst Assets.innocentReveler)
-              RegularAttack
+            Just cnidathquaId ->
+              push $ EnemyAttack $ (enemyAttack cnidathquaId iid)
+                { attackDamageStrategy = DamageFirst Assets.innocentReveler
+                }
             Nothing -> pure ()
         _ -> pure ()
       pure s

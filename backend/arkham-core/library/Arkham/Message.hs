@@ -325,8 +325,10 @@ data Message
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
-  | EnemyAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
-  | InitiateEnemyAttack InvestigatorId EnemyId EnemyAttackType
+  | EnemyWillAttack EnemyAttackDetails
+  | EnemyAttack EnemyAttackDetails
+  | InitiateEnemyAttack EnemyAttackDetails
+  | PerformEnemyAttack EnemyAttackDetails -- Internal
   | EnemyAttackFromDiscard InvestigatorId Card
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
@@ -346,7 +348,6 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnedAt LocationId EnemyId
-  | EnemyWillAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
   | EngageEnemy InvestigatorId EnemyId Bool
   | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
@@ -462,7 +463,6 @@ data Message
   | PayCardCost InvestigatorId Card [Window]
   | PaidForCardCost InvestigatorId Card Payment
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
-  | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
   | PlaceClues Target Int
   | PlaceCluesUpToClueValue LocationId Int
   | FlipClues Target Int

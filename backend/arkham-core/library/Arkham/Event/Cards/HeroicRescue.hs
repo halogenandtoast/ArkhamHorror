@@ -5,6 +5,7 @@ module Arkham.Event.Cards.HeroicRescue
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
@@ -22,7 +23,7 @@ heroicRescue = event HeroicRescue Cards.heroicRescue
 
 instance RunMessage HeroicRescue where
   runMessage msg e@(HeroicRescue attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.EnemyWouldAttack iid' eid' _)] _
+    InvestigatorPlayEvent _ eid _ [Window _ (Window.EnemyWouldAttack details')] _
       | eid == toId attrs
       -> do
         popMessageMatching_ \case
@@ -30,23 +31,20 @@ instance RunMessage HeroicRescue where
             any
             windows
             \case
-              Window _ (Window.EnemyAttacks targetInvestigator targetEnemy _)
-                -> targetInvestigator == iid' && targetEnemy == eid'
+              Window _ (Window.EnemyAttacks details) -> details == details'
               _ -> False
           _ -> False
         popMessageMatching_ \case
-          After (PerformEnemyAttack targetInvestigator targetEnemy _ _) ->
-            targetInvestigator == iid' && targetEnemy == eid'
+          After (PerformEnemyAttack details) -> details == details'
           _ -> False
         replaceMessageMatching
           \case
-            PerformEnemyAttack targetInvestigator targetEnemy _ _ ->
-              targetInvestigator == iid' && targetEnemy == eid'
+            PerformEnemyAttack details -> details == details'
             _ -> False
           \case
-            PerformEnemyAttack _ targetEnemy damageStrategy attackType ->
-              [ EnemyAttack iid targetEnemy damageStrategy attackType
-              , EnemyDamage targetEnemy $ nonAttack attrs 1
+            PerformEnemyAttack details ->
+              [ EnemyAttack details
+              , EnemyDamage (attackEnemy details) $ nonAttack attrs 1
               ]
             _ -> error "Mismatched"
         pure e

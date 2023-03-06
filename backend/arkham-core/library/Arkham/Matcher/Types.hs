@@ -107,7 +107,7 @@ data PreyMatcher
   | OnlyPrey InvestigatorMatcher
   | BearerOf EnemyId
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data AssetMatcher
   = AssetWithTitle Text

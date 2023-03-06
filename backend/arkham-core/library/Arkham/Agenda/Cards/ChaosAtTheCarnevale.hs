@@ -7,18 +7,17 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Attack
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype ChaosAtTheCarnevale = ChaosAtTheCarnevale AgendaAttrs
@@ -48,11 +47,9 @@ instance RunMessage ChaosAtTheCarnevale where
       a <$ case mCnidathquaId of
         Just cnidathquaId ->
           pushAll
-            $ [ EnemyAttack
-                  iid
-                  cnidathquaId
-                  (DamageFirst Assets.innocentReveler)
-                  RegularAttack
+            $ [ EnemyAttack $ enemyAttack cnidathquaId iid
+                & damageStrategyL
+                .~ DamageFirst Assets.innocentReveler
               | iid <- investigatorIds
               ]
             <> [RevertAgenda (toId attrs)]

@@ -159,6 +159,7 @@ data ModifierType
   | FailTies
   | FewerSlots SlotType Int
   | ForcedTokenChange TokenFace [TokenFace]
+  | ForcePrey PreyMatcher
   | HandSize Int
   | IgnoreHandSizeReduction
   | HandSizeCardCount Int

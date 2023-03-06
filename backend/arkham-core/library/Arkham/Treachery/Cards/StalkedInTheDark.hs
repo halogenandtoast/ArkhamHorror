@@ -10,8 +10,8 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -29,7 +29,7 @@ instance RunMessage StalkedInTheDark where
           iids <- selectList $ colocatedWith iid
           pushAll
             $ [Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
-            <> [ EnemyAttack iid' eid DamageAny RegularAttack | iid' <- iids ]
+            <> map (EnemyAttack . enemyAttack eid) iids
         Nothing -> push (Surge iid source)
       pure t
     _ -> StalkedInTheDark <$> runMessage msg attrs

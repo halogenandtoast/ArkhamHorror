@@ -6,7 +6,7 @@ module Arkham.Enemy.Cards.HasturTheKingInYellow
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Attack
+import Arkham.Attack hiding ( damageStrategyL )
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
@@ -50,8 +50,7 @@ instance RunMessage HasturTheKingInYellow where
   runMessage msg e@(HasturTheKingInYellow attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <- getInvestigatorIds
-      pushAll
-        [ InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids ]
+      pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs)) iids
       pure e
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       x <- field EnemyFight (toId attrs)

@@ -43,7 +43,6 @@ instance RunMessage CreatureOutOfDemhe where
     UseCardAbility _ source 1 [Window _ (Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
         iids <- selectList $ InvestigatorAt $ LocationWithId lid
-        pushAll
-          [ InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids ]
+        pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs)) iids
         pure e
     _ -> CreatureOutOfDemhe <$> runMessage msg attrs

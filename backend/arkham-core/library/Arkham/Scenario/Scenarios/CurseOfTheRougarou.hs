@@ -186,7 +186,7 @@ instance RunMessage CurseOfTheRougarou where
           (LocationWithInvestigator $ InvestigatorWithId iid)
         s <$ for_
           mrougarou
-          (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
+          (\eid -> push $ EnemyWillAttack $ enemyAttack eid iid)
       else do
         lid <- getJustLocation iid
         connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
@@ -195,7 +195,7 @@ instance RunMessage CurseOfTheRougarou where
             (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
         s <$ for_
           mrougarou
-          (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
+          (\eid -> push $ EnemyWillAttack $ enemyAttack eid iid)
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> s <$ when
       (tokenFace token == Tablet)
       (push $ CreateEffect

@@ -74,6 +74,6 @@ instance RunMessage SerpentsIre where
       -> do
         case selectedEnemy meta of
           Nothing -> error "enemy must be set"
-          Just eid -> push $ InitiateEnemyAttack iid eid RegularAttack
+          Just eid -> push $ InitiateEnemyAttack $ enemyAttack eid iid
         pure . SerpentsIre $ attrs `with` Metadata Nothing
     _ -> SerpentsIre . (`with` meta) <$> runMessage msg attrs

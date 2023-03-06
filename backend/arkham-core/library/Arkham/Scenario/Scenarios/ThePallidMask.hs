@@ -271,7 +271,7 @@ instance RunMessage ThePallidMask where
               (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
             unless (null enemies) $ push $ chooseOne
               iid
-              [ targetLabel enemy [InitiateEnemyAttack iid enemy RegularAttack]
+              [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy iid]
               | enemy <- enemies
               ]
           else do
@@ -282,7 +282,7 @@ instance RunMessage ThePallidMask where
               [ targetLabel
                   enemy
                   [ Ready (EnemyTarget enemy)
-                  , InitiateEnemyAttack iid enemy RegularAttack
+                  , InitiateEnemyAttack $ enemyAttack enemy iid
                   ]
               | enemy <- enemies
               ]

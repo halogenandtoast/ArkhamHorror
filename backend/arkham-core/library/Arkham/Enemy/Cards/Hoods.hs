@@ -29,6 +29,6 @@ instance HasAbilities Hoods where
 instance RunMessage Hoods where
   runMessage msg e@(Hoods attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InitiateEnemyAttack iid (toId attrs) RegularAttack
+      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
       pure e
     _ -> Hoods <$> runMessage msg attrs

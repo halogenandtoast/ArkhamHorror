@@ -43,5 +43,5 @@ instance HasAbilities WizardOfYogSothoth where
 instance RunMessage WizardOfYogSothoth where
   runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      e <$ push (EnemyAttack iid enemyId DamageAny RegularAttack)
+      e <$ push (EnemyAttack $ enemyAttack enemyId iid)
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

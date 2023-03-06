@@ -280,6 +280,8 @@ allTreacheries = mapFrom
   , SomeTreacheryCard terribleSecret
   -- weaknesses
   , SomeTreacheryCard the13thVision
+  -- The Watcher
+  , SomeTreacheryCard watchersGrasp
   -- Spectral Predators
   , SomeTreacheryCard whispersInTheDark
   -- Inexorable Fate

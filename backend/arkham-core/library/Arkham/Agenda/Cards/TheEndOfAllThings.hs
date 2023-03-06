@@ -7,13 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
@@ -32,9 +31,9 @@ instance HasAbilities TheEndOfAllThings where
       You
       EncounterCardSource
     , mkAbility x 2
-    $ ForcedAbility
-    $ EnemyDefeated Timing.When Anyone
-    $ EnemyWithTitle "Yog-Sothoth"
+      $ ForcedAbility
+      $ EnemyDefeated Timing.When Anyone
+      $ EnemyWithTitle "Yog-Sothoth"
     ]
 
 instance RunMessage TheEndOfAllThings where
@@ -46,8 +45,8 @@ instance RunMessage TheEndOfAllThings where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
       yogSothoth <- selectJust (EnemyWithTitle "Yog-Sothoth")
-      a <$ pushAll
-        ([ EnemyAttack iid yogSothoth DamageAny RegularAttack | iid <- investigatorIds ]
+      pushAll
+        $ map (EnemyAttack . enemyAttack yogSothoth) investigatorIds
         <> [RevertAgenda aid]
-        )
+      pure a
     _ -> TheEndOfAllThings <$> runMessage msg attrs

@@ -3672,10 +3672,10 @@ runGameMessage msg g = case msg of
           askMap
       _ -> push $ AskMap askMap
     pure g
-  EnemyWillAttack iid eid damageStrategy attackType -> do
-    modifiers' <- getModifiers (InvestigatorTarget iid)
+  EnemyWillAttack details -> do
+    modifiers' <- getModifiers (attackTarget details)
     cannotBeAttacked <- flip anyM modifiers' $ \case
-      CannotBeAttackedBy matcher -> member eid <$> select matcher
+      CannotBeAttackedBy matcher -> member (attackEnemy details) <$> select matcher
       _ -> pure False
     if not cannotBeAttacked
       then do
@@ -3684,31 +3684,31 @@ runGameMessage msg g = case msg of
           Just (EnemyAttacks as) -> do
             _ <- popMessage
             push $ EnemyAttacks
-              (EnemyAttack iid eid damageStrategy attackType : as)
+              (EnemyAttack details : as)
           Just aoo@(CheckAttackOfOpportunity _ _) -> do
             _ <- popMessage
             pushAll [aoo, msg]
-          Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
+          Just (EnemyWillAttack details2) -> do
             _ <- popMessage
-            modifiers2' <- getModifiers (InvestigatorTarget iid2)
+            modifiers2' <- getModifiers (attackTarget details2)
             cannotBeAttacked2 <- flip anyM modifiers2' $ \case
-              CannotBeAttackedBy matcher -> member eid2 <$> select matcher
+              CannotBeAttackedBy matcher -> member (attackEnemy details2) <$> select matcher
               _ -> pure False
             if not cannotBeAttacked2
               then push $ EnemyAttacks
-                [ EnemyAttack iid eid damageStrategy attackType
-                , EnemyAttack iid2 eid2 damageStrategy2 attackType2
+                [ EnemyAttack details
+                , EnemyAttack details2
                 ]
               else push
-                $ EnemyAttacks [EnemyAttack iid eid damageStrategy attackType]
-          _ -> push (EnemyAttack iid eid damageStrategy attackType)
+                $ EnemyAttacks [EnemyAttack details]
+          _ -> push (EnemyAttack details)
         pure g
       else pure g
   EnemyAttacks as -> do
     mNextMessage <- peekMessage
     let
       toUI msg' = case msg' of
-        EnemyAttack _ eid _ _ -> targetLabel eid [msg']
+        EnemyAttack details -> targetLabel (attackEnemy details) [msg']
         _ -> error "unhandled"
     case mNextMessage of
       Just (EnemyAttacks as2) -> do
@@ -3717,10 +3717,10 @@ runGameMessage msg g = case msg of
       Just aoo@(CheckAttackOfOpportunity _ _) -> do
         _ <- popMessage
         pushAll [aoo, msg]
-      Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
+      Just (EnemyWillAttack details2) -> do
         _ <- popMessage
         push $ EnemyAttacks
-          (EnemyAttack iid2 eid2 damageStrategy2 attackType2 : as)
+          (EnemyAttack details2 : as)
       _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) $ map toUI as
     pure g
   When (AssetDefeated aid) -> do
@@ -3926,11 +3926,8 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       enemyId = toId enemy
-    push $ EnemyWillAttack
-      iid
-      enemyId
-      (enemyDamageStrategy $ toAttrs enemy)
-      RegularAttack
+    push $ EnemyWillAttack $ (enemyAttack enemyId iid)
+      { attackDamageStrategy = enemyDamageStrategy (toAttrs enemy) }
     pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
   EndEnemy -> do
     pushAll . (: [EndPhase]) =<< checkWindows

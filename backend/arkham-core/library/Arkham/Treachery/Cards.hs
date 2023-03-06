@@ -281,6 +281,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , vortexOfTime
   , wallsClosingIn
   , watchersGaze
+  , watchersGrasp
   , whispersInTheDark
   , whispersInYourHeadAnxiety
   , whispersInYourHeadDismay
@@ -1212,6 +1213,11 @@ terribleSecret = (weakness "05015" "Terrible Secret")
 the13thVision :: CardDef
 the13thVision = (basicWeakness "05041" "The 13th Vision")
   { cdCardTraits = singleton Omen
+  }
+
+watchersGrasp :: CardDef
+watchersGrasp = (treachery "05087" "Watcher's Grasp" TheWatcher 2)
+  { cdCardTraits = setFromList [Power, Spectral]
   }
 
 whispersInTheDark :: CardDef

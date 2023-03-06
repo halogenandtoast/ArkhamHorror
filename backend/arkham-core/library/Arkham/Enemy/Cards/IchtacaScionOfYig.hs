@@ -64,7 +64,7 @@ instance RunMessage IchtacaScionOfYig where
       pure e
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ InitiateEnemyAttack iid (toId attrs) RegularAttack
+        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
         pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do

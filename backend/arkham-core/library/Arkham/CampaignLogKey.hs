@@ -158,6 +158,7 @@ data CampaignLogKey
   | DisappearedIntoTheMist
   | WasPulledIntoTheSpectralRealm
   | PiecesOfEvidenceWereLeftBehind
+  | YouAreBeingHunted
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

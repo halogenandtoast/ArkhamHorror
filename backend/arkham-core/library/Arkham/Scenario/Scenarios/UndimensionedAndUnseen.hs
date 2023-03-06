@@ -274,7 +274,7 @@ instance RunMessage UndimensionedAndUnseen where
                 == "02255"
                 && (action `elem` [Action.Evade, Action.Fight])
                 )
-                (push $ EnemyAttack iid eid DamageAny RegularAttack)
+                (push $ EnemyAttack $ enemyAttack eid iid)
             _ -> pure s
         _ -> pure s
     RequestedPlayerCard iid source mcard | isSource attrs source -> do

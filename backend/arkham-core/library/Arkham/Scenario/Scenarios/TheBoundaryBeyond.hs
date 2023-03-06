@@ -110,24 +110,63 @@ instance RunMessage TheBoundaryBeyond where
       isStandalone <- getIsStandalone
 
       if isStandalone
-         then pushAll [story iids introPart1, story iids introPart2]
-         else pushAll $
-           [story iids introPart1]
-           <> (if forgedABondWithIchtaca
-                then [ story iids ichtacasQuest ]
-                else story iids silentJourney : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingHand (-2)]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids])
-           <> (if foundTheMissingRelic
-                then
-                  story iids arcaneThrumming : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort : [AddCampaignCardToDeck ownerId Assets.relicOfAgesForestallingTheFuture | ownerId <- maybeToList mRelicOwner]
-                else [ story iids growingConcern ])
-           <> (if rescuedAlejandro
-                then story iids alejandrosThoughts : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingResources 2]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids]
-                else [ story iids anEmptySeat ])
-           <> (if isNothing withGasoline
-                 then story iids outOfGas : [CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [CannotMulligan]) (toSource attrs) (InvestigatorTarget iid) | iid <- iids]
-                 else [])
-           <> [ UseSupply iid Gasoline | iid <- maybeToList withGasoline ]
-           <> [story iids introPart2]
+        then pushAll [story iids introPart1, story iids introPart2]
+        else
+          pushAll
+          $ [story iids introPart1]
+          <> (if forgedABondWithIchtaca
+               then [story iids ichtacasQuest]
+               else
+                 story iids silentJourney
+                   : [ CreateWindowModifierEffect
+                         EffectSetupWindow
+                         (EffectModifiers
+                         $ toModifiers attrs [StartingHand (-2)]
+                         )
+                         (toSource attrs)
+                         (InvestigatorTarget iid)
+                     | iid <- iids
+                     ]
+             )
+          <> (if foundTheMissingRelic
+               then
+                 story iids arcaneThrumming
+                 : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+                 : [ AddCampaignCardToDeck
+                       ownerId
+                       Assets.relicOfAgesForestallingTheFuture
+                   | ownerId <- maybeToList mRelicOwner
+                   ]
+               else [story iids growingConcern]
+             )
+          <> (if rescuedAlejandro
+               then
+                 story iids alejandrosThoughts
+                   : [ CreateWindowModifierEffect
+                         EffectSetupWindow
+                         (EffectModifiers
+                         $ toModifiers attrs [StartingResources 2]
+                         )
+                         (toSource attrs)
+                         (InvestigatorTarget iid)
+                     | iid <- iids
+                     ]
+               else [story iids anEmptySeat]
+             )
+          <> (if isNothing withGasoline
+               then
+                 story iids outOfGas
+                   : [ CreateWindowModifierEffect
+                         EffectSetupWindow
+                         (EffectModifiers $ toModifiers attrs [CannotMulligan])
+                         (toSource attrs)
+                         (InvestigatorTarget iid)
+                     | iid <- iids
+                     ]
+               else []
+             )
+          <> [ UseSupply iid Gasoline | iid <- maybeToList withGasoline ]
+          <> [story iids introPart2]
       pure s
     SetTokensForScenario -> do
       whenM getIsStandalone $ push $ SetTokens standaloneTokens
@@ -189,7 +228,8 @@ instance RunMessage TheBoundaryBeyond where
           removeEachFromDeck encounterDeck' explorationDeckTreacheries
 
 
-      placeMetropolitanCathedral <- placeLocationCard_ Locations.metropolitanCathedral
+      placeMetropolitanCathedral <- placeLocationCard_
+        Locations.metropolitanCathedral
       (zocaloId, placeZocalo) <- placeLocationCard Locations.zocalo
       placeTempleRuins <- placeLocationCard_ Locations.templeRuins
       placeXochimilco <- placeLocationCard_ Locations.xochimilco
@@ -205,17 +245,17 @@ instance RunMessage TheBoundaryBeyond where
         $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeMetropolitanCathedral
-        , placeZocalo
-        , placeTempleRuins
-        , placeXochimilco
-        , placeChapultepecPark
-        , placeCoyoacan
-        ]
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeMetropolitanCathedral
+          , placeZocalo
+          , placeTempleRuins
+          , placeXochimilco
+          , placeChapultepecPark
+          , placeCoyoacan
+          ]
         <> [ chooseOne
                iid
                [ targetLabel lid [MoveTo (toSource attrs) iid lid]
@@ -295,15 +335,11 @@ instance RunMessage TheBoundaryBeyond where
           when (notNull serpents) $ if isEasyStandard attrs
             then push $ chooseOne
               iid
-              [ targetLabel
-                  serpent
-                  [EnemyAttack iid serpent DamageAny RegularAttack]
+              [ targetLabel serpent [EnemyAttack $ enemyAttack serpent iid]
               | serpent <- serpents
               ]
             else pushAll
-              [ EnemyAttack iid serpent DamageAny RegularAttack
-              | serpent <- serpents
-              ]
+              [ EnemyAttack $ enemyAttack serpent iid | serpent <- serpents ]
         ElderThing | isEasyStandard attrs -> do
           targets <-
             selectListMap LocationTarget

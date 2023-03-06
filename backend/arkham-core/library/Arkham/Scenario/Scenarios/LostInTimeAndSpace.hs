@@ -180,7 +180,7 @@ instance RunMessage LostInTimeAndSpace where
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
+            Just eid -> push (EnemyAttack $ enemyAttack eid iid)
         _ -> pure ()
     After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case tokenFace token of
@@ -194,7 +194,7 @@ instance RunMessage LostInTimeAndSpace where
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
+            Just eid -> push (EnemyAttack $ enemyAttack eid iid)
         _ -> pure ()
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
       (locationId, placement) <- placeLocation (EncounterCard card)

@@ -1293,7 +1293,7 @@ passesEnemyCriteria _iid source windows' criterion = selectAny
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
       let
         getAttackingEnemy = \case
-          Window _ (Window.EnemyAttacks _ eid _) -> Just eid
+          Window _ (Window.EnemyAttacks details) -> Just $ attackEnemy details
           _ -> Nothing
       in
         case mapMaybe getAttackingEnemy windows' of
@@ -1910,30 +1910,36 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyWouldAttack timingMatcher whoMatcher enemyAttackMatcher enemyMatcher
     -> case window' of
-      Window t (Window.EnemyWouldAttack who enemyId enemyAttackType)
-        | timingMatcher == t -> andM
-          [ matchWho iid who whoMatcher
-          , enemyMatches enemyId enemyMatcher
-          , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
-          ]
+      Window t (Window.EnemyWouldAttack details) | timingMatcher == t ->
+        case attackTarget details of
+          InvestigatorTarget who -> andM
+            [ matchWho iid who whoMatcher
+            , enemyMatches (attackEnemy details) enemyMatcher
+            , pure $ enemyAttackMatches (attackType details) enemyAttackMatcher
+            ]
+          _ -> pure False
       _ -> pure False
   Matcher.EnemyAttacks timingMatcher whoMatcher enemyAttackMatcher enemyMatcher
     -> case window' of
-      Window t (Window.EnemyAttacks who enemyId enemyAttackType)
-        | timingMatcher == t -> andM
-          [ matchWho iid who whoMatcher
-          , enemyMatches enemyId enemyMatcher
-          , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
-          ]
+      Window t (Window.EnemyAttacks details) | timingMatcher == t ->
+        case attackTarget details of
+          InvestigatorTarget who -> andM
+            [ matchWho iid who whoMatcher
+            , enemyMatches (attackEnemy details) enemyMatcher
+            , pure $ enemyAttackMatches (attackType details) enemyAttackMatcher
+            ]
+          _ -> pure False
       _ -> pure False
   Matcher.EnemyAttacksEvenIfCancelled timingMatcher whoMatcher enemyAttackMatcher enemyMatcher
     -> case window' of
-      Window t (Window.EnemyAttacksEvenIfCancelled who enemyId enemyAttackType)
-        | timingMatcher == t -> andM
-          [ matchWho iid who whoMatcher
-          , enemyMatches enemyId enemyMatcher
-          , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
-          ]
+      Window t (Window.EnemyAttacksEvenIfCancelled details) | timingMatcher == t ->
+        case attackTarget details of
+          InvestigatorTarget who -> andM
+            [ matchWho iid who whoMatcher
+            , enemyMatches (attackEnemy details) enemyMatcher
+            , pure $ enemyAttackMatches (attackType details) enemyAttackMatcher
+            ]
+          _ -> pure False
       _ -> pure False
   Matcher.EnemyAttacked timingMatcher whoMatcher sourceMatcher enemyMatcher ->
     case window' of

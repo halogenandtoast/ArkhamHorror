@@ -42,7 +42,7 @@ instance RunMessage DanceOfTheYellowKing where
               eid
               [ MoveUntil lid (EnemyTarget eid)
               , EnemyEngageInvestigator eid iid
-              , EnemyWillAttack iid eid DamageAny RegularAttack
+              , EnemyWillAttack $ enemyAttack eid iid
               ]
           | eid <- lunatics
           ]

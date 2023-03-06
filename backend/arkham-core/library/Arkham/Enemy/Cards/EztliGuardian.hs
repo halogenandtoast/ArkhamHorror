@@ -55,11 +55,9 @@ instance RunMessage EztliGuardian where
         selectList $ InvestigatorAt $ ConnectedFrom $ LocationWithEnemy
           (EnemyWithId $ toId attrs)
       insertAfterMatching
-        [ EnemyWillAttack
-            iid
-            (toId attrs)
-            (enemyDamageStrategy attrs)
-            RegularAttack
+        [ EnemyWillAttack $ (enemyAttack (toId attrs) iid)
+            { attackDamageStrategy = enemyDamageStrategy attrs
+            }
         | iid <- adjacentInvestigators
         ]
         (== EnemiesAttack)

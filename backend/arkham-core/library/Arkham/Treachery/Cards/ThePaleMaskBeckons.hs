@@ -30,7 +30,7 @@ instance RunMessage ThePaleMaskBeckons where
       t <$ case mTheManInThePallidMask of
         Just enemy -> do
           iids <- getInvestigatorIds
-          pushAll $ map (\i -> EnemyAttack i enemy DamageAny RegularAttack) iids
+          pushAll $ map (EnemyAttack . enemyAttack enemy) iids
         Nothing -> do
           enemy <- getCampaignStoryCard Cards.theManInThePallidMask
           pushAll

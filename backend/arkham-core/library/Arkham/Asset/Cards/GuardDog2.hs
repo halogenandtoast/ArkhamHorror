@@ -28,14 +28,22 @@ guardDog2 = ally GuardDog2 Cards.guardDog2 (4, 2)
 
 instance HasAbilities GuardDog2 where
   getAbilities (GuardDog2 x) =
-    [ restrictedAbility x 1 (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy)) $ FastAbility $ ExhaustCost $ toTarget x
-    , restrictedAbility x 2 ControlsThis $ ReactionAbility
-        (AssetDealtDamage
-          Timing.When
-          (SourceIsEnemyAttack AnyEnemy)
-          (AssetWithId (toId x))
+    [ restrictedAbility
+        x
+        1
+        (ControlsThis <> EnemyCriteria
+          (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy)
         )
-        Free
+      $ FastAbility
+      $ ExhaustCost
+      $ toTarget x
+    , restrictedAbility x 2 ControlsThis $ ReactionAbility
+      (AssetDealtDamage
+        Timing.When
+        (SourceIsEnemyAttack AnyEnemy)
+        (AssetWithId (toId x))
+      )
+      Free
     ]
 
 toEnemyId :: [Window] -> EnemyId
@@ -49,8 +57,17 @@ toEnemyId (_ : ws) = toEnemyId ws
 instance RunMessage GuardDog2 where
   runMessage msg a@(GuardDog2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      enemies <- selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy
-      push $ chooseOrRunOne iid [targetLabel enemy [EngageEnemy iid enemy False, InitiateEnemyAttack iid enemy RegularAttack] | enemy <- enemies]
+      enemies <-
+        selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy
+      push $ chooseOrRunOne
+        iid
+        [ targetLabel
+            enemy
+            [ EngageEnemy iid enemy False
+            , InitiateEnemyAttack $ enemyAttack enemy iid
+            ]
+        | enemy <- enemies
+        ]
       pure a
     UseCardAbility _ source 2 (toEnemyId -> eid) _ | isSource attrs source -> do
       push $ EnemyDamage eid $ nonAttack source 1

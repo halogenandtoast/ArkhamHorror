@@ -84,8 +84,8 @@ data WindowType
   | EndOfGame
   | EndTurn InvestigatorId
   | EnemyAttacked InvestigatorId Source EnemyId
-  | EnemyAttacks InvestigatorId EnemyId EnemyAttackType
-  | EnemyAttacksEvenIfCancelled InvestigatorId EnemyId EnemyAttackType
+  | EnemyAttacks EnemyAttackDetails
+  | EnemyAttacksEvenIfCancelled EnemyAttackDetails
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
   | EnemyDefeated (Maybe InvestigatorId) EnemyId
   | EnemyEngaged InvestigatorId EnemyId
@@ -93,7 +93,7 @@ data WindowType
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
   | EnemySpawns EnemyId LocationId
-  | EnemyWouldAttack InvestigatorId EnemyId EnemyAttackType
+  | EnemyWouldAttack EnemyAttackDetails
   | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
   | Entering InvestigatorId LocationId

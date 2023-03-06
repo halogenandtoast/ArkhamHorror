@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Attack
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
@@ -44,7 +45,7 @@ instance RunMessage Aquinnah3 where
   runMessage msg a@(Aquinnah3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack _ eid _ _ : queue' -> (queue', eid)
+        PerformEnemyAttack details : queue' -> (queue', attackEnemy details)
         _ -> error "unhandled"
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId

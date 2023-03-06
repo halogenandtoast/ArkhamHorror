@@ -84,5 +84,5 @@ instance RunMessage BidingItsTime where
         )
     FailedSkillTest iid _ source (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | isSource attrs source
-      -> a <$ push (EnemyAttack iid eid DamageAny RegularAttack)
+      -> a <$ push (EnemyAttack $ enemyAttack eid iid)
     _ -> BidingItsTime <$> runMessage msg attrs

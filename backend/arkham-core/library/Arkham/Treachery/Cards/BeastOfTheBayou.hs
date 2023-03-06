@@ -32,8 +32,7 @@ instance RunMessage BeastOfTheBayou where
               (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> pushAll [PlaceDoomOnAgenda]
-            xs -> pushAll
-              [ EnemyAttack iid' eid DamageAny RegularAttack | iid' <- xs ]
+            xs -> pushAll $ map (EnemyAttack . enemyAttack eid) xs
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
       -> do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny n 0

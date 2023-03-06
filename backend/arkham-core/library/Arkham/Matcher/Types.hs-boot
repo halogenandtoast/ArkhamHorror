@@ -65,3 +65,11 @@ instance FromJSON TokenMatcher
 instance Hashable TokenMatcher
 instance Show TokenMatcher
 instance Eq TokenMatcher
+
+data PreyMatcher
+
+instance ToJSON PreyMatcher
+instance FromJSON PreyMatcher
+instance Hashable PreyMatcher
+instance Show PreyMatcher
+instance Eq PreyMatcher

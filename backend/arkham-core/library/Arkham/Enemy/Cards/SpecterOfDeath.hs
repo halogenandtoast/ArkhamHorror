@@ -40,6 +40,6 @@ instance HasAbilities SpecterOfDeath where
 instance RunMessage SpecterOfDeath where
   runMessage msg e@(SpecterOfDeath attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ EnemyAttack iid (toId attrs) (enemyDamageStrategy attrs) RegularAttack
+      push $ EnemyAttack $ (enemyAttack (toId attrs) iid) { attackDamageStrategy = enemyDamageStrategy attrs }
       pure e
     _ -> SpecterOfDeath <$> runMessage msg attrs

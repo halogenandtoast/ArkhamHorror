@@ -47,6 +47,6 @@ instance RunMessage Ichtaca where
         pure e
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        push $ InitiateEnemyAttack iid (toId attrs) RegularAttack
+        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
         pure e
     _ -> Ichtaca <$> runMessage msg attrs

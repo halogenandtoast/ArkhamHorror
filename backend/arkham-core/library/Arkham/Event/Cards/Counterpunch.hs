@@ -5,6 +5,7 @@ module Arkham.Event.Cards.Counterpunch
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -23,7 +24,7 @@ counterpunch = event Counterpunch Cards.counterpunch
 
 toEnemy :: [Window] -> EnemyId
 toEnemy [] = error "invalid call"
-toEnemy (Window _ (Window.EnemyAttacksEvenIfCancelled _ eid _) : _) = eid
+toEnemy (Window _ (Window.EnemyAttacksEvenIfCancelled details) : _) = attackEnemy details
 toEnemy (_ : xs) = toEnemy xs
 
 instance RunMessage Counterpunch where

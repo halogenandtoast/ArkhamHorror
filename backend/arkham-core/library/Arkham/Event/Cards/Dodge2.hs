@@ -2,6 +2,7 @@ module Arkham.Event.Cards.Dodge2 where
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
@@ -28,7 +29,7 @@ instance RunMessage Dodge2 where
   runMessage msg e@(Dodge2 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack _ enemyId _ _ : _ -> enemyId
+        PerformEnemyAttack details : _ -> attackEnemy details
         _ -> error "unhandled"
       pushAll [CancelNext (toSource attrs) AttackMessage, beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillAgility 1]
       pure $ Dodge2 (attrs `with` Metadata (Just enemyId))

@@ -7,13 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Attack
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Asset.Runner
+import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Placement
@@ -48,10 +48,10 @@ instance RunMessage MaskedCarnevaleGoer_19 where
         lid = locationOf attrs
         enemyId = EnemyId $ toCardId attrs
       investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
-      a <$ pushAll
-        (Flip iid (InvestigatorSource iid) (toTarget attrs)
-        : [ EnemyAttack iid' enemyId DamageAny RegularAttack | iid' <- investigatorIds ]
-        )
+      pushAll
+        $ Flip iid (InvestigatorSource iid) (toTarget attrs)
+        : map (EnemyAttack . enemyAttack enemyId) investigatorIds
+      pure a
     Flip _ _ target | isTarget attrs target -> do
       let
         lid = locationOf attrs

@@ -66,6 +66,6 @@ instance RunMessage ScholarFromYith where
         pure e
     FailedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ InitiateEnemyAttack iid (toId attrs) RegularAttack
+        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
         pure e
     _ -> ScholarFromYith <$> runMessage msg attrs

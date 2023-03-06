@@ -54,7 +54,6 @@ instance HasTokenValue DisappearanceAtTheTwilightEstate where
 instance RunMessage DisappearanceAtTheTwilightEstate where
   runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = case msg of
     Setup -> do
-      investigatorIds <- allInvestigatorIds
       -- At Death's Doorstep is only locations so we will manually gather
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.theSpectralWatcher]

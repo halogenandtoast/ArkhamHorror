@@ -848,7 +848,12 @@ instance RunMessage EnemyAttrs where
         spawnAtMatcher = getModifiedSpawnAt modifiers'
       case spawnAtMatcher of
         Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
-        Just matcher -> spawnAt enemyId matcher
+        Just matcher -> do
+          let applyMatcherExclusions ms (SpawnAtFirst sas) = SpawnAtFirst (map (applyMatcherExclusions ms) sas)
+              applyMatcherExclusions [] m = m
+              applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnLocation m) = applyMatcherExclusions xs (SpawnLocation $ m <> NotLocation n)
+              applyMatcherExclusions (_ :xs) m = applyMatcherExclusions xs m
+          spawnAt enemyId (applyMatcherExclusions modifiers' matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       lids <- selectList locationMatcher

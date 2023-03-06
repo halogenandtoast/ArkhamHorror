@@ -19,6 +19,7 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message
+import Arkham.Name
 import Data.HashMap.Strict qualified as HashMap
 
 instance RunMessage CampaignAttrs where
@@ -112,7 +113,10 @@ instance RunMessage CampaignAttrs where
       pure $ a & logL . recorded %~ insertSet key & logL . orderedKeys %~ (<> [key])
     RecordSet key cardCodes ->
       pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
-    RecordSetInsert key cardCodes ->
+    RecordSetInsert key cardCodes -> do
+      let defs = mapMaybe lookupCardDef cardCodes
+      for_ defs $ \def ->
+        send $ "Record \"" <> format (toName def) <> " " <> format key <> "\""
       pure $ case a ^. logL . recordedSets . at key of
         Nothing ->
           a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)

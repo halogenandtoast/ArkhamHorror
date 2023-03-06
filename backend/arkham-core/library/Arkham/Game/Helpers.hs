@@ -1616,6 +1616,11 @@ windowMatches iid source window' = \case
           aid
           agendaMatcher
       _ -> pure False
+  Matcher.PlacedDoomCounter whenMatcher targetMatcher ->
+    case window' of
+      Window t (Window.PlacedDoom target _) | t == whenMatcher ->
+        targetMatches target targetMatcher
+      _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror (InvestigatorTarget iid') n)

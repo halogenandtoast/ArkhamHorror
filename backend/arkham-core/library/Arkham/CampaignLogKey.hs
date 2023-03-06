@@ -153,6 +153,11 @@ data CampaignLogKey
   | TheInvestigatorsSealedTheRelicOfAgesForever
   -- ^ The Forgotten Age
   | MissingPersons
+  | WasTakenByTheWatcher
+  | WasClaimedBySpecters
+  | DisappearedIntoTheMist
+  | WasPulledIntoTheSpectralRealm
+  | PiecesOfEvidenceWereLeftBehind
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

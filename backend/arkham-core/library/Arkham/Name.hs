@@ -4,6 +4,7 @@ module Arkham.Name
 
 import Arkham.Prelude
 
+import Arkham.Classes.GameLogger
 import Arkham.Json
 import Arkham.Helpers
 
@@ -61,3 +62,6 @@ instance FromJSON Name where
 
 nameToLabel :: Name -> Text
 nameToLabel = pack . toLabel . replaceNonLetters . unpack . nameTitle
+
+instance ToGameLoggerFormat Name where
+  format = display

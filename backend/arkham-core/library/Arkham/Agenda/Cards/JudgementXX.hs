@@ -5,22 +5,79 @@ module Arkham.Agenda.Cards.JudgementXX
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Ability
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.CampaignLogKey
 import Arkham.Classes
+import Arkham.DefeatedBy
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Message
+import Arkham.Investigator.Types ( Field (InvestigatorCardCode) )
+import Arkham.Matcher
+import Arkham.Message hiding ( InvestigatorDefeated )
+import Arkham.Projection
+import Arkham.Source
+import Arkham.Timing qualified as Timing
+import Arkham.Trait (Trait(Monster))
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype JudgementXX = JudgementXX AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 judgementXX :: AgendaCard JudgementXX
 judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)
 
+instance HasAbilities JudgementXX where
+  getAbilities (JudgementXX a) =
+    [ mkAbility a 1 $ ForcedAbility $ PlacedDoomCounter Timing.After AnyTarget
+    , mkAbility a 2 $ ForcedAbility $ InvestigatorDefeated
+      Timing.When
+      AnySource
+      ByAny
+      You
+    ]
+
+toDefeatedInfo :: [Window] -> Source
+toDefeatedInfo [] = error "Invalid call"
+toDefeatedInfo (Window _ (Window.InvestigatorDefeated source defeatedBy _) : _) =
+  source
+toDefeatedInfo (_ : xs) = toDefeatedInfo xs
+
 instance RunMessage JudgementXX where
-  runMessage msg a@(JudgementXX attrs) =
-    case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-        a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-      _ -> JudgementXX <$> runMessage msg attrs
+  runMessage msg a@(JudgementXX attrs) = case msg of
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      iids <- getInvestigatorIds
+      n <- getDoomCount
+      let damage = if n >= 5 then 2 else 1
+      pushAll
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny damage damage
+        | iid <- iids
+        ]
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _
+      -> do
+      push $ RevertAgenda $ toId attrs
+      cardCode <- field InvestigatorCardCode iid
+      let
+        handleOther = do
+          n <- getDoomCount
+          let key = if n >= 5 && isSource attrs source then DisappearedIntoTheMist else WasPulledIntoTheSpectralRealm
+          push $ RecordSetInsert key [cardCode]
+      case source of
+        (EnemyAttackSource eid) -> do
+          isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
+          isMonster <- eid <=~> EnemyWithTrait Monster
+          when isTheSpectralWatcher $ push $ RecordSetInsert
+            WasTakenByTheWatcher
+            [cardCode]
+          when isMonster $ push $ RecordSetInsert WasClaimedBySpecters [cardCode]
+          when (not isMonster && not isTheSpectralWatcher) handleOther
+        _ -> handleOther
+      push $ AdvanceAgenda $ toId attrs
+      pure a
+    _ -> JudgementXX <$> runMessage msg attrs

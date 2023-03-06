@@ -506,6 +506,7 @@ data WindowMatcher
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
+  | PlacedDoomCounter Timing TargetMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher

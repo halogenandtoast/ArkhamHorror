@@ -8,6 +8,7 @@ module Arkham.PlayerCard
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards (allEncounterInvestigatorCards)
 import Arkham.Asset.Cards (allPlayerAssetCards, allSpecialPlayerAssetCards)
 import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
@@ -41,6 +42,7 @@ allPlayerCards =
     <> allPlayerEventCards
     <> allPlayerSkillCards
     <> singletonMap "01000" randomWeakness
+    <> allEncounterInvestigatorCards -- technically player
 
 randomWeakness :: CardDef
 randomWeakness = CardDef

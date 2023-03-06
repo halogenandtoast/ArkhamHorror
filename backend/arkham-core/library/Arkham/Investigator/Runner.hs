@@ -2385,6 +2385,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DisengageEnemy iid eid | iid == investigatorId -> do
     canDisengage <- iid <=~> InvestigatorCanDisengage
     pure $ if canDisengage then a & engagedEnemiesL %~ deleteSet eid else a
+  DisengageEnemyFromAll eid -> do
+    canDisengage <- investigatorId <=~> InvestigatorCanDisengage
+    pure $ if canDisengage then a & engagedEnemiesL %~ deleteSet eid else a
   EndSearch iid _ (InvestigatorTarget iid') cardSources
     | iid == investigatorId -> do
       push (SearchEnded iid)

@@ -20,6 +20,7 @@ export interface Treachery {
   clues?: number;
   horror?: number;
   resources?: number;
+  doom?: number;
   placement: TreacheryPlacement;
 }
 
@@ -29,5 +30,6 @@ export const treacheryDecoder = JsonDecoder.object<Treachery>({
   clues: JsonDecoder.optional(JsonDecoder.number),
   horror: JsonDecoder.optional(JsonDecoder.number),
   resources: JsonDecoder.optional(JsonDecoder.number),
+  doom: JsonDecoder.optional(JsonDecoder.number),
   placement: treacheryPlacementDecoder,
 }, 'Treachery');

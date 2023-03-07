@@ -33,6 +33,8 @@ instance RunMessage TreacheryAttrs where
       pure $ a & placementL .~ placement
     PlaceResources target n | isTarget a target -> do
       pure $ a & resourcesL +~ n
+    PlaceDoom target n | isTarget a target -> do
+      pure $ a & doomL +~ n
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a ->
       a <$ push (Discard GameSource $ toTarget a)
     Discarded target _ _ | target `elem` treacheryAttachedTarget a ->

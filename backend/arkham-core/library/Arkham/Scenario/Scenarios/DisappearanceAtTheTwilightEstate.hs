@@ -10,6 +10,7 @@ import Arkham.Act.Types ( Field (..) )
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -182,10 +183,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
             when (action `elem` [Action.Fight, Action.Evade]) $ do
-              hauntedAbilities <-
-                selectList $ HauntedAbility <> AbilityOnLocation
-                  (locationWithInvestigator iid)
-              unless (null hauntedAbilities) $ push $ chooseOneAtATime
+              hauntedAbilities <- getHauntedAbilities iid
+              when (notNull hauntedAbilities) $ push $ chooseOneAtATime
                 iid
                 [ AbilityLabel iid ab [] [] | ab <- hauntedAbilities ]
         _ -> pure ()

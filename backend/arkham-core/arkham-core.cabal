@@ -615,6 +615,7 @@ library
       Arkham.Campaigns.TheCircleUndone.CampaignSteps
       Arkham.Campaigns.TheCircleUndone.ChaosBag
       Arkham.Campaigns.TheCircleUndone.FlavorText
+      Arkham.Campaigns.TheCircleUndone.Helpers
       Arkham.Campaigns.TheCircleUndone.Import
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag

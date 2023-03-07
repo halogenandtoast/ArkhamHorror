@@ -93,6 +93,11 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
         type="resource"
         :amount="treachery.resources"
       />
+      <PoolItem
+        v-if="treachery.doom && treachery.doom > 0"
+        type="doom"
+        :amount="treachery.doom"
+      />
     </div>
   </div>
 </template>

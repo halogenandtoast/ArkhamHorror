@@ -91,6 +91,9 @@ drawnFromL = lens treacheryDrawnFrom $ \m x -> m { treacheryDrawnFrom = x }
 placementL :: Lens' TreacheryAttrs TreacheryPlacement
 placementL = lens treacheryPlacement $ \m x -> m { treacheryPlacement = x }
 
+doomL :: Lens' TreacheryAttrs Int
+doomL = lens treacheryDoom $ \m x -> m { treacheryDoom = x }
+
 cluesL :: Lens' TreacheryAttrs Int
 cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
 

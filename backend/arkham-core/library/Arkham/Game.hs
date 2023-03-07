@@ -4575,11 +4575,12 @@ preloadModifiers g = case gameMode g of
       modifierFilter =
         if gameInSetup g then modifierActiveDuringSetup else const True
     allModifiers <- getMonoidalHashMap <$> foldMapM
-      (`toTargetModifiers` (entities <> inHandEntities))
+      (`toTargetModifiers` (entities <> inHandEntities <> discardEntities))
       (SkillTestTarget
       : map TokenTarget tokens
       <> map TokenFaceTarget [minBound .. maxBound]
       <> map toTarget entities
+      <> map toTarget discardEntities
       <> map CardTarget cards
       <> map (CardIdTarget . toCardId) cards
       <> map
@@ -4591,6 +4592,7 @@ preloadModifiers g = case gameMode g of
       $ g { gameModifiers = HashMap.map (filter modifierFilter) allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
+  discardEntities = overEntities (: []) (gameEncounterDiscardEntities g)
   inHandEntities =
     concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe

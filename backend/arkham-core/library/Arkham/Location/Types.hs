@@ -242,8 +242,6 @@ instance SourceEntity LocationAttrs where
   toSource = LocationSource . toId
   isSource LocationAttrs { locationId } (LocationSource lid) =
     locationId == lid
-  isSource LocationAttrs { locationId } (ProxySource (LocationSource lid) _) =
-    locationId == lid
   isSource _ _ = False
 
 

@@ -1082,6 +1082,7 @@ netherMist :: CardDef
 netherMist = (enemy "05100" "Nether Mist" SpectralPredators 1)
   { cdCardTraits = setFromList [Monster, Spectral]
   , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+  , cdVictoryPoints = Just 1
   }
 
 shadowHound :: CardDef

@@ -105,7 +105,7 @@ instance RunMessage JeromeDavids where
       let
         card = fromJustNote "must be in hand"
           $ find ((== cardId) . toCardId) (investigatorHand attrs)
-      push $ RemovedFromGame card
+      pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do
       pure i

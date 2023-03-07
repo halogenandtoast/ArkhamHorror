@@ -2175,6 +2175,28 @@ instance Projection (DiscardedEntity Asset) where
     case f of
       DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
 
+instance Projection (DiscardedEntity Treachery) where
+  field f tid = do
+    let missingTreachery = "Unknown treachery: " <> show tid
+    t <-
+      fromJustNote missingTreachery
+      . lookup tid
+      . entitiesTreacheries
+      . gameEncounterDiscardEntities
+      <$> getGame
+    let attrs = toAttrs t
+    case f of
+      DiscardedTreacheryKeywords -> do
+        modifiers' <- foldMapM
+          getModifiers
+          [toTarget t, CardIdTarget $ toCardId t]
+        let
+          additionalKeywords = foldl' applyModifier [] modifiers'
+          applyModifier ks = \case
+            AddKeyword k -> k : ks
+            _ -> ks
+        pure $ cdKeywords (toCardDef attrs) <> setFromList additionalKeywords
+
 instance Projection Act where
   field f aid = do
     a <- getAct aid
@@ -3256,10 +3278,11 @@ runGameMessage msg g = case msg of
       [Window Timing.When (Window.LeavePlay $ EnemyTarget eid)]
     g <$ push window
   RemoveTreachery tid -> do
+    treachery <- getTreachery tid
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
-    pure $ g & entitiesL . treacheriesL %~ deleteMap tid
+    pure $ g & entitiesL . treacheriesL %~ deleteMap tid & encounterDiscardEntitiesL . treacheriesL . at tid ?~ treachery
   When (RemoveLocation lid) -> do
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
@@ -4327,10 +4350,20 @@ runGameMessage msg g = case msg of
     keywords' <- case source of
       AssetSource _ -> pure mempty
       EnemySource eid -> field EnemyKeywords eid
-      TreacherySource tid -> field TreacheryKeywords tid
+      TreacherySource tid -> do
+        inDiscard <- selectNone $ TreacheryWithId tid
+        if inDiscard
+           then field DiscardedTreacheryKeywords tid
+           else field TreacheryKeywords tid
       LocationSource lid -> field LocationKeywords lid
       _ -> error "oh, missed a source for after revelation"
-    g <$ pushAll [ Surge iid source | Keyword.Surge `member` keywords' ]
+    pushAll [ Surge iid source | Keyword.Surge `member` keywords' ]
+    let
+      removeTreacheryLens =
+        case source of
+          TreacherySource tid -> encounterDiscardEntitiesL . treacheriesL %~ deleteMap tid
+          _ -> id
+    pure $ g & removeTreacheryLens
   DrewTreachery iid mdeck (EncounterCard card) -> do
     let
       treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid
@@ -4470,16 +4503,15 @@ runGameMessage msg g = case msg of
             pure $ g & entitiesL . eventsL %~ deleteMap eid
   Discard _ (TreacheryTarget tid) -> do
     treachery <- getTreachery tid
-    let card = lookupCard (toCardCode treachery) (unTreacheryId tid)
-    case card of
+    case lookupCard (toCardCode treachery) (unTreacheryId tid) of
       PlayerCard pc -> do
         let
           ownerId = fromJustNote "owner was not set" $ treacheryOwner $ toAttrs
             treachery
-        push (AddToDiscard ownerId pc { pcOwner = Just ownerId })
+        push $ AddToDiscard ownerId pc { pcOwner = Just ownerId }
       EncounterCard _ -> pure ()
       VengeanceCard _ -> error "Vengeance card"
-    pure $ g & entitiesL . treacheriesL %~ deleteMap tid
+    pure $ g & entitiesL . treacheriesL %~ deleteMap tid & encounterDiscardEntitiesL . treacheriesL . at tid ?~ treachery
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g

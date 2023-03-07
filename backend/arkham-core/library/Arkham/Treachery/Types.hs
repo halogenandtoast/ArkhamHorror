@@ -38,6 +38,9 @@ class
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
+data instance Field (DiscardedEntity Treachery) :: Type -> Type where
+  DiscardedTreacheryKeywords :: Field (DiscardedEntity Treachery) (HashSet Keyword)
+
 data instance Field Treachery :: Type -> Type where
   TreacheryClues :: Field Treachery Int
   TreacheryResources :: Field Treachery Int

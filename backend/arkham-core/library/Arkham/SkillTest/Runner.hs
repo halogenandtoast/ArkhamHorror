@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.SkillTest as X
 
+import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
@@ -498,7 +499,9 @@ instance RunMessage SkillTest where
                  )
                )
         FailedBy _ n -> do
-          hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator skillTestInvestigator)
+          hauntedAbilities <- case (skillTestTarget, skillTestAction) of
+            (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+            _ -> pure []
           pushAll
             $ [ When
                  (FailedSkillTest
@@ -538,7 +541,7 @@ instance RunMessage SkillTest where
                    skillTestType
                    n
                ]
-            <> [chooseOneAtATime skillTestInvestigator [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities] | notNull hauntedAbilities]
+            <> [chooseOneAtATime skillTestInvestigator [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities] | notNull hauntedAbilities ]
         Unrun -> pure ()
       pure s
     RerunSkillTest -> case skillTestResult of

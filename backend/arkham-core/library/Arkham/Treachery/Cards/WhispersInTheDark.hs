@@ -39,7 +39,7 @@ instance RunMessage WhispersInTheDark where
     UseCardAbility iid (isProxySource attrs -> True) 1 _ _ -> do
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure t
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure t
     _ -> WhispersInTheDark <$> runMessage msg attrs

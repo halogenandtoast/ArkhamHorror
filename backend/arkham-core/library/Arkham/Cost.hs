@@ -125,6 +125,7 @@ data Cost
   | ReleaseTokensCost Int
   | SealTokenCost Token -- internal to track sealed token
   | SupplyCost LocationMatcher Supply
+  | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -135,6 +136,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
   DiscardCombinedCost n ->

@@ -250,6 +250,11 @@ instance RunMessage ActiveCost where
           [] -> error "action expected"
           as -> as
       case cost of
+        ResolveEachHauntedAbility lid -> do
+          hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+          when (notNull hauntedAbilities) $ push $ chooseOneAtATime iid [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+          -- No need to record payment... yet
+          pure c
         OrCost xs -> do
           push $ chooseOne iid $ map
             (\x -> Label

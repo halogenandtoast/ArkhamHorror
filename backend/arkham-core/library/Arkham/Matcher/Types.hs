@@ -280,6 +280,7 @@ data LocationMatcher
   | LocationIs CardCode
   | Anywhere
   | Nowhere
+  | HauntedLocation
   | EmptyLocation
   | AccessibleLocation
   | ConnectedFrom LocationMatcher

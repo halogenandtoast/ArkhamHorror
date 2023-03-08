@@ -1975,7 +1975,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
           allCommittedCards
         committedCardCodes =
-          map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
+          concatMap (map toCardCode) . HashMap.elems $ skillTestCommittedCards
             skillTest
       let
         window =
@@ -2091,7 +2091,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       clueCount <- field LocationClues locationId
       canCommit <- canCommitToAnotherLocation a
       when (locationId == investigatorLocation || canCommit) $ do
-        committedCards <- field InvestigatorCommittedCards iid
+        committedCards <- field InvestigatorCommittedCards investigatorId
         allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
         let
           skillDifficulty = skillTestDifficulty skillTest
@@ -2100,7 +2100,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
             allCommittedCards
           committedCardNames =
-            map (cdName . toCardDef . snd)
+            concatMap (map (cdName . toCardDef))
               . HashMap.elems
               $ skillTestCommittedCards skillTest
         modifiers' <- getModifiers (toTarget a)

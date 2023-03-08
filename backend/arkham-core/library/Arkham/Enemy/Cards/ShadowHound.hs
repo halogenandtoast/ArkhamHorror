@@ -40,9 +40,6 @@ instance HasAbilities ShadowHound where
 instance RunMessage ShadowHound where
   runMessage msg e@(ShadowHound attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      hauntedAbilities <- getHauntedAbilities iid
-      when (notNull hauntedAbilities) $ push $ chooseOneAtATime
-        iid
-        [ AbilityLabel iid ab [] [] | ab <- hauntedAbilities ]
+      runHauntedAbilities iid
       pure e
     _ -> ShadowHound <$> runMessage msg attrs

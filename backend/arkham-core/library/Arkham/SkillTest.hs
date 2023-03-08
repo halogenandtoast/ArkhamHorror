@@ -11,7 +11,6 @@ import Arkham.SkillTest.Base as X
 import Arkham.SkillTest.Type as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Id
 import Arkham.Target
 import Arkham.Token
@@ -32,7 +31,7 @@ revealedTokensL :: Lens' SkillTest [Token]
 revealedTokensL =
   lens skillTestRevealedTokens $ \m x -> m {skillTestRevealedTokens = x}
 
-committedCardsL :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
+committedCardsL :: Lens' SkillTest (HashMap InvestigatorId [Card])
 committedCardsL =
   lens skillTestCommittedCards $ \m x -> m {skillTestCommittedCards = x}
 

@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Action (Action)
 import Arkham.Classes.Entity
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTestResult
@@ -32,7 +31,7 @@ data SkillTest = SkillTest
   , skillTestResolvedTokens :: [Token]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
-  , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
+  , skillTestCommittedCards :: HashMap InvestigatorId [Card]
   , skillTestSource :: Source
   , skillTestTarget :: Target
   , skillTestAction :: Maybe Action

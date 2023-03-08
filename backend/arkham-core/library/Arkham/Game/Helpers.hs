@@ -543,6 +543,7 @@ getCanAffordCost iid source mAction windows' = \case
       <=~> (Matcher.InvestigatorWithSupply supply
            <> Matcher.InvestigatorAt locationMatcher
            )
+  ResolveEachHauntedAbility _ -> pure True
 
 getActions :: HasGame m => InvestigatorId -> Window -> m [Ability]
 getActions iid window = getActionsWith iid window id
@@ -2479,6 +2480,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
     Matcher.LocationWithModifier _ -> locationId <=~> matcher
     Matcher.IsIchtacasDestination -> locationId <=~> matcher
+    Matcher.HauntedLocation -> locationId <=~> matcher
     Matcher.SingleSidedLocation -> locationId <=~> matcher
     Matcher.LocationWithEnemy enemyMatcher -> selectAny
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)

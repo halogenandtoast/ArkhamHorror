@@ -252,7 +252,7 @@ data Message
   | ChooseRandomLocation Target (HashSet LocationId)
   | ChosenRandomLocation Target LocationId
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
-  | CommitCard InvestigatorId CardId
+  | CommitCard InvestigatorId Card
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | CreateEnemy Card
@@ -397,6 +397,7 @@ data Message
   | InitiatePlayCard InvestigatorId Card (Maybe Target) [Window] Bool
   -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | CheckAdditionalActionCosts InvestigatorId Target Action [Message]
+  | CheckAdditionalCommitCosts InvestigatorId [Card]
   | -- Maybe Target is handler for success
     Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
   | -- | uses the internal method and then checks defeat

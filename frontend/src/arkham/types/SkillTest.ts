@@ -38,7 +38,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     difficulty: JsonDecoder.number,
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
-    committedCards: JsonDecoder.dictionary(JsonDecoder.tuple([JsonDecoder.string, cardDecoder], '[string, Card]'), 'Record<string, [string, Card]>').map((record) => Object.values(record).map(([,card]) => card)),
+    committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
   },
   'SkillTest',

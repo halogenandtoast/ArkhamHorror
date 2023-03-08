@@ -1835,6 +1835,7 @@ library
       Arkham.Treachery.Cards.PushedIntoTheBeyond
       Arkham.Treachery.Cards.RationalThought
       Arkham.Treachery.Cards.RealmOfMadness
+      Arkham.Treachery.Cards.RealmOfTorment
       Arkham.Treachery.Cards.RexsCurse
       Arkham.Treachery.Cards.RipplesOnTheSurface
       Arkham.Treachery.Cards.RitesHowled
@@ -1847,6 +1848,7 @@ library
       Arkham.Treachery.Cards.SerpentsIre
       Arkham.Treachery.Cards.Shadowed
       Arkham.Treachery.Cards.ShadowSpawned
+      Arkham.Treachery.Cards.ShapesInTheMist
       Arkham.Treachery.Cards.ShatteredAges
       Arkham.Treachery.Cards.ShellShock
       Arkham.Treachery.Cards.SlitheringBehindYou
@@ -1885,6 +1887,7 @@ library
       Arkham.Treachery.Cards.TorturousChords
       Arkham.Treachery.Cards.ToughCrowd
       Arkham.Treachery.Cards.ToweringBeasts
+      Arkham.Treachery.Cards.TrappedSpirits
       Arkham.Treachery.Cards.TwinSuns
       Arkham.Treachery.Cards.TwistedToHisWill
       Arkham.Treachery.Cards.TwistOfFate

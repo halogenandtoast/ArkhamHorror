@@ -182,11 +182,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         Skull -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
-            when (action `elem` [Action.Fight, Action.Evade]) $ do
-              hauntedAbilities <- getHauntedAbilities iid
-              when (notNull hauntedAbilities) $ push $ chooseOneAtATime
-                iid
-                [ AbilityLabel iid ab [] [] | ab <- hauntedAbilities ]
+            when (action `elem` [Action.Fight, Action.Evade]) $
+              runHauntedAbilities iid
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do

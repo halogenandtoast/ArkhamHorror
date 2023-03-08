@@ -866,9 +866,7 @@ getInvestigatorsMatching matcher = do
         Nothing -> pure False
         Just st -> do
           let
-            cards =
-              toList . filterMap ((== toId i) . fst) $ skillTestCommittedCards
-                st
+            cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
             iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
               modifiers' <- getModifiers (CardIdTarget pcId)
               pure $ foldr
@@ -885,7 +883,7 @@ getInvestigatorsMatching matcher = do
           skillTestCount <-
             length
               <$> concatMapM
-                    (fmap (map CommittedSkillIcon) . iconsForCard . snd)
+                    (fmap (map CommittedSkillIcon) . iconsForCard)
                     cards
           gameValueMatches skillTestCount valueMatcher
     HealableInvestigator _source damageType matcher' -> \i ->
@@ -1201,6 +1199,8 @@ getLocationsMatching lmatcher = do
     Anywhere -> pure ls
     LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
     EmptyLocation -> pure $ filter isEmptyLocation ls
+    HauntedLocation -> filterM (\l -> selectAny (HauntedAbility <> AbilityOnLocation (LocationWithId $ toId l))) ls
+
     LocationWithoutInvestigators -> pure $ filter noInvestigatorsAtLocation ls
     LocationWithoutEnemies -> pure $ filter noEnemiesAtLocation ls
     LocationWithoutModifier modifier' ->
@@ -2310,10 +2310,8 @@ instance Projection Investigator where
         pure $ case mskillTest of
           Nothing -> []
           Just skillTest ->
-            map snd
-              . filter ((== toId i) . fst)
-              . HashMap.elems
-              $ skillTestCommittedCards skillTest
+              findWithDefault [] (toId i)
+              (skillTestCommittedCards skillTest)
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
       InvestigatorXp -> pure investigatorXp
@@ -3354,17 +3352,7 @@ runGameMessage msg g = case msg of
   AddAgenda agendaDeckNum def -> do
     let aid = AgendaId $ toCardCode def
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum
-  CommitCard iid cardId -> do
-    investigator' <- getInvestigator iid
-    treacheryCards <- traverse (field TreacheryCard)
-      =<< selectList (TreacheryInHandOf $ InvestigatorWithId iid)
-    let
-      card =
-        fromJustNote "could not find card in hand"
-          $ find ((== cardId) . toCardId)
-          $ investigatorHand (toAttrs investigator')
-          <> map PlayerCard (unDeck . investigatorDeck $ toAttrs investigator')
-          <> treacheryCards
+  CommitCard iid card -> do
     push $ InvestigatorCommittedCard iid card
     case card of
       PlayerCard pc -> case toCardType pc of

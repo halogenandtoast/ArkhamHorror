@@ -19,7 +19,7 @@ newtype NetherMist = NetherMist EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasAbilities NetherMist where
-  getAbilities (NetherMist a) =
+  getAbilities (NetherMist a) = withBaseAbilities a
     [ haunted
         "Nether Mist attacks you."
         (ProxySource

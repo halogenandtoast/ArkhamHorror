@@ -69,6 +69,12 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdCanReplace = True
   }
 
+surge :: CardDef -> CardDef
+surge def = def { cdKeywords = insertSet Keyword.Surge (cdKeywords def) }
+
+peril :: CardDef -> CardDef
+peril def = def { cdKeywords = insertSet Keyword.Peril (cdKeywords def) }
+
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseTreachery cardCode name Nothing (Just Weakness)
 
@@ -230,6 +236,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , psychopompsSong
   , pushedIntoTheBeyond
   , realmOfMadness
+  , realmOfTorment
   , ripplesOnTheSurface
   , ritesHowled
   , rottingRemains
@@ -239,6 +246,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , serpentsIre
   , shadowSpawned
   , shadowed
+  , shapesInTheMist
   , shatteredAges
   , slitheringBehindYou
   , snakeBite
@@ -268,6 +276,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , torturousChords
   , toughCrowd
   , toweringBeasts
+  , trappedSpirits
   , twinSuns
   , twistOfFate
   , twistedToHisWill
@@ -1223,6 +1232,21 @@ watchersGrasp = (treachery "05087" "Watcher's Grasp" TheWatcher 2)
 whispersInTheDark :: CardDef
 whispersInTheDark = (treachery "05102" "Whispers in the Dark" SpectralPredators 2)
   { cdCardTraits = setFromList [Omen, Spectral]
+  }
+
+trappedSpirits :: CardDef
+trappedSpirits = (treachery "05104" "Trapped Spirits" TrappedSpirits 2)
+  { cdCardTraits = setFromList [Terror, Spectral]
+  }
+
+realmOfTorment :: CardDef
+realmOfTorment = (treachery "05105" "Realm of Torment" RealmOfDeath 2)
+  { cdCardTraits = setFromList [Terror, Spectral]
+  }
+
+shapesInTheMist :: CardDef
+shapesInTheMist = surge $ (treachery "05106" "Shapes in the Mist" RealmOfDeath 2)
+  { cdCardTraits = setFromList [Terror, Spectral]
   }
 
 terrorInTheNight :: CardDef

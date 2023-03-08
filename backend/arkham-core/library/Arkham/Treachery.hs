@@ -284,6 +284,11 @@ allTreacheries = mapFrom
   , SomeTreacheryCard watchersGrasp
   -- Spectral Predators
   , SomeTreacheryCard whispersInTheDark
+  -- Trapped Spirits
+  , SomeTreacheryCard trappedSpirits
+  -- Realm of Death
+  , SomeTreacheryCard realmOfTorment
+  , SomeTreacheryCard shapesInTheMist
   -- Inexorable Fate
   , SomeTreacheryCard terrorInTheNight
   , SomeTreacheryCard fateOfAllFools

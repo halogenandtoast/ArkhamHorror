@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.SkillTest as X
 
+import Arkham.Ability.Types
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
@@ -71,8 +72,8 @@ getCurrentSkillValue st = case skillTestBaseValue st of
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
   totalIcons <- length . filter matches <$> concatMapM
-      (iconsForCard . snd)
-      (toList skillTestCommittedCards)
+      iconsForCard
+      (concat $ toList skillTestCommittedCards)
   case skillTestType of
     SkillSkillTest sType -> do
       investigatorModifiers <- getModifiers
@@ -263,18 +264,47 @@ instance RunMessage SkillTest where
       windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
       pushAll
         $ HashMap.foldMapWithKey
-            (\k (i, _) -> [CommitCard i k])
+            (\i cs -> [CheckAdditionalCommitCosts i cs])
             skillTestCommittedCards
         <> [windowMsg, TriggerSkillTest skillTestInvestigator]
+      pure s
+    CheckAdditionalCommitCosts iid cards -> do
+      modifiers' <- getModifiers (InvestigatorTarget iid)
+      let
+        msgs = [CommitCard iid card | card <- cards]
+        additionalCosts = mapMaybe
+          (\case
+            CommitCost c -> Just c
+            _ -> Nothing
+          )
+          modifiers'
+      if null additionalCosts
+        then pushAll msgs
+        else do
+          canPay <- getCanAffordCost
+            iid
+            (toSource s)
+            Nothing
+            [Window Timing.When Window.NonFast]
+            (mconcat additionalCosts)
+          iid' <- getActiveInvestigatorId
+          when canPay
+            $ pushAll
+            $ [SetActiveInvestigator iid | iid /= iid']
+            <> [PayForAbility (abilityEffect s $ mconcat additionalCosts) []]
+            <> [SetActiveInvestigator iid' | iid /= iid']
+            <> msgs
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
     PutCardIntoPlay _ card _ _ -> do
-      pure $ s & committedCardsL %~ deleteMap (toCardId card)
+      pure $ s & committedCardsL %~ map (filter (/= card))
+    CardEnteredPlay _ card -> do
+      pure $ s & committedCardsL %~ map (filter (/= card))
     SkillTestCommitCard iid card -> do
-      pure $ s & committedCardsL %~ insertMap (toCardId card) (iid, card)
+      pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
-      pure $ s & committedCardsL %~ deleteMap (toCardId card)
+      pure $ s & committedCardsL %~ map (filter (/= card))
     ReturnSkillTestRevealedTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
@@ -288,14 +318,14 @@ instance RunMessage SkillTest where
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
       let
-        discards = mapMaybe
+        discards = concatMap
           (\case
-            (iid, PlayerCard pc) ->
-              (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
-            (_, EncounterCard _) -> Nothing
-            (_, VengeanceCard _) -> Nothing
+            (iid, cards) -> flip mapMaybe cards $ \case
+              PlayerCard pc -> (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
+              EncounterCard _ -> Nothing
+              VengeanceCard _ -> Nothing
           )
-          (s ^. committedCardsL . to toList)
+          (s ^. committedCardsL . to mapToList)
         skillResultValue = case skillTestResult of
           Unrun -> error "wat, skill test has to run"
           SucceededBy _ n -> n

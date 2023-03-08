@@ -308,7 +308,7 @@ canCommitToAnotherLocation attrs = do
     skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
   let
     committedCardIds =
-      map snd . filter ((== toId attrs) . fst) $ toList commitedCards
+      concatMap (map toCardId . snd) . filter ((== toId attrs) . fst) $ mapToList commitedCards
   modifiers <- getModifiers (toTarget attrs)
   pure $ any (permit committedCardIds) modifiers
  where

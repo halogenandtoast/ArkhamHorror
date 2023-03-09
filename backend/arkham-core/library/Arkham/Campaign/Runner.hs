@@ -27,7 +27,7 @@ instance RunMessage CampaignAttrs where
     StartCampaign -> a <$ push (CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ push GameOver -- TODO: move to generic
     CampaignStep (Just (ScenarioStep sid)) -> do
-      a <$ pushAll [ResetGame, StartScenario sid]
+      a <$ pushAll [ResetInvestigators, ResetGame, StartScenario sid]
     CampaignStep (Just (UpgradeDeckStep _)) -> do
       investigatorIds <- allInvestigatorIds
       a <$ pushAll

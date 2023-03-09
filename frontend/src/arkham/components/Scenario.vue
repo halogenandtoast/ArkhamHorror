@@ -279,17 +279,14 @@ const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter
 
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
-const cardsUnderAgenda = computed(() => {
-  return props.scenario.cardsUnderAgendaDeck
-})
+const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 
-const cardsUnderAct = computed(() => {
-  return props.scenario.cardsUnderActDeck
-})
+const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 
-const cardsNextToAct = computed(() => {
-  return props.scenario.cardsNextToActDeck
-})
+const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
+
+const locations = computed(() => Object.values(props.game.locations).
+  filter((a) => a.inFrontOf === null))
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
@@ -407,7 +404,7 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
       <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
         <Location
-          v-for="(location, key) in game.locations"
+          v-for="(location, key) in locations"
           class="location"
           :key="key"
           :game="game"

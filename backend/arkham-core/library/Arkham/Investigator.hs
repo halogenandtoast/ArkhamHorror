@@ -113,12 +113,38 @@ becomeYithian (Investigator a) =
     , investigatorIsYithian = True
     }
 
+handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator
+handleInvestigator o@(Investigator a) f = case cast a of
+  Just i -> f i
+  Nothing -> o
+
 returnToBody :: Investigator -> Investigator
-returnToBody (Investigator a) = case cast a of
-  Just (BodyOfAYithian (_ `With` meta)) -> case fromJSON (originalBody meta) of
-    Success x -> x
-    _ -> error "Investigator mind is too corrupted to return to their body"
-  Nothing -> Investigator a
+returnToBody i = i
+  `handleInvestigator`
+    (\(BodyOfAYithian (_ `With` meta)) -> case fromJSON (originalBody meta) of
+      Success x -> x
+      _ -> error "Investigator mind is too corrupted to return to their body"
+    )
+  `handleInvestigator`
+    (\(GavriellaMizrah (_ `With` meta)) -> case fromJSON (original meta) of
+      Success x -> x
+      _ -> error "Investigator mind is too corrupted to return to their body"
+    )
+  `handleInvestigator`
+    (\(JeromeDavids (_ `With` meta)) -> case fromJSON (original meta) of
+      Success x -> x
+      _ -> error "Investigator mind is too corrupted to return to their body"
+    )
+  `handleInvestigator`
+    (\(ValentinoRivas (_ `With` meta)) -> case fromJSON (original meta) of
+      Success x -> x
+      _ -> error "Investigator mind is too corrupted to return to their body"
+    )
+  `handleInvestigator`
+    (\(PennyWhite (_ `With` meta)) -> case fromJSON (original meta) of
+      Success x -> x
+      _ -> error "Investigator mind is too corrupted to return to their body"
+    )
 
 becomePrologueInvestigator :: Investigator -> InvestigatorId -> Investigator
 becomePrologueInvestigator (Investigator a) = \case

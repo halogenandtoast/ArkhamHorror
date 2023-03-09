@@ -1584,6 +1584,7 @@ library
       Arkham.Scenario.Scenarios.ThePallidMask
       Arkham.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Scenario.Scenarios.TheUntamedWilds
+      Arkham.Scenario.Scenarios.TheWitchingHour
       Arkham.Scenario.Scenarios.ThreadsOfFate
       Arkham.Scenario.Scenarios.TurnBackTime
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
@@ -1626,6 +1627,7 @@ library
       Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ThreadsOfFate.Story
       Arkham.Scenarios.TurnBackTime.Story

@@ -2890,7 +2890,7 @@ runPreGameMessage msg g = case msg of
   ScenarioResolution _ -> do
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
-  ResetGame ->
+  ResetInvestigators ->
     pure
       $ g
       & (modifiersL .~ mempty)

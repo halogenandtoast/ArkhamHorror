@@ -159,6 +159,8 @@ data CampaignLogKey
   | WasPulledIntoTheSpectralRealm
   | PiecesOfEvidenceWereLeftBehind
   | YouAreBeingHunted
+  | YouHaveAcceptedYourFate
+  | YouHaveRejectedYourFate
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

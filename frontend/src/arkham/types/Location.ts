@@ -20,6 +20,7 @@ export interface Location {
   cardsUnderneath: Card[];
   modifiers: Modifier[];
   connectedLocations: string[];
+  inFrontOf: string | null;
 }
 
 export const locationDecoder = JsonDecoder.object<Location>(
@@ -41,6 +42,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
+    inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
   },
   'Location',
 );

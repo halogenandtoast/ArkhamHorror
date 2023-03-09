@@ -15,6 +15,7 @@ import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 
 newtype Metadata = Metadata
@@ -111,6 +112,9 @@ instance RunMessage TheCircleUndone where
         [] -> pure ()
         xs -> pushAll $ map (uncurry BecomePrologueInvestigator) xs
       pure c
+    EndOfScenario _ -> do
+      pure . TheCircleUndone $ attrs `With` metadata
+        { prologueInvestigators = mempty }
     ResetGame -> do
       case mapToList (prologueInvestigators metadata) of
         [] -> TheCircleUndone . (`with` metadata) <$> runMessage msg attrs

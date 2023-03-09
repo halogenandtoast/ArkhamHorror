@@ -545,6 +545,7 @@ data Message
   | RequestedSetAsideCard Source Card
   | RequestedTokens Source (Maybe InvestigatorId) [Token]
   | RerunSkillTest
+  | ResetInvestigators
   | ResetGame
   | ResetTokens Source
   | Resign InvestigatorId
@@ -667,8 +668,9 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
-  | -- The Circle Undon
+  | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
+  | PutLocationInFrontOf InvestigatorId LocationId
   | If WindowType [Message]
   | -- Commit
     Do Message

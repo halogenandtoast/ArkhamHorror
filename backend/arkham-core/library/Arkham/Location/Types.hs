@@ -150,6 +150,9 @@ instance FieldDict Typeable Location where
 investigateSkillL :: Lens' LocationAttrs SkillType
 investigateSkillL = lens locationInvestigateSkill $ \m x -> m { locationInvestigateSkill = x }
 
+inFrontOfL :: Lens' LocationAttrs (Maybe InvestigatorId)
+inFrontOfL = lens locationInFrontOf $ \m x -> m { locationInFrontOf = x }
+
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
 
@@ -320,6 +323,7 @@ locationWith f def shroud' revealClues g = CardBuilder
     , locationCostToEnterUnrevealed = ActionCost 1
     , locationInvestigateSkill = SkillIntellect
     , locationCanBeFlipped = False
+    , locationInFrontOf = Nothing
     , locationWithoutClues = False
     }
   }
@@ -415,8 +419,8 @@ noEnemiesAtLocation l = null enemies'
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs
 
-data SomeLocationCard = forall a . IsLocation a => SomeLocationCard
-  (LocationCard a)
+data SomeLocationCard where
+  SomeLocationCard :: IsLocation a => LocationCard a -> SomeLocationCard
 
 someLocationCardCode :: SomeLocationCard -> CardCode
 someLocationCardCode (SomeLocationCard a) = cbCardCode a

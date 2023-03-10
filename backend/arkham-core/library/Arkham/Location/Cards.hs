@@ -428,6 +428,13 @@ allLocationCards = mapFromList $ map
   , wellOfSouls
   , whateleyRuins_250
   , whateleyRuins_251
+  , witchHauntedWoodsAbandonedMine
+  , witchHauntedWoodsCairnStones
+  , witchHauntedWoodsChildsTreeHouse
+  , witchHauntedWoodsHermitsHouse
+  , witchHauntedWoodsOvergrownBarn
+  , witchHauntedWoodsTaintedWell
+  , witchHauntedWoodsTheLonelyTree
   , xochimilco
   , yard
   , yithianOrrery
@@ -3148,6 +3155,97 @@ plateauOfLeng = singleSided $ location
   Equals
   [Star]
   ShatteredAeons
+
+witchHauntedWoodsAbandonedMine :: CardDef
+witchHauntedWoodsAbandonedMine = victory 1 $ locationWithUnrevealed
+  "05058"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "Abandoned Mine")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
+
+witchHauntedWoodsCairnStones :: CardDef
+witchHauntedWoodsCairnStones = victory 1 $ locationWithUnrevealed
+  "05059"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "Cairn Stones")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
+
+witchHauntedWoodsTheLonelyTree :: CardDef
+witchHauntedWoodsTheLonelyTree = victory 1 $ locationWithUnrevealed
+  "05060"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "The Lonely Tree")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
+
+witchHauntedWoodsChildsTreeHouse :: CardDef
+witchHauntedWoodsChildsTreeHouse = victory 1 $ locationWithUnrevealed
+  "05061"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "Child's Tree House")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
+
+witchHauntedWoodsTaintedWell :: CardDef
+witchHauntedWoodsTaintedWell = victory 1 $ locationWithUnrevealed
+  "05062"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "Tainted Well")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
+
+witchHauntedWoodsHermitsHouse :: CardDef
+witchHauntedWoodsHermitsHouse = victory 1 $ locationWithUnrevealed
+  "05063"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "Hermit's House")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
+
+witchHauntedWoodsOvergrownBarn :: CardDef
+witchHauntedWoodsOvergrownBarn = victory 1 $ locationWithUnrevealed
+  "05064"
+  "Witch-Haunted Woods"
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  ("Witch-Haunted Woods" <:> "Overgrown Barn")
+  [Woods]
+  Squiggle
+  [Squiggle, Plus]
+  TheWitchingHour
 
 entryHallSpectral :: CardDef
 entryHallSpectral = location

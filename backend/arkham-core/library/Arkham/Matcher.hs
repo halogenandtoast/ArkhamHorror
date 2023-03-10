@@ -160,6 +160,7 @@ replaceYourLocation _ Nothing = id
 replaceYourLocation iid (Just lid) = go
  where
   go matcher = case matcher of
+    LocationIsInFrontOf {} -> matcher
     HauntedLocation{} -> matcher
     IsIchtacasDestination{} -> matcher
     LocationWithoutClues{} -> matcher

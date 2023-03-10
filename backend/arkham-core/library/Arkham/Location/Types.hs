@@ -75,6 +75,7 @@ data instance Field Location :: Type -> Type where
   LocationEvents :: Field Location (HashSet EventId)
   LocationTreacheries :: Field Location (HashSet TreacheryId)
   LocationInvestigateSkill :: Field Location SkillType
+  LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   -- virtual
   LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card
@@ -89,6 +90,7 @@ instance ToJSON (Field Location typ) where
 
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case
+    "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
     "LocationClues" -> pure $ SomeField LocationClues
     "LocationResources" -> pure $ SomeField LocationResources
@@ -120,6 +122,7 @@ instance FromJSON (SomeField Location) where
 
 instance FieldDict Typeable Location where
   getDict = \case
+    LocationInFrontOf -> Dict
     LocationInvestigateSkill -> Dict
     LocationClues -> Dict
     LocationResources -> Dict

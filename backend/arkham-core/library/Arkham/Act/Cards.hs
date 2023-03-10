@@ -60,7 +60,8 @@ act cardCode name stage encounterSet = CardDef
 allActCards :: HashMap CardCode CardDef
 allActCards = mapFromList $ map
   (toCardCode &&& id)
-  [ afterHours
+  [ aCircleUnbroken
+  , afterHours
   , alejandrosPlight
   , alejandrosPrison
   , allIn
@@ -108,6 +109,7 @@ allActCards = mapFromList $ map
   , investigatingTheTrail
   , journeyToTheNexus
   , leadingTheWay
+  , lostInTheWoods
   , magicAndScience
   , mendTheShatter
   , missingPersons
@@ -122,6 +124,7 @@ allActCards = mapFromList $ map
   , outOfThisWorld
   , paradiseLost
   , pastAndPresent
+  , pathsIntoTwilight
   , planningTheEscape
   , pursuingShadows
   , raceForAnswers
@@ -179,6 +182,7 @@ allActCards = mapFromList $ map
   , trialOfTheHuntress
   , uncoveringTheConspiracy
   , whatHaveYouDone
+  , witchHauntings
   , worldsBeyond
   ]
 
@@ -539,6 +543,18 @@ momentOfDoom = act "04347" "Moment of Doom" 3 TurnBackTime
 
 theDisappearance :: CardDef
 theDisappearance = act "05045" "The Disappearance" 1 DisappearanceAtTheTwilightEstate
+
+lostInTheWoods :: CardDef
+lostInTheWoods = act "05053" "Lost in the Woods" 1 TheWitchingHour
+
+witchHauntings :: CardDef
+witchHauntings = act "05054" "Witch Hauntings" 2 TheWitchingHour
+
+pathsIntoTwilight :: CardDef
+pathsIntoTwilight = act "05055" "Paths into Twilight" 3 TheWitchingHour
+
+aCircleUnbroken :: CardDef
+aCircleUnbroken = act "05056" "A Circle Unbroken" 4 TheWitchingHour
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

@@ -10,8 +10,9 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Source
-import Arkham.Window (Window)
+import Arkham.Window ( Window )
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -42,7 +43,9 @@ windowModifierEffect' eid metadata effectWindow source target =
 instance HasModifiersFor WindowModifierEffect where
   getModifiersFor target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
-      Just (EffectModifiers modifiers) -> pure modifiers
+      Just (EffectModifiers modifiers) -> case effectWindow of
+        Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
+        _ -> pure modifiers
       Just (FailedByEffectModifiers modifiers) -> pure modifiers
       _ -> pure []
   getModifiersFor _ _ = pure []

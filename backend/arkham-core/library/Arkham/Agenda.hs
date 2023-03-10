@@ -157,6 +157,9 @@ allAgendas = mapFrom
   -- The Circle Undone
   -- Disappearance at the Twilight Estate
   , SomeAgendaCard judgementXX
+  -- The Witching Hour
+  , SomeAgendaCard temperanceXIV
+  , SomeAgendaCard theNightHowls
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

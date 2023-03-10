@@ -329,6 +329,7 @@ data LocationMatcher
   | ThisLocation
   -- ^ only useful for windows
   | IsIchtacasDestination
+  | LocationIsInFrontOf InvestigatorMatcher
   -- ^ Scenario specific criteria
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

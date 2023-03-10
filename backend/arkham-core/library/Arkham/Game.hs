@@ -1137,6 +1137,9 @@ getLocationsMatching
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
+    LocationIsInFrontOf investigatorMatcher -> do
+      investigators <- select investigatorMatcher
+      filterM (fmap (maybe False (`elem` investigators)) . field LocationInFrontOf . toId) ls
     HighestShroud matcher' -> do
       ls' <- filter (`elem` ls)
         <$> getLocationsMatching (RevealedLocation <> matcher')
@@ -2046,6 +2049,7 @@ instance Projection Location where
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
     case f of
+      LocationInFrontOf -> pure locationInFrontOf
       LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationClues -> pure locationClues
       LocationResources -> pure locationResources
@@ -4563,7 +4567,7 @@ preloadModifiers g = case gameMode g of
       modifierFilter =
         if gameInSetup g then modifierActiveDuringSetup else const True
     allModifiers <- getMonoidalHashMap <$> foldMapM
-      (`toTargetModifiers` (entities <> inHandEntities <> discardEntities))
+      (`toTargetModifiers` (entities <> inHandEntities <> discardEntities <> maybeToList (SomeEntity <$> modeScenario (gameMode g)) <> maybeToList (SomeEntity <$> modeCampaign (gameMode g))))
       (SkillTestTarget
       : map TokenTarget tokens
       <> map TokenFaceTarget [minBound .. maxBound]

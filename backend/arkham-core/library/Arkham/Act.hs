@@ -179,6 +179,11 @@ allActs = mapFrom
   -- The Circle Undone
   --- Disappearance at the Twilight Estate
   , SomeActCard theDisappearance
+  --- The Witching Hour
+  , SomeActCard lostInTheWoods
+  , SomeActCard witchHauntings
+  , SomeActCard pathsIntoTwilight
+  , SomeActCard aCircleUnbroken
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

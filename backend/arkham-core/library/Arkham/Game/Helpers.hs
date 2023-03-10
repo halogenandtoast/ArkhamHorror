@@ -610,6 +610,11 @@ getActionsWith iid window f = do
             && not (isForcedAbility ability)
         prevents CannotTriggerFastAbilities = isFastAbility ability
         prevents _ = False
+        -- Blank excludes any non-default abilities (index >= 100)
+        -- TODO: this is a leaky abstraction, we may want to track this
+        -- on the abilities themselves
+        blankPrevents Blank = abilityIndex ability < 100
+        blankPrevents _ = False
         -- If the window is fast we only permit fast abilities, but forced
         -- abilities need to be everpresent so we include them
         needsToBeFast = windowType window == Window.FastPlayerWindow && not
@@ -617,7 +622,7 @@ getActionsWith iid window f = do
           || isForcedAbility ability
           || isReactionAbility ability
           )
-      pure $ if any prevents investigatorModifiers || needsToBeFast
+      pure $ if any prevents investigatorModifiers || any blankPrevents modifiers' || needsToBeFast
         then Nothing
         else Just $ applyAbilityModifiers ability modifiers'
 
@@ -2576,6 +2581,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.InvestigatableLocation -> do
       modifiers <- getModifiers (LocationTarget locationId)
       pure $ CannotInvestigate `notElem` modifiers
+    Matcher.LocationIsInFrontOf _ -> locationId <=~> matcher
 
 skillTestMatches
   :: HasGame m

@@ -18,6 +18,7 @@ library
       Arkham.Act
       Arkham.Act.Acts
       Arkham.Act.Cards
+      Arkham.Act.Cards.ACircleUnbroken
       Arkham.Act.Cards.AfterHours
       Arkham.Act.Cards.AlejandrosPlight
       Arkham.Act.Cards.AlejandrosPrison
@@ -66,6 +67,7 @@ library
       Arkham.Act.Cards.InvestigatingTheTrail
       Arkham.Act.Cards.JourneyToTheNexus
       Arkham.Act.Cards.LeadingTheWay
+      Arkham.Act.Cards.LostInTheWoods
       Arkham.Act.Cards.MagicAndScience
       Arkham.Act.Cards.MendTheShatter
       Arkham.Act.Cards.MissingPersons
@@ -80,6 +82,7 @@ library
       Arkham.Act.Cards.OutOfThisWorld
       Arkham.Act.Cards.ParadiseLost
       Arkham.Act.Cards.PastAndPresent
+      Arkham.Act.Cards.PathsIntoTwilight
       Arkham.Act.Cards.PlanningTheEscape
       Arkham.Act.Cards.PursuingShadows
       Arkham.Act.Cards.RaceForAnswers
@@ -137,6 +140,7 @@ library
       Arkham.Act.Cards.TrialOfTheHuntress
       Arkham.Act.Cards.UncoveringTheConspiracy
       Arkham.Act.Cards.WhatHaveYouDone
+      Arkham.Act.Cards.WitchHauntings
       Arkham.Act.Cards.WorldsBeyond
       Arkham.Act.Helpers
       Arkham.Act.Runner
@@ -206,6 +210,7 @@ library
       Arkham.Agenda.Cards.SomethingStirs
       Arkham.Agenda.Cards.StrangeDisappearances
       Arkham.Agenda.Cards.SwallowedSky
+      Arkham.Agenda.Cards.TemperanceXIV
       Arkham.Agenda.Cards.TheArkhamWoods
       Arkham.Agenda.Cards.TheBarrierIsThin
       Arkham.Agenda.Cards.TheBeastUnleashed
@@ -222,6 +227,7 @@ library
       Arkham.Agenda.Cards.TheJunglesHeart
       Arkham.Agenda.Cards.TheLonelyCaverns
       Arkham.Agenda.Cards.TheMawWidens
+      Arkham.Agenda.Cards.TheNightHowls
       Arkham.Agenda.Cards.TheOldOnesHunger
       Arkham.Agenda.Cards.TheRedDepths
       Arkham.Agenda.Cards.TheRitualBegins
@@ -757,6 +763,7 @@ library
       Arkham.Enemy.Cards.AgentOfTheKing
       Arkham.Enemy.Cards.AlejandroVela
       Arkham.Enemy.Cards.AlmaHill
+      Arkham.Enemy.Cards.AnetteMason
       Arkham.Enemy.Cards.ApexStrangleweed
       Arkham.Enemy.Cards.AshleighClarke
       Arkham.Enemy.Cards.AsylumGorger
@@ -1520,6 +1527,13 @@ library
       Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
       Arkham.Location.Cards.WhateleyRuins_251
+      Arkham.Location.Cards.WitchHauntedWoodsAbandonedMine
+      Arkham.Location.Cards.WitchHauntedWoodsCairnStones
+      Arkham.Location.Cards.WitchHauntedWoodsChildsTreeHouse
+      Arkham.Location.Cards.WitchHauntedWoodsHermitsHouse
+      Arkham.Location.Cards.WitchHauntedWoodsOvergrownBarn
+      Arkham.Location.Cards.WitchHauntedWoodsTaintedWell
+      Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree
       Arkham.Location.Cards.Xochimilco
       Arkham.Location.Cards.Yard
       Arkham.Location.Cards.YithianOrrery

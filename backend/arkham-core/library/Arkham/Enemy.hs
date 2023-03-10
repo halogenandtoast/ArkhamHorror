@@ -225,6 +225,8 @@ allEnemies = mapFrom
   -- The Circle Undone
   -- signature
   , SomeEnemyCard hoods
+  -- The Witching Hour
+  , SomeEnemyCard anetteMason
   -- The Watcher
   , SomeEnemyCard theSpectralWatcher
   -- Spectral Predators

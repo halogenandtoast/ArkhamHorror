@@ -5,17 +5,22 @@ module Arkham.Scenario.Scenarios.TheWitchingHour
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
@@ -23,9 +28,11 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWitchingHour.Story
 import Arkham.Target
 import Arkham.Token
+import Data.HashMap.Monoidal qualified as MonoidalHashMap
+import Data.HashMap.Strict qualified as HashMap
 
 newtype TheWitchingHour = TheWitchingHour ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theWitchingHour :: Difficulty -> TheWitchingHour
@@ -41,6 +48,19 @@ theWitchingHour difficulty = scenario
   , ".      wood4 .             woods5 ."
   ] -- lost and separated, do we label 4 zones, or do a different placement
 
+instance HasModifiersFor TheWitchingHour where
+  getModifiersFor (LocationTarget lid) (TheWitchingHour a) = do
+    mInFrontOf <- field LocationInFrontOf lid
+    pure $ toModifiers
+      a
+      [ ConnectedToWhen
+          (LocationWithId lid)
+          (NotLocation (LocationWithId lid)
+          <> LocationIsInFrontOf (InvestigatorWithId iid)
+          )
+      | iid <- maybeToList mInFrontOf
+      ]
+  getModifiersFor _ _ = pure []
 
 
 instance HasTokenValue TheWitchingHour where
@@ -66,22 +86,52 @@ instance RunMessage TheWitchingHour where
         , EncounterSet.StrikingFear
         ]
 
-      arkhamWoods <-
+      witchHauntedWoods <-
         sampleN 5
-        $ Locations.arkhamWoodsUnhallowedGround
-        :| [ Locations.arkhamWoodsTwistingPaths
-           , Locations.arkhamWoodsOldHouse
-           , Locations.arkhamWoodsCliffside
-           , Locations.arkhamWoodsTangledThicket
-           , Locations.arkhamWoodsQuietGlade
+        $ Locations.witchHauntedWoodsAbandonedMine
+        :| [ Locations.witchHauntedWoodsCairnStones
+           , Locations.witchHauntedWoodsTheLonelyTree
+           , Locations.witchHauntedWoodsChildsTreeHouse
+           , Locations.witchHauntedWoodsTaintedWell
+           , Locations.witchHauntedWoodsHermitsHouse
+           , Locations.witchHauntedWoodsOvergrownBarn
            ]
 
-      let woodsWithInvestigators = zip arkhamWoods (cycleN 2 iids)
+      setAsideCards <- traverse
+        genCard
+        [ Enemies.anetteMason
+        , Locations.arkhamWoodsUnhallowedGround
+        , Locations.arkhamWoodsTwistingPaths
+        , Locations.arkhamWoodsOldHouse
+        , Locations.arkhamWoodsCliffside
+        , Locations.arkhamWoodsTangledThicket
+        , Locations.arkhamWoodsQuietGlade
+        ]
+
+      let
+        woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
+        locationMap = foldMap
+          (\(investigator, location) ->
+            MonoidalHashMap.singleton investigator (location :| [])
+          )
+          woodsWithInvestigators
+      startingLocations <- HashMap.fromList <$> traverse
+        (\(k, v) -> (k, ) <$> sample v)
+        (MonoidalHashMap.toList locationMap)
 
       locationPlacements <-
-        concatForM woodsWithInvestigators $ \(location, investigator) -> do
+        concatForM woodsWithInvestigators $ \(investigator, location) -> do
           (lid, placement) <- placeLocationCard location
-          pure [placement, PutLocationInFrontOf investigator lid]
+          let
+            mMoveTo = do
+              startingLocation <- lookup investigator startingLocations
+              guard $ location == startingLocation
+              pure $ MoveTo (toSource attrs) investigator lid
+
+          pure
+            $ placement
+            : PutLocationInFrontOf investigator lid
+            : maybeToList mMoveTo
 
       pushAll
         $ [ story iids intro1
@@ -94,9 +144,27 @@ instance RunMessage TheWitchingHour where
             ]
           , story iids intro4
           , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
           ]
         <> locationPlacements
-      pure s
+      TheWitchingHour <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.temperanceXIV, Agendas.theNightHowls]
+          )
+        & (actStackL
+          . at 1
+          ?~ [ Acts.lostInTheWoods
+             , Acts.witchHauntings
+             , Acts.pathsIntoTwilight
+             , Acts.aCircleUnbroken
+             ]
+          )
+        )
     SetupStep (isTarget attrs -> True) 2 -> do
       iids <- getInvestigatorIds
       lead <- getLeadInvestigatorId

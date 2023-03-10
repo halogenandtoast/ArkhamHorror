@@ -116,6 +116,7 @@ allAgendaCards = mapFromList $ map
   , somethingStirs
   , strangeDisappearances
   , swallowedSky
+  , temperanceXIV
   , theArkhamWoods
   , theBarrierIsThin
   , theBeastUnleashed
@@ -132,6 +133,7 @@ allAgendaCards = mapFromList $ map
   , theJunglesHeart
   , theLonelyCaverns
   , theMawWidens
+  , theNightHowls
   , theOldOnesHunger
   , theRedDepths
   , theRitualBegins
@@ -427,6 +429,12 @@ snappedThreads = agenda "04317" "Snapped Threads" 3 ShatteredAeons
 
 judgementXX :: CardDef
 judgementXX = agenda "05044" "JUDGEMENT • XX" 1 DisappearanceAtTheTwilightEstate
+
+temperanceXIV :: CardDef
+temperanceXIV = agenda "05051" "TEMPERANCE • XIV" 1 TheWitchingHour
+
+theNightHowls :: CardDef
+theNightHowls = agenda "05052" "The Night Howls" 2 TheWitchingHour
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

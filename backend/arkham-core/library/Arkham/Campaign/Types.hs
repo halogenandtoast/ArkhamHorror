@@ -139,6 +139,9 @@ instance Entity Campaign where
   toAttrs (Campaign a) = toAttrs a
   overAttrs f (Campaign a) = Campaign $ overAttrs f a
 
+instance Targetable Campaign where
+  toTarget _ = CampaignTarget
+
 data Campaign = forall a . IsCampaign a => Campaign a
 
 instance Eq Campaign where

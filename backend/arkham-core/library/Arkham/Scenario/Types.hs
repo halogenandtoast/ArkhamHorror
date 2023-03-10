@@ -255,6 +255,9 @@ storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
 
 data Scenario = forall a. IsScenario a => Scenario a
 
+instance Targetable Scenario where
+  toTarget _ = ScenarioTarget
+
 instance Eq Scenario where
   Scenario (a :: a) == Scenario (b :: b) = case eqT @a @b of
     Just Refl -> a == b

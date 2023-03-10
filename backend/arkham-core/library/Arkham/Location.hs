@@ -376,6 +376,14 @@ allLocations = mapFrom
   --- Special
   , SomeLocationCard betweenWorlds
   -- The Circle Undone
+  -- The Witching Hour
+  , SomeLocationCard witchHauntedWoodsAbandonedMine
+  , SomeLocationCard witchHauntedWoodsCairnStones
+  , SomeLocationCard witchHauntedWoodsTheLonelyTree
+  , SomeLocationCard witchHauntedWoodsChildsTreeHouse
+  , SomeLocationCard witchHauntedWoodsTaintedWell
+  , SomeLocationCard witchHauntedWoodsHermitsHouse
+  , SomeLocationCard witchHauntedWoodsOvergrownBarn
   -- At Death's Doorstep
   , SomeLocationCard entryHallSpectral
   , SomeLocationCard victorianHallsSpectral

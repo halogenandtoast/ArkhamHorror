@@ -102,6 +102,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , agentOfTheKing
   , alejandroVela
   , almaHill
+  , anetteMason
   , apexStrangleweed
   , ashleighClarke
   , asylumGorger
@@ -1070,6 +1071,13 @@ hoods :: CardDef
 hoods = (weakness "05017" "Hoods")
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+  }
+
+anetteMason :: CardDef
+anetteMason = (enemy "05057" ("Anette Mason" <:> "The High Priestess") TheWitchingHour 1)
+  { cdCardTraits = setFromList [Humanoid, Witch, Elite]
+  , cdKeywords = singleton Keyword.Retaliate
+  , cdVictoryPoints = Just 2
   }
 
 theSpectralWatcher :: CardDef

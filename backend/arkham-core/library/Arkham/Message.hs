@@ -39,6 +39,7 @@ import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
+import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
@@ -443,12 +444,12 @@ data Message
   | LoseResources InvestigatorId Source Int
   | LoseAllResources InvestigatorId
   | SpendActions InvestigatorId Source (Maybe Action) Int
-  | Move Source InvestigatorId LocationId
+  | Move Movement
   | MoveAction InvestigatorId LocationId Cost Bool
   | MoveAllCluesTo Target
   | MoveAllTo Source LocationId
   | MoveFrom Source InvestigatorId LocationId
-  | MoveTo Source InvestigatorId LocationId
+  | MoveTo Movement
   | MoveToward Target LocationMatcher
   | MoveTopOfDeckToBottom Source DeckSignifier Int
   | MoveUntil LocationId Target

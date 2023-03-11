@@ -11,6 +11,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -43,7 +44,7 @@ instance RunMessage ArkhamWoodsTwistingPaths where
         MoveFrom _ iid' lid' -> iid' == iid && toId l == lid'
         _ -> False
       moveTo <- popMessageMatching \case
-        MoveTo _ iid' _ -> iid == iid' -- we don't know where they are going for the cancel
+        MoveTo movement -> moveTarget movement == InvestigatorTarget iid -- we don't know where they are going for the cancel
         _ -> False
       let
         target = InvestigatorTarget iid

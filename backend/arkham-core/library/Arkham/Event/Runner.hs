@@ -58,4 +58,6 @@ runEventMessage msg a@EventAttrs {..} = case msg of
         RemoveThisFromGame -> push (RemoveEvent $ toId a)
       _ -> pure ()
     pure a
+  InvestigatorPlayEvent _ eid _ _ _ | eid == eventId ->
+    pure $ a & placementL .~ Limbo
   _ -> pure a

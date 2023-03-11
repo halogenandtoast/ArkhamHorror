@@ -5,11 +5,12 @@ module Arkham.Event.Cards.ThinkOnYourFeet
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 
 newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,12 +25,10 @@ instance RunMessage ThinkOnYourFeet where
       connectedLocationIds <- selectList AccessibleLocation
       unless (null connectedLocationIds) $ pushAll
         [ chooseOne
-          iid
-          [ TargetLabel
-              (LocationTarget lid')
-              [Move (toSource attrs) iid lid']
-          | lid' <- connectedLocationIds
-          ]
+            iid
+            [ targetLabel lid' [Move $ move attrs iid lid']
+            | lid' <- connectedLocationIds
+            ]
         ]
       pure e
     _ -> ThinkOnYourFeet <$> runMessage msg attrs

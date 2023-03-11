@@ -19,9 +19,8 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -32,7 +31,7 @@ import Data.HashMap.Monoidal qualified as MonoidalHashMap
 import Data.HashMap.Strict qualified as HashMap
 
 newtype TheWitchingHour = TheWitchingHour ScenarioAttrs
-  deriving anyclass IsScenario
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theWitchingHour :: Difficulty -> TheWitchingHour
@@ -47,20 +46,6 @@ theWitchingHour difficulty = scenario
   , ".      .     .             .      ."
   , ".      wood4 .             woods5 ."
   ] -- lost and separated, do we label 4 zones, or do a different placement
-
-instance HasModifiersFor TheWitchingHour where
-  getModifiersFor (LocationTarget lid) (TheWitchingHour a) = do
-    mInFrontOf <- field LocationInFrontOf lid
-    pure $ toModifiers
-      a
-      [ ConnectedToWhen
-          (LocationWithId lid)
-          (NotLocation (LocationWithId lid)
-          <> LocationIsInFrontOf (InvestigatorWithId iid)
-          )
-      | iid <- maybeToList mInFrontOf
-      ]
-  getModifiersFor _ _ = pure []
 
 
 instance HasTokenValue TheWitchingHour where
@@ -77,7 +62,8 @@ instance RunMessage TheWitchingHour where
       lead <- getLeadInvestigatorId
 
       -- The Devourer Below is only locations
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [ Enemies.anetteMason ]
         [ EncounterSet.TheWitchingHour
         , EncounterSet.AnettesCoven
         , EncounterSet.CityOfSins
@@ -126,7 +112,7 @@ instance RunMessage TheWitchingHour where
             mMoveTo = do
               startingLocation <- lookup investigator startingLocations
               guard $ location == startingLocation
-              pure $ MoveTo (toSource attrs) investigator lid
+              pure $ MoveTo $ move (toSource attrs) investigator lid
 
           pure
             $ placement

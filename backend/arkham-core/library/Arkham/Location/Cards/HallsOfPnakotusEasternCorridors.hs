@@ -14,6 +14,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Message
+import Arkham.Movement
 
 newtype HallsOfPnakotusEasternCorridors = HallsOfPnakotusEasternCorridors LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -44,7 +45,7 @@ instance RunMessage HallsOfPnakotusEasternCorridors where
           (LocationWithId $ toId attrs)
       push $ chooseOne
         iid
-        [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+        [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
         | lid <- otherHalls
         ]
       pure l

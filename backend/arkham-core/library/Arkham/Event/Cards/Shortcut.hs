@@ -10,6 +10,7 @@ import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 
 newtype Shortcut = Shortcut EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -32,7 +33,7 @@ instance RunMessage Shortcut where
                   iid
                   [ TargetLabel
                       (LocationTarget lid')
-                      [Move (toSource attrs) iid' lid']
+                      [Move $ move (toSource attrs) iid' lid']
                   | lid' <- connectingLocations
                   ]
               ]

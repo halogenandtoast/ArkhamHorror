@@ -15,6 +15,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Trait
 
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
@@ -42,7 +43,7 @@ instance RunMessage NorthsideTrainStation where
       l <$ push
         (chooseOne
           iid
-          [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+          [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
           | lid <- locationIds
           ]
         )

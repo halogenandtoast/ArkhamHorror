@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Cards ( anotherDimension )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
@@ -27,7 +28,8 @@ anotherDimension =
 instance HasAbilities AnotherDimension where
   getAbilities (AnotherDimension attrs) =
     withBaseAbilities attrs
-      $ [ mkAbility attrs 1
+      $ [ uncancellable
+          $ mkAbility attrs 1
           $ ForcedAbility
           $ LocationLeavesPlay Timing.When
           $ LocationMatchAny
@@ -41,8 +43,10 @@ instance RunMessage AnotherDimension where
       | isSource attrs source -> do
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
         enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
-        l <$ pushAll
-          ([ MoveTo (toSource attrs) iid (toId attrs) | iid <- investigatorIds ]
+        pushAll
+          $ [ MoveTo $ uncancellableMove $ move attrs iid (toId attrs)
+            | iid <- investigatorIds
+            ]
           <> [ EnemyMove eid (toId attrs) | eid <- enemyIds ]
-          )
+        pure l
     _ -> AnotherDimension <$> runMessage msg attrs

@@ -14,6 +14,7 @@ import Arkham.Criteria
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
@@ -68,7 +69,7 @@ instance RunMessage TheWayOut where
                     [ chooseOneAtATime leadInvestigatorId
                       $ [ targetLabel
                             investigator
-                            [MoveTo (toSource attrs) investigator connected]
+                            [MoveTo $ move (toSource attrs) investigator connected]
                         | investigator <- investigators
                         ]
                       <> [ targetLabel enemy [EnemyMove enemy connected]

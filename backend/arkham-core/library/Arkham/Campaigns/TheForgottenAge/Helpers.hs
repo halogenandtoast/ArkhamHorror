@@ -16,6 +16,7 @@ import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
@@ -138,7 +139,7 @@ explore iid source cardMatcher exploreRule matchCount = do
 
           pure
             $ locationAction
-            : [ Move source iid lid | canMove && exploreRule == PlaceExplored ]
+            : [ Move $ move source iid lid | canMove && exploreRule == PlaceExplored ]
             <> [ UpdateHistory iid historyItem
                , afterExploredWindow
                , afterPutIntoPlayWindow
@@ -184,7 +185,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           $ map snd placements
           <> [ chooseOne
                  iid
-                 [ targetLabel lid [Move source iid lid] | lid <- locationIds ]
+                 [ targetLabel lid [Move $ move source iid lid] | lid <- locationIds ]
              | canMove
              ]
           <> [ UpdateHistory iid historyItem

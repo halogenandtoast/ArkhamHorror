@@ -17,6 +17,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( PlaceUnderneath, LocationCard )
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.SkillType
@@ -76,7 +77,7 @@ instance RunMessage MendTheShatter where
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         relic <- selectJust $ AssetWithTitle "Relic of Ages"
         pushAll
-          $ [ MoveTo (toSource attrs) iid' aPocketInTime | iid' <- iids ]
+          $ [ MoveTo $ move (toSource attrs) iid' aPocketInTime | iid' <- iids ]
           <> [ EnemyMove eid lid | eid <- enemyIds ]
           <> [RemoveLocation lid, PlaceUnderneath (AssetTarget relic) [card]]
         pure a

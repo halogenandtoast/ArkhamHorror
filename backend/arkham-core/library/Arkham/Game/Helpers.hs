@@ -953,6 +953,7 @@ onSameLocation iid = \case
     (field InvestigatorLocation iid')
     (field InvestigatorLocation iid)
   Unplaced -> pure False
+  Limbo -> pure False
   TheVoid -> pure False
   Pursuit -> pure False
 

@@ -28,6 +28,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
   CampaignStoryCards :: Field Campaign (HashMap InvestigatorId [PlayerCard])
   CampaignCampaignLog :: Field Campaign CampaignLog
+  CampaignDecks :: Field Campaign (HashMap InvestigatorId (Deck PlayerCard))
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId

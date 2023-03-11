@@ -11,6 +11,7 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Id
 import Arkham.Strategy
@@ -35,6 +36,7 @@ data SkillAttrs = SkillAttrs
   , skillAdditionalCost :: Maybe Cost
   , skillAdditionalPayment :: Maybe Payment
   , skillAfterPlay :: AfterPlayStrategy
+  , skillPlacement :: Placement
   }
   deriving stock (Show, Eq, Generic)
 
@@ -101,6 +103,7 @@ skill f cardDef = CardBuilder
     , skillAdditionalCost = Nothing
     , skillAdditionalPayment = Nothing
     , skillAfterPlay = DiscardThis
+    , skillPlacement = Unplaced
     }
   }
 

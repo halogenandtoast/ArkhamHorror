@@ -4,11 +4,11 @@ import Arkham.Prelude
 
 import Arkham.Campaign.Types
 import Arkham.CampaignStep
-import Arkham.Card.CardDef
-import Arkham.Card.PlayerCard
+import Arkham.Card
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Matcher
@@ -51,3 +51,14 @@ getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
 getIsAlreadyOwned cDef = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ any ((== cDef) . toCardDef) $ concat (toList campaignStoryCards)
+
+campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
+campaignField fld = selectJust TheCampaign >>= field fld
+
+matchingCardsAlreadyInDeck
+  :: HasGame m => CardMatcher -> m (HashMap InvestigatorId (HashSet CardCode))
+matchingCardsAlreadyInDeck matcher = do
+  decks <- campaignField CampaignDecks
+  pure $ HashMap.map
+    (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck)
+    decks

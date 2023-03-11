@@ -13,6 +13,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Placement
 import Arkham.Source
 
@@ -43,7 +44,7 @@ instance RunMessage Shortcut2 where
       connectingLocations <- selectList $ AccessibleLocation
       push $ chooseOne
         iid
-        [ targetLabel lid' [Move (toSource attrs) iid lid']
+        [ targetLabel lid' [Move $ move (toSource attrs) iid lid']
         | lid' <- connectingLocations
         ]
       pure e

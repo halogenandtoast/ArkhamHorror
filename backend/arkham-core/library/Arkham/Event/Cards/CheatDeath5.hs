@@ -11,6 +11,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 
 newtype CheatDeath5 = CheatDeath5 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -49,7 +50,7 @@ instance RunMessage CheatDeath5 where
         <> maybeToList mHealHorror
         <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
         <> [ chooseOrRunOne iid $ map
-               (\lid -> targetLabel lid [MoveTo (toSource attrs) iid lid])
+               (\lid -> targetLabel lid [MoveTo $ move (toSource attrs) iid lid])
                locations
            | notNull locations
            ]

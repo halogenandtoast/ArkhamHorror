@@ -20,6 +20,7 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -79,10 +80,10 @@ instance RunMessage CurtainCall where
         theatreInvestigatorIds =
           maybe investigatorIds (`deleteFirst` investigatorIds) mLolaId
         theatreMoveTo = map
-          (\iid -> MoveTo (toSource attrs) iid theatreId)
+          (\iid -> MoveTo $ move (toSource attrs) iid theatreId)
           theatreInvestigatorIds
         backstageMoveTo =
-          [ MoveTo (toSource attrs) lolaId backstageId
+          [ MoveTo $ move (toSource attrs) lolaId backstageId
           | lolaId <- maybeToList mLolaId
           ]
 

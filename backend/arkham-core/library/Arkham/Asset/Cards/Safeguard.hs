@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -41,6 +42,6 @@ instance RunMessage Safeguard where
   runMessage msg a@(Safeguard attrs) = case msg of
     UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       let lid = getMovedToLocation windows'
-      push $ Move source iid lid
+      push $ Move $ move source iid lid
       pure a
     _ -> Safeguard <$> runMessage msg attrs

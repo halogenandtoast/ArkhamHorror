@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -46,7 +47,7 @@ instance RunMessage TheStrangerTheShoresOfHali where
           MoveFrom _ iid' _ -> iid' == iid
           _ -> False
         popMessageMatching_ \case
-          MoveTo _ iid' _ -> iid == iid'
+          MoveTo movement -> moveTarget movement == toTarget iid
           _ -> False
         e <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> TheStrangerTheShoresOfHali <$> runMessage msg attrs

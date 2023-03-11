@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
+import Arkham.Movement
 
 newtype EsotericAtlas2 = EsotericAtlas2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -41,7 +42,7 @@ instance RunMessage EsotericAtlas2 where
         [ LocationWithDistanceFrom n RevealedLocation | n <- [1 .. 3] ]
       push $ chooseOne
         iid
-        [ targetLabel location [MoveTo (toSource attrs) iid location]
+        [ targetLabel location [MoveTo $ move (toSource attrs) iid location]
         | location <- locations
         ]
       pure a

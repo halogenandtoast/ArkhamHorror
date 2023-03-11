@@ -13,6 +13,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
@@ -69,19 +70,19 @@ instance RunMessage StepsOfYhagharl where
           (const [])
         replaceMessageMatching
           (\case
-            Will (MoveTo _ iid' _) | iid == iid' -> True
+            Will (MoveTo movement) | moveTarget movement == toTarget iid -> True
             _ -> False
           )
           (const [])
         replaceMessageMatching
           (\case
-            After (Move _ iid' _) | iid == iid' -> True
+            After (Move movement) | moveTarget movement == toTarget iid -> True
             _ -> False
           )
           (const [])
         l <$ replaceMessageMatching
           (\case
-            MoveTo _ iid' _ | iid == iid' -> True
+            MoveTo movement | moveTarget movement == toTarget iid -> True
             _ -> False
           )
           (const [ShuffleBackIntoEncounterDeck $ toTarget attrs])

@@ -15,6 +15,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -96,7 +97,7 @@ instance RunMessage UrsulaDowns where
           "Move to a connecting location"
           [ chooseOne
               (toId attrs)
-              [ targetLabel lid' [Move (toSource attrs) (toId attrs) lid']
+              [ targetLabel lid' [Move $ move (toSource attrs) (toId attrs) lid']
               | lid' <- targets
               ]
           ]

@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Movement
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
   deriving anyclass IsAsset
@@ -51,7 +52,7 @@ instance RunMessage ForbiddenTomeSecretsRevealed3 where
       pushAll
         [ chooseOrRunOne iid
         $ Label "Do not move" []
-        : [targetLabel lid [ MoveTo (toSource attrs) iid lid] | lid <- lids ]
+        : [targetLabel lid [ MoveTo $ move (toSource attrs) iid lid] | lid <- lids ]
         , InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
         ]
       pure a

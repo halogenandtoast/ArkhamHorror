@@ -15,7 +15,6 @@ import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Id
-import Arkham.Matcher
 import Arkham.Message
 
 newtype Metadata = Metadata

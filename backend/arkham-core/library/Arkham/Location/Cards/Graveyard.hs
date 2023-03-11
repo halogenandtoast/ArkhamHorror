@@ -10,6 +10,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -49,7 +50,7 @@ instance RunMessage Graveyard where
               [InvestigatorAssignDamage iid source DamageAny 0 2]
             , Label
               "Move to Rivertown"
-              [MoveTo (toSource attrs) iid rivertownId]
+              [MoveTo $ move (toSource attrs) iid rivertownId]
             ]
           )
     _ -> Graveyard <$> runMessage msg attrs

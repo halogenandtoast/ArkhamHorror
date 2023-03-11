@@ -23,6 +23,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
@@ -92,19 +93,19 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
 
       let
         victorianHallsMoveTo =
-          [ MoveTo (toSource attrs) gavriellaId victorianHallsId
+          [ MoveTo $ move (toSource attrs) gavriellaId victorianHallsId
           | gavriellaId <- maybeToList mGavriellaMizrah
           ]
         officeMoveTo =
-          [ MoveTo (toSource attrs) jeromeId officeId
+          [ MoveTo $ move (toSource attrs) jeromeId officeId
           | jeromeId <- maybeToList mJeromeDavids
           ]
         billiardsRoomMoveTo =
-          [ MoveTo (toSource attrs) valentinoId billiardsRoomId
+          [ MoveTo $ move (toSource attrs) valentinoId billiardsRoomId
           | valentinoId <- maybeToList mValentinoRivas
           ]
         balconyMoveTo =
-          [ MoveTo (toSource attrs) pennyId balconyId
+          [ MoveTo $ move (toSource attrs) pennyId balconyId
           | pennyId <- maybeToList mPennyWhite
           ]
 

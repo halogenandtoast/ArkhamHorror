@@ -18,6 +18,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyEvaded )
+import Arkham.Movement
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
@@ -92,7 +93,7 @@ instance RunMessage RitaYoung where
                      iid
                      [ TargetLabel
                          (LocationTarget lid')
-                         [Move (toSource attrs) iid lid']
+                         [Move $ move (toSource attrs) iid lid']
                      | lid' <- connectingLocations
                      ]
                  ]

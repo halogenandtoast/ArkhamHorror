@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -30,10 +31,10 @@ instance RunMessage Wormhole where
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
       do
-        let locationId = LocationId $ toCardId card
+        let locationId = LocationId $ toCardId card -- TODO: need to fix this
         pushAll
           [ InvestigatorDrewEncounterCard iid card
-          , MoveTo (toSource attrs) iid locationId
+          , MoveTo $ move (toSource attrs) iid locationId
           ]
         pure t
     _ -> Wormhole <$> runMessage msg attrs

@@ -11,6 +11,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Source
 
@@ -36,7 +37,7 @@ instance RunMessage MysteriousGateway where
         , chooseOne
             leadInvestigatorId
             [ targetLabel iid'
-               [ MoveTo (toSource attrs) iid' holeInTheWallId
+               [ MoveTo $ move (toSource attrs) iid' holeInTheWallId
                , beginSkillTest iid' (ActSource aid) (InvestigatorTarget iid') SkillWillpower 4
                ]
             | iid' <- investigatorIds

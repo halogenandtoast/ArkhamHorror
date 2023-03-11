@@ -25,6 +25,7 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -189,7 +190,7 @@ instance RunMessage TheUnspeakableOath where
             iid
             [ TargetLabel
                 (LocationTarget location)
-                [MoveTo (toSource attrs) iid location]
+                [MoveTo $ move (toSource attrs) iid location]
             | location <- [westernPatientWingId, easternPatientWingId]
             ]
           )

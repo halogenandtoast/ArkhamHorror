@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 
 newtype Elusive = Elusive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,7 +25,7 @@ instance RunMessage Elusive where
         $ [ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
         <> [ chooseOrRunOne
                iid
-               [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+               [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
                | lid <- targets
                ]
            | notNull targets

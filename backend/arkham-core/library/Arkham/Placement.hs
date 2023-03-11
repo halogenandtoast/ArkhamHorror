@@ -16,6 +16,7 @@ data Placement
   | AttachedToAgenda AgendaId
   | AttachedToInvestigator InvestigatorId
   | Unplaced
+  | Limbo
   | TheVoid
   | Pursuit
   deriving stock (Show, Eq, Generic)
@@ -34,6 +35,7 @@ placementToAttached = \case
   AttachedToAgenda aid -> Just $ AgendaTarget aid
   AttachedToInvestigator iid -> Just $ InvestigatorTarget iid
   Unplaced -> Nothing
+  Limbo -> Nothing
   TheVoid -> Nothing
   Pursuit -> Nothing
 

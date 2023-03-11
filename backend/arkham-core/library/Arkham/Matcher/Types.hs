@@ -23,6 +23,7 @@ import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
+import {-# SOURCE #-} Arkham.Placement
 import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
@@ -92,6 +93,7 @@ data InvestigatorMatcher
   | AliveInvestigator
   | IncludeEliminated InvestigatorMatcher
   | HealableInvestigator Source DamageType InvestigatorMatcher
+  | InvestigatorWithMostCardsInPlayArea
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -153,6 +155,7 @@ data AssetMatcher
   | UniqueAsset
   | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher CardMatcher AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
+  | AssetWithPlacement Placement
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -253,6 +256,7 @@ data EventMatcher
   | EventCardMatch CardMatcher
   | EventMatches [EventMatcher]
   | AnyEvent
+  | EventWithPlacement Placement
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -373,6 +377,7 @@ data SkillMatcher
   | SkillWithTrait Trait
   | SkillWithClass ClassSymbol
   | SkillControlledBy InvestigatorMatcher
+  | SkillWithPlacement Placement
   | SkillMatches [SkillMatcher]
   | YourSkill
   | AnySkill

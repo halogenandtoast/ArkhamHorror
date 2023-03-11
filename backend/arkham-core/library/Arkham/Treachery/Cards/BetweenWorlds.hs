@@ -12,6 +12,7 @@ import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( Discarded )
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -38,7 +39,7 @@ instance RunMessage BetweenWorlds where
           (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
         , AddDirectConnection locationId nexus
         , AddDirectConnection nexus locationId
-        , MoveTo (toSource attrs) iid locationId
+        , MoveTo $ move (toSource attrs) iid locationId
         ]
       pure t
     After (Revelation _ source) | isSource attrs source -> do

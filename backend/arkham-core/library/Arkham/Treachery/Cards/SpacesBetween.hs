@@ -9,6 +9,7 @@ import Arkham.Classes
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Trait
 import Arkham.Treachery.Runner
@@ -38,7 +39,7 @@ instance RunMessage SpacesBetween where
                     )
 
           pure
-            $ [ MoveTo source iid destination | iid <- investigatorIds ]
+            $ [ MoveTo $ move source iid destination | iid <- investigatorIds ]
             <> [ EnemyMove eid destination | eid <- enemyIds ]
             <> [UnrevealLocation flipLocation]
         )

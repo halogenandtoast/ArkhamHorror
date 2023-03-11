@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Treachery.Runner
@@ -34,7 +35,7 @@ instance RunMessage LostInVenice where
             [ Label "Take 2 damage" [take2damage]
             , Label
               "Move to the location across from you"
-              [Move source iid acrossLocationId]
+              [Move $ move source iid acrossLocationId]
             ]
       pure t
     _ -> LostInVenice <$> runMessage msg attrs

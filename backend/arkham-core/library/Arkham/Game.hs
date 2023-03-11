@@ -100,6 +100,7 @@ import Arkham.Message hiding
   )
 import Arkham.Message qualified as Msg
 import Arkham.ModifierData
+import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement hiding ( TreacheryPlacement (..) )
@@ -657,20 +658,10 @@ getInvestigatorsMatching matcher = do
     AliveInvestigator -> \i -> do
       let attrs = toAttrs i
       pure $ not $ investigatorKilled attrs || investigatorDrivenInsane attrs
-    FewestCardsInHand -> \i -> do
-      let cardCount = length . investigatorHand $ toAttrs i
-      minCardCount <-
-        fmap (getMin . fold)
-        . traverse (fieldMap InvestigatorHand (Min . length))
-        =<< getInvestigatorIds
-      pure $ minCardCount == cardCount
-    MostCardsInHand -> \i -> do
-      let cardCount = length . investigatorHand $ toAttrs i
-      maxCardCount <-
-        fmap (getMax0 . fold)
-        . traverse (fieldMap InvestigatorHand (Max . length))
-        =<< getInvestigatorIds
-      pure $ maxCardCount == cardCount
+    FewestCardsInHand -> \i ->
+      isLowestAmongst (toId i) UneliminatedInvestigator (fieldMap InvestigatorHand length)
+    MostCardsInHand -> \i ->
+      isHighestAmongst (toId i) UneliminatedInvestigator (fieldMap InvestigatorHand length)
     LowestRemainingHealth -> \i -> do
       h <- field InvestigatorRemainingHealth (toId i)
       lowestRemainingHealth <-
@@ -784,24 +775,10 @@ getInvestigatorsMatching matcher = do
           <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
-    InvestigatorWithLowestSkill skillType -> \i -> do
-      lowestSkillValue <-
-        getMin
-        . fold
-        <$> (traverse (fmap Min . getSkillValue skillType)
-            =<< getInvestigatorIds
-            )
-      skillValue <- getSkillValue skillType (toId i)
-      pure $ lowestSkillValue == skillValue
-    InvestigatorWithHighestSkill skillType -> \i -> do
-      highestSkillValue <-
-        getMax0
-        . fold
-        <$> (traverse (fmap Max . getSkillValue skillType)
-            =<< getInvestigatorIds
-            )
-      skillValue <- getSkillValue skillType (toId i)
-      pure $ highestSkillValue == skillValue
+    InvestigatorWithLowestSkill skillType -> \i ->
+      isLowestAmongst (toId i) UneliminatedInvestigator (getSkillValue skillType)
+    InvestigatorWithHighestSkill skillType -> \i ->
+      isHighestAmongst (toId i) UneliminatedInvestigator (getSkillValue skillType)
     InvestigatorWithClues gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . investigatorClues . toAttrs
     InvestigatorWithResources gameValueMatcher ->
@@ -896,6 +873,35 @@ getInvestigatorsMatching matcher = do
             then pure False
             else member (toId i)
               <$> select (matcher' <> InvestigatorWithAnyHorror)
+    InvestigatorWithMostCardsInPlayArea -> \i ->
+      isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
+
+isHighestAmongst :: HasGame m => InvestigatorId -> InvestigatorMatcher -> (InvestigatorId -> m Int) -> m Bool
+isHighestAmongst iid matcher f = do
+  allIds <- selectList matcher
+  if iid `elem` allIds
+    then do
+      highestCount <- getMax0 <$> foldMapM (fmap Max . f) allIds
+      thisCount <- f iid
+      pure $ highestCount == thisCount
+    else pure False
+
+isLowestAmongst :: HasGame m => InvestigatorId -> InvestigatorMatcher -> (InvestigatorId -> m Int) -> m Bool
+isLowestAmongst iid matcher f = do
+  allIds <- selectList matcher
+  if iid `elem` allIds
+    then do
+      highestCount <- getMin <$> foldMapM (fmap Min . f) allIds
+      thisCount <- f iid
+      pure $ highestCount == thisCount
+    else pure False
+
+getCardsInPlayCount :: HasGame m => InvestigatorId -> m Int
+getCardsInPlayCount i = do
+  assets <- Sum <$> selectCount (AssetWithPlacement $ InPlayArea i)
+  events <- Sum <$> selectCount (EventWithPlacement $ InPlayArea i)
+  skills <- Sum <$> selectCount (SkillWithPlacement $ InPlayArea i)
+  pure . getSum $ assets <> events <> skills
 
 getAgendasMatching :: HasGame m => AgendaMatcher -> m [Agenda]
 getAgendasMatching matcher = do
@@ -1349,7 +1355,7 @@ getLocationsMatching lmatcher = do
       -- querying those locations and seeing if they match the matcher
       flip filterM ls $ \l -> do
         matchAny <- getConnectedMatcher l
-        selectAny $ matcher <> matchAny
+        selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
     ConnectedFrom matcher -> do
       startIds <- select matcher
       let starts = filter ((`elem` startIds) . toId) ls
@@ -1470,6 +1476,7 @@ getAssetsMatching matcher = do
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . assetSlots . toAttrs) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
+    AssetWithPlacement placement -> pure $ filter ((== placement) . assetPlacement . toAttrs) as
     AssetControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
@@ -1650,6 +1657,8 @@ getEventsMatching matcher = do
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventCardMatch cardMatcher ->
       filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
+    EventWithPlacement placement ->
+      pure $ filter ((== placement) . eventPlacement . toAttrs) as
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
@@ -1684,6 +1693,7 @@ getSkillsMatching matcher = do
     SkillControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . skillOwner . toAttrs) as
+    SkillWithPlacement placement -> pure $ filter ((== placement) . skillPlacement . toAttrs) as
     SkillMatches ms -> foldM filterMatcher as ms
     AnySkill -> pure as
     YourSkill -> do
@@ -2149,6 +2159,7 @@ instance Projection Asset where
         AttachedToAct _ -> pure Nothing
         AttachedToAgenda _ -> pure Nothing
         Unplaced -> pure Nothing
+        Limbo -> pure Nothing
         TheVoid -> pure Nothing
         Pursuit -> pure Nothing
       AssetCardCode -> pure assetCardCode
@@ -2654,6 +2665,7 @@ instance Projection Campaign where
       CampaignCompletedSteps -> pure campaignCompletedSteps
       CampaignStoryCards -> pure campaignStoryCards
       CampaignCampaignLog -> pure campaignLog
+      CampaignDecks -> pure campaignDecks
 
 instance Projection Effect where
   field fld eid = do
@@ -3189,7 +3201,7 @@ runGameMessage msg g = case msg of
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
-  MoveTo _ iid _ -> do
+  MoveTo (moveTarget -> InvestigatorTarget iid) -> do
     let
       historyItem = mempty { historyMoved = True }
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -3968,8 +3980,11 @@ runGameMessage msg g = case msg of
       [Window Timing.When (Window.PhaseEnds UpkeepPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
-    endRoundMessage <- checkWindows [Window Timing.When Window.AtEndOfRound]
-    g <$ push endRoundMessage
+    windows' <- traverse
+      (\t -> checkWindows [Window t Window.AtEndOfRound])
+      [Timing.When, Timing.AtIf, Timing.After]
+    pushAll windows'
+    pure g
   EndRound -> do
     pushEnd BeginRound
     pure $ g & (roundHistoryL .~ mempty)

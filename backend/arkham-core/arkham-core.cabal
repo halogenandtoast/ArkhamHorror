@@ -1553,6 +1553,7 @@ library
       Arkham.Message.Type
       Arkham.Modifier
       Arkham.ModifierData
+      Arkham.Movement
       Arkham.Name
       Arkham.Phase
       Arkham.Placement

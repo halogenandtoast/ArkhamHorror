@@ -17,6 +17,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Scenario.Deck
 
 newtype CavernOfTheForgottenAge = CavernOfTheForgottenAge ActAttrs
@@ -85,7 +86,7 @@ instance RunMessage CavernOfTheForgottenAge where
                *> [ chooseOne
                     leadInvestigator
                     [ targetLabel l
-                      $ [ MoveTo (toSource attrs) i l | i <- investigators ]
+                      $ [ MoveTo $ move attrs i l | i <- investigators ]
                       <> [ EnemyMove eid lid | eid <- enemies ]
                     | l <- moveTo
                     ]

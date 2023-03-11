@@ -11,6 +11,7 @@ import Arkham.EffectMetadata
 import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -29,7 +30,8 @@ instance RunMessage ArcaneBarrier where
       mLocation <- field InvestigatorLocation iid
       for_ mLocation $ push . AttachTreachery (toId attrs) . toTarget
       pure t
-    Will (MoveTo _ iid lid) -> do
+    Will (MoveTo movement@(moveTarget -> InvestigatorTarget iid)) -> do
+      let lid = moveDestination movement
       shouldCostAdditional <-
         selectAny $ locationWithTreachery (toId attrs) <> LocationMatchAny
           [locationWithInvestigator iid, LocationWithId lid]

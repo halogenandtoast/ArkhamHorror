@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -33,7 +34,7 @@ instance RunMessage OnWingsOfDarkness where
           : map (DisengageEnemy iid) enemiesToDisengage
           <> [ chooseOne
                  iid
-                 [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+                 [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
                  | lid <- centralLocations
                  ]
              ]

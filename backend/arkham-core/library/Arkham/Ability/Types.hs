@@ -28,6 +28,7 @@ data Ability = Ability
   , abilityCriteria :: Maybe Criterion
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   , abilityTooltip :: Maybe Text
+  , abilityCanBeCancelled :: Bool
   }
   deriving stock (Show, Generic)
   deriving anyclass (Hashable, ToJSONKey, FromJSONKey)
@@ -119,6 +120,9 @@ reaction
   :: SourceEntity a => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
 reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
 
+uncancellable :: Ability -> Ability
+uncancellable ab = ab { abilityCanBeCancelled = False }
+
 abilityEffect :: SourceEntity a => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
@@ -133,6 +137,7 @@ mkAbility entity idx type' = Ability
   , abilityCriteria = Nothing
   , abilityDoesNotProvokeAttacksOfOpportunity = False
   , abilityTooltip = Nothing
+  , abilityCanBeCancelled = True
   }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

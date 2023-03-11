@@ -31,6 +31,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (LocationCard, LocationName) )
 import Arkham.Matcher hiding ( LocationCard )
 import Arkham.Message hiding ( EnemyDamage )
+import Arkham.Movement
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
@@ -258,7 +259,7 @@ instance RunMessage TheBoundaryBeyond where
           ]
         <> [ chooseOne
                iid
-               [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+               [ targetLabel lid [MoveTo $ move attrs iid lid]
                | lid <- [zocaloId, coyoacanId]
                ]
            | iid <- iids

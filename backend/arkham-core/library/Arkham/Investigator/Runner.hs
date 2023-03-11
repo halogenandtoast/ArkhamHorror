@@ -51,6 +51,7 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Movement
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -767,8 +768,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <- Helpers.checkWindows
       [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
-    a <$ pushAll (resolve (Move (toSource a) iid lid) <> [afterWindowMsg])
-  Move source iid destinationLocationId | iid == investigatorId -> do
+    a <$ pushAll (resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg])
+  Move movement | isTarget a (moveTarget movement)-> do
+    let source = moveSource movement
+        destinationLocationId = moveDestination movement
+        iid = investigatorId
     mFromLocation <- field InvestigatorLocation iid
     windowMsgs <- Helpers.windows
       [Window.Moves iid source mFromLocation destinationLocationId]
@@ -776,11 +780,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ [ Will (MoveFrom source iid fromLocationId)
         | fromLocationId <- maybeToList mFromLocation
         ]
-      <> [Will (MoveTo source iid destinationLocationId)]
+      <> [Will (MoveTo $ move source iid destinationLocationId)]
       <> [ MoveFrom source iid fromLocationId
          | fromLocationId <- maybeToList mFromLocation
          ]
-      <> [MoveTo source iid destinationLocationId]
+      <> [MoveTo $ move source iid destinationLocationId]
       <> windowMsgs
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
@@ -1606,7 +1610,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ((`Window` Window.InvestigatorDefeated source defeatedBy iid)
       <$> [Timing.When]
       )
-    pushAll $ [windowMsg, InvestigatorIsDefeated source iid]
+    pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
     unless investigatorDefeated $ do
@@ -1616,8 +1620,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
-    a <$ push (MoveTo source investigatorId lid)
-  MoveTo source iid lid | iid == investigatorId -> do
+    a <$ push (MoveTo $ move source investigatorId lid)
+  MoveTo movement | isTarget a (moveTarget movement) -> do
+    let source = moveSource movement
+        lid = moveDestination movement
+        iid = investigatorId
     movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
     afterMoveButBeforeEnemyEngagement <- Helpers.checkWindows
       [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]

@@ -24,7 +24,7 @@ data MovementMeans = Direct
 uncancellableMove :: Movement -> Movement
 uncancellableMove m = m { moveCancelable = False }
 
-move :: SourceEntity source => source -> InvestigatorId -> LocationId -> Movement
+move :: Sourceable source => source -> InvestigatorId -> LocationId -> Movement
 move (toSource -> source) iid lid = Movement
   { moveSource = source
   , moveTarget = InvestigatorTarget iid

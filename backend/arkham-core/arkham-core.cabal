@@ -841,6 +841,7 @@ library
       Arkham.Enemy.Cards.OBannionsThug
       Arkham.Enemy.Cards.PadmaAmrita
       Arkham.Enemy.Cards.PeterWarren
+      Arkham.Enemy.Cards.PiperOfAzathoth
       Arkham.Enemy.Cards.PitViper
       Arkham.Enemy.Cards.PitWarden
       Arkham.Enemy.Cards.Poleman
@@ -1777,6 +1778,7 @@ library
       Arkham.Treachery.Cards.CursedSwamp
       Arkham.Treachery.Cards.CurseOfTheRougarou
       Arkham.Treachery.Cards.CurseOfYig
+      Arkham.Treachery.Cards.DaemonicPiping
       Arkham.Treachery.Cards.DanceOfTheYellowKing
       Arkham.Treachery.Cards.DeadlyFate
       Arkham.Treachery.Cards.DeepDark

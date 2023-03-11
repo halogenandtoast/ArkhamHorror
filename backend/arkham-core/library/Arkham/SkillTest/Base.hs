@@ -74,7 +74,7 @@ instance Targetable SkillTest where
   isTarget _ SkillTestTarget = True
   isTarget _ _ = False
 
-instance SourceEntity SkillTest where
+instance Sourceable SkillTest where
   toSource SkillTest {..} =
     SkillTestSource
       skillTestInvestigator

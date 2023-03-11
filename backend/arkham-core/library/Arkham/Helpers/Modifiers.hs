@@ -29,17 +29,17 @@ withoutModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
-toModifier :: SourceEntity a => a -> ModifierType -> Modifier
+toModifier :: Sourceable a => a -> ModifierType -> Modifier
 toModifier a mType = Modifier (toSource a) mType False
 
-toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
+toModifiers :: Sourceable a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
-toModifiersWith :: SourceEntity a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
+toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
 toModifiersWith a f xs= map (f . toModifier a) xs
 
 skillTestModifier
-  :: (SourceEntity source, Targetable target)
+  :: (Sourceable source, Targetable target)
   => source
   -> target
   -> ModifierType
@@ -48,7 +48,7 @@ skillTestModifier source target modifier =
   skillTestModifiers source target [modifier]
 
 skillTestModifiers
-  :: (SourceEntity source, Targetable target)
+  :: (Sourceable source, Targetable target)
   => source
   -> target
   -> [ModifierType]

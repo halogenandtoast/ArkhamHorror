@@ -152,7 +152,7 @@ instance Targetable ScenarioAttrs where
   isTarget _ ScenarioTarget = True
   isTarget _ _ = False
 
-instance SourceEntity ScenarioAttrs where
+instance Sourceable ScenarioAttrs where
   toSource _ = ScenarioSource
   isSource _ ScenarioSource = True
   isSource _ _ = False

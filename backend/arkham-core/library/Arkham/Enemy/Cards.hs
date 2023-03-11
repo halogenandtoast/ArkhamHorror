@@ -176,6 +176,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , oBannionsThug
   , padmaAmrita
   , peterWarren
+  , piperOfAzathoth
   , pitViper
   , pitWarden
   , poleman
@@ -1084,6 +1085,13 @@ theSpectralWatcher :: CardDef
 theSpectralWatcher = (enemy "05086" ("The Spectral Watcher" <:> "You Are Its Prey") TheWatcher 1)
   { cdCardTraits = setFromList [AncientOne, Spectral, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+  }
+
+piperOfAzathoth :: CardDef
+piperOfAzathoth = (enemy "05088" "Piper of Azathoth" AgentsOfAzathoth 1)
+  { cdCardTraits = setFromList [Monster, Elite]
+  , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+  , cdVictoryPoints = Just 2
   }
 
 netherMist :: CardDef

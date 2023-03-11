@@ -177,6 +177,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , curseOfYig
   , cursedLuck
   , cursedSwamp
+  , daemonicPiping
   , danceOfTheYellowKing
   , deadlyFate
   , deepDark
@@ -1227,6 +1228,11 @@ the13thVision = (basicWeakness "05041" "The 13th Vision")
 watchersGrasp :: CardDef
 watchersGrasp = (treachery "05087" "Watcher's Grasp" TheWatcher 2)
   { cdCardTraits = setFromList [Power, Spectral]
+  }
+
+daemonicPiping :: CardDef
+daemonicPiping = surge $ (treachery "05089" "Daemonic Piping" AgentsOfAzathoth 3)
+  { cdCardTraits = setFromList [Power, Terror]
   }
 
 whispersInTheDark :: CardDef

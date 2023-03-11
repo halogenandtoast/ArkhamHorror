@@ -41,7 +41,7 @@ drewCard c draw = draw { cardDrawState = updatedState }
     ResolvedCardDraw _ -> error "card draw was already finished"
 
 newCardDraw
-  :: (MonadRandom m, SourceEntity source)
+  :: (MonadRandom m, Sourceable source)
   => InvestigatorId
   -> source
   -> Int

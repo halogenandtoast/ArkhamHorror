@@ -139,7 +139,7 @@ instance Targetable TreacheryAttrs where
     treacheryId == tid
   isTarget _ _ = False
 
-instance SourceEntity TreacheryAttrs where
+instance Sourceable TreacheryAttrs where
   toSource = TreacherySource . toId
   isSource TreacheryAttrs { treacheryId } (TreacherySource tid) =
     treacheryId == tid
@@ -264,7 +264,7 @@ instance Targetable Treachery where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Treachery where
+instance Sourceable Treachery where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

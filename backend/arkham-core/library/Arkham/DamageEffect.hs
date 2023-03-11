@@ -15,7 +15,7 @@ data DamageAssignment = DamageAssignment
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-attack :: SourceEntity a => a -> Int -> DamageAssignment
+attack :: Sourceable a => a -> Int -> DamageAssignment
 attack a n = DamageAssignment
   { damageAssignmentSource = toSource a
   , damageAssignmentAmount = n
@@ -24,7 +24,7 @@ attack a n = DamageAssignment
   , damageAssignmentDelayed = False
   }
 
-nonAttack :: SourceEntity a => a -> Int -> DamageAssignment
+nonAttack :: Sourceable a => a -> Int -> DamageAssignment
 nonAttack a n = DamageAssignment
   { damageAssignmentSource = toSource a
   , damageAssignmentAmount = n
@@ -33,7 +33,7 @@ nonAttack a n = DamageAssignment
   , damageAssignmentDelayed = False
   }
 
-storyDamage :: SourceEntity a => a -> Int -> DamageAssignment
+storyDamage :: Sourceable a => a -> Int -> DamageAssignment
 storyDamage a n = DamageAssignment
   { damageAssignmentSource = toSource a
   , damageAssignmentAmount = n

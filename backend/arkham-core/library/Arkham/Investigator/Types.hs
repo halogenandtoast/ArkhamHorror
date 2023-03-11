@@ -178,7 +178,7 @@ instance Targetable InvestigatorAttrs where
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity InvestigatorAttrs where
+instance Sourceable InvestigatorAttrs where
   toSource = InvestigatorSource . toId
   isSource InvestigatorAttrs { investigatorId } (InvestigatorSource iid) =
     iid == investigatorId
@@ -367,7 +367,7 @@ instance Targetable Investigator where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Investigator where
+instance Sourceable Investigator where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

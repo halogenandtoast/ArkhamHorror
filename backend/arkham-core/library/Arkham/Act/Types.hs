@@ -105,7 +105,7 @@ instance Targetable ActAttrs where
   isTarget ActAttrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
 
-instance SourceEntity ActAttrs where
+instance Sourceable ActAttrs where
   toSource = ActSource . toId
   isSource ActAttrs { actId } (ActSource aid) = actId == aid
   isSource _ _ = False
@@ -154,7 +154,7 @@ instance Targetable Act where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Act where
+instance Sourceable Act where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

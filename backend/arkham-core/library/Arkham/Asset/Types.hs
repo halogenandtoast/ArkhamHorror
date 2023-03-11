@@ -62,7 +62,7 @@ instance Targetable Asset where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Asset where
+instance Sourceable Asset where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
@@ -353,7 +353,7 @@ instance Targetable AssetAttrs where
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 
-instance SourceEntity AssetAttrs where
+instance Sourceable AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
   isSource _ _ = False

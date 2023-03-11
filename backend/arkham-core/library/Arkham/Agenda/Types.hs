@@ -91,7 +91,7 @@ instance Targetable AgendaAttrs where
   isTarget AgendaAttrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
 
-instance SourceEntity AgendaAttrs where
+instance Sourceable AgendaAttrs where
   toSource = AgendaSource . toId
   isSource AgendaAttrs { agendaId } (AgendaSource aid) = agendaId == aid
   isSource _ _ = False
@@ -166,7 +166,7 @@ instance Targetable Agenda where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Agenda where
+instance Sourceable Agenda where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

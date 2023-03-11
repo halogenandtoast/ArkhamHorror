@@ -63,7 +63,7 @@ instance RunMessage TheWitchingHour where
 
       -- The Devourer Below is only locations
       encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.anetteMason ]
+        [Enemies.anetteMason]
         [ EncounterSet.TheWitchingHour
         , EncounterSet.AnettesCoven
         , EncounterSet.CityOfSins
@@ -71,6 +71,11 @@ instance RunMessage TheWitchingHour where
         , EncounterSet.AncientEvils
         , EncounterSet.StrikingFear
         ]
+
+      agentsOfShubNiggurath <- map EncounterCard
+        <$> gatherEncounterSet EncounterSet.AgentsOfShubNiggurath
+      agentsOfAzathoth <- map EncounterCard
+        <$> gatherEncounterSet EncounterSet.AgentsOfAzathoth
 
       witchHauntedWoods <-
         sampleN 5
@@ -83,7 +88,7 @@ instance RunMessage TheWitchingHour where
            , Locations.witchHauntedWoodsOvergrownBarn
            ]
 
-      setAsideCards <- traverse
+      setAsideCards <- (<> agentsOfShubNiggurath <> agentsOfAzathoth) <$> traverse
         genCard
         [ Enemies.anetteMason
         , Locations.arkhamWoodsUnhallowedGround

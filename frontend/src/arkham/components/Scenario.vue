@@ -148,7 +148,8 @@ function handleConnections() {
   }
 
   const allConnections = []
-  for(const [id,location] of Object.entries(props.game.locations)) {
+  for(const location of locations.value) {
+    const id = location.id
     const connections = typeof location.connectedLocations == "object" ? Object.values(location.connectedLocations) : location.connectedLocations
     connections.forEach((connection) => {
       const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement

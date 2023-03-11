@@ -241,7 +241,7 @@ instance Targetable EnemyAttrs where
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity EnemyAttrs where
+instance Sourceable EnemyAttrs where
   toSource = EnemySource . toId
   isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
@@ -284,7 +284,7 @@ instance Targetable Enemy where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Enemy where
+instance Sourceable Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

@@ -9,9 +9,11 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
@@ -58,17 +60,32 @@ instance RunMessage LostInTheWoods where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       iids <- getInvestigatorIds
+      lead <- getLeadInvestigatorId
       arkhamWoods <- shuffleM
         =<< selectList (SetAsideCardMatch $ CardWithTitle "Arkham Woods")
       placements <- traverse placeLocation arkhamWoods
 
+      goatSpawn <- getSetAsideCardsMatching $ cardIs Enemies.goatSpawn
+      relentlessDarkYoung <- getSetAsideCard Enemies.relentlessDarkYoung
+
       let
+        enemyPairings = if length iids == 4
+          then
+            (lead, relentlessDarkYoung) : zip (deleteFirst lead iids) goatSpawn
+          else zip iids goatSpawn
         msgs =
           flip concatMap (zip iids placements) $ \(iid, (lid, placement)) ->
             [ placement
             , PutLocationInFrontOf iid lid
             , MoveTo $ uncancellableMove $ move attrs iid lid
             ]
+
+      pairingsWithLocations <-
+        flip mapMaybeM enemyPairings $ \(iid, enemyCard) -> do
+          mlid <- field InvestigatorLocation iid
+          pure $ case mlid of
+            Just lid -> Just (iid, CreateEnemyAt enemyCard lid Nothing)
+            Nothing -> Nothing
 
       pushAll msgs
       pure a

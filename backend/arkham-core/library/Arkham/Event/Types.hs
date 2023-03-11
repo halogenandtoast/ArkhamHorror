@@ -145,7 +145,7 @@ instance Targetable EventAttrs where
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity EventAttrs where
+instance Sourceable EventAttrs where
   toSource = EventSource . toId
   isSource EventAttrs {eventId} (EventSource eid) = eventId == eid
   isSource _ _ = False
@@ -186,7 +186,7 @@ instance Targetable Event where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Event where
+instance Sourceable Event where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

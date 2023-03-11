@@ -229,6 +229,8 @@ allEnemies = mapFrom
   , SomeEnemyCard anetteMason
   -- The Watcher
   , SomeEnemyCard theSpectralWatcher
+  -- Agents of Azathoth
+  , SomeEnemyCard piperOfAzathoth
   -- Spectral Predators
   , SomeEnemyCard netherMist
   , SomeEnemyCard shadowHound

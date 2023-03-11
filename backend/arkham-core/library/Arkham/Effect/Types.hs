@@ -99,7 +99,7 @@ instance Targetable EffectAttrs where
   isTarget EffectAttrs { effectId } (EffectTarget eid) = effectId == eid
   isTarget _ _ = False
 
-instance SourceEntity EffectAttrs where
+instance Sourceable EffectAttrs where
   toSource = EffectSource . toId
   isSource EffectAttrs { effectId } (EffectSource eid) = effectId == eid
   isSource _ _ = False
@@ -134,7 +134,7 @@ instance Targetable Effect where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Effect where
+instance Sourceable Effect where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

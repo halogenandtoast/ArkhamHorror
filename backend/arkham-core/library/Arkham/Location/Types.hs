@@ -244,7 +244,7 @@ instance Targetable LocationAttrs where
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity LocationAttrs where
+instance Sourceable LocationAttrs where
   toSource = LocationSource . toId
   isSource LocationAttrs { locationId } (LocationSource lid) =
     locationId == lid
@@ -403,7 +403,7 @@ instance Targetable Location where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Location where
+instance Sourceable Location where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

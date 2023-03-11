@@ -14,11 +14,11 @@ import Arkham.Direction
 import Arkham.Game.Helpers as X
 import Arkham.Matcher
 
-resignAction :: SourceEntity a => a -> Ability
+resignAction :: Sourceable a => a -> Ability
 resignAction a =
   mkAbility a 99 $ ActionAbility (Just Action.Resign) (ActionCost 1)
 
-drawCardUnderneathAction :: SourceEntity a => a -> Ability
+drawCardUnderneathAction :: Sourceable a => a -> Ability
 drawCardUnderneathAction a =
   (restrictedAbility
         a

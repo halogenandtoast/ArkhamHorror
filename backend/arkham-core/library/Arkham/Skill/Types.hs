@@ -83,7 +83,7 @@ instance Targetable SkillAttrs where
   isTarget SkillAttrs { skillId } (SkillTarget sid) = skillId == sid
   isTarget _ _ = False
 
-instance SourceEntity SkillAttrs where
+instance Sourceable SkillAttrs where
   toSource = SkillSource . skillId
   isSource SkillAttrs { skillId } (SkillSource sid) = skillId == sid
   isSource _ _ = False
@@ -146,7 +146,7 @@ instance Targetable Skill where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance SourceEntity Skill where
+instance Sourceable Skill where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

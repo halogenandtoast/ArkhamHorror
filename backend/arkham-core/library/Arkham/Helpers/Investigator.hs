@@ -369,13 +369,13 @@ isEliminated iid =
 getHandCount :: HasGame m => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
 
-getHealHorrorMessage :: (HasGame m, SourceEntity a) => a -> Int -> InvestigatorId -> m (Maybe Message)
+getHealHorrorMessage :: (HasGame m, Sourceable a) => a -> Int -> InvestigatorId -> m (Maybe Message)
 getHealHorrorMessage a n iid = do
   mHorrorId <- canHaveHorrorHealed a iid
   for mHorrorId $ \horrorId ->
     pure $ HealHorror (InvestigatorTarget horrorId) (toSource a) n
 
-canHaveHorrorHealed :: (HasGame m, SourceEntity a) => a -> InvestigatorId -> m (Maybe InvestigatorId)
+canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m (Maybe InvestigatorId)
 canHaveHorrorHealed a iid =  do
   result <- selectAny $ HealableInvestigator (toSource a) HorrorType $ InvestigatorWithId iid
 
@@ -402,11 +402,11 @@ canHaveHorrorHealed a iid =  do
       _ -> pure Nothing
     _ -> pure Nothing
 
-canHaveDamageHealed :: (HasGame m, SourceEntity a) => a -> InvestigatorId -> m Bool
+canHaveDamageHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
 
 getInvestigatorsWithHealHorror
-  :: (HasGame m, SourceEntity a)
+  :: (HasGame m, Sourceable a)
   => a
   -> Int
   -> InvestigatorMatcher

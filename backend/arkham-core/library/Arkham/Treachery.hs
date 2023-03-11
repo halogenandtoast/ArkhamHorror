@@ -282,6 +282,8 @@ allTreacheries = mapFrom
   , SomeTreacheryCard the13thVision
   -- The Watcher
   , SomeTreacheryCard watchersGrasp
+  -- Agents of Azathoth
+  , SomeTreacheryCard daemonicPiping
   -- Spectral Predators
   , SomeTreacheryCard whispersInTheDark
   -- Trapped Spirits

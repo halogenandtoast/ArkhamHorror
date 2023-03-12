@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( EncounterDeck )
 import Arkham.Message
@@ -112,7 +111,11 @@ instance RunMessage LostInTheWoods where
             ShuffleCardsIntoDeck EncounterDeck [EncounterCard x]
               : map AddToEncounterDiscard xs
 
-      pushAll $ msgs <> enemyMsgs <> pipingMsgs
+      pushAll
+        $ msgs
+        <> enemyMsgs
+        <> pipingMsgs
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
       -> do

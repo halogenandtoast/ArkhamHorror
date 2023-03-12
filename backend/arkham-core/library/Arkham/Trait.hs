@@ -38,6 +38,7 @@ data Trait
   | Central
   | Charm
   | Chosen
+  | Circle
   | Civic
   | Clairvoyant
   | Clothing

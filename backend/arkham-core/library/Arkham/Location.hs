@@ -377,6 +377,7 @@ allLocations = mapFrom
   , SomeLocationCard betweenWorlds
   -- The Circle Undone
   -- The Witching Hour
+  , SomeLocationCard witchesCircle
   , SomeLocationCard witchHauntedWoodsAbandonedMine
   , SomeLocationCard witchHauntedWoodsCairnStones
   , SomeLocationCard witchHauntedWoodsTheLonelyTree

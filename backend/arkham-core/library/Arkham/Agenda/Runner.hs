@@ -116,8 +116,9 @@ instance RunMessage AgendaAttrs
               , AdvanceAgenda agendaId
               ]
           pure a
-    RevertAgenda aid | aid == agendaId && onSide B a ->
+    RevertAgenda aid | aid == agendaId && agendaFlipped ->
       pure
         $ a
-        & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) A)
+        & (sequenceL .~ flipSequence agendaSequence)
+        & flippedL .~ False
     _ -> pure a

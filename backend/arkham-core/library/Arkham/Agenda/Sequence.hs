@@ -15,6 +15,20 @@ data AgendaSide = A | B | C | D
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data AgendaSequence = Sequence Int AgendaSide
+data AgendaSequence = Sequence
+  { agendaSequenceStep :: Int
+  , agendaSequenceSide :: AgendaSide
+  }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+flipAgendaSide :: AgendaSide -> AgendaSide
+flipAgendaSide = \case
+  A -> B
+  B -> A
+  C -> D
+  D -> C
+
+flipSequence :: AgendaSequence -> AgendaSequence
+flipSequence as =
+  as { agendaSequenceSide = flipAgendaSide (agendaSequenceSide as) }

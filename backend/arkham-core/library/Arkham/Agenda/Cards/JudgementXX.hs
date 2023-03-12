@@ -75,7 +75,6 @@ instance RunMessage JudgementXX where
               ]
           | iid <- iids
           ]
-        <> [RevertAgenda $ toId attrs]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _
       -> do

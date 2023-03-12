@@ -34,6 +34,8 @@ replaceYouMatcher iid (AnyInvestigator matchers) =
   AnyInvestigator $ map (replaceYouMatcher iid) matchers
 replaceYouMatcher iid (HealableInvestigator source damageType inner) =
   HealableInvestigator source damageType $ replaceYouMatcher iid inner
+replaceYouMatcher iid (IncludeEliminated inner) =
+  IncludeEliminated $ replaceYouMatcher iid inner
 replaceYouMatcher _ m = m
 
 -- ** Prey Helpers **

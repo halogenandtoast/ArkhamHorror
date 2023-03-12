@@ -42,10 +42,13 @@ instance RunMessage Awakening where
       -- Advance to one of the 3 copies of act 2a, at random
       nextAct <- sample $ Cards.theStrangerACityAflame :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
 
+      createTheManInThePallidMask <-
+        createEnemyAt_ theManInThePallidMask locationId Nothing
+
       pushAll
         [ locationPlacement
         , SetLocationLabel locationId label
-        , CreateEnemyAt theManInThePallidMask locationId Nothing
+        , createTheManInThePallidMask
         , AdvanceToAct (actDeckId attrs) nextAct A (toSource attrs)
         ]
       pure a

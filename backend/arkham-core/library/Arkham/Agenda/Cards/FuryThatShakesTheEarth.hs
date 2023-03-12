@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
@@ -50,17 +51,16 @@ instance RunMessage FuryThatShakesTheEarth where
   runMessage msg a@(FuryThatShakesTheEarth attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
-      mYig <- selectOne $ SetAsideCardMatch $ cardIs Enemies.yig
+      mYig <- maybeGetSetAsideEncounterCard Enemies.yig
       depthStart <- getDepthStart
-      let
-        yigMsgs = [ CreateEnemyAt yig depthStart Nothing | yig <- toList mYig ]
+      yigMsgs <- for (toList mYig)
+        $ \yig -> createEnemyAt_ (EncounterCard yig) depthStart Nothing
       pushAll
         $ enemyMsgs
         <> yigMsgs
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      enemyMsgs <- getPlacePursuitEnemyMessages
-      pushAll enemyMsgs
+      pushAllM getPlacePursuitEnemyMessages
       pure a
     _ -> FuryThatShakesTheEarth <$> runMessage msg attrs

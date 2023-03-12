@@ -6,15 +6,14 @@ module Arkham.Act.Cards.TheParisianConspiracyV1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding (When)
+import Arkham.Message hiding ( When )
 import Arkham.Timing
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
@@ -45,25 +44,25 @@ instance RunMessage TheParisianConspiracyV1 where
       case advanceMode of
         AdvancedWithClues -> do
           locationId <- selectJust LeadInvestigatorLocation
+          createTheOrganist <- createEnemyAt_ theOrganist locationId Nothing
           pushAll
-            [ CreateEnemyAt theOrganist locationId Nothing
+            [ createTheOrganist
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
         _ -> do
           investigatorIds <- getInvestigatorIds
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
-          leadInvestigatorId <- getLeadInvestigatorId
+          lead <- getLead
+
+          choices <- for locationIds $ \lid -> do
+            createTheOrganist <- createEnemyAt_ theOrganist lid Nothing
+            pure $ targetLabel lid [createTheOrganist]
+
           pushAll
             $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
               | iid <- investigatorIds
               ]
-            <> [ chooseOrRunOne
-                 leadInvestigatorId
-                 [ TargetLabel
-                     (LocationTarget lid)
-                     [CreateEnemyAt theOrganist lid Nothing]
-                 | lid <- locationIds
-                 ]
+            <> [ chooseOrRunOne lead choices
                , AdvanceActDeck (actDeckId attrs) (toSource attrs)
                ]
       pure a

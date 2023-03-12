@@ -50,8 +50,9 @@ instance RunMessage SearchForTheStrangerV3 where
         (enemyIs Enemies.theManInThePallidMask)
       location <- selectJust $ LocationWithEnemy $ EnemyWithId
         theManInThePallidMask
+      createHastur <- createEnemyAt_ hastur location Nothing
       pushAll
-        [ CreateEnemyAt hastur location Nothing
+        [ createHastur
         , RemoveEnemy theManInThePallidMask
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]

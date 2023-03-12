@@ -16,6 +16,9 @@ import Arkham.Name
 getLeadInvestigatorId :: HasGame m => m InvestigatorId
 getLeadInvestigatorId = selectJust $ Anyone <> LeadInvestigator
 
+getLead :: HasGame m => m InvestigatorId
+getLead = getLeadInvestigatorId
+
 getActiveInvestigatorId :: HasGame m => m InvestigatorId
 getActiveInvestigatorId = selectJust ActiveInvestigator
 
@@ -57,8 +60,10 @@ getSetAsideCard def = do
 
 getSetAsideEncounterCard :: HasGame m => CardDef -> m EncounterCard
 getSetAsideEncounterCard =
-  fmap (fromJustNote "must be encounter card" . preview _EncounterCard)
-    . getSetAsideCard
+  fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
+
+maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
+maybeGetSetAsideEncounterCard = fmap (preview _EncounterCard) . getSetAsideCard
 
 getSetAsideCardsMatching :: HasGame m => CardMatcher -> m [Card]
 getSetAsideCardsMatching = selectList . SetAsideCardMatch

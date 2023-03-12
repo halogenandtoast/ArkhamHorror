@@ -6,7 +6,6 @@ module Arkham.Agenda.Cards.BidingItsTime
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Attack
@@ -14,7 +13,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Exception
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( ChosenRandomLocation )
 import Arkham.Message
@@ -38,51 +36,46 @@ instance HasAbilities BidingItsTime where
 instance RunMessage BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      broodOfYogSothoth <- selectListMap EnemyTarget (EnemyWithTitle "Brood of Yog-Sothoth")
-      a <$ when
-        (notNull broodOfYogSothoth)
-        (push $ chooseOneAtATime
-          leadInvestigatorId
-          [ TargetLabel target [ChooseRandomLocation target mempty]
-          | target <- broodOfYogSothoth
-          ]
-        )
-    ChosenRandomLocation target@(EnemyTarget _) lid ->
-      a <$ push (MoveToward target (LocationWithId lid))
+      lead <- getLead
+      broodOfYogSothoth <- selectTargets $ EnemyWithTitle "Brood of Yog-Sothoth"
+      when (notNull broodOfYogSothoth) $ push $ chooseOneAtATime
+        lead
+        [ TargetLabel target [ChooseRandomLocation target mempty]
+        | target <- broodOfYogSothoth
+        ]
+      pure a
+    ChosenRandomLocation target@(EnemyTarget _) lid -> do
+      push $ MoveToward target (LocationWithId lid)
+      pure a
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> do
       broodOfYogSothothCount <- length <$> getSetAsideBroodOfYogSothoth
-      a <$ pushAll
-        (ShuffleEncounterDiscardBackIn
+      pushAll
+        $ ShuffleEncounterDiscardBackIn
         : [ RequestSetAsideCard (toSource attrs) (CardCode "02255")
           | broodOfYogSothothCount > 0
           ]
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-        )
+      pure a
     RequestedSetAsideCard source card | isSource attrs source -> do
       when
         (toCardCode card /= CardCode "02255")
         (throwIO $ InvalidState "wrong card")
-      let enemyId = EnemyId $ toCardId card
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       locationId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be somewhere")
-        leadInvestigatorId
-      investigatorIds <- selectList $ colocatedWith leadInvestigatorId
-      a <$ pushAll
-        (CreateEnemy card
+        lead
+      investigatorIds <- selectList $ colocatedWith lead
+      (enemyId, enemyCreation) <- createEnemy card
+      pushAll
+        $ enemyCreation
         : EnemySpawn Nothing locationId enemyId
-        : [ beginSkillTest
-              iid
-              source
-              (EnemyTarget enemyId)
-              SkillAgility
-              4
+        : [ beginSkillTest iid source enemyId SkillAgility 4
           | iid <- investigatorIds
           ]
-        )
-    FailedSkillTest iid _ source (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
-      | isSource attrs source
-      -> a <$ push (EnemyAttack $ enemyAttack eid iid)
+      pure a
+    FailedSkillTest iid _ (isSource attrs -> True) (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
+      -> do
+        push $ EnemyAttack $ enemyAttack eid iid
+        pure a
     _ -> BidingItsTime <$> runMessage msg attrs

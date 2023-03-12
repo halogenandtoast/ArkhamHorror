@@ -132,7 +132,7 @@ instance RunMessage ReturnToTheDevourerBelow where
           & (actStackL . at 1 ?~ actDeck)
           & (agendaStackL . at 1 ?~ agendaDeck)
           )
-      CreateEnemyAt card lid _ | toCardCode card == "01157" -> do
+      CreateEnemyAt _ card lid _ | toCardCode card == "01157" -> do
         name <- field LocationName lid
         if name == "Ritual Site"
           then do

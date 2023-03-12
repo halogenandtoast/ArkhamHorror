@@ -62,7 +62,9 @@ instance RunMessage TheMidnightMasks where
     Setup -> do
       count' <- getPlayerCount
       investigatorIds <- allInvestigatorIds
-      (acolytes, darkCult) <- splitAt (count' - 1) . sortOn toCardCode
+      (acolytes, darkCult) <-
+        splitAt (count' - 1)
+        . sortOn toCardCode
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
 
@@ -80,7 +82,8 @@ instance RunMessage TheMidnightMasks where
                 )
       (graveyardId, placeGraveyard) <- placeLocationCard Locations.graveyard
       placeEasttown <- placeLocationCard_ Locations.easttown
-      placeMiskatonicUniversity <- placeLocationCard_ Locations.miskatonicUniversity
+      placeMiskatonicUniversity <- placeLocationCard_
+        Locations.miskatonicUniversity
       placeNorthside <- placeLocationCard_ Locations.northside
       placeStMarysHospital <- placeLocationCard_ Locations.stMarysHospital
 
@@ -107,10 +110,10 @@ instance RunMessage TheMidnightMasks where
             ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
-        spawnAcolyteMessages =
-          [ CreateEnemyAt (EncounterCard c) l Nothing
-          | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
-          ]
+
+      spawnAcolyteMessages <-
+        for (zip acolytes [southsideId, downtownId, graveyardId])
+          $ \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
 
       encounterDeck <- buildEncounterDeckWith
         (<> darkCult)

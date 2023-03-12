@@ -13,8 +13,8 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 
-createEnemy :: (HasCallStack, IsCard a) => a -> Enemy
-createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
+createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
+createEnemy a = lookupEnemy (toCardCode a)
 
 instance RunMessage Enemy where
   runMessage msg e@(Enemy x) = do

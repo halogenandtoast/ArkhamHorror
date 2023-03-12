@@ -24,23 +24,30 @@ inLostCarcosa :: ActCard InLostCarcosa
 inLostCarcosa = act (1, A) InLostCarcosa Cards.inLostCarcosa Nothing
 
 instance HasAbilities InLostCarcosa where
-  getAbilities (InLostCarcosa x) = withBaseAbilities x $ if onSide A x
-    then
-      [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
-          AnyWindow
-          (GroupClueCost (PerPlayer 2) Anywhere)
-      ]
-    else []
+  getAbilities (InLostCarcosa x) = withBaseAbilities
+    x
+    [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
+        AnyWindow
+        (GroupClueCost (PerPlayer 2) Anywhere)
+    | onSide A x
+    ]
 
 instance RunMessage InLostCarcosa where
   runMessage msg a@(InLostCarcosa attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ AdvanceAct (toId a) source AdvancedWithClues
+      pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
+
+      createTheManInThePallidMask <- createEnemyAt_
+        theManInThePallidMask
+        palaceOfTheKing
+        Nothing
+
       pushAll
-        [ CreateEnemyAt theManInThePallidMask palaceOfTheKing Nothing
+        [ createTheManInThePallidMask
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

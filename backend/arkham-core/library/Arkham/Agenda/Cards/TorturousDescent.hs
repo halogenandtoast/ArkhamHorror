@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -29,27 +29,21 @@ torturousDescent =
 instance RunMessage TorturousDescent where
   runMessage msg a@(TorturousDescent attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      spawnConstanceDumaine <-
-        notElem (Recorded $ toCardCode Enemies.constanceDumaine)
-          <$> getRecordSet VIPsSlain
+      lead <- getLead
 
-      spawnConstanceDumaineMessages <- if spawnConstanceDumaine
-        then do
-          card <- genCard Enemies.constanceDumaine
-          pure [CreateEnemyAtLocationMatching card (LocationWithTitle "Garden")]
-        else pure []
+      spawnConstanceDumaineMessages <- do
+        spawnConstanceDumaine <- not <$> slain Enemies.constanceDumaine
+        card <- genCard Enemies.constanceDumaine
+        createConstanceDumaine <- createEnemyAtLocationMatching_ card
+          $ LocationWithTitle "Garden"
+        pure [ createConstanceDumaine | spawnConstanceDumaine ]
+
       pushAll
-        $ [ DrawRandomFromScenarioDeck
-              leadInvestigatorId
-              MonstersDeck
-              (toTarget attrs)
-              1
-          ]
+        $ [DrawRandomFromScenarioDeck lead MonstersDeck (toTarget attrs) 1]
         <> spawnConstanceDumaineMessages
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
-    DrewFromScenarioDeck _ _ target cards | isTarget attrs target -> do
+    DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
       push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
       pure a
     _ -> TorturousDescent <$> runMessage msg attrs

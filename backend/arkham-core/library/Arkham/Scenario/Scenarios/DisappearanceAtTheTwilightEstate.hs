@@ -109,6 +109,9 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           | pennyId <- maybeToList mPennyWhite
           ]
 
+      createNetherMist <- createEnemyAt_ netherMist officeId Nothing
+      createTheSpectralWatcher <- createEnemyAt_ theSpectralWatcher entryHallId Nothing
+
       pushAll
         $ [ SetEncounterDeck
           $ removeEachFromDeck encounterDeck
@@ -128,7 +131,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           , placeMasterBedroom
           , placeBalcony
           , placeEntryHall
-          , CreateEnemyAt theSpectralWatcher entryHallId Nothing
+          , createTheSpectralWatcher
           ]
         <> victorianHallsMoveTo
         <> officeMoveTo
@@ -137,7 +140,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         <> [ AttachStoryTreacheryTo obscuringFog (LocationTarget officeId)
            | isJust mJeromeDavids
            ]
-        <> [ CreateEnemyAt netherMist officeId Nothing | isJust mJeromeDavids ]
+        <> [ createNetherMist | isJust mJeromeDavids ]
         <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
            | valentinoId <- maybeToList mValentinoRivas
            ]

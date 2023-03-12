@@ -2,14 +2,14 @@ module Arkham.SkillTest.Base where
 
 import Arkham.Prelude
 
-import Arkham.Action (Action)
-import Arkham.Classes.Entity
+import Arkham.Action ( Action )
 import Arkham.Card
+import Arkham.Classes.Entity
 import Arkham.Id
 import Arkham.Json
-import Arkham.SkillTestResult
 import Arkham.SkillTest.Type
-import Arkham.SkillType (SkillType)
+import Arkham.SkillTestResult
+import Arkham.SkillType ( SkillType )
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -43,31 +43,46 @@ data SkillTest = SkillTest
 
 allSkillTestTokens :: SkillTest -> [Token]
 allSkillTestTokens SkillTest {..} =
-  skillTestSetAsideTokens
-  <> skillTestRevealedTokens
-  <> skillTestResolvedTokens
+  skillTestSetAsideTokens <> skillTestRevealedTokens <> skillTestResolvedTokens
 
 instance ToJSON SkillTest where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
   toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
 
 instance FromJSON SkillTest where
-  parseJSON = withObject "SkillTest" $ \o -> SkillTest
-    <$> o .: "investigator"
-    <*> o .: "type"
-    <*> o .: "baseValue"
-    <*> o .: "difficulty"
-    <*> o .: "setAsideTokens"
-    <*> o .: "revealedTokens"
-    <*> o .: "resolvedTokens"
-    <*> o .: "valueModifier"
-    <*> o .: "result"
-    <*> o .: "committedCards"
-    <*> o .: "source"
-    <*> o .: "target"
-    <*> o .: "action"
-    <*> o .: "subscribers"
-    <*> o .:? "isRevelation" .!= False
+  parseJSON = withObject "SkillTest" $ \o ->
+    SkillTest
+      <$> o
+      .: "investigator"
+      <*> o
+      .: "type"
+      <*> o
+      .: "baseValue"
+      <*> o
+      .: "difficulty"
+      <*> o
+      .: "setAsideTokens"
+      <*> o
+      .: "revealedTokens"
+      <*> o
+      .: "resolvedTokens"
+      <*> o
+      .: "valueModifier"
+      <*> o
+      .: "result"
+      <*> o
+      .: "committedCards"
+      <*> o
+      .: "source"
+      <*> o
+      .: "target"
+      <*> o
+      .: "action"
+      <*> o
+      .: "subscribers"
+      <*> o
+      .:? "isRevelation"
+      .!= False
 
 instance Targetable SkillTest where
   toTarget _ = SkillTestTarget
@@ -75,13 +90,12 @@ instance Targetable SkillTest where
   isTarget _ _ = False
 
 instance Sourceable SkillTest where
-  toSource SkillTest {..} =
-    SkillTestSource
-      skillTestInvestigator
-      skillTestType
-      skillTestSource
-      skillTestAction
-  isSource _ SkillTestSource {} = True
+  toSource SkillTest {..} = SkillTestSource
+    skillTestInvestigator
+    skillTestType
+    skillTestSource
+    skillTestAction
+  isSource _ SkillTestSource{} = True
   isSource _ _ = False
 
 data SkillTestResultsData = SkillTestResultsData
@@ -95,26 +109,32 @@ data SkillTestResultsData = SkillTestResultsData
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-initSkillTest ::
-  InvestigatorId ->
-  Source ->
-  Target ->
-  SkillType ->
-  Int ->
-  SkillTest
-initSkillTest iid source target skillType =
-  buildSkillTest iid source target (SkillSkillTest skillType) (SkillBaseValue skillType)
+initSkillTest
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> Int
+  -> SkillTest
+initSkillTest iid source target skillType = buildSkillTest
+  iid
+  source
+  target
+  (SkillSkillTest skillType)
+  (SkillBaseValue skillType)
 
-buildSkillTest ::
-  InvestigatorId ->
-  Source ->
-  Target ->
-  SkillTestType ->
-  SkillTestBaseValue ->
-  Int ->
-  SkillTest
-buildSkillTest iid source target stType bValue difficulty =
-  SkillTest
+buildSkillTest
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillTestType
+  -> SkillTestBaseValue
+  -> Int
+  -> SkillTest
+buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue difficulty
+  = SkillTest
     { skillTestInvestigator = iid
     , skillTestType = stType
     , skillTestBaseValue = bValue

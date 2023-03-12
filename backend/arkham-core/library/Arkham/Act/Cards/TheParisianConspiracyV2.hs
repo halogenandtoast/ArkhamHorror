@@ -6,15 +6,14 @@ module Arkham.Act.Cards.TheParisianConspiracyV2
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding (When)
+import Arkham.Message hiding ( When )
 import Arkham.Timing
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
@@ -28,11 +27,12 @@ theParisianConspiracyV2 =
     $ GroupClueCost (PerPlayer 2) Anywhere
 
 instance HasAbilities TheParisianConspiracyV2 where
-  getAbilities (TheParisianConspiracyV2 a) = withBaseAbilities a
+  getAbilities (TheParisianConspiracyV2 a) = withBaseAbilities
+    a
     [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
-        $ Objective
-        $ ForcedAbility
-        $ RoundEnds When
+      $ Objective
+      $ ForcedAbility
+      $ RoundEnds When
     ]
 
 instance RunMessage TheParisianConspiracyV2 where
@@ -45,25 +45,24 @@ instance RunMessage TheParisianConspiracyV2 where
       case advanceMode of
         AdvancedWithClues -> do
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
-          leadInvestigatorId <- getLeadInvestigatorId
+          lead <- getLead
+          choices <- for locationIds $ \lid -> do
+            createTheOrganist <- createEnemyAt_ theOrganist lid Nothing
+            pure $ targetLabel lid [createTheOrganist]
+
           pushAll
-            [ chooseOrRunOne
-              leadInvestigatorId
-              [ TargetLabel
-                  (LocationTarget lid)
-                  [CreateEnemyAt theOrganist lid Nothing]
-              | lid <- locationIds
-              ]
+            [ chooseOrRunOne lead choices
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
         _ -> do
           investigatorIds <- getInvestigatorIds
           locationId <- selectJust LeadInvestigatorLocation
+          createTheOrganist <- createEnemyAt_ theOrganist locationId Nothing
           pushAll
             $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
               | iid <- investigatorIds
               ]
-            <> [ CreateEnemyAt theOrganist locationId Nothing
+            <> [ createTheOrganist
                , AdvanceActDeck (actDeckId attrs) (toSource attrs)
                ]
       pure a

@@ -95,11 +95,11 @@ instance RunMessage TheYithianRelic where
       whenHasRecord IchtacaIsSetAgainstYou $ do
         nexus <- selectJust $ locationIs Locations.nexusOfNKai
         ichtaca <- getSetAsideCard Enemies.ichtacaScionOfYig
-        push $ CreateEnemyAt ichtaca nexus Nothing
+        pushM $ createEnemyAt_ ichtaca nexus Nothing
       whenHasRecord AlejandroIsSetAgainstYou $ do
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         alejandro <- getSetAsideCard Enemies.alejandroVela
-        push $ CreateEnemyAt alejandro aPocketInTime Nothing
+        pushM $ createEnemyAt_ alejandro aPocketInTime Nothing
       push $ createCardEffect
         Cards.theYithianRelic
         Nothing

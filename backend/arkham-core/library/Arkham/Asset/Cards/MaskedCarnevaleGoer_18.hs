@@ -57,10 +57,12 @@ instance RunMessage MaskedCarnevaleGoer_18 where
         lid = locationOf attrs
         elisabettaMagro = EncounterCard
           $ lookupEncounterCard Enemies.elisabettaMagro (toCardId attrs)
-      a <$ pushAll
-        [ CreateEnemyAt elisabettaMagro lid Nothing
+      createElisabettaMagro <- createEnemyAt_ elisabettaMagro lid Nothing
+      pushAll
+        [ createElisabettaMagro
         , Flipped (toSource attrs) elisabettaMagro
         ]
+      pure a
     LookAtRevealed iid source target | isTarget a target -> do
       let
         elisabettaMagro = EncounterCard

@@ -167,27 +167,22 @@ instance RunMessage UndimensionedAndUnseen where
           pure $ (iid, ) <$> powderOfIbnGhazi
         )
 
+      broodOfYogSothoth <- genCard Enemies.broodOfYogSothoth
+      createBroodOfYogSothoth <- createEnemyAt_
+        broodOfYogSothoth
+        coldSpringGlenId
+        Nothing
       (msgs, setAsideCount) <- case sacrificedToYogSothoth of
-        2 -> do
-          broodOfYogSothoth <- EncounterCard
-            <$> genEncounterCard Enemies.broodOfYogSothoth
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlenId Nothing], 3)
-        3 -> do
-          broodOfYogSothoth <- EncounterCard
-            <$> genEncounterCard Enemies.broodOfYogSothoth
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlenId Nothing], 2)
+        2 -> pure ([createBroodOfYogSothoth], 3)
+        3 -> pure ([createBroodOfYogSothoth], 2)
         x -> if x <= 2
           then do
-            broodOfYogSothoth1 <- EncounterCard
-              <$> genEncounterCard Enemies.broodOfYogSothoth
-            broodOfYogSothoth2 <- EncounterCard
-              <$> genEncounterCard Enemies.broodOfYogSothoth
-            pure
-              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlenId Nothing
-                , CreateEnemyAt broodOfYogSothoth2 blastedHeathId Nothing
-                ]
-              , 3
-              )
+            broodOfYogSothoth2 <- genCard Enemies.broodOfYogSothoth
+            createBroodOfYogSothoth2 <- createEnemyAt_
+              broodOfYogSothoth2
+              blastedHeathId
+              Nothing
+            pure ([createBroodOfYogSothoth, createBroodOfYogSothoth2], 3)
           else pure ([], 2)
 
       setAsideBroodOfYogSothoth <- replicateM
@@ -269,14 +264,17 @@ instance RunMessage UndimensionedAndUnseen where
           case mtarget of
             Just (EnemyTarget eid) -> do
               enemyCardCode <- field EnemyCardCode eid
-              s <$ when
-                (enemyCardCode
-                == "02255"
-                && (action `elem` [Action.Evade, Action.Fight])
-                )
-                (push $ EnemyAttack $ enemyAttack eid iid)
-            _ -> pure s
-        _ -> pure s
+              when
+                  (enemyCardCode
+                  == "02255"
+                  && (action `elem` [Action.Evade, Action.Fight])
+                  )
+                $ push
+                $ EnemyAttack
+                $ enemyAttack eid iid
+            _ -> pure ()
+        _ -> pure ()
+      pure s
     RequestedPlayerCard iid source mcard | isSource attrs source -> do
       for_ mcard $ \card -> push
         $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]

@@ -256,12 +256,12 @@ data Message
   | CommitCard InvestigatorId Card
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
-  | CreateEnemy Card
-  | CreateEnemyWithPlacement Card Placement
-  | CreateEnemyAt Card LocationId (Maybe Target)
+  | CreateEnemy EnemyId Card
+  | CreateEnemyWithPlacement EnemyId Card Placement
+  | CreateEnemyAt EnemyId Card LocationId (Maybe Target)
   | CreatedEnemyAt EnemyId LocationId Target
-  | CreateEnemyAtLocationMatching Card LocationMatcher
-  | CreateEnemyEngagedWithPrey Card
+  | CreateEnemyAtLocationMatching EnemyId Card LocationMatcher
+  | CreateEnemyEngagedWithPrey EnemyId Card
   -- new payment bs
   | PayForAbility Ability [Window]
   | CreatedCost ActiveCostId

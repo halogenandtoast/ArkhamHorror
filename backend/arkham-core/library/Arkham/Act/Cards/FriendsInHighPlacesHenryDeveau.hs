@@ -59,8 +59,14 @@ instance RunMessage FriendsInHighPlacesHenryDeveau where
         henryDeveauAlejandrosKidnapper = EncounterCard $ lookupEncounterCard
           Enemies.henryDeveauAlejandrosKidnapper
           (unAssetId henryDeveau)
+
+      createHenryDeveau <- createEnemyAt_
+        henryDeveauAlejandrosKidnapper
+        henrysLocation
+        Nothing
+
       pushAll
-        [ CreateEnemyAt henryDeveauAlejandrosKidnapper henrysLocation Nothing
+        [ createHenryDeveau
         , Flipped (AssetSource henryDeveau) henryDeveauAlejandrosKidnapper
         , NextAdvanceActStep aid 1
         , AdvanceToAct

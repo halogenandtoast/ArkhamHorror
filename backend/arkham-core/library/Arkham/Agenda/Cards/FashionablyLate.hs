@@ -6,10 +6,9 @@ module Arkham.Agenda.Cards.FashionablyLate
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -27,13 +26,16 @@ instance RunMessage FashionablyLate where
   runMessage msg a@(FashionablyLate attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       dianneDevine <- getSetAsideCard Cards.dianneDevine
-
-      a <$ pushAll
-        [ CreateEnemyAtLocationMatching dianneDevine
+      createDianneDevine <-
+        createEnemyAtLocationMatching_ dianneDevine
         $ LocationWithAsset
         $ AssetWithFewestClues
         $ AssetWithTrait Bystander
+
+      pushAll
+        [ createDianneDevine
         , ShuffleEncounterDiscardBackIn
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
+      pure a
     _ -> FashionablyLate <$> runMessage msg attrs

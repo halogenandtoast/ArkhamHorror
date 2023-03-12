@@ -5,7 +5,6 @@ module Arkham.Act.Cards.TheReallyBadOnesV2
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -39,8 +38,13 @@ instance RunMessage TheReallyBadOnesV2 where
       danielsCell <- getJustLocationIdByName
         ("Patient Confinement" <:> "Daniel's Cell")
       danielChesterfield <- getSetAsideCard Enemies.danielChesterfield
-      a <$ pushAll
-        [ CreateEnemyAt danielChesterfield danielsCell Nothing
+      createDanielChesterfield <- createEnemyAt_
+        danielChesterfield
+        danielsCell
+        Nothing
+      pushAll
+        [ createDanielChesterfield
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     _ -> TheReallyBadOnesV2 <$> runMessage msg attrs

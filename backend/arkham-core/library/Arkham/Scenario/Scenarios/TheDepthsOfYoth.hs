@@ -173,6 +173,9 @@ instance RunMessage TheDepthsOfYoth where
       yig <- genCard Enemies.yig
       harbingerOfValusia <- genCard Enemies.harbingerOfValusia
 
+      createHarbinger <- createEnemyWithPlacement_ harbingerOfValusia Pursuit
+      createYig <- createEnemyWithPlacement_ yig Pursuit
+
       pushAll
         $ story investigatorIds intro1
         : [ story investigatorIds intro2 | isIntro2 ]
@@ -199,10 +202,10 @@ instance RunMessage TheDepthsOfYoth where
            , placeStartLocation
            , MoveAllTo (toSource attrs) startLocationId
            ]
-        <> [ CreateEnemyWithPlacement harbingerOfValusia Pursuit
+        <> [ createHarbinger
            | startsOnAgenda5
            ]
-        <> [ CreateEnemyWithPlacement yig Pursuit | startsOnAgenda6 ]
+        <> [ createYig | startsOnAgenda6 ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive

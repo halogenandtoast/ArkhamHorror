@@ -26,7 +26,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDamage)
+import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -206,7 +206,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           encounterDeck =
             removeEachFromDeck encounterDeck' explorationDeckTreacheries
 
-        (mouthOfKnYanTheCavernsMawId, placeMouthOfKnYanTheCavernsMaw) <- placeLocationCard Locations.mouthOfKnYanTheCavernsMaw
+        (mouthOfKnYanTheCavernsMawId, placeMouthOfKnYanTheCavernsMaw) <-
+          placeLocationCard Locations.mouthOfKnYanTheCavernsMaw
         theWingedSerpent <- genCard Enemies.theWingedSerpent
         ruinsLocation <- genCard =<< sample ruinsLocations
         placeRuinsLocation <- placeLocation_ ruinsLocation
@@ -226,20 +227,23 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           genCard
           (replicate setAsidePoisonedCount Treacheries.poisoned)
 
+        createTheWingedSerpent <- createEnemyAt_
+          theWingedSerpent
+          mouthOfKnYanTheCavernsMawId
+          Nothing
+
         pushAll
           $ introMessages
           <> [ SetEncounterDeck encounterDeck
              , SetAgendaDeck
              , SetActDeck
              , placeMouthOfKnYanTheCavernsMaw
-             , MoveAllTo
-               (toSource attrs)
-               mouthOfKnYanTheCavernsMawId
+             , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
              , PlaceResources
                (LocationTarget mouthOfKnYanTheCavernsMawId)
                pathsKnown
              ]
-          <> [ CreateEnemyAt theWingedSerpent mouthOfKnYanTheCavernsMawId Nothing | reachedAct2 metadata ]
+          <> [ createTheWingedSerpent | reachedAct2 metadata ]
           <> [ placeRuinsLocation | mappedOutTheWayForward ]
 
         HeartOfTheElders . (`with` metadata) <$> runMessage
@@ -327,7 +331,8 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         encounterDeck'
         (explorationDeckTreacheries <> theJungleWatchesCardDefs)
 
-    (mouthOfKnYanTheDepthsBelowId, placeMouthOfKnYanTheDepthsBelow) <- placeLocationCard Locations.mouthOfKnYanTheDepthsBelow
+    (mouthOfKnYanTheDepthsBelowId, placeMouthOfKnYanTheDepthsBelow) <-
+      placeLocationCard Locations.mouthOfKnYanTheDepthsBelow
     setAsidePoisonedCount <- getSetAsidePoisonedCount
     setAsideCards <- traverse
       genCard

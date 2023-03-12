@@ -56,8 +56,10 @@ instance RunMessage StrangeRelicsMariaDeSilva where
         mariaDeSilvaKnowsMoreThanSheLetsOn = EncounterCard $ lookupEncounterCard
           Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
           (unAssetId maria)
+
+      createMariaDeSilva <- createEnemyAt_ mariaDeSilvaKnowsMoreThanSheLetsOn mariasLocation Nothing
       pushAll
-        [ CreateEnemyAt mariaDeSilvaKnowsMoreThanSheLetsOn mariasLocation Nothing
+        [ createMariaDeSilva
         , Flipped (AssetSource maria) mariaDeSilvaKnowsMoreThanSheLetsOn
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.theBrotherhoodIsRevealed E (toSource attrs)

@@ -11,7 +11,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Message
 
 newtype EmpireOfTheDead = EmpireOfTheDead AgendaAttrs
@@ -25,13 +24,13 @@ empireOfTheDead =
 instance RunMessage EmpireOfTheDead where
   runMessage msg a@(EmpireOfTheDead attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      specterOfDeath <- EncounterCard
-        <$> genEncounterCard Enemies.specterOfDeath
-      let specterOfDeathId = EnemyId $ toCardId specterOfDeath
-      leadInvestigatorId <- getLeadInvestigatorId
-      a <$ pushAll
-        [ CreateEnemy specterOfDeath
-        , InvestigatorDrawEnemy leadInvestigatorId specterOfDeathId
+      lead <- getLead
+      specterOfDeath <- genCard Enemies.specterOfDeath
+      (specterOfDeathId, createSpecterOfDeath) <- createEnemy specterOfDeath
+      pushAll
+        [ createSpecterOfDeath
+        , InvestigatorDrawEnemy lead specterOfDeathId
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
+      pure a
     _ -> EmpireOfTheDead <$> runMessage msg attrs

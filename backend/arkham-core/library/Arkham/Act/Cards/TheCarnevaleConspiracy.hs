@@ -83,8 +83,9 @@ instance RunMessage TheCarnevaleConspiracy where
                 | x <- xs
                 ]
             ]
+      createCnidathqua <- createEnemy_ cnidathqua
       pushAll
-        $ [CreateEnemy cnidathqua, AdvanceActDeck actDeckId (toSource attrs)]
+        $ [createCnidathqua, AdvanceActDeck actDeckId (toSource attrs)]
         <> flipMsg
       pure a
     _ -> TheCarnevaleConspiracy <$> runMessage msg attrs

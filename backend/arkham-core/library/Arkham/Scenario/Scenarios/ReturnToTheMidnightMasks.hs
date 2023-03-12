@@ -72,9 +72,8 @@ instance RunMessage ReturnToTheMidnightMasks where
           )
         placeEasttown <- placeLocationCard_ =<< sample
           (Locations.easttown :| [Locations.easttownArkhamPoliceStation])
-        placeNorthside <-
-          placeLocationCard_ =<< sample
-            (Locations.northside :| [Locations.northsideTrainStation])
+        placeNorthside <- placeLocationCard_ =<< sample
+          (Locations.northside :| [Locations.northsideTrainStation])
 
         predatorOrPrey <-
           sample $ Agendas.predatorOrPrey :| [Agendas.returnToPredatorOrPrey]
@@ -102,13 +101,14 @@ instance RunMessage ReturnToTheMidnightMasks where
               ]
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
-          spawnAcolyteMessages =
-            [ CreateEnemyAt (EncounterCard c) l Nothing
-            | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
-            ]
           intro1or2 = if litaForcedToFindOthersToHelpHerCause
             then TheMidnightMasksIntroOne
             else TheMidnightMasksIntroTwo
+
+        spawnAcolyteMessages <-
+          for (zip acolytes [southsideId, downtownId, graveyardId])
+            $ \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
+
         encounterDeck <- buildEncounterDeckWith
           (<> theDevourersCult)
           [ EncounterSet.ReturnToTheMidnightMasks

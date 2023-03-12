@@ -6,7 +6,6 @@ module Arkham.Agenda.Cards.VengeanceAwaits
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
@@ -50,20 +49,20 @@ instance RunMessage VengeanceAwaits where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       actIds <- selectList AnyAct
       umordhoth <- getSetAsideCard Enemies.umordhoth
-      a <$ if "01146" `elem` actIds
+      if "01146" `elem` actIds
         then do
-          (ritualSiteId, placeRitualSite) <- placeSetAsideLocation Locations.ritualSite
-          pushAll
-            [ placeRitualSite
-            , CreateEnemyAt umordhoth ritualSiteId Nothing
-            ]
+          (ritualSiteId, placeRitualSite) <- placeSetAsideLocation
+            Locations.ritualSite
+          createUmordhoth <- createEnemyAt_ umordhoth ritualSiteId Nothing
+          pushAll [placeRitualSite, createUmordhoth]
         else do
           ritualSiteId <- getJustLocationIdByName "Ritual Site"
-          enemies <- selectListMap EnemyTarget $ EnemyAt $ LocationWithId
-            ritualSiteId
+          enemies <- selectTargets $ EnemyAt $ LocationWithId ritualSiteId
+          createUmordhoth <- createEnemyAt_ umordhoth ritualSiteId Nothing
           pushAll
             $ [ Discard (toSource attrs) enemy | enemy <- enemies ]
-            <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
+            <> [createUmordhoth]
+      pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do

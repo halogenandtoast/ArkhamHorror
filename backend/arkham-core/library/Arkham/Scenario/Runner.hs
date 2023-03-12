@@ -446,7 +446,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
   AttachStoryTreacheryTo card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
-  CreateEnemyAt card _ _ -> do
+  CreateEnemyAt _ card _ _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
   PlaceUnderneath AgendaDeckTarget cards -> do
     pure $ a & cardsUnderAgendaDeckL <>~ cards

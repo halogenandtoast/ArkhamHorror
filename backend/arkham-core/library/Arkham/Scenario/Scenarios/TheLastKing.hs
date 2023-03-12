@@ -237,8 +237,9 @@ instance RunMessage TheLastKing where
         assetId
       iids <- selectList $ InvestigatorAt $ LocationWithId lid
       clues <- field AssetClues assetId
-      s <$ pushAll
-        ([ InvestigatorAssignDamage
+      enemyCreation <- createEnemyAt_ enemyCard lid Nothing
+      pushAll
+        $ [ InvestigatorAssignDamage
              iid
              (StorySource $ cdCardCode story')
              DamageAny
@@ -249,9 +250,9 @@ instance RunMessage TheLastKing where
         <> [ RemoveClues (AssetTarget assetId) clues
            , PlaceClues (LocationTarget lid) clues
            , RemoveFromGame (AssetTarget assetId)
-           , CreateEnemyAt enemyCard lid Nothing
+           , enemyCreation
            ]
-        )
+      pure s
     ResolveStory _ story' -> do
       let
         remember

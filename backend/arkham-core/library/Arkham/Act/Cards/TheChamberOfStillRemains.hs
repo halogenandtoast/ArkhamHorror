@@ -58,13 +58,14 @@ instance RunMessage TheChamberOfStillRemains where
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesRepossessThePast
       investigators <- selectList $ investigatorAt chamberOfTime
       yig <- genCard Enemies.yig
+      createYig <- createEnemyAt_ yig chamberOfTime Nothing
       pushAll
         $ [ chooseOrRunOne
             leadInvestigatorId
             [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
             | iid <- investigators
             ]
-          , CreateEnemyAt yig chamberOfTime Nothing
+          , createYig
           , AddToVictory (toTarget attrs)
           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
           ]

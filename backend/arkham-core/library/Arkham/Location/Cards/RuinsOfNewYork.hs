@@ -46,8 +46,10 @@ instance RunMessage RuinsOfNewYork where
       let
         (cards, _) = splitAt (if playerCount >= 3 then 2 else 1) deck
         polyps = map (\card -> PlayerCard $ card { pcCardCode = "xpolyp" }) cards
+      placements <- for polyps $ \polyp -> do
+        createEnemyWithPlacement_ polyp (AtLocation $ toId attrs)
       pushAll
         $ map (RemovePlayerCardFromGame False . PlayerCard) cards
-        <> map (`CreateEnemyWithPlacement` AtLocation (toId attrs)) polyps
+        <> placements
       pure l
     _ -> RuinsOfNewYork <$> runMessage msg attrs

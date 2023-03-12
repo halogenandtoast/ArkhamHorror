@@ -25,6 +25,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
+import Data.HashMap.Strict qualified as HashMap
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs
   deriving anyclass IsAct
@@ -73,6 +74,7 @@ instance RunMessage LostInTheWoods where
       relentlessDarkYoung <- getSetAsideCard Enemies.relentlessDarkYoung
 
       let
+        placementMap = HashMap.fromList $ zip iids placements
         enemyPairings = if length iids == 4
           then
             (lead, relentlessDarkYoung) : zip (deleteFirst lead iids) goatSpawn
@@ -84,11 +86,10 @@ instance RunMessage LostInTheWoods where
             , MoveTo $ uncancellableMove $ move attrs iid lid
             ]
 
-      enemyMsgs <- flip concatMapM enemyPairings $ \(iid, enemyCard) -> do
-        mlid <- field InvestigatorLocation iid
-        case mlid of
+      enemyMsgs <- flip concatMapM enemyPairings $ \(iid, enemyCard) ->
+        case lookup iid placementMap of
           Nothing -> pure []
-          Just lid -> do
+          Just (lid, _) -> do
             (enemyId, enemyCreation) <- createEnemyAt enemyCard lid Nothing
             pure
               [ enemyCreation
@@ -113,7 +114,12 @@ instance RunMessage LostInTheWoods where
 
       pushAll $ msgs <> enemyMsgs <> pipingMsgs
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) (EnemyTarget eid) _ _ -> do
-      pushAll $ Exhaust (EnemyTarget eid) : [DisengageEnemy iid eid]
-      pure a
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        mTarget <- getSkillTestTarget
+        case mTarget of
+          Just (EnemyTarget eid) ->
+            pushAll $ Exhaust (EnemyTarget eid) : [DisengageEnemy iid eid]
+          _ -> error "Invalid target"
+        pure a
     _ -> LostInTheWoods <$> runMessage msg attrs

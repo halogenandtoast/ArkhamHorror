@@ -52,17 +52,30 @@ instance RunMessage JudgementXX where
       n <- getDoomCount
       let damage = if n >= 5 then 2 else 1
       pushAll
-        [ chooseOne
-            iid
-            [ Label
-              "Take damage"
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny damage 0]
-            , Label
-              "Take horror"
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 damage]
-            ]
-        | iid <- iids
-        ]
+        $ [ chooseOne
+              iid
+              [ Label
+                "Take damage"
+                [ InvestigatorAssignDamage
+                    iid
+                    (toSource attrs)
+                    DamageAny
+                    damage
+                    0
+                ]
+              , Label
+                "Take horror"
+                [ InvestigatorAssignDamage
+                    iid
+                    (toSource attrs)
+                    DamageAny
+                    0
+                    damage
+                ]
+              ]
+          | iid <- iids
+          ]
+        <> [RevertAgenda $ toId attrs]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _
       -> do

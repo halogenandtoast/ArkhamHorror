@@ -2,7 +2,6 @@ module Arkham.Act.Cards.InvestigatingTheTrail where
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -36,10 +35,9 @@ instance RunMessage InvestigatingTheTrail where
         push placeRitualSite
       cultistsWhoGotAway <- traverse (genCard . lookupEncounterCardDef)
         =<< getRecordedCardCodes CultistsWhoGotAway
-      pushAll $
-        [ CreateEnemyAt card mainPathId Nothing
-        | card <- cultistsWhoGotAway
-        ]
-        <> [AdvanceActDeck actDeckId (toSource attrs)]
+      createEnemies <- for cultistsWhoGotAway
+        $ \card -> createEnemyAt_ card mainPathId Nothing
+
+      pushAll $ createEnemies <> [AdvanceActDeck actDeckId (toSource attrs)]
       pure a
     _ -> InvestigatingTheTrail <$> runMessage msg attrs

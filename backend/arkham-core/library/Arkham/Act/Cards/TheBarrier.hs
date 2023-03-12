@@ -34,17 +34,21 @@ instance HasAbilities TheBarrier where
 
 instance RunMessage TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+      pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       hallwayId <- getJustLocationIdByName "Hallway"
       parlorId <- getJustLocationIdByName "Parlor"
       ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
       litaChantler <- getSetAsideCard Assets.litaChantler
-      a <$ pushAll
+      createGhoulPriest <- createEnemyAt_ ghoulPriest hallwayId Nothing
+
+      pushAll
         [ RevealLocation Nothing parlorId
         , CreateAssetAt litaChantler (AtLocation parlorId)
-        , CreateEnemyAt ghoulPriest hallwayId Nothing
+        , createGhoulPriest
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
+      pure a
     _ -> TheBarrier <$> runMessage msg attrs

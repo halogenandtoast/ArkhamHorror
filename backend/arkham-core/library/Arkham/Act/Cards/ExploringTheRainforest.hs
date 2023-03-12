@@ -43,8 +43,9 @@ instance RunMessage ExploringTheRainforest where
         . listToMaybe
         <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
       locationId <- selectJust LeadInvestigatorLocation
+      createIchtaca <- createEnemyAt_ ichtaca locationId Nothing
       pushAll
-        [ CreateEnemyAt ichtaca locationId Nothing
+        [ createIchtaca
         , ShuffleEncounterDiscardBackIn
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]

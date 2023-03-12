@@ -84,6 +84,6 @@ instance RunMessage TheBarrierIsThin where
     NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
       padma <- getSetAsideCard Enemies.padmaAmrita
       temploMayor <- selectJust $ LocationWithTitle "Templo Mayor"
-      push $ CreateEnemyAt padma temploMayor Nothing
+      pushM $ createEnemyAt_ padma temploMayor Nothing
       pure a
     _ -> TheBarrierIsThin <$> runMessage msg attrs

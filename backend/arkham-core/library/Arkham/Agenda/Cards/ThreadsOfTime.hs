@@ -26,25 +26,28 @@ threadsOfTime = agenda (1, A) ThreadsOfTime Cards.threadsOfTime (Static 6)
 
 instance HasAbilities ThreadsOfTime where
   getAbilities (ThreadsOfTime a) =
-    [ mkAbility a 1
+    let hasCard = HasCard (CardWithTitle "Relic of Ages")
+    in
+      [ mkAbility a 1
         $ ForcedAbility
         $ InvestigatorEliminated Timing.When
         $ AnyInvestigator
-            [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
-            , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
-            , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
+            [ HandWith hasCard
+            , DiscardWith hasCard
+            , DeckWith hasCard
             , HasMatchingAsset (AssetWithTitle "Relic of Ages")
             ]
-    ]
+      ]
 
 instance RunMessage ThreadsOfTime where
   runMessage msg a@(ThreadsOfTime attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       formlessSpawn <- getSetAsideCard Enemies.formlessSpawn
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
+      createFormlessSpawn <- createEnemyAt_ formlessSpawn nexus Nothing
       pushAll
         [ ShuffleEncounterDiscardBackIn
-        , CreateEnemyAt formlessSpawn nexus Nothing
+        , createFormlessSpawn
         , AddToVictory (toTarget attrs)
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]

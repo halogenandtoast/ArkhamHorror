@@ -33,7 +33,7 @@ instance RunMessage UndergroundMuscle where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       laBellaLunaId <- getJustLocationIdByName "La Bella Luna"
       cloverClubLoungeId <- getJustLocationIdByName "Clover Club Lounge"
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       result <- shuffleM =<< gatherEncounterSet HideousAbominations
       let
         enemy = fromJust . headMay $ result
@@ -45,28 +45,31 @@ instance RunMessage UndergroundMuscle where
       unEngagedEnemiesAtLaBellaLuna <- filterM
         (fieldMap EnemyEngagedInvestigators null)
         laBellaLunaEnemies
-      push
-        (chooseOne
-          leadInvestigatorId
-          [ Label
-              "Continue"
-              ([ CreateEnemyAt (EncounterCard enemy) cloverClubLoungeId Nothing
-               , ShuffleEncounterDiscardBackIn
-               , ShuffleCardsIntoDeck Deck.EncounterDeck
-                 $ map EncounterCard (rest <> strikingFear)
-               ]
-              <> [ MoveAction iid cloverClubLoungeId Free False
-                 | iid <- laBellaLunaInvestigators
-                 ]
-              <> [ EnemyMove eid cloverClubLoungeId
-                 | eid <- unEngagedEnemiesAtLaBellaLuna
-                 ]
-              <> [ RemoveLocation laBellaLunaId
-                 , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-                 ]
-              )
-          ]
-        )
+
+      enemyCreation <- createEnemyAt_
+        (EncounterCard enemy)
+        cloverClubLoungeId
+        Nothing
+
+      push $ chooseOne
+        lead
+        [ Label "Continue"
+          $ [ enemyCreation
+            , ShuffleEncounterDiscardBackIn
+            , ShuffleCardsIntoDeck Deck.EncounterDeck
+              $ map EncounterCard (rest <> strikingFear)
+            ]
+          <> [ MoveAction iid cloverClubLoungeId Free False
+             | iid <- laBellaLunaInvestigators
+             ]
+          <> [ EnemyMove eid cloverClubLoungeId
+             | eid <- unEngagedEnemiesAtLaBellaLuna
+             ]
+          <> [ RemoveLocation laBellaLunaId
+             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+             ]
+        ]
+
       pure
         $ UndergroundMuscle
         $ attrs

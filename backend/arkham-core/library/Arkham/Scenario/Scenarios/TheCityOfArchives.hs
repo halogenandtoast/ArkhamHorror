@@ -184,6 +184,11 @@ instance RunMessage TheCityOfArchives where
           , SetLocationLabel locationId ("interviewRoom" <> tshow @Int idx)
           ]
 
+      createYithianObserver <- createEnemyAt_
+        yithianObserver
+        interviewRoomId
+        Nothing
+
       pushAll
         $ [ SetEncounterDeck encounterDeck
           , SetAgendaDeck
@@ -193,9 +198,7 @@ instance RunMessage TheCityOfArchives where
           , MoveAllTo (toSource attrs) interviewRoomId
           ]
         <> concat placeOtherRooms
-        <> [ CreateEnemyAt yithianObserver interviewRoomId Nothing
-           | cooperatedWithTheYithians
-           ]
+        <> [ createYithianObserver | cooperatedWithTheYithians ]
         <> placeRemainingLocations
       pure
         . TheCityOfArchives
@@ -253,7 +256,8 @@ instance RunMessage TheCityOfArchives where
             ]
           resignedWithTheCustodian <- orM
             [ resignedWith Assets.theCustodian
-            , selectAny (AssetControlledBy Anyone <> assetIs Assets.theCustodian)
+            , selectAny
+              (AssetControlledBy Anyone <> assetIs Assets.theCustodian)
             ]
 
           let

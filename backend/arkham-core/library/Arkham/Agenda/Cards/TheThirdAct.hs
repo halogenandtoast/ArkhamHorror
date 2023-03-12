@@ -6,12 +6,11 @@ module Arkham.Agenda.Cards.TheThirdAct
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 
@@ -25,15 +24,15 @@ theThirdAct = agenda (1, A) TheThirdAct Cards.theThirdAct (Static 6)
 instance RunMessage TheThirdAct where
   runMessage msg a@(TheThirdAct attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      royalEmissary <- fromJustNote "missing royal emissary" <$> selectOne
-        (ExtendedCardWithOneOf
-          [ SetAsideCardMatch $ cardIs Cards.royalEmissary
-          , VictoryDisplayCardMatch $ cardIs Cards.royalEmissary
-          ]
-        )
-
-      a <$ pushAll
-        [ CreateEnemyAtLocationMatching royalEmissary $ locationIs Cards.theatre
-        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+      royalEmissary <- selectJust $ ExtendedCardWithOneOf
+        [ SetAsideCardMatch $ cardIs Cards.royalEmissary
+        , VictoryDisplayCardMatch $ cardIs Cards.royalEmissary
         ]
+
+      createRoyalEmissary <- createEnemyAtLocationMatching_ royalEmissary
+        $ locationIs Cards.theatre
+
+      pushAll
+        [createRoyalEmissary, AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pure a
     _ -> TheThirdAct <$> runMessage msg attrs

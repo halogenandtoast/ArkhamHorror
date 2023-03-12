@@ -49,8 +49,12 @@ instance RunMessage MadnessDrowns where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
       beastOfAldebaran <- getSetAsideCard Enemies.beastOfAldebaran
+      createBeastOfAldebaran <- createEnemyAt_
+        beastOfAldebaran
+        palaceOfTheKing
+        Nothing
       pushAll
-        [ CreateEnemyAt beastOfAldebaran palaceOfTheKing Nothing
+        [ createBeastOfAldebaran
         , ShuffleEncounterDiscardBackIn
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]

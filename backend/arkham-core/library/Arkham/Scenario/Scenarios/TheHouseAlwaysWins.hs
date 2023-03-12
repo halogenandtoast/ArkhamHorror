@@ -69,6 +69,7 @@ instance RunMessage TheHouseAlwaysWins where
       (cloverClubLoungeId, placeCloverClubLounge) <- placeLocationCard Locations.cloverClubLounge
       placeCloverClubBar <- placeLocationCard_ Locations.cloverClubBar
       placeCloverClubCardroom <- placeLocationCard_ Locations.cloverClubCardroom
+      createCloverClubPitBoss <- createEnemyAt_ cloverClubPitBoss cloverClubLoungeId Nothing
 
       pushAll
         [ SetEncounterDeck encounterDeck
@@ -80,7 +81,7 @@ instance RunMessage TheHouseAlwaysWins where
         , placeCloverClubCardroom
         , RevealLocation Nothing laBellaLunaId
         , MoveAllTo (toSource attrs) laBellaLunaId
-        , CreateEnemyAt cloverClubPitBoss cloverClubLoungeId Nothing
+        , createCloverClubPitBoss
         , story investigatorIds intro
         ]
 

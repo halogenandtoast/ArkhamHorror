@@ -5,11 +5,10 @@ module Arkham.Act.Cards.ThroughTheCatacombs
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
@@ -32,22 +31,22 @@ instance RunMessage ThroughTheCatacombs where
       theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask
       startingLocation <- getStartingLocation
       tombOfShadows <- selectJust $ locationIs Locations.tombOfShadows
-      spawnIshimaruHaruko <-
-        notElem (Recorded $ toCardCode Enemies.ishimaruHaruko)
-          <$> getRecordSet VIPsSlain
-      spawnIshimaruHarukoMessages <- if spawnIshimaruHaruko
-        then do
-          card <- genCard Enemies.ishimaruHaruko
-          pure
-            [ CreateEnemyAtLocationMatching
-                card
-                (LocationWithId startingLocation)
-            ]
-        else pure []
+      spawnIshimaruHarukoMessages <- do
+        spawnIshimaruHaruko <- not <$> slain Enemies.ishimaruHaruko
+        card <- genCard Enemies.ishimaruHaruko
+        createIshimaruHaruko <- createEnemyAtLocationMatching_
+          card
+          (LocationWithId startingLocation)
+        pure [ createIshimaruHaruko | spawnIshimaruHaruko ]
+
+      createTheManInThePallidMask <- createEnemyAt_
+        theManInThePallidMask
+        tombOfShadows
+        Nothing
+
       pushAll
-        ([CreateEnemyAt theManInThePallidMask tombOfShadows Nothing]
-        <> spawnIshimaruHarukoMessages
+        $ createTheManInThePallidMask
+        : spawnIshimaruHarukoMessages
         <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
-        )
       pure a
     _ -> ThroughTheCatacombs <$> runMessage msg attrs

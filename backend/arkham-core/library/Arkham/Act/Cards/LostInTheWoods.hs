@@ -8,19 +8,23 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher
+import Arkham.Matcher hiding ( EncounterDeck )
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs
   deriving anyclass IsAct
@@ -80,13 +84,36 @@ instance RunMessage LostInTheWoods where
             , MoveTo $ uncancellableMove $ move attrs iid lid
             ]
 
-      pairingsWithLocations <-
-        flip mapMaybeM enemyPairings $ \(iid, enemyCard) -> do
-          mlid <- field InvestigatorLocation iid
-          pure $ case mlid of
-            Just lid -> Just (iid, CreateEnemyAt enemyCard lid Nothing)
-            Nothing -> Nothing
+      enemyMsgs <- flip concatMapM enemyPairings $ \(iid, enemyCard) -> do
+        mlid <- field InvestigatorLocation iid
+        case mlid of
+          Nothing -> pure []
+          Just lid -> do
+            (enemyId, enemyCreation) <- createEnemyAt enemyCard lid Nothing
+            pure
+              [ enemyCreation
+              , chooseOne
+                iid
+                [ SkillLabel
+                    skillType
+                    [beginSkillTest iid attrs enemyId skillType 3]
+                | skillType <- [SkillWillpower, SkillAgility]
+                ]
+              ]
 
-      pushAll msgs
+      piping <- mapMaybe (preview _EncounterCard)
+        <$> getSetAsideCardsMatching (cardIs Treacheries.daemonicPiping)
+
+      let
+        pipingMsgs = case nonEmpty piping of
+          Nothing -> error "no daemonic piping"
+          Just (x :| xs) ->
+            ShuffleCardsIntoDeck EncounterDeck [EncounterCard x]
+              : map AddToEncounterDiscard xs
+
+      pushAll $ msgs <> enemyMsgs <> pipingMsgs
+      pure a
+    PassedSkillTest iid _ (isSource attrs -> True) (EnemyTarget eid) _ _ -> do
+      pushAll $ Exhaust (EnemyTarget eid) : [DisengageEnemy iid eid]
       pure a
     _ -> LostInTheWoods <$> runMessage msg attrs

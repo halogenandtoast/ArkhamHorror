@@ -39,13 +39,14 @@ instance HasAbilities AscendingTheHillV2 where
 instance RunMessage AscendingTheHillV2 where
   runMessage msg a@(AscendingTheHillV2 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
+      sentinelPeak <- selectJust $ LocationWithTitle "Sentinel Peak"
       sethBishop <- genCard Enemies.sethBishop
+      createSethBiship <- createEnemyAt_ sethBishop sentinelPeak Nothing
       pushAll
-        [ CreateEnemyAt sethBishop sentinelPeak Nothing
+        [ createSethBiship
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

@@ -5,7 +5,6 @@ module Arkham.Act.Cards.FindingLadyEsprit
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -23,7 +22,7 @@ import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.HashSet qualified as HashSet
-import Data.Maybe (fromJust)
+import Data.Maybe ( fromJust )
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -52,35 +51,35 @@ instance RunMessage FindingLadyEsprit where
                           [NewOrleans, Riverside, Wilderness, Unhallowed]
         locationsFor t = filter (member t . toTraits) setAsideLocations
 
-      setAsideLocationsWithLabels <- concatMapM (\t -> locationsWithLabels t (locationsFor t)) traits
+      setAsideLocationsWithLabels <- concatMapM
+        (\t -> locationsWithLabels t (locationsFor t))
+        traits
       placements <- for setAsideLocationsWithLabels $ \(label, card) -> do
         (locationId, locationPlacement) <- placeLocation card
         pure [locationPlacement, SetLocationLabel locationId label]
 
-      pushAll $ [CreateAssetAt ladyEsprit (AtLocation ladyEspritSpawnLocation)]
+      pushAll
+        $ [CreateAssetAt ladyEsprit (AtLocation ladyEspritSpawnLocation)]
         <> concat placements
         <> [NextAdvanceActStep aid 2]
       pure a
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      curseOfTheRougarouSet <- map EncounterCard <$> gatherEncounterSet
-        EncounterSet.CurseOfTheRougarou
+      lead <- getLead
+      curseOfTheRougarouSet <- map EncounterCard
+        <$> gatherEncounterSet EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
       theRougarou <- genCard Enemies.theRougarou
       curseOfTheRougarou <- genCard Treacheries.curseOfTheRougarou
-      pushAll $
-         [ chooseOne
-             leadInvestigatorId
-             [ targetLabel lid [CreateEnemyAt theRougarou lid Nothing]
-             | lid <- rougarouSpawnLocations
-             ]
-         ]
+      choices <- for rougarouSpawnLocations $ \lid -> do
+        createRougarou <- createEnemyAt_ theRougarou lid Nothing
+        pure $ targetLabel lid [createRougarou]
+
+      pushAll
+        $ [chooseOne lead choices]
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
-           , AddCampaignCardToDeck
-             leadInvestigatorId
-             Treacheries.curseOfTheRougarou
-           , CreateWeaknessInThreatArea curseOfTheRougarou leadInvestigatorId
+           , AddCampaignCardToDeck lead Treacheries.curseOfTheRougarou
+           , CreateWeaknessInThreatArea curseOfTheRougarou lead
            , AdvanceActDeck actDeckId (toSource attrs)
            ]
       pure a

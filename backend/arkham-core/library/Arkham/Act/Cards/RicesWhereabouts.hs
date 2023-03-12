@@ -6,12 +6,11 @@ module Arkham.Act.Cards.RicesWhereabouts
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
@@ -52,7 +51,13 @@ instance RunMessage RicesWhereabouts where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
-      a <$ push (DiscardTopOfEncounterDeck iid discardCount (toAbilitySource attrs 1) Nothing)
+      a <$ push
+        (DiscardTopOfEncounterDeck
+          iid
+          discardCount
+          (toAbilitySource attrs 1)
+          Nothing
+        )
     UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
       let
         mCard = flip firstJust windows' $ \case
@@ -78,20 +83,19 @@ instance RunMessage RicesWhereabouts where
       theExperiment <- getSetAsideCard Enemies.theExperiment
       alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 
-      a <$ pushAll
-        ([ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
-         | not alchemyLabsInPlay
-         ]
-        <> [ CreateEnemyAtLocationMatching
-               theExperiment
-               (LocationWithTitle "Alchemy Labs")
-           | step <= 2
-           ]
+      createTheExperiment <- createEnemyAtLocationMatching_ theExperiment
+        $ LocationWithTitle "Alchemy Labs"
+
+      pushAll
+        $ [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
+          | not alchemyLabsInPlay
+          ]
+        <> [ createTheExperiment | step <= 2 ]
         <> [ CreateStoryAssetAtLocationMatching
                alchemicalConcoction
                (LocationWithTitle "Alchemy Labs")
            | completedTheHouseAlwaysWins
            ]
         <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
-        )
+      pure a
     _ -> RicesWhereabouts <$> runMessage msg attrs

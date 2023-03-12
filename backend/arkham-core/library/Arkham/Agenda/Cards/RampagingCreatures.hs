@@ -32,25 +32,26 @@ instance HasAbilities RampagingCreatures where
 instance RunMessage RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      broodOfYogSothoth <- selectListMap EnemyTarget
+      lead <- getLead
+      broodOfYogSothoth <- selectTargets
         $ EnemyWithTitle "Brood of Yog-Sothoth"
-      a <$ when
+      when
         (notNull broodOfYogSothoth)
-        (push $ chooseOneAtATime
-          leadInvestigatorId
+        $ push $ chooseOneAtATime
+          lead
           [ TargetLabel target [ChooseRandomLocation target mempty]
           | target <- broodOfYogSothoth
           ]
-        )
-    ChosenRandomLocation target@(EnemyTarget _) lid | onSide A attrs ->
-      a <$ push (MoveToward target (LocationWithId lid))
+      pure a
+    ChosenRandomLocation target@(EnemyTarget _) lid | onSide A attrs -> do
+      push $ MoveToward target (LocationWithId lid)
+      pure a
     ChosenRandomLocation target lid | isTarget attrs target && onSide B attrs ->
       do
         setAsideBroodOfYogSothoth <- shuffleM =<< getSetAsideBroodOfYogSothoth
-        case setAsideBroodOfYogSothoth of
-          [] -> pure a
-          (x : _) -> a <$ push (CreateEnemyAt x lid Nothing)
+        for_ (nonEmpty setAsideBroodOfYogSothoth) $ \(x :| _) ->
+          pushM $ createEnemyAt_ x lid Nothing
+        pure a
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> a <$ pushAll
       [ ShuffleEncounterDiscardBackIn
       , ChooseRandomLocation (toTarget attrs) mempty

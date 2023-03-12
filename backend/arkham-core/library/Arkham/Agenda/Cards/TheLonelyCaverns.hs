@@ -65,10 +65,12 @@ instance RunMessage TheLonelyCaverns where
       locationId <- if yigsFury >= 8
         then getJustLocation =<< getLeadInvestigatorId
         else selectJust $ FarthestLocationFromAll Anywhere
+      createHarbinger <- createEnemyAt_
+        harbinger
+        locationId
+        (Just $ toTarget attrs)
       pushAll
-        $ [ CreateEnemyAt harbinger locationId (Just $ toTarget attrs)
-          | harbingerAlive
-          ]
+        $ [ createHarbinger | harbingerAlive ]
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     CreatedEnemyAt harbingerId _ (isTarget attrs -> True) -> do

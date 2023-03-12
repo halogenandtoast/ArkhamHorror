@@ -16,7 +16,6 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Message
-import Arkham.Source
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -31,14 +30,15 @@ instance HasAbilities PredatorOrPrey where
 
 instance RunMessage PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid (AgendaSource aid) 1 _ _ | aid == agendaId -> do
-      push (Resign iid)
-      PredatorOrPrey <$> runMessage msg attrs
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ Resign iid
+      pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      theMaskedHunter <- EncounterCard
-        <$> genEncounterCard Enemies.theMaskedHunter
-      a <$ pushAll
-        [ CreateEnemyEngagedWithPrey theMaskedHunter
+      theMaskedHunter <- genCard Enemies.theMaskedHunter
+      createTheMaskedHunter <- createEnemyEngagedWithPrey_ theMaskedHunter
+      pushAll
+        [ createTheMaskedHunter
         , AdvanceAgendaDeck agendaDeckId (toSource attrs)
         ]
+      pure a
     _ -> PredatorOrPrey <$> runMessage msg attrs

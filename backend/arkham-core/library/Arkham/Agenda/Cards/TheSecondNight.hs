@@ -5,14 +5,12 @@ module Arkham.Agenda.Cards.TheSecondNight
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -39,16 +37,13 @@ instance RunMessage TheSecondNight where
       pure a
     NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
       organistMsg <- moveOrganistAwayFromNearestInvestigator
-      spawnJordanPerry <- notElem (Recorded $ toCardCode Enemies.jordanPerry)
-        <$> getRecordSet VIPsSlain
-      card <- genCard Enemies.jordanPerry
-      let
-        spawnJordanPerryMessages =
-          [ CreateEnemyAtLocationMatching
-              card
-              (LocationWithTitle "Montparnasse")
-          | spawnJordanPerry
-          ]
+      spawnJordanPerryMessages <- do
+        spawnJordanPerry <- not <$> slain Enemies.jordanPerry
+        card <- genCard Enemies.jordanPerry
+        createJordanPerry <- createEnemyAtLocationMatching_
+          card
+          (LocationWithTitle "Montparnasse")
+        pure [ createJordanPerry | spawnJordanPerry ]
       pushAll
         $ organistMsg
         : spawnJordanPerryMessages

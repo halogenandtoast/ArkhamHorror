@@ -9,12 +9,12 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Enemy.Types ( Field (EnemyTraits) )
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (EnemyTraits) )
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -49,23 +49,23 @@ instance HasAbilities TheEntityAboveTheFloodBelow where
 instance RunMessage TheEntityAboveTheFloodBelow where
   runMessage msg a@(TheEntityAboveTheFloodBelow attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide D attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       beast <- getSetAsideCard Enemies.beastOfAldebaran
-      chapel <- maybeToList <$> selectOne (LocationWithTitle "Chapel of St. Aubert")
+      mChapel <- selectOne $ LocationWithTitle "Chapel of St. Aubert"
       spawnAshleighClarkeMessages <- do
-        spawnAshleighClarke <-
-          notElem (Recorded $ toCardCode Enemies.ashleighClarke)
-            <$> getRecordSet VIPsSlain
-        if spawnAshleighClarke
-          then do
-            port <- selectJust $ LocationWithTitle "Porte de l’Avancée"
-            card <- genCard Enemies.ashleighClarke
-            pure [CreateEnemyAtLocationMatching card (LocationWithId port)]
-          else pure []
+        spawnAshleighClarke <- not <$> slain Enemies.ashleighClarke
+        port <- selectJust $ LocationWithTitle "Porte de l’Avancée"
+        card <- genCard Enemies.ashleighClarke
+        createAshleighClarke <- createEnemyAt_ card port Nothing
+        pure [ createAshleighClarke | spawnAshleighClarke ]
+
+      createBeastOfAldebaran <- for (toList mChapel)
+        $ \chapel -> createEnemyAt_ beast chapel Nothing
+
       pushAll
-        $ [CreateEnemyAt beast lid Nothing | lid <- chapel]
+        $ createBeastOfAldebaran
         <> spawnAshleighClarkeMessages
-        <> [ RemoveAllCopiesOfCardFromGame leadInvestigatorId "03282"
+        <> [ RemoveAllCopiesOfCardFromGame lead "03282"
            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
            ]
       pure a
@@ -73,6 +73,8 @@ instance RunMessage TheEntityAboveTheFloodBelow where
       investigatorIds <- getInvestigatorIds
       pushAll
         $ [PlaceDoom (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False | iid <- investigatorIds ]
+        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
+           | iid <- investigatorIds
+           ]
       pure a
     _ -> TheEntityAboveTheFloodBelow <$> runMessage msg attrs

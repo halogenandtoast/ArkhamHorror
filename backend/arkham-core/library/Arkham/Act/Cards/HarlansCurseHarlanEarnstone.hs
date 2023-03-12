@@ -59,8 +59,14 @@ instance RunMessage HarlansCurseHarlanEarnstone where
         harlanEarnstoneCrazedByTheCurse = EncounterCard $ lookupEncounterCard
           Enemies.harlanEarnstoneCrazedByTheCurse
           (unAssetId harlan)
+
+      createHarlanEarnstone <- createEnemyAt_
+        harlanEarnstoneCrazedByTheCurse
+        harlansLocation
+        Nothing
+
       pushAll
-        [ CreateEnemyAt harlanEarnstoneCrazedByTheCurse harlansLocation Nothing
+        [ createHarlanEarnstone
         , Flipped (AssetSource harlan) harlanEarnstoneCrazedByTheCurse
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.recoverTheRelic A (toSource attrs)

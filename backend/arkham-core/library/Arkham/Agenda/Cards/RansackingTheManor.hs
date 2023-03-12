@@ -7,19 +7,18 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype RansackingTheManor = RansackingTheManor AgendaAttrs
@@ -47,28 +46,23 @@ instance HasAbilities RansackingTheManor where
 instance RunMessage RansackingTheManor where
   runMessage msg a@(RansackingTheManor attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      possessedOathspeaker <- getSetAsideCard Enemies.possessedOathspeaker
-      spawnSebastienMoreau <-
-        notElem (Recorded $ toCardCode Enemies.sebastienMoreau)
-          <$> getRecordSet VIPsSlain
-      spawnSebastienMoreauMessages <- if spawnSebastienMoreau
-        then do
-          card <- genCard Enemies.sebastienMoreau
-          pure
-            [ CreateEnemyAtLocationMatching
-                card
-                (LocationWithTitle "Entry Hall")
-            ]
-        else pure []
+      spawnSebastienMoreau <- not <$> slain Enemies.sebastienMoreau
+      spawnSebastienMoreauMessages <- do
+        card <- genCard Enemies.sebastienMoreau
+        createEnemyAtLocationMatching_ card (LocationWithTitle "Entry Hall")
+      spawnPossessedOathspeaker <- do
+        possessedOathspeaker <- getSetAsideCard Enemies.possessedOathspeaker
+        createEnemyAtLocationMatching_
+          possessedOathspeaker
+          (LocationWithTitle "Entry Hall")
 
-      a <$ pushAll
-        ([ CreateEnemyAtLocationMatching
-             possessedOathspeaker
-             (LocationWithTitle "Entry Hall")
-         ]
-        <> spawnSebastienMoreauMessages
+      pushAll
+        $ spawnPossessedOathspeaker
+        : [ spawnSebastienMoreauMessages | spawnSebastienMoreau ]
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-        )
+      pure a
     UseCardAbility _ source 1 [Window _ (Window.PlacedClues target n)] _
-      | isSource attrs source -> a <$ pushAll [FlipClues target n]
+      | isSource attrs source -> do
+        pushAll [FlipClues target n]
+        pure a
     _ -> RansackingTheManor <$> runMessage msg attrs

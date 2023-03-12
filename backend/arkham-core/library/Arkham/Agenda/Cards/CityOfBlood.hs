@@ -7,10 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
@@ -25,13 +25,9 @@ cityOfBlood = agenda (4, A) CityOfBlood Cards.cityOfBlood (Static 4)
 instance RunMessage CityOfBlood where
   runMessage msg a@(CityOfBlood attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      mHarbinger <- selectOne $ SetAsideCardMatch $ cardIs
-        Enemies.harbingerOfValusia
-      let
-        harbingerMsgs =
-          [ CreateEnemyWithPlacement harbinger Pursuit
-          | harbinger <- toList mHarbinger
-          ]
+      mHarbinger <- maybeGetSetAsideEncounterCard Enemies.harbingerOfValusia
+      harbingerMsgs <- for (maybeToList mHarbinger) $ \harbinger ->
+        createEnemyWithPlacement_ (EncounterCard harbinger) Pursuit
       pushAll
         $ harbingerMsgs
         <> [ NextAdvanceAgendaStep (toId attrs) 1

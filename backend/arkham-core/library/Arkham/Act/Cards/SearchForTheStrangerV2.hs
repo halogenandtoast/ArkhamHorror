@@ -51,8 +51,9 @@ instance RunMessage SearchForTheStrangerV2 where
       hastur <- getSetAsideCard Enemies.hasturTheKingInYellow
       theManInThePallidMask <- selectJust
         (enemyIs Enemies.theManInThePallidMask)
+      createHastur <- createEnemy_ hastur
       pushAll
-        [ CreateEnemy hastur
+        [ createHastur
         , RemoveEnemy theManInThePallidMask
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]

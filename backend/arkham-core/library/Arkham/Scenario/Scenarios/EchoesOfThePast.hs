@@ -15,8 +15,8 @@ import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
@@ -78,12 +78,12 @@ gatherTheMidnightMasks = traverse
 
 placeAndLabelLocations :: Text -> [Card] -> GameT [(LocationId, [Message])]
 placeAndLabelLocations prefix locations =
-  for (withIndex1 locations) $ \(idx, location) -> do 
+  for (withIndex1 locations) $ \(idx, location) -> do
     (locationId, placement) <- placeLocation location
-    pure $
-      (locationId, [ placement
-      , SetLocationLabel locationId (prefix <> tshow idx)
-      ])
+    pure
+      $ ( locationId
+        , [placement, SetLocationLabel locationId (prefix <> tshow idx)]
+        )
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =
@@ -154,32 +154,31 @@ instance RunMessage EchoesOfThePast where
         ]
 
       (entryHallId, placeEntryHall) <- placeLocationCard Locations.entryHall
-      (quietHalls1Id, placeQuietHalls1) <- placeLocationCard Locations.quietHalls_131
-      (quietHalls2Id, placeQuietHalls2) <- placeLocationCard Locations.quietHalls_135
+      (quietHalls1Id, placeQuietHalls1) <- placeLocationCard
+        Locations.quietHalls_131
+      (quietHalls2Id, placeQuietHalls2) <- placeLocationCard
+        Locations.quietHalls_135
 
-      groundFloorPlacements <- shuffleM =<< placeAndLabelLocations "groundloor" groundFloor
-      secondFloorPlacements <- shuffleM =<< placeAndLabelLocations "secondFloor" secondFloor
-      thirdFloorPlacements <- shuffleM =<< placeAndLabelLocations "thirdFloor" thirdFloor
+      groundFloorPlacements <-
+        shuffleM =<< placeAndLabelLocations "groundloor" groundFloor
+      secondFloorPlacements <-
+        shuffleM =<< placeAndLabelLocations "secondFloor" secondFloor
+      thirdFloorPlacements <-
+        shuffleM =<< placeAndLabelLocations "thirdFloor" thirdFloor
 
-      let
-        spawnMessages = case length seekersToSpawn of
-          n | n == 3 ->
-            -- with 3 we can spawn at either 2nd or 3rd floor so we use
-            -- location matching
-            [ CreateEnemyAtLocationMatching
-                (EncounterCard seeker)
-                (EmptyLocation
-                <> LocationMatchAny
-                     [ LocationWithTrait SecondFloor
-                     , LocationWithTrait ThirdFloor
-                     ]
-                )
-            | seeker <- seekersToSpawn
-            ]
-          _ ->
-            [ CreateEnemyAt (EncounterCard card) locationId Nothing
-            | ((locationId, _), card) <- zip thirdFloorPlacements seekersToSpawn
-            ]
+      spawnMessages <- case length seekersToSpawn of
+        n | n == 3 -> for seekersToSpawn $ \seeker ->
+          -- with 3 we can spawn at either 2nd or 3rd floor so we use
+          -- location matching
+          createEnemyAtLocationMatching_
+            (EncounterCard seeker)
+            (EmptyLocation <> LocationMatchAny
+              [LocationWithTrait SecondFloor, LocationWithTrait ThirdFloor]
+            )
+        _ ->
+          for (zip thirdFloorPlacements seekersToSpawn)
+            $ \((locationId, _), card) ->
+                createEnemyAt_ (EncounterCard card) locationId Nothing
 
       sebastienInterviewed <-
         elem (Recorded $ toCardCode Assets.sebastienMoreau)
@@ -290,11 +289,11 @@ instance RunMessage EchoesOfThePast where
       pure s
     ScenarioResolution NoResolution -> do
       investigatorIds <- allInvestigatorIds
-      s
-        <$ pushAll
-             [ story investigatorIds noResolution
-             , ScenarioResolution (Resolution 4)
-             ]
+      pushAll
+        [ story investigatorIds noResolution
+        , ScenarioResolution (Resolution 4)
+        ]
+      pure s
     ScenarioResolution (Resolution n) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- allInvestigatorIds

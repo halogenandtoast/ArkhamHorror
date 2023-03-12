@@ -53,7 +53,7 @@ import Arkham.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
-import Arkham.Helpers.Message
+import Arkham.Helpers.Message hiding (createEnemy)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator ( becomePrologueInvestigator, becomeYithian, returnToBody )
@@ -3610,11 +3610,11 @@ runGameMessage msg g = case msg of
         _ -> pure g
       VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do
+    enemyId <- getRandom
     let
-      enemy = createEnemy card
-      eid = toId enemy
-    pushAll [SetBearer (toTarget enemy) iid, RemoveCardFromHand iid (toCardId card), InvestigatorDrawEnemy iid eid]
-    pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
+      enemy = createEnemy card enemyId
+    pushAll [SetBearer (toTarget enemy) iid, RemoveCardFromHand iid (toCardId card), InvestigatorDrawEnemy iid enemyId]
+    pure $ g & entitiesL . enemiesL %~ insertMap enemyId enemy
   CancelEachNext source msgTypes -> do
     push =<< checkWindows
       [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
@@ -3950,9 +3950,9 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & phaseL .~ EnemyPhase
   EnemyAttackFromDiscard iid card -> do
+    enemyId <- getRandom
     let
-      enemy = createEnemy card
-      enemyId = toId enemy
+      enemy = createEnemy card enemyId
     push $ EnemyWillAttack $ (enemyAttack enemyId iid)
       { attackDamageStrategy = enemyDamageStrategy (toAttrs enemy) }
     pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
@@ -4148,30 +4148,31 @@ runGameMessage msg g = case msg of
   After (EnemySpawn _ lid eid) -> do
     windowMsg <- checkWindows [Window Timing.After (Window.EnemySpawns eid lid)]
     g <$ push windowMsg
+  -- TODO: CHECK SpawnEnemyAt and SpawnEnemyAtEngagedWith
   SpawnEnemyAt card lid -> do
+    enemyId <- getRandom
     let
-      enemy = createEnemy card
-      eid = toId enemy
+      enemy = createEnemy card enemyId
     pushAll
-      [ Will (EnemySpawn Nothing lid eid)
-      , When (EnemySpawn Nothing lid eid)
-      , EnemySpawn Nothing lid eid
+      [ Will (EnemySpawn Nothing lid enemyId)
+      , When (EnemySpawn Nothing lid enemyId)
+      , EnemySpawn Nothing lid enemyId
       ]
-    pure $ g & entitiesL . enemiesL . at eid ?~ enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   SpawnEnemyAtEngagedWith card lid iid -> do
+    enemyId <- getRandom
     let
-      enemy = createEnemy card
-      eid = toId enemy
+      enemy = createEnemy card enemyId
     pushAll
-      [ Will (EnemySpawn (Just iid) lid eid)
-      , When (EnemySpawn (Just iid) lid eid)
-      , EnemySpawn (Just iid) lid eid
+      [ Will (EnemySpawn (Just iid) lid enemyId)
+      , When (EnemySpawn (Just iid) lid enemyId)
+      , EnemySpawn (Just iid) lid enemyId
       ]
-    pure $ g & entitiesL . enemiesL . at eid ?~ enemy
-  CreateEnemy card -> do
-    push $ CreateEnemyWithPlacement card Unplaced
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+  CreateEnemy enemyId card -> do
+    push $ CreateEnemyWithPlacement enemyId card Unplaced
     pure g
-  CreateEnemyWithPlacement card placement -> do
+  CreateEnemyWithPlacement enemyId card placement -> do
     let
       originalCardCode = \case
         EncounterCard ec -> ecOriginalCardCode ec
@@ -4183,25 +4184,22 @@ runGameMessage msg g = case msg of
         VengeanceCard vc -> getBearer vc
     enemy <- runMessage
       (SetOriginalCardCode $ originalCardCode card)
-      (createEnemy card)
+      (createEnemy card enemyId)
     enemy' <- case getBearer card of
       Nothing -> pure enemy
       Just iid -> runMessage (SetBearer (toTarget enemy) iid) enemy
-    let enemyId = toId enemy'
     push $ PlaceEnemy enemyId placement
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy'
-  CreateEnemyAtLocationMatching cardCode locationMatcher -> do
+  CreateEnemyAtLocationMatching enemyId cardCode locationMatcher -> do
     matches' <- selectList locationMatcher
     when (null matches') (error "No matching locations")
-    leadInvestigatorId <- getLeadInvestigatorId
-    push $ chooseOrRunOne
-      leadInvestigatorId
-      [ targetLabel lid [CreateEnemyAt cardCode lid Nothing] | lid <- matches' ]
+    lead <- getLead
+    push $ chooseOrRunOne lead
+      [ targetLabel lid [CreateEnemyAt enemyId cardCode lid Nothing] | lid <- matches' ]
     pure g
-  CreateEnemyAt card lid mtarget -> do
+  CreateEnemyAt enemyId card lid mtarget -> do
     let
-      enemy = createEnemy card
-      enemyId = toId enemy
+      enemy = createEnemy card enemyId
     pushAll
       $ [ Will (EnemySpawn Nothing lid enemyId)
         , When (EnemySpawn Nothing lid enemyId)
@@ -4209,10 +4207,9 @@ runGameMessage msg g = case msg of
         ]
       <> [ CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget ]
     pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
-  CreateEnemyEngagedWithPrey card -> do
+  CreateEnemyEngagedWithPrey enemyId card -> do
     let
-      enemy = createEnemy card
-      enemyId = toId enemy
+      enemy = createEnemy card enemyId
     pushAll
       [ Will (EnemySpawnEngagedWithPrey enemyId)
       , EnemySpawnEngagedWithPrey enemyId
@@ -4289,14 +4286,14 @@ runGameMessage msg g = case msg of
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
       pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
     PlayerEnemyType -> do
+      enemyId <- getRandom
       let
-        enemy = createEnemy card
-        enemyId = toId enemy
+        enemy = createEnemy card enemyId
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll
         $ [ SetBearer (toTarget enemy) iid
           , RemoveCardFromHand iid (toCardId card)
-          , InvestigatorDrawEnemy iid (toId enemy)
+          , InvestigatorDrawEnemy iid enemyId
           ]
         <> resolve (Revelation iid (EnemySource enemyId))
       pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
@@ -4312,7 +4309,8 @@ runGameMessage msg g = case msg of
             )
     case toCardType card of
       EnemyType -> do
-        let enemy = createEnemy card
+        enemyId <- getRandom
+        let enemy = createEnemy card enemyId
         checkWindowMessage <- checkWindows
           [ Window
               Timing.When
@@ -4320,12 +4318,12 @@ runGameMessage msg g = case msg of
           ]
         pushAll
           [ checkWindowMessage
-          , InvestigatorDrawEnemy iid $ toId enemy
+          , InvestigatorDrawEnemy iid enemyId
           , UnsetActiveCard
           ]
         pure
           $ g'
-          & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)
+          & (entitiesL . enemiesL . at enemyId ?~ enemy)
           & (activeCardL ?~ EncounterCard card)
       TreacheryType ->
         g <$ push

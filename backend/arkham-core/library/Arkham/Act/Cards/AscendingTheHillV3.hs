@@ -44,8 +44,9 @@ instance RunMessage AscendingTheHillV3 where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       sentinelPeak <- selectJust $ LocationWithTitle "Sentinel Peak"
       sethBishop <- genCard Enemies.sethBishop
+      createSethBishop <- createEnemyAt_ sethBishop sentinelPeak (Just $ toTarget attrs)
       pushAll
-        [ CreateEnemyAt sethBishop sentinelPeak (Just $ toTarget attrs)
+        [ createSethBishop
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

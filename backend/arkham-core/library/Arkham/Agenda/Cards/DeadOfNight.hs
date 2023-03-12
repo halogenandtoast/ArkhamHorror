@@ -5,7 +5,6 @@ module Arkham.Agenda.Cards.DeadOfNight
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
@@ -31,22 +30,22 @@ instance HasModifiersFor DeadOfNight where
 instance RunMessage DeadOfNight where
   runMessage msg a@(DeadOfNight attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      dormitoriesInPlay <- isJust
-        <$> selectOne (LocationWithTitle "Dormitories")
-      mExperimentId <- selectOne (enemyIs Enemies.theExperiment)
-      theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
-      scienceBuildingId <- fromJustNote "missing science building"
-        <$> selectOne (LocationWithTitle "Science Building")
-      a <$ pushAll
-        ([ PlaceLocationMatching (CardWithTitle "Dormitories")
-         | not dormitoriesInPlay
-         ]
+      dormitoriesInPlay <- selectAny $ LocationWithTitle "Dormitories"
+      mExperimentId <- selectOne $ enemyIs Enemies.theExperiment
+      theExperiment <- genCard Enemies.theExperiment
+      scienceBuildingId <- selectJust $ LocationWithTitle "Science Building"
+      createTheExperiment <- createEnemyAt_
+        theExperiment
+        scienceBuildingId
+        Nothing
+      pushAll
+        $ [ PlaceLocationMatching (CardWithTitle "Dormitories")
+          | not dormitoriesInPlay
+          ]
         <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
            | eid <- maybeToList mExperimentId
            ]
-        <> [ CreateEnemyAt theExperiment scienceBuildingId Nothing
-           | isNothing mExperimentId
-           ]
+        <> [ createTheExperiment | isNothing mExperimentId ]
         <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
-        )
+      pure a
     _ -> DeadOfNight <$> runMessage msg attrs

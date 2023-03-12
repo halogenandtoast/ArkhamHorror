@@ -55,20 +55,68 @@ getIsBeingInvestigated lid = do
   mAction <- getSkillTestAction
   pure $ mAction == Just Investigate && mTarget == Just (LocationTarget lid)
 
-beginSkillTest :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
-beginSkillTest iid source target sType n = BeginSkillTest $ initSkillTest iid source target sType n
+beginSkillTest
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> Int
+  -> Message
+beginSkillTest iid (toSource -> source) (toTarget -> target) sType n =
+  BeginSkillTest $ initSkillTest iid source target sType n
 
-parley :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
-parley iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Parley }
+parley
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> Int
+  -> Message
+parley iid (toSource -> source) (toTarget -> target) sType n =
+  BeginSkillTest $ (initSkillTest iid source target sType n)
+    { skillTestAction = Just Parley
+    }
 
-fight :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
-fight iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Fight }
+fight
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> Int
+  -> Message
+fight iid (toSource -> source) (toTarget -> target) sType n =
+  BeginSkillTest $ (initSkillTest iid source target sType n)
+    { skillTestAction = Just Fight
+    }
 
-evade :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
-evade iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Evade }
+evade
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> Int
+  -> Message
+evade iid (toSource -> source) (toTarget -> target) sType n =
+  BeginSkillTest $ (initSkillTest iid source target sType n)
+    { skillTestAction = Just Evade
+    }
 
-investigate :: InvestigatorId -> Source -> Target -> SkillType -> Int -> Message
-investigate iid source target sType n = BeginSkillTest $ (initSkillTest iid source target sType n) { skillTestAction = Just Investigate }
+investigate
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> Int
+  -> Message
+investigate iid (toSource -> source) (toTarget -> target) sType n =
+  BeginSkillTest $ (initSkillTest iid source target sType n)
+    { skillTestAction = Just Investigate
+    }
 
 getIsScenarioAbility :: HasGame m => m Bool
 getIsScenarioAbility = do

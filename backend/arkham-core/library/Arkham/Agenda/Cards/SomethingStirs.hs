@@ -11,7 +11,7 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Location.Types (Field(..))
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -48,15 +48,12 @@ instance RunMessage SomethingStirs where
       maxDoom <- getMax0 <$> selectAgg Max LocationDoom Anywhere
       targets <- selectList $ LocationWithDoom $ EqualTo (Static maxDoom)
       harbingerOfValusia <- getSetAsideCard Enemies.harbingerOfValusia
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
+      choices <- for targets $ \target -> do
+        choice <- createEnemyAt_ harbingerOfValusia target Nothing
+        pure $ targetLabel target [choice]
       pushAll
-        $ chooseOne
-            leadInvestigatorId
-            [ targetLabel
-                target
-                [CreateEnemyAt harbingerOfValusia target Nothing]
-            | target <- targets
-            ]
+        $ chooseOne lead choices
         : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> SomethingStirs <$> runMessage msg attrs

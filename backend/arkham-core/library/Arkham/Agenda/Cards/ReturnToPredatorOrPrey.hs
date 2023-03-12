@@ -16,7 +16,6 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Message
-import Arkham.Source
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -35,11 +34,13 @@ instance RunMessage ReturnToPredatorOrPrey where
     case msg of
       AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
         narogath <- EncounterCard <$> genEncounterCard Enemies.narogath
-        a <$ pushAll
-          [ CreateEnemyEngagedWithPrey narogath
+        createNarogath <- createEnemyEngagedWithPrey_ narogath
+        pushAll
+          [ createNarogath
           , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           ]
-      UseCardAbility iid (AgendaSource aid) 1 _ _ | aid == agendaId -> do
-        push (Resign iid)
-        ReturnToPredatorOrPrey <$> runMessage msg attrs
+        pure a
+      UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+        push $ Resign iid
+        pure a
       _ -> ReturnToPredatorOrPrey <$> runMessage msg attrs

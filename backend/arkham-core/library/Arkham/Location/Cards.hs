@@ -10,7 +10,8 @@ import Arkham.EncounterSet hiding ( Dunwich )
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol
 import Arkham.Name
-import Arkham.Trait
+import Arkham.Trait hiding (Circle)
+import Arkham.Trait qualified as Trait
 
 locationWithUnrevealed
   :: CardCode
@@ -435,6 +436,7 @@ allLocationCards = mapFromList $ map
   , witchHauntedWoodsOvergrownBarn
   , witchHauntedWoodsTaintedWell
   , witchHauntedWoodsTheLonelyTree
+  , witchesCircle
   , xochimilco
   , yard
   , yithianOrrery
@@ -3155,6 +3157,15 @@ plateauOfLeng = singleSided $ location
   Equals
   [Star]
   ShatteredAeons
+
+witchesCircle :: CardDef
+witchesCircle = victory 2 $ singleSided $ location
+  "05055b"
+  "Witches' Circle"
+  [Woods, Trait.Circle]
+  Plus
+  [Squiggle]
+  TheWitchingHour
 
 witchHauntedWoodsAbandonedMine :: CardDef
 witchHauntedWoodsAbandonedMine = victory 1 $ locationWithUnrevealed

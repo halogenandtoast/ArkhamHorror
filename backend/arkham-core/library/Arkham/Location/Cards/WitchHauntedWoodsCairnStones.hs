@@ -1,27 +1,54 @@
 module Arkham.Location.Cards.WitchHauntedWoodsCairnStones
   ( witchHauntedWoodsCairnStones
   , WitchHauntedWoodsCairnStones(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Ability
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message hiding (DiscoverClues)
+import Arkham.Timing qualified as Timing
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
 
 newtype WitchHauntedWoodsCairnStones = WitchHauntedWoodsCairnStones LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 witchHauntedWoodsCairnStones :: LocationCard WitchHauntedWoodsCairnStones
-witchHauntedWoodsCairnStones = location WitchHauntedWoodsCairnStones Cards.witchHauntedWoodsCairnStones 3 (PerPlayer 2)
+witchHauntedWoodsCairnStones = location
+  WitchHauntedWoodsCairnStones
+  Cards.witchHauntedWoodsCairnStones
+  3
+  (PerPlayer 2)
 
 instance HasAbilities WitchHauntedWoodsCairnStones where
-  getAbilities (WitchHauntedWoodsCairnStones attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (WitchHauntedWoodsCairnStones a) = withBaseAbilities
+    a
+    [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a)
+      $ ForcedAbility
+      $ DiscoverClues
+          Timing.After
+          You
+          (LocationWithId $ toId a)
+          (AtLeast $ Static 1)
+    ]
+
+getCount :: [Window] -> Int
+getCount [] = error "wrong window"
+getCount (Window _ (Window.DiscoverClues _ _ n) : _) = n
+getCount (_ : xs) = getCount xs
 
 instance RunMessage WitchHauntedWoodsCairnStones where
-  runMessage msg (WitchHauntedWoodsCairnStones attrs) =
-    WitchHauntedWoodsCairnStones <$> runMessage msg attrs
+  runMessage msg l@(WitchHauntedWoodsCairnStones attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (getCount -> n) _ -> do
+      iids <- selectList $ investigatorAt $ toId attrs
+      pushAll [LoseResources iid (toSource attrs) n | iid <- iids]
+      pure l
+    _ -> WitchHauntedWoodsCairnStones <$> runMessage msg attrs

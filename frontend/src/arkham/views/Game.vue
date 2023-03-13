@@ -111,7 +111,7 @@ async function update(state: Arkham.Game) {
   game.value = state;
 }
 
-onBeforeRouteLeave(() => close ())
+onBeforeRouteLeave(() => close())
 onUnmounted(() => close())
 
 const toggleDebug = () => debug.value = !debug.value

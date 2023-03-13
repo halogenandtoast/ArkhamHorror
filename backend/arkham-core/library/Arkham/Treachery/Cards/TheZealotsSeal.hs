@@ -2,15 +2,15 @@ module Arkham.Treachery.Cards.TheZealotsSeal where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Matcher
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
@@ -33,6 +33,9 @@ instance RunMessage TheZealotsSeal where
       pure t
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ _
       | tid == treacheryId -> do
-      pushAll [RandomDiscard iid (toSource attrs) AnyCard, RandomDiscard iid (toSource attrs) AnyCard]
-      pure t
+        pushAll
+          [ toMessage $ randomDiscard iid attrs
+          , toMessage $ randomDiscard iid attrs
+          ]
+        pure t
     _ -> TheZealotsSeal <$> runMessage msg attrs

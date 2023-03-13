@@ -2,13 +2,13 @@ module Arkham.Treachery.Cards.ChillFromBelow where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Matcher
+import Arkham.Discard
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Projection
-import Arkham.Investigator.Types ( Field(..) )
+import Arkham.SkillType
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
@@ -22,14 +22,13 @@ instance RunMessage ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> do
+    FailedSkillTest iid _ source@(isSource attrs -> True) SkillTestInitiatorTarget{} _ n
+      -> do
         handCount <- fieldMap InvestigatorHand length iid
-        if handCount < n
-          then
-            pushAll
-            $ replicate handCount (RandomDiscard iid (toSource attrs) AnyCard)
-            <> [InvestigatorAssignDamage iid source DamageAny (n - handCount) 0]
-          else pushAll $ replicate n (RandomDiscard iid (toSource attrs) AnyCard)
+        pushAll
+          $ replicate (min n handCount) (toMessage $ randomDiscard iid attrs)
+          <> [ InvestigatorAssignDamage iid source DamageAny (n - handCount) 0
+             | n - handCount > 0
+             ]
         pure t
     _ -> ChillFromBelow <$> runMessage msg attrs

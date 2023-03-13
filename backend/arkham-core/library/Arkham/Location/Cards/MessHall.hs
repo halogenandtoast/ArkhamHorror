@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -35,6 +36,7 @@ instance HasAbilities MessHall where
 
 instance RunMessage MessHall where
   runMessage msg l@(MessHall attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (ChooseAndDiscardCard iid (toAbilitySource attrs 1))
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1)
+      pure l
     _ -> MessHall <$> runMessage msg attrs

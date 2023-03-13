@@ -13,9 +13,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.EffectMetadata
+import Arkham.Discard
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.SkillTest.Base
@@ -33,9 +34,10 @@ mistsOfRlyeh4 = asset MistsOfRlyeh4 Cards.mistsOfRlyeh4
 
 instance HasAbilities MistsOfRlyeh4 where
   getAbilities (MistsOfRlyeh4 a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Evade)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Evade)
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Charge 1
     ]
 
 instance RunMessage MistsOfRlyeh4 where
@@ -69,17 +71,19 @@ mistsOfRlyeh4Effect = cardEffect MistsOfRlyeh4Effect Cards.mistsOfRlyeh4
 
 instance RunMessage MistsOfRlyeh4Effect where
   runMessage msg e@(MistsOfRlyeh4Effect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> case effectTarget of
-      InvestigatorTarget iid' | iid == iid' -> e <$ when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll
-          [ If
-            (Window.RevealTokenEffect iid token effectId)
-            [ChooseAndDiscardCard iid effectSource]
-          , DisableEffect effectId
-          ]
-        )
-      _ -> pure e
+    RevealToken _ iid token | effectMetadata == Just (EffectInt 1) ->
+      case effectTarget of
+        InvestigatorTarget iid' | iid == iid' -> e <$ when
+          (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+          )
+          (pushAll
+            [ If
+              (Window.RevealTokenEffect iid token effectId)
+              [toMessage $ chooseAndDiscardCard iid effectSource]
+            , DisableEffect effectId
+            ]
+          )
+        _ -> pure e
     SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
       case effectTarget of
         InvestigatorTarget iid -> do

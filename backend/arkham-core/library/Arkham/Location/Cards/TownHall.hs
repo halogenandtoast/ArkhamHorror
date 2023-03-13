@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Discard
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Investigator.Types ( Field (InvestigatorHand) )
@@ -51,6 +52,8 @@ instance RunMessage TownHall where
       let
         weaknessCount = count cardIsWeakness hand
         discardCount = min (length hand - 3) (length hand - weaknessCount)
-      pushAll $ replicate discardCount $ ChooseAndDiscardCard iid (toAbilitySource attrs 1)
+      pushAll $ replicate discardCount $ toMessage $ chooseAndDiscardCard
+        iid
+        (toAbilitySource attrs 1)
       pure l
     _ -> TownHall <$> runMessage msg attrs

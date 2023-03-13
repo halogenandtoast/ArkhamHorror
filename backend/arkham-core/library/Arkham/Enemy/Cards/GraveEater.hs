@@ -6,11 +6,12 @@ module Arkham.Enemy.Cards.GraveEater
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Discard
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks)
+import Arkham.Message hiding ( EnemyAttacks )
 import Arkham.Timing qualified as Timing
 
 newtype GraveEater = GraveEater EnemyAttrs
@@ -33,6 +34,6 @@ instance HasAbilities GraveEater where
 instance RunMessage GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RandomDiscard iid (toSource attrs) AnyCard
+      push $ toMessage $ randomDiscard iid attrs
       pure e
     _ -> GraveEater <$> runMessage msg attrs

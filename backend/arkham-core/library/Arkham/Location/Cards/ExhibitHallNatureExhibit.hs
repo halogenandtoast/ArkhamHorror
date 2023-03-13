@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( exhibitHallNatureExhibit )
 import Arkham.Location.Helpers
@@ -39,6 +40,10 @@ instance HasAbilities ExhibitHallNatureExhibit where
 
 instance RunMessage ExhibitHallNatureExhibit where
   runMessage msg l@(ExhibitHallNatureExhibit attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ pushAll [RandomDiscard iid (toAbilitySource attrs 1) AnyCard, RandomDiscard iid (toAbilitySource attrs 1) AnyCard]
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushAll
+        [ toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+        , toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+        ]
+      pure l
     _ -> ExhibitHallNatureExhibit <$> runMessage msg attrs

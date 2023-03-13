@@ -6,6 +6,7 @@ module Arkham.Location.Cards.OfficeSpectral
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -27,6 +28,6 @@ instance HasAbilities OfficeSpectral where
 instance RunMessage OfficeSpectral where
   runMessage msg l@(OfficeSpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ ChooseAndDiscardCard iid (toSource attrs)
+      push $ toMessage $ chooseAndDiscardCard iid attrs
       pure l
     _ -> OfficeSpectral <$> runMessage msg attrs

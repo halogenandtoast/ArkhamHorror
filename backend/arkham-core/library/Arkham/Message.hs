@@ -29,6 +29,7 @@ import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
+import {-# SOURCE #-} Arkham.Discard
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.Effect.Window
@@ -120,6 +121,17 @@ getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
  let choicesMap = mapFromList @(HashMap Text Int) choices
  in findWithDefault 0 key choicesMap
+
+class IsMessage msg where
+  toMessage :: msg -> Message
+
+instance IsMessage Message where
+  toMessage = id
+  {-# INLINE toMessage #-}
+
+instance IsMessage EnemyAttackDetails where
+  toMessage = InitiateEnemyAttack
+  {-# INLINE toMessage #-}
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -241,7 +253,8 @@ data Message
   | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
   | RunWindow InvestigatorId [Window]
   | ChooseAndDiscardAsset InvestigatorId Source AssetMatcher
-  | ChooseAndDiscardCard InvestigatorId Source
+  | DiscardFromHand HandDiscard
+  | DiscardCard InvestigatorId Source CardId
   | ChooseEndTurn InvestigatorId
   | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
   | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
@@ -285,7 +298,6 @@ data Message
   | DeckHasNoCards InvestigatorId (Maybe Target)
   | DisableEffect EffectId
   | Discard Source Target
-  | DiscardCard InvestigatorId Source CardId
   | DiscardHand InvestigatorId Source
   | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
   | DiscardUntilFirst InvestigatorId Source CardMatcher
@@ -495,7 +507,6 @@ data Message
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
-  | RandomDiscard InvestigatorId Source CardMatcher
   | Ready Target
   | ReadyAlternative Source Target
   | ReadyExhausted
@@ -738,8 +749,8 @@ chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
 chooseOrRunN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseAmounts
-  :: InvestigatorId -> Text -> AmountTarget -> [(Text, (Int, Int))] -> Target -> Message
-chooseAmounts iid label total choiceMap target = Ask
+  :: Targetable target => InvestigatorId -> Text -> AmountTarget -> [(Text, (Int, Int))] -> target -> Message
+chooseAmounts iid label total choiceMap (toTarget -> target) = Ask
   iid
   (ChooseAmounts label total amountChoices target)
  where

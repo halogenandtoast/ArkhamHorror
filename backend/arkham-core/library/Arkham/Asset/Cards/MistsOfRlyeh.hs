@@ -13,9 +13,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.EffectMetadata
+import Arkham.Discard
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.SkillTest.Base
@@ -68,9 +69,17 @@ instance RunMessage MistsOfRlyehEffect where
   runMessage msg e@(MistsOfRlyehEffect attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> do
       case effectTarget of
-        InvestigatorTarget iid' | iid == iid' -> when
-          (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-          $ pushAll [ If (Window.RevealTokenEffect iid token effectId) [ChooseAndDiscardCard iid effectSource] , DisableEffect effectId ]
+        InvestigatorTarget iid' | iid == iid' ->
+          when
+              (tokenFace token
+              `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+              )
+            $ pushAll
+                [ If
+                  (Window.RevealTokenEffect iid token effectId)
+                  [toMessage $ chooseAndDiscardCard iid effectSource]
+                , DisableEffect effectId
+                ]
         _ -> pure ()
       pure e
     SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
@@ -81,12 +90,12 @@ instance RunMessage MistsOfRlyehEffect where
             Just (SucceededBy _ _) -> do
               unblockedConnectedLocationIds <- selectList AccessibleLocation
               let
-                moveOptions = chooseOrRunOne
-                  iid
-                  $ [Label "Do not move to a connecting location" []]
-                  <> [ targetLabel lid [MoveAction iid lid Free False]
-                     | lid <- unblockedConnectedLocationIds
-                     ]
+                moveOptions =
+                  chooseOrRunOne iid
+                    $ [Label "Do not move to a connecting location" []]
+                    <> [ targetLabel lid [MoveAction iid lid Free False]
+                       | lid <- unblockedConnectedLocationIds
+                       ]
               pushAll [moveOptions, DisableEffect effectId]
             _ -> push $ DisableEffect effectId
         _ -> error "Invalid Target"

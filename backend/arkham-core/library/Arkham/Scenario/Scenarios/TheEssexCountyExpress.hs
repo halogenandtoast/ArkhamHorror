@@ -13,6 +13,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Direction
+import Arkham.Discard
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
@@ -215,9 +216,9 @@ instance RunMessage TheEssexCountyExpress where
         s <$ case tokenFace token of
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-          ElderThing | isEasyStandard attrs -> push $ ChooseAndDiscardCard iid (TokenEffectSource ElderThing)
+          ElderThing | isEasyStandard attrs -> push $ toMessage $ chooseAndDiscardCard iid (TokenEffectSource ElderThing)
           ElderThing | isHardExpert attrs ->
-            pushAll $ replicate n (ChooseAndDiscardCard iid (TokenEffectSource ElderThing))
+            pushAll $ replicate n $ toMessage $ chooseAndDiscardCard iid (TokenEffectSource ElderThing)
           _ -> pure ()
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]

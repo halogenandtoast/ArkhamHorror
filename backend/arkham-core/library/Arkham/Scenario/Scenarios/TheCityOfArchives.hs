@@ -13,6 +13,7 @@ import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Discard
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Deck
@@ -229,10 +230,9 @@ instance RunMessage TheCityOfArchives where
           push $ InvestigatorPlaceCluesOnLocation iid 1
         Tablet -> do
           let discardCount = if isEasyStandard attrs then 1 else n
-          pushAll $ replicate discardCount $ RandomDiscard
+          pushAll $ replicate discardCount $ toMessage $ randomDiscard
             iid
             (TokenEffectSource Tablet)
-            AnyCard
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

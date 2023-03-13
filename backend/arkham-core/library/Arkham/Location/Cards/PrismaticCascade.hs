@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Label ( mkLabel )
@@ -40,13 +41,14 @@ instance HasAbilities PrismaticCascade where
 instance RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RandomDiscard iid (toSource attrs) AnyCard
+      push $ toMessage $ randomDiscard iid attrs
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2] ]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels
       case availableLabel of
         Just label -> pure . PrismaticCascade $ attrs & labelL .~ label
         Nothing -> error "could not find label"
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      l <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure l
     _ -> PrismaticCascade <$> runMessage msg attrs

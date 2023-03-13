@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( bedroom )
 import Arkham.Location.Helpers
@@ -34,6 +35,7 @@ instance HasAbilities Bedroom where
 
 instance RunMessage Bedroom where
   runMessage msg l@(Bedroom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (RandomDiscard iid (toAbilitySource attrs 1) AnyCard)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toMessage $ randomDiscard iid $ toAbilitySource attrs 1
+      pure l
     _ -> Bedroom <$> runMessage msg attrs

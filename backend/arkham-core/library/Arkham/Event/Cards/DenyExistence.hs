@@ -1,16 +1,15 @@
 module Arkham.Event.Cards.DenyExistence
   ( denyExistence
   , DenyExistence(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
-import Arkham.Card
 import Arkham.Classes
+import Arkham.Discard
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message hiding (Discarded)
+import Arkham.Message hiding ( Discarded )
 import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs
@@ -18,8 +17,7 @@ newtype DenyExistence = DenyExistence EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 denyExistence :: EventCard DenyExistence
-denyExistence =
-  event DenyExistence Cards.denyExistence
+denyExistence = event DenyExistence Cards.denyExistence
 
 -- Discard cards from hand, lose resources, lose actions, take damage, or take horror.
 --
@@ -46,7 +44,7 @@ instance RunMessage DenyExistence where
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       case windowType w of
         Discarded iid source c -> do
-          popMessageMatching_ (== Do (DiscardCard iid source (toCardId c)))
+          popMessageMatching_ (== Do (toMessage $ discardCard iid source c))
         LostResources iid source n -> do
           popMessageMatching_ (== Do (LoseResources iid source n))
         LostActions iid source n -> do
@@ -64,7 +62,8 @@ instance RunMessage DenyExistence where
           CheckWindow _ ws -> any ((== windowType w) . windowType) ws
           _ -> False
         \case
-          CheckWindow iids ws -> [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
+          CheckWindow iids ws ->
+            [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
           _ -> error "no match"
       pure e
     _ -> DenyExistence <$> runMessage msg attrs

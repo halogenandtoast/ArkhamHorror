@@ -4,14 +4,15 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( farAboveYourHouse )
+import qualified Arkham.Location.Cards as Cards (farAboveYourHouse)
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
+import Arkham.Message hiding (RevealLocation)
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 
 newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -34,19 +35,16 @@ instance HasAbilities FarAboveYourHouse where
 
 instance RunMessage FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillWillpower
-        4
-      )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ beginSkillTest iid attrs iid SkillWillpower 4
+      pure l
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         investigatorIds <- getInvestigatorIds
         pushAll $ concat $ replicate @[[Message]]
           n
-          [ RandomDiscard iid' (toAbilitySource attrs 1) AnyCard | iid' <- investigatorIds ]
+          [ toMessage $ randomDiscard iid' (toAbilitySource attrs 1)
+          | iid' <- investigatorIds
+          ]
         pure l
     _ -> FarAboveYourHouse <$> runMessage msg attrs

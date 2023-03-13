@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.StickToThePlan3
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
@@ -48,7 +47,7 @@ instance RunMessage StickToThePlan3 where
       push $ Search
         iid
         (toSource attrs)
-        (InvestigatorTarget iid)
+        (toTarget iid)
         [fromDeck]
         AnyCard
         (DeferSearchedToTarget $ toTarget attrs)
@@ -65,8 +64,8 @@ instance RunMessage StickToThePlan3 where
         iid
         3
         "Choose no more events"
-        [ TargetLabel
-            (CardIdTarget $ toCardId card)
+        [ targetLabel
+            (toCardId card)
             [ RemoveCardFromSearch iid (toCardId card)
             , PlaceUnderneath (toTarget attrs) [card]
             ]
@@ -74,10 +73,8 @@ instance RunMessage StickToThePlan3 where
         ]
       pure a
     InitiatePlayCard iid card _ _ _
-      | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs
-      -> do
-        let
-          remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
+      | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
+        let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
         pushAll
           [ CreateWindowModifierEffect
             EffectTurnWindow

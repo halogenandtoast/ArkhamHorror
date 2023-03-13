@@ -55,12 +55,12 @@ instance RunMessage AChanceEncounter2 where
       -- update the game state if invalid due to erroring
       when (null filteredDiscards) (error "Invalid choice")
 
-      e <$ pushAll
+      pushAll
         [ FocusCards filteredDiscards
         , chooseOne
           iid
-          [ TargetLabel
-              (CardIdTarget $ toCardId card')
+          [ targetLabel
+              (toCardId card')
               [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
               , RemoveFromDiscard iid (toCardId card')
               ]
@@ -68,4 +68,5 @@ instance RunMessage AChanceEncounter2 where
           ]
         , UnfocusCards
         ]
+      pure e
     _ -> AChanceEncounter2 <$> runMessage msg attrs

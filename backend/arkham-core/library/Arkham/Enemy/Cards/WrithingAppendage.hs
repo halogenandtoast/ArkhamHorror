@@ -8,13 +8,13 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.DamageEffect
+import Arkham.Discard
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message hiding ( EnemyAttacks, EnemyDefeated )
 import Arkham.Message qualified as Msg
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
@@ -43,16 +43,13 @@ instance HasAbilities WrithingAppendage where
 instance RunMessage WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RandomDiscard iid (toSource attrs) AnyCard
+      push $ toMessage $ randomDiscard iid attrs
       pure e
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       -- TODO: Damage here should not be dealt from an investigator to avoid
       -- triggering any abilities
       mCnidathquaId <- getCnidathqua
-      case mCnidathquaId of
-        Just cnidathquaId -> push $ Msg.EnemyDamage cnidathquaId $ nonAttack
-          (InvestigatorSource iid)
-          1
-        Nothing -> pure ()
-      WrithingAppendage <$> runMessage msg attrs
+      for_ mCnidathquaId $ \cnidathquaId ->
+        push $ Msg.EnemyDamage cnidathquaId $ nonAttack iid 1
+      pure e
     _ -> WrithingAppendage <$> runMessage msg attrs

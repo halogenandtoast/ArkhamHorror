@@ -12,6 +12,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Discard
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
@@ -253,7 +254,7 @@ instance RunMessage EchoesOfThePast where
           push $ chooseOne
             iid
             [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-        Tablet -> push $ RandomDiscard iid (TokenEffectSource Tablet) AnyCard
+        Tablet -> push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when
@@ -273,7 +274,7 @@ instance RunMessage EchoesOfThePast where
           push $ chooseOne
             iid
             [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-        Tablet -> push $ RandomDiscard iid (TokenEffectSource Tablet) AnyCard
+        Tablet -> push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when

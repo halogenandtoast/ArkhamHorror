@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Investigator.Types
@@ -44,7 +45,9 @@ instance RunMessage BlackCave where
             [InvestigatorAssignDamage iid source DamageAny 0 1]
         : [ Label
               "Choose and discard 2 cards from your hand"
-              [ChooseAndDiscardCard iid (toAbilitySource attrs 1), ChooseAndDiscardCard iid (toAbilitySource attrs 1)]
+              [ toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1)
+              , toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1)
+              ]
           | cardsInHand >= 2
           ]
       pure l

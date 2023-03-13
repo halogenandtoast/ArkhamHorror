@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.EffectMetadata
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
@@ -76,7 +77,7 @@ instance RunMessage MistsOfRlyeh2Effect where
         (pushAll
           [ If
             (Window.RevealTokenEffect iid token effectId)
-            [ChooseAndDiscardCard iid effectSource]
+            [toMessage $ chooseAndDiscardCard iid effectSource]
           , DisableEffect effectId
           ]
         )

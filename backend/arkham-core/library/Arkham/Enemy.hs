@@ -231,6 +231,9 @@ allEnemies = mapFrom
   , SomeEnemyCard theSpectralWatcher
   -- Agents of Azathoth
   , SomeEnemyCard piperOfAzathoth
+  -- Anette's Coven
+  , SomeEnemyCard covenInitiate
+  , SomeEnemyCard priestessOfTheCoven
   -- Spectral Predators
   , SomeEnemyCard netherMist
   , SomeEnemyCard shadowHound

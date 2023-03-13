@@ -125,6 +125,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , corpseDweller
   , corpseHungryGhoul
   , corpseTaker
+  , covenInitiate
   , crazedShoggoth
   , creatureOutOfDemhe
   , danielChesterfield
@@ -182,6 +183,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , poleman
   , poltergeist
   , possessedOathspeaker
+  , priestessOfTheCoven
   , ravenousGhoul
   , relentlessDarkYoung
   , riftSeeker
@@ -1092,6 +1094,17 @@ piperOfAzathoth = (enemy "05088" "Piper of Azathoth" AgentsOfAzathoth 1)
   { cdCardTraits = setFromList [Monster, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
   , cdVictoryPoints = Just 2
+  }
+
+covenInitiate :: CardDef
+covenInitiate = (enemy "05090" "Coven Initiate" AnettesCoven 3)
+  { cdCardTraits = setFromList [Humanoid, Witch]
+  }
+
+priestessOfTheCoven :: CardDef
+priestessOfTheCoven = (enemy "05091" "Priestess of the Coven" AnettesCoven 1)
+  { cdCardTraits = setFromList [Humanoid, Witch]
+  , cdKeywords = singleton Keyword.Retaliate
   }
 
 netherMist :: CardDef

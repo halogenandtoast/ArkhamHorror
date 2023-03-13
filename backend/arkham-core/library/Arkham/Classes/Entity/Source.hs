@@ -33,6 +33,9 @@ instance Sourceable a => Sourceable (a `With` b) where
 instance Sourceable InvestigatorId where
   toSource = InvestigatorSource
 
+instance Sourceable LocationId where
+  toSource = LocationSource
+
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource = AbilitySource . toSource
 

@@ -455,6 +455,9 @@ vengeance n def = def { cdVengeancePoints = Just n }
 victory :: Int -> CardDef -> CardDef
 victory n def = def { cdVictoryPoints = Just n }
 
+revelation :: CardDef -> CardDef
+revelation def = def { cdRevelation = True }
+
 singleSided :: CardDef -> CardDef
 singleSided def = def { cdDoubleSided = False }
 
@@ -3159,7 +3162,7 @@ plateauOfLeng = singleSided $ location
   ShatteredAeons
 
 witchesCircle :: CardDef
-witchesCircle = victory 2 $ singleSided $ location
+witchesCircle = revelation $ victory 2 $ singleSided $ location
   "05055b"
   "Witches' Circle"
   [Woods, Trait.Circle]

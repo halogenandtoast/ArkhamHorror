@@ -15,6 +15,7 @@ import Arkham.Classes.HasTokenValue
 import Arkham.Classes.RunMessage.Internal
 import Arkham.ClassSymbol
 import Arkham.Deck qualified as Deck
+import Arkham.Discard
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards
@@ -130,6 +131,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorSupplies :: [Supply]
   , investigatorDrawnCards :: [PlayerCard] -- temporarily track drawn cards mid shuffle
   , investigatorIsYithian :: Bool
+  -- internal tracking
+  , investigatorDiscarding :: Maybe HandDiscard
   }
   deriving stock (Show, Eq, Generic)
 
@@ -333,6 +336,9 @@ startsWithInHandL =
 additionalActionsL :: Lens' InvestigatorAttrs [AdditionalAction]
 additionalActionsL = lens investigatorAdditionalActions
   $ \m x -> m { investigatorAdditionalActions = x }
+
+discardingL :: Lens' InvestigatorAttrs (Maybe HandDiscard)
+discardingL = lens investigatorDiscarding $ \m x -> m { investigatorDiscarding = x }
 
 data Investigator = forall a . IsInvestigator a => Investigator a
 

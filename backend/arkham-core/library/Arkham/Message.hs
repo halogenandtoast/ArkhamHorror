@@ -254,6 +254,7 @@ data Message
   | RunWindow InvestigatorId [Window]
   | ChooseAndDiscardAsset InvestigatorId Source AssetMatcher
   | DiscardFromHand HandDiscard
+  | DoneDiscarding InvestigatorId
   | DiscardCard InvestigatorId Source CardId
   | ChooseEndTurn InvestigatorId
   | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool

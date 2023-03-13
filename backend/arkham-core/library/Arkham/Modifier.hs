@@ -94,7 +94,6 @@ data ModifierType
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
-  | CannotBeDiscarded
   | CannotBeEnteredByNonElite
   | CannotBeEvaded
   | CannotBeRevealed

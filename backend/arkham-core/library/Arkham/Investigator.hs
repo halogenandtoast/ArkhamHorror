@@ -111,6 +111,7 @@ becomeYithian (Investigator a) =
     , investigatorClass = Neutral
     , investigatorTraits = setFromList [Monster, Yithian]
     , investigatorIsYithian = True
+    , investigatorDiscarding = Nothing
     }
 
 handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator

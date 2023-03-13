@@ -14,7 +14,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Source
 
 newtype WitchHauntings = WitchHauntings ActAttrs
   deriving anyclass IsAct
@@ -25,7 +24,9 @@ witchHauntings = act (2, A) WitchHauntings Cards.witchHauntings Nothing
 
 instance HasAbilities WitchHauntings where
   getAbilities (WitchHauntings a) =
-    [mkAbility a 1 $ Objective $ ActionAbility Nothing $ PerPlayerClueCost 2]
+    [ mkAbility a 1 $ Objective $ FastAbility $ PerPlayerClueCost 1
+    | onSide A a
+    ]
 
 instance HasModifiersFor WitchHauntings where
   getModifiersFor (LocationTarget lid) (WitchHauntings a) = do
@@ -45,8 +46,8 @@ instance HasModifiersFor WitchHauntings where
 
 instance RunMessage WitchHauntings where
   runMessage msg a@(WitchHauntings attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithClues
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)

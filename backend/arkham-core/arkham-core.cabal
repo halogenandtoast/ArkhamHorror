@@ -786,6 +786,7 @@ library
       Arkham.Enemy.Cards.CorpseDweller
       Arkham.Enemy.Cards.CorpseHungryGhoul
       Arkham.Enemy.Cards.CorpseTaker
+      Arkham.Enemy.Cards.CovenInitiate
       Arkham.Enemy.Cards.CrazedShoggoth
       Arkham.Enemy.Cards.CreatureOutOfDemhe
       Arkham.Enemy.Cards.DanielChesterfield
@@ -847,6 +848,7 @@ library
       Arkham.Enemy.Cards.Poleman
       Arkham.Enemy.Cards.Poltergeist
       Arkham.Enemy.Cards.PossessedOathspeaker
+      Arkham.Enemy.Cards.PriestessOfTheCoven
       Arkham.Enemy.Cards.RavenousGhoul
       Arkham.Enemy.Cards.RelentlessDarkYoung
       Arkham.Enemy.Cards.RiftSeeker

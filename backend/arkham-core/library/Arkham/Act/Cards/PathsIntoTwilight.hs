@@ -6,11 +6,12 @@ module Arkham.Act.Cards.PathsIntoTwilight
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
@@ -42,9 +43,12 @@ instance HasModifiersFor PathsIntoTwilight where
 instance RunMessage PathsIntoTwilight where
   runMessage msg a@(PathsIntoTwilight attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      placeWitchesCircle <- placeLocationCard_ Locations.witchesCircle
+      (witchesCircleId, placeWitchesCircle) <- placeLocationCard
+        Locations.witchesCircle
+      lead <- getLead
       pushAll
         [ placeWitchesCircle
+        , Revelation lead (toSource witchesCircleId)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

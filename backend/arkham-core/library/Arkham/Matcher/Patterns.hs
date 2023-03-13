@@ -10,6 +10,10 @@ import Arkham.Trait
 
 -- ** Investigator Patterns **
 
+pattern InvestigatorWithDiscardableCard :: InvestigatorMatcher
+pattern InvestigatorWithDiscardableCard <- HandWith (HasCard DiscardableCard) where
+  InvestigatorWithDiscardableCard = HandWith (HasCard DiscardableCard)
+
 pattern InvestigatorWithoutActionsRemaining :: InvestigatorMatcher
 pattern InvestigatorWithoutActionsRemaining <-
   InvestigatorWithActionsRemaining (EqualTo (Static 0)) where
@@ -58,6 +62,15 @@ pattern InvestigatorCanGainResources <-
   InvestigatorWithoutModifier CannotGainResources where
   InvestigatorCanGainResources =
     InvestigatorWithoutModifier CannotGainResources
+
+pattern InvestigatorCanDrawCards :: InvestigatorMatcher -> InvestigatorMatcher
+pattern InvestigatorCanDrawCards matcher <-
+  InvestigatorMatches [InvestigatorWithoutModifier CannotDrawCards, InvestigatorWithoutModifier CannotManipulateDeck, matcher] where
+  InvestigatorCanDrawCards matcher = InvestigatorMatches
+    [ InvestigatorWithoutModifier CannotDrawCards
+    , InvestigatorWithoutModifier CannotManipulateDeck
+    , matcher
+    ]
 
 -- placeholder in case a modifier prevents spending resources
 pattern InvestigatorCanSpendResources :: GameValue -> InvestigatorMatcher

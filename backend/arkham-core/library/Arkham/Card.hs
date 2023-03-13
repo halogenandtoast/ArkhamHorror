@@ -107,6 +107,7 @@ cardMatch a = \case
   CardWithPrintedLocationConnection sym ->
     elem sym . cdLocationRevealedConnections $ toCardDef a
   CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
+  DiscardableCard -> cardMatch a NonWeakness
 
 instance IsCard PlayerCard where
   toCardId = pcId

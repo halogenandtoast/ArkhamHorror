@@ -262,6 +262,7 @@ investigator f cardDef Stats {..} =
         , investigatorAssignedSanityDamage = 0
         , investigatorDrawnCards = []
         , investigatorIsYithian = False
+        , investigatorDiscarding = Nothing
         }
       }
 

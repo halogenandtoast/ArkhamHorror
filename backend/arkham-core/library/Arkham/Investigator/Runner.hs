@@ -493,6 +493,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
   DiscardFromHand handDiscard | discardInvestigator handDiscard == investigatorId -> do
+    push $ DoneDiscarding investigatorId
     case discardStrategy handDiscard of
       DiscardChoose -> case discardableCards a of
         [] -> pure ()
@@ -509,7 +510,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         for_ (nonEmpty filtered) $ \targets -> do
           cards <- sampleN (discardAmount handDiscard) targets
           pushAll $ map (DiscardCard investigatorId (discardSource handDiscard) . toCardId) cards
-    pure a
+    pure $ a & discardingL ?~ handDiscard
   Discard source (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
     <$ push (DiscardCard investigatorId source cardId)
@@ -533,10 +534,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card = fromJustNote "must be in hand"
         $ find ((== cardId) . toCardId) investigatorHand
     case card of
-      PlayerCard pc ->
-        pure $ a & handL %~ filter (/= card) & discardL %~ (pc :)
+      PlayerCard pc -> do
+        let updateHandDiscard handDiscard = handDiscard { discardAmount = max 0 (discardAmount handDiscard - 1) }
+        pure $ a & handL %~ filter (/= card) & discardL %~ (pc :) & discardingL %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
+  DoneDiscarding iid | iid == investigatorId ->
+    case investigatorDiscarding of
+      Nothing -> pure a
+      Just handDiscard -> do
+        when (discardAmount handDiscard == 0) $
+          for_ (discardThen handDiscard) push
+        pure $ a & discardingL .~ Nothing
   RemoveCardFromHand iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   RemoveCardFromSearch iid cardId | iid == investigatorId ->

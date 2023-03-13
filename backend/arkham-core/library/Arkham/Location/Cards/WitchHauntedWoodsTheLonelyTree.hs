@@ -94,14 +94,14 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
               [ toMessage $ (chooseAndDiscardCard iid attrs)
                   { discardThen =
                     guard (notNull chooseOtherDraw)
-                      $> chooseOne iid chooseOtherDraw
+                      $> chooseOrRunOne iid chooseOtherDraw
                   }
               ]
           | handLength > 0
           ]
         <> [ Label
                "vice versa"
-               [ chooseOne
+               [ chooseOrRunOne
                    iid
                    [ targetLabel
                        other
@@ -111,8 +111,8 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
                        ]
                    | other <- iidsForDiscard
                    ]
-               | notNull iidsForDiscard && canDraw
                ]
+           | notNull iidsForDiscard && canDraw
            ]
       pure l
     _ -> WitchHauntedWoodsTheLonelyTree <$> runMessage msg attrs

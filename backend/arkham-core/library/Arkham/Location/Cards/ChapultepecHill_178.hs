@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -56,8 +57,8 @@ instance RunMessage ChapultepecHill_178 where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ investigatorAt (toId attrs)
       for_ iids $ \iid -> pushAll
-        [ RandomDiscard iid (toAbilitySource attrs 1) AnyCard
-        , RandomDiscard iid (toAbilitySource attrs 1) AnyCard
+        [ toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+        , toMessage $ randomDiscard iid (toAbilitySource attrs 1)
         ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

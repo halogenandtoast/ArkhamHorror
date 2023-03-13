@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Classes
+import Arkham.Discard
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
@@ -41,6 +42,6 @@ instance RunMessage WorldsMerge where
         n <- getStep =<< selectOne (AgendaWithSide AS.C)
         pushAll $ InvestigatorAssignDamage iid source DamageAny 0 n : replicate
           n
-          (ChooseAndDiscardCard iid (toSource attrs))
+          (toMessage $ chooseAndDiscardCard iid attrs)
         pure t
     _ -> WorldsMerge <$> runMessage msg attrs

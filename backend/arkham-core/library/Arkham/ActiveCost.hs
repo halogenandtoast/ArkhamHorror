@@ -21,6 +21,7 @@ import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
+import Arkham.Discard
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
 import Arkham.Game.Helpers
@@ -30,12 +31,13 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher hiding ( AssetCard, EventCard, PlayCard, SkillCard, LocationCard )
+import Arkham.Matcher hiding
+  ( AssetCard, EventCard, LocationCard, PlayCard, SkillCard )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.SkillType
 import Arkham.Skill.Types ( Field (..) )
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -251,8 +253,11 @@ instance RunMessage ActiveCost where
           as -> as
       case cost of
         ResolveEachHauntedAbility lid -> do
-          hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
-          when (notNull hauntedAbilities) $ push $ chooseOneAtATime iid [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+          hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation
+            (LocationWithId lid)
+          when (notNull hauntedAbilities) $ push $ chooseOneAtATime
+            iid
+            [ AbilityLabel iid ab [] [] | ab <- hauntedAbilities ]
           -- No need to record payment... yet
           pure c
         OrCost xs -> do
@@ -365,7 +370,7 @@ instance RunMessage ActiveCost where
           pushAll [DiscardedCost target, Discard (activeCostSource c) target]
           withPayment $ DiscardPayment [(zone, card)]
         DiscardCardCost card -> do
-          push $ DiscardCard iid (activeCostSource c) (toCardId card)
+          push $ toMessage $ discardCard iid (activeCostSource c) card
           withPayment $ DiscardCardPayment [card]
         DiscardDrawnCardCost -> do
           let
@@ -374,7 +379,7 @@ instance RunMessage ActiveCost where
               Window _ (Window.DrawCard _ card' _) -> card'
               _ -> getDrawnCard xs
             card = getDrawnCard (activeCostWindows c)
-          push $ DiscardCard iid (activeCostSource c) (toCardId card)
+          push $ toMessage $ discardCard iid (activeCostSource c) card
           withPayment $ DiscardCardPayment [card]
         ExileCost target -> do
           push (Exile target)
@@ -615,8 +620,8 @@ instance RunMessage ActiveCost where
           push $ chooseN
             iid
             x
-            [ TargetLabel
-                (CardIdTarget $ toCardId card)
+            [ targetLabel
+                (toCardId card)
                 [ PayCost
                     acId
                     iid
@@ -659,19 +664,22 @@ instance RunMessage ActiveCost where
         DiscardFromCost x zone cardMatcher -> do
           let
             getCards = \case
-              FromHandOf whoMatcher ->
-                selectListMap (FromHand,) (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
+              FromHandOf whoMatcher -> selectListMap
+                (FromHand, )
+                (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
               FromPlayAreaOf whoMatcher -> do
                 assets <- selectList $ AssetControlledBy whoMatcher
-                map (FromPlay,) . filter (`cardMatch` cardMatcher) <$> traverse (field AssetCard) assets
+                map (FromPlay, )
+                  . filter (`cardMatch` cardMatcher)
+                  <$> traverse (field AssetCard) assets
               CostZones zs -> concatMapM getCards zs
           cards <- getCards zone
           c <$ push
             (chooseN
               iid
               x
-              [ TargetLabel
-                  (CardIdTarget $ toCardId card)
+              [ targetLabel
+                  (toCardId card)
                   [ PayCost
                       acId
                       iid
@@ -697,17 +705,17 @@ instance RunMessage ActiveCost where
               handCards
             cardMsgs = map
               (\(n, card) -> if n >= x
-                then TargetLabel
-                  (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (activeCostSource c) (toCardId card)
+                then targetLabel
+                  (toCardId card)
+                  [ toMessage $ discardCard iid (activeCostSource c) card
                   , PaidAbilityCost
                     iid
                     Nothing
                     (SkillIconPayment $ cdSkills $ toCardDef card)
                   ]
-                else TargetLabel
-                  (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (activeCostSource c) (toCardId card)
+                else targetLabel
+                  (toCardId card)
+                  [ toMessage $ discardCard iid (activeCostSource c) card
                   , PaidAbilityCost
                     iid
                     Nothing
@@ -731,15 +739,15 @@ instance RunMessage ActiveCost where
               map (toFst (maybe 0 toPrintedCost . cdCost . toCardDef)) handCards
             cardMsgs = map
               (\(n, card) -> if n >= x
-                then TargetLabel
-                  (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (activeCostSource c) (toCardId card)
+                then targetLabel
+                  (toCardId card)
+                  [ toMessage $ discardCard iid (activeCostSource c) card
                   , PaidAbilityCost iid Nothing
                     $ DiscardCardPayment [PlayerCard card]
                   ]
-                else TargetLabel
-                  (CardIdTarget $ toCardId card)
-                  [ DiscardCard iid (activeCostSource c) (toCardId card)
+                else targetLabel
+                  (toCardId card)
+                  [ toMessage $ discardCard iid (activeCostSource c) card
                   , PaidAbilityCost iid Nothing
                     $ DiscardCardPayment [PlayerCard card]
                   , PayCost acId iid skipAdditionalCosts
@@ -756,8 +764,8 @@ instance RunMessage ActiveCost where
             iid
           let
             cardMsgs = map
-              (\card -> TargetLabel
-                (CardIdTarget $ toCardId card)
+              (\card -> targetLabel
+                (toCardId card)
                 [ RemoveFromDiscard iid (toCardId card)
                 , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
                 , PaidAbilityCost iid Nothing $ CardPayment card

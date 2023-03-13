@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.Ants
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -37,7 +38,7 @@ instance RunMessage Ants where
         selectAny $ DiscardableAsset <> assetControlledBy iid
       push
         $ chooseOrRunOne iid
-        $ Label "Discard hand card" [ChooseAndDiscardCard iid (toSource attrs)]
+        $ Label "Discard hand card" [toMessage $ chooseAndDiscardCard iid attrs]
         : [ Label
               "Discard a card from your play area"
               [ChooseAndDiscardAsset iid (toSource attrs) DiscardableAsset]

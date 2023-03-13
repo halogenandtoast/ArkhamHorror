@@ -15,10 +15,10 @@ import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
-import Arkham.Window qualified as Window
 import Arkham.Matcher
+import Arkham.Timing qualified as Timing
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype OldBookOfLore3 = OldBookOfLore3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -60,32 +60,46 @@ instance RunMessage OldBookOfLore3 where
         | iid' <- investigatorIds
         ]
       pure a
-    SearchFound iid (isTarget attrs -> True) (Deck.InvestigatorDeck iid') targetCards -> do
-      let windows' = [Window Timing.When (Window.DuringTurn iid)]
-      mEndSearch <- popMessageMatching $ \case
-        EndSearch{} -> True
-        _ -> False
-      case mEndSearch of
-        Nothing -> error "no matching end search"
-        Just endSearch -> do
-          choices <- for targetCards $ \card -> do
-            spendableResources <- getSpendableResources iid'
-            playable <- getIsPlayableWithResources iid' (toSource attrs) (spendableResources + 2) UnpaidCost windows' card
-            pure $ TargetLabel (CardIdTarget $ toCardId card) $ AddFocusedToHand iid (InvestigatorTarget iid') FromDeck (toCardId card)
-              : endSearch
-              : [ chooseOne iid
-                  [ Label
-                    "Spend secret"
-                    [ SpendUses (toTarget attrs) Secret 1
-                    , createCardEffect Cards.oldBookOfLore3 Nothing (toSource attrs) (CardIdTarget $ toCardId card)
-                    , PayCardCost iid' card windows'
-                    ]
-                  , Label "Do not spend secret" []
+    SearchFound iid (isTarget attrs -> True) (Deck.InvestigatorDeck iid') targetCards
+      -> do
+        let windows' = [Window Timing.When (Window.DuringTurn iid)]
+        mEndSearch <- popMessageMatching $ \case
+          EndSearch{} -> True
+          _ -> False
+        case mEndSearch of
+          Nothing -> error "no matching end search"
+          Just endSearch -> do
+            choices <- for targetCards $ \card -> do
+              spendableResources <- getSpendableResources iid'
+              playable <- getIsPlayableWithResources
+                iid'
+                (toSource attrs)
+                (spendableResources + 2)
+                UnpaidCost
+                windows'
+                card
+              pure
+                $ targetLabel (toCardId card)
+                $ AddFocusedToHand iid (toTarget iid') FromDeck (toCardId card)
+                : endSearch
+                : [ chooseOne
+                      iid
+                      [ Label
+                        "Spend secret"
+                        [ SpendUses (toTarget attrs) Secret 1
+                        , createCardEffect
+                          Cards.oldBookOfLore3
+                          Nothing
+                          (toSource attrs)
+                          (CardIdTarget $ toCardId card)
+                        , PayCardCost iid' card windows'
+                        ]
+                      , Label "Do not spend secret" []
+                      ]
+                  | playable && useCount (assetUses attrs) > 0
                   ]
-                | playable && useCount (assetUses attrs) > 0
-                ]
-          push $ chooseOne iid' choices
-      pure a
+            push $ chooseOne iid' choices
+        pure a
     _ -> OldBookOfLore3 <$> runMessage msg attrs
 
 newtype OldBookOfLore3Effect = OldBookOfLore3Effect EffectAttrs

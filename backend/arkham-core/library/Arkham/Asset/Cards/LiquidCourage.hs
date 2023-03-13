@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
+import Arkham.Discard
 import Arkham.Matcher
 import Arkham.SkillType
 
@@ -47,23 +48,20 @@ instance RunMessage LiquidCourage where
         [ targetLabel
             iid'
             [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
-            , beginSkillTest
-              iid'
-              source
-              (toTarget iid')
-              SkillWillpower
-              2
+            , beginSkillTest iid' source iid' SkillWillpower 2
             ]
         | iid' <- iids
         ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
-      push $ AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 1
-      pure a
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
-      pushAll
-        [ AdditionalHealHorror (InvestigatorTarget iid) (toSource attrs) 0
-        , RandomDiscard iid (toSource attrs) AnyCard
-        ]
-      pure a
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
+        pure a
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        pushAll
+          [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
+          , toMessage $ randomDiscard iid (toSource attrs)
+          ]
+        pure a
     _ -> LiquidCourage <$> runMessage msg attrs

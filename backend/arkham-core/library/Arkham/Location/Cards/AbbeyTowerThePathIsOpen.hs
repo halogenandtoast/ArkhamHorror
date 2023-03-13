@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
@@ -73,6 +74,6 @@ instance RunMessage AbbeyTowerThePathIsOpen where
         discardAmount = findWithDefault 0 "Cards" choicesMap
       when (discardAmount > 0) $ pushAll $ replicate
         discardAmount
-        (ChooseAndDiscardCard iid (toAbilitySource attrs 1))
+        (toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1))
       pure l
     _ -> AbbeyTowerThePathIsOpen <$> runMessage msg attrs

@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( audubonPark )
 import Arkham.Location.Helpers
@@ -26,14 +27,14 @@ instance HasAbilities AudubonPark where
       $ [ restrictedAbility attrs 1 Here
           $ ForcedAbility
           $ EnemyEvaded Timing.When You
-          $ EnemyAt
-          $ LocationWithId
+          $ enemyAt
           $ toId attrs
         | locationRevealed attrs
         ]
 
 instance RunMessage AudubonPark where
   runMessage msg l@(AudubonPark attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (RandomDiscard iid (toAbilitySource attrs 1) AnyCard)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toMessage $ randomDiscard iid $ toAbilitySource attrs 1
+      pure l
     _ -> AudubonPark <$> runMessage msg attrs

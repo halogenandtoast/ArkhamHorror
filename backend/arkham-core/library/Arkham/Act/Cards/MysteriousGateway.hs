@@ -7,6 +7,7 @@ import Arkham.Act.Types
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -47,6 +48,6 @@ instance RunMessage MysteriousGateway where
       pure a
     FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} _ n
       | aid == actId -> do
-      pushAll $ replicate n $ RandomDiscard iid (toSource attrs) AnyCard
+      pushAll $ replicate n $ toMessage $ randomDiscard iid attrs
       pure a
     _ -> MysteriousGateway <$> runMessage msg attrs

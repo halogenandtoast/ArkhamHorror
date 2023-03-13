@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Deck
+import Arkham.Discard
 import Arkham.Matcher
 import Arkham.Message hiding ( AssetDamage )
 import Arkham.Projection
@@ -33,15 +34,13 @@ instance RunMessage LostInTime where
         then do
           push $ chooseOne
             iid
-            [ targetLabel
-                aid
-                (ShuffleIntoDeck (InvestigatorDeck iid) (toTarget attrs)
-                : [ InvestigatorDamage iid (toSource attrs) dmg hrr
-                  | dmg > 0 || hrr > 0
-                  ]
-                )
+            [ targetLabel aid
+              $ ShuffleIntoDeck (InvestigatorDeck iid) (toTarget attrs)
+              : [ InvestigatorDamage iid (toSource attrs) dmg hrr
+                | dmg > 0 || hrr > 0
+                ]
             | (aid, dmg, hrr) <- assetsWithDamageAndHorror
             ]
-        else pushAll $ replicate 3 (ChooseAndDiscardCard iid (toSource attrs))
+        else pushAll $ replicate 3 $ toMessage $ chooseAndDiscardCard iid attrs
       pure t
     _ -> LostInTime <$> runMessage msg attrs

@@ -6,13 +6,13 @@ module Arkham.Treachery.Cards.UmordhothsWrath
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,14 +23,9 @@ umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
 instance RunMessage UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ push
-      (beginSkillTest
-        iid
-        source
-        (InvestigatorTarget iid)
-        SkillWillpower
-        5
-      )
+    Revelation iid source | isSource attrs source -> do
+      push $ beginSkillTest iid source iid SkillWillpower 5
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t
       <$ push (HandlePointOfFailure iid (toTarget attrs) n)
@@ -41,7 +36,9 @@ instance RunMessage UmordhothsWrath where
         then t <$ pushAll
           [ chooseOne
             iid
-            [ Label "Discard a card from your hand" [RandomDiscard iid (toSource attrs) AnyCard]
+            [ Label
+              "Discard a card from your hand"
+              [toMessage $ randomDiscard iid attrs]
             , Label
               "Take 1 damage and 1 horror"
               [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]

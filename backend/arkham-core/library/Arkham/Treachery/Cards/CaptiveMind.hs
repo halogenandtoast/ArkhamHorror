@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.CaptiveMind
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discard
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
@@ -36,7 +37,7 @@ doDiscard iid source = do
   n <- getSkillTestModifiedSkillValue st
   handCount <- fieldMap InvestigatorHand length iid
   let discardCount = max 0 (handCount - n)
-  pushAll $ replicate discardCount $ ChooseAndDiscardCard iid source
+  pushAll $ replicate discardCount $ toMessage $ chooseAndDiscardCard iid source
 
 instance RunMessage CaptiveMind where
   runMessage msg t@(CaptiveMind attrs) = case msg of

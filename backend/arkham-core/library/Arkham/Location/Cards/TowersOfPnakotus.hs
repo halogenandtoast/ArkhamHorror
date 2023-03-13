@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Investigator.Types ( Field (..) )
@@ -55,7 +56,7 @@ instance RunMessage TowersOfPnakotus where
         cardAmount = findWithDefault 0 "Cards" choicesMap
       drawing <- drawCards iid attrs (cardAmount + 1)
       pushAll
-        $ replicate cardAmount (ChooseAndDiscardCard iid (toAbilitySource attrs 1))
+        $ replicate cardAmount (toMessage $ chooseAndDiscardCard iid $ toAbilitySource attrs 1)
         <> [ShuffleDiscardBackIn iid, drawing]
       pure l
     _ -> TowersOfPnakotus <$> runMessage msg attrs

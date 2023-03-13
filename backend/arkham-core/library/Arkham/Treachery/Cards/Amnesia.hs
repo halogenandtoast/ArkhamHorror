@@ -2,11 +2,12 @@ module Arkham.Treachery.Cards.Amnesia where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Discard
+import Arkham.Investigator.Types
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Investigator.Types
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Amnesia = Amnesia TreacheryAttrs
@@ -18,7 +19,10 @@ amnesia = treachery Amnesia Cards.amnesia
 
 instance RunMessage Amnesia where
   runMessage msg t@(Amnesia attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       cardCount' <- fieldMap InvestigatorHand length iid
-      t <$ pushAll (replicate (cardCount' - 1) (ChooseAndDiscardCard iid (toSource attrs)))
+      pushAll $ replicate (cardCount' - 1) $ toMessage $ chooseAndDiscardCard
+        iid
+        attrs
+      pure t
     _ -> Amnesia <$> runMessage msg attrs

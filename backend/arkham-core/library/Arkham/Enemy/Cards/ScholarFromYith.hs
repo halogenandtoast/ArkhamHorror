@@ -11,6 +11,7 @@ import Arkham.Attack
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Discard
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )
@@ -49,7 +50,10 @@ instance HasAbilities ScholarFromYith where
 instance RunMessage ScholarFromYith where
   runMessage msg e@(ScholarFromYith attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll [RandomDiscard iid (toSource attrs) AnyCard, RandomDiscard iid (toSource attrs) AnyCard]
+      pushAll
+        [ toMessage $ randomDiscard iid attrs
+        , toMessage $ randomDiscard iid attrs
+        ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ parley
@@ -66,6 +70,6 @@ instance RunMessage ScholarFromYith where
         pure e
     FailedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
+        push $ toMessage $ enemyAttack (toId attrs) iid
         pure e
     _ -> ScholarFromYith <$> runMessage msg attrs

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discard
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Investigator.Types ( Field (..) )
@@ -40,9 +41,9 @@ instance HasAbilities YithianObserver where
 instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      emptyHand<- fieldMap InvestigatorHand null iid
+      emptyHand <- fieldMap InvestigatorHand null iid
       push $ if emptyHand
-        then skillTestModifiers source (toTarget attrs) [DamageDealt 1, HorrorDealt 1]
-        else RandomDiscard iid (toSource attrs) AnyCard
+        then skillTestModifiers source attrs [DamageDealt 1, HorrorDealt 1]
+        else toMessage $ randomDiscard iid attrs
       pure e
     _ -> YithianObserver <$> runMessage msg attrs

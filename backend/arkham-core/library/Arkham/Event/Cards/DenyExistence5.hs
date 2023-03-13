@@ -1,16 +1,15 @@
 module Arkham.Event.Cards.DenyExistence5
   ( denyExistence5
   , DenyExistence5(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
-import Arkham.Card
 import Arkham.Classes
+import Arkham.Discard
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message hiding (Discarded)
+import Arkham.Message hiding ( Discarded )
 import Arkham.Window
 
 newtype DenyExistence5 = DenyExistence5 EventAttrs
@@ -18,8 +17,7 @@ newtype DenyExistence5 = DenyExistence5 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 denyExistence5 :: EventCard DenyExistence5
-denyExistence5 =
-  event DenyExistence5 Cards.denyExistence5
+denyExistence5 = event DenyExistence5 Cards.denyExistence5
 
 -- Discard cards from hand, lose resources, lose actions, take damage, or take horror.
 --
@@ -47,7 +45,7 @@ instance RunMessage DenyExistence5 where
       case windowType w of
         Discarded iid source c -> do
           drawing <- drawCards iid source 1
-          replaceMessageMatching (== Do (DiscardCard iid source (toCardId c)))
+          replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
             $ \_ -> [drawing]
         LostResources iid source n -> do
           replaceMessageMatching (== Do (LoseResources iid source n))
@@ -57,14 +55,10 @@ instance RunMessage DenyExistence5 where
             $ \_ -> [GainActions iid source n]
         WouldTakeDamage source (InvestigatorTarget iid) n -> do
           pushAll
-            [ CancelDamage iid n
-            , HealDamage (InvestigatorTarget iid) source n
-            ]
+            [CancelDamage iid n, HealDamage (InvestigatorTarget iid) source n]
         WouldTakeHorror source (InvestigatorTarget iid) n -> do
           pushAll
-            [ CancelHorror iid n
-            , HealHorror (InvestigatorTarget iid) source n
-            ]
+            [CancelHorror iid n, HealHorror (InvestigatorTarget iid) source n]
         _ -> error "Invalid window"
       popMessageMatching_ $ \case
         CheckWindow _ [w'] -> windowType w == windowType w'
@@ -74,7 +68,8 @@ instance RunMessage DenyExistence5 where
           CheckWindow _ ws -> any ((== windowType w) . windowType) ws
           _ -> False
         \case
-          CheckWindow iids ws -> [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
+          CheckWindow iids ws ->
+            [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
           _ -> error "no match"
       pure e
     _ -> DenyExistence5 <$> runMessage msg attrs

@@ -31,6 +31,7 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
+import Arkham.Discard
 import Arkham.Draw.Types
 import Arkham.Event.Types ( Field (..) )
 import Arkham.Game.Helpers hiding ( windows )
@@ -324,13 +325,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SetRole iid role | iid == investigatorId -> do
     pure $ a { investigatorClass = role }
   AllRandomDiscard source matcher | not (a ^. defeatedL || a ^. resignedL) -> do
-    push $ RandomDiscard investigatorId source matcher
-    pure a
-  RandomDiscard iid source matcher | iid == investigatorId -> do
-    let filtered = filter (`cardMatch` matcher) investigatorHand
-    for_ (nonEmpty filtered) $ \targets -> do
-      c <- sample targets
-      push $ DiscardCard investigatorId source (toCardId c)
+    push $ toMessage $ randomDiscardMatching investigatorId source matcher
     pure a
   FinishedWithMulligan iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -497,17 +492,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
-  ChooseAndDiscardCard iid source | iid == investigatorId -> do
-    case discardableCards a of
-      [] -> pure ()
-      cs ->
-        push
-          $ chooseOne iid
-          $ [ TargetLabel
-                (CardIdTarget $ toCardId c)
-                [DiscardCard iid source (toCardId c)]
-            | c <- cs
-            ]
+  DiscardFromHand handDiscard | discardInvestigator handDiscard == investigatorId -> do
+    case discardStrategy handDiscard of
+      DiscardChoose -> case discardableCards a of
+        [] -> pure ()
+        cs ->
+          pushAll $ replicate (discardAmount handDiscard)
+            $ chooseOne investigatorId
+            $ [ targetLabel
+                  (toCardId c)
+                  [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
+              | c <- cs
+              ]
+      DiscardRandom -> do
+        let filtered = filter (`cardMatch` (discardFilter handDiscard)) investigatorHand
+        for_ (nonEmpty filtered) $ \targets -> do
+          cards <- sampleN (discardAmount handDiscard) targets
+          pushAll $ map (DiscardCard investigatorId (discardSource handDiscard) . toCardId) cards
     pure a
   Discard source (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
@@ -533,8 +534,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ find ((== cardId) . toCardId) investigatorHand
     case card of
       PlayerCard pc ->
-        pure $ a & handL %~ filter ((/= cardId) . toCardId) & discardL %~ (pc :)
-      EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . toCardId) -- TODO: This should discard to the encounter discard
+        pure $ a & handL %~ filter (/= card) & discardL %~ (pc :)
+      EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
   RemoveCardFromHand iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
@@ -2406,17 +2407,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PutBackInAnyOrder -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
           push
-            (chooseOneAtATime iid $ map
-              (\c -> TargetLabel
-                (CardIdTarget $ toCardId c)
+            $ chooseOneAtATime iid $ mapTargetLabelWith toCardId
+              (\c -> 
                 [ AddFocusedToTopOfDeck
                     iid
-                    (InvestigatorTarget iid')
+                    (toTarget iid')
                     (toCardId c)
                 ]
               )
               (findWithDefault [] Zone.FromDeck investigatorFoundCards)
-            )
         ShuffleBackIn -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
           push $ ShuffleCardsIntoDeck
@@ -2479,11 +2478,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         DrawFound who n -> do
           let
             choices =
-              [ TargetLabel
-                  (CardIdTarget $ toCardId card)
+              [ targetLabel
+                  (toCardId card)
                   [ AddFocusedToHand
                       iid
-                      (InvestigatorTarget who)
+                      (toTarget who)
                       zone
                       (toCardId card)
                   ]
@@ -2496,11 +2495,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         DrawFoundUpTo who n -> do
           let
             choices =
-              [ TargetLabel
-                  (CardIdTarget $ toCardId card)
+              [ targetLabel
+                  (toCardId card)
                   [ AddFocusedToHand
                       iid
-                      (InvestigatorTarget who)
+                      (toTarget who)
                       zone
                       (toCardId card)
                   ]

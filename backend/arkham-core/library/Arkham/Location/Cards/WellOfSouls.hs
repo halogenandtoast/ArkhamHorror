@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
+import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -72,7 +73,9 @@ instance RunMessage WellOfSouls where
             [InvestigatorDirectDamage iid (toSource attrs) 0 1]
         : [ Label
               "Discard 2 random cards from your hand"
-              [RandomDiscard iid (toAbilitySource attrs 1) AnyCard, RandomDiscard iid (toAbilitySource attrs 1) AnyCard]
+              [ toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+              , toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+              ]
           | hasCardsInHand
           ]
       pure l

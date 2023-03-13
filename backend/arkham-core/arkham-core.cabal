@@ -680,6 +680,7 @@ library
       Arkham.DefeatedBy
       Arkham.Difficulty
       Arkham.Direction
+      Arkham.Discard
       Arkham.Distance
       Arkham.Draw.Types
       Arkham.Effect

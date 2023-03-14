@@ -57,9 +57,24 @@ instance HasTokenValue TheWitchingHour where
 
 instance RunMessage TheWitchingHour where
   runMessage msg s@(TheWitchingHour attrs) = case msg of
-    Setup -> do
+    PreScenarioSetup -> do
       iids <- getInvestigatorIds
       lead <- getLeadInvestigatorId
+
+      pushAll
+        $ [ story iids intro1
+          , chooseOne
+            lead
+            [ Label
+              "“What can I do to avoid this fate?”"
+              [SetupStep (toTarget attrs) 2]
+            , Label "“This is bullshit.”" [SetupStep (toTarget attrs) 3]
+            ]
+          , story iids intro4
+          ]
+      pure s
+    Setup -> do
+      iids <- getInvestigatorIds
 
       -- The Devourer Below is only locations
       encounterDeck <- buildEncounterDeckExcluding
@@ -88,16 +103,17 @@ instance RunMessage TheWitchingHour where
            , Locations.witchHauntedWoodsOvergrownBarn
            ]
 
-      setAsideCards <- (<> agentsOfShubNiggurath <> agentsOfAzathoth) <$> traverse
-        genCard
-        [ Enemies.anetteMason
-        , Locations.arkhamWoodsUnhallowedGround
-        , Locations.arkhamWoodsTwistingPaths
-        , Locations.arkhamWoodsOldHouse
-        , Locations.arkhamWoodsCliffside
-        , Locations.arkhamWoodsTangledThicket
-        , Locations.arkhamWoodsQuietGlade
-        ]
+      setAsideCards <-
+        (<> agentsOfShubNiggurath <> agentsOfAzathoth) <$> traverse
+          genCard
+          [ Enemies.anetteMason
+          , Locations.arkhamWoodsUnhallowedGround
+          , Locations.arkhamWoodsTwistingPaths
+          , Locations.arkhamWoodsOldHouse
+          , Locations.arkhamWoodsCliffside
+          , Locations.arkhamWoodsTangledThicket
+          , Locations.arkhamWoodsQuietGlade
+          ]
 
       let
         woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
@@ -125,19 +141,7 @@ instance RunMessage TheWitchingHour where
             : maybeToList mMoveTo
 
       pushAll
-        $ [ story iids intro1
-          , chooseOne
-            lead
-            [ Label
-              "“What can I do to avoid this fate?”"
-              [SetupStep (toTarget attrs) 2]
-            , Label "“This is bullshit.”" [SetupStep (toTarget attrs) 3]
-            ]
-          , story iids intro4
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          ]
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> locationPlacements
       TheWitchingHour <$> runMessage
         msg
@@ -160,9 +164,10 @@ instance RunMessage TheWitchingHour where
       iids <- getInvestigatorIds
       lead <- getLeadInvestigatorId
       -- collection is infinite so we only care if the lead already has either card in their deck
-      doNotAdd <- fieldMap
+      addCards <- fieldMap
         InvestigatorDeck
-        (any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef)
+        (not
+        . any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef)
         . unDeck
         )
         lead
@@ -172,7 +177,7 @@ instance RunMessage TheWitchingHour where
           , AddToken Tablet
           , AddToken Tablet
           ]
-        <> (guard doNotAdd
+        <> (guard addCards
            *> [ AddCampaignCardToDeck lead Assets.theTowerXVI
               , AddCampaignCardToDeck lead Assets.aceOfRods1
               ]

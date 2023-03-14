@@ -51,6 +51,7 @@ library:
     - template-haskell
     - newtype
     - constraints
+    - transformers
 
 tests:
   spec:

@@ -1754,6 +1754,7 @@ library
       Arkham.Treachery.Cards.Atychiphobia
       Arkham.Treachery.Cards.Bathophobia
       Arkham.Treachery.Cards.BeastOfTheBayou
+      Arkham.Treachery.Cards.Bedeviled
       Arkham.Treachery.Cards.BetweenWorlds
       Arkham.Treachery.Cards.BeyondTheVeil
       Arkham.Treachery.Cards.BlackStarsRise
@@ -1763,6 +1764,7 @@ library
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CaptiveMind
       Arkham.Treachery.Cards.CaughtRedHanded
+      Arkham.Treachery.Cards.CenturiesOfSecrets
       Arkham.Treachery.Cards.ChaosInTheWater
       Arkham.Treachery.Cards.ChildrenOfValusia
       Arkham.Treachery.Cards.ChillFromBelow
@@ -1787,6 +1789,7 @@ library
       Arkham.Treachery.Cards.DeadlyFate
       Arkham.Treachery.Cards.DeepDark
       Arkham.Treachery.Cards.DescentIntoMadness
+      Arkham.Treachery.Cards.DiabolicVoices
       Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DissonantVoices
       Arkham.Treachery.Cards.Doomed
@@ -1796,6 +1799,7 @@ library
       Arkham.Treachery.Cards.EagerForDeath
       Arkham.Treachery.Cards.Entombed
       Arkham.Treachery.Cards.EphemeralExhibits
+      Arkham.Treachery.Cards.EvilPast
       Arkham.Treachery.Cards.EyesInTheWalls
       Arkham.Treachery.Cards.FalseLead
       Arkham.Treachery.Cards.FateOfAllFools
@@ -1935,6 +1939,7 @@ library
       Arkham.Treachery.Cards.WordsOfPower
       Arkham.Treachery.Cards.WorldsMerge
       Arkham.Treachery.Cards.Wormhole
+      Arkham.Treachery.Cards.Wracked
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Cards.WrackedByTime
       Arkham.Treachery.Cards.YithianPresence
@@ -1990,6 +1995,7 @@ library
     , text
     , these
     , these-lens
+    , transformers
     , unordered-containers
     , uuid
   default-language: GHC2021

@@ -24,19 +24,24 @@ moonlightRitual = event MoonlightRitual Cards.moonlightRitual
 instance RunMessage MoonlightRitual where
   runMessage msg e@(MoonlightRitual attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      -- we assume that the only cards that are relevant here are assets and investigators
+      -- we assume that the only cards that are relevant here are assets,events, and investigators
       assets <-
-        selectWithField AssetDoom $ AssetControlledBy You <> AssetWithAnyDoom
+        selectWithField AssetDoom $ assetControlledBy iid <> AssetWithAnyDoom
+      events <-
+        selectWithField EventDoom $ eventControlledBy iid <> EventWithAnyDoom
       investigatorDoomCount <- field InvestigatorDoom iid
       pushAll
         [ chooseOne iid
         $ [ targetLabel
               iid
-              [RemoveDoom (InvestigatorTarget iid) investigatorDoomCount]
+              [RemoveDoom (toTarget iid) investigatorDoomCount]
           | investigatorDoomCount > 0
           ]
-        <> [ targetLabel aid [RemoveDoom (AssetTarget aid) assetDoomCount]
+        <> [ targetLabel aid [RemoveDoom (toTarget aid) assetDoomCount]
            | (aid, assetDoomCount) <- assets
+           ]
+        <> [ targetLabel eventId [RemoveDoom (toTarget eventId) eventDoomCount]
+           | (eventId, eventDoomCount) <- events
            ]
         ]
       pure e

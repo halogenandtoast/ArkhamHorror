@@ -37,7 +37,7 @@ spec = describe "Close Call (2)" $ do
               _ -> False
             )
           game <- getGame
-          deckSize <- scenarioFieldMap ScenarioEncounterDeck (length . unDeck)
+          deckSize <- scenarioFieldMap ScenarioEncounterDeck length
           deckSize `shouldBe` (1 :: Int)
           length (game ^. entitiesL . enemiesL) `shouldBe` 0
 

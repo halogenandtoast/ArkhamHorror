@@ -371,7 +371,7 @@ data Message
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
   | FightEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
-  | FindAndDrawEncounterCard InvestigatorId CardMatcher
+  | FindAndDrawEncounterCard InvestigatorId CardMatcher Bool
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]

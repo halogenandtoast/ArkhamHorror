@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
-import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
@@ -17,8 +17,8 @@ import Arkham.Classes
 import Arkham.Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -121,7 +121,9 @@ instance RunMessage BlackStarsRise where
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
-      push $ ShuffleCardsIntoDeck (InvestigatorDeck leadInvestigatorId) [theManInThePallidMask]
+      push $ ShuffleCardsIntoDeck
+        (InvestigatorDeck leadInvestigatorId)
+        [theManInThePallidMask]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -192,7 +194,9 @@ instance RunMessage BlackStarsRise where
       isStandalone <- getIsStandalone
 
       (porteDeLAvanceeId, placePorteDeLAvancee) <- placeLocation porteDeLAvancee
-      otherPlacements <- traverse placeLocation_ [northTower, outerWall, brokenSteps, grandRue, abbeyChurch]
+      otherPlacements <- traverse
+        placeLocation_
+        [northTower, outerWall, brokenSteps, grandRue, abbeyChurch]
 
       pushAll
         $ [story investigatorIds intro]
@@ -209,10 +213,7 @@ instance RunMessage BlackStarsRise where
            | iid <- investigatorIds
            , not isStandalone
            ]
-        <> [ AddToken tokenToAdd
-           , SetAgendaDeck
-           , SetEncounterDeck encounterDeck
-           ]
+        <> [AddToken tokenToAdd, SetAgendaDeck, SetEncounterDeck encounterDeck]
         <> (placePorteDeLAvancee : otherPlacements)
         <> [MoveAllTo (toSource attrs) porteDeLAvanceeId]
 
@@ -251,10 +252,12 @@ instance RunMessage BlackStarsRise where
         targets <- selectListMap AgendaTarget AnyAgenda
         pushAll [ PlaceDoom target 1 | target <- targets ]
       when (tokenFace token == ElderThing) $ do
-        push
-          $ FindAndDrawEncounterCard iid
-          $ CardWithType EnemyType
+        push $ FindAndDrawEncounterCard
+          iid
+          (CardWithType EnemyType
           <> CardWithOneOf (map CardWithTrait [Trait.Byakhee])
+          )
+          True
       pure s
     ScenarioResolution res -> do
       ashleighSlain <- selectOne

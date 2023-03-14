@@ -9,11 +9,11 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher hiding ( PlaceUnderneath, treacheryInHandOf, TreacheryInHandOf )
+import Arkham.Matcher hiding
+  ( PlaceUnderneath, TreacheryInHandOf, treacheryInHandOf )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Scenario.Deck
-import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -29,7 +29,9 @@ instance HasModifiersFor GiftOfMadnessMisery where
   getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessMisery a) =
     pure $ toModifiers
       a
-      [ CannotFight (EnemyWithTrait Lunatic) | treacheryInHandOf a == Just iid ]
+      [ CannotTriggerAbilityMatching (AbilityOnLocation Anywhere)
+      | treacheryInHandOf a == Just iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GiftOfMadnessMisery where

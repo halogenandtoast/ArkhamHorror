@@ -118,6 +118,9 @@ class GetCardDef m a where
 class HasCardDef a where
   toCardDef :: a -> CardDef
 
+hasRevelation :: HasCardDef a => a -> Bool
+hasRevelation = cdRevelation . toCardDef
+
 class HasOriginalCardCode a where
   toOriginalCardCode :: a -> CardCode
 

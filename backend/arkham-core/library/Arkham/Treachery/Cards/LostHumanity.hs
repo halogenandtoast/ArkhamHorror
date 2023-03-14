@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.LostHumanity
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Helpers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
@@ -31,7 +30,7 @@ instance RunMessage LostHumanity where
       pure t
     RevelationChoice iid (isSource attrs -> True) 1 -> do
       handCount <- fieldMap InvestigatorHand length iid
-      deckCount <- fieldMap InvestigatorDeck (length . unDeck) iid
+      deckCount <- fieldMap InvestigatorDeck length iid
       discardCount <- fieldMap InvestigatorDiscard length iid
       when (handCount + deckCount + discardCount < 10) $ push $ DrivenInsane iid
       pure t

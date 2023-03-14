@@ -37,6 +37,7 @@ instance RunMessage MaskOfUmordhoth where
           [ FindAndDrawEncounterCard
             iid
             (CardWithType EnemyType <> CardWithTrait Cultist)
+            True
           , Revelation iid source
           ]
         eids -> push $ chooseOrRunOne

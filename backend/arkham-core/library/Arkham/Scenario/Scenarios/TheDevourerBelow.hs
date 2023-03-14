@@ -180,6 +180,7 @@ instance RunMessage TheDevourerBelow where
         (FindAndDrawEncounterCard
           iid
           (CardWithType EnemyType <> CardWithTrait Monster)
+          True
         )
     ScenarioResolution r -> do
       let

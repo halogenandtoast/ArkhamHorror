@@ -25,6 +25,7 @@ instance RunMessage MysteriousChanting where
         [] -> push $ FindAndDrawEncounterCard
           iid
           (CardWithType EnemyType <> CardWithTrait Cultist)
+          True
         xs -> pushAll
           [ chooseOne
               iid

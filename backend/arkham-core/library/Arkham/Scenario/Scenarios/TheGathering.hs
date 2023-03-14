@@ -121,6 +121,7 @@ instance RunMessage TheGathering where
         Skull | isHardExpert attrs -> push $ FindAndDrawEncounterCard
           iid
           (CardWithType EnemyType <> CardWithTrait Trait.Ghoul)
+          True
         Cultist -> push $ InvestigatorAssignDamage
           iid
           (TokenSource token)

@@ -5,6 +5,7 @@ module Arkham.Scenario.Scenarios.BloodOnTheAltar
 
 import Arkham.Prelude
 
+import Control.Monad.Trans.Maybe
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -128,7 +129,7 @@ instance RunMessage BloodOnTheAltar where
           False
 
         (encounterCardsToPutUnderneath, encounterDeck) <-
-          splitAt 3 . unDeck <$> buildEncounterDeckExcluding
+          draw 3 <$> buildEncounterDeckExcluding
             [ Enemies.silasBishop
             , Locations.theHiddenChamber
             , Assets.keyToTheChamber
@@ -142,10 +143,8 @@ instance RunMessage BloodOnTheAltar where
             <> [ EncounterSet.NaomisCrew | oBannionGangHasABoneToPick ]
             )
 
-        theHiddenChamber <- EncounterCard
-          <$> genEncounterCard Locations.theHiddenChamber
-        keyToTheChamber <- EncounterCard
-          <$> genEncounterCard Assets.keyToTheChamber
+        theHiddenChamber <- genCard Locations.theHiddenChamber
+        keyToTheChamber <- genCard Assets.keyToTheChamber
 
         cardsToPutUnderneath <-
           shuffleM
@@ -163,17 +162,17 @@ instance RunMessage BloodOnTheAltar where
           DrHenryArmitageWasKidnapped
           True
 
-        professorWarrenRice <- if professorWarrenRiceKidnapped
-          then Just . PlayerCard <$> genPlayerCard Assets.professorWarrenRice
-          else pure Nothing
-        drFrancisMorgan <- if drFrancisMorganKidnapped
-          then Just . PlayerCard <$> genPlayerCard Assets.drFrancisMorgan
-          else pure Nothing
-        drHenryArmitage <- if drHenryArmitageKidnapped
-          then Just . PlayerCard <$> genPlayerCard Assets.drHenryArmitage
-          else pure Nothing
-        zebulonWhateley <- PlayerCard <$> genPlayerCard Assets.zebulonWhateley
-        earlSawyer <- PlayerCard <$> genPlayerCard Assets.earlSawyer
+        professorWarrenRice <- runMaybeT $ do
+          guard professorWarrenRiceKidnapped
+          lift $ genCard Assets.professorWarrenRice
+        drFrancisMorgan <- runMaybeT $ do
+          guard drFrancisMorganKidnapped
+          lift $ genCard Assets.drFrancisMorgan
+        drHenryArmitage <- runMaybeT $ do
+          guard drHenryArmitageKidnapped
+          lift $ genCard Assets.drHenryArmitage
+        zebulonWhateley <- genCard Assets.zebulonWhateley
+        earlSawyer <- genCard Assets.earlSawyer
 
         delayedOnTheirWayToDunwich <- getHasRecordOrStandalone
           TheInvestigatorsWereDelayedOnTheirWayToDunwich
@@ -188,8 +187,7 @@ instance RunMessage BloodOnTheAltar where
           , schoolhouse
           ]
 
-        villageCommons <- EncounterCard
-          <$> genEncounterCard Locations.villageCommons
+        villageCommons <- genCard Locations.villageCommons
 
         let
           potentialSacrifices = [zebulonWhateley, earlSawyer] <> catMaybes
@@ -203,7 +201,7 @@ instance RunMessage BloodOnTheAltar where
 
         pushAll
           $ [ story investigatorIds intro
-            , SetEncounterDeck (Deck encounterDeck)
+            , SetEncounterDeck encounterDeck
             , SetAgendaDeck
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]

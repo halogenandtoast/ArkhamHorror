@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Helpers.Message as X
 import Arkham.Scenario.Types as X
 
-import Arkham.Classes.GameLogger
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types ( Field (..) )
 import Arkham.Agenda.Sequence qualified as Agenda
@@ -18,6 +17,7 @@ import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.ChaosBag ()
 import Arkham.Classes.Entity
+import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Query
@@ -209,14 +209,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           (newActSide == Act.B)
           (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
         push (ReplaceAct fromActId toActId)
-        pure (x, filter
-          (\c ->
-            (cdStage c /= cdStage act)
-              || (cdCardCode c `cardCodeExactEq` cdCardCode act)
+        pure
+          ( x
+          , filter
+            (\c ->
+              (cdStage c /= cdStage act)
+                || (cdCardCode c `cardCodeExactEq` cdCardCode act)
+            )
+            ys
           )
-          ys)
       _ -> error "Can not advance act deck"
-    pure $ a
+    pure
+      $ a
       & (actStackL . at n ?~ actStack')
       & (completedActStackL . at n ?~ oldAct : completedActStack)
   ResetActDeckToStage n -> do
@@ -303,9 +307,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   EndOfScenario mNextCampaignStep -> do
     clearQueue
     standalone <- getIsStandalone
-    push $ if standalone
-      then GameOver
-      else NextCampaignStep mNextCampaignStep
+    push $ if standalone then GameOver else NextCampaignStep mNextCampaignStep
     pure a
   ScenarioResolution _ ->
     error "The scenario should specify what to do for no resolution"
@@ -514,17 +516,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
     if standalone
       then pure $ a & storyCardsL %~ insertWith
-          (<>)
-          iid
-          [card { pcOwner = Just iid }]
+        (<>)
+        iid
+        [card { pcOwner = Just iid }]
       else pure a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
     a <$ pushAll
       [FocusCards cards, chooseOne iid [Label "Continue" [UnfocusCards]]]
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
-    let (cards, deck) = splitAt n (unDeck scenarioEncounterDeck)
-    pure $ a & encounterDeckL .~ Deck (deck <> cards)
+    let (cards, deck) = draw n scenarioEncounterDeck
+    pure $ a & encounterDeckL .~ withDeck (<> cards) deck
   Discard _ (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     case card of
@@ -533,12 +535,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       VengeanceCard _ -> error "vengeance card"
   InvestigatorDoDrawEncounterCard iid -> case unDeck scenarioEncounterDeck of
     [] -> do
-      when (notNull scenarioDiscard) $ pushAll
-        [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
+      when (notNull scenarioDiscard) $ do
+        pushAll [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
       pure a
       -- This case should not happen but this safeguards against it
     (card : encounterDeck) -> do
-      when (null encounterDeck) (push ShuffleEncounterDiscardBackIn)
+      when (null encounterDeck) $ do
+        windows' <- checkWindows [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+        pushAll [windows', ShuffleEncounterDiscardBackIn]
       pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
       pure $ a & (encounterDeckL .~ Deck encounterDeck)
   Search iid source EncounterDeckTarget cardSources _traits foundStrategy -> do
@@ -735,7 +739,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       <> map EncounterCard matchingDiscards
       <> map snd voidEnemiesWithCards
     pure a
-  FindAndDrawEncounterCard iid matcher -> do
+  FindAndDrawEncounterCard iid matcher includeDiscard -> do
     let
       matchingDiscards = filter (`cardMatch` matcher) scenarioDiscard
       matchingDeckCards =
@@ -746,7 +750,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ [ TargetLabel
             (CardIdTarget $ toCardId card)
             [FoundAndDrewEncounterCard iid FromDiscard card]
-        | card <- matchingDiscards
+        | includeDiscard, card <- matchingDiscards
         ]
       <> [ TargetLabel
              (CardIdTarget $ toCardId card)
@@ -760,17 +764,21 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       <> map EncounterCard matchingDiscards
     pure a
   DrawEncounterCards target n -> do
-    let (cards, encounterDeck) = splitAt n $ unDeck scenarioEncounterDeck
+    let (cards, encounterDeck) = draw n scenarioEncounterDeck
     push (RequestedEncounterCards target cards)
-    pure $ a & encounterDeckL .~ Deck encounterDeck
-  DiscardTopOfEncounterDeck iid n source mtarget ->
-    a <$ push (DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget [])
-  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards ->
-    a <$ case mtarget of
-      Nothing -> pure ()
-      Just target -> push (DiscardedTopOfEncounterDeck iid cards source target)
-  DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards ->
-    case unDeck scenarioEncounterDeck of
+    pure $ a & encounterDeckL .~ encounterDeck
+  DiscardTopOfEncounterDeck iid n source mtarget -> a <$ push
+    (DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget [])
+  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards -> do
+    windows' <- checkWindows [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+    pushAll
+      $ [ DiscardedTopOfEncounterDeck iid cards source target
+        | target <- maybeToList mtarget
+        ]
+      <> (guard (null scenarioEncounterDeck) *> [ windows', ShuffleEncounterDiscardBackIn])
+    pure a
+  DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards
+    -> case unDeck scenarioEncounterDeck of
       [] -> do
         push $ DiscardTopOfEncounterDeckWithDiscardedCards
           iid
@@ -781,15 +789,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure a
       (card : cards) -> do
         pushAll
-          $ Discarded (InvestigatorTarget iid) source (EncounterCard card)
-          : [ ShuffleEncounterDiscardBackIn | null cards ]
-          <> [ DiscardTopOfEncounterDeckWithDiscardedCards
-                 iid
-                 (n - 1)
-                 source
-                 mtarget
-                 (card : discardedCards)
-             ]
+          [ Discarded (CardIdTarget $ toCardId card) source (EncounterCard card)
+          , DiscardTopOfEncounterDeckWithDiscardedCards
+            iid
+            (n - 1)
+            source
+            mtarget
+            (card : discardedCards)
+          ]
         pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
   SpawnEnemyAt (EncounterCard ec) _ -> do
     pure $ a & discardL %~ filter (/= ec)
@@ -818,7 +825,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & decksL . at deckKey ?~ deck'
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
     deck' <- shuffleM $ cards <> fromMaybe [] (view (decksL . at deckKey) a)
-    pure $ a & decksL . at deckKey ?~ deck' & discardL %~ filter ((`notElem` cards) . EncounterCard)
+    pure $ a & decksL . at deckKey ?~ deck' & discardL %~ filter
+      ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
       selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid

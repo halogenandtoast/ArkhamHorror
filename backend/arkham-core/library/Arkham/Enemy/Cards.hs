@@ -1099,6 +1099,7 @@ piperOfAzathoth = (enemy "05088" "Piper of Azathoth" AgentsOfAzathoth 1)
 covenInitiate :: CardDef
 covenInitiate = (enemy "05090" "Coven Initiate" AnettesCoven 3)
   { cdCardTraits = setFromList [Humanoid, Witch]
+  , cdRevelation = True
   }
 
 priestessOfTheCoven :: CardDef

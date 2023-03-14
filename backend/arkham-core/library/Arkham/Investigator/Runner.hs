@@ -17,7 +17,6 @@ import Arkham.Target as X
 import Arkham.Token as X
 import Arkham.Trait as X hiding ( Cultist )
 
-import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Ability
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
@@ -38,7 +37,9 @@ import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Id
+import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
   ( AssetMatcher (..)
@@ -188,7 +189,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               card <- genCard cardDef
               let
                 setOwner = \case
-                  PlayerCard pc -> PlayerCard $ pc { pcOwner = Just investigatorId }
+                  PlayerCard pc ->
+                    PlayerCard $ pc { pcOwner = Just investigatorId }
                   other -> other
               pure
                 ( PutCardIntoPlay
@@ -234,7 +236,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           applyModifier (StartingHand m) n = max 0 (n + m)
           applyModifier _ n = n
           (discard, hand, deck) = drawOpeningHand a startingHandAmount
-        pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
+        pure
+          $ a
+          & (discardL .~ discard)
+          & (handL .~ hand)
+          & (deckL .~ Deck deck)
   ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
     -- Card is assumed to be in your discard
     -- but since find card can also return cards in your hand
@@ -344,9 +350,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         5
         modifiers'
-      (discard, hand, deck) = if any (`elem` (modifiers')) [CannotDrawCards, CannotManipulateDeck]
-        then (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
-        else drawOpeningHand a (startingHandAmount - length investigatorHand)
+      (discard, hand, deck) =
+        if any (`elem` (modifiers')) [CannotDrawCards, CannotManipulateDeck]
+          then (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
+          else drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows
       [Window Timing.After (Window.DrawingStartingHand iid)]
     additionalHandCards <- traverse genCard investigatorStartsWithInHand
@@ -492,25 +499,36 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
-  DiscardFromHand handDiscard | discardInvestigator handDiscard == investigatorId -> do
-    push $ DoneDiscarding investigatorId
-    case discardStrategy handDiscard of
-      DiscardChoose -> case discardableCards a of
-        [] -> pure ()
-        cs ->
-          pushAll $ replicate (discardAmount handDiscard)
-            $ chooseOne investigatorId
-            $ [ targetLabel
-                  (toCardId c)
-                  [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
-              | c <- cs
-              ]
-      DiscardRandom -> do
-        let filtered = filter (`cardMatch` (discardFilter handDiscard)) investigatorHand
-        for_ (nonEmpty filtered) $ \targets -> do
-          cards <- sampleN (discardAmount handDiscard) targets
-          pushAll $ map (DiscardCard investigatorId (discardSource handDiscard) . toCardId) cards
-    pure $ a & discardingL ?~ handDiscard
+  DiscardFromHand handDiscard
+    | discardInvestigator handDiscard == investigatorId -> do
+      push $ DoneDiscarding investigatorId
+      case discardStrategy handDiscard of
+        DiscardChoose -> case discardableCards a of
+          [] -> pure ()
+          cs ->
+            pushAll
+              $ replicate (discardAmount handDiscard)
+              $ chooseOne investigatorId
+              $ [ targetLabel
+                    (toCardId c)
+                    [ DiscardCard
+                        investigatorId
+                        (discardSource handDiscard)
+                        (toCardId c)
+                    ]
+                | c <- cs
+                ]
+        DiscardRandom -> do
+          let
+            filtered =
+              filter (`cardMatch` (discardFilter handDiscard)) investigatorHand
+          for_ (nonEmpty filtered) $ \targets -> do
+            cards <- sampleN (discardAmount handDiscard) targets
+            pushAll $ map
+              (DiscardCard investigatorId (discardSource handDiscard) . toCardId
+              )
+              cards
+      pure $ a & discardingL ?~ handDiscard
   Discard source (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
     <$ push (DiscardCard investigatorId source cardId)
@@ -535,17 +553,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ find ((== cardId) . toCardId) investigatorHand
     case card of
       PlayerCard pc -> do
-        let updateHandDiscard handDiscard = handDiscard { discardAmount = max 0 (discardAmount handDiscard - 1) }
-        pure $ a & handL %~ filter (/= card) & discardL %~ (pc :) & discardingL %~ fmap updateHandDiscard
+        let
+          updateHandDiscard handDiscard = handDiscard
+            { discardAmount = max 0 (discardAmount handDiscard - 1)
+            }
+        pure
+          $ a
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ (pc :)
+          & discardingL
+          %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
-  DoneDiscarding iid | iid == investigatorId ->
-    case investigatorDiscarding of
-      Nothing -> pure a
-      Just handDiscard -> do
-        when (discardAmount handDiscard == 0) $
-          for_ (discardThen handDiscard) push
-        pure $ a & discardingL .~ Nothing
+  DoneDiscarding iid | iid == investigatorId -> case investigatorDiscarding of
+    Nothing -> pure a
+    Just handDiscard -> do
+      when (discardAmount handDiscard == 0)
+        $ for_ (discardThen handDiscard) push
+      pure $ a & discardingL .~ Nothing
   RemoveCardFromHand iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   RemoveCardFromSearch iid cardId | iid == investigatorId ->
@@ -778,11 +805,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <- Helpers.checkWindows
       [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
-    a <$ pushAll (resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg])
-  Move movement | isTarget a (moveTarget movement)-> do
-    let source = moveSource movement
-        destinationLocationId = moveDestination movement
-        iid = investigatorId
+    a <$ pushAll
+      (resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg])
+  Move movement | isTarget a (moveTarget movement) -> do
+    let
+      source = moveSource movement
+      destinationLocationId = moveDestination movement
+      iid = investigatorId
     mFromLocation <- field InvestigatorLocation iid
     windowMsgs <- Helpers.windows
       [Window.Moves iid source mFromLocation destinationLocationId]
@@ -1632,9 +1661,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo $ move source investigatorId lid)
   MoveTo movement | isTarget a (moveTarget movement) -> do
-    let source = moveSource movement
-        lid = moveDestination movement
-        iid = investigatorId
+    let
+      source = moveSource movement
+      lid = moveDestination movement
+      iid = investigatorId
     movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
     afterMoveButBeforeEnemyEngagement <- Helpers.checkWindows
       [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
@@ -1715,7 +1745,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (additionalActionsL %~ (additionalActions <>))
       & (actionsTakenL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
-    let (cs, deck') = splitAt n (unDeck investigatorDeck)
+    let (cs, deck') = draw n investigatorDeck
     windowMsgs <- if null deck'
       then pure <$> checkWindows
         ((`Window` Window.DeckHasNoCards iid) <$> [Timing.When, Timing.After])
@@ -1726,7 +1756,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ DiscardedTopOfDeck iid cs source target
          | target <- maybeToList mTarget
          ]
-    pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
+    pure $ a & deckL .~ deck' & discardL %~ (reverse cs <>)
   DiscardUntilFirst iid source matcher | iid == investigatorId -> do
     let
       (discards, remainingDeck) =
@@ -1762,8 +1792,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n
     | iid == investigatorId -> do
-      let (cards, deck) = splitAt n (unDeck investigatorDeck)
-      pure $ a & deckL .~ Deck (deck <> cards)
+      let (cards, deck) = draw n investigatorDeck
+      pure $ a & deckL .~ Deck.withDeck (<> cards) deck
   DrawCards cardDraw
     | cardDrawInvestigator cardDraw == investigatorId && not
       (cardDrawAction cardDraw)
@@ -1783,7 +1813,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         n = cardDrawAmount cardDraw
 
       modifiers' <- getModifiers (toTarget a)
-      if null (unDeck investigatorDeck)
+      if null investigatorDeck
         then do
           -- What happens if the Yorick player has Graveyard Ghouls engaged
           -- with him or her and runs out of deck? "If an investigator with an
@@ -1831,7 +1861,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       guard $ not shuffleBackInEachWeakness
                       Just $ DrewPlayerEnemy iid $ PlayerCard card
                     other
-                      | cdRevelation (toCardDef card)
+                      | hasRevelation card
                         && other
                         `notElem` [PlayerTreacheryType, PlayerEnemyType]
                       -> do
@@ -2106,8 +2136,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       locationId <- getJustLocation iid
       isScenarioAbility <- getIsScenarioAbility
       clueCount <- field LocationClues locationId
-      otherLocation <- field InvestigatorLocation (skillTestInvestigator skillTest)
-      canCommit <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
+      otherLocation <- field
+        InvestigatorLocation
+        (skillTestInvestigator skillTest)
+      canCommit <- maybe
+        (pure False)
+        (canCommitToAnotherLocation a)
+        otherLocation
       when (locationId == investigatorLocation || canCommit) $ do
         committedCards <- field InvestigatorCommittedCards investigatorId
         allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
@@ -2348,10 +2383,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> do
-        when (cdRevelation (toCardDef card'))
-          $ if toCardType card' == PlayerTreacheryType
-              then push (DrewTreachery iid Nothing card)
-              else push (Revelation iid $ PlayerCardSource card')
+        when (hasRevelation card') $ if toCardType card' == PlayerTreacheryType
+          then push (DrewTreachery iid Nothing card)
+          else push (Revelation iid $ PlayerCardSource card')
         when (toCardType card' == PlayerEnemyType)
           $ push (DrewPlayerEnemy iid card)
       _ -> pure ()
@@ -2416,16 +2450,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
         PutBackInAnyOrder -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-          push
-            $ chooseOneAtATime iid $ mapTargetLabelWith toCardId
-              (\c -> 
-                [ AddFocusedToTopOfDeck
-                    iid
-                    (toTarget iid')
-                    (toCardId c)
-                ]
-              )
-              (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+          push $ chooseOneAtATime iid $ mapTargetLabelWith
+            toCardId
+            (\c -> [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)])
+            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
         ShuffleBackIn -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
           push $ ShuffleCardsIntoDeck
@@ -2490,12 +2518,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             choices =
               [ targetLabel
                   (toCardId card)
-                  [ AddFocusedToHand
-                      iid
-                      (toTarget who)
-                      zone
-                      (toCardId card)
-                  ]
+                  [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
               | (zone, cards) <- mapToList targetCards
               , card <- cards
               ]
@@ -2507,12 +2530,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             choices =
               [ targetLabel
                   (toCardId card)
-                  [ AddFocusedToHand
-                      iid
-                      (toTarget who)
-                      zone
-                      (toCardId card)
-                  ]
+                  [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
               | (zone, cards) <- mapToList targetCards
               , card <- cards
               ]

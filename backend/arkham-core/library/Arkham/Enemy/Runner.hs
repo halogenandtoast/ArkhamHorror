@@ -875,7 +875,9 @@ instance RunMessage EnemyAttrs where
         getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
         spawnAtMatcher = getModifiedSpawnAt modifiers'
       case spawnAtMatcher of
-        Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
+        Nothing -> do
+          windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+          pushAll $ windows' : resolve (EnemySpawn (Just iid) lid eid)
         Just matcher -> do
           let applyMatcherExclusions ms (SpawnAtFirst sas) = SpawnAtFirst (map (applyMatcherExclusions ms) sas)
               applyMatcherExclusions [] m = m

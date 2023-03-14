@@ -6,6 +6,7 @@ module Arkham.Location.Cards.WitchHauntedWoodsOvergrownBarn
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Attack
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
@@ -32,7 +33,12 @@ instance HasAbilities WitchHauntedWoodsOvergrownBarn where
   getAbilities (WitchHauntedWoodsOvergrownBarn a) = withBaseAbilities
     a
     [ restrictedAbility a 1 Here $ ReactionAbility
-        (EnemyWouldSpawnAt AnyEnemy (NotLocation $ LocationWithId $ toId a))
+        (EnemyWouldSpawnAt
+          AnyEnemy
+          (NotLocation (LocationWithId $ toId a)
+          <> LocationWithTitle "Witch-Haunted Woods"
+          )
+        )
         Free
     ]
 
@@ -40,14 +46,15 @@ instance RunMessage WitchHauntedWoodsOvergrownBarn where
   runMessage msg l@(WitchHauntedWoodsOvergrownBarn attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 [Window _ (Window.EnemyWouldSpawnAt enemyId _)] _
       -> do
+        iids <- selectList $ investigatorAt $ toId attrs
         replaceMessageMatching
           (\case
             When (EnemySpawn _ _ eid) -> eid == enemyId
             _ -> False
           )
           (\case
-            When (EnemySpawn mId _ eid) ->
-              [When $ EnemySpawn mId (toId attrs) eid]
+            When (EnemySpawn _ _ eid) ->
+              [When $ EnemySpawn Nothing (toId attrs) eid]
             _ -> error "bad match"
           )
         replaceMessageMatching
@@ -56,7 +63,7 @@ instance RunMessage WitchHauntedWoodsOvergrownBarn where
             _ -> False
           )
           (\case
-            EnemySpawn mId _ eid -> [EnemySpawn mId (toId attrs) eid]
+            EnemySpawn _ _ eid -> [EnemySpawn Nothing (toId attrs) eid]
             _ -> error "bad match"
           )
         replaceMessageMatching
@@ -65,8 +72,9 @@ instance RunMessage WitchHauntedWoodsOvergrownBarn where
             _ -> False
           )
           (\case
-            After (EnemySpawn mId _ eid) ->
-              [After $ EnemySpawn mId (toId attrs) eid]
+            After (EnemySpawn _ _ eid) ->
+              After (EnemySpawn Nothing (toId attrs) eid)
+                : map (InitiateEnemyAttack . enemyAttack eid) iids
             _ -> error "bad match"
           )
         pure l

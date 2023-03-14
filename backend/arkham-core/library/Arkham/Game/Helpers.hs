@@ -622,9 +622,12 @@ getActionsWith iid window f = do
           || isForcedAbility ability
           || isReactionAbility ability
           )
-      pure $ if any prevents investigatorModifiers || any blankPrevents modifiers' || needsToBeFast
-        then Nothing
-        else Just $ applyAbilityModifiers ability modifiers'
+      pure
+        $ if any prevents investigatorModifiers
+              || any blankPrevents modifiers'
+              || needsToBeFast
+            then Nothing
+            else Just $ applyAbilityModifiers ability modifiers'
 
   actions''' <- filterM
     (\action -> andM
@@ -1520,6 +1523,14 @@ windowMatches iid source window' = \case
       (matchWho iid who whoMatcher)
       (cardListMatches cards cardListMatcher)
     _ -> pure False
+  Matcher.EnemyWouldSpawnAt enemyMatcher locationMatcher ->
+    case window' of
+      Window _ (Window.EnemyWouldSpawnAt eid lid) -> do
+        andM
+          [ enemyMatches eid enemyMatcher
+          , lid <=~> locationMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
     case window' of
       Window t (Window.EnemyAttemptsToSpawnAt eid locationMatcher')
@@ -1623,11 +1634,10 @@ windowMatches iid source window' = \case
           aid
           agendaMatcher
       _ -> pure False
-  Matcher.PlacedDoomCounter whenMatcher targetMatcher ->
-    case window' of
-      Window t (Window.PlacedDoom target _) | t == whenMatcher ->
-        targetMatches target targetMatcher
-      _ -> pure False
+  Matcher.PlacedDoomCounter whenMatcher targetMatcher -> case window' of
+    Window t (Window.PlacedDoom target _) | t == whenMatcher ->
+      targetMatches target targetMatcher
+    _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror (InvestigatorTarget iid') n)
@@ -1939,8 +1949,8 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyAttacksEvenIfCancelled timingMatcher whoMatcher enemyAttackMatcher enemyMatcher
     -> case window' of
-      Window t (Window.EnemyAttacksEvenIfCancelled details) | timingMatcher == t ->
-        case attackTarget details of
+      Window t (Window.EnemyAttacksEvenIfCancelled details)
+        | timingMatcher == t -> case attackTarget details of
           InvestigatorTarget who -> andM
             [ matchWho iid who whoMatcher
             , enemyMatches (attackEnemy details) enemyMatcher
@@ -2042,9 +2052,12 @@ windowMatches iid source window' = \case
           -> andM
             [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
         Window t (Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _)
-          | t == whenMatcher
-          -> andM
-            [ member aid <$> select (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+          | t == whenMatcher -> andM
+            [ member aid
+              <$> select
+                    (Matcher.AssetControlledBy
+                    $ Matcher.replaceYouMatcher iid whoMatcher
+                    )
             , sourceMatches source' sourceMatcher
             ]
         _ -> pure False
@@ -2055,7 +2068,8 @@ windowMatches iid source window' = \case
         [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
     Window t (Window.DealtDamage source' _ (AssetTarget aid) _)
       | t == whenMatcher -> andM
-        [ member aid <$> select (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+        [ member aid <$> select
+          (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
         , sourceMatches source' sourceMatcher
         ]
     _ -> pure False
@@ -2065,7 +2079,8 @@ windowMatches iid source window' = \case
         [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
     Window t (Window.DealtHorror source' (AssetTarget aid) _)
       | t == whenMatcher -> andM
-        [ member aid <$> select (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+        [ member aid <$> select
+          (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
         , sourceMatches source' sourceMatcher
         ]
     _ -> pure False
@@ -2717,10 +2732,19 @@ spawnAtOneOf iid eid targetLids = do
   locations' <- select Matcher.Anywhere
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> push (Discard GameSource (EnemyTarget eid))
-    [lid] -> pushAll (resolve $ EnemySpawn Nothing lid eid)
-    lids -> push $ chooseOne
-      iid
-      [ targetLabel lid $ resolve $ EnemySpawn Nothing lid eid | lid <- lids ]
+    [lid] -> do
+      windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+      pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
+    lids -> do
+      windowPairs <- for lids $ \lid -> do
+        windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+        pure (windows', lid)
+
+      push $ chooseOne
+        iid
+        [ targetLabel lid $ windows' : resolve (EnemySpawn Nothing lid eid)
+        | (windows', lid) <- windowPairs
+        ]
 
 sourceCanDamageEnemy :: HasGame m => EnemyId -> Source -> m Bool
 sourceCanDamageEnemy eid source = do
@@ -2793,4 +2817,4 @@ additionalActionCovers
 additionalActionCovers source maction = \case
   TraitRestrictedAdditionalAction t _ -> member t <$> sourceTraits source
   ActionRestrictedAdditionalAction a -> pure $ maction == Just a
-  EffectAction  _ _ -> pure False
+  EffectAction _ _ -> pure False

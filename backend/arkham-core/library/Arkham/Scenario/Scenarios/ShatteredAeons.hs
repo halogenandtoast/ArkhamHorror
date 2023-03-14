@@ -302,12 +302,10 @@ instance RunMessage ShatteredAeons where
           mHex =
             find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
         for_ mHex $ \hex -> do
-          pushAll
-            [ RemoveFromEncounterDiscard hex
-            , ShuffleCardsIntoDeck
+          push
+            $ ShuffleCardsIntoDeck
               (Deck.ScenarioDeckByKey ExplorationDeck)
               [EncounterCard hex]
-            ]
       pure s
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do
       let
@@ -316,12 +314,10 @@ instance RunMessage ShatteredAeons where
       modifiers <- getModifiers (TokenFaceTarget ElderThing)
       when (RevealAnotherToken `elem` modifiers) $ push $ DrawAnotherToken iid
       for_ mHex $ \hex -> do
-        pushAll
-          [ RemoveFromEncounterDiscard hex
-          , ShuffleCardsIntoDeck
+        push
+          $ ShuffleCardsIntoDeck
             (Deck.ScenarioDeckByKey ExplorationDeck)
             [EncounterCard hex]
-          ]
       pure s
     ResolveToken _ face iid -> do
       modifiers <- getModifiers (TokenFaceTarget face)

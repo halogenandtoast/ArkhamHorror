@@ -1,26 +1,51 @@
 module Arkham.Location.Cards.WitchHauntedWoodsTaintedWell
   ( witchHauntedWoodsTaintedWell
   , WitchHauntedWoodsTaintedWell(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Projection
 
 newtype WitchHauntedWoodsTaintedWell = WitchHauntedWoodsTaintedWell LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 witchHauntedWoodsTaintedWell :: LocationCard WitchHauntedWoodsTaintedWell
-witchHauntedWoodsTaintedWell = location WitchHauntedWoodsTaintedWell Cards.witchHauntedWoodsTaintedWell 3 (PerPlayer 1)
+witchHauntedWoodsTaintedWell = location
+  WitchHauntedWoodsTaintedWell
+  Cards.witchHauntedWoodsTaintedWell
+  3
+  (PerPlayer 1)
 
-instance HasAbilities WitchHauntedWoodsTaintedWell where
-  getAbilities (WitchHauntedWoodsTaintedWell attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+instance HasModifiersFor WitchHauntedWoodsTaintedWell where
+  getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsTaintedWell attrs)
+    = do
+      mlid <- field InvestigatorLocation iid
+      case mlid of
+        Nothing -> pure []
+        Just lid -> if lid == toId attrs
+          then pure $ toModifiers
+            attrs
+            [ CanCommitToSkillTestPerformedByAnInvestigatorAt
+                $ LocationWithTitle "Witch-Haunted Woods"
+            ]
+          else do
+            isWitchHauntedWoods <- member lid
+              <$> select (LocationWithTitle "Witch-Haunted Woods")
+            pure $ toModifiers
+              attrs
+              [ CanCommitToSkillTestPerformedByAnInvestigatorAt
+                  (LocationWithId $ toId attrs)
+              | isWitchHauntedWoods
+              ]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage WitchHauntedWoodsTaintedWell where
   runMessage msg (WitchHauntedWoodsTaintedWell attrs) =

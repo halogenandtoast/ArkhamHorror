@@ -2106,7 +2106,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       locationId <- getJustLocation iid
       isScenarioAbility <- getIsScenarioAbility
       clueCount <- field LocationClues locationId
-      canCommit <- canCommitToAnotherLocation a
+      otherLocation <- field InvestigatorLocation (skillTestInvestigator skillTest)
+      canCommit <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
       when (locationId == investigatorLocation || canCommit) $ do
         committedCards <- field InvestigatorCommittedCards investigatorId
         allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone

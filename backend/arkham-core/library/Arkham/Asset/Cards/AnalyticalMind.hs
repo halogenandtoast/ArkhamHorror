@@ -33,7 +33,7 @@ instance HasModifiersFor AnalyticalMind where
   getModifiersFor (InvestigatorTarget iid) (AnalyticalMind attrs)
     | controlledBy attrs iid = pure $ toModifiers
       attrs
-      [CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation 1]
+      [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AnalyticalMind where

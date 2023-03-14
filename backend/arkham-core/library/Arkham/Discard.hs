@@ -64,6 +64,10 @@ randomDiscard
   :: Sourceable source => InvestigatorId -> source -> HandDiscard
 randomDiscard iid source = randomDiscardMatching iid source AnyCard
 
+randomDiscardN
+  :: Sourceable source => InvestigatorId -> source -> Int -> HandDiscard
+randomDiscardN iid source n = (randomDiscard iid source) { discardAmount = n }
+
 randomDiscardMatching
   :: Sourceable source
   => InvestigatorId

@@ -561,6 +561,7 @@ data WindowMatcher
   | PlacedCounterOnAgenda Timing AgendaMatcher CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
+  | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who

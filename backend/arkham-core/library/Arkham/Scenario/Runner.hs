@@ -805,20 +805,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & setAsideCardsL %~ filter ((/= cCode) . toCardCode)
   Record key -> do
     isStandalone <- getIsStandalone
-    if isStandalone
-      then pure $ a & standaloneCampaignLogL . recorded %~ insertSet key
-      else pure a
+    pure $ if isStandalone
+      then a & standaloneCampaignLogL . recorded %~ insertSet key
+      else a
   RecordCount key n -> do
     isStandalone <- getIsStandalone
-    if isStandalone
-      then pure $ a & standaloneCampaignLogL . recordedCounts %~ insertMap key n
-      else pure a
+    pure $ if isStandalone
+      then a & standaloneCampaignLogL . recordedCounts %~ insertMap key n
+      else a
   ShuffleDeck (Deck.ScenarioDeckByKey deckKey) -> do
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
     deck' <- shuffleM $ cards <> fromMaybe [] (view (decksL . at deckKey) a)
-    pure $ a & decksL . at deckKey ?~ deck'
+    pure $ a & decksL . at deckKey ?~ deck' & discardL %~ filter ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
       selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid

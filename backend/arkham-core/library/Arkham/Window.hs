@@ -92,6 +92,7 @@ data WindowType
   | EnemyEnters EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
+  | EnemyWouldSpawnAt EnemyId LocationId
   | EnemySpawns EnemyId LocationId
   | EnemyWouldAttack EnemyAttackDetails
   | EnemyWouldBeDefeated EnemyId

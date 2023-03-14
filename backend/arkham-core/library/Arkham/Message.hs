@@ -270,6 +270,7 @@ data Message
   | CommitCard InvestigatorId Card
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
+  | ObtainCard Card
   | CreateEnemy EnemyId Card
   | CreateEnemyWithPlacement EnemyId Card Placement
   | CreateEnemyAt EnemyId Card LocationId (Maybe Target)

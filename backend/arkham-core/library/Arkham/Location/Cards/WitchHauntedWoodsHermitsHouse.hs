@@ -6,9 +6,18 @@ where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Ability
+import Arkham.Criteria
+import Arkham.Discard
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message hiding (DiscoverClues)
+import Arkham.Timing qualified as Timing
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
 
 newtype WitchHauntedWoodsHermitsHouse = WitchHauntedWoodsHermitsHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,10 +27,26 @@ witchHauntedWoodsHermitsHouse :: LocationCard WitchHauntedWoodsHermitsHouse
 witchHauntedWoodsHermitsHouse = location WitchHauntedWoodsHermitsHouse Cards.witchHauntedWoodsHermitsHouse 4 (PerPlayer 2)
 
 instance HasAbilities WitchHauntedWoodsHermitsHouse where
-  getAbilities (WitchHauntedWoodsHermitsHouse attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (WitchHauntedWoodsHermitsHouse a) = withBaseAbilities
+    a
+    [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a)
+      $ ForcedAbility
+      $ DiscoverClues
+          Timing.After
+          You
+          (LocationWithId $ toId a)
+          (AtLeast $ Static 1)
+    ]
+
+getCount :: [Window] -> Int
+getCount [] = error "wrong window"
+getCount (Window _ (Window.DiscoverClues _ _ n) : _) = n
+getCount (_ : xs) = getCount xs
 
 instance RunMessage WitchHauntedWoodsHermitsHouse where
-  runMessage msg (WitchHauntedWoodsHermitsHouse attrs) =
-    WitchHauntedWoodsHermitsHouse <$> runMessage msg attrs
+  runMessage msg l@(WitchHauntedWoodsHermitsHouse attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (getCount -> n) _ -> do
+      iids <- selectList $ investigatorAt $ toId attrs
+      pushAll [toMessage $ randomDiscardN iid attrs n | iid <- iids]
+      pure l
+    _ -> WitchHauntedWoodsHermitsHouse <$> runMessage msg attrs

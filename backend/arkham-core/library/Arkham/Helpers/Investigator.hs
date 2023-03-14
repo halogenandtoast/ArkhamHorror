@@ -20,7 +20,6 @@ import Arkham.Investigator.Types
 import Arkham.Matcher hiding ( InvestigatorDefeated )
 import Arkham.Message (Message(HealHorror))
 import Arkham.Projection
-import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
@@ -303,19 +302,13 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 canCommitToAnotherLocation
-  :: HasGame m => InvestigatorAttrs -> m Bool
-canCommitToAnotherLocation attrs = do
-  commitedCards <-
-    skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
-  let
-    committedCardIds =
-      concatMap (map toCardId . snd) . filter ((== toId attrs) . fst) $ mapToList commitedCards
+  :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool
+canCommitToAnotherLocation attrs otherLocation = do
   modifiers <- getModifiers (toTarget attrs)
-  pure $ any (permit committedCardIds) modifiers
+  anyM permit modifiers
  where
-  permit n (CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation m) =
-    m > length n
-  permit _ _ = False
+  permit (CanCommitToSkillTestPerformedByAnInvestigatorAt matcher) = member otherLocation <$> select matcher
+  permit _ = pure False
 
 findCard :: HasCallStack => CardId -> InvestigatorAttrs -> Card
 findCard cardId a =

@@ -76,7 +76,7 @@ data ModifierType
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
-  | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int
+  | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])

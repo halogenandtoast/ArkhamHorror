@@ -894,7 +894,9 @@ instance RunMessage EnemyAttrs where
               | iid <- maybeToList miid
               , enemySurgeIfUnabledToSpawn
               ]
-        [lid] -> pushAll (resolve $ EnemySpawn miid lid eid)
+        [lid] -> do
+          windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+          pushAll $ windows' : resolve (EnemySpawn miid lid eid)
         xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
       pure a
     InvestigatorEliminated iid -> case enemyPlacement of

@@ -8,8 +8,8 @@ import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Message (Message(BeginSkillTest))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Message ( Message (BeginSkillTest, RevelationSkillTest) )
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -18,7 +18,8 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Types ( Field (..) )
 
-getBaseValueForSkillTestType :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
+getBaseValueForSkillTestType
+  :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
 getBaseValueForSkillTestType iid mAction = \case
   SkillSkillTest skillType -> baseSkillValueFor skillType mAction [] iid
   ResourceSkillTest -> field InvestigatorResources iid
@@ -54,6 +55,15 @@ getIsBeingInvestigated lid = do
   mTarget <- getSkillTestTarget
   mAction <- getSkillTestAction
   pure $ mAction == Just Investigate && mTarget == Just (LocationTarget lid)
+
+revelationSkillTest
+  :: Sourceable source
+  => InvestigatorId
+  -> source
+  -> SkillType
+  -> Int
+  -> Message
+revelationSkillTest iid (toSource -> source) = RevelationSkillTest iid source
 
 beginSkillTest
   :: (Sourceable source, Targetable target)

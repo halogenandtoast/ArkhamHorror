@@ -50,6 +50,6 @@ instance RunMessage DeepBelowYourHouse where
         <$ pushAll
              (replicate
                n
-               (FindAndDrawEncounterCard iid (CardWithCardCode "01159"))
+               (FindAndDrawEncounterCard iid (CardWithCardCode "01159") True)
              )
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

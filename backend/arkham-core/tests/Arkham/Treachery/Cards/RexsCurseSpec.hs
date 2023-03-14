@@ -84,4 +84,4 @@ spec = describe "Rex's Curse" $ do
               <> treacheryIs Cards.rexsCurse
               )
             `shouldReturn` False
-          fieldAssert InvestigatorDeck ((== 1) . length . unDeck) investigator
+          fieldAssert InvestigatorDeck ((== 1) . length) investigator

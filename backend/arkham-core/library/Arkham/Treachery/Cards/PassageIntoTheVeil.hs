@@ -36,9 +36,9 @@ instance RunMessage PassageIntoTheVeil where
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        assetIds <- selectList (AssetControlledBy You)
-        t <$ push
-          (chooseOne
+        assetIds <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
+        push
+          $ chooseOne
             iid
             [ Label
               "Discard the top 5 cards of your deck"
@@ -49,5 +49,5 @@ instance RunMessage PassageIntoTheVeil where
               : [ AssetDamage aid source 1 0 | aid <- assetIds ]
               )
             ]
-          )
+        pure t
     _ -> PassageIntoTheVeil <$> runMessage msg attrs

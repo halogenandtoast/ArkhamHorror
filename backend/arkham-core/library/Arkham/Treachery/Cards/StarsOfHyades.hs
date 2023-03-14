@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
@@ -32,7 +31,7 @@ instance RunMessage StarsOfHyades where
       case nonEmpty events of
         Nothing -> push (InvestigatorAssignDamage iid source DamageAny 1 1)
         Just targets -> do
-          deckSize <- fieldMap InvestigatorDeck (length . unDeck) iid
+          deckSize <- fieldMap InvestigatorDeck length iid
           discardedEvent <- sample targets
           pushAll
             $ chooseOne

@@ -54,5 +54,5 @@ instance RunMessage DiningCar where
   runMessage msg l@(DiningCar attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       l <$ push
-        (FindAndDrawEncounterCard iid (CardWithTitle "Grappling Horror"))
+        (FindAndDrawEncounterCard iid (CardWithTitle "Grappling Horror") True)
     _ -> DiningCar <$> runMessage msg attrs

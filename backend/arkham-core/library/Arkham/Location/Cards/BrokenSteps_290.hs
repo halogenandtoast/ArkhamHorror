@@ -49,7 +49,7 @@ instance RunMessage BrokenSteps_290 where
           ]
           <> [ Label
                  "Draw the topmost cultist enemy in the encounter discard pile"
-                 [FindAndDrawEncounterCard iid $ CardWithId $ toCardId c]
+                 [FindAndDrawEncounterCard iid (CardWithId $ toCardId c) True]
              | c <- maybeToList mCultistCard
              ]
       unless (null choices) $ push $ chooseOne iid choices

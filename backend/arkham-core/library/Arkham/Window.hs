@@ -72,6 +72,7 @@ data WindowType
   | DealtExcessDamage Source DamageEffect Target Int
   | DealtHorror Source Target Int
   | DeckHasNoCards InvestigatorId
+  | EncounterDeckRunsOutOfCards
   | Defeated Source
   | Discarded InvestigatorId Source Card
   | DiscoverClues InvestigatorId LocationId Int

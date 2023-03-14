@@ -295,6 +295,7 @@ instance RunMessage ThePallidMask where
           (CardWithType EnemyType
           <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
           )
+          True
         pure s
       _ -> pure s
     ScenarioResolution res -> do

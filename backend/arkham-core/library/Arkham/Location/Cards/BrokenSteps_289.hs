@@ -51,7 +51,7 @@ instance RunMessage BrokenSteps_289 where
           ]
           <> [ Label
                  "Draw the topmost omen treachery in the encounter discard pile"
-                 [FindAndDrawEncounterCard iid $ CardWithId $ toCardId c]
+                 [FindAndDrawEncounterCard iid (CardWithId $ toCardId c) True]
              | c <- maybeToList mOmenCard
              ]
       unless (null choices) $ push $ chooseOne iid choices

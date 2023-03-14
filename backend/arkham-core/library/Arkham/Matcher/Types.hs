@@ -509,6 +509,7 @@ data WindowMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | AmongSearchedCards Who
   | DeckHasNoCards Timing Who
+  | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
   | MovedFromHunter Timing EnemyMatcher
@@ -767,6 +768,7 @@ data AbilityMatcher
   | AbilityOneOf [AbilityMatcher]
   | AnyAbility
   | AbilityOnEncounterCard
+  | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility
   deriving stock (Show, Eq, Generic)

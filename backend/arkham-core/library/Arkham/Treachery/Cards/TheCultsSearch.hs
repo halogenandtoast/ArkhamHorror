@@ -29,9 +29,10 @@ instance RunMessage TheCultsSearch where
       let
         revelation = if null cultists
           then
-            [ FindAndDrawEncounterCard iid
-              $ CardWithType EnemyType
-              <> CardWithTrait Cultist
+            [ FindAndDrawEncounterCard
+              iid
+              (CardWithType EnemyType <> CardWithTrait Cultist)
+              True
             ]
           else
             concatMap

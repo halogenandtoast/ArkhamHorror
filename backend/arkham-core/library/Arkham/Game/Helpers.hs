@@ -2174,6 +2174,9 @@ windowMatches iid source window' = \case
     Window t (Window.DeckHasNoCards who) | whenMatcher == t ->
       matchWho iid who whoMatcher
     _ -> pure False
+  Matcher.EncounterDeckRunsOutOfCards -> case window' of
+    Window _ Window.EncounterDeckRunsOutOfCards -> pure True
+    _ -> pure False
   Matcher.PlayCard whenMatcher whoMatcher cardMatcher -> case window' of
     Window t (Window.PlayCard who card) | whenMatcher == t -> liftA2
       (&&)

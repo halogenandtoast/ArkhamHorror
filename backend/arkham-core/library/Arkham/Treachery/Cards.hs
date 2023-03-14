@@ -157,11 +157,13 @@ allEncounterTreacheryCards = mapFromList $ map
   , attractingAttention
   , bathophobia
   , beastOfTheBayou
+  , bedeviled
   , betweenWorlds
   , beyondTheVeil
   , blackStarsRise
   , brokenRails
   , captiveMind
+  , centuriesOfSecrets
   , chaosInTheWater
   , childrenOfValusia
   , chillFromBelow
@@ -182,6 +184,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , deadlyFate
   , deepDark
   , descentIntoMadness
+  , diabolicVoices
   , dismalCurse
   , dissonantVoices
   , draggedUnder
@@ -189,6 +192,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , eagerForDeath
   , entombed
   , ephemeralExhibits
+  , evilPast
   , eyesInTheWalls
   , falseLead
   , fateOfAllFools
@@ -301,6 +305,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , wordsOfPower
   , worldsMerge
   , wormhole
+  , wracked
   , wrackedByTime
   , yithianPresence
   ]
@@ -1233,6 +1238,31 @@ watchersGrasp = (treachery "05087" "Watcher's Grasp" TheWatcher 2)
 daemonicPiping :: CardDef
 daemonicPiping = surge $ (treachery "05089" "Daemonic Piping" AgentsOfAzathoth 3)
   { cdCardTraits = setFromList [Power, Terror]
+  }
+
+diabolicVoices :: CardDef
+diabolicVoices = (treachery "05092" "Diabolic Voices" Witchcraft 3)
+  { cdCardTraits = singleton Curse
+  }
+
+wracked :: CardDef
+wracked = (treachery "05093" "Wracked" Witchcraft 2)
+  { cdCardTraits = singleton Hex
+  }
+
+bedeviled :: CardDef
+bedeviled = (treachery "05094" "Bedeviled" Witchcraft 2)
+  { cdCardTraits = singleton Hex
+  }
+
+evilPast :: CardDef
+evilPast = (treachery "05098" "Evil Past" CityOfSins 2)
+  { cdCardTraits = singleton Curse
+  }
+
+centuriesOfSecrets :: CardDef
+centuriesOfSecrets = (treachery "05099" "Centuries of Secrets" CityOfSins 3)
+  { cdCardTraits = singleton Curse
   }
 
 whispersInTheDark :: CardDef

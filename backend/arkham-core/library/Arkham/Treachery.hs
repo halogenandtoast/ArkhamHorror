@@ -284,6 +284,13 @@ allTreacheries = mapFrom
   , SomeTreacheryCard watchersGrasp
   -- Agents of Azathoth
   , SomeTreacheryCard daemonicPiping
+  -- Witchcraft
+  , SomeTreacheryCard diabolicVoices
+  , SomeTreacheryCard wracked
+  , SomeTreacheryCard bedeviled
+  -- City of Sins
+  , SomeTreacheryCard evilPast
+  , SomeTreacheryCard centuriesOfSecrets
   -- Spectral Predators
   , SomeTreacheryCard whispersInTheDark
   -- Trapped Spirits

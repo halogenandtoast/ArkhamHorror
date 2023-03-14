@@ -29,8 +29,13 @@ drawCard :: [a] -> (Maybe a, [a])
 drawCard [] = (Nothing, [])
 drawCard (x : xs) = (Just x, xs)
 
+draw :: forall a. Int -> Deck a -> ([a], Deck a)
+draw = coerce (splitAt @[a])
+
 newtype Deck a = Deck { unDeck :: [a] }
-  deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq)
+  deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq, MonoFoldable, SemiSequence, GrowingAppend)
+
+type instance Element (Deck a) = a
 
 instance Show (Deck a) where
   show _ = "<Deck>"

@@ -1,14 +1,17 @@
 module Arkham.Enemy.Cards.CovenInitiate
   ( covenInitiate
   , CovenInitiate(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Scenario.Types ( Field (..) )
+import Arkham.Trait ( Trait (Hex) )
 
 newtype CovenInitiate = CovenInitiate EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,5 +21,20 @@ covenInitiate :: EnemyCard CovenInitiate
 covenInitiate = enemy CovenInitiate Cards.covenInitiate (2, Static 2, 2) (0, 1)
 
 instance RunMessage CovenInitiate where
-  runMessage msg (CovenInitiate attrs) =
-    CovenInitiate <$> runMessage msg attrs
+  runMessage msg e@(CovenInitiate attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      push $ DiscardTopOfEncounterDeck
+        iid
+        2
+        (toSource attrs)
+        (Just $ toTarget attrs)
+      pure e
+    DiscardedTopOfEncounterDeck iid _ _ (isTarget attrs -> True) -> do
+      deckEmpty <- scenarioFieldMap ScenarioEncounterDeck null
+      when deckEmpty $ do
+        mHexCard <- findTopOfDiscard (CardWithTrait Hex)
+        for_
+          mHexCard
+          \hexCard -> push (InvestigatorDrewEncounterCard iid hexCard)
+      pure e
+    _ -> CovenInitiate <$> runMessage msg attrs

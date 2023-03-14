@@ -26,8 +26,8 @@ instance RunMessage ChillFromBelow where
       -> do
         handCount <- fieldMap InvestigatorHand length iid
         pushAll
-          $ replicate (min n handCount) (toMessage $ randomDiscard iid attrs)
-          <> [ InvestigatorAssignDamage iid source DamageAny (n - handCount) 0
+          $ toMessage (randomDiscardN iid attrs (min n handCount))
+          : [ InvestigatorAssignDamage iid source DamageAny (n - handCount) 0
              | n - handCount > 0
              ]
         pure t

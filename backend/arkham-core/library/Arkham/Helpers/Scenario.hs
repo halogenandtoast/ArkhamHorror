@@ -65,3 +65,9 @@ withStandalone cf sf =
 resignedWith :: HasGame m => CardDef -> m Bool
 resignedWith cDef =
   scenarioFieldMap ScenarioResignedCardCodes (elem (toCardCode cDef))
+
+findTopOfDiscard :: HasGame m => CardMatcher -> m (Maybe EncounterCard)
+findTopOfDiscard = fmap listToMaybe . findInDiscard
+
+findInDiscard :: HasGame m => CardMatcher -> m [EncounterCard]
+findInDiscard matcher = scenarioFieldMap ScenarioDiscard (filter (`cardMatch` matcher))

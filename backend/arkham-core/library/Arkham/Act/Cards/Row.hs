@@ -6,9 +6,9 @@ module Arkham.Act.Cards.Row
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
@@ -50,7 +50,14 @@ instance RunMessage Row where
       _ <- popMessageMatching $ \case
         InvestigatorDoDrawEncounterCard iid' -> iid == iid'
         _ -> False
-      a <$ push (DiscardTopOfEncounterDeck iid 5 (toSource attrs) (Just $ toTarget attrs))
+      a
+        <$ push
+             (DiscardTopOfEncounterDeck
+               iid
+               5
+               (toSource attrs)
+               (Just $ toTarget attrs)
+             )
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
@@ -63,12 +70,9 @@ instance RunMessage Row where
       let
         writhingAppendages =
           filter ((== Enemies.writhingAppendage) . toCardDef) cards
-      a <$ pushAll
-        (concat
-          [ [ RemoveFromEncounterDiscard card
-            , SpawnEnemyAtEngagedWith (EncounterCard card) lid iid
-            ]
-          | card <- writhingAppendages
-          ]
-        )
+      pushAll
+        [ SpawnEnemyAtEngagedWith (EncounterCard card) lid iid
+        | card <- writhingAppendages
+        ]
+      pure a
     _ -> Row <$> runMessage msg attrs

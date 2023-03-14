@@ -43,11 +43,8 @@ instance RunMessage Courtyard where
         (toAbilitySource attrs 1)
         (Just $ toTarget attrs)
       pure l
-    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target ->
-      do
-        when (toCardType card == EnemyType) $ pushAll
-          [ RemoveFromEncounterDiscard card
-          , InvestigatorDrewEncounterCard iid card
-          ]
-        pure l
+    DiscardedTopOfEncounterDeck iid [card] _ (isTarget attrs -> True) -> do
+      when (toCardType card == EnemyType) $ do
+        push $ InvestigatorDrewEncounterCard iid card
+      pure l
     _ -> Courtyard <$> runMessage msg attrs

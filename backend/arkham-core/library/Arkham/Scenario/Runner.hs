@@ -791,6 +791,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                  (card : discardedCards)
              ]
         pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
+  SpawnEnemyAt (EncounterCard ec) _ -> do
+    pure $ a & discardL %~ filter (/= ec)
+  SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
+    pure $ a & discardL %~ filter (/= ec)
+  InvestigatorDrewEncounterCard _ ec -> do
+    pure $ a & discardL %~ filter (/= ec)
   When (EnemySpawn _ _ enemyId) -> do
     card <- field EnemyCard enemyId
     pure $ a & (victoryDisplayL %~ delete card)

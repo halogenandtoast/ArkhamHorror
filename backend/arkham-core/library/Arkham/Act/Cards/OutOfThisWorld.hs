@@ -53,10 +53,9 @@ instance RunMessage OutOfThisWorld where
         [ FocusCards (map EncounterCard locationCards)
         , chooseOne
           iid
-          [ TargetLabel
-              (CardIdTarget $ toCardId location)
-              [ RemoveFromEncounterDiscard location
-              , InvestigatorDrewEncounterCard iid location
+          [ targetLabel
+              (toCardId location)
+              [ InvestigatorDrewEncounterCard iid location
               ]
           | location <- locationCards
           ]

@@ -28,7 +28,11 @@ instance RunMessage HuntedByByakhee where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         t <$ pushAll
-          [ DiscardTopOfEncounterDeck iid n (toSource attrs) (Just $ toTarget attrs)
+          [ DiscardTopOfEncounterDeck
+            iid
+            n
+            (toSource attrs)
+            (Just $ toTarget attrs)
           , ShuffleDeck Deck.EncounterDeck
           ]
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
@@ -43,11 +47,9 @@ instance RunMessage HuntedByByakhee where
             [ FocusCards $ map EncounterCard cards
             , chooseOne
               iid
-              [ TargetLabel
-                  (CardIdTarget $ toCardId enemy)
-                  [ RemoveFromEncounterDiscard enemy
-                  , InvestigatorDrewEncounterCard iid enemy
-                  ]
+              [ targetLabel
+                  (toCardId enemy)
+                  [InvestigatorDrewEncounterCard iid enemy]
               | enemy <- byakhee
               ]
             , UnfocusCards

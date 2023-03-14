@@ -65,13 +65,9 @@ instance RunMessage RicesWhereabouts where
             | toCardDef card == Assets.jazzMulligan -> Just card
           _ -> Nothing
       case mCard of
-        Just (EncounterCard ec) ->
-          a
-            <$ pushAll
-                 [ RemoveFromEncounterDiscard ec
-                 , InvestigatorDrewEncounterCard iid ec
-                 ]
+        Just (EncounterCard ec) -> push $ InvestigatorDrewEncounterCard iid ec
         _ -> throwIO $ InvalidState "did not find the correct card"
+      pure a
     UseCardAbility _ source 3 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do

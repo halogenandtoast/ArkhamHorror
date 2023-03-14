@@ -39,27 +39,19 @@ instance RunMessage DimensionalDoorway where
   runMessage msg l@(DimensionalDoorway attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- scenarioField ScenarioDiscard
-      let
-        mHexCard = find (member Hex . toTraits) encounterDiscard
-        revelationMsgs = case mHexCard of
-          Nothing -> []
-          Just hexCard ->
-            [ RemoveFromEncounterDiscard hexCard
-            , InvestigatorDrewEncounterCard iid hexCard
-            ]
-      pushAll revelationMsgs
+      for_ (find (member Hex . toTraits) encounterDiscard)
+        $ \hexCard -> push $ InvestigatorDrewEncounterCard iid hexCard
       DimensionalDoorway <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       resourceCount <- getSpendableResources iid
-      if resourceCount >= 2
-        then l <$ push
-          (chooseOne
-            iid
-            [ Label "Spend 2 resource" [SpendResources iid 2]
-            , Label
-              "Shuffle Dimensional Doorway back into the encounter deck"
-              [ShuffleBackIntoEncounterDeck $ toTarget attrs]
-            ]
-          )
-        else l <$ push (ShuffleBackIntoEncounterDeck $ toTarget attrs)
+      push $ if resourceCount >= 2
+        then chooseOne
+          iid
+          [ Label "Spend 2 resource" [SpendResources iid 2]
+          , Label
+            "Shuffle Dimensional Doorway back into the encounter deck"
+            [ShuffleBackIntoEncounterDeck $ toTarget attrs]
+          ]
+        else ShuffleBackIntoEncounterDeck (toTarget attrs)
+      pure l
     _ -> DimensionalDoorway <$> runMessage msg attrs

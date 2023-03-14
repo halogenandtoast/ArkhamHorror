@@ -11,8 +11,8 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field(..))
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -48,11 +48,13 @@ instance HasAbilities WitchHauntedWoodsAbandonedMine where
           attrs
           1
           (Here
-          <> (InvestigatorExists $ AnyInvestigator
-               [ You <> InvestigatorWithAnyResources
-               , InvestigatorAt (NotLocation $ LocationWithInvestigator You)
-                 <> InvestigatorWithAnyResources
-               ]
+          <> (InvestigatorExists
+             $ InvestigatorWithAnyResources
+             <> AnyInvestigator
+                  [ You
+                  , InvestigatorAt
+                    (NotLocation $ LocationWithInvestigator You)
+                  ]
              )
           )
       $ FastAbility Free

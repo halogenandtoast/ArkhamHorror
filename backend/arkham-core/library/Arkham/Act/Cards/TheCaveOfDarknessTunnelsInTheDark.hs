@@ -77,9 +77,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
            ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
-      when (toCardType card == TreacheryType) $ pushAll
-        [ RemoveFromEncounterDiscard card
-        , InvestigatorDrewEncounterCard iid card
-        ]
+      when (toCardType card == TreacheryType) $ do
+        push $ InvestigatorDrewEncounterCard iid card
       pure a
     _ -> TheCaveOfDarknessTunnelsInTheDark <$> runMessage msg attrs

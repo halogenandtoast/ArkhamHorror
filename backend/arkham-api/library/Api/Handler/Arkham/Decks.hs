@@ -1,5 +1,6 @@
 module Api.Handler.Arkham.Decks
   ( getApiV1ArkhamDecksR
+  , getApiV1ArkhamDeckR
   , postApiV1ArkhamDecksR
   , deleteApiV1ArkhamDeckR
   , putApiV1ArkhamGameDecksR
@@ -142,6 +143,16 @@ fromPostData userId CreateDeckPost {..} = do
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
 getDeckList url = liftIO $ eitherDecode <$> simpleHttp (T.unpack url)
+
+getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
+getApiV1ArkhamDeckR deckId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  mDeck <- runDB $ selectOne $ do
+    decks <- from $ table @ArkhamDeck
+    where_ $ decks ^. persistIdField ==. val deckId
+    where_ $ decks ^. ArkhamDeckUserId ==. val userId
+    pure decks
+  maybe notFound pure mDeck
 
 deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do

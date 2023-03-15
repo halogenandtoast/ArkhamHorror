@@ -31,6 +31,7 @@ data instance Field Skill :: Type -> Type where
 
 data SkillAttrs = SkillAttrs
   { skillCardCode :: CardCode
+  , skillCardId :: CardId
   , skillId :: SkillId
   , skillOwner :: InvestigatorId
   , skillAdditionalCost :: Maybe Cost
@@ -58,7 +59,7 @@ instance HasCardDef SkillAttrs where
     Nothing -> error $ "missing card def for skill " <> show (skillCardCode a)
 
 instance IsCard SkillAttrs where
-  toCardId = unSkillId . skillId
+  toCardId = skillCardId
   toCardOwner = Just . skillOwner
 
 instance ToJSON SkillAttrs where
@@ -96,8 +97,9 @@ skill
   :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
 skill f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(iid, sid) -> f $ SkillAttrs
+  , cbCardBuilder = \cardId (iid, sid) -> f $ SkillAttrs
     { skillCardCode = toCardCode cardDef
+    , skillCardId = cardId
     , skillId = sid
     , skillOwner = iid
     , skillAdditionalCost = Nothing

@@ -26,7 +26,6 @@ import Arkham.Campaign
 import Arkham.Campaign.Types hiding ( campaign, modifiersL )
 import Arkham.Card
 import Arkham.Card.Cost
-import Arkham.Card.Id
 import Arkham.Card.PlayerCard
 import Arkham.ChaosBag.Base
 import Arkham.Classes
@@ -246,6 +245,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameFoundCards = mempty
       , gameFocusedTokens = mempty
       , gameActiveCard = Nothing
+      , gameResolvingCard = Nothing
       , gameActiveAbilities = mempty
       , gamePlayerOrder = toList playersMap
       , gameRemovedFromPlay = mempty
@@ -1053,11 +1053,15 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AssetAbility assetMatcher ->
       concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
     AbilityOnCardControlledBy iid -> do
-      flip filterM abilities $ \ability -> case abilitySource ability of
-        AssetSource aid -> member aid <$> select (assetControlledBy iid)
-        EventSource eid -> member eid <$> select (eventControlledBy iid)
-        InvestigatorSource iid' -> pure $ iid == iid'
-        _ -> pure False
+      let
+        sourceMatch = \case
+          AssetSource aid -> member aid <$> select (assetControlledBy iid)
+          EventSource eid -> member eid <$> select (eventControlledBy iid)
+          InvestigatorSource iid' -> pure $ iid == iid'
+          AbilitySource s _ -> sourceMatch s
+          ProxySource s _ -> sourceMatch s
+          _ -> pure False
+      flip filterM abilities $ \ability -> sourceMatch (abilitySource ability)
     AbilityOnLocation locationMatcher -> do
       lids <- selectList locationMatcher
       let
@@ -1170,6 +1174,7 @@ getLocationsMatching
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
+    LocationWithCardCode cardId -> filter ((== cardId) . toCardId) ls
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher
       filterM
@@ -1500,6 +1505,7 @@ getAssetsMatching matcher = do
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
+    AssetWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
     AssetWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
     AssetWithHealth -> pure $ filter (isJust . assetHealth . toAttrs) as
@@ -1776,6 +1782,7 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
@@ -2204,6 +2211,7 @@ instance Projection Asset where
         TheVoid -> pure Nothing
         Pursuit -> pure Nothing
       AssetCardCode -> pure assetCardCode
+      AssetCardId -> pure assetCardId
       AssetSlots -> pure assetSlots
       AssetSealedTokens -> pure assetSealedTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
@@ -2721,6 +2729,7 @@ instance Projection Event where
       attrs@EventAttrs {..} = toAttrs e
       cdef = toCardDef attrs
     case fld of
+      EventCardId -> pure eventCardId
       EventSealedTokens -> pure eventSealedTokens
       EventPlacement -> pure eventPlacement
       EventTraits -> pure $ cdCardTraits cdef
@@ -3298,7 +3307,7 @@ runGameMessage msg g = case msg of
     pure $ g & gameStateL .~ IsOver
   PlaceLocation lid card -> if isNothing $ g ^. entitiesL . locationsL . at lid
     then do
-      let location = lookupLocation (toCardCode card) lid
+      let location = lookupLocation (toCardCode card) lid (toCardId card)
       push (PlacedLocation (toName location) (toCardCode card) lid)
       pure $ g & entitiesL . locationsL . at lid ?~ location
     else pure g
@@ -3307,7 +3316,7 @@ runGameMessage msg g = case msg of
     let
       oldAttrs = toAttrs location
       location' =
-        flip overAttrs (lookupLocation (toCardCode card) lid) $ \attrs -> attrs
+        flip overAttrs (lookupLocation (toCardCode card) lid (toCardId card)) $ \attrs -> attrs
           { locationInvestigators = locationInvestigators oldAttrs
           , locationEnemies = locationEnemies oldAttrs
           , locationEvents = locationEvents oldAttrs
@@ -3425,9 +3434,9 @@ runGameMessage msg g = case msg of
     case card of
       PlayerCard pc -> case toCardType pc of
         SkillType -> do
+          skillId <- getRandom
           let
-            skill = createSkill pc iid
-            skillId = toId skill
+            skill = createSkill pc iid skillId
           push (InvestigatorCommittedSkill iid skillId)
           for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
             let ability = abilityEffect skill cost
@@ -3620,9 +3629,9 @@ runGameMessage msg g = case msg of
     case card of
       PlayerCard pc -> case toCardType pc of
         PlayerTreacheryType -> do
+          tid <- getRandom
           let
-            tid = TreacheryId cardId
-            treachery = lookupTreachery (toCardCode pc) iid tid
+            treachery = lookupTreachery (toCardCode pc) iid tid cardId
           pushAll
             $ resolve (Revelation iid (TreacherySource tid))
             <> [UnsetActiveCard]
@@ -3631,10 +3640,10 @@ runGameMessage msg g = case msg of
             & (entitiesL . treacheriesL %~ insertMap tid treachery)
             & (activeCardL ?~ card)
         AssetType -> do
-          let aid = AssetId cardId
+          aid <- getRandom
           asset <- runMessage
             (SetOriginalCardCode $ pcOriginalCardCode pc)
-            (createAsset card)
+            (createAsset card aid)
           pushAll
             [ CardEnteredPlay iid card
             , InvestigatorPlayAsset iid aid
@@ -3642,12 +3651,12 @@ runGameMessage msg g = case msg of
             ]
           pure $ g & entitiesL . assetsL %~ insertMap aid asset
         EventType -> do
+          eid <- getRandom
           event' <- runMessage
             (SetOriginalCardCode $ pcOriginalCardCode pc)
-            (createEvent pc iid)
+            (createEvent pc iid eid)
           investigator' <- getInvestigator iid
           let
-            eid = toId event'
             zone = if card `elem` investigatorHand (toAttrs investigator')
               then Zone.FromHand
               else Zone.FromDiscard
@@ -3661,9 +3670,9 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard ec -> case toCardType ec of
         TreacheryType -> do
+          tid <- getRandom
           let
-            treachery = createTreachery card iid
-            tid = toId treachery
+            treachery = createTreachery card iid tid
           push $ AttachTreachery tid (InvestigatorTarget iid)
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         _ -> pure g
@@ -4155,9 +4164,9 @@ runGameMessage msg g = case msg of
     lid <- selectJust locationMatcher
     g <$ push (CreateAssetAt cardCode $ AtLocation lid)
   CreateAssetAt card placement -> do
+    assetId <- getRandom
     let
-      asset = createAsset card
-      assetId = toId asset
+      asset = createAsset card assetId
     iid <- getActiveInvestigatorId
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
@@ -4171,9 +4180,9 @@ runGameMessage msg g = case msg of
           & (entitiesL . assetsL . at assetId ?~ asset)
           & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateEventAt iid card placement -> do
+    eventId <- getRandom
     let
-      event' = createEvent card iid
-      eventId = toId event'
+      event' = createEvent card iid eventId
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
       Nothing -> do
@@ -4188,27 +4197,27 @@ runGameMessage msg g = case msg of
           & (activeCostL %~ insertMap (activeCostId cost) cost)
 
   CreateWeaknessInThreatArea card iid -> do
+    treacheryId <- getRandom
     let
-      treachery = createTreachery card iid
-      treacheryId = toId treachery
+      treachery = createTreachery card iid treacheryId
     push (AttachTreachery treacheryId (InvestigatorTarget iid))
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   AttachStoryTreacheryTo card target -> do
+    treacheryId <- getRandom
     let
-      treachery = createTreachery card (g ^. leadInvestigatorIdL)
-      treacheryId = toId treachery
+      treachery = createTreachery card (g ^. leadInvestigatorIdL) treacheryId
     push (AttachTreachery treacheryId target)
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do
+    assetId <- getRandom
     let
-      asset = createAsset card
-      assetId = toId asset
+      asset = createAsset card assetId
     pushAll [TakeControlOfAsset iid assetId]
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   ReplaceInvestigatorAsset iid card -> do
+    assetId <- getRandom
     let
-      asset = createAsset card
-      assetId = toId asset
+      asset = createAsset card assetId
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do
@@ -4355,9 +4364,9 @@ runGameMessage msg g = case msg of
     pure $ g & (activeCardL ?~ card)
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do
+      assetId <- getRandom
       let
-        asset = createAsset card
-        assetId = toId asset
+        asset = createAsset card assetId
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
       pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
@@ -4378,6 +4387,7 @@ runGameMessage msg g = case msg of
     let
       g' =
         g
+          & (resolvingCardL ?~ EncounterCard card)
           & (focusedCardsL %~ filter ((/= Just card) . preview _EncounterCard))
           & (foundCardsL %~ HashMap.map
               (filter ((/= Just card) . preview _EncounterCard))
@@ -4405,16 +4415,16 @@ runGameMessage msg g = case msg of
         g <$ push
           (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
       EncounterAssetType -> do
+        assetId <- getRandom
         let
-          asset = createAsset card
-          assetId = toId asset
+          asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ resolve $ Revelation iid (AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       LocationType -> do
+        locationId <- getRandom
         let
-          location = createLocation card
-          locationId = toId location
+          location = createLocation card locationId
         pushAll
           $ [ PlacedLocation (toName location) (toCardCode card) locationId
             , RevealLocation (Just iid) locationId
@@ -4446,9 +4456,9 @@ runGameMessage msg g = case msg of
         _ -> id
     pure $ g & removeTreacheryLens
   DrewTreachery iid mdeck (EncounterCard card) -> do
+    treacheryId <- getRandom
     let
-      treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid
-      treacheryId = toId treachery
+      treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
@@ -4480,9 +4490,9 @@ runGameMessage msg g = case msg of
           <> [AfterRevelation iid treacheryId]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
+    treacheryId <- getRandom
     let
-      treachery = createTreachery card iid
-      treacheryId = toId treachery
+      treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows
     pushAll
       $ [ RemoveCardFromHand iid (toCardId card)
@@ -4546,8 +4556,9 @@ runGameMessage msg g = case msg of
   DiscardedCost (SearchedCardTarget cid) -> do
     -- There is only one card, Astounding Revelation, that does this so we just hard code for now
     iid <- getActiveInvestigatorId
+    eventId <- getRandom
     let
-      event' = lookupEvent "06023" iid (EventId cid)
+      event' = lookupEvent "06023" iid eventId cid
       dEntities =
         fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
     pure
@@ -4666,7 +4677,6 @@ preloadModifiers g = case gameMode g of
     allModifiers <- getMonoidalHashMap <$> foldMapM
       (`toTargetModifiers` (entities
                            <> inHandEntities
-                           <> discardEntities
                            <> maybeToList
                                 (SomeEntity <$> modeScenario (gameMode g))
                            <> maybeToList
@@ -4677,7 +4687,6 @@ preloadModifiers g = case gameMode g of
       : map TokenTarget tokens
       <> map TokenFaceTarget [minBound .. maxBound]
       <> map toTarget entities
-      <> map toTarget discardEntities
       <> map CardTarget cards
       <> map (CardIdTarget . toCardId) cards
       <> map
@@ -4689,7 +4698,6 @@ preloadModifiers g = case gameMode g of
       $ g { gameModifiers = HashMap.map (filter modifierFilter) allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
-  discardEntities = overEntities (: []) (gameEncounterDiscardEntities g)
   inHandEntities =
     concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe

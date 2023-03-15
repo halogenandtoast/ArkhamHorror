@@ -56,6 +56,11 @@ assetControlledBy = AssetControlledBy . InvestigatorWithId
 assetAt :: LocationId -> AssetMatcher
 assetAt = AssetAt . LocationWithId
 
+-- ** Skill Helpers **
+
+skillControlledBy :: InvestigatorId -> SkillMatcher
+skillControlledBy = SkillControlledBy . InvestigatorWithId
+
 -- ** Enemy Helpers **
 
 enemyIs :: HasCardCode a => a -> EnemyMatcher
@@ -177,6 +182,7 @@ replaceYourLocation iid (Just lid) = go
     LocationWithLabel{} -> matcher
     LocationWithSymbol{} -> matcher
     LocationLeavingPlay -> matcher
+    LocationWithCardId{} -> matcher
     LocationWithDoom{} -> matcher
     LocationWithDefeatedEnemyThisRound{} -> matcher
     YourLocation -> LocationWithId lid

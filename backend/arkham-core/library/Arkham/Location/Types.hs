@@ -292,9 +292,10 @@ locationWith
   -> CardBuilder LocationId a
 locationWith f def shroud' revealClues g = CardBuilder
   { cbCardCode = cdCardCode def
-  , cbCardBuilder = \lid -> f . g $ LocationAttrs
+  , cbCardBuilder = \cardId lid -> f . g $ LocationAttrs
     { locationId = lid
     , locationCardCode = toCardCode def
+    , locationCardId = cardId
     , locationLabel = nameToLabel (cdName def)
     , locationRevealClues = revealClues
     , locationClues = 0
@@ -438,5 +439,5 @@ instance Named (Unrevealed LocationAttrs) where
   toName (Unrevealed l) = toName (toCardDef l)
 
 instance IsCard LocationAttrs where
-  toCardId = unLocationId . locationId
+  toCardId = locationCardId
   toCardOwner = const Nothing

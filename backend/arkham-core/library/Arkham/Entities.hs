@@ -30,19 +30,22 @@ import Arkham.Treachery.Types (Treachery)
 
 -- Entity id generation should be random, so even though this is pure now
 -- this is using a Monad
-addEntity :: Monad m => Investigator -> Entities -> Card -> m Entities
+addEntity :: MonadRandom m => Investigator -> Entities -> Card -> m Entities
 addEntity i e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType -> do
-      let event' = createEvent card (toId i)
+      eventId <- getRandom
+      let event' = createEvent card (toId i) eventId
       pure $ e & eventsL %~ insertEntity event'
     AssetType -> do
-      let asset = createAsset card
+      assetId <- getRandom
+      let asset = createAsset card assetId
       pure $ e & assetsL %~ insertMap (toId asset) asset
     _ -> error "Unhandled"
   EncounterCard ec -> case toCardType ec of
     TreacheryType -> do
-      let treachery = createTreachery card (toId i)
+      treacheryId <- getRandom
+      let treachery = createTreachery card (toId i) treacheryId
       pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled"
   VengeanceCard _ -> error "vengeance card"

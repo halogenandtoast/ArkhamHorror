@@ -138,7 +138,7 @@ allEnemyCards :: HashMap CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards
 
 instance IsCard EnemyAttrs where
-  toCardId = unEnemyId . enemyId
+  toCardId = enemyCardId
   toCard e = case lookupCard (enemyOriginalCardCode e) (toCardId e) of
     PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer e }
     ec -> ec
@@ -167,8 +167,9 @@ enemyWith
 enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \eid -> f . g $ EnemyAttrs
+    , cbCardBuilder = \cardId eid -> f . g $ EnemyAttrs
       { enemyId = eid
+      , enemyCardId = cardId
       , enemyCardCode = toCardCode cardDef
       , enemyOriginalCardCode = toCardCode cardDef
       , enemyPlacement = Unplaced

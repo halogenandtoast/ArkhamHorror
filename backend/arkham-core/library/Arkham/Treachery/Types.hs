@@ -57,6 +57,7 @@ data instance Field Treachery :: Type -> Type where
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
+  , treacheryCardId :: CardId
   , treacheryCardCode :: CardCode
   , treacheryOwner :: Maybe InvestigatorId
   , treacheryDoom :: Int
@@ -146,7 +147,7 @@ instance Sourceable TreacheryAttrs where
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
-  toCardId = unTreacheryId . treacheryId
+  toCardId = treacheryCardId
   toCardOwner = treacheryOwner
 
 treacheryOn :: Target -> TreacheryAttrs -> Bool
@@ -205,8 +206,9 @@ treacheryWith
   -> CardBuilder (InvestigatorId, TreacheryId) a
 treacheryWith f cardDef g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(iid, tid) -> f . g $ TreacheryAttrs
+  , cbCardBuilder = \cardId (iid, tid) -> f . g $ TreacheryAttrs
     { treacheryId = tid
+    , treacheryCardId = cardId
     , treacheryCardCode = toCardCode cardDef
     , treacheryPlacement = TreacheryLimbo
     , treacheryOwner = if isJust (cdCardSubType cardDef)
@@ -225,7 +227,7 @@ treacheryWith f cardDef g = CardBuilder
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
 is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
-is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
+is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
 data Treachery = forall a . IsTreachery a => Treachery a

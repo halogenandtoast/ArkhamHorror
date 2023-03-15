@@ -20,13 +20,9 @@ data EnemyAttackDetails = EnemyAttackDetails
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-enemyAttack
-  :: Targetable targetable
-  => EnemyId
-  -> targetable
-  -> EnemyAttackDetails
-enemyAttack enemyId targetable = EnemyAttackDetails
-  { attackTarget = toTarget targetable
+enemyAttack :: Targetable target => EnemyId -> target -> EnemyAttackDetails
+enemyAttack enemyId (toTarget -> target) = EnemyAttackDetails
+  { attackTarget = target
   , attackEnemy = enemyId
   , attackType = RegularAttack
   , attackDamageStrategy = DamageAny
@@ -34,12 +30,9 @@ enemyAttack enemyId targetable = EnemyAttackDetails
   }
 
 attackOfOpportunity
-  :: Targetable targetable
-  => EnemyId
-  -> targetable
-  -> EnemyAttackDetails
-attackOfOpportunity enemyId targetable =
-  (enemyAttack enemyId targetable) { attackType = AttackOfOpportunity }
+  :: Targetable target => EnemyId -> target -> EnemyAttackDetails
+attackOfOpportunity enemyId target =
+  (enemyAttack enemyId target) { attackType = AttackOfOpportunity }
 
 damageStrategyL :: Lens' EnemyAttackDetails DamageStrategy
 damageStrategyL =

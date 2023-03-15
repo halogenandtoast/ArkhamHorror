@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Window ( Window (..) )
@@ -23,7 +23,7 @@ newtype Counterpunch2 = Counterpunch2 EventAttrs
 counterpunch2 :: EventCard Counterpunch2
 counterpunch2 = event Counterpunch2 Cards.counterpunch2
 
-toEnemy :: [Window] -> EnemyId
+toEnemy :: [Window] -> EnemyMatcher
 toEnemy [] = error "invalid call"
 toEnemy (Window _ (Window.EnemyAttacks details) : _) = attackEnemy details
 toEnemy (_ : xs) = toEnemy xs
@@ -31,13 +31,14 @@ toEnemy (_ : xs) = toEnemy xs
 instance RunMessage Counterpunch2 where
   runMessage msg e@(Counterpunch2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      let enemyId = toEnemy windows'
-      pushAll
-        [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [SkillModifier SkillCombat 2, DamageDealt 1]
-        , FightEnemy iid enemyId (toSource attrs) Nothing SkillCombat False
-        ]
+      mEnemy <- selectOne $ toEnemy windows'
+      for_ mEnemy $ \enemyId ->
+        pushAll
+          [ skillTestModifiers
+            attrs
+            (InvestigatorTarget iid)
+            [SkillModifier SkillCombat 2, DamageDealt 1]
+          , FightEnemy iid enemyId (toSource attrs) Nothing SkillCombat False
+          ]
       pure e
     _ -> Counterpunch2 <$> runMessage msg attrs

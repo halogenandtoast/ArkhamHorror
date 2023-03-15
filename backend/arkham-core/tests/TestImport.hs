@@ -429,6 +429,7 @@ newGame investigator = do
     , gameFocusedCards = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
+    , gameResolvingCard = Nothing
     , gamePlayerOrder = [investigatorId]
     , gameRemovedFromPlay = mempty
     , gameEnemyMoving = Nothing

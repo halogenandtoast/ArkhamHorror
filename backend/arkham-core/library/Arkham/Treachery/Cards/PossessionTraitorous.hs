@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
@@ -38,7 +37,7 @@ instance RunMessage PossessionTraitorous where
         when (horror > sanity * 2) $ push $ InvestigatorKilled (toSource attrs) iid
         pure t
       Nothing -> pure t
-    InvestigatorCommittedCard _ card | toCardId card == unTreacheryId (toId attrs) ->
+    InvestigatorCommittedCard _ card | toCardId card == toCardId attrs ->
       do
         pushAll [Discard (toSource attrs) (toTarget attrs), FailSkillTest]
         pure t

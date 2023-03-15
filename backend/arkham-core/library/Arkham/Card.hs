@@ -9,12 +9,13 @@ import Arkham.Card.CardCode as X
 import Arkham.Card.CardDef as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Class as X
+import Arkham.Card.Id as X
+import Arkham.Card.EncounterCard as X ( EncounterCard (..) )
+import Arkham.Card.PlayerCard as X ( PlayerCard (..) )
+
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
-import Arkham.Card.EncounterCard as X ( EncounterCard (..) )
-import Arkham.Card.Id
 import Arkham.Card.PlayerCard
-import Arkham.Card.PlayerCard as X ( PlayerCard (..) )
 import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
 import Arkham.Id
@@ -40,12 +41,12 @@ lookupCardDef (toCardCode -> cardCode) = lookup cardCode allEncounterCards <|> l
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
-  , cbCardBuilder :: ident -> a
+  , cbCardBuilder :: CardId -> ident -> a
   }
 
 instance Functor (CardBuilder ident) where
   fmap f CardBuilder {..} =
-    CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = f . cbCardBuilder }
+    CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = \cId -> f . cbCardBuilder cId }
 
 instance IsCard Card where
   toCardId = \case

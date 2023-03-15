@@ -40,18 +40,15 @@ instance HasAbilities TryAndTryAgain1 where
 instance RunMessage TryAndTryAgain1 where
   runMessage msg a@(TryAndTryAgain1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      committedSkills <-
-        filter ((== SkillType) . toCardType)
-          <$> field InvestigatorCommittedCards iid
-      a <$ pushAll
+      committedSkills <- selectList $ skillControlledBy iid
+      pushAll
         [ FocusCards committedSkills
         , chooseOne
           iid
-          [ TargetLabel
-              (SkillTarget $ SkillId $ toCardId skill)
-              [ReturnToHand iid (SkillTarget $ SkillId $ toCardId skill)]
+          [ targetLabel skill [ReturnToHand iid (toTarget skill)]
           | skill <- committedSkills
           ]
         , UnfocusCards
         ]
+      pure a
     _ -> TryAndTryAgain1 <$> runMessage msg attrs

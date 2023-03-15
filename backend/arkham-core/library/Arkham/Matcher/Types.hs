@@ -136,6 +136,7 @@ data AssetMatcher
   | AssetWithClues ValueMatcher
   | AssetInSlot SlotType
   | AssetIs CardCode
+  | AssetWithCardId CardId
   | AssetCardMatch CardMatcher
   | AnyAsset
   | NotAsset AssetMatcher
@@ -189,6 +190,7 @@ data EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
   | NearestEnemyToLocation LocationId EnemyMatcher
   | EnemyIs CardCode
+  | EnemyWithCardId CardId
   | AnyEnemy
   | CanFightEnemy
   | CanFightEnemyWithOverride CriteriaOverride
@@ -282,6 +284,7 @@ data LocationMatcher
   | SameLocation
   | NotYourLocation
   | LocationIs CardCode
+  | LocationWithCardId CardId
   | Anywhere
   | Nowhere
   | HauntedLocation

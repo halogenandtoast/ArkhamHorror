@@ -60,7 +60,7 @@ actWith
   -> CardBuilder (Int, ActId) a
 actWith (n, side) f cardDef mCost g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(deckId, aid) -> f . g $ ActAttrs
+  , cbCardBuilder = \_ (deckId, aid) -> f . g $ ActAttrs
     { actId = aid
     , actSequence = AS.Sequence n side
     , actClues = 0

@@ -10,11 +10,12 @@ import Arkham.Act.Acts
 import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Id
+import Data.UUID (nil)
 
-lookupAct :: ActId -> (Int -> Act)
+lookupAct :: ActId -> Int -> Act
 lookupAct actId = case lookup (unActId actId) allActs of
   Nothing -> error $ "Unknown act: " <> show actId
-  Just (SomeActCard a) -> \i -> Act $ cbCardBuilder a (i, actId)
+  Just (SomeActCard a) -> \i -> Act $ cbCardBuilder a (CardId nil) (i, actId)
 
 instance FromJSON Act where
   parseJSON = withObject "Act" $ \o -> do

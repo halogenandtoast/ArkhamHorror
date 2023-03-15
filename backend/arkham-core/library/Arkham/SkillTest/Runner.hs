@@ -164,7 +164,7 @@ instance RunMessage SkillTest where
                 pushAll
                   $ resolve (RevealToken (toSource s) iid (Token t tokenFace))
         else if SkillTestAutomaticallySucceeds `elem` modifiers'
-          then push PassSkillTest
+          then pushAll [PassSkillTest, UnsetActiveCard]
           else do
             let
               applyRevealStategyModifier _ (ChangeRevealStrategy n) = n

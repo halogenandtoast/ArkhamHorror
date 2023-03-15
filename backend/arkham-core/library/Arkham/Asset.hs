@@ -8,14 +8,14 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Id
 
-createAsset :: IsCard a => a -> Asset
-createAsset a =
-  lookupAsset (toCardCode a) (AssetId $ toCardId a, toCardOwner a)
+createAsset :: IsCard a => a -> AssetId -> Asset
+createAsset a aId =
+  lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
 
-lookupAsset :: CardCode -> ((AssetId, Maybe InvestigatorId) -> Asset)
+lookupAsset :: CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset
 lookupAsset cardCode = case lookup cardCode allAssets of
   Nothing -> error $ "Unknown asset: " <> show cardCode
-  Just (SomeAssetCard a) -> Asset <$> cbCardBuilder a
+  Just (SomeAssetCard a) -> \aid mId cId -> Asset $ cbCardBuilder a cId (aid, mId)
 
 instance FromJSON Asset where
   parseJSON = withObject "Asset" $ \o -> do

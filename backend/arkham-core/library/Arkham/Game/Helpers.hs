@@ -28,7 +28,6 @@ import Arkham.Asset.Uses ( useTypeCount )
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
-import Arkham.Card.Id
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.ClassSymbol
@@ -555,7 +554,7 @@ getActionsWith
   -> (Ability -> Ability)
   -> m [Ability]
 getActionsWith iid window f = do
-  modifiersForFilter <- getModifiers (InvestigatorTarget iid)
+  modifiersForFilter <- getModifiers iid
   let
     abilityFilters = mapMaybe
       (\case
@@ -568,7 +567,7 @@ getActionsWith iid window f = do
     then pure unfilteredActions
     else do
       ignored <- select (mconcat abilityFilters)
-      pure $ filter (`member` ignored) unfilteredActions
+      pure $ filter (`notMember` ignored) unfilteredActions
   actionsWithSources <- concat <$> for
     actions'
     \action -> do
@@ -1004,8 +1003,12 @@ passesCriteria iid source windows' = \case
       (fieldMap InvestigatorHand (map toCardId) iid)
       (map toCardId <$> getAsIfInHandCards iid)
     case source of
-      EventSource eid -> pure $ unEventId eid `elem` hand
-      AssetSource aid -> pure $ unAssetId aid `elem` hand
+      EventSource eid -> do
+        cardId <- field EventCardId eid
+        pure $ cardId `elem` hand
+      AssetSource aid -> do
+        cardId <- field AssetCardId aid
+        pure $ cardId `elem` hand
       TreacherySource tid -> do
         member tid <$> select
           (Matcher.TreacheryInHandOf $ Matcher.InvestigatorWithId iid)
@@ -2538,6 +2541,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationCanBeFlipped -> locationId <=~> matcher
     Matcher.BlockedLocation -> locationId <=~> matcher
     Matcher.EmptyLocation -> locationId <=~> matcher
+    Matcher.LocationWithCardId _ -> locationId <=~> matcher
     Matcher.LocationWithoutInvestigators -> locationId <=~> matcher
     Matcher.LocationWithoutEnemies -> locationId <=~> matcher
     Matcher.AccessibleLocation -> locationId <=~> matcher

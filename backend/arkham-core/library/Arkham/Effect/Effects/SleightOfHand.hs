@@ -22,9 +22,9 @@ instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     EndTurn _ -> do
       case effectTarget attrs of
-        AssetTarget aid -> do
-          inPlay <- isJust <$> selectOne (AssetWithId aid)
-          when inPlay $ do
+        CardIdTarget cid -> do
+          mAid <- selectOne (AssetWithCardId cid)
+          for_ mAid $ \aid -> do
             mController <- selectAssetController aid
             for_ mController $ \controllerId ->
               push (ReturnToHand controllerId (AssetTarget aid))

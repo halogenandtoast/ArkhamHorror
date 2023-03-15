@@ -2,7 +2,6 @@ module Arkham.Id where
 
 import Arkham.Prelude
 
-import Arkham.Card.Id
 import Arkham.Card.CardCode
 
 newtype ActId = ActId { unActId :: CardCode }
@@ -11,7 +10,7 @@ newtype ActId = ActId { unActId :: CardCode }
 newtype AgendaId = AgendaId { unAgendaId :: CardCode }
   deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
-newtype AssetId = AssetId { unAssetId :: CardId }
+newtype AssetId = AssetId { unAssetId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype CampaignId = CampaignId { unCampaignId :: Text }
@@ -20,25 +19,25 @@ newtype CampaignId = CampaignId { unCampaignId :: Text }
 newtype EffectId = EffectId { unEffectId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
-newtype EnemyId = EnemyId { unEnemyId :: CardId }
+newtype EnemyId = EnemyId { unEnemyId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
-newtype EventId = EventId { unEventId :: CardId }
+newtype EventId = EventId { unEventId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype InvestigatorId = InvestigatorId { unInvestigatorId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 
-newtype LocationId = LocationId { unLocationId :: CardId }
+newtype LocationId = LocationId { unLocationId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype ScenarioId = ScenarioId { unScenarioId :: CardCode }
   deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
-newtype SkillId = SkillId { unSkillId :: CardId }
+newtype SkillId = SkillId { unSkillId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
-newtype TreacheryId = TreacheryId { unTreacheryId :: CardId }
+newtype TreacheryId = TreacheryId { unTreacheryId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 -- non entity-ids

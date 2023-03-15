@@ -14,8 +14,8 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Trait (Trait(Witch))
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Trait ( Trait (Witch) )
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Bedeviled = Bedeviled TreacheryAttrs
@@ -42,7 +42,8 @@ instance HasModifiersFor Bedeviled where
           _ -> pure []
       pure
         $ toModifiers attrs
-        $ CannotTriggerAbilityMatching (AbilityOnCardControlledBy iid)
+        $ CannotTriggerAbilityMatching
+            (AbilityIsActionAbility <> AbilityOnCardControlledBy iid)
         : skillTestModifiers'
   getModifiersFor _ _ = pure []
 

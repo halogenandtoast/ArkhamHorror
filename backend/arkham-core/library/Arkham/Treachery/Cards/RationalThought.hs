@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card.CardCode
-import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.Helpers.Modifiers
@@ -71,7 +70,7 @@ instance RunMessage RationalThought where
       pure $ RationalThought $ attrs `with` Metadata True
     HealHorror (InvestigatorTarget iid) source amount
       | unCardCode (unInvestigatorId iid)
-        == UUID.toText (unCardId $ unTreacheryId $ toId attrs)
+        == UUID.toText (unTreacheryId $ toId attrs)
       -> do
         afterWindow <- checkWindows
           [ Window
@@ -80,7 +79,7 @@ instance RunMessage RationalThought where
                 HorrorType
                 (InvestigatorTarget
                 $ InvestigatorId
-                    (CardCode $ UUID.toText $ unCardId $ unTreacheryId $ toId
+                    (CardCode $ UUID.toText $ unTreacheryId $ toId
                       attrs
                     )
                 )
@@ -98,7 +97,7 @@ instance RunMessage RationalThought where
           . subtract amount
     HealHorrorDirectly (InvestigatorTarget iid) _ amount
       | unCardCode (unInvestigatorId iid)
-        == UUID.toText (unCardId $ unTreacheryId $ toId attrs)
+        == UUID.toText (unTreacheryId $ toId attrs)
       -> do
       -- USE ONLY WHEN NO CALLBACKS
         pure

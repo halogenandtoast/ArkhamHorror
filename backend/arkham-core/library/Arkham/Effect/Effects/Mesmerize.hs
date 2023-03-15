@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 
@@ -25,7 +24,7 @@ instance RunMessage Mesmerize where
     Flipped _ card -> do
       if toCardDef card == Assets.innocentReveler
         then do
-          let aid = AssetId $ toCardId card
+          aid <- selectJust $ AssetWithCardId $ toCardId card
           case effectTarget attrs of
             InvestigatorTarget iid -> do
               locationTargets <- selectListMap LocationTarget $ FarthestLocationFromYou LocationWithoutInvestigators

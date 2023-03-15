@@ -56,7 +56,7 @@ instance RunMessage HarbingerOfValusia where
           let
             damage = enemyDamage attrs
             enemy' = overAttrs (damageL .~ damage)
-              $ cbCardBuilder harbingerOfValusia (toId attrs)
+              $ cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
           push $ SetOutOfPlay (toTarget attrs)
           pure enemy'
         else do

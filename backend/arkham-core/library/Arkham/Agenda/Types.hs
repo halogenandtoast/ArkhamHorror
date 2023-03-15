@@ -117,7 +117,7 @@ agendaWith
   -> CardBuilder (Int, AgendaId) a
 agendaWith (n, side) f cardDef threshold g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(deckId, aid) -> f . g $ AgendaAttrs
+  , cbCardBuilder = \_ (deckId, aid) -> f . g $ AgendaAttrs
     { agendaDoom = 0
     , agendaDoomThreshold = Just threshold
     , agendaId = aid

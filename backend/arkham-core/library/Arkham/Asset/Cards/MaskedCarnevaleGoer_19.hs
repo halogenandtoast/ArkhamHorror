@@ -10,14 +10,12 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Attack
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Source
 
 newtype MaskedCarnevaleGoer_19 = MaskedCarnevaleGoer_19 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -43,33 +41,38 @@ locationOf AssetAttrs { assetPlacement } = case assetPlacement of
 
 instance RunMessage MaskedCarnevaleGoer_19 where
   runMessage msg a@(MaskedCarnevaleGoer_19 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      let
-        lid = locationOf attrs
-        enemyId = EnemyId $ toCardId attrs
-      investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        $ Flip iid (InvestigatorSource iid) (toTarget attrs)
-        : map (EnemyAttack . enemyAttack enemyId) investigatorIds
+        [ Flip iid (toSource iid) (toTarget attrs)
+        , FindEnemy (EnemyWithCardId $ toCardId attrs) (toTarget attrs)
+        ]
       pure a
-    Flip _ _ target | isTarget attrs target -> do
+    FindEnemy matcher (isTarget attrs -> True) -> do
+      mEnemy <- selectOne matcher
+      for_ mEnemy $ \enemy -> do
+        investigators <- selectList $ investigatorAt $ locationOf attrs
+        lead <- getLead
+        push $ chooseOneAtATime
+          lead
+          [ targetLabel
+              investigator
+              [EnemyAttack $ enemyAttack enemy investigator]
+          | investigator <- investigators
+          ]
+      pure a
+    Flip _ _ (isTarget a -> True) -> do
       let
         lid = locationOf attrs
-        salvatoreNeri = EncounterCard
-          $ lookupEncounterCard Enemies.salvatoreNeri (toCardId attrs)
+        salvatoreNeri = lookupCard Enemies.salvatoreNeri (toCardId attrs)
       createSalvatoreNeri <- createEnemyAt_ salvatoreNeri lid Nothing
+      pushAll [createSalvatoreNeri, Flipped (toSource attrs) salvatoreNeri]
+      pure a
+    LookAtRevealed _ _ (isTarget a -> True) -> do
+      let salvatoreNeri = lookupCard Enemies.salvatoreNeri (toCardId attrs)
+      lead <- getLead
       pushAll
-        [ createSalvatoreNeri
-        , Flipped (toSource attrs) salvatoreNeri
+        [ FocusCards [salvatoreNeri]
+        , chooseOne lead [Label "Continue" [UnfocusCards]]
         ]
       pure a
-    LookAtRevealed _ _ target | isTarget a target -> do
-      let
-        salvatoreNeri = EncounterCard
-          $ lookupEncounterCard Enemies.salvatoreNeri (toCardId attrs)
-      leadInvestigatorId <- getLeadInvestigatorId
-      a <$ pushAll
-        [ FocusCards [salvatoreNeri]
-        , chooseOne leadInvestigatorId [Label "Continue" [UnfocusCards]]
-        ]
     _ -> MaskedCarnevaleGoer_19 <$> runMessage msg attrs

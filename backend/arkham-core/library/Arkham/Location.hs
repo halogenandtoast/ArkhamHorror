@@ -7,7 +7,6 @@ module Arkham.Location
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -17,16 +16,16 @@ import Arkham.Location.Types as X ( Location )
 import Arkham.Message
 import Data.UUID ( nil )
 
-createLocation :: IsCard a => a -> Location
-createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
+createLocation :: IsCard a => a -> LocationId -> Location
+createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
 
 lookupLocationStub :: CardCode -> Location
-lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation
+lookupLocationStub cCode = lookupLocation cCode (LocationId $ CardId nil) (CardId nil)
 
-lookupLocation :: CardCode -> LocationId -> Location
-lookupLocation lid = case lookup lid allLocations of
-  Nothing -> error $ "Unknown location: " <> show lid
-  Just (SomeLocationCard a) -> Location <$> cbCardBuilder a
+lookupLocation :: CardCode -> LocationId -> CardId -> Location
+lookupLocation cCode = case lookup cCode allLocations of
+  Nothing -> error $ "Unknown location: " <> show cCode
+  Just (SomeLocationCard a) -> \lid cid -> Location $ cbCardBuilder a cid lid
 
 instance RunMessage Location where
   runMessage msg x@(Location l) = do

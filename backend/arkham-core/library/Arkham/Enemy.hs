@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
-createEnemy a = lookupEnemy (toCardCode a)
+createEnemy a eid = lookupEnemy (toCardCode a) eid (toCardId a)
 
 instance RunMessage Enemy where
   runMessage msg e@(Enemy x) = do
@@ -28,10 +28,10 @@ instance RunMessage Enemy where
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Enemy <$> runMessage msg' x
 
-lookupEnemy :: HasCallStack => CardCode -> EnemyId -> Enemy
+lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
   Nothing -> error $ "Unknown enemy: " <> show cardCode
-  Just (SomeEnemyCard a) -> Enemy <$> cbCardBuilder a
+  Just (SomeEnemyCard a) -> \e c -> Enemy $ cbCardBuilder a c e
 
 instance FromJSON Enemy where
   parseJSON = withObject "Enemy" $ \o -> do

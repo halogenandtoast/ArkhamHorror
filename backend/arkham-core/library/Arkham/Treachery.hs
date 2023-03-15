@@ -9,17 +9,17 @@ import Arkham.Id
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Treacheries
 
-createTreachery :: IsCard a => a -> InvestigatorId -> Treachery
-createTreachery a iid =
-  lookupTreachery (toCardCode a) iid (TreacheryId $ toCardId a)
+createTreachery :: IsCard a => a -> InvestigatorId -> TreacheryId -> Treachery
+createTreachery a iid tid =
+  lookupTreachery (toCardCode a) iid tid (toCardId a)
 
 instance RunMessage Treachery where
   runMessage msg (Treachery a) = Treachery <$> runMessage msg a
 
-lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> Treachery
+lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> CardId -> Treachery
 lookupTreachery cardCode = case lookup cardCode allTreacheries of
   Nothing -> error $ "Unknown treachery: " <> show cardCode
-  Just (SomeTreacheryCard a) -> \i t -> Treachery $ cbCardBuilder a (i, t)
+  Just (SomeTreacheryCard a) -> \i t c -> Treachery $ cbCardBuilder a c (i, t)
 
 instance FromJSON Treachery where
   parseJSON = withObject "Treachery" $ \o -> do

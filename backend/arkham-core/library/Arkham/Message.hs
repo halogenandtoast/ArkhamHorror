@@ -22,7 +22,6 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
@@ -374,6 +373,7 @@ data Message
   | FindAndDrawEncounterCard InvestigatorId CardMatcher Bool
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
+  | FindEnemy EnemyMatcher Target -- delay enemy reference, see Masked Carnevale Goers
   | FocusCards [Card]
   | FocusTokens [Token]
   | Force Message

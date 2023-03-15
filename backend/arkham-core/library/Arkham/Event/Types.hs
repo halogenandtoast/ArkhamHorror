@@ -32,6 +32,7 @@ data instance Field Event :: Type -> Type where
   EventOwner :: Field Event InvestigatorId
   EventDoom :: Field Event Int
   EventCard :: Field Event Card
+  EventCardId :: Field Event CardId
   EventSealedTokens :: Field Event [Token]
 
 -- These could be different, update in the future
@@ -43,6 +44,7 @@ eventAttachedTarget = placementToAttached . eventPlacement
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode
+  , eventCardId :: CardId
   , eventOriginalCardCode :: CardCode
   , eventId :: EventId
   , eventOwner :: InvestigatorId
@@ -100,7 +102,7 @@ instance FromJSON EventAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
 instance IsCard EventAttrs where
-  toCardId = unEventId . eventId
+  toCardId = eventCardId
   toCardOwner = Just . eventOwner
 
 eventWith :: (EventAttrs -> a) -> CardDef -> (EventAttrs -> EventAttrs) -> CardBuilder (InvestigatorId, EventId) a
@@ -111,10 +113,11 @@ event ::
 event f cardDef =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \(iid, eid) ->
+    , cbCardBuilder = \cardId (iid, eid) ->
         f $
           EventAttrs
             { eventCardCode = toCardCode cardDef
+            , eventCardId = cardId
             , eventOriginalCardCode = toCardCode cardDef
             , eventId = eid
             , eventOwner = iid

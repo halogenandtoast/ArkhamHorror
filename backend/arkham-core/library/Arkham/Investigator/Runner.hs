@@ -67,6 +67,7 @@ import Arkham.Zone qualified as Zone
 import Control.Monad.Extra ( findM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
+import Data.UUID (nil)
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -157,7 +158,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pure $ a & usedAbilitiesL .~ usedAbilities'
   ResetGame ->
-    pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
+    pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) (CardId nil) ())
       { Attrs.investigatorId = investigatorId
       , investigatorXp = investigatorXp
       , investigatorPhysicalTrauma = investigatorPhysicalTrauma

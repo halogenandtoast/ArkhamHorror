@@ -91,6 +91,7 @@ data instance Field Asset :: Type -> Type where
   AssetOwner :: Field Asset (Maybe InvestigatorId)
   AssetLocation :: Field Asset (Maybe LocationId)
   AssetCardCode :: Field Asset CardCode
+  AssetCardId :: Field Asset CardId
   AssetSlots :: Field Asset [SlotType]
   AssetSealedTokens :: Field Asset [Token]
   AssetPlacement :: Field Asset Placement
@@ -107,7 +108,7 @@ deriving stock instance Show (Field Asset typ)
 instance ToJSON (Field Asset typ) where
   toJSON = toJSON . show
 
-instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability], c [Card]) => FieldDict c Asset where
+instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c CardId, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability], c [Card]) => FieldDict c Asset where
   getDict = \case
     AssetName -> Dict
     AssetCost -> Dict
@@ -125,6 +126,7 @@ instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId)
     AssetOwner -> Dict
     AssetLocation -> Dict
     AssetCardCode -> Dict
+    AssetCardId -> Dict
     AssetSlots -> Dict
     AssetSealedTokens -> Dict
     AssetPlacement -> Dict
@@ -153,6 +155,7 @@ instance FromJSON (SomeField Asset) where
     "AssetOwner" -> pure $ SomeField AssetOwner
     "AssetLocation" -> pure $ SomeField AssetLocation
     "AssetCardCode" -> pure $ SomeField AssetCardCode
+    "AssetCardId" -> pure $ SomeField AssetCardId
     "AssetSlots" -> pure $ SomeField AssetSlots
     "AssetSealedTokens" -> pure $ SomeField AssetSealedTokens
     "AssetPlacement" -> pure $ SomeField AssetPlacement
@@ -166,6 +169,7 @@ instance FromJSON (SomeField Asset) where
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
+  , assetCardId :: CardId
   , assetCardCode :: CardCode
   , assetOriginalCardCode :: CardCode
   , assetPlacement :: Placement
@@ -269,7 +273,7 @@ instance FromJSON AssetAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
 instance IsCard AssetAttrs where
-  toCardId = unAssetId . assetId
+  toCardId = assetCardId
   toCard a = case lookupCard (assetOriginalCardCode a) (toCardId a) of
     PlayerCard pc -> PlayerCard $ pc { pcOwner = assetOwner a }
     ec -> ec
@@ -309,8 +313,9 @@ assetWith
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
 assetWith f cardDef g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(aid, mOwner) -> f . g $ AssetAttrs
+  , cbCardBuilder = \cardId (aid, mOwner) -> f . g $ AssetAttrs
     { assetId = aid
+    , assetCardId = cardId
     , assetCardCode = toCardCode cardDef
     , assetOriginalCardCode = toCardCode cardDef
     , assetOwner = mOwner
@@ -349,7 +354,7 @@ instance Targetable AssetAttrs where
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
     CardCodeTarget cardCode -> cdCardCode (toCardDef attrs) == cardCode
-    CardIdTarget cardId -> cardId == unAssetId assetId
+    CardIdTarget cardId -> cardId == assetCardId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 

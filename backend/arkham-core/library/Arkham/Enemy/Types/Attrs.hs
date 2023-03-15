@@ -17,6 +17,7 @@ import Arkham.Token
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
+  , enemyCardId :: CardId
   , enemyCardCode :: CardCode
   , enemyOriginalCardCode :: CardCode
   , enemyPlacement :: Placement

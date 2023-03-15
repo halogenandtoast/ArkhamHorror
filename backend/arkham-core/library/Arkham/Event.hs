@@ -9,16 +9,16 @@ import Arkham.Event.Events
 import Arkham.Event.Runner
 import Arkham.Id
 
-createEvent :: IsCard a => a -> InvestigatorId -> Event
-createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
+createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
+createEvent a iid eid = lookupEvent (toCardCode a) iid eid (toCardId a)
 
 instance RunMessage Event where
   runMessage msg (Event a) = Event <$> runMessage msg a
 
-lookupEvent :: CardCode -> InvestigatorId -> EventId -> Event
+lookupEvent :: CardCode -> InvestigatorId -> EventId -> CardId -> Event
 lookupEvent cardCode = case lookup cardCode allEvents of
   Nothing -> error $ "Unknown event: " <> show cardCode
-  Just (SomeEventCard a) -> \i e -> Event $ cbCardBuilder a (i, e)
+  Just (SomeEventCard a) -> \i e c -> Event $ cbCardBuilder a c (i, e)
 
 instance FromJSON Event where
   parseJSON = withObject "Event" $ \o -> do

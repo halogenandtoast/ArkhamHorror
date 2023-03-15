@@ -9,16 +9,16 @@ import Arkham.Id
 import Arkham.Skill.Runner
 import Arkham.Skill.Skills
 
-createSkill :: IsCard a => a -> InvestigatorId -> Skill
-createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
+createSkill :: IsCard a => a -> InvestigatorId -> SkillId -> Skill
+createSkill a iid sId = lookupSkill (toCardCode a) iid sId (toCardId a)
 
 instance RunMessage Skill where
   runMessage msg (Skill a) = Skill <$> runMessage msg a
 
-lookupSkill :: CardCode -> InvestigatorId -> SkillId -> Skill
+lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of
   Nothing -> error $ "Unknown skill: " <> show cardCode
-  Just (SomeSkillCard a) -> \i s -> Skill $ cbCardBuilder a (i, s)
+  Just (SomeSkillCard a) -> \i s c -> Skill $ cbCardBuilder a c (i, s)
 
 instance FromJSON Skill where
   parseJSON = withObject "Skill" $ \o -> do

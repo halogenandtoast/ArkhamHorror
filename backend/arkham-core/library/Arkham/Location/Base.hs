@@ -15,6 +15,7 @@ import Arkham.SkillType
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
   , locationCardCode :: CardCode
+  , locationCardId :: CardId
   , locationLabel :: Text
   , locationRevealClues :: GameValue
   , locationClues :: Int

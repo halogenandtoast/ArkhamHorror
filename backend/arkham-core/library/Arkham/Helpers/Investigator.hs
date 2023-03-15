@@ -7,7 +7,6 @@ import Data.UUID qualified as UUID
 import Data.Monoid
 import Arkham.Action
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Classes.Entity
 import Arkham.Classes.Query
 import Arkham.Damage
@@ -193,7 +192,7 @@ investigator f cardDef Stats {..} =
   in
     CardBuilder
       { cbCardCode = cdCardCode cardDef
-      , cbCardBuilder = \_ -> f $ InvestigatorAttrs
+      , cbCardBuilder = \_ _ -> f $ InvestigatorAttrs
         { investigatorId = iid
         , investigatorName = cdName cardDef
         , investigatorCardCode = cdCardCode cardDef
@@ -213,7 +212,7 @@ investigator f cardDef Stats {..} =
         , investigatorClues = 0
         , investigatorDoom = 0
         , investigatorResources = 0
-        , investigatorLocation = LocationId $ CardId nil
+        , investigatorLocation = LocationId nil
         , investigatorActionsTaken = mempty
         , investigatorRemainingActions = 3
         , investigatorEndedTurn = False
@@ -391,7 +390,7 @@ canHaveHorrorHealed a iid =  do
         case mAsIfInverstigator of
           Just iid' | iid == iid' -> do
             innerResult <- member tid <$> select (treacheryIs Treacheries.rationalThought)
-            pure $ InvestigatorId (CardCode $ UUID.toText $ unCardId $ unTreacheryId tid) <$ guard innerResult
+            pure $ InvestigatorId (CardCode $ UUID.toText $ unTreacheryId tid) <$ guard innerResult
           _ -> pure Nothing
       _ -> pure Nothing
     _ -> pure Nothing

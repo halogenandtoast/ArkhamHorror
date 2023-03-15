@@ -9,10 +9,10 @@ import Arkham.Attack
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype Counterpunch = Counterpunch EventAttrs
@@ -22,17 +22,17 @@ newtype Counterpunch = Counterpunch EventAttrs
 counterpunch :: EventCard Counterpunch
 counterpunch = event Counterpunch Cards.counterpunch
 
-toEnemy :: [Window] -> EnemyId
+toEnemy :: [Window] -> EnemyMatcher
 toEnemy [] = error "invalid call"
-toEnemy (Window _ (Window.EnemyAttacksEvenIfCancelled details) : _) = attackEnemy details
+toEnemy (Window _ (Window.EnemyAttacksEvenIfCancelled details) : _) =
+  attackEnemy details
 toEnemy (_ : xs) = toEnemy xs
 
 instance RunMessage Counterpunch where
   runMessage msg e@(Counterpunch attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      let enemyId = toEnemy windows'
-      pushAll
-        [ FightEnemy iid enemyId (toSource attrs) Nothing SkillCombat False
-        ]
+      mEnemy <- selectOne $ toEnemy windows'
+      for_ mEnemy $ \enemy ->
+        push $ FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
       pure e
     _ -> Counterpunch <$> runMessage msg attrs

@@ -7,7 +7,6 @@ import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import Arkham.Campaign.Types ( Campaign )
 import {-# SOURCE #-} Arkham.Card
-import Arkham.Card.Id
 import Arkham.Difficulty
 import Arkham.Id
 import Arkham.Investigator.Types ( Investigator )
@@ -72,6 +71,7 @@ data Game = Game
   , gameFoundCards :: HashMap Zone [Card]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
+  , gameResolvingCard :: Maybe Card
   , gameActiveAbilities :: [Ability]
   , gameRemovedFromPlay :: [Card]
   , gameInSetup :: Bool

@@ -58,7 +58,7 @@ const deckUrlToPage = (url: string): string => {
     <transition-group name="deck">
       <div v-for="deck in decks" :key="deck.id" class="deck">
         <img class="portrait--decklist" :src="`${baseUrl}/img/arkham/cards/${deck.list.investigator_code.replace('c', '')}.jpg`" />
-        <span class="deck-title">{{deck.name}}</span>
+        <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
         <div class="open-deck">
           <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
         </div>
@@ -140,6 +140,12 @@ h2 {
 .deck-title {
   font-weight: 800;
   font-size: 1.2em;
+  a {
+    text-decoration: none;
+    &:hover {
+      color: #336699;
+    }
+  }
 }
 
 .deck-move,

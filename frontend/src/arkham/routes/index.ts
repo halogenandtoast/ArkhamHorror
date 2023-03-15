@@ -1,5 +1,6 @@
 import CampaignLog from '@/arkham/views/CampaignLog.vue';
 import Game from '@/arkham/views/Game.vue';
+import Deck from '@/arkham/views/Deck.vue';
 import Decks from '@/arkham/views/Decks.vue';
 import Cards from '@/arkham/views/Cards.vue';
 import JoinGame from '@/arkham/views/JoinGame.vue';
@@ -12,6 +13,13 @@ export default [
     name: 'Cards',
     component: Cards,
     meta: { requiresAuth: true, title: "Arkham Horror: Cards" },
+    props: true,
+  },
+  {
+    path: '/deck/:deckId',
+    name: 'Deck',
+    component: Deck,
+    meta: { requiresAuth: true, title: "Arkham Horror: Deck" },
     props: true,
   },
   {

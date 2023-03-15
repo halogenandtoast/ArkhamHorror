@@ -11,7 +11,7 @@
       /decks ApiV1ArkhamDecksP:
         / ApiV1ArkhamDecksR GET POST
         /#ArkhamDeckId ApiV1ArkhamDeckP:
-          / ApiV1ArkhamDeckR DELETE
+          / ApiV1ArkhamDeckR GET DELETE
           /sync ApiV1ArkhamSyncDeckR POST
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST

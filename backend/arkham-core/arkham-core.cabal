@@ -194,7 +194,7 @@ library
       Arkham.Agenda.Cards.MadnessDrowns
       Arkham.Agenda.Cards.OutOfTime
       Arkham.Agenda.Cards.PastPresentAndFuture
-      Arkham.Agenda.Cards.PendolousThreads
+      Arkham.Agenda.Cards.PendulousThreads
       Arkham.Agenda.Cards.PredatorOrPrey
       Arkham.Agenda.Cards.QuietHalls
       Arkham.Agenda.Cards.RampagingCreatures
@@ -734,6 +734,7 @@ library
       Arkham.Effect.Effects.SongOfTheDead2
       Arkham.Effect.Effects.StormOfSpirits
       Arkham.Effect.Effects.SureGamble3
+      Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.TenAcreMeadow_246
       Arkham.Effect.Effects.TheKingsEdict
       Arkham.Effect.Effects.TheOrganistHopelessIDefiedHim
@@ -1114,7 +1115,6 @@ library
       Arkham.Event.Helpers
       Arkham.Event.Runner
       Arkham.Event.Types
-      Arkham.EventId
       Arkham.Exception
       Arkham.Field
       Arkham.Field.Matchers

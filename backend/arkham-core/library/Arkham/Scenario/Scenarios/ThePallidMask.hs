@@ -169,8 +169,7 @@ instance RunMessage ThePallidMask where
       blockedPassage <- genCard Locations.blockedPassage
       tombOfShadows <- genCard Locations.tombOfShadows
 
-      otherCatacombs <- traverse
-        genCard
+      otherCatacombs <- genCards
         [ Locations.stoneArchways
         , Locations.stoneArchways
         , Locations.cryptOfTheSepulchralLamp
@@ -192,7 +191,8 @@ instance RunMessage ThePallidMask where
             _ -> error "invalid setup"
         else (theGateToHell, ) <$> shuffleM otherCatacombs
 
-      (startingLocationId, placeStartingLocation) <- placeLocation startingLocation
+      (startingLocationId, placeStartingLocation) <- placeLocation
+        startingLocation
 
       theManInThePallidMask <- getCampaignStoryCard
         Enemies.theManInThePallidMask
@@ -209,30 +209,30 @@ instance RunMessage ThePallidMask where
            , SetAgendaDeck
            , SetActDeck
            , placeStartingLocation
-           , SetLocationLabel startingLocationId (unLabel $ positionToLabel startPosition)
+           , SetLocationLabel
+             startingLocationId
+             (unLabel $ positionToLabel startPosition)
            , PlaceResources (LocationTarget startingLocationId) 1
            , MoveAllTo (toSource attrs) startingLocationId
            , SetupStep (toTarget attrs) 1
            , RemoveFromBearersDeckOrDiscard theManInThePallidMask
            ]
         )
+      agendas <- genCards [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
+      acts <- genCards
+        [ Acts.throughTheCatacombs
+        , Acts.thePathIsBarred
+        , Acts.theWayOut
+        , Acts.leadingTheWay
+        ]
+
       ThePallidMask <$> runMessage
         msg
         (attrs
         & (decksL . at CatacombsDeck ?~ catacombsDeck)
         & (setAsideCardsL .~ [PlayerCard theManInThePallidMask])
-        & (actStackL
-          . at 1
-          ?~ [ Acts.throughTheCatacombs
-             , Acts.thePathIsBarred
-             , Acts.theWayOut
-             , Acts.leadingTheWay
-             ]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     SetupStep (isTarget attrs -> True) 1 -> do
       leadInvestigatorId <- getLeadInvestigatorId

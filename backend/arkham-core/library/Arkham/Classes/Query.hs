@@ -93,6 +93,32 @@ selectAgg f p matcher = do
   values <- traverse (fieldMap p f) results
   pure $ fold values
 
+selectSum
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs a
+  -> matcher
+  -> m a
+selectSum fld matcher = getSum <$> selectAgg Sum fld matcher
+
+selectMax
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Ord a
+     , Bounded a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs a
+  -> matcher
+  -> m a
+selectMax fld matcher = getMax0 <$> selectAgg Max fld matcher
+
 selectOne
   :: (HasCallStack, Query a, HasGame m)
   => a

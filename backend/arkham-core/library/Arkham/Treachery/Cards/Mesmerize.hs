@@ -26,21 +26,15 @@ instance RunMessage Mesmerize where
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       t <$ case mlid of
-        Nothing -> push $ Surge iid (toSource attrs)
+        Nothing -> push $ gainSurge attrs
         Just lid -> do
           maskedCarnevaleGoers <- selectListMap
             AssetTarget
             (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
           case maskedCarnevaleGoers of
-            [] -> push $ chooseOne
-              iid
-              [TargetLabel (toTarget attrs) [Surge iid $ toSource attrs]]
+            [] -> push $ chooseOne iid [targetLabel attrs [gainSurge attrs]]
             xs -> pushAll
-              [ CreateEffect
-                (toCardCode attrs)
-                Nothing
-                source
-                (InvestigatorTarget iid)
+              [ CreateEffect (toCardCode attrs) Nothing source (toTarget iid)
               , chooseOne
                 iid
                 [ TargetLabel target [Flip iid source target] | target <- xs ]

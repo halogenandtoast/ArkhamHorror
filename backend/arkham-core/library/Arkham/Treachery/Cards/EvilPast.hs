@@ -33,13 +33,9 @@ instance RunMessage EvilPast where
       hasEvilPast <-
         selectAny $ treacheryIs Cards.evilPast <> TreacheryInThreatAreaOf
           (InvestigatorWithId iid)
-      if hasEvilPast
-        then
-          pushAll
-            [ Discard (toSource attrs) (toTarget attrs)
-            , Surge iid (toSource attrs)
-            ]
-        else push $ AttachTreachery (toId attrs) (toTarget iid)
+      push $ if hasEvilPast
+        then gainSurge attrs
+        else AttachTreachery (toId attrs) (toTarget iid)
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll

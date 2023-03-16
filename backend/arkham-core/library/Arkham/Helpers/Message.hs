@@ -135,6 +135,9 @@ placeLocationCard_ = placeLocation_ <=< genCard
 scenarioResolution :: Int -> Message
 scenarioResolution = ScenarioResolution . Resolution
 
+gainSurge :: (Sourceable a, Targetable a) => a -> Message
+gainSurge a = GainSurge (toSource a) (toTarget a)
+
 toDiscard :: (Sourceable source, Targetable target) => source -> target -> Message
 toDiscard source target = Discard (toSource source) (toTarget target)
 

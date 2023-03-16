@@ -5,7 +5,6 @@ module Arkham.Scenario.Scenarios.BloodOnTheAltar
 
 import Arkham.Prelude
 
-import Control.Monad.Trans.Maybe
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -31,6 +30,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Target
 import Arkham.Token
+import Control.Monad.Trans.Maybe
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -195,9 +195,10 @@ instance RunMessage BloodOnTheAltar where
 
         (villageCommonsId, placeVillageCommons) <- placeLocation villageCommons
 
-        otherPlacements <- for (zip locations cardsToPutUnderneath) $ \(location, card) -> do
-          (locationId, placement) <- placeLocation location
-          pure [placement, PlaceUnderneath (LocationTarget locationId) [card]]
+        otherPlacements <-
+          for (zip locations cardsToPutUnderneath) $ \(location, card) -> do
+            (locationId, placement) <- placeLocation location
+            pure [placement, PlaceUnderneath (LocationTarget locationId) [card]]
 
         pushAll
           $ [ story investigatorIds intro
@@ -211,30 +212,26 @@ instance RunMessage BloodOnTheAltar where
              , MoveAllTo (toSource attrs) villageCommonsId
              ]
 
-        setAsideCards <- traverse
-          genCard
+        setAsideCards <- genCards
           [ Enemies.silasBishop
           , Locations.theHiddenChamber
           , Assets.keyToTheChamber
           , Assets.powderOfIbnGhazi
           ]
+        agendas <- genCards
+          [ Agendas.strangeDisappearances
+          , Agendas.theOldOnesHunger
+          , Agendas.feedTheBeast
+          ]
+        acts <- genCards [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
 
         BloodOnTheAltar . (`with` metadata) <$> runMessage
           msg
           (attrs
           & (setAsideCardsL .~ setAsideCards)
           & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
-          & (actStackL
-            . at 1
-            ?~ [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
-            )
-          & (agendaStackL
-            . at 1
-            ?~ [ Agendas.strangeDisappearances
-               , Agendas.theOldOnesHunger
-               , Agendas.feedTheBeast
-               ]
-            )
+          & (actStackL . at 1 ?~ acts)
+          & (agendaStackL . at 1 ?~ agendas)
           )
       ResolveToken _ Tablet iid -> do
         lid <- getJustLocation iid
@@ -244,7 +241,7 @@ instance RunMessage BloodOnTheAltar where
           (push $ DrawAnotherToken iid)
       ResolveToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <- selectJust AnyAgenda
-        s <$ push (PlaceDoom (AgendaTarget agendaId) 1)
+        s <$ push (PlaceDoom (toTarget agendaId) 1)
       FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
         s <$ case tokenFace token of
           Cultist -> do
@@ -252,7 +249,7 @@ instance RunMessage BloodOnTheAltar where
             push (PlaceClues (LocationTarget lid) 1)
           ElderThing | isEasyStandard attrs -> do
             agendaId <- selectJust AnyAgenda
-            push (PlaceDoom (AgendaTarget agendaId) 1)
+            push (PlaceDoom (toTarget agendaId) 1)
           _ -> pure ()
       ScenarioResolution NoResolution -> do
         iids <- allInvestigatorIds
@@ -268,7 +265,7 @@ instance RunMessage BloodOnTheAltar where
         pushAll
           $ [ story iids noResolution
             , Record TheRitualWasCompleted
-            , PlaceUnderneath (AgendaTarget agendaId) potentialSacrifices
+            , PlaceUnderneath (toTarget agendaId) potentialSacrifices
             ]
           <> map (RemoveCampaignCard . toCardDef) sacrificedToYogSothoth
           <> removeNecronomicon

@@ -9,8 +9,8 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import qualified Arkham.Treachery.Cards as Cards
 
 newtype TwinSuns = TwinSuns TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,22 +21,20 @@ twinSuns = treachery TwinSuns Cards.twinSuns
 
 instance RunMessage TwinSuns where
   runMessage msg t@(TwinSuns attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillIntellect 4
-      , Discard (toSource attrs) $ toTarget attrs
-      ]
+    Revelation iid source | isSource attrs source -> do
+      push $ RevelationSkillTest iid source SkillIntellect 4
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         agenda <- selectJust AnyAgenda
-        t <$ push
-          (chooseOne
-            iid
-            [ Label
-              "Remove 1 doom from the current agenda"
-              [RemoveDoom (AgendaTarget agenda) 1]
-            , Label
-              "Take 1 horror for each point you failed by"
-              [InvestigatorAssignDamage iid source DamageAny 0 n]
-            ]
-          )
+        push $ chooseOne
+          iid
+          [ Label
+            "Remove 1 doom from the current agenda"
+            [RemoveDoom (toTarget agenda) 1]
+          , Label
+            "Take 1 horror for each point you failed by"
+            [InvestigatorAssignDamage iid source DamageAny 0 n]
+          ]
+        pure t
     _ -> TwinSuns <$> runMessage msg attrs

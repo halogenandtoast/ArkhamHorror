@@ -82,7 +82,7 @@ const investigatorPortrait = computed(() => {
     const player = props.game.investigators[choice.investigatorId]
 
     if (player.isYithian) {
-      return `${baseUrl}/img/arkham/portraits/${choice.investigatorId.value.replace('c', '')}.jpg`
+      return `${baseUrl}/img/arkham/portraits/${choice.investigatorId.replace('c', '')}.jpg`
     }
 
     return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
@@ -92,7 +92,7 @@ const investigatorPortrait = computed(() => {
     const player = props.game.investigators[props.skillTest.investigator]
 
     if (player.isYithian) {
-      return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator.value.replace('c', '')}.jpg`
+      return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator.replace('c', '')}.jpg`
     }
 
     return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`

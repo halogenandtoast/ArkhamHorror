@@ -190,7 +190,8 @@ instance RunMessage ShatteredAeons where
           ]
         <> additionalSets
 
-      (nexusOfNKaiId, placeNexusOfNKai) <- placeLocationCard Locations.nexusOfNKai
+      (nexusOfNKaiId, placeNexusOfNKai) <- placeLocationCard
+        Locations.nexusOfNKai
 
       let
         encounterDeck' = removeEachFromDeck
@@ -200,8 +201,7 @@ instance RunMessage ShatteredAeons where
           , Treacheries.ancientEvils
           ]
 
-      explorationDeck <- shuffleM =<< traverse
-        genCard
+      explorationDeck <- shuffleM =<< genCards
         [ Locations.yuggoth
         , Locations.shoresOfRlyeh
         , Locations.cityOfTheUnseen
@@ -210,8 +210,7 @@ instance RunMessage ShatteredAeons where
         , Treacheries.ancientEvils
         ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Assets.relicOfAgesUnleashTheTimestream
         , Enemies.ichtacaScionOfYig
         , Enemies.alejandroVela
@@ -241,25 +240,25 @@ instance RunMessage ShatteredAeons where
            ]
         <> map (RemovePlayerCardFromGame False) cardsToAddToVictory
 
+      acts <- genCards
+        [ Acts.worldsBeyond
+        , Acts.searchForTheBrotherhood
+        , Acts.theYithianRelic
+        , Acts.mendTheShatter
+        ]
+
+      agendas <- genCards
+        [ Agendas.threadsOfTime
+        , Agendas.pendulousThreads
+        , Agendas.snappedThreads
+        ]
+
       ShatteredAeons <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.threadsOfTime
-             , Agendas.pendolousThreads
-             , Agendas.snappedThreads
-             ]
-          )
-        & (actStackL
-          . at 1
-          ?~ [ Acts.worldsBeyond
-             , Acts.searchForTheBrotherhood
-             , Acts.theYithianRelic
-             , Acts.mendTheShatter
-             ]
-          )
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
         & (setAsideCardsL .~ setAsideCards)
         & (victoryDisplayL .~ map VengeanceCard cardsToAddToVictory)
         )
@@ -302,10 +301,9 @@ instance RunMessage ShatteredAeons where
           mHex =
             find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
         for_ mHex $ \hex -> do
-          push
-            $ ShuffleCardsIntoDeck
-              (Deck.ScenarioDeckByKey ExplorationDeck)
-              [EncounterCard hex]
+          push $ ShuffleCardsIntoDeck
+            (Deck.ScenarioDeckByKey ExplorationDeck)
+            [EncounterCard hex]
       pure s
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do
       let
@@ -314,10 +312,9 @@ instance RunMessage ShatteredAeons where
       modifiers <- getModifiers (TokenFaceTarget ElderThing)
       when (RevealAnotherToken `elem` modifiers) $ push $ DrawAnotherToken iid
       for_ mHex $ \hex -> do
-        push
-          $ ShuffleCardsIntoDeck
-            (Deck.ScenarioDeckByKey ExplorationDeck)
-            [EncounterCard hex]
+        push $ ShuffleCardsIntoDeck
+          (Deck.ScenarioDeckByKey ExplorationDeck)
+          [EncounterCard hex]
       pure s
     ResolveToken _ face iid -> do
       modifiers <- getModifiers (TokenFaceTarget face)

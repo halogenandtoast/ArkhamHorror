@@ -98,8 +98,8 @@ instance HasTokenValue UndimensionedAndUnseen where
 instance RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
     SetTokensForScenario -> do
-      standalone <- getIsStandalone
-      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+      whenStandalone $ push (SetTokens standaloneTokens)
+      pure s
     StandaloneSetup ->
       pure
         . UndimensionedAndUnseen
@@ -108,11 +108,11 @@ instance RunMessage UndimensionedAndUnseen where
         .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       s <$ pushAll
         [ story investigatorIds intro
         , chooseOne
-          leadInvestigatorId
+          lead
           [ Label
             "You try to calm down the townsfolk in order to learn more."
             [SetupStep (toTarget attrs) 1]
@@ -233,21 +233,19 @@ instance RunMessage UndimensionedAndUnseen where
            ]
         <> msgs
 
+      agendas <- genCards
+        [ Agendas.rampagingCreatures
+        , Agendas.bidingItsTime
+        , Agendas.horrorsUnleashed
+        ]
+      acts <- genCards [Acts.saracenicScript, Acts.theyMustBeDestroyed]
+
       UndimensionedAndUnseen <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.saracenicScript, Acts.theyMustBeDestroyed]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.rampagingCreatures
-             , Agendas.bidingItsTime
-             , Agendas.horrorsUnleashed
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken drawnToken Tablet _ -> s <$ push
       (CreateEffect

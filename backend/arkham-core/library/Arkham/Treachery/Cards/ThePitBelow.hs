@@ -25,9 +25,8 @@ thePitBelow :: TreacheryCard ThePitBelow
 thePitBelow = treachery ThePitBelow Cards.thePitBelow
 
 instance HasModifiersFor ThePitBelow where
-  getModifiersFor (LocationTarget lid) (ThePitBelow attrs) =
-    pure
-      $ toModifiers attrs [ ShroudModifier 1 | treacheryOnLocation lid attrs ]
+  getModifiersFor (LocationTarget lid) (ThePitBelow attrs) = pure
+    $ toModifiers attrs [ ShroudModifier 1 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ThePitBelow where
@@ -38,16 +37,12 @@ instance RunMessage ThePitBelow where
   runMessage msg t@(ThePitBelow attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
-      case mlid of
-        Nothing -> push (Discard (toSource attrs) $ toTarget attrs)
-        Just lid -> do
-          hasThePitBelow <-
-            selectAny
-            $ TreacheryAt (LocationWithId lid)
-            <> treacheryIs Cards.thePitBelow
-          if hasThePitBelow
-            then pushAll [Discard (toSource attrs) (toTarget attrs), Surge iid (toSource attrs)]
-            else push (AttachTreachery (toId attrs) $ LocationTarget lid)
+      for_ mlid $ \lid -> do
+        hasThePitBelow <-
+          selectAny $ treacheryAt lid <> treacheryIs Cards.thePitBelow
+        pure $ if hasThePitBelow
+          then gainSurge attrs
+          else AttachTreachery (toId attrs) (toTarget lid)
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <-

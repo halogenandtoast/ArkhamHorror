@@ -98,19 +98,14 @@ interviewedToCardCode = \case
 instance RunMessage TheLastKing where
   runMessage msg s@(TheLastKing attrs) = case msg of
     SetTokensForScenario -> do
-      standalone <- getIsStandalone
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      s <$ if standalone
-        then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
-        else pure ()
+      whenStandalone
+        $ push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+      pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      s
-        <$ push
-             (AddCampaignCardToDeck
-               leadInvestigatorId
-               Enemies.theManInThePallidMask
-             )
+      lead <- getLead
+      push $ AddCampaignCardToDeck lead Enemies.theManInThePallidMask
+      pure s
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.dianneDevine]
@@ -134,8 +129,7 @@ instance RunMessage TheLastKing where
       totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
 
       bystanders <-
-        traverse (\c -> (c, ) <$> getRandom) =<< shuffleM =<< traverse
-          genCard
+        traverse (\c -> (c, ) <$> getRandom) =<< shuffleM =<< genCards
           [ Assets.constanceDumaine
           , Assets.jordanPerry
           , Assets.ishimaruHaruko
@@ -165,27 +159,25 @@ instance RunMessage TheLastKing where
            | (_, assetId) <- bystanders
            ]
 
-      setAsideEncounterCards <- traverse genCard [Enemies.dianneDevine]
+      setAsideEncounterCards <- genCards [Enemies.dianneDevine]
 
-      storyCards <- traverse
-        genCard
+      storyCards <- genCards
         [ Story.sickeningReality_65
         , Story.sickeningReality_66
         , Story.sickeningReality_67
         , Story.sickeningReality_68
         , Story.sickeningReality_69
         ]
+      agendas <- genCards [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
+      acts <- genCards [Acts.discoveringTheTruth]
 
       TheLastKing <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideEncounterCards)
         & (cardsUnderScenarioReferenceL .~ storyCards)
-        & (actStackL . at 1 ?~ [Acts.discoveringTheTruth])
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ token iid | token `elem` [Skull, Cultist, Tablet] ->
       s <$ case token of
@@ -194,15 +186,12 @@ instance RunMessage TheLastKing where
           clueCount <- field InvestigatorClues iid
           when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
 
-        Tablet | isHardExpert attrs ->
-          push
-            (InvestigatorAssignDamage
-              iid
-              (TokenEffectSource token)
-              DamageAny
-              0
-              1
-            )
+        Tablet | isHardExpert attrs -> push $ InvestigatorAssignDamage
+          iid
+          (TokenEffectSource token)
+          DamageAny
+          0
+          1
         _ -> pure ()
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
@@ -287,7 +276,7 @@ instance RunMessage TheLastKing where
       investigatorIdsWithNames <- forToSnd
         investigatorIds
         (field InvestigatorName)
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       clueCounts <- traverse (field ActClues) =<< selectList AnyAct
       vipsSlain <-
         selectListMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait
@@ -305,7 +294,7 @@ instance RunMessage TheLastKing where
       s <$ pushAll
         ([ assignXp assignedXp iid | iid <- investigatorIds ]
         <> [ chooseN
-               leadInvestigatorId
+               lead
                remainingXp
                [ Label
                    ("Choose " <> display name <> " to gain 1 additional XP")

@@ -169,36 +169,40 @@ instance RunMessage DimCarcosa where
         , EncounterSet.StrikingFear
         ]
 
-      (shoresOfHaliId, placeShoresOfHali) <- placeLocationCard Locations.shoresOfHali
+      (shoresOfHaliId, placeShoresOfHali) <- placeLocationCard
+        Locations.shoresOfHali
       (darkSpiresId, placeDarkSpires) <- placeLocationCard Locations.darkSpires
       palaceOfTheKing <- genCard Locations.palaceOfTheKing
 
-      (bleakPlains, setAsideBleakPlains) <- sampleWithRest =<< traverse
-        genCard
+      (bleakPlains, setAsideBleakPlains) <- sampleWithRest =<< genCards
         (Locations.bleakPlainsBleakDesolation
         :| [Locations.bleakPlainsStarsOfAldebaran]
         )
-      (ruinsOfCarcosa, setAsideRuinsOfCarcosa) <- sampleWithRest =<< traverse
-        genCard
+      (ruinsOfCarcosa, setAsideRuinsOfCarcosa) <- sampleWithRest =<< genCards
         (Locations.ruinsOfCarcosaTheCoffin
         :| [ Locations.ruinsOfCarcosaInhabitantOfCarcosa
            , Locations.ruinsOfCarcosaAMomentsRest
            ]
         )
-      (dimStreets, setAsideDimStreets) <- sampleWithRest =<< traverse
-        genCard
+      (dimStreets, setAsideDimStreets) <- sampleWithRest =<< genCards
         (Locations.dimStreetsMappingTheStreets
         :| [ Locations.dimStreetsTheArchway
            , Locations.dimStreetsTheKingsParade
            ]
         )
-      (depthsOfDemhe, setAsideDepthsOfDemhe) <- sampleWithRest =<< traverse
-        genCard
+      (depthsOfDemhe, setAsideDepthsOfDemhe) <- sampleWithRest =<< genCards
         (Locations.depthsOfDemheStepsOfThePalace
         :| [Locations.depthsOfDemheTheHeightOfTheDepths]
         )
 
-      placeRest <- traverse placeLocation_ [bleakPlains, ruinsOfCarcosa, dimStreets, depthsOfDemhe, palaceOfTheKing]
+      placeRest <- traverse
+        placeLocation_
+        [ bleakPlains
+        , ruinsOfCarcosa
+        , dimStreets
+        , depthsOfDemhe
+        , palaceOfTheKing
+        ]
 
       openedThePathBelow <- getHasRecord YouOpenedThePathBelow
       let
@@ -209,24 +213,26 @@ instance RunMessage DimCarcosa where
       theManInThePallidMask <- getCampaignStoryCard
         Enemies.theManInThePallidMask
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Enemies.hasturTheKingInYellow
         , Enemies.hasturLordOfCarcosa
         , Enemies.hasturTheTatteredKing
         , Enemies.beastOfAldebaran
         ]
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        ]
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          ]
         <> (placeDarkSpires : placeShoresOfHali : placeRest)
         <> [ MoveAllTo (toSource attrs) startingLocation
            , RemoveFromBearersDeckOrDiscard theManInThePallidMask
            ]
+      agendas <- genCards
+        [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
+      acts <- genCards [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
       DimCarcosa <$> runMessage
         msg
         (attrs
@@ -239,17 +245,8 @@ instance RunMessage DimCarcosa where
             <> setAsideDepthsOfDemhe
             )
           )
-        & (actStackL
-          . at 1
-          ?~ [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.madnessCoils
-             , Agendas.madnessDrowns
-             , Agendas.madnessDies
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       when (tokenFace token == Cultist) $ push $ InvestigatorAssignDamage

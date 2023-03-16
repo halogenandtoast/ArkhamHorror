@@ -35,10 +35,9 @@ instance HasModifiersFor DismalCurse where
 
 instance RunMessage DismalCurse where
   runMessage msg t@(DismalCurse attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard (toSource attrs) $ toTarget attrs
-      ]
+    Revelation iid source | isSource attrs source -> do
+      push $ RevelationSkillTest iid source SkillWillpower 3
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         horror <- field InvestigatorHorror iid

@@ -85,16 +85,14 @@ standaloneTokens =
 instance RunMessage TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
-      standalone <- getIsStandalone
-      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+      whenStandalone $ push (SetTokens standaloneTokens)
+      pure s
     LookAtTopOfDeck iid ScenarioDeckTarget n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
         xs -> do
           let cards = take n xs
           pushAll
-            [ FocusCards cards
-            , chooseOne iid [Label "Continue" [UnfocusCards]]
-            ]
+            [FocusCards cards, chooseOne iid [Label "Continue" [UnfocusCards]]]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -103,8 +101,7 @@ instance RunMessage TheMiskatonicMuseum where
         DrHenryArmitageWasKidnapped
         True
 
-      exhibitHalls <- shuffleM =<< traverse
-        genCard
+      exhibitHalls <- shuffleM =<< genCards
         [ Locations.exhibitHallAthabaskanExhibit
         , Locations.exhibitHallMedusaExhibit
         , Locations.exhibitHallNatureExhibit
@@ -130,7 +127,8 @@ instance RunMessage TheMiskatonicMuseum where
         , EncounterSet.LockedDoors
         ]
 
-      (museumEntranceId, placeMuseumEntrance) <- placeLocationCard Locations.museumEntrance
+      (museumEntranceId, placeMuseumEntrance) <- placeLocationCard
+        Locations.museumEntrance
       placeMuseumHalls <- placeLocationCard_ Locations.museumHalls
       placeSecurityOffice <- placeLocationCard_ =<< sample
         (Locations.securityOffice_128 :| [Locations.securityOffice_129])
@@ -153,12 +151,20 @@ instance RunMessage TheMiskatonicMuseum where
         , MoveAllTo (toSource attrs) museumEntranceId
         ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Assets.haroldWalsted
         , Assets.adamLynch
         , Assets.theNecronomiconOlausWormiusTranslation
         , Treacheries.shadowSpawned
+        ]
+
+      agendas <- genCards
+        [Agendas.restrictedAccess, Agendas.shadowsDeepen, Agendas.inEveryShadow]
+      acts <- genCards
+        [ Acts.findingAWayInside
+        , Acts.nightAtTheMuseum
+        , Acts.breakingAndEntering
+        , Acts.searchingForTheTome
         ]
 
       TheMiskatonicMuseum <$> runMessage
@@ -166,37 +172,22 @@ instance RunMessage TheMiskatonicMuseum where
         (attrs
         & (decksL . at ExhibitDeck ?~ exhibitDeck)
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [ Acts.findingAWayInside
-             , Acts.nightAtTheMuseum
-             , Acts.breakingAndEntering
-             , Acts.searchingForTheTome
-             ]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.restrictedAccess
-             , Agendas.shadowsDeepen
-             , Agendas.inEveryShadow
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     PlacedLocation name _ lid -> do
-      s <$ if nameTitle name == "Exhibit Hall"
-        then do
-          hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
-          push (SetLocationLabel lid $ "hall" <> tshow hallCount)
-        else pure ()
+      when (nameTitle name == "Exhibit Hall") $ do
+        hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
+        push (SetLocationLabel lid $ "hall" <> tshow hallCount)
+      pure s
     ResolveToken _ Tablet iid | isEasyStandard attrs ->
       s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
-      case mHuntingHorrorId of
-        Just huntingHorrorId ->
-          s <$ push (EnemyAttack $ enemyAttack huntingHorrorId iid)
-        Nothing -> pure s
+      for_ mHuntingHorrorId $ \huntingHorrorId ->
+        push (EnemyAttack $ enemyAttack huntingHorrorId iid)
+      pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
         Cultist -> push $ FindEncounterCard
@@ -204,7 +195,8 @@ instance RunMessage TheMiskatonicMuseum where
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard, FromVoid]
           (cardIs Enemies.huntingHorror)
-        ElderThing -> push $ ChooseAndDiscardAsset iid (TokenEffectSource ElderThing) AnyAsset
+        ElderThing -> push
+          $ ChooseAndDiscardAsset iid (TokenEffectSource ElderThing) AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getJustLocation iid
@@ -233,20 +225,20 @@ instance RunMessage TheMiskatonicMuseum where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story investigatorIds resolution2
           , Record TheInvestigatorsTookCustodyOfTheNecronomicon
           , chooseOne
-            leadInvestigatorId
+            lead
             [ Label
               "Add The Necronomicon (Olaus Wormius Translation) to a deck"
               [ chooseOne
-                  leadInvestigatorId
-                  [ TargetLabel
-                      (InvestigatorTarget iid)
+                  lead
+                  [ targetLabel
+                      iid
                       [ AddCampaignCardToDeck
                           iid
                           Assets.theNecronomiconOlausWormiusTranslation

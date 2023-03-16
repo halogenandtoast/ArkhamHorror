@@ -71,9 +71,7 @@ instance HasTokenValue LostInTimeAndSpace where
     Tablet -> pure $ toTokenValue attrs Tablet 3 5
     ElderThing -> do
       mlid <- field InvestigatorLocation iid
-      shroud <- case mlid of
-        Nothing -> pure 0
-        Just lid -> field LocationShroud lid
+      shroud <- maybe (pure 0) (field LocationShroud) mlid
       pure $ toTokenValue attrs ElderThing shroud (shroud * 2)
     otherFace -> getTokenValue iid otherFace attrs
 
@@ -115,8 +113,8 @@ readInvestigatorDefeat a = do
 instance RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
     SetTokensForScenario -> do
-      standalone <- getIsStandalone
-      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+      whenStandalone $ push (SetTokens standaloneTokens)
+      pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
@@ -128,7 +126,8 @@ instance RunMessage LostInTimeAndSpace where
         , EncounterSet.AgentsOfYogSothoth
         ]
 
-      (anotherDimensionId, placeAnotherDimension) <- placeLocationCard Locations.anotherDimension
+      (anotherDimensionId, placeAnotherDimension) <- placeLocationCard
+        Locations.anotherDimension
 
       pushAll
         [ story investigatorIds intro
@@ -140,48 +139,42 @@ instance RunMessage LostInTimeAndSpace where
         , MoveAllTo (toSource attrs) anotherDimensionId
         ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Locations.theEdgeOfTheUniverse
         , Locations.tearThroughTime
         , Enemies.yogSothoth
+        ]
+      acts <- genCards
+        [ Acts.outOfThisWorld
+        , Acts.intoTheBeyond
+        , Acts.closeTheRift
+        , Acts.findingANewWay
+        ]
+      agendas <- genCards
+        [ Agendas.allIsOne
+        , Agendas.pastPresentAndFuture
+        , Agendas.breakingThrough
+        , Agendas.theEndOfAllThings
         ]
 
       LostInTimeAndSpace <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [ Acts.outOfThisWorld
-             , Acts.intoTheBeyond
-             , Acts.closeTheRift
-             , Acts.findingANewWay
-             ]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.allIsOne
-             , Agendas.pastPresentAndFuture
-             , Agendas.breakingThrough
-             , Agendas.theEndOfAllThings
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     After (PassedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, tokenFace token) of
-        (True, Cultist) ->
-          push
-            (DiscardEncounterUntilFirst
-              (toSource attrs)
-              Nothing
-              (CardWithType LocationType)
-            )
+        (True, Cultist) -> push
+          (DiscardEncounterUntilFirst
+            (toSource attrs)
+            Nothing
+            (CardWithType LocationType)
+          )
         (_, Tablet) -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          case mYogSothothId of
-            Nothing -> pure ()
-            Just eid -> push (EnemyAttack $ enemyAttack eid iid)
+          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid iid)
         _ -> pure ()
     After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case tokenFace token of
@@ -193,17 +186,13 @@ instance RunMessage LostInTimeAndSpace where
           )
         Tablet -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          case mYogSothothId of
-            Nothing -> pure ()
-            Just eid -> push (EnemyAttack $ enemyAttack eid iid)
+          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid iid)
         _ -> pure ()
-    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
-      (locationId, placement) <- placeLocation (EncounterCard card)
-      pushAll
-        [ placement
-        , MoveTo $ move (toSource attrs) iid locationId
-        ]
-      pure s
+    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
+      do
+        (locationId, placement) <- placeLocation (EncounterCard card)
+        pushAll [placement, MoveTo $ move attrs iid locationId]
+        pure s
     ScenarioResolution NoResolution -> do
       actId <- selectJust AnyAct
       step <- fieldMap ActSequence (AS.unActStep . AS.actStep) actId

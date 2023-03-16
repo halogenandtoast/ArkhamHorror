@@ -22,7 +22,7 @@ import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDamage)
+import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -146,7 +146,7 @@ instance RunMessage TheDepthsOfYoth where
         ]
 
       stepsOfYoth <- genCard Locations.stepsOfYoth
-      locations <- shuffleM =<< traverse genCard otherLocationCards
+      locations <- shuffleM =<< genCards otherLocationCards
 
       let
         (startLocation, rest) = case locations of
@@ -202,15 +202,13 @@ instance RunMessage TheDepthsOfYoth where
            , placeStartLocation
            , MoveAllTo (toSource attrs) startLocationId
            ]
-        <> [ createHarbinger
-           | startsOnAgenda5
-           ]
+        <> [ createHarbinger | startsOnAgenda5 ]
         <> [ createYig | startsOnAgenda6 ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
       setAsideCards <-
-        traverse genCard
+        genCards
         $ Assets.relicOfAgesRepossessThePast
         : [ Enemies.harbingerOfValusia
           | theHarbingerIsStillAlive && not startsOnAgenda5
@@ -218,20 +216,22 @@ instance RunMessage TheDepthsOfYoth where
         <> [ Enemies.yig | not startsOnAgenda6 ]
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
+      acts <- genCards [Acts.journeyToTheNexus]
+      agendas <-
+        genCards
+        $ [ Agendas.theDescentBegins | yigsFury < 6 ] -- 1
+        <> [ Agendas.horrificDescent | yigsFury < 11 ] -- 2
+        <> [ Agendas.endlessCaverns | yigsFury < 15 ] -- 3
+        <> [ Agendas.cityOfBlood | yigsFury < 18 ] -- 4
+        <> [ Agendas.furyThatShakesTheEarth | yigsFury < 21 ] -- 5
+        <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
+
       TheDepthsOfYoth <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.theDescentBegins | yigsFury < 6 ] -- 1
-          <> [ Agendas.horrificDescent | yigsFury < 11 ] -- 2
-          <> [ Agendas.endlessCaverns | yigsFury < 15 ] -- 3
-          <> [ Agendas.cityOfBlood | yigsFury < 18 ] -- 4
-          <> [ Agendas.furyThatShakesTheEarth | yigsFury < 21 ] -- 5
-          <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
-          )
-        & (actStackL . at 1 ?~ [Acts.journeyToTheNexus])
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
         & (setAsideCardsL .~ setAsideCards <> setAsideLocations)
         & (metaL .~ toMeta startLocationId)
         & (countsL .~ mapFromList [(CurrentDepth, 1)])

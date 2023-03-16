@@ -14,6 +14,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Enemy.Cards qualified as Enemies
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -32,10 +33,11 @@ letTheStormRageTheVortexAbove = agenda
   (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheVortexAbove where
-  getModifiersFor (TreacheryTarget tid) (LetTheStormRageTheVortexAbove a) = do
-    isAncientEvils <- member tid
-      <$> select (treacheryIs Treacheries.ancientEvils)
-    pure $ toModifiers a [ AddKeyword Keyword.Surge | isAncientEvils ]
+  getModifiersFor (CardIdTarget cardId) (LetTheStormRageTheVortexAbove a) = do
+    card <- getCard cardId
+    pure $ toModifiers
+      a
+      [ AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LetTheStormRageTheVortexAbove where

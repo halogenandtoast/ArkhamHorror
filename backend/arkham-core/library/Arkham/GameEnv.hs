@@ -26,11 +26,30 @@ newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
 instance CardGen GameT where
-  genEncounterCard a = lookupEncounterCard (toCardDef a) <$> getRandom
-  genPlayerCard a = lookupPlayerCard (toCardDef a) <$> getRandom
+  genEncounterCard a = do
+    cardId <- unsafeMakeCardId <$> getRandom
+    let card = lookupEncounterCard (toCardDef a) cardId
+    ref <- asks gameEnvGame
+    atomicModifyIORef' ref $ \g ->
+      (g { gameCards = insertMap cardId (EncounterCard card) (gameCards g) }, ())
+    pure card
+  genPlayerCard a = do
+    cardId <- unsafeMakeCardId <$> getRandom
+    let card = lookupPlayerCard (toCardDef a) cardId
+    ref <- asks gameEnvGame
+    atomicModifyIORef' ref $ \g ->
+      (g { gameCards = insertMap cardId (PlayerCard card) (gameCards g) }, ())
+    pure card
 
 class Monad m => HasGame m where
   getGame :: m Game
+
+getCard :: HasGame m => CardId -> m Card
+getCard cardId = do
+  g <- getGame
+  case lookup cardId (gameCards g) of
+    Nothing -> error $ "Unregistered card id: " <> show cardId
+    Just card -> pure card
 
 instance Monad m => HasGame (ReaderT Game m) where
   getGame = ask
@@ -39,7 +58,7 @@ runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 
 data GameEnv = GameEnv
-  { gameEnvGame :: Game
+  { gameEnvGame :: IORef Game
   , gameEnvQueue :: Queue Message
   , gameRandomGen :: IORef StdGen
   , gameLogger :: Text -> IO ()
@@ -49,7 +68,7 @@ instance HasStdGen GameEnv where
   genL = lens gameRandomGen $ \m x -> m { gameRandomGen = x }
 
 instance HasGame GameT where
-  getGame = asks $ gameEnvGame
+  getGame = asks gameEnvGame >>= readIORef
 
 instance HasQueue Message GameT where
   messageQueue = asks gameEnvQueue
@@ -63,11 +82,10 @@ toGameEnv
      , HasStdGen env
      , HasGameLogger env
      , MonadReader env m
-     , MonadIO m
      )
   => m GameEnv
 toGameEnv = do
-  game <- readIORef =<< view gameRefL
+  game <- view gameRefL
   gen <- view genL
   queueRef <- messageQueue
   logger <- view gameLoggerL

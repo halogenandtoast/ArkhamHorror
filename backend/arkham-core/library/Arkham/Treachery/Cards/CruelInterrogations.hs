@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
-import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -30,9 +29,6 @@ instance HasModifiersFor CruelInterrogations where
   getModifiersFor (InvestigatorTarget iid) (CruelInterrogations a)
     | treacheryOnInvestigator iid a = do
       pure $ toModifiers a [CannotTakeAction $ IsAction Action.Draw]
-  getModifiersFor target (CruelInterrogations a) | isTarget a target = do
-    interviewedASubject <- remembered InterviewedASubject
-    pure $ toModifiers a [ AddKeyword Keyword.Surge | interviewedASubject ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CruelInterrogations where
@@ -47,15 +43,22 @@ instance RunMessage CruelInterrogations where
       interviewedASubject <- remembered InterviewedASubject
       pushAll
         $ AttachTreachery (toId t) (InvestigatorTarget iid)
-        : [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-          | interviewedASubject
-          ]
+        : (guard interviewedASubject
+          *> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+             , gainSurge attrs
+             ]
+          )
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 1) (InvestigatorTarget iid) SkillWillpower 2
+      push $ beginSkillTest
+        iid
+        (toAbilitySource attrs 1)
+        (toTarget iid)
+        SkillWillpower
+        2
       pure t
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
       -> do
-        push $ Discard (toSource attrs) (toTarget attrs)
+        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
         pure t
     _ -> CruelInterrogations <$> runMessage msg attrs

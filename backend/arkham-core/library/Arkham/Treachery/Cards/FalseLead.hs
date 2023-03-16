@@ -23,7 +23,7 @@ instance RunMessage FalseLead where
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- field InvestigatorClues iid
       push $ if playerClueCount == 0
-        then chooseOne iid [Label "Surge" [Surge iid (toSource attrs)]]
+        then chooseOne iid [Label "Surge" [gainSurge attrs]]
         else RevelationSkillTest iid source SkillIntellect 4
       pure t
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n

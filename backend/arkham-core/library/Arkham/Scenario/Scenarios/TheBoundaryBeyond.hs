@@ -28,8 +28,8 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types ( Field (LocationCard, LocationName) )
-import Arkham.Matcher hiding ( LocationCard )
+import Arkham.Location.Types ( Field (LocationName) )
+import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Movement
 import Arkham.Name
@@ -237,12 +237,12 @@ instance RunMessage TheBoundaryBeyond where
       placeChapultepecPark <- placeLocationCard_ Locations.chapultepecPark
       (coyoacanId, placeCoyoacan) <- placeLocationCard Locations.coyoacan
 
-      explorationDeck <- shuffleM =<< traverse
-        genCard
-        (explorationDeckLocations <> explorationDeckTreacheries)
+      explorationDeck <-
+        shuffleM
+          =<< genCards (explorationDeckLocations <> explorationDeckTreacheries)
 
       setAsideCards <-
-        traverse genCard
+        genCards
         $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
@@ -264,19 +264,15 @@ instance RunMessage TheBoundaryBeyond where
                ]
            | iid <- iids
            ]
+      agendas <- genCards [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
+      acts <- genCards [Acts.crossingTheThreshold, Acts.pastAndPresent]
       TheBoundaryBeyond <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.crossingTheThreshold, Acts.pastAndPresent]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
@@ -285,16 +281,6 @@ instance RunMessage TheBoundaryBeyond where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher ReplaceExplored 1
       pure s
-    AddToVictory (LocationTarget lid) -> do
-      -- We want to replace the card ID to avoid UI confusion
-      -- TODO: We REALLY want card ids and instance ids to be different
-      card <- field LocationCard lid
-      newId <- getRandom
-      let
-        card' = case card of
-          EncounterCard ec -> EncounterCard $ ec { ecId = newId }
-          _ -> error "Unhandled"
-      pure . TheBoundaryBeyond $ attrs & (victoryDisplayL %~ (card' :))
     RemoveLocation lid -> do
       -- we handle remove location special because we need to replace it
       title <- fieldMap LocationName nameTitle lid

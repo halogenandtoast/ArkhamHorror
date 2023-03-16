@@ -38,8 +38,7 @@ instance RunMessage SerpentsIre where
       serpents <-
         selectList $ SetAsideMatcher $ EnemyWithTrait Serpent <> EnemyOneOf
           (map EnemyWithId $ toList inPursuit)
-      fightValue <- getMax0 <$> selectAgg
-        Max
+      fightValue <- selectMax
         (SetAsideEnemyField EnemyFight)
         (SetAsideMatcher $ EnemyOneOf (map EnemyWithId serpents))
       choices <-
@@ -49,7 +48,7 @@ instance RunMessage SerpentsIre where
               (fieldMap (SetAsideEnemyField EnemyFight) ((== fightValue)))
               serpents
       if null choices
-        then push $ Surge iid source
+        then push $ gainSurge attrs
         else do
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> push $ chooseOne

@@ -201,25 +201,24 @@ instance RunMessage TheCityOfArchives where
         <> concat placeOtherRooms
         <> [ createYithianObserver | cooperatedWithTheYithians ]
         <> placeRemainingLocations
+
+      acts <- genCards
+        [ Acts.exploringPnakotus
+        , Acts.restrictedAccess
+        , Acts.repossession
+        ]
+      agendas <- genCards
+        [ Agendas.cityOfTheGreatRace
+        , Agendas.lostMemories
+        , Agendas.humanityFading
+        ]
       pure
         . TheCityOfArchives
         $ attrs
         & victoryDisplayUpdate
         & (setAsideCardsL %~ (<> setAsideCards))
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.cityOfTheGreatRace
-             , Agendas.lostMemories
-             , Agendas.humanityFading
-             ]
-          )
-        & (actStackL
-          . at 1
-          ?~ [ Acts.exploringPnakotus
-             , Acts.restrictedAccess
-             , Acts.repossession
-             ]
-          )
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
     ResolveToken _ tokenFace iid
       | isHardExpert attrs && tokenFace `elem` [Cultist, ElderThing] -> do
         push $ InvestigatorPlaceCluesOnLocation iid 1

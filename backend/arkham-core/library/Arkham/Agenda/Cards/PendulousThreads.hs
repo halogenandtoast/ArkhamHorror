@@ -1,6 +1,6 @@
-module Arkham.Agenda.Cards.PendolousThreads
-  ( PendolousThreads(..)
-  , pendolousThreads
+module Arkham.Agenda.Cards.PendulousThreads
+  ( PendulousThreads(..)
+  , pendulousThreads
   ) where
 
 import Arkham.Prelude
@@ -18,16 +18,16 @@ import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Timing qualified as Timing
 
-newtype PendolousThreads = PendolousThreads AgendaAttrs
+newtype PendulousThreads = PendulousThreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-pendolousThreads :: AgendaCard PendolousThreads
-pendolousThreads =
-  agenda (2, A) PendolousThreads Cards.pendolousThreads (Static 7)
+pendulousThreads :: AgendaCard PendulousThreads
+pendulousThreads =
+  agenda (2, A) PendulousThreads Cards.pendulousThreads (Static 7)
 
-instance HasAbilities PendolousThreads where
-  getAbilities (PendolousThreads a) =
+instance HasAbilities PendulousThreads where
+  getAbilities (PendulousThreads a) =
     [ mkAbility a 1
         $ ForcedAbility
         $ InvestigatorEliminated Timing.When
@@ -39,8 +39,8 @@ instance HasAbilities PendolousThreads where
             ]
     ]
 
-instance RunMessage PendolousThreads where
-  runMessage msg a@(PendolousThreads attrs) = case msg of
+instance RunMessage PendulousThreads where
+  runMessage msg a@(PendulousThreads attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       inPlay <- selectAny $ enemyIs Enemies.formlessSpawn
       mVictory <- selectOne $ VictoryDisplayCardMatch $ cardIs
@@ -59,4 +59,4 @@ instance RunMessage PendolousThreads where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ AdvanceToAgenda 1 Agendas.snappedThreads B (toSource attrs)
       pure a
-    _ -> PendolousThreads <$> runMessage msg attrs
+    _ -> PendulousThreads <$> runMessage msg attrs

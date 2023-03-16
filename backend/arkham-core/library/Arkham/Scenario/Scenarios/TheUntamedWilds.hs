@@ -79,10 +79,10 @@ instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      (expeditionCampId, placeExpeditionCamp) <- placeLocationCard Locations.expeditionCamp
+      (expeditionCampId, placeExpeditionCamp) <- placeLocationCard
+        Locations.expeditionCamp
 
-      explorationDeck <- shuffleM =<< traverse
-        genCard
+      explorationDeck <- shuffleM =<< genCards
         [ Locations.pathOfThorns
         , Locations.riverCanyon
         , Locations.ropeBridge
@@ -96,8 +96,7 @@ instance RunMessage TheUntamedWilds where
         ]
       agentsOfYig <- map EncounterCard
         <$> gatherEncounterSet EncounterSet.AgentsOfYig
-      setAsideCards <- (agentsOfYig <>) <$> traverse
-        genCard
+      setAsideCards <- (agentsOfYig <>) <$> genCards
         [ Locations.ruinsOfEztli
         , Locations.templeOfTheFang
         , Locations.overgrownRuins
@@ -144,23 +143,21 @@ instance RunMessage TheUntamedWilds where
           , placeExpeditionCamp
           , MoveAllTo (toSource attrs) expeditionCampId
           ]
+
+      agendas <- genCards [Agendas.expeditionIntoTheWild, Agendas.intruders]
+      acts <- genCards
+        [ Acts.exploringTheRainforest
+        , Acts.huntressOfTheEztli
+        , Acts.searchForTheRuins
+        , Acts.theGuardedRuins
+        ]
       TheUntamedWilds <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [ Acts.exploringTheRainforest
-             , Acts.huntressOfTheEztli
-             , Acts.searchForTheRuins
-             , Acts.theGuardedRuins
-             ]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.expeditionIntoTheWild, Agendas.intruders]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> case tokenFace token of
       ElderThing | isHardExpert attrs -> do

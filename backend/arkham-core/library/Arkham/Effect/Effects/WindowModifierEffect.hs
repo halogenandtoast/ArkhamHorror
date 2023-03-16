@@ -53,7 +53,8 @@ instance HasModifiersFor WindowModifierEffect where
 instance RunMessage WindowModifierEffect where
   runMessage msg e@(WindowModifierEffect attrs) = case msg of
     CancelFailedByModifierEffects -> case effectMetadata attrs of
-      Just (FailedByEffectModifiers _) ->
-        e <$ push (DisableEffect $ toId attrs)
+      Just (FailedByEffectModifiers _) -> do
+        push (DisableEffect $ toId attrs)
+        pure e
       _ -> pure e
     _ -> WindowModifierEffect <$> runMessage msg attrs

@@ -48,8 +48,8 @@ instance HasAbilities TheEntityAboveTheVortexAbove where
 instance RunMessage TheEntityAboveTheVortexAbove where
   runMessage msg a@(TheEntityAboveTheVortexAbove attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide D attrs -> do
-      pushAll
-        [Discard GameSource (AgendaTarget $ toId attrs), AddAct 2 Acts.openThePathAbove]
+      openThePathAbove <- getSetAsideCard Acts.openThePathAbove
+      pushAll [Discard GameSource (toTarget attrs), AddAct 2 openThePathAbove]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

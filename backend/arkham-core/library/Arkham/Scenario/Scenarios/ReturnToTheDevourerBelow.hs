@@ -10,7 +10,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher (CardMatcher(..))
+import Arkham.Matcher ( CardMatcher (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
@@ -54,20 +54,22 @@ instance RunMessage ReturnToTheDevourerBelow where
         ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
 
         let
-          toLocationCard = fmap EncounterCard . genEncounterCard
           woodsLabels = ["woods1", "woods2", "woods3", "woods4"]
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
-          pastMidnightMessages =
-            if pastMidnight then [AllRandomDiscard (toSource attrs) AnyCard, AllRandomDiscard (toSource attrs) AnyCard] else []
+          pastMidnightMessages = if pastMidnight
+            then
+              [ AllRandomDiscard (toSource attrs) AnyCard
+              , AllRandomDiscard (toSource attrs) AnyCard
+              ]
+            else []
           cultistsWhoGotAwayMessages = replicate
             ((length cultistsWhoGotAway + 1) `div` 2)
             PlaceDoomOnAgenda
 
         (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
 
-        arkhamWoods <- traverse
-          toLocationCard
+        arkhamWoods <- genCards
           [ Locations.arkhamWoodsUnhallowedGround
           , Locations.arkhamWoodsTwistingPaths
           , Locations.arkhamWoodsOldHouse
@@ -101,9 +103,10 @@ instance RunMessage ReturnToTheDevourerBelow where
           , randomSet
           ]
 
-        placeWoods <- for (zip woodsLabels woodsLocations) $ \(label, location) -> do
-          (locationId, placement) <- placeLocation location
-          pure [placement, SetLocationLabel locationId label]
+        placeWoods <-
+          for (zip woodsLabels woodsLocations) $ \(label, location) -> do
+            (locationId, placement) <- placeLocation location
+            pure [placement, SetLocationLabel locationId label]
 
         pushAll
           $ [ story investigatorIds intro
@@ -121,16 +124,18 @@ instance RunMessage ReturnToTheDevourerBelow where
           <> cultistsWhoGotAwayMessages
           <> pastMidnightMessages
 
-        setAsideEncounterCards <- traverse
-          (fmap EncounterCard . genEncounterCard)
+        setAsideEncounterCards <- genCards
           [Locations.ritualSite, Enemies.umordhoth]
+
+        agendas <- genCards agendaDeck
+        acts <- genCards actDeck
 
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs
           & (setAsideCardsL .~ setAsideEncounterCards)
-          & (actStackL . at 1 ?~ actDeck)
-          & (agendaStackL . at 1 ?~ agendaDeck)
+          & (actStackL . at 1 ?~ acts)
+          & (agendaStackL . at 1 ?~ agendas)
           )
       CreateEnemyAt _ card lid _ | toCardCode card == "01157" -> do
         name <- field LocationName lid

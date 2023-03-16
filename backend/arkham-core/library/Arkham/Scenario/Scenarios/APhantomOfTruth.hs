@@ -21,7 +21,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -100,35 +99,21 @@ gatherTheMidnightMasks conviction doubt = traverse
 
 cultistEffect :: GameT ()
 cultistEffect = do
-  leadInvestigatorId <- getLeadInvestigatorId
-  byakhee <- selectList (EnemyWithTrait Byakhee <> UnengagedEnemy)
-  byakheePairs :: [(EnemyId, (Distance, [InvestigatorId]))] <- forToSnd
-    byakhee
-    investigatorsNearestToEnemy
+  lead <- getLead
+  byakhee <- selectList $ EnemyWithTrait Byakhee <> UnengagedEnemy
+  byakheePairs <- forToSnd byakhee investigatorsNearestToEnemy
   let
-    minDistance :: Int = fromJustNote "error" . minimumMay $ map
+    minDistance = fromJustNote "error" . minimumMay $ map
       (unDistance . fst . snd)
       byakheePairs
-  let
     hset = concatMap (snd . snd)
       $ filter ((== minDistance) . unDistance . fst . snd) byakheePairs
   push $ chooseOneAtATime
-    leadInvestigatorId
-    [ TargetLabel
-        (EnemyTarget eid)
-        (moveTowardMessages leadInvestigatorId eid hset)
+    lead
+    [ targetLabel eid (moveTowardMessages lead eid hset)
     | (eid, _) <- byakheePairs
     ]
  where
-  -- investigatorsNearestToByakhee :: EnemyId -> GameT (HashSet InvestigatorId)
-  -- investigatorsNearestToByakhee eid = do
-  --   mappings :: [(InvestigatorId, Distance)] <- getList (EnemyWithId eid)
-  --   let minDistance :: Int =
-  --         fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-  --   pure . setFromList . map fst $
-  --     filter
-  --       ((== minDistance) . unDistance . snd)
-  --       mappings
   moveTowardMessages leadId eid hset = case hset of
     [] -> []
     [x] -> [moveToward eid x]
@@ -137,9 +122,7 @@ cultistEffect = do
           leadId
           [ TargetLabel (InvestigatorTarget x) [moveToward eid x] | x <- xs ]
       ]
-  moveToward eid x = MoveToward
-    (EnemyTarget eid)
-    (LocationWithInvestigator $ InvestigatorWithId x)
+  moveToward eid x = MoveToward (toTarget eid) (locationWithInvestigator x)
 
 instance RunMessage APhantomOfTruth where
   runMessage msg s@(APhantomOfTruth attrs) = case msg of
@@ -149,22 +132,20 @@ instance RunMessage APhantomOfTruth where
         push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
       pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
       pushAll
         [ chooseOne
-          leadInvestigatorId
+          lead
           [ Label "Conviction" [RecordCount Conviction 1]
           , Label "Doubt" [RecordCount Doubt 1]
           ]
-        , ShuffleCardsIntoDeck
-          (InvestigatorDeck leadInvestigatorId)
-          [theManInThePallidMask]
+        , ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
         ]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
 
       theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
       youIntrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
@@ -208,9 +189,9 @@ instance RunMessage APhantomOfTruth where
            , (iid, lostSoul) <- zip investigatorIds lostSouls
            ]
         <> [ chooseOne
-               leadInvestigatorId
-               [ TargetLabel
-                   (InvestigatorTarget iid)
+               lead
+               [ targetLabel
+                   iid
                    [ShuffleCardsIntoDeck (InvestigatorDeck iid) [paranoia]]
                | iid <- investigatorIds
                ]
@@ -218,7 +199,7 @@ instance RunMessage APhantomOfTruth where
            ]
         <> [ SufferTrauma iid 0 1 | showDream7, iid <- investigatorIds ]
         <> [ chooseOne
-               leadInvestigatorId
+               lead
                [ Label
                  "“How could any of this be beautiful to you?”"
                  [SetupStep (toTarget attrs) 11]
@@ -259,7 +240,7 @@ instance RunMessage APhantomOfTruth where
       midnightMasks <- gatherTheMidnightMasks conviction doubt
       encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
-      setAsideCards <- traverse genCard [theOrganist]
+      setAsideCards <- genCards [theOrganist]
 
       montmartre <- genCard
         =<< sample (Locations.montmartre209 :| [Locations.montmartre210])
@@ -278,8 +259,7 @@ instance RunMessage APhantomOfTruth where
       notreDame <- genCard Locations.notreDame
       gardensOfLuxembourg <- genCard Locations.gardensOfLuxembourg
 
-      jordanInterviewed <- elem (Recorded $ toCardCode Assets.jordanPerry)
-        <$> getRecordSet VIPsInterviewed
+      jordanInterviewed <- interviewed Assets.jordanPerry
       investigatorIds <- allInvestigatorIds
 
       (montparnasseId, placeMontparnasse) <- placeLocation montparnasse
@@ -289,37 +269,47 @@ instance RunMessage APhantomOfTruth where
         startingLocation =
           if jordanInterviewed then montparnasseId else gareDOrsayId
 
-      otherPlacements <- traverse placeLocation_ [montmartre, operaGarnier, leMarais, grandGuignol, canalSaintMartin, pereLachaiseCemetery, notreDame, gardensOfLuxembourg]
+      otherPlacements <- traverse
+        placeLocation_
+        [ montmartre
+        , operaGarnier
+        , leMarais
+        , grandGuignol
+        , canalSaintMartin
+        , pereLachaiseCemetery
+        , notreDame
+        , gardensOfLuxembourg
+        ]
 
-      pushAll $
-        [ story investigatorIds dream11 | n == 11 ]
+      pushAll
+        $ [ story investigatorIds dream11 | n == 11 ]
         <> [ story investigatorIds dream12 | n == 12 ]
         <> [ RecordCount Doubt (doubt + 1) | n == 12 ]
         <> [story investigatorIds dream13, story investigatorIds awakening]
         <> [ story investigatorIds jordansInformation | jordanInterviewed ]
-        <> [ CreateWindowModifierEffect EffectSetupWindow (EffectModifiers $ toModifiers attrs [StartingResources 3]) (toSource attrs) (InvestigatorTarget iid)
+        <> [ CreateWindowModifierEffect
+               EffectSetupWindow
+               (EffectModifiers $ toModifiers attrs [StartingResources 3])
+               (toSource attrs)
+               (InvestigatorTarget iid)
            | jordanInterviewed
            , iid <- investigatorIds
            ]
-        <> [ SetEncounterDeck encounterDeck
-           , SetAgendaDeck
-           , SetActDeck
-           ]
+        <> [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
-        <>  [ MoveAllTo (toSource attrs) startingLocation ]
+        <> [MoveAllTo (toSource attrs) startingLocation]
+
+      acts <- genCards [act1, act2]
+      agendas <-
+        genCards
+          [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
 
       APhantomOfTruth <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL . at 1 ?~ [act1, act2])
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.theFirstNight
-             , Agendas.theSecondNight
-             , Agendas.theThirdNight
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken drawnToken tokenFace _ -> case tokenFace of
       Cultist | isHardExpert attrs -> s <$ cultistEffect
@@ -334,7 +324,8 @@ instance RunMessage APhantomOfTruth where
       _ -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ n -> case tokenFace token of
       Cultist | isEasyStandard attrs -> s <$ cultistEffect
-      ElderThing -> s <$ push (LoseResources iid (TokenEffectSource ElderThing) n)
+      ElderThing ->
+        s <$ push (LoseResources iid (TokenEffectSource ElderThing) n)
       _ -> pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds

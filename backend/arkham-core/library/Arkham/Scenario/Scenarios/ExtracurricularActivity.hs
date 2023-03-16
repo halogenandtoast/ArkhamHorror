@@ -76,23 +76,30 @@ instance RunMessage ExtracurricularActivity where
         , EncounterSet.AgentsOfYogSothoth
         ]
 
-      (miskatonicQuadId, placeMiskatonicQuad) <- placeLocationCard Locations.miskatonicQuad
-      placeOtherLocations <- traverse placeLocationCard_ [Locations.humanitiesBuilding, Locations.orneLibrary, Locations.studentUnion, Locations.scienceBuilding, Locations.administrationBuilding]
-
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeMiskatonicQuad
+      (miskatonicQuadId, placeMiskatonicQuad) <- placeLocationCard
+        Locations.miskatonicQuad
+      placeOtherLocations <- traverse
+        placeLocationCard_
+        [ Locations.humanitiesBuilding
+        , Locations.orneLibrary
+        , Locations.studentUnion
+        , Locations.scienceBuilding
+        , Locations.administrationBuilding
         ]
+
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeMiskatonicQuad
+          ]
         <> placeOtherLocations
         <> [ RevealLocation Nothing miskatonicQuadId
            , MoveAllTo (toSource attrs) miskatonicQuadId
            , story investigatorIds intro
            ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ if completedTheHouseAlwaysWins
           then Locations.facultyOfficesTheHourIsLate
           else Locations.facultyOfficesTheNightIsStillYoung
@@ -104,46 +111,40 @@ instance RunMessage ExtracurricularActivity where
         , Assets.professorWarrenRice
         ]
 
+      agendas <- genCards
+        [Agendas.quietHalls, Agendas.deadOfNight, Agendas.theBeastUnleashed]
+      acts <- genCards
+        [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
+
       ExtracurricularActivity <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.quietHalls
-             , Agendas.deadOfNight
-             , Agendas.theBeastUnleashed
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
-    ResolveToken drawnToken ElderThing iid -> s <$ push
-      (DiscardTopOfDeck
+    ResolveToken drawnToken ElderThing iid -> do
+      push $ DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
         (TokenEffectSource ElderThing)
         (Just $ TokenTarget drawnToken)
-      )
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
-      s <$ case tokenFace token of
-        Skull -> push $ DiscardTopOfDeck
-          iid
-          (if isEasyStandard attrs then 3 else 5)
-          (TokenEffectSource Skull)
-          Nothing
-        _ -> pure ()
-    DiscardedTopOfDeck _iid cards _ target@(TokenTarget token) ->
-      s <$ case tokenFace token of
-        ElderThing -> do
-          let
-            n = sum $ map
-              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
-              cards
-          push $ CreateTokenValueEffect (-n) (toSource attrs) target
-        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Skull)) _ _ -> do
+      push $ DiscardTopOfDeck
+        iid
+        (if isEasyStandard attrs then 3 else 5)
+        (TokenEffectSource Skull)
+        Nothing
+      pure s
+    DiscardedTopOfDeck _iid cards _ target@(TokenTarget (tokenFace -> ElderThing))
+      -> do
+        let
+          n = sum $ map
+            (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
+            cards
+        push $ CreateTokenValueEffect (-n) (toSource attrs) target
+        pure s
     ScenarioResolution NoResolution -> do
       iids <- allInvestigatorIds
       xp <- getXp

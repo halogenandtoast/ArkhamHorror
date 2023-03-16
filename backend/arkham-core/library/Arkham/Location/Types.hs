@@ -75,6 +75,7 @@ data instance Field Location :: Type -> Type where
   LocationTreacheries :: Field Location (HashSet TreacheryId)
   LocationInvestigateSkill :: Field Location SkillType
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
+  LocationCardId :: Field Location CardId
   -- virtual
   LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card

@@ -48,6 +48,6 @@ instance RunMessage PossessionTorturous where
         pure t
       Nothing -> pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toSource attrs) (toTarget attrs)
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> PossessionTorturous <$> runMessage msg attrs

@@ -73,7 +73,6 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )
 import Data.HashSet qualified as HashSet
-import Data.UUID ( nil )
 
 replaceThisCard :: Card -> Source -> Source
 replaceThisCard c = \case
@@ -81,19 +80,16 @@ replaceThisCard c = \case
   s -> s
 
 cancelToken :: Token -> GameT ()
-cancelToken token = withQueue $ \queue ->
-  ( filter
-    (\case
-      When (RevealToken _ _ token') | token == token' -> False
-      RevealToken _ _ token' | token == token' -> False
-      After (RevealToken _ _ token') | token == token' -> False
-      RequestedTokens _ _ [token'] | token == token' -> False
-      RequestedTokens{} -> error "not setup for multiple tokens"
-      _ -> True
-    )
-    queue
-  , ()
+cancelToken token = withQueue_ $ \queue -> filter
+  (\case
+    When (RevealToken _ _ token') | token == token' -> False
+    RevealToken _ _ token' | token == token' -> False
+    After (RevealToken _ _ token') | token == token' -> False
+    RequestedTokens _ _ [token'] | token == token' -> False
+    RequestedTokens{} -> error "not setup for multiple tokens"
+    _ -> True
   )
+  queue
 
 getPlayableCards
   :: (HasCallStack, HasGame m)
@@ -1398,7 +1394,7 @@ windowMatches iid source window' = \case
           andM
             [ matchWho iid who whoMatcher
             , pure $ tokenFace token `elem` tokens
-            , pure $ lookupCard cardCode (CardId nil) `cardMatch` cardMatcher
+            , pure $ lookupCard cardCode nullCardId `cardMatch` cardMatcher
             ]
         Window.RevealTokenEventEffect who tokens' eventId -> do
           card <- field EventCard eventId

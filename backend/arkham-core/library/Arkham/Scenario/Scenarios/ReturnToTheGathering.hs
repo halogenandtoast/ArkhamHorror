@@ -55,15 +55,18 @@ instance RunMessage ReturnToTheGathering where
           , EncounterSet.ChillingCold
           ]
 
-        (studyId, placeStudy) <- placeLocationCard Locations.studyAberrantGateway
-        placeRest <- traverse placeLocationCard_ [Locations.guestHall, Locations.bedroom, Locations.bathroom]
+        (studyId, placeStudy) <- placeLocationCard
+          Locations.studyAberrantGateway
+        placeRest <- traverse
+          placeLocationCard_
+          [Locations.guestHall, Locations.bedroom, Locations.bathroom]
 
-        pushAll $
-          [ SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeStudy
-          ]
+        pushAll
+          $ [ SetEncounterDeck encounterDeck
+            , SetAgendaDeck
+            , SetActDeck
+            , placeStudy
+            ]
           <> placeRest
           <> [ RevealLocation Nothing studyId
              , MoveAllTo (toSource attrs) studyId
@@ -73,8 +76,7 @@ instance RunMessage ReturnToTheGathering where
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]
         cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]
 
-        setAsideCards <- traverse
-          genCard
+        setAsideCards <- genCards
           [ Enemies.ghoulPriest
           , Assets.litaChantler
           , attic
@@ -85,17 +87,15 @@ instance RunMessage ReturnToTheGathering where
           , Locations.parlor
           ]
 
+        agendas <- genCards theGatheringAgendaDeck
+        acts <- genCards
+          [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
+
         ReturnToTheGathering . TheGathering <$> runMessage
           msg
           (attrs
           & (setAsideCardsL .~ setAsideCards)
-          & (actStackL
-            . at 1
-            ?~ [ Acts.mysteriousGateway
-               , Acts.theBarrier
-               , Acts.whatHaveYouDone
-               ]
-            )
-          & (agendaStackL . at 1 ?~ theGatheringAgendaDeck)
+          & (actStackL . at 1 ?~ acts)
+          & (agendaStackL . at 1 ?~ agendas)
           )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

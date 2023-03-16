@@ -217,14 +217,12 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         explorationDeck <-
           shuffleM
           . (<> [ ruinsLocation | not mappedOutTheWayForward ])
-          =<< traverse
-                genCard
+          =<< genCards
                 (explorationDeckLocations <> explorationDeckTreacheries)
 
         setAsidePoisonedCount <- getSetAsidePoisonedCount
 
-        setAsideCards <- traverse
-          genCard
+        setAsideCards <- genCards
           (replicate setAsidePoisonedCount Treacheries.poisoned)
 
         createTheWingedSerpent <- createEnemyAt_
@@ -246,19 +244,16 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           <> [ createTheWingedSerpent | reachedAct2 metadata ]
           <> [ placeRuinsLocation | mappedOutTheWayForward ]
 
+        acts <- genCards [Acts.searchForThePattern, Acts.openingTheMaw]
+        agendas <- genCards [Agendas.theJunglesHeart, Agendas.settingSun]
+
         HeartOfTheElders . (`with` metadata) <$> runMessage
           msg
           (attrs
           & (decksL . at ExplorationDeck ?~ explorationDeck)
           & (setAsideCardsL .~ setAsideCards)
-          & (agendaStackL
-            . at 1
-            ?~ [Agendas.theJunglesHeart, Agendas.settingSun]
-            )
-          & (actStackL
-            . at 1
-            ?~ [Acts.searchForThePattern, Acts.openingTheMaw]
-            )
+          & (agendaStackL . at 1 ?~ agendas)
+          & (actStackL . at 1 ?~ acts)
           )
   ScenarioResolution r -> case r of
     NoResolution -> do
@@ -310,10 +305,8 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         ]
 
     theJungleWatches <- recordedCardCodes <$> getRecordSet TheJungleWatches
-    theJungleWatchesCards <- for
-      theJungleWatches
-      (\cCode -> lookupCard cCode <$> getRandom)
-    let theJungleWatchesCardDefs = map toCardDef theJungleWatchesCards
+    let theJungleWatchesCardDefs = mapMaybe (lookupCardDef) theJungleWatches
+    theJungleWatchesCards <- genCards theJungleWatchesCardDefs
 
     encounterDeck' <- buildEncounterDeckExcluding
       explorationDeckLocations
@@ -334,14 +327,12 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     (mouthOfKnYanTheDepthsBelowId, placeMouthOfKnYanTheDepthsBelow) <-
       placeLocationCard Locations.mouthOfKnYanTheDepthsBelow
     setAsidePoisonedCount <- getSetAsidePoisonedCount
-    setAsideCards <- traverse
-      genCard
+    setAsideCards <- genCards
       (Locations.descentToYoth
       : replicate setAsidePoisonedCount Treacheries.poisoned
       )
 
-    explorationDeck <- traverse
-      genCard
+    explorationDeck <- genCards
       (explorationDeckLocations <> explorationDeckTreacheries)
 
     pushAll
@@ -352,6 +343,11 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       , MoveAllTo (toSource attrs) mouthOfKnYanTheDepthsBelowId
       ]
 
+    acts <- genCards
+      [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
+    agendas <- genCards
+      [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
+
     HeartOfTheElders . (`with` metadata) <$> runMessage
       msg
       (attrs
@@ -359,14 +355,8 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       & (decksL . at ExplorationDeck ?~ explorationDeck)
       & (setAsideCardsL .~ setAsideCards)
       & (victoryDisplayL .~ theJungleWatchesCards)
-      & (agendaStackL
-        . at 1
-        ?~ [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
-        )
-      & (actStackL
-        . at 1
-        ?~ [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
-        )
+      & (agendaStackL . at 1 ?~ agendas)
+      & (actStackL . at 1 ?~ acts)
       )
   ScenarioResolution r -> do
     iids <- allInvestigatorIds

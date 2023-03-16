@@ -60,6 +60,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyAbilities :: Field Enemy [Ability]
   EnemyCard :: Field Enemy Card
   EnemyCardCode :: Field Enemy CardCode
+  EnemyCardId :: Field Enemy CardId
   EnemyLocation :: Field Enemy (Maybe LocationId)
   EnemyPlacement :: Field Enemy Placement
   EnemySealedTokens :: Field Enemy [Token]

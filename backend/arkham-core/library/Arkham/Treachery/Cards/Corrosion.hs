@@ -43,7 +43,7 @@ instance RunMessage Corrosion where
         iid
       push $ if shroud > 0 && (hasAssets || hasHandAssets)
         then RevelationChoice iid source shroud
-        else Surge iid source
+        else gainSurge attrs
       pure t
     RevelationChoice iid source n | n > 0 -> do
       assets <- selectWithField AssetCost assetMatcher

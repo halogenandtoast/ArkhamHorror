@@ -30,6 +30,6 @@ instance RunMessage StalkedInTheDark where
           pushAll
             $ [Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
             <> map (EnemyAttack . enemyAttack eid) iids
-        Nothing -> push (Surge iid source)
+        Nothing -> push $ gainSurge attrs
       pure t
     _ -> StalkedInTheDark <$> runMessage msg attrs

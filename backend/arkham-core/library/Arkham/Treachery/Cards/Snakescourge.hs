@@ -51,7 +51,7 @@ instance RunMessage Snakescourge where
       isPoisoned <- getIsPoisoned iid
       pushAll
         $ AttachTreachery (toId t) (InvestigatorTarget iid)
-        : [ Surge iid source | isPoisoned ]
+        : [ gainSurge attrs | isPoisoned ]
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)

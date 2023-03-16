@@ -2784,6 +2784,7 @@ instance Projection Treachery where
     case fld of
       TreacheryPlacement -> pure treacheryPlacement
       TreacheryDrawnBy -> pure treacheryDrawnBy
+      TreacheryDrawnFrom -> pure treacheryDrawnFrom
       TreacheryCardId -> pure treacheryCardId
       TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
       TreacheryClues -> pure treacheryClues
@@ -4421,7 +4422,7 @@ runGameMessage msg g = case msg of
           $ g'
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
           & (activeCardL ?~ EncounterCard card)
-      TreacheryType ->
+      TreacheryType -> do
         g <$ push
           (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
       EncounterAssetType -> do
@@ -4462,7 +4463,9 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
-    push (ResolveTreachery iid treacheryId)
+    modifiers' <- getModifiers (toTarget treachery)
+
+    pushAll $ [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers'] <> [ResolveTreachery iid treacheryId]
 
     pure
       $ g
@@ -4492,8 +4495,12 @@ runGameMessage msg g = case msg of
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows
+
+    modifiers' <- getModifiers (toTarget treachery)
+
     pushAll
       $ [ RemoveCardFromHand iid (toCardId card) | hasRevelation card ]
+      <> [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']
       <> [ResolveTreachery iid treacheryId]
 
     let

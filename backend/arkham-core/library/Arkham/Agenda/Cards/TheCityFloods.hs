@@ -7,10 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Card
 import Arkham.Classes
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -23,10 +24,11 @@ theCityFloods :: AgendaCard TheCityFloods
 theCityFloods = agenda (3, A) TheCityFloods Cards.theCityFloods (Static 8)
 
 instance HasModifiersFor TheCityFloods where
-  getModifiersFor (TreacheryTarget tid) (TheCityFloods a) = do
-    isAncientEvils <- member tid
-      <$> select (treacheryIs Treacheries.ancientEvils)
-    pure $ toModifiers a [ AddKeyword Keyword.Surge | isAncientEvils ]
+  getModifiersFor (CardIdTarget cardId) (TheCityFloods a) = do
+    card <- getCard cardId
+    pure $ toModifiers
+      a
+      [ AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheCityFloods where

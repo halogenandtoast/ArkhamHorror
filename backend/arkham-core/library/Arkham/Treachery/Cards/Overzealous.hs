@@ -26,11 +26,7 @@ instance RunMessage Overzealous where
       withTreacheryOwner
         attrs
         \iid -> t <$ pushAll
-          [ CreateEffect
-            (toCardCode attrs)
-            Nothing
-            (toSource attrs)
-            (CardIdTarget $ toCardId card)
+          [ GainSurge (toSource attrs) (toTarget $ toCardId card)
           , InvestigatorDrewEncounterCard iid card
           ]
     _ -> Overzealous <$> runMessage msg attrs

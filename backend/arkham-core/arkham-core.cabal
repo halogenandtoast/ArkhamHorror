@@ -688,7 +688,6 @@ library
       Arkham.Effect.Effects.AChanceEncounter
       Arkham.Effect.Effects.AlchemicalTransmutation
       Arkham.Effect.Effects.ArcaneBarrier
-      Arkham.Effect.Effects.ArkhamWoodsGreatWillow
       Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Effect.Effects.BaseballBat
       Arkham.Effect.Effects.BindMonster2
@@ -722,7 +721,6 @@ library
       Arkham.Effect.Effects.MrPeabody
       Arkham.Effect.Effects.NarrowShaft
       Arkham.Effect.Effects.NathanielCho
-      Arkham.Effect.Effects.Overzealous
       Arkham.Effect.Effects.PereLachaiseCemetery
       Arkham.Effect.Effects.PushedIntoTheBeyond
       Arkham.Effect.Effects.QuickThinking

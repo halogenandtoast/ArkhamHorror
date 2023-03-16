@@ -150,6 +150,9 @@ instance RunMessage SkillTest where
     Discard _ target | target == skillTestTarget -> do
       push $ SkillTestEnds skillTestInvestigator skillTestSource
       pure s
+    RemoveFromGame target | target == skillTestTarget -> do
+      push $ SkillTestEnds skillTestInvestigator skillTestSource
+      pure s
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'

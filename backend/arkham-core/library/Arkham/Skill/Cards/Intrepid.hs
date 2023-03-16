@@ -9,6 +9,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Id
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Skill.Cards qualified as Cards
@@ -29,9 +30,10 @@ instance RunMessage Intrepid where
         let
           intrepidAsset =
             PlayerCard (intrepidAssetProxy { pcOriginalCardCode = toCardCode attrs })
+          assetId = AssetId $ unSkillId $ toId attrs
         pushAll
           [ RemoveSkill $ toId attrs
-          , CreateAssetAt intrepidAsset (InPlayArea iid)
+          , CreateAssetAt assetId intrepidAsset (InPlayArea iid)
           ]
         pure s
     _ -> Intrepid <$> runMessage msg attrs

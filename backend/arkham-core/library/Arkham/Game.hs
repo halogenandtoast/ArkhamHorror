@@ -411,7 +411,7 @@ withInvestigatorConnectionData
   -> m (With (With WithDeckSize ModifierData) ConnectionData)
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' ->
-    if investigatorLocation (toAttrs investigator') == LocationId (CardId nil)
+    if investigatorLocation (toAttrs investigator') == LocationId nil
       then pure $ inner `with` ConnectionData []
       else do
         location <- getLocation $ investigatorLocation (toAttrs investigator')
@@ -615,11 +615,8 @@ getInvestigatorsMatching matcher = do
                   Just targetInvestigator -> pure
                     [ overAttrs
                         (\a -> a
-                          { Investigator.investigatorId =
-                            InvestigatorId
-                              (CardCode $ UUID.toText $ unCardId $ unTreacheryId
-                                tid
-                              )
+                          { Investigator.investigatorId = InvestigatorId
+                            (CardCode $ UUID.toText $ unTreacheryId tid)
                           }
                         )
                         targetInvestigator
@@ -776,7 +773,7 @@ getInvestigatorsMatching matcher = do
       pure . (== title) . nameTitle . toName . toAttrs
     DefeatedInvestigator -> pure . investigatorDefeated . toAttrs
     InvestigatorAt locationMatcher -> \i ->
-      if investigatorLocation (toAttrs i) == LocationId (CardId nil)
+      if investigatorLocation (toAttrs i) == LocationId nil
         then pure False
         else member (investigatorLocation $ toAttrs i)
           <$> select locationMatcher
@@ -1174,7 +1171,8 @@ getLocationsMatching
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
-    LocationWithCardCode cardId -> filter ((== cardId) . toCardId) ls
+    LocationWithCardId cardId ->
+      pure $ filter ((== cardId) . toCardId . toAttrs) ls
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher
       filterM
@@ -1505,7 +1503,8 @@ getAssetsMatching matcher = do
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
-    AssetWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
+    AssetWithCardId cardId ->
+      pure $ filter ((== cardId) . toCardId . toAttrs) as
     AssetWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
     AssetWithHealth -> pure $ filter (isJust . assetHealth . toAttrs) as
@@ -1718,6 +1717,7 @@ getEventsMatching matcher = do
       pure $ filter
         (maybe False (`elem` assets) . eventAttachedTarget . toAttrs)
         as
+    EventWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
 
 getSkillsMatching :: HasGame m => SkillMatcher -> m [Skill]
 getSkillsMatching matcher = do
@@ -1782,7 +1782,7 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
-  EnemyWithCardId cardId -> pure . (== cardId) . toCardId
+  EnemyWithCardId cardId -> pure . (== cardId) . toCardId . toAttrs
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
@@ -2149,7 +2149,7 @@ instance Projection Location where
       LocationTreacheries -> pure locationTreacheries
       -- virtual
       LocationCardDef -> pure $ toCardDef attrs
-      LocationCard -> pure $ lookupCard locationCardCode (unLocationId lid)
+      LocationCard -> pure $ lookupCard locationCardCode locationCardId
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
@@ -2219,7 +2219,7 @@ instance Projection Asset where
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
       AssetTraits -> pure . cdCardTraits $ toCardDef attrs
       AssetCardDef -> pure $ toCardDef attrs
-      AssetCard -> pure $ case lookupCard assetCardCode (unAssetId aid) of
+      AssetCard -> pure $ case lookupCard assetCardCode assetCardId of
         PlayerCard pc -> PlayerCard $ pc { pcOwner = assetOwner }
         ec -> ec
       AssetAbilities -> pure $ getAbilities a
@@ -2280,7 +2280,7 @@ instance Projection VoidEnemy where
     e <- getVoidEnemy eid
     let EnemyAttrs {..} = toAttrs e
     case f of
-      VoidEnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId enemyId)
+      VoidEnemyCard -> pure $ lookupCard enemyCardCode enemyCardId
 
 instance Projection Enemy where
   field f = getEnemyField f <=< getEnemy
@@ -2311,10 +2311,9 @@ getEnemyField f e = do
     EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
     EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
     EnemyAbilities -> pure $ getAbilities e
-    EnemyCard ->
-      pure $ case lookupCard enemyOriginalCardCode (unEnemyId $ toId e) of
-        PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer }
-        ec -> ec
+    EnemyCard -> pure $ case lookupCard enemyOriginalCardCode enemyCardId of
+      PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer }
+      ec -> ec
     EnemyCardCode -> pure enemyCardCode
     EnemyLocation -> case enemyPlacement of
       AtLocation lid -> pure $ Just lid
@@ -2335,10 +2334,9 @@ instance Projection Investigator where
         pure (investigatorSanity - investigatorSanityDamage)
       InvestigatorRemainingHealth ->
         pure (investigatorHealth - investigatorHealthDamage)
-      InvestigatorLocation ->
-        pure $ if investigatorLocation == LocationId (CardId nil)
-          then Nothing
-          else Just investigatorLocation
+      InvestigatorLocation -> pure $ if investigatorLocation == LocationId nil
+        then Nothing
+        else Just investigatorLocation
       InvestigatorWillpower -> pure investigatorWillpower
       InvestigatorIntellect -> pure investigatorIntellect
       InvestigatorCombat -> pure investigatorCombat
@@ -2738,7 +2736,7 @@ instance Projection Event where
       EventDoom -> pure eventDoom
       EventCard ->
         -- an event might need to be converted back to its original card
-        pure $ lookupCard eventOriginalCardCode (unEventId eid)
+        pure $ lookupCard eventOriginalCardCode eventCardId
 
 instance Projection Scenario where
   field fld _ = do
@@ -2774,7 +2772,7 @@ instance Projection Skill where
       cdef = toCardDef attrs
     case fld of
       SkillTraits -> pure $ cdCardTraits cdef
-      SkillCard -> pure $ lookupCard skillCardCode (unSkillId sid)
+      SkillCard -> pure $ lookupCard skillCardCode skillCardId
       SkillOwner -> pure skillOwner
 
 instance Projection Treachery where
@@ -2786,6 +2784,7 @@ instance Projection Treachery where
     case fld of
       TreacheryPlacement -> pure treacheryPlacement
       TreacheryDrawnBy -> pure treacheryDrawnBy
+      TreacheryCardId -> pure treacheryCardId
       TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
       TreacheryClues -> pure treacheryClues
       TreacheryResources -> pure treacheryResources
@@ -2804,7 +2803,7 @@ instance Projection Treachery where
         pure $ cdKeywords cdef <> setFromList additionalKeywords
       TreacheryAbilities -> pure $ getAbilities t
       TreacheryCardDef -> pure cdef
-      TreacheryCard -> pure $ lookupCard treacheryCardCode (unTreacheryId tid)
+      TreacheryCard -> pure $ lookupCard treacheryCardCode treacheryCardId
 
 instance HasDistance Game where
   getDistance' _ start fin = do
@@ -3316,13 +3315,14 @@ runGameMessage msg g = case msg of
     let
       oldAttrs = toAttrs location
       location' =
-        flip overAttrs (lookupLocation (toCardCode card) lid (toCardId card)) $ \attrs -> attrs
-          { locationInvestigators = locationInvestigators oldAttrs
-          , locationEnemies = locationEnemies oldAttrs
-          , locationEvents = locationEvents oldAttrs
-          , locationAssets = locationAssets oldAttrs
-          , locationTreacheries = locationTreacheries oldAttrs
-          }
+        flip overAttrs (lookupLocation (toCardCode card) lid (toCardId card))
+          $ \attrs -> attrs
+              { locationInvestigators = locationInvestigators oldAttrs
+              , locationEnemies = locationEnemies oldAttrs
+              , locationEvents = locationEvents oldAttrs
+              , locationAssets = locationAssets oldAttrs
+              , locationTreacheries = locationTreacheries oldAttrs
+              }
     -- todo: should we just run this in place?
     iid <- getLeadInvestigatorId
     afterPutIntoPlayWindow <- checkWindows
@@ -3435,8 +3435,7 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case toCardType pc of
         SkillType -> do
           skillId <- getRandom
-          let
-            skill = createSkill pc iid skillId
+          let skill = createSkill pc iid skillId
           push (InvestigatorCommittedSkill iid skillId)
           for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
             let ability = abilityEffect skill cost
@@ -3458,7 +3457,7 @@ runGameMessage msg g = case msg of
             DiscardThis ->
               ( AddToDiscard
                 (skillOwner $ toAttrs skill)
-                (lookupPlayerCard (toCardDef skill) (unSkillId skillId))
+                (lookupPlayerCard (toCardDef skill) (toCardId skill))
               , Just skillId
               )
             RemoveThisFromGame ->
@@ -3630,8 +3629,7 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case toCardType pc of
         PlayerTreacheryType -> do
           tid <- getRandom
-          let
-            treachery = lookupTreachery (toCardCode pc) iid tid cardId
+          let treachery = lookupTreachery (toCardCode pc) iid tid cardId
           pushAll
             $ resolve (Revelation iid (TreacherySource tid))
             <> [UnsetActiveCard]
@@ -3671,8 +3669,7 @@ runGameMessage msg g = case msg of
       EncounterCard ec -> case toCardType ec of
         TreacheryType -> do
           tid <- getRandom
-          let
-            treachery = createTreachery card iid tid
+          let treachery = createTreachery card iid tid
           push $ AttachTreachery tid (InvestigatorTarget iid)
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         _ -> pure g
@@ -4162,11 +4159,11 @@ runGameMessage msg g = case msg of
     pure $ g & (skillTestL ?~ skillTest)
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
-    g <$ push (CreateAssetAt cardCode $ AtLocation lid)
-  CreateAssetAt card placement -> do
     assetId <- getRandom
-    let
-      asset = createAsset card assetId
+    push $ CreateAssetAt assetId cardCode $ AtLocation lid
+    pure g
+  CreateAssetAt assetId card placement -> do
+    let asset = createAsset card assetId
     iid <- getActiveInvestigatorId
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
@@ -4181,8 +4178,7 @@ runGameMessage msg g = case msg of
           & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateEventAt iid card placement -> do
     eventId <- getRandom
-    let
-      event' = createEvent card iid eventId
+    let event' = createEvent card iid eventId
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
       Nothing -> do
@@ -4198,26 +4194,22 @@ runGameMessage msg g = case msg of
 
   CreateWeaknessInThreatArea card iid -> do
     treacheryId <- getRandom
-    let
-      treachery = createTreachery card iid treacheryId
+    let treachery = createTreachery card iid treacheryId
     push (AttachTreachery treacheryId (InvestigatorTarget iid))
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   AttachStoryTreacheryTo card target -> do
     treacheryId <- getRandom
-    let
-      treachery = createTreachery card (g ^. leadInvestigatorIdL) treacheryId
+    let treachery = createTreachery card (g ^. leadInvestigatorIdL) treacheryId
     push (AttachTreachery treacheryId target)
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do
     assetId <- getRandom
-    let
-      asset = createAsset card assetId
+    let asset = createAsset card assetId
     pushAll [TakeControlOfAsset iid assetId]
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   ReplaceInvestigatorAsset iid card -> do
     assetId <- getRandom
-    let
-      asset = createAsset card assetId
+    let asset = createAsset card assetId
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do
@@ -4365,8 +4357,7 @@ runGameMessage msg g = case msg of
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do
       assetId <- getRandom
-      let
-        asset = createAsset card assetId
+      let asset = createAsset card assetId
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
       pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
@@ -4403,9 +4394,7 @@ runGameMessage msg g = case msg of
           ]
         pushAll
           $ [checkWindowMessage, InvestigatorDrawEnemy iid enemyId]
-          <> [ Revelation iid (EnemySource enemyId)
-             | hasRevelation card
-             ]
+          <> [ Revelation iid (EnemySource enemyId) | hasRevelation card ]
           <> [UnsetActiveCard]
         pure
           $ g'
@@ -4416,15 +4405,13 @@ runGameMessage msg g = case msg of
           (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
       EncounterAssetType -> do
         assetId <- getRandom
-        let
-          asset = createAsset card assetId
+        let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ resolve $ Revelation iid (AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       LocationType -> do
         locationId <- getRandom
-        let
-          location = createLocation card locationId
+        let location = createLocation card locationId
         pushAll
           $ [ PlacedLocation (toName location) (toCardCode card) locationId
             , RevealLocation (Just iid) locationId
@@ -4458,7 +4445,8 @@ runGameMessage msg g = case msg of
   DrewTreachery iid mdeck (EncounterCard card) -> do
     treacheryId <- getRandom
     let
-      treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
+      treachery =
+        overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
@@ -4491,13 +4479,10 @@ runGameMessage msg g = case msg of
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
     treacheryId <- getRandom
-    let
-      treachery = createTreachery card iid treacheryId
+    let treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows
     pushAll
-      $ [ RemoveCardFromHand iid (toCardId card)
-        | hasRevelation card
-        ]
+      $ [ RemoveCardFromHand iid (toCardId card) | hasRevelation card ]
       <> [ResolveTreachery iid treacheryId]
 
     let
@@ -4595,7 +4580,7 @@ runGameMessage msg g = case msg of
             pure $ g & entitiesL . eventsL %~ deleteMap eid
   Discard _ (TreacheryTarget tid) -> do
     treachery <- getTreachery tid
-    case lookupCard (toCardCode treachery) (unTreacheryId tid) of
+    case lookupCard (toCardCode treachery) (toCardId treachery) of
       PlayerCard pc -> do
         let
           ownerId = fromJustNote "owner was not set" $ treacheryOwner $ toAttrs

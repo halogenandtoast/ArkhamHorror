@@ -5,11 +5,11 @@ module Arkham.Scenario.Scenarios.TheLastKing
 
 import Arkham.Prelude
 
-import Arkham.Act.Types ( Field (..) )
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -21,10 +21,9 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -123,35 +122,48 @@ instance RunMessage TheLastKing where
         ]
 
       (foyerId, placeFoyer) <- placeLocationCard Locations.foyer
-      otherPlacements <- traverse placeLocationCard [Locations.courtyard, Locations.livingRoom, Locations.ballroom, Locations.diningRoom, Locations.gallery]
+      otherPlacements <- traverse
+        placeLocationCard
+        [ Locations.courtyard
+        , Locations.livingRoom
+        , Locations.ballroom
+        , Locations.diningRoom
+        , Locations.gallery
+        ]
 
       totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
 
-      bystanders <- shuffleM =<< traverse
-        genCard
-        [ Assets.constanceDumaine
-        , Assets.jordanPerry
-        , Assets.ishimaruHaruko
-        , Assets.sebastienMoreau
-        , Assets.ashleighClarke
-        ]
+      bystanders <-
+        traverse (\c -> (c, ) <$> getRandom) =<< shuffleM =<< traverse
+          genCard
+          [ Assets.constanceDumaine
+          , Assets.jordanPerry
+          , Assets.ishimaruHaruko
+          , Assets.sebastienMoreau
+          , Assets.ashleighClarke
+          ]
 
       destinations <- shuffleM $ map fst otherPlacements
       investigatorIds <- allInvestigatorIds
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeFoyer
-        ]
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeFoyer
+          ]
         <> map snd otherPlacements
         <> [MoveAllTo (toSource attrs) foyerId]
-        <> zipWith CreateAssetAt bystanders (map AtLocation destinations)
-        <> map
-            ((`PlaceClues` totalClues) . AssetTarget . AssetId . toCardId)
-            bystanders
+        <> zipWith
+             (\(bystander, assetId) placement ->
+               CreateAssetAt assetId bystander placement
+             )
+             bystanders
+             (map AtLocation destinations)
+        <> [ PlaceClues (toTarget assetId) totalClues
+           | (_, assetId) <- bystanders
+           ]
 
       setAsideEncounterCards <- traverse genCard [Enemies.dianneDevine]
 
@@ -240,13 +252,13 @@ instance RunMessage TheLastKing where
       enemyCreation <- createEnemyAt_ enemyCard lid Nothing
       pushAll
         $ [ InvestigatorAssignDamage
-             iid
-             (StorySource $ cdCardCode story')
-             DamageAny
-             0
-             1
-         | iid <- iids
-         ]
+              iid
+              (StorySource $ cdCardCode story')
+              DamageAny
+              0
+              1
+          | iid <- iids
+          ]
         <> [ RemoveClues (AssetTarget assetId) clues
            , PlaceClues (LocationTarget lid) clues
            , RemoveFromGame (AssetTarget assetId)
@@ -272,7 +284,9 @@ instance RunMessage TheLastKing where
       -- want to handle `getXp` in two phases. The first phase will essentially evenly
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
       investigatorIds <- allInvestigatorIds
-      investigatorIdsWithNames <- forToSnd investigatorIds (field InvestigatorName)
+      investigatorIdsWithNames <- forToSnd
+        investigatorIds
+        (field InvestigatorName)
       leadInvestigatorId <- getLeadInvestigatorId
       clueCounts <- traverse (field ActClues) =<< selectList AnyAct
       vipsSlain <-

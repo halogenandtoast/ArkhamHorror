@@ -39,9 +39,10 @@ instance RunMessage SkinGame where
       drFrancisMorgan <- genCard Assets.drFrancisMorgan
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
       vipAreaId <- getJustLocationIdByName "VIP Area"
-      if completedExtracurricularActivity
-        then pushAll
-          [ CreateAssetAt peterClover (AtLocation cloverClubBarId)
+      assetId <- getRandom
+      pushAll $ if completedExtracurricularActivity
+        then
+          [ CreateAssetAt assetId peterClover (AtLocation cloverClubBarId)
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
@@ -49,8 +50,8 @@ instance RunMessage SkinGame where
             (CardWithType EnemyType <> CardWithTrait Abomination)
           , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
           ]
-        else pushAll
-          [ CreateAssetAt drFrancisMorgan (AtLocation vipAreaId)
+        else
+          [ CreateAssetAt assetId drFrancisMorgan (AtLocation vipAreaId)
           , AdvanceToAct (actDeckId attrs) Acts.allIn A (toSource attrs)
           ]
       pure a

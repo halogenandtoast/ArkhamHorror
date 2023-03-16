@@ -11,10 +11,9 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher
+import Arkham.Matcher hiding (SkillCard)
 import Arkham.Projection
+import Arkham.Skill.Types ( Field (..) )
 import Arkham.Timing qualified as Timing
 
 newtype TryAndTryAgain1 = TryAndTryAgain1 AssetAttrs
@@ -40,13 +39,16 @@ instance HasAbilities TryAndTryAgain1 where
 instance RunMessage TryAndTryAgain1 where
   runMessage msg a@(TryAndTryAgain1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      committedSkills <- selectList $ skillControlledBy iid
+      committedSkillCards <- selectListMapM (field SkillCard)
+        $ skillControlledBy iid
       pushAll
-        [ FocusCards committedSkills
+        [ FocusCards committedSkillCards
         , chooseOne
           iid
-          [ targetLabel skill [ReturnToHand iid (toTarget skill)]
-          | skill <- committedSkills
+          [ targetLabel
+              (toCardId skillCard)
+              [ReturnToHand iid (toTarget $ toCardId skillCard)]
+          | skillCard <- committedSkillCards
           ]
         , UnfocusCards
         ]

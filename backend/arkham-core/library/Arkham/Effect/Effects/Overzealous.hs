@@ -8,9 +8,10 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Treachery.Types ( Field (..) )
 
 newtype Overzealous = Overzealous EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -26,7 +27,11 @@ instance HasModifiersFor Overzealous where
 
 instance RunMessage Overzealous where
   runMessage msg e@(Overzealous attrs) = case msg of
-    Discard _ (TreacheryTarget tid)
-      | effectTarget attrs == CardIdTarget (unTreacheryId tid) -> e
-      <$ push (DisableEffect $ effectId attrs)
+    Discard _ (TreacheryTarget tid) -> do
+      cardId <- field TreacheryCardId tid
+      when (effectTarget attrs == toTarget cardId)
+        $ push
+        $ DisableEffect
+        $ effectId attrs
+      pure e
     _ -> Overzealous <$> runMessage msg attrs

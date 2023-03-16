@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -69,9 +68,10 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
       pure a
     RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
       blackCave <- selectJust $ locationIs Locations.blackCave
+      (enemyId, enemyCreation) <- createEnemyAt (EncounterCard ec) blackCave Nothing
       pushAll
-        [ SpawnEnemyAt (EncounterCard ec) blackCave
-        , Remember $ IchtacasPrey $ labeled ec $ EnemyId $ toCardId ec
+        [ enemyCreation
+        , Remember $ IchtacasPrey $ labeled ec enemyId
         ]
       pure a
     _ -> TheCaveOfDarknessEmbroiledInBattle <$> runMessage msg attrs

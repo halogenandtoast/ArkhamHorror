@@ -12,6 +12,14 @@ import {-# SOURCE #-} Arkham.GameEnv
 class Projection a where
   field :: (HasCallStack, HasGame m) => Field a typ -> EntityId a -> m typ
 
+fieldJust
+  :: (HasCallStack, Projection a, HasGame m, Show (Field a (Maybe typ)))
+  => Field a (Maybe typ)
+  -> EntityId a
+  -> m typ
+fieldJust fld entityId = fromJustNote missingField <$> field fld entityId
+  where missingField = "Maybe field " <> show fld <> " was Nothing"
+
 fieldP
   :: (HasCallStack, HasGame m, Projection a)
   => Field a typ

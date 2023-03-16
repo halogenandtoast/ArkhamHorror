@@ -10,17 +10,16 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field(..))
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
 import Arkham.Name
-import Arkham.Source
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 
 newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs
@@ -52,15 +51,16 @@ instance RunMessage StrangeRelicsMariaDeSilva where
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       maria <- selectJust $ assetIs Assets.mariaDeSilva
       mariasLocation <- selectJust $ LocationWithAsset $ AssetWithId maria
+      cardId <- field AssetCardId maria
       let
-        mariaDeSilvaKnowsMoreThanSheLetsOn = EncounterCard $ lookupEncounterCard
+        mariaDeSilvaKnowsMoreThanSheLetsOn = lookupCard
           Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
-          (unAssetId maria)
+          cardId
 
       createMariaDeSilva <- createEnemyAt_ mariaDeSilvaKnowsMoreThanSheLetsOn mariasLocation Nothing
       pushAll
         [ createMariaDeSilva
-        , Flipped (AssetSource maria) mariaDeSilvaKnowsMoreThanSheLetsOn
+        , Flipped (toSource maria) mariaDeSilvaKnowsMoreThanSheLetsOn
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.theBrotherhoodIsRevealed E (toSource attrs)
         ]

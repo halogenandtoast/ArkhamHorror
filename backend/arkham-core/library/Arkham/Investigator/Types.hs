@@ -81,6 +81,8 @@ data instance Field Investigator :: Type -> Type where
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
+deriving stock instance Show (Field Investigator val)
+
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
   , investigatorName :: Name

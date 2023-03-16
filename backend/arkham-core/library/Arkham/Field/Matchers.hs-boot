@@ -12,4 +12,4 @@ instance FromJSON AssetFieldEq
 instance Hashable AssetFieldEq
 
 data FieldEq a where
-  FieldEq :: forall a typ fld. (fld ~ Field a typ, Show fld, Hashable typ, Hashable fld, Typeable a, Typeable typ, Show typ, Eq typ, ToJSON typ, ToJSON fld) => fld -> typ -> FieldEq a
+  FieldEq :: (fld ~ Field a typ, Hashable typ, Typeable typ, Show fld, Typeable a, ToJSON typ, ToJSON fld, Show typ) => fld -> typ -> FieldEq a

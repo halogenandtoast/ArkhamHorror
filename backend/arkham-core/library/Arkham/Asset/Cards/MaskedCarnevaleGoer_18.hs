@@ -42,30 +42,29 @@ locationOf AssetAttrs { assetPlacement } = case assetPlacement of
 instance RunMessage MaskedCarnevaleGoer_18 where
   runMessage msg a@(MaskedCarnevaleGoer_18 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ Flip iid (toSource iid) (toTarget attrs)
-        , FindEnemy (EnemyWithCardId $ toCardId attrs) (toTarget attrs)
-        ]
-      pure a
-    FindEnemy matcher (isTarget attrs -> True) -> do
-      mEnemy <- selectOne matcher
-      for_ mEnemy $ \enemy -> do
-        investigators <- selectList $ investigatorAt $ locationOf attrs
-        lead <- getLead
-        push $ chooseOneAtATime
-          lead
-          [ targetLabel
-              investigator
-              [EnemyAttack $ enemyAttack enemy investigator]
-          | investigator <- investigators
-          ]
+      push $ Flip iid (toSource iid) (toTarget attrs)
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
       let
         lid = locationOf attrs
         elisabettaMagro = lookupCard Enemies.elisabettaMagro (toCardId attrs)
-      createElisabettaMagro <- createEnemyAt_ elisabettaMagro lid Nothing
-      pushAll [createElisabettaMagro, Flipped (toSource attrs) elisabettaMagro]
+      investigators <- selectList $ investigatorAt $ locationOf attrs
+      lead <- getLead
+      (enemyId, createElisabettaMagro) <- createEnemyAt
+        elisabettaMagro
+        lid
+        Nothing
+      pushAll
+        [ createElisabettaMagro
+        , Flipped (toSource attrs) elisabettaMagro
+        , chooseOrRunOneAtATime
+          lead
+          [ targetLabel
+              investigator
+              [EnemyAttack $ enemyAttack enemyId investigator]
+          | investigator <- investigators
+          ]
+        ]
       pure a
     LookAtRevealed iid source target | isTarget a target -> do
       let elisabettaMagro = lookupCard Enemies.elisabettaMagro (toCardId attrs)

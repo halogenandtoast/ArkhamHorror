@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
@@ -14,7 +15,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -49,23 +49,21 @@ instance HasAbilities SanMarcoBasilica where
 
 instance RunMessage SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      innocentRevelerIds <-
-        selectList $ AssetControlledBy You <> assetIs Assets.innocentReveler
-      l <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (AssetTarget innocentRevelerId)
-              [ PlaceUnderneath
-                ActDeckTarget
-                [ PlayerCard $ lookupPlayerCard
-                    Assets.innocentReveler
-                    (unAssetId innocentRevelerId)
-                ]
-              , RemoveFromGame (AssetTarget innocentRevelerId)
-              ]
-          | innocentRevelerId <- innocentRevelerIds
-          ]
-        )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      innocentRevelers <-
+        selectWithField AssetCardId
+        $ AssetControlledBy You
+        <> assetIs Assets.innocentReveler
+      push $ chooseOne
+        iid
+        [ targetLabel
+            innocentReveler
+            [ PlaceUnderneath
+              ActDeckTarget
+              [PlayerCard $ lookupPlayerCard Assets.innocentReveler cardId]
+            , RemoveFromGame (toTarget innocentReveler)
+            ]
+        | (innocentReveler, cardId) <- innocentRevelers
+        ]
+      pure l
     _ -> SanMarcoBasilica <$> runMessage msg attrs

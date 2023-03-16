@@ -45,6 +45,7 @@ import Arkham.Matcher
   ( AssetMatcher (..)
   , CardMatcher (..)
   , EnemyMatcher (..)
+  , EventMatcher (..)
   , InvestigatorMatcher (..)
   , LocationMatcher (..)
   , assetIs
@@ -809,23 +810,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ pushAll
       (resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg])
   Move movement | isTarget a (moveTarget movement) -> do
-    let
-      source = moveSource movement
-      destinationLocationId = moveDestination movement
-      iid = investigatorId
-    mFromLocation <- field InvestigatorLocation iid
-    windowMsgs <- Helpers.windows
-      [Window.Moves iid source mFromLocation destinationLocationId]
-    pushAll
-      $ [ Will (MoveFrom source iid fromLocationId)
-        | fromLocationId <- maybeToList mFromLocation
-        ]
-      <> [Will (MoveTo $ move source iid destinationLocationId)]
-      <> [ MoveFrom source iid fromLocationId
-         | fromLocationId <- maybeToList mFromLocation
-         ]
-      <> [MoveTo $ move source iid destinationLocationId]
-      <> windowMsgs
+    case moveDestination movement of
+      ToLocationMatching matcher -> do
+        lids <- selectList matcher
+        push $ chooseOrRunOne investigatorId [targetLabel lid [Move $ movement { moveDestination = ToLocation lid }] | lid <- lids]
+      ToLocation destinationLocationId -> do
+        let
+          source = moveSource movement
+          iid = investigatorId
+        mFromLocation <- field InvestigatorLocation iid
+        windowMsgs <- Helpers.windows
+          [Window.Moves iid source mFromLocation destinationLocationId]
+        pushAll
+          $ [ Will (MoveFrom source iid fromLocationId)
+            | fromLocationId <- maybeToList mFromLocation
+            ]
+          <> [Will (MoveTo $ move source iid destinationLocationId)]
+          <> [ MoveFrom source iid fromLocationId
+             | fromLocationId <- maybeToList mFromLocation
+             ]
+          <> [MoveTo $ move source iid destinationLocationId]
+          <> windowMsgs
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> do
@@ -1372,12 +1377,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy windows' asAction
     | iid == investigatorId
     -> do
-      a <$ push
-        (chooseOne
+      event <- selectJust $ EventWithCardId $ toCardId card
+      push
+        $ chooseOne
           iid
-          [ TargetLabel
-              (CardIdTarget $ toCardId choice)
-              [ ReturnToHand iid (EventTarget $ EventId $ toCardId card)
+          [ targetLabel
+              (toCardId choice)
+              [ ReturnToHand iid (toTarget event)
               , InitiatePlayCardAs
                 iid
                 card
@@ -1389,7 +1395,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ]
           | choice <- choices
           ]
-        )
+      pure a
   InitiatePlayCardAs iid card choice msgs chosenCardStrategy windows' asAction
     | iid == investigatorId -> do
       let
@@ -1662,24 +1668,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo $ move source investigatorId lid)
   MoveTo movement | isTarget a (moveTarget movement) -> do
-    let
-      source = moveSource movement
-      lid = moveDestination movement
-      iid = investigatorId
-    movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
-    afterMoveButBeforeEnemyEngagement <- Helpers.checkWindows
-      [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
-    afterEnterWindow <- checkWindows
-      [Window Timing.After (Window.Entering iid lid)]
-    pushAll
-      $ movedByWindows
-      <> [ WhenWillEnterLocation iid lid
-         , EnterLocation iid lid
-         , afterEnterWindow
-         , afterMoveButBeforeEnemyEngagement
-         , CheckEnemyEngagement iid
-         ]
-    pure $ a & locationL .~ lid
+    case moveDestination movement of
+      ToLocationMatching matcher -> do
+        lids <- selectList matcher
+        push $ chooseOrRunOne investigatorId [targetLabel lid [MoveTo $ movement { moveDestination = ToLocation lid }] | lid <- lids]
+        pure a
+      ToLocation lid -> do
+        let
+          source = moveSource movement
+          iid = investigatorId
+        movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
+        afterMoveButBeforeEnemyEngagement <- Helpers.checkWindows
+          [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
+        afterEnterWindow <- checkWindows
+          [Window Timing.After (Window.Entering iid lid)]
+        pushAll
+          $ movedByWindows
+          <> [ WhenWillEnterLocation iid lid
+             , EnterLocation iid lid
+             , afterEnterWindow
+             , afterMoveButBeforeEnemyEngagement
+             , CheckEnemyEngagement iid
+             ]
+        pure $ a & locationL .~ lid
   CheckEnemyEngagement iid | iid == investigatorId -> do
     enemies <- selectList $ EnemyAt $ LocationWithId investigatorLocation
     a <$ pushAll [ EnemyCheckEngagement eid | eid <- enemies ]
@@ -1991,25 +2002,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL %~ filter (/= card))
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   PlaceUnderneath target cards | isTarget a target -> do
-    let
-      update = appEndo $ foldMap
-        (\card ->
-          Endo
-            $ (assetsL %~ deleteSet (AssetId $ toCardId card))
-            . (slotsL %~ removeFromSlots (AssetId $ toCardId card))
-            . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
-        )
-        cards
+    update <- fmap appEndo $ foldMapM
+      (\card -> do
+        mAssetId <- selectOne $ AssetWithCardId $ toCardId card
+        pure $ Endo
+          $ (assetsL %~ maybe id deleteSet mAssetId)
+          . (slotsL %~ maybe id removeFromSlots mAssetId)
+          . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      )
+      cards
     pure $ a & cardsUnderneathL <>~ cards & update
   PlaceUnderneath _ cards -> do
-    let
-      update = appEndo . mconcat $ map
-        (\card ->
-          Endo
-            $ (assetsL %~ deleteSet (AssetId $ toCardId card))
-            . (slotsL %~ removeFromSlots (AssetId $ toCardId card))
-        )
-        cards
+    update <- fmap (appEndo . mconcat) $ traverse
+      (\card -> do
+        mAssetId <- selectOne $ AssetWithCardId $ toCardId card
+        pure $ Endo
+          $ (assetsL %~ maybe id deleteSet mAssetId)
+          . (slotsL %~ maybe id removeFromSlots mAssetId)
+      )
+      cards
     pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
   BeforeSkillTest skillTest
     | skillTestInvestigator skillTest == investigatorId -> do
@@ -2390,12 +2401,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         when (toCardType card' == PlayerEnemyType)
           $ push (DrewPlayerEnemy iid card)
       _ -> pure ()
+    mAssetId <- selectOne $ AssetWithCardId $ toCardId card
     pure
       $ a
       & (handL %~ (card :))
       & (cardsUnderneathL %~ filter (/= card))
-      & (assetsL %~ deleteSet (AssetId $ toCardId card))
-      & (slotsL %~ removeFromSlots (AssetId $ toCardId card))
+      & (assetsL %~ maybe id deleteSet mAssetId)
+      & (slotsL %~ maybe id removeFromSlots mAssetId)
       & (discardL %~ filter ((/= card) . PlayerCard))
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
     | iid == investigatorId -> do

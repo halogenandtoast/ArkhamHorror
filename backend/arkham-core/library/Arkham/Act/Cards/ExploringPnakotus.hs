@@ -43,11 +43,12 @@ instance RunMessage ExploringPnakotus where
       yithianObservers <- selectList $ enemyIs Enemies.yithianObserver
       placements <- traverse placeLocation locations
       spawnLocation <- maybe (error "no locations") (fmap fst . sample) $ NE.nonEmpty placements
+      assetId <- getRandom
 
       pushAll
         $ map EnemyCheckEngagement yithianObservers
         <> map snd placements
-        <> [ CreateAssetAt custodian $ AtLocation spawnLocation
+        <> [ CreateAssetAt assetId custodian $ AtLocation spawnLocation
            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]
 

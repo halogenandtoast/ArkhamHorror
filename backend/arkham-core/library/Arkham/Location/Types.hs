@@ -31,7 +31,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait ( Trait )
-import Data.Constraint
 import Data.Text qualified as T
 import Data.Typeable
 
@@ -119,36 +118,6 @@ instance FromJSON (SomeField Location) where
     "LocationPrintedSymbol" -> pure $ SomeField LocationPrintedSymbol
     "LocationVengeance" -> pure $ SomeField LocationVengeance
     _ -> error "no such field"
-
-instance FieldDict Typeable Location where
-  getDict = \case
-    LocationInFrontOf -> Dict
-    LocationInvestigateSkill -> Dict
-    LocationClues -> Dict
-    LocationResources -> Dict
-    LocationHorror -> Dict
-    LocationDoom -> Dict
-    LocationShroud -> Dict
-    LocationTraits -> Dict
-    LocationKeywords -> Dict
-    LocationUnrevealedName -> Dict
-    LocationName -> Dict
-    LocationConnectedMatchers -> Dict
-    LocationRevealedConnectedMatchers -> Dict
-    LocationRevealed -> Dict
-    LocationConnectsTo -> Dict
-    LocationCardsUnderneath -> Dict
-    LocationConnectedLocations -> Dict
-    LocationInvestigators -> Dict
-    LocationEnemies -> Dict
-    LocationAssets -> Dict
-    LocationEvents -> Dict
-    LocationTreacheries -> Dict
-    LocationCardDef -> Dict
-    LocationCard -> Dict
-    LocationAbilities -> Dict
-    LocationPrintedSymbol -> Dict
-    LocationVengeance -> Dict
 
 investigateSkillL :: Lens' LocationAttrs SkillType
 investigateSkillL = lens locationInvestigateSkill $ \m x -> m { locationInvestigateSkill = x }

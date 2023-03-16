@@ -50,6 +50,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
         Enemies.brotherhoodCultist
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
+      assetId <- getRandom
       pushAll
         $ map
             ((`HealAllDamage` toSource attrs) . EnemyTarget)
@@ -57,7 +58,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
         <> [ chooseOrRunOne
                leadInvestigatorId
                [ targetLabel cultist
-                 $ CreateAssetAt relicOfAges (AttachedToEnemy cultist)
+                 $ CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
                  : [ PlaceDoom (EnemyTarget cultist) 1 | deckCount <= 2 ]
                | cultist <- farthestBrotherhoodCultists
                ]

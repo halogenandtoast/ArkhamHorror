@@ -285,7 +285,7 @@ data Message
   -- end  new payment bs
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
-  | CreateAssetAt Card Placement
+  | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement
   | PlaceEvent InvestigatorId EventId Placement
@@ -373,7 +373,6 @@ data Message
   | FindAndDrawEncounterCard InvestigatorId CardMatcher Bool
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
-  | FindEnemy EnemyMatcher Target -- delay enemy reference, see Masked Carnevale Goers
   | FocusCards [Card]
   | FocusTokens [Token]
   | Force Message
@@ -731,6 +730,11 @@ chooseOne iid msgs = Ask iid (ChooseOne msgs)
 chooseOneAtATime :: InvestigatorId -> [UI Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
+
+chooseOrRunOneAtATime :: InvestigatorId -> [UI Message] -> Message
+chooseOrRunOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
+chooseOrRunOneAtATime _ [x] = uiToRun x
+chooseOrRunOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
 chooseSome :: InvestigatorId -> Text -> [UI Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"

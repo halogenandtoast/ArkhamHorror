@@ -10,18 +10,17 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field(..))
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Query
-import Arkham.Id
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Source
+import Arkham.Projection
 
 newtype HarlansCurseHarlanEarnstone = HarlansCurseHarlanEarnstone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -55,10 +54,11 @@ instance RunMessage HarlansCurseHarlanEarnstone where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       harlan <- selectJust $ assetIs Assets.harlanEarnstone
       harlansLocation <- selectJust $ LocationWithAsset $ AssetWithId harlan
+      cardId <- field AssetCardId harlan
       let
-        harlanEarnstoneCrazedByTheCurse = EncounterCard $ lookupEncounterCard
+        harlanEarnstoneCrazedByTheCurse = lookupCard
           Enemies.harlanEarnstoneCrazedByTheCurse
-          (unAssetId harlan)
+          cardId
 
       createHarlanEarnstone <- createEnemyAt_
         harlanEarnstoneCrazedByTheCurse
@@ -67,7 +67,7 @@ instance RunMessage HarlansCurseHarlanEarnstone where
 
       pushAll
         [ createHarlanEarnstone
-        , Flipped (AssetSource harlan) harlanEarnstoneCrazedByTheCurse
+        , Flipped (toSource harlan) harlanEarnstoneCrazedByTheCurse
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.recoverTheRelic A (toSource attrs)
         ]
@@ -75,6 +75,7 @@ instance RunMessage HarlansCurseHarlanEarnstone where
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide B attrs -> do
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       harlan <- selectJust $ enemyIs Enemies.harlanEarnstoneCrazedByTheCurse
-      pushAll [CreateAssetAt relicOfAges (AttachedToEnemy harlan)]
+      assetId <- getRandom
+      pushAll [CreateAssetAt assetId relicOfAges (AttachedToEnemy harlan)]
       pure a
     _ -> HarlansCurseHarlanEarnstone <$> runMessage msg attrs

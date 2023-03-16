@@ -54,11 +54,14 @@ instance RunMessage FriendsInHighPlacesHenrysInformation where
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       mTownHall <- selectOne $ locationIs Locations.townHall
       createAssetMessages <- case mTownHall of
-        Just townHallId -> pure [CreateAssetAt alejandroVela (AttachedToLocation townHallId)]
+        Just townHallId -> do
+          assetId <- getRandom
+          pure [CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
         Nothing -> do
           townHall <- genCard Locations.townHall
           (townHallId, placeTownHall) <- placeLocation townHall
-          pure [placeTownHall , CreateAssetAt alejandroVela (AttachedToLocation townHallId)]
+          assetId <- getRandom
+          pure [placeTownHall , CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
 
       pushAll
         $ createAssetMessages

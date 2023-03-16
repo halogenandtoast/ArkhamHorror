@@ -56,11 +56,6 @@ assetControlledBy = AssetControlledBy . InvestigatorWithId
 assetAt :: LocationId -> AssetMatcher
 assetAt = AssetAt . LocationWithId
 
--- ** Skill Helpers **
-
-skillControlledBy :: InvestigatorId -> SkillMatcher
-skillControlledBy = SkillControlledBy . InvestigatorWithId
-
 -- ** Enemy Helpers **
 
 enemyIs :: HasCardCode a => a -> EnemyMatcher

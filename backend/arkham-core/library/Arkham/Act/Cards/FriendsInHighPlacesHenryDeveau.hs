@@ -10,18 +10,17 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Query
-import Arkham.Id
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Source
+import Arkham.Projection
 
 newtype FriendsInHighPlacesHenryDeveau = FriendsInHighPlacesHenryDeveau ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -54,11 +53,11 @@ instance RunMessage FriendsInHighPlacesHenryDeveau where
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
       henryDeveau <- selectJust $ assetIs Assets.henryDeveau
-      henrysLocation <- selectJust $ LocationWithAsset $ AssetWithId henryDeveau
+      henrysLocation <- selectJust $ locationWithAsset henryDeveau
+      cardId <- field AssetCardId henryDeveau
       let
-        henryDeveauAlejandrosKidnapper = EncounterCard $ lookupEncounterCard
-          Enemies.henryDeveauAlejandrosKidnapper
-          (unAssetId henryDeveau)
+        henryDeveauAlejandrosKidnapper =
+          lookupCard Enemies.henryDeveauAlejandrosKidnapper cardId
 
       createHenryDeveau <- createEnemyAt_
         henryDeveauAlejandrosKidnapper
@@ -67,7 +66,7 @@ instance RunMessage FriendsInHighPlacesHenryDeveau where
 
       pushAll
         [ createHenryDeveau
-        , Flipped (AssetSource henryDeveau) henryDeveauAlejandrosKidnapper
+        , Flipped (toSource henryDeveau) henryDeveauAlejandrosKidnapper
         , NextAdvanceActStep aid 1
         , AdvanceToAct
           (actDeckId attrs)
@@ -79,6 +78,7 @@ instance RunMessage FriendsInHighPlacesHenryDeveau where
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       henryDeveau <- selectJust $ enemyIs Enemies.henryDeveauAlejandrosKidnapper
-      pushAll [CreateAssetAt alejandroVela (AttachedToEnemy henryDeveau)]
+      assetId <- getRandom
+      pushAll [CreateAssetAt assetId alejandroVela (AttachedToEnemy henryDeveau)]
       pure a
     _ -> FriendsInHighPlacesHenryDeveau <$> runMessage msg attrs

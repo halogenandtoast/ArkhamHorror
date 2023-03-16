@@ -166,7 +166,7 @@ newtype JSONError = JSONError { errorMsg :: Text }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler ()
+postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 postApiV1ArkhamSyncDeckR deckId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   deck <- runDB $ get404 deckId
@@ -175,7 +175,9 @@ postApiV1ArkhamSyncDeckR deckId = do
     (JSONError "Deck does not belong to this user")
   edecklist <- getDeckList (arkhamDeckUrl deck)
   case edecklist of
-    Right decklist -> runDB $ update $ \d -> do
-      set d [ArkhamDeckList =. val decklist]
-      where_ $ d ^. ArkhamDeckId ==. val deckId
+    Right decklist -> do
+      runDB $ update $ \d -> do
+        set d [ArkhamDeckList =. val decklist]
+        where_ $ d ^. ArkhamDeckId ==. val deckId
+      pure $ Entity deckId $ deck { arkhamDeckList = decklist }
     Left _ -> sendStatusJSON Status.status400 (JSONError "Could not sync deck")

@@ -1,17 +1,22 @@
 <script lang="ts" setup>
 import { ref, computed, inject } from 'vue';
-import { fetchDeck, fetchCards } from '@/arkham/api';
+import { useRouter } from 'vue-router'
+import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
 import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
+import Prompt from '@/components/Prompt.vue'
+import { useToast } from "vue-toastification";
 
 export interface Props {
   deckId: string
 }
 
 const props = defineProps<Props>()
-
+const router = useRouter()
+const toast = useToast()
 const allCards = ref<Arkham.CardDef[]>([])
 const ready = ref(false)
+const deleting = ref(false)
 const deck = ref<Deck | null>(null)
 const baseUrl = inject('baseUrl')
 
@@ -228,6 +233,23 @@ const cardSetText = (card: Arkham.CardDef) => {
   return "Unknown"
 }
 
+async function deleteDeckEvent() {
+  if (deck.value) {
+    deleteDeck(deck.value.id).then(() => {
+      router.push({ name: 'Decks' })
+    })
+  }
+}
+
+async function sync() {
+  if (deck.value) {
+    syncDeck(deck.value.id).then((newData) => {
+      toast.success("Deck synced successfully", { timeout: 3000 })
+      deck.value = newData
+    })
+  }
+}
+
 const deckUrlToPage = (url: string): string => {
   // converts https://arkhamdb.com/api/public/decklist/25027
   // to https://arkhamdb.com/decklist/view/25027
@@ -255,24 +277,24 @@ const deckUrlToPage = (url: string): string => {
                 <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
               </div>
               <div class="sync-deck">
-                <a href="#" @click.prevent="sync(deck)"><font-awesome-icon icon="refresh" /></a>
+                <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
               </div>
               <div class="deck-delete">
-                <a href="#delete" @click.prevent="deleteId = deck.id"><font-awesome-icon icon="trash" /></a>
+                <a href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
               </div>
             </div>
           </div>
         </div>
       </header>
       <div class="cards" v-if="view == View.Image">
-        <img class="card" v-for="card in cards" :key="card.art" :src="image(card)" />
+        <img class="card" v-for="(card, idx) in cards" :key="idx" :src="image(card)" />
       </div>
       <table class="list" v-if="view == View.List">
         <thead>
           <tr><th>Name</th><th>Class</th><th>Cost</th><th>Type</th><th>Icons</th><th>Traits</th><th>Set</th></tr>
         </thead>
         <tbody>
-          <tr v-for="card in cards" :key="card.art">
+          <tr v-for="(card, idx) in cards" :key="idx">
             <td>{{cardName(card)}}{{levelText(card)}}</td>
             <td>{{card.classSymbols.join(', ')}}</td>
             <td>{{cardCost(card)}}</td>
@@ -286,6 +308,12 @@ const deckUrlToPage = (url: string): string => {
         </tbody>
       </table>
     </div>
+    <Prompt
+      v-if="deleting"
+      prompt="Are you sure you want to delete this deck?"
+      :yes="deleteDeckEvent"
+      :no="() => deleting = false"
+    />
   </div>
 </template>
 
@@ -331,20 +359,7 @@ const deckUrlToPage = (url: string): string => {
   }
 }
 
-
-@media (max-width: 1100px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 3 * 100%));
-  }
-}
-
-@media (max-width: 900px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 2 * 100%));
-  }
-}
-
-@media (max-width: 700px) {
+@media (max-width: 500px) {
   .cards {
     grid-template-columns: repeat(auto-fill, calc(100%));
   }

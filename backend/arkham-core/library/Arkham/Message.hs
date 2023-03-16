@@ -49,6 +49,7 @@ import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
+import Arkham.SkillTestResult qualified as SkillTest
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
@@ -614,7 +615,7 @@ data Message
   | SkillTestAsk Message
   | SkillTestCommitCard InvestigatorId Card
   | SkillTestEnds InvestigatorId Source
-  | AfterSkillTestEnds Source Target Int
+  | AfterSkillTestEnds Source Target SkillTest.SkillTestResult
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData
   | SkillTestUncommitCard InvestigatorId Card

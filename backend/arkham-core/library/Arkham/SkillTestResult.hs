@@ -2,6 +2,7 @@ module Arkham.SkillTestResult where
 
 import Arkham.Prelude
 
+-- TODO: figure out what the bool is for
 data SkillTestResult
   = Unrun
   | SucceededBy Bool Int

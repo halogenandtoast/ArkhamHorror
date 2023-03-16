@@ -147,6 +147,9 @@ getModifiedTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
+    Discard _ target | target == skillTestTarget -> do
+      push $ SkillTestEnds skillTestInvestigator skillTestSource
+      pure s
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
@@ -326,10 +329,6 @@ instance RunMessage SkillTest where
               VengeanceCard _ -> Nothing
           )
           (s ^. committedCardsL . to mapToList)
-        skillResultValue = case skillTestResult of
-          Unrun -> error "wat, skill test has to run"
-          SucceededBy _ n -> n
-          FailedBy _ n -> (-n)
 
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
       pushAll
@@ -339,7 +338,7 @@ instance RunMessage SkillTest where
         <> [ AfterSkillTestEnds
                skillTestSource
                skillTestTarget
-               skillResultValue
+               skillTestResult
            ]
       pure s
     SkillTestResults{} -> do

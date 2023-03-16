@@ -15,6 +15,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.SkillType
+import Arkham.SkillTestResult
 
 newtype Stealth = Stealth AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -43,8 +44,8 @@ instance RunMessage Stealth where
       pure a
     ChosenEvadeEnemy source eid | isSource attrs source ->
       a <$ push (skillTestModifier source (EnemyTarget eid) (EnemyEvade (-2)))
-    AfterSkillTestEnds source target@(EnemyTarget eid) n
-      | isSource attrs source && n >= 0 -> do
+    AfterSkillTestEnds source target@(EnemyTarget eid) (SucceededBy _ _)
+      | isSource attrs source -> do
         let iid = getController attrs
         canDisengage <- iid <=~> InvestigatorCanDisengage
         pushAll

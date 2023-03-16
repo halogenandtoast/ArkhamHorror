@@ -14,13 +14,9 @@ import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Location.Types as X ( Location )
 import Arkham.Message
-import Data.UUID ( nil )
 
 createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
-
-lookupLocationStub :: CardCode -> Location
-lookupLocationStub cCode = lookupLocation cCode (LocationId $ CardId nil) (CardId nil)
 
 lookupLocation :: CardCode -> LocationId -> CardId -> Location
 lookupLocation cCode = case lookup cCode allLocations of

@@ -250,6 +250,7 @@ data EventMatcher
   | EventWithId EventId
   | EventWithTrait Trait
   | EventWithClass ClassSymbol
+  | EventWithCardId CardId
   | EventControlledBy InvestigatorMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher

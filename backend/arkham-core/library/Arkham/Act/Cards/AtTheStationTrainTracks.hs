@@ -35,9 +35,10 @@ instance RunMessage AtTheStationTrainTracks where
       trainTracks <- genCard Locations.trainTracks
       (locationId, placeTrainTracks) <- placeLocation trainTracks
       alejandroVela <- getSetAsideCard Assets.alejandroVela
+      assetId <- getRandom
       pushAll
         [ placeTrainTracks
-        , CreateAssetAt alejandroVela (AttachedToLocation locationId)
+        , CreateAssetAt assetId alejandroVela (AttachedToLocation locationId)
         , AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)
         ]
       pure a

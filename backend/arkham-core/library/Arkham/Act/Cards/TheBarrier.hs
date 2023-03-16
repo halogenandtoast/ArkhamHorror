@@ -43,10 +43,11 @@ instance RunMessage TheBarrier where
       ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
       litaChantler <- getSetAsideCard Assets.litaChantler
       createGhoulPriest <- createEnemyAt_ ghoulPriest hallwayId Nothing
+      assetId <- getRandom
 
       pushAll
         [ RevealLocation Nothing parlorId
-        , CreateAssetAt litaChantler (AtLocation parlorId)
+        , CreateAssetAt assetId litaChantler (AtLocation parlorId)
         , createGhoulPriest
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]

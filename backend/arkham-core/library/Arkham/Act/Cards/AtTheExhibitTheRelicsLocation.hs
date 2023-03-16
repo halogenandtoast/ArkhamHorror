@@ -54,9 +54,10 @@ instance RunMessage AtTheExhibitTheRelicsLocation where
               : [ PlaceClues (LocationTarget locationId) n | deckCount <= 2 ]
             )
 
+      assetId <- getRandom
       pushAll
         $ msgs
-        <> [ CreateAssetAt relicOfAges (AttachedToLocation townHallId)
+        <> [ CreateAssetAt assetId relicOfAges (AttachedToLocation townHallId)
            , AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)
            ]
       pure a

@@ -56,8 +56,9 @@ instance RunMessage HarlansCurseSafekeeping where
       acolyteCount <- if deckCount <= 2
         then getPlayerCountValue (ByPlayerCount 1 1 2 2)
         else pure 0
+      assetId <- getRandom
       pushAll
-        $ CreateAssetAt relicOfAges (AttachedToLocation curiositieShoppe)
+        $ CreateAssetAt assetId relicOfAges (AttachedToLocation curiositieShoppe)
         : replicate
             acolyteCount
             (FindEncounterCard

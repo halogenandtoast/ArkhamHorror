@@ -21,7 +21,6 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token ( Token )
 import Arkham.Trait ( Trait )
-import Data.Constraint
 import Data.Typeable
 
 data Asset = forall a . IsAsset a => Asset a
@@ -107,35 +106,6 @@ deriving stock instance Show (Field Asset typ)
 
 instance ToJSON (Field Asset typ) where
   toJSON = toJSON . show
-
-instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c CardId, c [SlotType], c [Token], c Placement, c (HashSet ClassSymbol), c (HashSet Trait), c CardDef, c Card, c [Ability], c [Card]) => FieldDict c Asset where
-  getDict = \case
-    AssetName -> Dict
-    AssetCost -> Dict
-    AssetClues -> Dict
-    AssetResources -> Dict
-    AssetHorror -> Dict
-    AssetDamage -> Dict
-    AssetRemainingHealth -> Dict
-    AssetRemainingSanity -> Dict
-    AssetDoom -> Dict
-    AssetExhausted -> Dict
-    AssetUses -> Dict
-    AssetStartingUses -> Dict
-    AssetController -> Dict
-    AssetOwner -> Dict
-    AssetLocation -> Dict
-    AssetCardCode -> Dict
-    AssetCardId -> Dict
-    AssetSlots -> Dict
-    AssetSealedTokens -> Dict
-    AssetPlacement -> Dict
-    AssetClasses -> Dict
-    AssetTraits -> Dict
-    AssetCardDef -> Dict
-    AssetCard -> Dict
-    AssetAbilities -> Dict
-    AssetCardsUnderneath -> Dict
 
 instance FromJSON (SomeField Asset) where
   parseJSON = withText "Field Asset" $ \case

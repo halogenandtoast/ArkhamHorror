@@ -56,10 +56,11 @@ instance RunMessage SearchForTheBrotherhood where
         then Just <$> getSetAsideCard Assets.relicOfAgesUnleashTheTimestream
         else pure Nothing
       aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
+      assetId <- getRandom
       pushAll
         $ [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) shattered]
         <> [ NextAdvanceActStep (toId attrs) idx | (idx, _) <- zip [1 ..] iids ]
-        <> [ CreateAssetAt relic $ AttachedToLocation aPocketInTime
+        <> [ CreateAssetAt assetId relic $ AttachedToLocation aPocketInTime
            | relic <- maybeToList mRelic
            ]
         <> [ AdvanceToAct

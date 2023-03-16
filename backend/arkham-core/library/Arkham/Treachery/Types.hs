@@ -51,6 +51,7 @@ data instance Field Treachery :: Type -> Type where
   TreacheryAbilities :: Field Treachery [Ability]
   TreacheryCardDef :: Field Treachery CardDef
   TreacheryCard :: Field Treachery Card
+  TreacheryCardId :: Field Treachery CardId
   TreacheryCanBeCommitted :: Field Treachery Bool
   TreacheryPlacement :: Field Treachery TreacheryPlacement
   TreacheryDrawnBy :: Field Treachery InvestigatorId

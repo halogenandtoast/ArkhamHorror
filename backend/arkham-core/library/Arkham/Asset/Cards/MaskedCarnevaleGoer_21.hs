@@ -13,7 +13,6 @@ import Arkham.Card.PlayerCard
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Placement
-import Arkham.Source
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -35,25 +34,27 @@ instance HasAbilities MaskedCarnevaleGoer_21 where
 instance RunMessage MaskedCarnevaleGoer_21 where
   runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ push (Flip iid (InvestigatorSource iid) (toTarget attrs))
+      push $ Flip iid (toSource iid) (toTarget attrs)
+      pure a
     Flip _ _ target | isTarget attrs target -> do
       case assetPlacement attrs of
         AtLocation lid -> do
           let
-            innocentReveler = PlayerCard
-              $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
-          a <$ pushAll
-            [ CreateAssetAt innocentReveler (AtLocation lid)
+            innocentReveler = lookupCard Cards.innocentReveler (toCardId attrs)
+          pushAll
+            [ CreateAssetAt (toId attrs) innocentReveler (AtLocation lid)
             , Flipped (toSource attrs) innocentReveler
             ]
         _ -> error "not possible"
+      pure a
     LookAtRevealed _ _ target | isTarget a target -> do
       let
         innocentReveler =
           PlayerCard $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ pushAll
+      pushAll
         [ FocusCards [innocentReveler]
         , chooseOne leadInvestigatorId [Label "Continue" [UnfocusCards]]
         ]
+      pure a
     _ -> MaskedCarnevaleGoer_21 <$> runMessage msg attrs

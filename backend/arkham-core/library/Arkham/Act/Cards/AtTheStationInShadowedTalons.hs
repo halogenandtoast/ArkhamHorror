@@ -55,6 +55,7 @@ instance RunMessage AtTheStationInShadowedTalons where
         Enemies.huntingNightgaunt
       deckCount <- getActDecksInPlayCount
       alejandroVela <- getSetAsideCard Assets.alejandroVela
+      assetId <- getRandom
       pushAll
         $ map
             ((`HealAllDamage` toSource attrs) . EnemyTarget)
@@ -63,6 +64,7 @@ instance RunMessage AtTheStationInShadowedTalons where
                leadInvestigatorId
                [ targetLabel huntingNightgaunt
                  $ CreateAssetAt
+                     assetId
                      alejandroVela
                      (AttachedToEnemy huntingNightgaunt)
                  : [ PlaceDoom (EnemyTarget huntingNightgaunt) 1

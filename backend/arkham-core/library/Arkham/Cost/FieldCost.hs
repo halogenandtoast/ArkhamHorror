@@ -34,7 +34,6 @@ data FieldCost where
     , Hashable fld
     , Hashable matcher
     , FromJSON (SomeField rec)
-    , FieldDict Typeable rec
     , Projection rec
     , Query matcher
     ) => matcher -> fld -> FieldCost
@@ -63,7 +62,7 @@ instance FromJSON FieldCost where
       "Location" -> do
         sfld :: SomeField Location <- v .: "field"
         case sfld of
-          SomeField (fld :: Field Location typ) -> withFieldDict @Typeable fld $ do
+          SomeField (fld :: Field Location typ) ->
             case eqT @typ @Int of
               Just Refl -> do
                 mtchr :: LocationMatcher <- v .: "matcher"

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.Investigator.Deck

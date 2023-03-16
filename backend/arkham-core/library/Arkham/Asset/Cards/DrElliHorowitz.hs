@@ -35,7 +35,8 @@ instance HasModifiersFor DrElliHorowitz where
       Just iid -> do
         placement <- field AssetPlacement aid
         pure case placement of
-          AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
+          AttachedToAsset aid' _ | aid' == toId a ->
+            toModifiers a [AsIfUnderControlOf iid]
           _ -> []
   getModifiersFor _ _ = pure []
 
@@ -70,18 +71,22 @@ instance RunMessage DrElliHorowitz where
               flip mapMaybe (setToList $ cdKeywords $ toCardDef c) $ \case
                 Keyword.Seal matcher -> Just $ matcher
                 _ -> Nothing
-          allM (\matcher -> anyM (\t -> matchToken iid t matcher) tokens) sealTokenMatchers
+          allM
+            (\matcher -> anyM (\t -> matchToken iid t matcher) tokens)
+            sealTokenMatchers
       validCardsAfterSeal <- filterM validAfterSeal validCards
       if null validCardsAfterSeal
         then push $ chooseOne iid [Label "No Cards Found" []]
-        else pushAll
-            [ chooseOne
-                iid
-                [ TargetLabel
-                    (CardIdTarget $ toCardId c)
-                    [CreateAssetAt c $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)]
-                | c <- validCardsAfterSeal
+        else do
+          assetId <- getRandom
+          push $ chooseOne
+            iid
+            [ targetLabel
+                (toCardId c)
+                [ CreateAssetAt assetId c
+                    $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)
                 ]
+            | c <- validCardsAfterSeal
             ]
       pure a
     SearchNoneFound iid target | isTarget attrs target -> do

@@ -153,7 +153,7 @@ instance RunMessage CarnevaleOfHorrors where
 
       locationIdsWithMaskedCarnevaleGoers <-
         zip nonSanMarcoBasilicaLocationIds
-          <$> (shuffleM =<< traverse
+          <$> (traverse (\c -> (c,) <$> getRandom) =<< shuffleM =<< traverse
                 genCard
                 [ Assets.maskedCarnevaleGoer_17
                 , Assets.maskedCarnevaleGoer_18
@@ -168,6 +168,7 @@ instance RunMessage CarnevaleOfHorrors where
 
       -- Assets
       abbess <- genCard Assets.abbessAllegriaDiBiase
+      abbessId <- getRandom
 
       let
         placeLocations =
@@ -188,10 +189,11 @@ instance RunMessage CarnevaleOfHorrors where
                RightOf
                (NE.last locationIds)
            ]
-        <> [ CreateAssetAt asset (AtLocation locationId)
-           | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers
+        <> [ CreateAssetAt assetId asset (AtLocation locationId)
+           | (locationId, (asset, assetId)) <-
+             locationIdsWithMaskedCarnevaleGoers
            ]
-        <> [ CreateAssetAt abbess (AtLocation sanMarcoBasilicaId)
+        <> [ CreateAssetAt abbessId abbess (AtLocation sanMarcoBasilicaId)
            , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo (toSource attrs) sanMarcoBasilicaId
            , story investigatorIds Flavor.intro

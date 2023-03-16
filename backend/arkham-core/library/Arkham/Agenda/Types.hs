@@ -36,6 +36,7 @@ data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
   , agendaDoomThreshold :: Maybe GameValue
   , agendaId :: AgendaId
+  , agendaCardId :: CardId
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
   , agendaTreacheries :: HashSet TreacheryId
@@ -117,10 +118,11 @@ agendaWith
   -> CardBuilder (Int, AgendaId) a
 agendaWith (n, side) f cardDef threshold g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \_ (deckId, aid) -> f . g $ AgendaAttrs
+  , cbCardBuilder = \cardId (deckId, aid) -> f . g $ AgendaAttrs
     { agendaDoom = 0
     , agendaDoomThreshold = Just threshold
     , agendaId = aid
+    , agendaCardId = cardId
     , agendaSequence = AS.Sequence n side
     , agendaFlipped = False
     , agendaTreacheries = mempty

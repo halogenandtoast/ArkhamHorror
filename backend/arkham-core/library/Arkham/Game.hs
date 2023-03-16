@@ -3412,23 +3412,27 @@ runGameMessage msg g = case msg of
     g <$ pushAll [ AdvanceAgenda aid | aid <- aids ]
   ReplaceAgenda aid1 aid2 -> do
     agendaDeckId <- field AgendaDeckId aid1
+    cardId <- getRandom
     pure
       $ g
       & (entitiesL . agendasL %~ deleteMap aid1)
-      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 agendaDeckId)
+      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 agendaDeckId cardId)
         )
   ReplaceAct aid1 aid2 -> do
     actDeckId <- field ActDeckId aid1
+    cardId <- getRandom
     pure
       $ g
       & (entitiesL . actsL %~ deleteMap aid1)
-      & (entitiesL . actsL %~ insertMap aid2 (lookupAct aid2 actDeckId))
+      & (entitiesL . actsL %~ insertMap aid2 (lookupAct aid2 actDeckId cardId))
   AddAct deckNum def -> do
     let aid = ActId $ toCardCode def
-    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum
+    cardId <- getRandom
+    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum cardId
   AddAgenda agendaDeckNum def -> do
+    cardId <- getRandom
     let aid = AgendaId $ toCardCode def
-    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum
+    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum cardId
   CommitCard iid card -> do
     push $ InvestigatorCommittedCard iid card
     case card of

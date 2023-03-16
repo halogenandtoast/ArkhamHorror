@@ -34,6 +34,7 @@ data instance Field Act :: Type -> Type where
 
 data ActAttrs = ActAttrs
   { actId :: ActId
+  , actCardId :: CardId
   , actSequence :: AS.ActSequence
   , actAdvanceCost :: Maybe Cost
   , actClues :: Int
@@ -60,8 +61,9 @@ actWith
   -> CardBuilder (Int, ActId) a
 actWith (n, side) f cardDef mCost g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \_ (deckId, aid) -> f . g $ ActAttrs
+  , cbCardBuilder = \cardId (deckId, aid) -> f . g $ ActAttrs
     { actId = aid
+    , actCardId = cardId
     , actSequence = AS.Sequence n side
     , actClues = 0
     , actAdvanceCost = mCost

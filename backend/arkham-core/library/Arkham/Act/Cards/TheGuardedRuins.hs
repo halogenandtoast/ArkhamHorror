@@ -6,14 +6,17 @@ module Arkham.Act.Cards.TheGuardedRuins
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Act.Runner
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheGuardedRuins = TheGuardedRuins ActAttrs
   deriving anyclass IsAct
@@ -32,9 +35,13 @@ instance HasModifiersFor TheGuardedRuins where
     pure $ if isEztliGuardian
       then toModifiers a [EnemyFight 1, EnemyEvade 1]
       else []
-  getModifiersFor (TreacheryTarget tid) (TheGuardedRuins a) = do
-    isArrowsFromTheTrees <- tid <=~> TreacheryWithTitle "Arrows from the Trees"
-    pure $ toModifiers a [ AddKeyword Keyword.Surge | isArrowsFromTheTrees ]
+  getModifiersFor (CardIdTarget cardId) (TheGuardedRuins a) = do
+    card <- getCard cardId
+    pure $ toModifiers
+      a
+      [ AddKeyword Keyword.Surge
+      | card `isCard` Treacheries.arrowsFromTheTrees
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheGuardedRuins where

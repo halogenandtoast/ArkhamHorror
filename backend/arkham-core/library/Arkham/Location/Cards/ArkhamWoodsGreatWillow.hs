@@ -3,7 +3,6 @@ module Arkham.Location.Cards.ArkhamWoodsGreatWillow where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
@@ -38,11 +37,7 @@ instance RunMessage ArkhamWoodsGreatWillow where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       getSkillTestSource >>= \case
         Just (TreacherySource tid) -> do
-          push $ CreateEffect
-            (toCardCode attrs)
-            Nothing
-            source
-            (TreacheryTarget tid)
+          push $ GainSurge (toSource attrs) (toTarget tid)
           pure l
         _ -> error "Invalid use of Arkham Woods: Great Willow ability"
     _ -> ArkhamWoodsGreatWillow <$> runMessage msg attrs

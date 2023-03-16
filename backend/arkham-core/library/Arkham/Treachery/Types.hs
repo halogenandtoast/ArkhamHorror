@@ -55,6 +55,7 @@ data instance Field Treachery :: Type -> Type where
   TreacheryCanBeCommitted :: Field Treachery Bool
   TreacheryPlacement :: Field Treachery TreacheryPlacement
   TreacheryDrawnBy :: Field Treachery InvestigatorId
+  TreacheryDrawnFrom :: Field Treachery (Maybe DeckSignifier)
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

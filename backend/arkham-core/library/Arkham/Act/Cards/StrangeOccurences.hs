@@ -12,6 +12,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -35,16 +36,20 @@ strangeOccurences =
 
 instance HasModifiersFor StrangeOccurences where
   getModifiersFor (TreacheryTarget tid) (StrangeOccurences a) = do
-    iid <- field TreacheryDrawnBy tid
-    atIchtacasDestination <-
-      selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
-    treacheriesDrawnCount <-
-      length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
-    pure $ toModifiers
-      a
-      [ AddKeyword Keyword.Surge
-      | atIchtacasDestination && treacheriesDrawnCount == 1
-      ]
+    mDrawnFrom <- field TreacheryDrawnFrom tid
+    case mDrawnFrom of
+      Just Deck.EncounterDeck -> do
+        iid <- field TreacheryDrawnBy tid
+        atIchtacasDestination <-
+          selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
+        treacheriesDrawnCount <-
+          length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
+        pure $ toModifiers
+          a
+          [ AddKeyword Keyword.Surge
+          | atIchtacasDestination && treacheriesDrawnCount == 1
+          ]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StrangeOccurences where

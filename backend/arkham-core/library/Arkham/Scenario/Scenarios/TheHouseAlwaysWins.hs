@@ -65,11 +65,16 @@ instance RunMessage TheHouseAlwaysWins where
         ]
 
       cloverClubPitBoss <- genCard Enemies.cloverClubPitBoss
-      (laBellaLunaId, placeLaBellaLuna) <- placeLocationCard Locations.laBellaLuna
-      (cloverClubLoungeId, placeCloverClubLounge) <- placeLocationCard Locations.cloverClubLounge
+      (laBellaLunaId, placeLaBellaLuna) <- placeLocationCard
+        Locations.laBellaLuna
+      (cloverClubLoungeId, placeCloverClubLounge) <- placeLocationCard
+        Locations.cloverClubLounge
       placeCloverClubBar <- placeLocationCard_ Locations.cloverClubBar
       placeCloverClubCardroom <- placeLocationCard_ Locations.cloverClubCardroom
-      createCloverClubPitBoss <- createEnemyAt_ cloverClubPitBoss cloverClubLoungeId Nothing
+      createCloverClubPitBoss <- createEnemyAt_
+        cloverClubPitBoss
+        cloverClubLoungeId
+        Nothing
 
       pushAll
         [ SetEncounterDeck encounterDeck
@@ -85,8 +90,7 @@ instance RunMessage TheHouseAlwaysWins where
         , story investigatorIds intro
         ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Locations.darkenedHall
         , Assets.peterClover
         , Assets.drFrancisMorgan
@@ -95,21 +99,20 @@ instance RunMessage TheHouseAlwaysWins where
         , Locations.backAlley
         ]
 
+      acts <- genCards
+        [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
+      agendas <- genCards
+        [ Agendas.theCloverClub
+        , Agendas.undergroundMuscle
+        , Agendas.chaosInTheCloverClub
+        ]
+
       TheHouseAlwaysWins <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.theCloverClub
-             , Agendas.undergroundMuscle
-             , Agendas.chaosInTheCloverClub
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
@@ -135,7 +138,8 @@ instance RunMessage TheHouseAlwaysWins where
       pure s
     PassedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
-        Cultist | isEasyStandard attrs -> push $ TakeResources iid 3 (TokenEffectSource Cultist) False
+        Cultist | isEasyStandard attrs ->
+          push $ TakeResources iid 3 (TokenEffectSource Cultist) False
         _ -> pure ()
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
@@ -149,15 +153,15 @@ instance RunMessage TheHouseAlwaysWins where
       xp <- getXp
       pushAll
         $ [ story investigatorIds resolution1
-         , Record OBannionGangHasABoneToPickWithTheInvestigators
-         , Record DrFrancisMorganWasKidnapped
-         ]
+          , Record OBannionGangHasABoneToPickWithTheInvestigators
+          , Record DrFrancisMorganWasKidnapped
+          ]
         <> [ AddToken ElderThing | Cheated `member` scenarioLog attrs ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
@@ -165,13 +169,13 @@ instance RunMessage TheHouseAlwaysWins where
           , Record OBannionGangHasABoneToPickWithTheInvestigators
           , Record TheInvestigatorsRescuedDrFrancisMorgan
           , chooseOne
-            leadInvestigatorId
+            lead
             [ Label
               "Add Dr. Francis Morgan to a deck"
               [ chooseOne
-                  leadInvestigatorId
-                  [ TargetLabel
-                      (InvestigatorTarget iid)
+                  lead
+                  [ targetLabel
+                      iid
                       [AddCampaignCardToDeck iid Assets.drFrancisMorgan]
                   | iid <- investigatorIds
                   ]

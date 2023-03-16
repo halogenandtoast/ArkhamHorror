@@ -36,7 +36,7 @@ instance RunMessage AlteredBeast where
     Revelation iid source | isSource attrs source -> do
       abominations <- selectListMap EnemyTarget $ EnemyWithTrait Abomination
       push $ case abominations of
-        [] -> Surge iid source
+        [] -> gainSurge attrs
         xs -> chooseOrRunOne
           iid
           [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x (toSource attrs)]

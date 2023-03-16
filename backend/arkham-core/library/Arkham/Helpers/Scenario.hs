@@ -28,6 +28,9 @@ scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
 getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
+whenStandalone :: HasGame m => m () -> m ()
+whenStandalone = whenM getIsStandalone
+
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do

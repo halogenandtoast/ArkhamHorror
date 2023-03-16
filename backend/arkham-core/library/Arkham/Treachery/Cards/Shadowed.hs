@@ -30,14 +30,14 @@ instance RunMessage Shadowed where
         then
           pushAll
             [ InvestigatorAssignDamage iid source DamageAny 0 1
-            , Surge iid source
+            , gainSurge attrs
             ]
         else do
           push $ chooseOrRunOne
             iid
             [ targetLabel
                 cultist
-                [ PlaceDoom (EnemyTarget cultist) 1
+                [ PlaceDoom (toTarget cultist) 1
                 , RevelationSkillTest iid source SkillWillpower x
                 ]
             | (cultist, x) <- cultists

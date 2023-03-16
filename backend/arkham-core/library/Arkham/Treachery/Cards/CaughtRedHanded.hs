@@ -23,11 +23,10 @@ instance RunMessage CaughtRedHanded where
   runMessage msg t@(CaughtRedHanded attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <- selectListMap EnemyTarget $ EnemyAt
-        (LocationMatchAny
+        $ LocationMatchAny
           [ locationWithInvestigator iid
           , ConnectedFrom (locationWithInvestigator iid)
           ]
-        )
       hunters <- selectListMap EnemyTarget $ HunterEnemy <> EnemyAt
         (ConnectedFrom $ locationWithInvestigator iid)
       pushAll
@@ -35,9 +34,9 @@ instance RunMessage CaughtRedHanded where
         <> [ MoveToward target (locationWithInvestigator iid)
            | target <- hunters
            ]
-        <> if null hunters
-             then [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)]
-             else [Discard (toSource attrs) $ toTarget attrs]
+        <> [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
+           | null hunters
+           ]
 
       pure t
     _ -> CaughtRedHanded <$> runMessage msg attrs

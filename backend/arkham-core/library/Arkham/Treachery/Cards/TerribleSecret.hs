@@ -35,7 +35,7 @@ instance RunMessage TerribleSecret where
               iid
               (length cardsUnderneath)
               "Keep Remaining Cards"
-              [ TargetLabel (CardIdTarget $ toCardId c) [AddToDiscard iid c]
+              [ targetLabel (toCardId c) [AddToDiscard iid c]
               | pc <- cardsUnderneath, c <- maybeToList (preview _PlayerCard pc)
               ]
           , UnfocusCards]

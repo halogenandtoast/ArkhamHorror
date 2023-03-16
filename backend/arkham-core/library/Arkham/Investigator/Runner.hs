@@ -68,7 +68,6 @@ import Arkham.Zone qualified as Zone
 import Control.Monad.Extra ( findM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
-import Data.UUID (nil)
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -159,7 +158,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pure $ a & usedAbilitiesL .~ usedAbilities'
   ResetGame ->
-    pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) (CardId nil) ())
+    pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId ())
       { Attrs.investigatorId = investigatorId
       , investigatorXp = investigatorXp
       , investigatorPhysicalTrauma = investigatorPhysicalTrauma
@@ -1862,16 +1861,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 shuffleBackInEachWeakness =
                   ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
 
-                msgs = flip mapMaybe allDrawn $ \card ->
+                msgs = flip concatMap allDrawn $ \card ->
                   case toCardType card of
                     PlayerTreacheryType -> do
                       guard $ not shuffleBackInEachWeakness
-                      Just
-                        $ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid)
-                        $ PlayerCard card
+                      [DrewTreachery iid (Just $ Deck.InvestigatorDeck iid)
+                        (PlayerCard card), ResolvedCard iid (PlayerCard card)]
                     PlayerEnemyType -> do
                       guard $ not shuffleBackInEachWeakness
-                      Just $ DrewPlayerEnemy iid $ PlayerCard card
+                      [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
                     other
                       | hasRevelation card
                         && other
@@ -1880,8 +1878,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                         guard
                           $ ShuffleBackInEachWeakness
                           `notElem` cardDrawRules cardDraw
-                        Just $ Revelation iid $ PlayerCardSource card
-                    _ -> Nothing
+                        [Revelation iid (PlayerCardSource card), ResolvedCard iid (PlayerCard card)]
+                    _ -> []
 
               let
                 weaknesses =

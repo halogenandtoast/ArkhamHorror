@@ -25,7 +25,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding ( matches )
 import Arkham.Scenario.Runner
@@ -55,13 +54,9 @@ echoesOfThePast difficulty = scenario
 instance HasTokenValue EchoesOfThePast where
   getTokenValue iid tokenFace (EchoesOfThePast attrs) = case tokenFace of
     Skull -> do
-      enemies <- selectList AnyEnemy
-      doomCounts <- traverse (field EnemyDoom) enemies
-      pure $ toTokenValue
-        attrs
-        Skull
-        (maybe 0 maximum $ fromNullable doomCounts)
-        (sum doomCounts)
+      highestDoom <- selectMax EnemyDoom AnyEnemy
+      totalDoom <- selectSum EnemyDoom AnyEnemy
+      pure $ toTokenValue attrs Skull highestDoom totalDoom
     Cultist -> pure $ toTokenValue attrs Cultist 2 4
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
@@ -136,19 +131,19 @@ instance RunMessage EchoesOfThePast where
       encounterDeck <- Deck <$> shuffleM
         (unDeck partialEncounterDeck <> midnightMasks <> seekersToShuffle)
 
-      groundFloor <- traverse genCard . drop 1 =<< shuffleM
+      groundFloor <- genCards . drop 1 =<< shuffleM
         [ Locations.historicalSocietyMeetingRoom
         , Locations.historicalSocietyRecordOffice_129
         , Locations.historicalSocietyHistoricalMuseum_130
         ]
 
-      secondFloor <- traverse genCard . drop 1 =<< shuffleM
+      secondFloor <- genCards . drop 1 =<< shuffleM
         [ Locations.historicalSocietyHistoricalMuseum_132
         , Locations.historicalSocietyHistoricalLibrary_133
         , Locations.historicalSocietyReadingRoom
         ]
 
-      thirdFloor <- traverse genCard . drop 1 =<< shuffleM
+      thirdFloor <- genCards . drop 1 =<< shuffleM
         [ Locations.historicalSocietyHistoricalLibrary_136
         , Locations.historicalSocietyPeabodysOffice
         , Locations.historicalSocietyRecordOffice_138
@@ -222,30 +217,27 @@ instance RunMessage EchoesOfThePast where
              else []
         )
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Locations.hiddenLibrary
         , Enemies.possessedOathspeaker
         , Assets.mrPeabody
         , Assets.theTatteredCloak
         , Assets.claspOfBlackOnyx
         ]
+      agendas <- genCards
+        [ Agendas.theTruthIsHidden
+        , Agendas.ransackingTheManor
+        , Agendas.secretsBetterLeftHidden
+        ]
+      acts <- genCards
+        [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
 
       EchoesOfThePast <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.theTruthIsHidden
-             , Agendas.ransackingTheManor
-             , Agendas.secretsBetterLeftHidden
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ token iid | token `elem` [Cultist, Tablet, ElderThing] ->
       s <$ case token of
@@ -254,7 +246,8 @@ instance RunMessage EchoesOfThePast where
           push $ chooseOne
             iid
             [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-        Tablet -> push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
+        Tablet ->
+          push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when
@@ -274,7 +267,8 @@ instance RunMessage EchoesOfThePast where
           push $ chooseOne
             iid
             [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-        Tablet -> push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
+        Tablet ->
+          push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when
@@ -291,9 +285,7 @@ instance RunMessage EchoesOfThePast where
     ScenarioResolution NoResolution -> do
       investigatorIds <- allInvestigatorIds
       pushAll
-        [ story investigatorIds noResolution
-        , ScenarioResolution (Resolution 4)
-        ]
+        [story investigatorIds noResolution, ScenarioResolution (Resolution 4)]
       pure s
     ScenarioResolution (Resolution n) -> do
       leadInvestigatorId <- getLeadInvestigatorId

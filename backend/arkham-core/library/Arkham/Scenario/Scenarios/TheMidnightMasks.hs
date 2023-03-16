@@ -2,18 +2,18 @@ module Arkham.Scenario.Scenarios.TheMidnightMasks where
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import qualified Arkham.EncounterSet as EncounterSet
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Enemy.Types
-import Arkham.Location.Cards qualified as Locations
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Matcher
-  ( CardMatcher (..), EnemyMatcher (..), ExtendedCardMatcher (..) )
+  (CardMatcher(..), EnemyMatcher(..), ExtendedCardMatcher(..))
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -21,7 +21,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait qualified as Trait
+import qualified Arkham.Trait as Trait
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock Generic
@@ -43,8 +43,7 @@ theMidnightMasks difficulty = scenarioWith
 instance HasTokenValue TheMidnightMasks where
   getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
     Skull | isEasyStandard attrs -> do
-      tokenValue' <- getMax0
-        <$> selectAgg Max EnemyDoom (EnemyWithTrait Trait.Cultist)
+      tokenValue' <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
       pure $ TokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do
       doomCount <- getDoomCount
@@ -147,15 +146,15 @@ instance RunMessage TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
 
+      agendas <- genCards [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
+      acts <- genCards [Acts.uncoveringTheConspiracy]
+
       TheMidnightMasks <$> runMessage
         msg
         (attrs
         & (decksL . at CultistDeck ?~ cultistDeck')
-        & (actStackL . at 1 ?~ [Acts.uncoveringTheConspiracy])
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait
@@ -171,10 +170,11 @@ instance RunMessage TheMidnightMasks where
       s <$ case cultists of
         [] -> push (DrawAnotherToken iid)
         xs -> pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-    FailedSkillTest iid _ _ (TokenTarget token) _ _
-      | tokenFace token == Tablet -> if isEasyStandard attrs
-        then s <$ push (InvestigatorPlaceAllCluesOnLocation iid)
-        else s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
+    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Tablet)) _ _ -> do
+      push $ if isEasyStandard attrs
+        then InvestigatorPlaceAllCluesOnLocation iid
+        else InvestigatorPlaceCluesOnLocation iid 1
+      pure s
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution n) -> do

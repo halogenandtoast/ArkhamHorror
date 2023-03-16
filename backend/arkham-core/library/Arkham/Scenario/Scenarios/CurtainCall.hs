@@ -16,8 +16,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -72,35 +72,35 @@ instance RunMessage CurtainCall where
 
       (theatreId, placeTheater) <- placeLocationCard Locations.theatre
       (backstageId, placeBackstage) <- placeLocationCard Locations.backstage
-      placeRest <- traverse placeLocationCard_ [Locations.lobby, Locations.balcony]
+      placeRest <- traverse
+        placeLocationCard_
+        [Locations.lobby, Locations.balcony]
 
       investigatorIds <- allInvestigatorIds
       mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       let
         theatreInvestigatorIds =
           maybe investigatorIds (`deleteFirst` investigatorIds) mLolaId
-        theatreMoveTo = map
-          (\iid -> MoveTo $ move (toSource attrs) iid theatreId)
-          theatreInvestigatorIds
+        theatreMoveTo =
+          map (\iid -> MoveTo $ move attrs iid theatreId) theatreInvestigatorIds
         backstageMoveTo =
-          [ MoveTo $ move (toSource attrs) lolaId backstageId
+          [ MoveTo $ move attrs lolaId backstageId
           | lolaId <- maybeToList mLolaId
           ]
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeTheater
-        , placeBackstage
-        ]
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeTheater
+          , placeBackstage
+          ]
         <> placeRest
         <> theatreMoveTo
         <> backstageMoveTo
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Enemies.royalEmissary
         , Enemies.theManInThePallidMask
         , Locations.lightingBox
@@ -110,24 +110,24 @@ instance RunMessage CurtainCall where
         , Locations.rehearsalRoom
         , Locations.trapRoom
         ]
+      agendas <- genCards [Agendas.theThirdAct, Agendas.encore]
+      acts <- genCards
+        [ Acts.awakening
+        , Acts.theStrangerACityAflame
+        , Acts.theStrangerThePathIsMine
+        , Acts.theStrangerTheShoresOfHali
+        , Acts.curtainCall
+        ]
 
       CurtainCall <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [ Acts.awakening
-             , Acts.theStrangerACityAflame
-             , Acts.theStrangerThePathIsMine
-             , Acts.theStrangerTheShoresOfHali
-             , Acts.curtainCall
-             ]
-          )
-        & (agendaStackL . at 1 ?~ [Agendas.theThirdAct, Agendas.encore])
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ScenarioResolution resolution -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       investigatorIds <- allInvestigatorIds
       gainXP <- map (uncurry GainXP) <$> getXp
       conviction <- getRecordCount Conviction
@@ -138,9 +138,7 @@ instance RunMessage CurtainCall where
       let
         theStrangerIsOnToYou =
           [ Record TheStrangerIsOnToYou
-          , AddCampaignCardToDeck
-            leadInvestigatorId
-            Enemies.theManInThePallidMask
+          , AddCampaignCardToDeck lead Enemies.theManInThePallidMask
           ]
       s <$ case resolution of
         NoResolution ->

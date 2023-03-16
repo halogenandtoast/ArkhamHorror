@@ -57,8 +57,8 @@ blackStarsRise difficulty = scenarioWith
 instance HasTokenValue BlackStarsRise where
   getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of
     Skull -> do
-      maxDoom <- getMax0 <$> selectAgg Max AgendaDoom AnyAgenda
-      totalDoom <- getSum <$> selectAgg Sum AgendaDoom AnyAgenda
+      maxDoom <- selectMax AgendaDoom AnyAgenda
+      totalDoom <- selectSum AgendaDoom AnyAgenda
       pure $ toTokenValue attrs Skull maxDoom totalDoom
     Cultist -> if isEasyStandard attrs
       then do
@@ -114,16 +114,15 @@ standaloneTokens =
 instance RunMessage BlackStarsRise where
   runMessage msg s@(BlackStarsRise attrs) = case msg of
     SetTokensForScenario -> do
-      whenM getIsStandalone $ do
-        randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+      whenStandalone $ do
+        randomToken <- sample $ Cultist :| [Tablet, ElderThing]
+        push $ SetTokens $ standaloneTokens <> [randomToken, randomToken]
       pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
-      push $ ShuffleCardsIntoDeck
-        (InvestigatorDeck leadInvestigatorId)
-        [theManInThePallidMask]
+      push
+        $ ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -165,8 +164,7 @@ instance RunMessage BlackStarsRise where
       choeurGothique <- sample
         (Locations.choeurGothique_292 :| [Locations.choeurGothique_293])
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Enemies.tidalTerror
         , Enemies.tidalTerror
         , Enemies.riftSeeker
@@ -217,28 +215,28 @@ instance RunMessage BlackStarsRise where
         <> (placePorteDeLAvancee : otherPlacements)
         <> [MoveAllTo (toSource attrs) porteDeLAvanceeId]
 
+      agendas1 <- genCards
+        [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]
+      agendas2 <-
+        genCards
+          [ Agendas.theRitualBeginsBlackStarsRise
+          , agenda2c
+          , Agendas.swallowedSky
+          ]
+
       BlackStarsRise <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]
-          )
-        & (agendaStackL
-          . at 2
-          ?~ [ Agendas.theRitualBeginsBlackStarsRise
-             , agenda2c
-             , Agendas.swallowedSky
-             ]
-          )
+        & (agendaStackL . at 1 ?~ agendas1)
+        & (agendaStackL . at 2 ?~ agendas2)
         )
     PlaceDoomOnAgenda -> do
       agendaIds <- selectList AnyAgenda
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       push $ chooseOne
-        leadInvestigatorId
-        [ targetLabel agendaId [PlaceDoom (AgendaTarget agendaId) 1]
+        lead
+        [ targetLabel agendaId [PlaceDoom (toTarget agendaId) 1]
         | agendaId <- agendaIds
         ]
       pure s

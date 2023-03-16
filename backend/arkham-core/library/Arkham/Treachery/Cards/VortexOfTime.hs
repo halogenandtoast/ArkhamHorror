@@ -5,13 +5,13 @@ module Arkham.Treachery.Cards.VortexOfTime
 
 import Arkham.Prelude
 
-import Arkham.SkillType
-import Arkham.Treachery.Runner
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.SkillType
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype VortexOfTime = VortexOfTime TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,20 +23,15 @@ vortexOfTime = treachery VortexOfTime Cards.vortexOfTime
 instance RunMessage VortexOfTime where
   runMessage msg t@(VortexOfTime attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      sentinelHills <- selectList $ LocationWithTrait SentinelHill
-      investigatorsAtSentinelHills <- concatMapM' (selectList . InvestigatorAt . LocationWithId) sentinelHills
-      t <$ pushAll
-        ([ beginSkillTest
-             iid
-             source
-             (InvestigatorTarget iid)
-             SkillWillpower
-             4
-         | iid <- investigatorsAtSentinelHills
-         ]
-        <> [Discard (toSource attrs) $ toTarget attrs]
-        )
+      investigatorsAtSentinelHills <-
+        selectList $ InvestigatorAt $ LocationWithTrait SentinelHill
+      pushAll
+        [ RevelationSkillTest iid source SkillWillpower 4
+        | iid <- investigatorsAtSentinelHills
+        ]
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t
-      <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
+      | isSource attrs source -> do
+        push $ InvestigatorAssignDamage iid source DamageAny 2 0
+        pure t
     _ -> VortexOfTime <$> runMessage msg attrs

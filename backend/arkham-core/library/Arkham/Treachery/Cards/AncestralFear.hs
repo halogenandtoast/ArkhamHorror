@@ -33,7 +33,7 @@ instance RunMessage AncestralFear where
           ]
         <> [ Label
                "Place Ancestral Fear in the victory display."
-               [AddToVictory (toTarget attrs), Surge iid source]
+               [AddToVictory (toTarget attrs), gainSurge attrs]
            ]
       pure t
     _ -> AncestralFear <$> runMessage msg attrs

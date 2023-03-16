@@ -27,7 +27,7 @@ instance RunMessage Abduction where
       | isSource attrs source -> do
         allies <- selectListMap
           AssetTarget
-          (AssetControlledBy You <> AllyAsset <> DiscardableAsset)
+          (assetControlledBy iid <> AllyAsset <> DiscardableAsset)
         case allies of
           [] -> push $ LoseAllResources iid
           targets -> push $ chooseOne

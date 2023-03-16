@@ -93,24 +93,27 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
 
       let
         victorianHallsMoveTo =
-          [ MoveTo $ move (toSource attrs) gavriellaId victorianHallsId
+          [ MoveTo $ move attrs gavriellaId victorianHallsId
           | gavriellaId <- maybeToList mGavriellaMizrah
           ]
         officeMoveTo =
-          [ MoveTo $ move (toSource attrs) jeromeId officeId
+          [ MoveTo $ move attrs jeromeId officeId
           | jeromeId <- maybeToList mJeromeDavids
           ]
         billiardsRoomMoveTo =
-          [ MoveTo $ move (toSource attrs) valentinoId billiardsRoomId
+          [ MoveTo $ move attrs valentinoId billiardsRoomId
           | valentinoId <- maybeToList mValentinoRivas
           ]
         balconyMoveTo =
-          [ MoveTo $ move (toSource attrs) pennyId balconyId
+          [ MoveTo $ move attrs pennyId balconyId
           | pennyId <- maybeToList mPennyWhite
           ]
 
       createNetherMist <- createEnemyAt_ netherMist officeId Nothing
-      createTheSpectralWatcher <- createEnemyAt_ theSpectralWatcher entryHallId Nothing
+      createTheSpectralWatcher <- createEnemyAt_
+        theSpectralWatcher
+        entryHallId
+        Nothing
 
       pushAll
         $ [ SetEncounterDeck
@@ -137,14 +140,14 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         <> officeMoveTo
         <> billiardsRoomMoveTo
         <> balconyMoveTo
-        <> [ AttachStoryTreacheryTo obscuringFog (LocationTarget officeId)
+        <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
            | isJust mJeromeDavids
            ]
         <> [ createNetherMist | isJust mJeromeDavids ]
         <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
            | valentinoId <- maybeToList mValentinoRivas
            ]
-        <> [ AttachStoryTreacheryTo obscuringFog (LocationTarget officeId)
+        <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
            | isJust mJeromeDavids
            ]
         <> [ SpawnEnemyAtEngagedWith wraith balconyId pennyId
@@ -152,12 +155,12 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
            ]
         <> [SetupStep (toTarget attrs) 2]
 
+      acts <- genCards [Acts.theDisappearance]
+      agendas <- genCards [Agendas.judgementXX]
+
       DisappearanceAtTheTwilightEstate <$> runMessage
         msg
-        (attrs
-        & (actStackL . at 1 ?~ [Acts.theDisappearance])
-        & (agendaStackL . at 1 ?~ [Agendas.judgementXX])
-        )
+        (attrs & (actStackL . at 1 ?~ acts) & (agendaStackL . at 1 ?~ agendas))
     SetupStep (isTarget attrs -> True) 2 -> do
       gavriellaChosen <- selectAny
         $ investigatorIs Investigators.gavriellaMizrah
@@ -174,10 +177,10 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         $ [ EnemyDamage theSpectralWatcher $ nonAttack attrs 1
           | gavriellaChosen
           ]
-        <> [ AttachStoryTreacheryTo terrorInTheNight (AgendaTarget agendaId)
+        <> [ AttachStoryTreacheryTo terrorInTheNight (toTarget agendaId)
            | valentinoChosen
            ]
-        <> [ AttachStoryTreacheryTo whispersInTheDark (AgendaTarget agendaId)
+        <> [ AttachStoryTreacheryTo whispersInTheDark (toTarget agendaId)
            | pennyChosen
            ]
       pure s
@@ -186,13 +189,13 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         Skull -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
-            when (action `elem` [Action.Fight, Action.Evade]) $
-              runHauntedAbilities iid
+            when (action `elem` [Action.Fight, Action.Evade])
+              $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do
       iids <- allInvestigatorIds
-      clues <- getSum <$> selectAgg Sum ActClues AnyAct
+      clues <- selectSum ActClues AnyAct
       pushAll
         [ story iids noResolution
         , RecordCount PiecesOfEvidenceWereLeftBehind clues

@@ -113,8 +113,7 @@ instance RunMessage TurnBackTime where
           , Treacheries.cryptChill
           ]
 
-      explorationDeck <- shuffleM =<< traverse
-        genCard
+      explorationDeck <- shuffleM =<< genCards
         [ Locations.ancientHall
         , Locations.grandChamber
         , Locations.burialPit
@@ -130,7 +129,7 @@ instance RunMessage TurnBackTime where
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       setAsideCards <-
-        traverse genCard
+        genCards
         $ [ Locations.chamberOfTime
           , Assets.relicOfAgesRepossessThePast
           , Enemies.harbingerOfValusia
@@ -150,22 +149,21 @@ instance RunMessage TurnBackTime where
            , MoveAllTo (toSource attrs) entrywayId
            , AddToken ElderThing
            ]
+
+      agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
+      acts <- genCards
+        [ Acts.intoTheRuinsOnceAgain
+        , Acts.theChamberOfStillRemains
+        , Acts.momentOfDoom
+        ]
+
       TurnBackTime <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
         & (setAsideCardsL .~ setAsideCards)
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.somethingStirs, Agendas.theTempleWarden]
-          )
-        & (actStackL
-          . at 1
-          ?~ [ Acts.intoTheRuinsOnceAgain
-             , Acts.theChamberOfStillRemains
-             , Acts.momentOfDoom
-             ]
-          )
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
         )
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do
       mlid <- field InvestigatorLocation iid

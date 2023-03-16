@@ -88,17 +88,17 @@ sacrificesMade investigatorIds s =
       ]
 
 abbessSatisfied :: InvestigatorId -> [InvestigatorId] -> [Message]
-abbessSatisfied leadInvestigatorId investigatorIds =
+abbessSatisfied lead investigatorIds =
   story investigatorIds Flavor.abbessSatisfied
     : [ addCampaignCardToDeckChoice
-          leadInvestigatorId
+          lead
           investigatorIds
           Assets.abbessAllegriaDiBiase
       ]
 
 additionalRewards :: HasGame m => ScenarioAttrs -> m [Message]
 additionalRewards s = do
-  leadInvestigatorId <- getLeadInvestigatorId
+  lead <- getLead
   investigatorIds <- allInvestigatorIds
   let
     proceedToSacrificesMade =
@@ -110,7 +110,7 @@ additionalRewards s = do
       if null (scenarioCardsUnderAgendaDeck s)
           && length (scenarioCardsUnderAgendaDeck s)
           == 3
-        then abbessSatisfied leadInvestigatorId investigatorIds
+        then abbessSatisfied lead investigatorIds
         else []
   pure
     $ [ChooseOneRewardByEachPlayer masks investigatorIds]
@@ -153,8 +153,7 @@ instance RunMessage CarnevaleOfHorrors where
 
       locationIdsWithMaskedCarnevaleGoers <-
         zip nonSanMarcoBasilicaLocationIds
-          <$> (traverse (\c -> (c,) <$> getRandom) =<< shuffleM =<< traverse
-                genCard
+          <$> (traverse (\c -> (c, ) <$> getRandom) =<< shuffleM =<< genCards
                 [ Assets.maskedCarnevaleGoer_17
                 , Assets.maskedCarnevaleGoer_18
                 , Assets.maskedCarnevaleGoer_19
@@ -199,8 +198,7 @@ instance RunMessage CarnevaleOfHorrors where
            , story investigatorIds Flavor.intro
            ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Enemies.cnidathqua
         , Assets.pantalone
         , Assets.medicoDellaPeste
@@ -208,21 +206,20 @@ instance RunMessage CarnevaleOfHorrors where
         , Assets.gildedVolto
         ]
 
+      agendas <- genCards
+        [ Agendas.theFestivitiesBegin
+        , Agendas.theShadowOfTheEclipse
+        , Agendas.chaosAtTheCarnevale
+        ]
+      acts <- genCards
+        [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
+
       CarnevaleOfHorrors <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.theFestivitiesBegin
-             , Agendas.theShadowOfTheEclipse
-             , Agendas.chaosAtTheCarnevale
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     SetTokensForScenario -> do
       let
@@ -277,35 +274,31 @@ instance RunMessage CarnevaleOfHorrors where
         Assets.innocentReveler
       case closestInnocentRevelers of
         [] -> pure ()
-        [x] -> push
-          (chooseOne
-            iid
-            [ ComponentLabel
-              (AssetComponent x DamageToken)
-              [AssetDamage x (TokenSource token) 1 0]
-            , ComponentLabel
-              (AssetComponent x HorrorToken)
-              [AssetDamage x (TokenSource token) 0 1]
-            ]
-          )
-        xs -> push
-          (chooseOne
-            iid
-            [ TargetLabel
-                (AssetTarget x)
-                [ chooseOne
-                    iid
-                    [ ComponentLabel
-                      (AssetComponent x DamageToken)
-                      [AssetDamage x (TokenSource token) 1 0]
-                    , ComponentLabel
-                      (AssetComponent x HorrorToken)
-                      [AssetDamage x (TokenSource token) 0 1]
-                    ]
-                ]
-            | x <- xs
-            ]
-          )
+        [x] -> push $ chooseOne
+          iid
+          [ ComponentLabel
+            (AssetComponent x DamageToken)
+            [AssetDamage x (TokenSource token) 1 0]
+          , ComponentLabel
+            (AssetComponent x HorrorToken)
+            [AssetDamage x (TokenSource token) 0 1]
+          ]
+        xs -> push $ chooseOne
+          iid
+          [ targetLabel
+              x
+              [ chooseOne
+                  iid
+                  [ ComponentLabel
+                    (AssetComponent x DamageToken)
+                    [AssetDamage x (TokenSource token) 1 0]
+                  , ComponentLabel
+                    (AssetComponent x HorrorToken)
+                    [AssetDamage x (TokenSource token) 0 1]
+                  ]
+              ]
+          | x <- xs
+          ]
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       case tokenFace token of

@@ -26,7 +26,7 @@ instance RunMessage HuntedDown where
     Revelation iid source | isSource attrs source -> do
       enemiesToMove <- select $ UnengagedEnemy <> EnemyWithTrait Criminal
       if null enemiesToMove
-        then push (Surge iid $ toSource attrs)
+        then push $ gainSurge attrs
         else do
           mDestinationId <- field InvestigatorLocation iid
           for_ mDestinationId $ \destinationId -> do

@@ -5,12 +5,12 @@ module Arkham.Treachery.Cards.VastExpanse
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype VastExpanse = VastExpanse TreacheryAttrs
@@ -24,16 +24,15 @@ instance RunMessage VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
-      let
-        revelationMsg = if extradimensionalCount == 0
-          then Surge iid source
-          else beginSkillTest
-            iid
-            source
-            (InvestigatorTarget iid)
-            SkillWillpower
-            (min 5 extradimensionalCount)
-      t <$ push revelationMsg
+      push $ if extradimensionalCount == 0
+        then gainSurge attrs
+        else beginSkillTest
+          iid
+          source
+          (toTarget iid)
+          SkillWillpower
+          (min 5 extradimensionalCount)
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t
       <$ push (InvestigatorAssignDamage iid source DamageAny 0 n)

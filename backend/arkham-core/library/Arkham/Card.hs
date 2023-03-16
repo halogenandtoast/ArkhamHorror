@@ -9,9 +9,9 @@ import Arkham.Card.CardCode as X
 import Arkham.Card.CardDef as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Class as X
+import Arkham.Card.EncounterCard as X (EncounterCard(..))
 import Arkham.Card.Id as X
-import Arkham.Card.EncounterCard as X ( EncounterCard (..) )
-import Arkham.Card.PlayerCard as X ( PlayerCard (..) )
+import Arkham.Card.PlayerCard as X (PlayerCard(..))
 
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -24,7 +24,7 @@ import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
 import Arkham.Trait
-import Data.Text qualified as T
+import qualified Data.Text as T
 
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
@@ -37,7 +37,8 @@ lookupCard (toCardCode -> cardCode) cardId =
 
 -- we prefer encounter cards over player cards to handle cases like straitjacket
 lookupCardDef :: (HasCardCode cardCode) => cardCode -> Maybe CardDef
-lookupCardDef (toCardCode -> cardCode) = lookup cardCode allEncounterCards <|> lookup cardCode allPlayerCards
+lookupCardDef (toCardCode -> cardCode) =
+  lookup cardCode allEncounterCards <|> lookup cardCode allPlayerCards
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
@@ -45,8 +46,10 @@ data CardBuilder ident a = CardBuilder
   }
 
 instance Functor (CardBuilder ident) where
-  fmap f CardBuilder {..} =
-    CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = \cId -> f . cbCardBuilder cId }
+  fmap f CardBuilder {..} = CardBuilder
+    { cbCardCode = cbCardCode
+    , cbCardBuilder = \cId -> f . cbCardBuilder cId
+    }
 
 instance IsCard Card where
   toCardId = \case
@@ -71,14 +74,22 @@ class MonadRandom m => CardGen m where
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
 
 instance CardGen IO where
-  genEncounterCard a = lookupEncounterCard (toCardDef a) <$> getRandom
-  genPlayerCard a = lookupPlayerCard (toCardDef a) <$> getRandom
+  genEncounterCard a =
+    lookupEncounterCard (toCardDef a) . unsafeMakeCardId <$> getRandom
+  genPlayerCard a =
+    lookupPlayerCard (toCardDef a) . unsafeMakeCardId <$> getRandom
 
 genCard :: (HasCardDef a, CardGen m) => a -> m Card
 genCard a = if cdCardType def `elem` encounterCardTypes
   then EncounterCard <$> genEncounterCard def
   else PlayerCard <$> genPlayerCard def
   where def = toCardDef a
+
+genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
+genCards = traverse genCard
+
+isCard :: (HasCardCode a, HasCardCode b) => a -> b -> Bool
+isCard (toCardCode -> a) (toCardCode -> b) = a == b
 
 cardMatch :: IsCard a => a -> CardMatcher -> Bool
 cardMatch a = \case
@@ -167,9 +178,6 @@ data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId
   , campaignStoryCardPlayerCard :: PlayerCard
   }
-
-class HasCard env a where
-  getCard :: (MonadReader env m, MonadIO m) => CardId -> a -> m Card
 
 instance HasSkillIcons Card where
   getSkillIcons (PlayerCard card) = getSkillIcons card

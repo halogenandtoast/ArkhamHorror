@@ -6,14 +6,13 @@ module Arkham.Treachery.Cards.Straitjacket
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
-import Arkham.Matcher hiding (Discarded)
+import Arkham.Matcher hiding ( Discarded )
 import Arkham.Message
 import Arkham.Slot
-import Arkham.Source
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Straitjacket = Straitjacket TreacheryAttrs
@@ -30,19 +29,17 @@ instance RunMessage Straitjacket where
         selectAny
         $ AssetControlledBy (InvestigatorWithId iid)
         <> assetIs Assets.straitjacket
-      if alreadyInStraitJacket
-        then t <$ push (Discard GameSource $ toTarget attrs)
-        else do
-          returnableAssets <-
-            selectList
-            $ AssetControlledBy (InvestigatorWithId iid)
-            <> AssetCanLeavePlayByNormalMeans
-            <> AssetOneOf [AssetInSlot BodySlot, AssetInSlot HandSlot]
-          let asset = lookupPlayerCard Assets.straitjacket (toCardId attrs)
-          t <$ pushAll
-            (map (ReturnToHand iid . AssetTarget) returnableAssets
-            <> [TakeControlOfSetAsideAsset iid (PlayerCard asset)]
-            )
+      unless alreadyInStraitJacket $ do
+        returnableAssets <-
+          selectList
+          $ assetControlledBy iid
+          <> AssetCanLeavePlayByNormalMeans
+          <> AssetOneOf [AssetInSlot BodySlot, AssetInSlot HandSlot]
+        let asset = lookupPlayerCard Assets.straitjacket (toCardId attrs)
+        pushAll
+          $ map (ReturnToHand iid . AssetTarget) returnableAssets
+          <> [TakeControlOfSetAsideAsset iid (PlayerCard asset)]
+      pure t
     After (Revelation _ source) | isSource attrs source -> do
       push $ Discarded (toTarget attrs) (toSource attrs) (toCard attrs) -- Using discarded to remove existence)
       pure t

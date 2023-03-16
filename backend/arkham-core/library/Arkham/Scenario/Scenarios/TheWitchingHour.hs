@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types ( Field (..) )
@@ -59,7 +58,7 @@ instance RunMessage TheWitchingHour where
   runMessage msg s@(TheWitchingHour attrs) = case msg of
     PreScenarioSetup -> do
       iids <- getInvestigatorIds
-      lead <- getLeadInvestigatorId
+      lead <- getLead
 
       pushAll
         $ [ story iids intro1
@@ -104,8 +103,7 @@ instance RunMessage TheWitchingHour where
            ]
 
       setAsideCards <-
-        (<> agentsOfShubNiggurath <> agentsOfAzathoth) <$> traverse
-          genCard
+        (<> agentsOfShubNiggurath <> agentsOfAzathoth) <$> genCards
           [ Enemies.anetteMason
           , Locations.arkhamWoodsUnhallowedGround
           , Locations.arkhamWoodsTwistingPaths
@@ -133,7 +131,7 @@ instance RunMessage TheWitchingHour where
             mMoveTo = do
               startingLocation <- lookup investigator startingLocations
               guard $ location == startingLocation
-              pure $ MoveTo $ move (toSource attrs) investigator lid
+              pure $ MoveTo $ move attrs investigator lid
 
           pure
             $ placement
@@ -143,32 +141,30 @@ instance RunMessage TheWitchingHour where
       pushAll
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> locationPlacements
+
+      agendas <- genCards [Agendas.temperanceXIV, Agendas.theNightHowls]
+      acts <- genCards
+        [ Acts.lostInTheWoods
+        , Acts.witchHauntings
+        , Acts.pathsIntoTwilight
+        , Acts.aCircleUnbroken
+        ]
+
       TheWitchingHour <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.temperanceXIV, Agendas.theNightHowls]
-          )
-        & (actStackL
-          . at 1
-          ?~ [ Acts.lostInTheWoods
-             , Acts.witchHauntings
-             , Acts.pathsIntoTwilight
-             , Acts.aCircleUnbroken
-             ]
-          )
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
         )
     SetupStep (isTarget attrs -> True) 2 -> do
       iids <- getInvestigatorIds
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       -- collection is infinite so we only care if the lead already has either card in their deck
       addCards <- fieldMap
         InvestigatorDeck
         (not
         . any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef)
-        . unDeck
         )
         lead
       pushAll

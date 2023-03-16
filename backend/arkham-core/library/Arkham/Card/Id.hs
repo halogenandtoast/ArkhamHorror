@@ -1,20 +1,15 @@
-module Arkham.Card.Id where
+module Arkham.Card.Id (CardId, nullCardId, unsafeMakeCardId) where
 
 import Arkham.Prelude
 import Data.UUID (nil)
 
-newtype CardId = CardId { unCardId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
+newtype CardId = CardId UUID
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+-- exports the constructor, but we only want to use this in CardGen
+unsafeMakeCardId :: UUID -> CardId
+unsafeMakeCardId = CardId
 
 nullCardId :: CardId
 nullCardId = CardId nil
 {-# INLINE nullCardId #-}
-
-newtype CommittedCardId = CommittedCardId { unCommittedCardId :: CardId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
-newtype HandCardId = HandCardId { unHandCardId :: CardId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
-newtype DeckCardId = DeckCardId { unDeckCardId :: CardId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

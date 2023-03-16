@@ -97,6 +97,18 @@ createTokenEffect effectMetadata source token = do
   eid <- getRandom
   pure (eid, buildTokenEffect eid effectMetadata source token)
 
+createSurgeEffect
+  :: (MonadRandom m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> m (EffectId, Effect)
+createSurgeEffect (toSource -> source) (toTarget -> target) = do
+  eid <- getRandom
+  pure
+    ( eid
+    , Effect $ surgeEffect (eid, Nothing, source, target)
+    )
+
 instance RunMessage Effect where
   runMessage msg (Effect a) = Effect <$> runMessage msg a
 
@@ -246,4 +258,5 @@ allEffects = mapFromList
   , ("90002", SomeEffect daisysToteBagAdvanced)
   , ("wmode", SomeEffect windowModifierEffect)
   , ("tokef", SomeEffect tokenEffect)
+  , ("surge", SomeEffect surgeEffect)
   ]

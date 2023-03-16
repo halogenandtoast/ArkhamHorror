@@ -117,7 +117,7 @@ instance RunMessage WhereDoomAwaits where
         .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.sethBishop]
         [ EncounterSet.WhereDoomAwaits
@@ -152,8 +152,10 @@ instance RunMessage WhereDoomAwaits where
       silasBishopPutOutOfMisery <- getHasRecord
         TheInvestigatorsPutSilasBishopOutOfHisMisery
 
-      (baseOfTheHillId, placeBaseOfTheHill) <- placeLocationCard Locations.baseOfTheHill
-      (ascendingPathId, placeAscendingPath) <- placeLocationCard Locations.ascendingPath
+      (baseOfTheHillId, placeBaseOfTheHill) <- placeLocationCard
+        Locations.baseOfTheHill
+      (ascendingPathId, placeAscendingPath) <- placeLocationCard
+        Locations.ascendingPath
       placeSentinelPeak <- placeLocationCard_ Locations.sentinelPeak
 
       silasMsgs <- if silasBishopPutOutOfMisery
@@ -170,14 +172,14 @@ instance RunMessage WhereDoomAwaits where
             ]
         else pure []
 
-      divergingPaths <- traverse genCard . take 3 =<< shuffleM
+      divergingPaths <- genCards . take 3 =<< shuffleM
         [ Locations.slaughteredWoods
         , Locations.eerieGlade
         , Locations.destroyedPath
         , Locations.frozenSpring
         ]
 
-      alteredPaths <- traverse genCard . take 3 =<< shuffleM
+      alteredPaths <- genCards . take 3 =<< shuffleM
         [ Locations.dimensionalGap
         , Locations.aTearInThePath
         , Locations.uprootedWoods
@@ -194,32 +196,31 @@ instance RunMessage WhereDoomAwaits where
       pushAll
         $ story investigatorIds intro
         : [ story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks ]
-        <> [ GainClues leadInvestigatorId 1 | naomiHasTheInvestigatorsBacks ]
+        <> [ GainClues lead 1 | naomiHasTheInvestigatorsBacks ]
         <> [ AddToken token
            , SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
            ]
         <> replicate broodEscapedCount PlaceDoomOnAgenda
-        <> [ placeBaseOfTheHill, placeAscendingPath, placeSentinelPeak]
+        <> [placeBaseOfTheHill, placeAscendingPath, placeSentinelPeak]
         <> silasMsgs
         <> [ RevealLocation Nothing baseOfTheHillId
            , MoveAllTo (toSource attrs) baseOfTheHillId
            ]
 
-      setAsideCards <- traverse genCard [Enemies.silasBishop]
+      setAsideCards <- genCards [Enemies.silasBishop]
+
+      agendas <- genCards
+        [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
+      acts <- genCards
+        [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
 
       WhereDoomAwaits <$> runMessage
         msg
         (attrs
-        & (actStackL
-          . at 1
-          ?~ [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         & (setAsideCardsL
           <>~ (divergingPaths <> alteredPaths <> setAsideCards)
           )

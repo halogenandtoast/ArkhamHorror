@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.TheFinalAct
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field(..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -25,12 +25,7 @@ instance RunMessage TheFinalAct where
     Revelation iid source | isSource attrs source -> do
       agenda <- selectJust AnyAgenda
       noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
-      pushAll $ if noRemainingSanity
-        then
-          [ PlaceDoom (AgendaTarget agenda) 2
-          , AdvanceAgendaIfThresholdSatisfied
-          , Discard (toSource attrs) $ toTarget attrs
-          ]
-        else [Discard (toSource attrs) $ toTarget attrs]
+      when noRemainingSanity $ pushAll
+        [PlaceDoom (AgendaTarget agenda) 2, AdvanceAgendaIfThresholdSatisfied]
       pure t
     _ -> TheFinalAct <$> runMessage msg attrs

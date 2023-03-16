@@ -142,11 +142,17 @@ instance RunMessage TheEssexCountyExpress where
         (engineCarId, placeEngineCar) <- placeLocationCard engineCar
         placeTrainCars <- for (zip [6, 5 ..] trainCars) $ \(idx, car) -> do
           (locationId, placement) <- placeLocationCard car
-          pure (locationId, [placement, SetLocationLabel locationId ("trainCar" <> tshow @Int idx)])
+          pure
+            ( locationId
+            , [ placement
+              , SetLocationLabel locationId ("trainCar" <> tshow @Int idx)
+              ]
+            )
 
         let
           start = fst . fromJustNote "No train cars?" $ headMay placeTrainCars
-          end = fst . fromJustNote "No train cars?" $ headMay (reverse placeTrainCars)
+          end = fst . fromJustNote "No train cars?" $ headMay
+            (reverse placeTrainCars)
           allCars = map fst placeTrainCars <> [engineCarId]
           token = case scenarioDifficulty of
             Easy -> MinusTwo
@@ -177,28 +183,27 @@ instance RunMessage TheEssexCountyExpress where
              , MoveAllTo (toSource attrs) start
              ]
 
-        setAsideCards <- traverse
-          genCard
+        setAsideCards <- genCards
           [ Treacheries.acrossSpaceAndTime
           , Treacheries.acrossSpaceAndTime
           , Treacheries.acrossSpaceAndTime
           , Treacheries.acrossSpaceAndTime
           ]
+        agendas <- genCards
+          [ Agendas.aTearInReality
+          , Agendas.theMawWidens
+          , Agendas.rollingBackwards
+          , Agendas.drawnIn
+          , Agendas.outOfTime
+          ]
+        acts <- genCards [Acts.run, Acts.getTheEngineRunning]
 
         TheEssexCountyExpress <$> runMessage
           msg
           (attrs
           & (setAsideCardsL .~ setAsideCards)
-          & (actStackL . at 1 ?~ [Acts.run, Acts.getTheEngineRunning])
-          & (agendaStackL
-            . at 1
-            ?~ [ Agendas.aTearInReality
-               , Agendas.theMawWidens
-               , Agendas.rollingBackwards
-               , Agendas.drawnIn
-               , Agendas.outOfTime
-               ]
-            )
+          & (actStackL . at 1 ?~ acts)
+          & (agendaStackL . at 1 ?~ agendas)
           )
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <- selectList $ NearestEnemyTo iid $ EnemyWithTrait
@@ -216,9 +221,14 @@ instance RunMessage TheEssexCountyExpress where
         s <$ case tokenFace token of
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-          ElderThing | isEasyStandard attrs -> push $ toMessage $ chooseAndDiscardCard iid (TokenEffectSource ElderThing)
+          ElderThing | isEasyStandard attrs ->
+            push $ toMessage $ chooseAndDiscardCard
+              iid
+              (TokenEffectSource ElderThing)
           ElderThing | isHardExpert attrs ->
-            pushAll $ replicate n $ toMessage $ chooseAndDiscardCard iid (TokenEffectSource ElderThing)
+            pushAll $ replicate n $ toMessage $ chooseAndDiscardCard
+              iid
+              (TokenEffectSource ElderThing)
           _ -> pure ()
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]

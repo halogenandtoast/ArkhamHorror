@@ -21,8 +21,8 @@ import Arkham.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
 import Arkham.Movement
@@ -135,10 +135,17 @@ instance RunMessage TheUnspeakableOath where
         :| [Locations.asylumHallsEasternPatientWing_171]
         )
 
-      placeOtherLocations <- traverse placeLocationCard_ [Locations.messHall, Locations.kitchen, Locations.yard, Locations.garden, Locations.infirmary, Locations.basementHall]
+      placeOtherLocations <- traverse
+        placeLocationCard_
+        [ Locations.messHall
+        , Locations.kitchen
+        , Locations.yard
+        , Locations.garden
+        , Locations.infirmary
+        , Locations.basementHall
+        ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Assets.danielChesterfield
         , Locations.patientConfinementDrearyCell
         , Locations.patientConfinementDanielsCell
@@ -181,8 +188,10 @@ instance RunMessage TheUnspeakableOath where
       theFollowersOfTheSignHaveFoundTheWayForward <- getHasRecord
         TheFollowersOfTheSignHaveFoundTheWayForward
 
-      (easternPatientWingId, placeEasternPatientWing) <- placeLocationCard easternPatientWing
-      (westernPatientWingId, placeWesternPatientWing) <- placeLocationCard westernPatientWing
+      (easternPatientWingId, placeEasternPatientWing) <- placeLocationCard
+        easternPatientWing
+      (westernPatientWingId, placeWesternPatientWing) <- placeLocationCard
+        westernPatientWing
 
       let
         spawnMessages = map
@@ -215,12 +224,16 @@ instance RunMessage TheUnspeakableOath where
            , SetAgendaDeck
            , SetActDeck
            , placeWesternPatientWing
-           , SetLocationLabel westernPatientWingId "asylumHallsWesternPatientWing"
+           , SetLocationLabel
+             westernPatientWingId
+             "asylumHallsWesternPatientWing"
            , placeEasternPatientWing
-           , SetLocationLabel easternPatientWingId "asylumHallsEasternPatientWing"
+           , SetLocationLabel
+             easternPatientWingId
+             "asylumHallsEasternPatientWing"
            ]
         <> placeOtherLocations
-        <> [ AddToken tokenToAdd ]
+        <> [AddToken tokenToAdd]
         <> spawnMessages
 
       tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
@@ -229,27 +242,23 @@ instance RunMessage TheUnspeakableOath where
           then Acts.theReallyBadOnesV1
           else Acts.theReallyBadOnesV2
 
+      acts <- genCards
+        [ Acts.arkhamAsylum
+        , theReallyBadOnes
+        , Acts.planningTheEscape
+        , Acts.noAsylum
+        ]
+      agendas <- genCards
+        [Agendas.lockedInside, Agendas.torturousDescent, Agendas.hisDomain]
+
       TheUnspeakableOath <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
         & (decksL . at LunaticsDeck ?~ map EncounterCard lunatics)
         & (decksL . at MonstersDeck ?~ map EncounterCard monsters)
-        & (actStackL
-          . at 1
-          ?~ [ Acts.arkhamAsylum
-             , theReallyBadOnes
-             , Acts.planningTheEscape
-             , Acts.noAsylum
-             ]
-          )
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.lockedInside
-             , Agendas.torturousDescent
-             , Agendas.hisDomain
-             ]
-          )
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ tokenFace iid -> case tokenFace of
       Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)

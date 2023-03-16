@@ -128,8 +128,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       Just (x : y : ys) -> do
         let
           fromAgendaId = AgendaId (toCardCode x)
-          toAgendaId = AgendaId (toCardCode y)
-        push (ReplaceAgenda fromAgendaId toAgendaId)
+        push (ReplaceAgenda fromAgendaId y)
         pure (x, y : ys)
       _ -> error "Can not advance agenda deck"
     pure
@@ -142,14 +141,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         let
           go [] as = (as, [])
           go (y : ys) as =
-            if cdStage y /= Just n then go ys (y : as) else (y : as, ys)
+            if cdStage (toCardDef y) /= Just n then go ys (y : as) else (y : as, ys)
           (prepend, remaining) = go xs []
         case (prepend, lookup n scenarioAgendaStack) of
           (toAgenda : _, Just (fromAgenda : _)) -> do
             let
               fromAgendaId = AgendaId (toCardCode fromAgenda)
-              toAgendaId = AgendaId (toCardCode toAgenda)
-            push (ReplaceAgenda fromAgendaId toAgendaId)
+            push (ReplaceAgenda fromAgendaId toAgenda)
           _ -> error "Could not reset agenda deck to stage"
         pure
           $ a
@@ -163,8 +161,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       Just (x : y : ys) -> do
         let
           fromActId = ActId (toCardCode x)
-          toActId = ActId (toCardCode y)
-        push (ReplaceAct fromActId toActId)
+        push (ReplaceAct fromActId y)
         pure (x, y : ys)
       _ -> error "Can not advance act deck"
     pure
@@ -177,47 +174,44 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     actIds <- selectList $ Matcher.ActWithDeckId n
     pushAll
       $ [ Discard GameSource (ActTarget actId) | actId <- actIds ]
-      <> [AddAct n $ toCardDef current]
+      <> [AddAct n current]
     pure
       $ a
-      & actStackL
-      . at n
-      ?~ map toCardDef stack
-      & setAsideCardsL
-      %~ filter (`notElem` stack)
+      & (actStackL . at n ?~ stack)
+      & (setAsideCardsL %~ filter (`notElem` stack))
   SetCurrentAgendaDeck n stack@(current : _) -> do
     agendaIds <- selectList $ Matcher.AgendaWithDeckId n
     pushAll
       $ [ Discard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds ]
-      <> [AddAgenda n $ toCardDef current]
+      <> [AddAgenda n current]
     pure
       $ a
-      & agendaStackL
-      . at n
-      ?~ map toCardDef stack
-      & setAsideCardsL
-      %~ filter (`notElem` stack)
-  AdvanceToAct n act newActSide _ -> do
+      & (agendaStackL . at n ?~ stack)
+      & (setAsideCardsL %~ filter (`notElem` stack))
+  AdvanceToAct n actDef newActSide _ -> do
     let
       completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
     (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : ys) -> do
         let
           fromActId = ActId (toCardCode x)
-          toActId = ActId (toCardCode act)
-        when
-          (newActSide == Act.B)
-          (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
-        push (ReplaceAct fromActId toActId)
-        pure
-          ( x
-          , filter
-            (\c ->
-              (cdStage c /= cdStage act)
-                || (cdCardCode c `cardCodeExactEq` cdCardCode act)
-            )
-            ys
-          )
+        case find (`isCard` actDef) ys of
+          Nothing -> error $ "Missing act: " <> show actDef
+          Just toAct -> do
+            let toActId = ActId (toCardCode toAct)
+            when
+              (newActSide == Act.B)
+              (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
+            push (ReplaceAct fromActId toAct)
+            pure
+              ( x
+              , filter
+                (\c ->
+                  (cdStage (toCardDef c) /= cdStage actDef)
+                    || (toCardCode c `cardCodeExactEq` toCardCode actDef)
+                )
+                ys
+              )
       _ -> error "Can not advance act deck"
     pure
       $ a
@@ -229,35 +223,37 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         let
           go [] as = (as, [])
           go (y : ys) as =
-            if cdStage y /= Just n then go ys (y : as) else (y : as, ys)
+            if cdStage (toCardDef y) /= Just n then go ys (y : as) else (y : as, ys)
           (prepend, remaining) = go xs []
         case (prepend, lookup n scenarioActStack) of
           (toAct : _, Just (fromAct : _)) -> do
             let
               fromActId = ActId (toCardCode fromAct)
-              toActId = ActId (toCardCode toAct)
-            push (ReplaceAct fromActId toActId)
+            push (ReplaceAct fromActId toAct)
           _ -> error "Could not reset act deck to stage"
         pure
           $ a
           & (actStackL . ix n %~ (prepend <>))
           & (completedActStackL . at n ?~ remaining)
       _ -> error "Invalid act deck to reset"
-  AdvanceToAgenda n agenda newAgendaSide _ -> do
+  AdvanceToAgenda n agendaDef newAgendaSide _ -> do
     agendaStack' <- case lookup n scenarioAgendaStack of
       Just (x : ys) -> do
         let
           fromAgendaId = AgendaId (toCardCode x)
-          toAgendaId = AgendaId (toCardCode agenda)
-        when (newAgendaSide == Agenda.B) $ push $ AdvanceAgenda toAgendaId
-        push (ReplaceAgenda fromAgendaId toAgendaId)
-        -- filter the stack so only agendas with higher stages are left
-        pure $ filter
-          (\c ->
-            (fromMaybe False (liftA2 (>) (cdStage c) (cdStage agenda)))
-              || (cdCardCode c `cardCodeExactEq` cdCardCode agenda)
-          )
-          ys
+        case find (`isCard` agendaDef) ys of
+          Nothing -> error $ "Missing agenda: " <> show agendaDef
+          Just toAgenda -> do
+            let toAgendaId = AgendaId (toCardCode toAgenda)
+            when (newAgendaSide == Agenda.B) $ push $ AdvanceAgenda toAgendaId
+            push (ReplaceAgenda fromAgendaId toAgenda)
+            -- filter the stack so only agendas with higher stages are left
+            pure $ filter
+              (\c ->
+                (fromMaybe False (liftA2 (>) (cdStage $ toCardDef c) (cdStage agendaDef)))
+                  || (toCardCode c `cardCodeExactEq` toCardCode agendaDef)
+              )
+              ys
       _ -> error "Can not advance agenda deck"
     pure $ a & agendaStackL . at n ?~ agendaStack'
 
@@ -494,8 +490,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push
       (chooseOne iid [CardLabel (cdCardCode story') [ResolveStory iid story']])
     pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
-  SetActDeckRefs n refs -> do
-    pure $ a & (actStackL . at n ?~ refs)
+  SetActDeckCards n cards -> do
+    pure $ a & (actStackL . at n ?~ cards)
   SetActDeck -> do
     let ks = sortOn Down $ a ^. actStackL . to IntMap.keys
     for_ ks $ \k -> do

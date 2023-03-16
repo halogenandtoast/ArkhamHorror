@@ -152,7 +152,7 @@ allAgendas = mapFrom
   , SomeAgendaCard vengeance
   -- Shattered Aeons
   , SomeAgendaCard threadsOfTime
-  , SomeAgendaCard pendolousThreads
+  , SomeAgendaCard pendulousThreads
   , SomeAgendaCard snappedThreads
   -- The Circle Undone
   -- Disappearance at the Twilight Estate

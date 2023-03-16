@@ -40,5 +40,5 @@ instance RunMessage Haunted where
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard (toSource attrs) $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> Haunted <$> runMessage msg attrs

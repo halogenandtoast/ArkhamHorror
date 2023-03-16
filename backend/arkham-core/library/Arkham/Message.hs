@@ -144,11 +144,11 @@ data Message
     DiscardedCost Target
   | -- Act Deck Messages
     SetActDeck
-  | SetActDeckRefs Int [CardDef]
-  | AddAct Int CardDef
+  | SetActDeckCards Int [Card]
+  | AddAct Int Card
   | AdvanceAct ActId Source AdvancementMethod
   | NextAdvanceActStep ActId Int
-  | ReplaceAct ActId ActId
+  | ReplaceAct ActId Card
   | RevertAct ActId
   | ResetActDeckToStage Int
   | AdvanceActDeck Int Source
@@ -156,7 +156,7 @@ data Message
   | SetCurrentActDeck Int [Card]
   | -- Agenda Deck Messages
     SetAgendaDeck
-  | AddAgenda Int CardDef
+  | AddAgenda Int Card
   | SetCurrentAgendaDeck Int [Card]
   | AdvanceAgenda AgendaId
   | AdvanceToAgenda Int CardDef AgendaSide Source
@@ -166,7 +166,7 @@ data Message
   | AdvanceCurrentAgenda
   | ReplaceLocation LocationId Card
   | ReplacedLocation LocationId LocationId
-  | ReplaceAgenda AgendaId AgendaId
+  | ReplaceAgenda AgendaId Card
   | RevertAgenda AgendaId
   | ResetAgendaDeckToStage Int
   | -- No Remaining Investigator Messages
@@ -634,6 +634,7 @@ data Message
   | SufferTrauma InvestigatorId Int Int
   | CheckTrauma InvestigatorId
   | HealTrauma InvestigatorId Int Int
+  | GainSurge Source Target
   | Surge InvestigatorId Source
   | TakeAction InvestigatorId (Maybe Action) Cost
   | TakeControlOfAsset InvestigatorId AssetId

@@ -15,7 +15,6 @@ import Arkham.Investigator.Runner qualified as Attrs
 import Arkham.Message
 import Data.Aeson (Result(..))
 import Data.Typeable
-import Data.UUID (nil)
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator a) = do
@@ -150,10 +149,10 @@ returnToBody i = i
 
 becomePrologueInvestigator :: Investigator -> InvestigatorId -> Investigator
 becomePrologueInvestigator (Investigator a) = \case
-  "05046" -> setId $ Investigator $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) (CardId nil) ()
-  "05047" -> setId $ Investigator $ cbCardBuilder (jeromeDavids (PrologueMetadata $ toJSON a)) (CardId nil) ()
-  "05048" -> setId $ Investigator $ cbCardBuilder (valentinoRivas (PrologueMetadata $ toJSON a)) (CardId nil) ()
-  "05049" -> setId $ Investigator $ cbCardBuilder (pennyWhite (PrologueMetadata $ toJSON a)) (CardId nil) ()
+  "05046" -> setId $ Investigator $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) nullCardId ()
+  "05047" -> setId $ Investigator $ cbCardBuilder (jeromeDavids (PrologueMetadata $ toJSON a)) nullCardId ()
+  "05048" -> setId $ Investigator $ cbCardBuilder (valentinoRivas (PrologueMetadata $ toJSON a)) nullCardId ()
+  "05049" -> setId $ Investigator $ cbCardBuilder (pennyWhite (PrologueMetadata $ toJSON a)) nullCardId ()
   _ -> error "Not a prologue investigator"
  where
    setId = overAttrs (\attrs -> attrs { Attrs.investigatorId = toId a })

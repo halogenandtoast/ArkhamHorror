@@ -135,14 +135,15 @@ instance RunMessage ReturnToTheMidnightMasks where
           <> startingLocationMessages
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
+
+        agendas <- genCards [predatorOrPrey, Agendas.timeIsRunningShort]
+        acts <- genCards [Acts.uncoveringTheConspiracy]
+
         ReturnToTheMidnightMasks . TheMidnightMasks <$> runMessage
           msg
           (attrs
           & (decksL . at CultistDeck ?~ cultistDeck')
-          & (actStackL . at 1 ?~ [Acts.uncoveringTheConspiracy])
-          & (agendaStackL
-            . at 1
-            ?~ [predatorOrPrey, Agendas.timeIsRunningShort]
-            )
+          & (actStackL . at 1 ?~ acts)
+          & (agendaStackL . at 1 ?~ agendas)
           )
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

@@ -45,7 +45,7 @@ instance RunMessage SomethingStirs where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      maxDoom <- getMax0 <$> selectAgg Max LocationDoom Anywhere
+      maxDoom <- selectMax LocationDoom Anywhere
       targets <- selectList $ LocationWithDoom $ EqualTo (Static maxDoom)
       harbingerOfValusia <- getSetAsideCard Enemies.harbingerOfValusia
       lead <- getLead

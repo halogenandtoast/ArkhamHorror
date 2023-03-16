@@ -6,13 +6,13 @@ module Arkham.Treachery.Cards.DreamsOfRlyeh
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -25,9 +25,9 @@ dreamsOfRlyeh = treachery DreamsOfRlyeh Cards.dreamsOfRlyeh
 
 instance HasModifiersFor DreamsOfRlyeh where
   getModifiersFor (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =
-    pure $ toModifiers attrs $ if treacheryOnInvestigator iid attrs
-      then [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
-      else []
+    pure $ toModifiers attrs $ do
+      guard $ treacheryOnInvestigator iid attrs
+      [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamsOfRlyeh where
@@ -44,5 +44,6 @@ instance RunMessage DreamsOfRlyeh where
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillWillpower 3
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard (toSource attrs) $ toTarget attrs)
+      | isSource attrs source -> t
+      <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

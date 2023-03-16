@@ -307,9 +307,8 @@ addInvestigator i d = do
     <> [StartCampaign]
     )
 
-  atomicWriteIORef
-    gameRef
-    (g'
+  putGame
+    $ g'
     & (gameStateL .~ gameState)
     -- Adding players causes RNG split so we reset the initial seed on each player
     -- being added so that choices can replay correctly
@@ -321,7 +320,7 @@ addInvestigator i d = do
            investigatorsList'
            difficulty
       )
-    )
+
 
 -- TODO: Rename this
 toExternalGame
@@ -680,12 +679,11 @@ getInvestigatorsMatching matcher = do
     MostRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <-
-        getMax0
-          <$> selectAgg Max InvestigatorRemainingSanity UneliminatedInvestigator
+          selectMax InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
       mostHorrorCount <-
-        getMax0 <$> selectAgg Max InvestigatorHorror UneliminatedInvestigator
+        selectMax InvestigatorHorror UneliminatedInvestigator
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToLocation locationMatcher -> \i -> do
       let
@@ -752,7 +750,7 @@ getInvestigatorsMatching matcher = do
       (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
     MostClues -> \i -> do
       mostClueCount <-
-        getMax0 <$> selectAgg Max InvestigatorClues UneliminatedInvestigator
+        selectMax InvestigatorClues UneliminatedInvestigator
       pure $ mostClueCount == investigatorClues (toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
@@ -957,7 +955,7 @@ getActsMatching matcher = do
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
-getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [CardDef]
+getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [Card]
 getRemainingActsMatching matcher = do
   acts <-
     scenarioActs
@@ -2147,6 +2145,7 @@ instance Projection Location where
       LocationAssets -> pure locationAssets
       LocationEvents -> pure locationEvents
       LocationTreacheries -> pure locationTreacheries
+      LocationCardId -> pure locationCardId
       -- virtual
       LocationCardDef -> pure $ toCardDef attrs
       LocationCard -> pure $ lookupCard locationCardCode locationCardId
@@ -2270,7 +2269,7 @@ instance Projection Act where
       ActClues -> pure actClues
       ActDeckId -> pure actDeckId
       ActAbilities -> pure $ getAbilities a
-      ActCard -> pure $ lookupCard (unActId aid) (CardId nil)
+      ActCard -> pure $ lookupCard (unActId aid) actCardId
 
 instance Projection (SetAsideEntity Enemy) where
   field (SetAsideEnemyField f) = getEnemyField f <=< getOutOfPlayEnemy
@@ -2315,6 +2314,7 @@ getEnemyField f e = do
       PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer }
       ec -> ec
     EnemyCardCode -> pure enemyCardCode
+    EnemyCardId -> pure enemyCardId
     EnemyLocation -> case enemyPlacement of
       AtLocation lid -> pure $ Just lid
       InThreatArea iid -> field InvestigatorLocation iid
@@ -2701,7 +2701,7 @@ instance Projection Agenda where
       AgendaDoom -> pure agendaDoom
       AgendaDeckId -> pure agendaDeckId
       AgendaAbilities -> pure $ getAbilities a
-      AgendaCard -> pure $ lookupCard (unAgendaId aid) (CardId nil)
+      AgendaCard -> pure $ lookupCard (unAgendaId aid) agendaCardId
 
 instance Projection Campaign where
   field fld _ = do
@@ -2823,8 +2823,10 @@ readGame = view gameRefL >>= readIORef
 
 putGame :: (MonadIO m, MonadReader env m, HasGameRef env) => Game -> m ()
 putGame g = do
+  -- we want to retain the card database between puts
   ref <- view gameRefL
-  atomicWriteIORef ref g
+  g' <- readIORef ref
+  atomicWriteIORef ref $ g { gameCards = gameCards g' <> gameCards g }
 
 overGame
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> Game) -> m ()
@@ -3410,29 +3412,30 @@ runGameMessage msg g = case msg of
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. entitiesL . agendasL
     g <$ pushAll [ AdvanceAgenda aid | aid <- aids ]
-  ReplaceAgenda aid1 aid2 -> do
+  ReplaceAgenda aid1 card -> do
     agendaDeckId <- field AgendaDeckId aid1
-    cardId <- getRandom
+    let
+      newAgendaId = AgendaId (toCardCode card)
+      newAgenda = lookupAgenda newAgendaId agendaDeckId (toCardId card)
     pure
       $ g
       & (entitiesL . agendasL %~ deleteMap aid1)
-      & (entitiesL . agendasL %~ insertMap aid2 (lookupAgenda aid2 agendaDeckId cardId)
-        )
-  ReplaceAct aid1 aid2 -> do
+      & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda)
+  ReplaceAct aid1 card -> do
     actDeckId <- field ActDeckId aid1
-    cardId <- getRandom
+    let
+      newActId = ActId (toCardCode card)
+      newAct = lookupAct newActId actDeckId (toCardId card)
     pure
       $ g
       & (entitiesL . actsL %~ deleteMap aid1)
-      & (entitiesL . actsL %~ insertMap aid2 (lookupAct aid2 actDeckId cardId))
-  AddAct deckNum def -> do
-    let aid = ActId $ toCardCode def
-    cardId <- getRandom
-    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum cardId
-  AddAgenda agendaDeckNum def -> do
-    cardId <- getRandom
-    let aid = AgendaId $ toCardCode def
-    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum cardId
+      & (entitiesL . actsL %~ insertMap newActId newAct)
+  AddAct deckNum card -> do
+    let aid = ActId $ toCardCode card
+    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum (toCardId card)
+  AddAgenda agendaDeckNum card -> do
+    let aid = AgendaId $ toCardCode card
+    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum (toCardId card)
   CommitCard iid card -> do
     push $ InvestigatorCommittedCard iid card
     case card of
@@ -3674,7 +3677,7 @@ runGameMessage msg g = case msg of
         TreacheryType -> do
           tid <- getRandom
           let treachery = createTreachery card iid tid
-          push $ AttachTreachery tid (InvestigatorTarget iid)
+          push $ AttachTreachery tid (toTarget iid)
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         _ -> pure g
       VengeanceCard _ -> error "Vengeance card"
@@ -3686,7 +3689,7 @@ runGameMessage msg g = case msg of
       , RemoveCardFromHand iid (toCardId card)
       , InvestigatorDrawEnemy iid enemyId
       ]
-    pure $ g & entitiesL . enemiesL %~ insertMap enemyId enemy
+    pure $ g & entitiesL . enemiesL %~ insertMap enemyId enemy & resolvingCardL ?~ card
   CancelEachNext source msgTypes -> do
     push =<< checkWindows
       [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
@@ -4325,12 +4328,21 @@ runGameMessage msg g = case msg of
     mcard <-
       case
         filter
-          ((`cardMatch` matcher) . (`lookupPlayerCard` CardId nil))
+          ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId))
           (toList allPlayerCards)
       of
         [] -> pure Nothing
         (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
     g <$ push (RequestedPlayerCard iid source mcard)
+  GainSurge source target -> do
+    cardId <- case target of
+      EnemyTarget eid -> field EnemyCardId eid
+      TreacheryTarget tid -> field TreacheryCardId tid
+      AssetTarget aid -> field AssetCardId aid
+      LocationTarget lid -> field LocationCardId lid
+      _ -> error "Unhandled surge target"
+    (effectId, surgeEffect) <- createSurgeEffect source cardId
+    pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
   Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
   SetActiveInvestigator iid -> pure $ g & activeInvestigatorIdL .~ iid
@@ -4378,7 +4390,12 @@ runGameMessage msg g = case msg of
       pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
     other ->
       error $ "Currently not handling Revelations from type " <> show other
+  ResolvedCard iid card | Just card == gameResolvingCard g -> do
+    modifiers' <- getModifiers (toCardId card)
+    when (AddKeyword Keyword.Surge `elem` modifiers' || Keyword.Surge `elem` cdKeywords (toCardDef card)) $ push $ Surge iid GameSource
+    pure $ g & resolvingCardL .~ Nothing
   InvestigatorDrewEncounterCard iid card -> do
+    push $ ResolvedCard iid (EncounterCard card)
     let
       g' =
         g
@@ -4428,18 +4445,7 @@ runGameMessage msg g = case msg of
           <> show (toCardType card)
           <> ": "
           <> show card
-  After (Revelation iid source) -> do
-    keywords' <- case source of
-      AssetSource _ -> pure mempty
-      EnemySource eid -> field EnemyKeywords eid
-      TreacherySource tid -> do
-        inDiscard <- selectNone $ TreacheryWithId tid
-        if inDiscard
-          then field DiscardedTreacheryKeywords tid
-          else field TreacheryKeywords tid
-      LocationSource lid -> field LocationKeywords lid
-      _ -> error "oh, missed a source for after revelation"
-    pushAll [ Surge iid source | Keyword.Surge `member` keywords' ]
+  After (Revelation _ source) -> do
     let
       removeTreacheryLens = case source of
         TreacherySource tid ->
@@ -4462,6 +4468,7 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard card)
+      & (resolvingCardL ?~ EncounterCard card)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   ResolveTreachery iid treacheryId -> do
@@ -4499,6 +4506,7 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . treacheriesL %~ insertMap treacheryId treachery)
       & (activeCardL ?~ PlayerCard card)
+      & (resolvingCardL ?~ PlayerCard card)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
@@ -4659,7 +4667,6 @@ preloadModifiers :: Monad m => Game -> m Game
 preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
-    let cards = allCards g
     let
       modifierFilter =
         if gameInSetup g then modifierActiveDuringSetup else const True
@@ -4676,8 +4683,8 @@ preloadModifiers g = case gameMode g of
       : map TokenTarget tokens
       <> map TokenFaceTarget [minBound .. maxBound]
       <> map toTarget entities
-      <> map CardTarget cards
-      <> map (CardIdTarget . toCardId) cards
+      <> map CardTarget (toList $ gameCards g)
+      <> map CardIdTarget (keys $ gameCards g)
       <> map
            (InvestigatorHandTarget . toId)
            (toList $ entitiesInvestigators $ gameEntities g)
@@ -4695,49 +4702,6 @@ preloadModifiers g = case gameMode g of
     (modeScenario $ gameMode g)
   toTargetModifiers target =
     foldMapM (fmap (MonoidalHashMap.singleton target) . getModifiersFor target)
-  allCards Game {..} =
-    let
-      Entities {..} = gameEntities
-      agendaCards =
-        concatMap (agendaCardsUnderneath . toAttrs) (toList entitiesAgendas)
-      assetCards =
-        concatMap (assetCardsUnderneath . toAttrs) (toList entitiesAssets)
-      investigatorCards = concatMap
-        (concat
-        . sequence
-            [ map PlayerCard . unDeck . investigatorDeck
-            , map PlayerCard . investigatorDiscard
-            , concat . toList . investigatorDecks
-            , investigatorHand
-            , investigatorCardsUnderneath
-            ]
-        . toAttrs
-        )
-        (toList entitiesInvestigators)
-      locationCards =
-        concatMap (locationCardsUnderneath . toAttrs) (toList entitiesLocations)
-      scenarioCards = case modeScenario gameMode of
-        Just s ->
-          concat
-            . sequence
-                [ scenarioCardsUnderScenarioReference
-                , scenarioCardsUnderAgendaDeck
-                , scenarioCardsUnderActDeck
-                , scenarioCardsNextToActDeck
-                , concat . toList . scenarioDecks
-                , scenarioSetAsideCards
-                , scenarioVictoryDisplay
-                , map EncounterCard . unDeck . scenarioEncounterDeck
-                , map EncounterCard . scenarioDiscard
-                ]
-            $ toAttrs s
-        Nothing -> []
-    in
-      agendaCards
-      <> assetCards
-      <> investigatorCards
-      <> locationCards
-      <> scenarioCards
 
 handleTraitRestrictedModifiers :: MonadUnliftIO m => Game -> m Game
 handleTraitRestrictedModifiers g = do

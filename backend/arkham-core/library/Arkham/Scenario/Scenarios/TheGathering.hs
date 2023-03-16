@@ -80,8 +80,7 @@ instance RunMessage TheGathering where
         , story investigatorIds theGatheringIntro
         ]
 
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Enemies.ghoulPriest
         , Assets.litaChantler
         , Locations.hallway
@@ -90,15 +89,15 @@ instance RunMessage TheGathering where
         , Locations.parlor
         ]
 
+      agendas <- genCards theGatheringAgendaDeck
+      acts <- genCards [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
+
       TheGathering <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL
-          . at 1
-          ?~ [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
-          )
-        & (agendaStackL . at 1 ?~ theGatheringAgendaDeck)
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
@@ -131,16 +130,16 @@ instance RunMessage TheGathering where
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       iids <- allInvestigatorIds
       xp <- getXpWithBonus 2
       let
         xpGain = [ GainXP iid n | (iid, n) <- xp ]
         chooseToAddLita = chooseOne
-          leadInvestigatorId
+          lead
           [ Label
             "Add Lita Chantler to your deck"
-            [AddCampaignCardToDeck leadInvestigatorId Assets.litaChantler]
+            [AddCampaignCardToDeck lead Assets.litaChantler]
           , Label "Do not add Lita Chantler to your deck" []
           ]
       case resolution of
@@ -158,7 +157,7 @@ instance RunMessage TheGathering where
             $ [ story iids resolution1
               , Record YourHouseHasBurnedToTheGround
               , chooseToAddLita
-              , SufferTrauma leadInvestigatorId 0 1
+              , SufferTrauma lead 0 1
               ]
             <> xpGain
             <> [EndOfGame Nothing]
@@ -167,7 +166,7 @@ instance RunMessage TheGathering where
           pushAll
             $ [ story iids resolution2
               , Record YourHouseIsStillStanding
-              , GainXP leadInvestigatorId 1
+              , GainXP lead 1
               ]
             <> xpGain
             <> [EndOfGame Nothing]

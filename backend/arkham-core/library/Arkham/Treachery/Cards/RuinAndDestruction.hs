@@ -22,7 +22,7 @@ ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 
 instance RunMessage RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation _iid source | isSource attrs source -> do
       targetInvestigators <-
         selectList $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle
           broodTitle
@@ -30,7 +30,7 @@ instance RunMessage RuinAndDestruction where
         [ beginSkillTest iid' source (InvestigatorTarget iid') SkillAgility 3
          | iid' <- targetInvestigators
          ]
-        <> [ Surge iid source | null targetInvestigators ]
+        <> [ gainSurge attrs | null targetInvestigators ]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t

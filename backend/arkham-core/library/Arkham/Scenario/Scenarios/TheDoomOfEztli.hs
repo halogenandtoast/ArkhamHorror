@@ -196,8 +196,7 @@ instance RunMessage TheDoomOfEztli where
       (entrywayId, placeEntryway) <- placeLocationCard Locations.entryway
       -- | Messages
 
-      explorationDeck <- shuffleM =<< traverse
-        genCard
+      explorationDeck <- shuffleM =<< genCards
         [ Locations.ancientHall
         , Locations.grandChamber
         , Locations.burialPit
@@ -213,7 +212,7 @@ instance RunMessage TheDoomOfEztli where
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       setAsideCards <-
-        traverse genCard
+        genCards
         $ [ Locations.chamberOfTime
           , Assets.relicOfAgesADeviceOfSomeSort
           , Enemies.harbingerOfValusia
@@ -228,26 +227,22 @@ instance RunMessage TheDoomOfEztli where
           , placeEntryway
           , RevealLocation Nothing entrywayId
           ]
-        <> [ PlaceDoom
-               (LocationTarget entrywayId)
-               (resolution4Count metadata)
+        <> [ PlaceDoom (LocationTarget entrywayId) (resolution4Count metadata)
            | resolution4Count metadata > 0
            ]
         <> [MoveAllTo (toSource attrs) entrywayId]
+
+      acts <- genCards
+        [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
+      agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
 
       TheDoomOfEztli . (`with` metadata) <$> runMessage
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
         & (setAsideCardsL .~ setAsideCards)
-        & (agendaStackL
-          . at 1
-          ?~ [Agendas.somethingStirs, Agendas.theTempleWarden]
-          )
-        & (actStackL
-          . at 1
-          ?~ [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
-          )
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
         )
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]

@@ -83,8 +83,7 @@ instance RunMessage TheDevourerBelow where
 
       (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
 
-      arkhamWoods <- traverse
-        genCard
+      arkhamWoods <- genCards
         [ Locations.arkhamWoodsUnhallowedGround
         , Locations.arkhamWoodsTwistingPaths
         , Locations.arkhamWoodsOldHouse
@@ -134,54 +133,52 @@ instance RunMessage TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
 
-      setAsideCards <- traverse
-        genCard
-        [Locations.ritualSite, Enemies.umordhoth]
+      setAsideCards <- genCards [Locations.ritualSite, Enemies.umordhoth]
+
+      acts <- genCards actDeck
+      agendas <- genCards agendaDeck
 
       TheDevourerBelow <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
-        & (actStackL . at 1 ?~ actDeck)
-        & (agendaStackL . at 1 ?~ agendaDeck)
+        & (actStackL . at 1 ?~ acts)
+        & (agendaStackL . at 1 ?~ agendas)
         )
     ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- selectList $ NearestEnemy AnyEnemy
       case closestEnemyIds of
         [] -> pure ()
-        [x] -> push (PlaceDoom (EnemyTarget x) doom)
-        xs -> push
-          (chooseOne
-            iid
-            [ targetLabel x [PlaceDoom (EnemyTarget x) doom] | x <- xs ]
-          )
+        [x] -> push $ PlaceDoom (toTarget x) doom
+        xs -> push $ chooseOne
+          iid
+          [ targetLabel x [PlaceDoom (toTarget x) doom] | x <- xs ]
       pure s
     ResolveToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
       isMonsterAtYourLocation <-
         selectAny
-        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+        $ EnemyAt (locationWithInvestigator iid)
         <> EnemyWithTrait Monster
-      s <$ when
-        isMonsterAtYourLocation
-        (push $ InvestigatorAssignDamage
+      when isMonsterAtYourLocation $ do
+        push $ InvestigatorAssignDamage
           iid
           (TokenEffectSource Tablet)
           DamageAny
           1
           horror
-        )
+      pure s
     ResolveToken _ ElderThing iid -> do
-      ancientOneCount <- selectCount $ EnemyWithTrait AncientOne
-      s <$ when (ancientOneCount > 0) (push $ DrawAnotherToken iid)
-    FailedSkillTest iid _ _ (TokenTarget token) _ _
-      | isHardExpert attrs && tokenFace token == Skull -> s <$ push
-        (FindAndDrawEncounterCard
+      anyAncientOnes <- selectAny $ EnemyWithTrait AncientOne
+      s <$ when anyAncientOnes (push $ DrawAnotherToken iid)
+    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Skull)) _ _
+      | isHardExpert attrs -> do
+        push $ FindAndDrawEncounterCard
           iid
           (CardWithType EnemyType <> CardWithTrait Monster)
           True
-        )
+        pure s
     ScenarioResolution r -> do
       let
         (resolution, record) = case r of

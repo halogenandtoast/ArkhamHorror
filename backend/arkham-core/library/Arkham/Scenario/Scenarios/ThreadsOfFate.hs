@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Act qualified as Act
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
-import Arkham.Act.Types (ActAttrs(actSequence))
+import Arkham.Act.Types ( ActAttrs (actSequence) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -57,7 +57,7 @@ threadsOfFate difficulty = scenarioWith
 instance HasTokenValue ThreadsOfFate where
   getTokenValue iid tokenFace (ThreadsOfFate attrs) = case tokenFace of
     Skull -> do
-      n <- getMax0 <$> selectAgg Max EnemyDoom (EnemyWithTrait Trait.Cultist)
+      n <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
       doom <- getDoomCount
       pure $ toTokenValue attrs Skull n doom
     Cultist -> pure $ toTokenValue attrs Cultist 2 2
@@ -141,7 +141,15 @@ instance RunMessage ThreadsOfFate where
       encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
       (rivertownId, placeRivertown) <- placeLocationCard Locations.rivertown
-      placeOtherLocations <- traverse placeLocationCard_ [Locations.northside, Locations.downtownFirstBankOfArkham, Locations.easttown, Locations.miskatonicUniversity, Locations.velmasDiner, Locations.curiositieShoppe]
+      placeOtherLocations <- traverse
+        placeLocationCard_
+        [ Locations.northside
+        , Locations.downtownFirstBankOfArkham
+        , Locations.easttown
+        , Locations.miskatonicUniversity
+        , Locations.velmasDiner
+        , Locations.curiositieShoppe
+        ]
 
       gaveCustodyToHarlan <- getHasRecord
         TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
@@ -152,7 +160,7 @@ instance RunMessage ThreadsOfFate where
             sample
             $ Acts.harlansCurseSafekeeping
             :| [Acts.harlansCurseHarlanEarnstone]
-          pure
+          genCards
             [ Acts.harlanIsInDanger
             , harlansCurse
             , Acts.findTheRelic
@@ -163,7 +171,7 @@ instance RunMessage ThreadsOfFate where
             sample
             $ Acts.atTheExhibitTheRelicsLocation
             :| [Acts.atTheExhibitTheBrotherhoodsPlot]
-          pure
+          genCards
             [ Acts.theRelicIsMissing
             , atTheExhibit
             , Acts.findTheRelic
@@ -175,7 +183,7 @@ instance RunMessage ThreadsOfFate where
           sample
           $ Acts.atTheStationInShadowedTalons
           :| [Acts.atTheStationTrainTracks]
-        pure
+        genCards
           [ Acts.missingPersons
           , atTheStation
           , Acts.alejandrosPrison
@@ -186,7 +194,7 @@ instance RunMessage ThreadsOfFate where
           sample
           $ Acts.friendsInHighPlacesHenrysInformation
           :| [Acts.friendsInHighPlacesHenryDeveau]
-        pure
+        genCards
           [ Acts.searchForAlejandro
           , friendsInHighPlaces
           , Acts.alejandrosPrison
@@ -200,7 +208,7 @@ instance RunMessage ThreadsOfFate where
             sample
             $ Acts.strangeRelicsMariaDeSilva
             :| [Acts.strangeRelicsMariasInformation]
-          pure
+          genCards
             [ Acts.theGuardiansInquiry
             , strangeRelics
             , Acts.strangeOccurences
@@ -211,15 +219,14 @@ instance RunMessage ThreadsOfFate where
             sample
             $ Acts.theCaveOfDarknessEmbroiledInBattle
             :| [Acts.theCaveOfDarknessTunnelsInTheDark]
-          pure
+          genCards
             [ Acts.trialOfTheHuntress
             , theCaveOfDarkness
             , Acts.strangeOccurences
             , Acts.theBrotherhoodIsRevealed
             ]
       leadInvestigatorId <- getLeadInvestigatorId
-      setAsideCards <- traverse
-        genCard
+      setAsideCards <- genCards
         [ Locations.townHall
         , Assets.ichtacaTheForgottenGuardian
         , Assets.expeditionJournal
@@ -227,34 +234,36 @@ instance RunMessage ThreadsOfFate where
         , Assets.alejandroVela
         ]
 
-      pushAll $
-        [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-        , RemoveCampaignCard Assets.alejandroVela
-        , SetEncounterDeck encounterDeck
-        , chooseOne
-          leadInvestigatorId
-          [ Label
-            "Go to the police to inform them of Alejandro's disappearance"
-            [SetActDeckRefs 2 act2Deck1]
-          , Label "Look for Alejandro on your own" [SetActDeckRefs 2 act2Deck2]
+      pushAll
+        $ [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+          , RemoveCampaignCard Assets.alejandroVela
+          , SetEncounterDeck encounterDeck
+          , chooseOne
+            leadInvestigatorId
+            [ Label
+              "Go to the police to inform them of Alejandro's disappearance"
+              [SetActDeckCards 2 act2Deck1]
+            , Label
+              "Look for Alejandro on your own"
+              [SetActDeckCards 2 act2Deck2]
+            ]
+          , SetAgendaDeck
+          , SetActDeck
+          , placeRivertown
           ]
-        , SetAgendaDeck
-        , SetActDeck
-        , placeRivertown
-        ]
         <> placeOtherLocations
         <> [MoveAllTo (toSource attrs) rivertownId]
+
+      agendas <- genCards
+        [ Agendas.threeFates
+        , Agendas.behindTheCurtain
+        , Agendas.hiddenEntanglements
+        ]
 
       ThreadsOfFate <$> runMessage
         Setup
         (attrs
-        & (agendaStackL
-          . at 1
-          ?~ [ Agendas.threeFates
-             , Agendas.behindTheCurtain
-             , Agendas.hiddenEntanglements
-             ]
-          )
+        & (agendaStackL . at 1 ?~ agendas)
         & (actStackL . at 1 ?~ act1Deck)
         & (actStackL . at 3 ?~ act3Deck)
         & (setAsideCardsL .~ setAsideCards)
@@ -348,12 +357,20 @@ instance RunMessage ThreadsOfFate where
         actPairCount = flip map actPairs $ \(n, acts) ->
           let
             c = flip count acts $ \actDef -> do
-              ((`elem` [Act.B, Act.D, Act.F]) . Act.actSide . actSequence . toAttrs) (Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
+              ((`elem` [Act.B, Act.D, Act.F])
+                . Act.actSide
+                . actSequence
+                . toAttrs
+                )
+                (Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
           in (n, c)
         actPairCountMap = IntMap.fromList actPairCount
-        completedStack n = (== 3) . (+ findWithDefault 0 n actPairCountMap) . length . fromMaybe [] $ lookup
-          n
-          (scenarioCompletedActStack attrs)
+        completedStack n =
+          (== 3)
+            . (+ findWithDefault 0 n actPairCountMap)
+            . length
+            . fromMaybe []
+            $ lookup n (scenarioCompletedActStack attrs)
 
         act3bCompleted = completedStack 1
         act3dCompleted = completedStack 2

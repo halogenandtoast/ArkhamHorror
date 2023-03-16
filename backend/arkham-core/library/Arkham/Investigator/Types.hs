@@ -30,7 +30,6 @@ import Arkham.Trait
 import Arkham.Zone
 import Data.Text qualified as T
 import Data.Typeable
-import Data.UUID (nil)
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, HasTokenValue a, RunMessage a, Entity a, EntityId a ~ InvestigatorId, EntityAttrs a ~ InvestigatorAttrs) => IsInvestigator a
 
@@ -397,4 +396,4 @@ someInvestigatorCardCode :: SomeInvestigatorCard -> CardCode
 someInvestigatorCardCode = liftInvestigatorCard cbCardCode
 
 toInvestigator :: SomeInvestigatorCard -> Investigator
-toInvestigator (SomeInvestigatorCard f) = Investigator $ cbCardBuilder f (CardId nil) ()
+toInvestigator (SomeInvestigatorCard f) = Investigator $ cbCardBuilder f nullCardId ()

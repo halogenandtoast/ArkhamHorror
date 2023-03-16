@@ -34,10 +34,6 @@ instance RunMessage TorturousChords where
       -> do
         push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
         pure $ TorturousChords $ attrs & resourcesL .~ n
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
-        push $ Discard (toSource attrs) $ toTarget attrs
-        pure t
     PlayCard iid _ _ _ False | treacheryOnInvestigator iid attrs -> do
       when
         (treacheryResources attrs <= 1)

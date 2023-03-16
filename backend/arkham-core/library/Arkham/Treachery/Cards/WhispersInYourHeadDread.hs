@@ -39,5 +39,5 @@ instance RunMessage WhispersInYourHeadDread where
     Revelation iid source | isSource attrs source ->
       t <$ push (addHiddenToHand iid attrs)
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) ->
-      t <$ push (Discard (toSource attrs) $ toTarget attrs)
+      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> WhispersInYourHeadDread <$> runMessage msg attrs

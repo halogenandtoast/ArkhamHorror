@@ -46,6 +46,8 @@ getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 class Monad m => HasGame m where
   getGame :: m Game
 
+getCard :: HasGame m => CardId -> m Card
+
 instance HasGame GameT
 
 instance Monad m => HasGame (ReaderT Game m)

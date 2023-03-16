@@ -11,7 +11,6 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Helpers
@@ -37,7 +36,7 @@ instance RunMessage CampaignAttrs where
         )
     SetTokensForScenario -> a <$ push (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardDef -> do
-      card <- lookupPlayerCard cardDef <$> getRandom
+      card <- genPlayerCard cardDef
       pure $ a & storyCardsL %~ insertWith
         (<>)
         iid

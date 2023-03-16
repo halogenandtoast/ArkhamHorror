@@ -13,7 +13,7 @@ packages:
     hackage: relude-1.2.0.0@sha256:e47f363d57e5551542cc567b68f375001f850732ebe9c226351c26e7af56f797,11937
 snapshots:
 - completed:
-    sha256: cb60a8ed946dc9d43a46fd03a14a4e0268d3615b4c87025b88996386a6f948b7
-    size: 598581
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/3/12.yaml
-  original: nightly-2023-03-12
+    sha256: c547ded280cb8518065c1c09523faaf2a61e7af4c633ae5de8d657284d87666b
+    size: 599236
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/3/15.yaml
+  original: nightly-2023-03-15

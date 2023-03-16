@@ -28,7 +28,12 @@ instance Eq (FieldEq a) where
       Nothing -> False
 
 instance ToJSON (FieldEq a) where
-  toJSON (FieldEq (fld :: Field a typ) v) = object ["field" .= fld, "value" .= v, "entity" .= show (typeRep $ Proxy @a)]
+  toJSON (FieldEq (fld :: Field a typ) v) =
+    object
+      [ "field" .= fld
+      , "value" .= v
+      , "entity" .= show (typeRep $ Proxy @a)
+      ]
 
 instance Typeable a => FromJSON (FieldEq a) where
   parseJSON = withObject "FieldEq a" $ \o -> do

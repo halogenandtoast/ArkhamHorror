@@ -10,12 +10,11 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Data.UUID (nil)
 
-lookupAgenda :: AgendaId -> Int -> Agenda
+lookupAgenda :: AgendaId -> Int -> CardId -> Agenda
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
   Nothing -> error $ "Unknown agenda: " <> show agendaId
-  Just (SomeAgendaCard a) -> \i -> Agenda $ cbCardBuilder a (CardId nil) (i, agendaId)
+  Just (SomeAgendaCard a) -> \i cardId -> Agenda $ cbCardBuilder a cardId (i, agendaId)
 
 instance RunMessage Agenda where
   runMessage msg (Agenda a) = Agenda <$> runMessage msg a

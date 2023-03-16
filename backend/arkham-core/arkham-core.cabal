@@ -1980,7 +1980,6 @@ library
     , aeson-diff
     , base
     , classy-prelude
-    , constraints
     , containers
     , extra
     , lens

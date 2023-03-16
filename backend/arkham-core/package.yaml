@@ -50,7 +50,6 @@ library:
     - pretty-simple
     - template-haskell
     - newtype
-    - constraints
     - transformers
 
 tests:

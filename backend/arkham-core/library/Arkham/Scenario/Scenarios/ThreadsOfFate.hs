@@ -348,7 +348,7 @@ instance RunMessage ThreadsOfFate where
         actPairCount = flip map actPairs $ \(n, acts) ->
           let
             c = flip count acts $ \actDef -> do
-              ((`elem` [Act.B, Act.D, Act.F]) . Act.actSide . actSequence . toAttrs) (Act.lookupAct (ActId $ toCardCode actDef) 0)
+              ((`elem` [Act.B, Act.D, Act.F]) . Act.actSide . actSequence . toAttrs) (Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
           in (n, c)
         actPairCountMap = IntMap.fromList actPairCount
         completedStack n = (== 3) . (+ findWithDefault 0 n actPairCountMap) . length . fromMaybe [] $ lookup

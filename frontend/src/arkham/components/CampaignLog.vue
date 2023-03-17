@@ -72,7 +72,7 @@ const fullName = (name: Name): string => {
       <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>
     </ul>
     <ul>
-      <li v-for="[setKey, setValues] in recordedSets" :key="setKey">{{toCapitalizedWords(setKey)}}
+      <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
         <ul>
           <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{cardCodeToTitle(setValue.contents)}}</li>
         </ul>

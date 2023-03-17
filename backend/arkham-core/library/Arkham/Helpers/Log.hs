@@ -32,16 +32,17 @@ getRecordCount :: HasGame m => CampaignLogKey -> m Int
 getRecordCount k =
   findWithDefault 0 k . campaignLogRecordedCounts <$> getCampaignLog
 
-getRecordSet :: HasGame m => CampaignLogKey -> m [Recorded CardCode]
+getRecordSet :: HasGame m => CampaignLogKey -> m [SomeRecorded]
 getRecordSet k =
   findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
 
 getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
 getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
  where
+  onlyRecorded :: SomeRecorded -> Maybe CardCode
   onlyRecorded = \case
-    Recorded cCode -> Just cCode
-    CrossedOut _ -> Nothing
+    SomeRecorded RecordableCardCode (Recorded cCode) -> Just cCode
+    _ -> Nothing
 
 remembered :: HasGame m => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered

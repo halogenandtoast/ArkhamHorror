@@ -2,21 +2,26 @@ module Arkham.CampaignLogKey where
 
 import Arkham.Prelude hiding (toLower)
 import Arkham.Classes.GameLogger
+import Arkham.Card.CardCode
+import Control.Monad.Fail
 import Data.Char (isUpper, toLower)
+import Data.Typeable
 
 data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-recordedCardCodes :: [Recorded a] -> [a]
+recordedCardCodes :: [SomeRecorded] -> [CardCode]
 recordedCardCodes [] = []
-recordedCardCodes (Recorded a : as) = a : recordedCardCodes as
+recordedCardCodes (SomeRecorded RecordableCardCode (Recorded a) : as) = a : recordedCardCodes as
 recordedCardCodes (_ : as) = recordedCardCodes as
 
-unrecorded :: Recorded a -> a
-unrecorded = \case
-  Recorded a -> a
-  CrossedOut a -> a
+unrecorded :: forall a. Recordable a => SomeRecorded -> Maybe a
+unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
+  Just Refl -> case rec of
+    Recorded a -> Just a
+    CrossedOut a -> Just a
+  Nothing -> Nothing
 
 data CampaignLogKey
   = DrivenInsaneInvestigators
@@ -161,6 +166,8 @@ data CampaignLogKey
   | YouAreBeingHunted
   | YouHaveAcceptedYourFate
   | YouHaveRejectedYourFate
+  | TheWitches'SpellWasBroken
+  | TheWitches'SpellWasCast
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -191,3 +198,63 @@ instance ToGameLoggerFormat CampaignLogKey where
       go' [] = []
       go' (x:xs) | isUpper x = ' ' : toLower x : go' xs
       go' (x:xs) = x : go' xs
+
+class (ToJSON a, FromJSON a, Eq a, Show a, Typeable a) => Recordable a where
+  recordableType :: RecordableType a
+
+instance Recordable CardCode where
+  recordableType = RecordableCardCode
+
+instance Recordable Memento where
+  recordableType = RecordableMemento
+
+recorded :: forall a. Recordable a => a -> SomeRecorded
+recorded a = SomeRecorded (recordableType @a) (Recorded a)
+
+data Memento = MesmerizingFlute | RitualComponents | ScrapOfTownShadow | GilmansJournal | KeziahsFormulae | WornCrucifix | WispOfSpectralMist
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data RecordableType a where
+  RecordableCardCode :: RecordableType CardCode
+  RecordableMemento :: RecordableType Memento
+
+data SomeRecordableType where
+  SomeRecordableType :: RecordableType a -> SomeRecordableType
+
+deriving stock instance Show (RecordableType a)
+deriving stock instance Eq (RecordableType a)
+
+instance ToJSON (RecordableType a) where
+  toJSON = toJSON . show
+
+instance FromJSON SomeRecordableType where
+  parseJSON = withText "RecordableType" $ \case
+    "RecordableCardCode" -> pure $ SomeRecordableType RecordableCardCode
+    "RecordableMemento" -> pure $ SomeRecordableType RecordableMemento
+    other -> fail $ "No such recordable type: " <> unpack other
+
+data SomeRecorded where
+  SomeRecorded :: Recordable a => RecordableType a -> Recorded a -> SomeRecorded
+
+deriving stock instance Show SomeRecorded
+
+instance Eq SomeRecorded where
+  (SomeRecorded _ (a :: a)) == (SomeRecorded _ (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance ToJSON SomeRecorded where
+  toJSON (SomeRecorded rType rVal) = object ["recordType" .= rType, "recordVal" .= rVal]
+
+instance FromJSON SomeRecorded where
+  parseJSON = withObject "SomeRecorded" $ \o -> do
+    rType <- o .: "recordType"
+    case rType of
+      SomeRecordableType RecordableCardCode -> do
+        rVal <- o .: "recordVal"
+        pure $ SomeRecorded RecordableCardCode rVal
+      SomeRecordableType RecordableMemento -> do
+        rVal <- o .: "recordVal"
+        pure $ SomeRecorded RecordableMemento rVal
+

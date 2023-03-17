@@ -130,7 +130,7 @@ instance RunMessage ThePathToCarcosa where
       possessed <- getRecordSet Possessed
       let
         investigatorIds = flip mapMaybe possessed $ \case
-          Recorded cardCode -> Just (InvestigatorId cardCode)
+          SomeRecorded RecordableCardCode (Recorded cardCode) -> Just (InvestigatorId cardCode)
           _ -> Nothing
       pushAll
         $ [ story investigatorIds epilogue | notNull investigatorIds ]

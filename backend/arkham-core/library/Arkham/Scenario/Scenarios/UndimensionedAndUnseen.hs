@@ -81,7 +81,7 @@ standaloneTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog = mkCampaignLog
   { campaignLogRecordedSets = mapFromList
-    [(SacrificedToYogSothoth, [Recorded "02040"])]
+    [(SacrificedToYogSothoth, [recorded @CardCode "02040"])]
   }
 
 instance HasTokenValue UndimensionedAndUnseen where

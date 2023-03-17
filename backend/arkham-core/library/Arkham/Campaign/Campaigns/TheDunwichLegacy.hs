@@ -84,7 +84,7 @@ instance RunMessage TheDunwichLegacy where
               Assets.powderOfIbnGhazi
             <$ guard
                  (any
-                   ((`notElem` sacrificedToYogSothoth) . Recorded . toCardCode)
+                   ((`notElem` sacrificedToYogSothoth) . recorded . toCardCode)
                    [ Assets.drHenryArmitage
                    , Assets.professorWarrenRice
                    , Assets.drFrancisMorgan
@@ -97,7 +97,7 @@ instance RunMessage TheDunwichLegacy where
               Assets.drHenryArmitage
             <$ guard
                  (drHenryArmitageUnowned
-                 && Recorded (toCardCode Assets.drHenryArmitage)
+                 && recorded (toCardCode Assets.drHenryArmitage)
                  `notElem` sacrificedToYogSothoth
                  )
         addProfessorWarrenRice =
@@ -107,7 +107,7 @@ instance RunMessage TheDunwichLegacy where
               Assets.professorWarrenRice
             <$ guard
                  (professorWarrenRiceUnowned
-                 && Recorded (toCardCode Assets.professorWarrenRice)
+                 && recorded (toCardCode Assets.professorWarrenRice)
                  `notElem` sacrificedToYogSothoth
                  )
         addDrFrancisMorgan =
@@ -117,7 +117,7 @@ instance RunMessage TheDunwichLegacy where
               Assets.drFrancisMorgan
             <$ guard
                  (drFrancisMorganUnowned
-                 && Recorded (toCardCode Assets.drFrancisMorgan)
+                 && recorded (toCardCode Assets.drFrancisMorgan)
                  `notElem` sacrificedToYogSothoth
                  )
         addZebulonWhateley =
@@ -126,7 +126,7 @@ instance RunMessage TheDunwichLegacy where
               investigatorIds
               Assets.zebulonWhateley
             <$ guard
-                 (Recorded (toCardCode Assets.zebulonWhateley)
+                 (recorded (toCardCode Assets.zebulonWhateley)
                  `notElem` sacrificedToYogSothoth
                  )
         addEarlSawyer =
@@ -135,29 +135,29 @@ instance RunMessage TheDunwichLegacy where
               investigatorIds
               Assets.earlSawyer
             <$ guard
-                 (Recorded (toCardCode Assets.earlSawyer)
+                 (recorded (toCardCode Assets.earlSawyer)
                  `notElem` sacrificedToYogSothoth
                  )
       c <$ pushAll
         ([story investigatorIds interlude2]
         <> [ story investigatorIds interlude2DrHenryArmitage
-           | Recorded "02040" `notElem` sacrificedToYogSothoth
+           | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
            ]
         <> addDrHenryArmitage
         <> [ story investigatorIds interlude2ProfessorWarrenRice
-           | Recorded "02061" `notElem` sacrificedToYogSothoth
+           | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
            ]
         <> addProfessorWarrenRice
         <> [ story investigatorIds interlude2DrFrancisMorgan
-           | Recorded "02080" `notElem` sacrificedToYogSothoth
+           | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
            ]
         <> addDrFrancisMorgan
         <> [ story investigatorIds interlude2ZebulonWhateley
-           | Recorded "02217" `notElem` sacrificedToYogSothoth
+           | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
            ]
         <> addZebulonWhateley
         <> [ story investigatorIds interlude2EarlSawyer
-           | Recorded "02218" `notElem` sacrificedToYogSothoth
+           | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
            ]
         <> addEarlSawyer
         <> addPowderOfIbnGhazi

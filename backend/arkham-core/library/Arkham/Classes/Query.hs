@@ -77,6 +77,19 @@ selectJust
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
   where errorNote = "Could not find any matches for: " <> show matcher
 
+selectJustField
+  :: ( HasCallStack
+     , Show a
+     , Query a
+     , HasGame m
+     , QueryElement a ~ EntityId entity
+     , Projection entity
+     )
+  => Field entity typ
+  -> a
+  -> m typ
+selectJustField fld matcher = field fld =<< selectJust matcher
+
 selectAgg
   :: ( Monoid monoid
      , Query a

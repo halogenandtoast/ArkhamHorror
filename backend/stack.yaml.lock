@@ -11,6 +11,27 @@ packages:
       size: 4286
   original:
     hackage: relude-1.2.0.0@sha256:e47f363d57e5551542cc567b68f375001f850732ebe9c226351c26e7af56f797,11937
+- completed:
+    hackage: unix-compat-0.7@sha256:651fa34c14d9c05c1bbd508271a971e39d99e2b415518f100a17b84174ab6625,3566
+    pantry-tree:
+      sha256: f1bb357d4843258439d94f79ce632db01bf181524577b4c9eb2fb41ecaf7dd3c
+      size: 1196
+  original:
+    hackage: unix-compat-0.7
+- completed:
+    hackage: happy-1.21.0@sha256:1dc09b68d46fed691d9969f8f7bd8d83cf3252491709d6fb070e7cfec9a5cabe,6326
+    pantry-tree:
+      sha256: 3a84541bd92963b14e34d8364112bed677145d6a17d1d0055cbffe5a6541cc00
+      size: 8312
+  original:
+    hackage: happy-1.21.0
+- completed:
+    hackage: warp-3.3.25@sha256:3108518eb0d64f19d4c031f990166e5e5ab3542f877df3946eb7e300881d2ca1,11100
+    pantry-tree:
+      sha256: 1cb1e3cd20f70005f4cbfc11df2e2e96ca609418b077a2e8efa92dd76bf33c95
+      size: 3838
+  original:
+    hackage: warp-3.3.25
 snapshots:
 - completed:
     sha256: c547ded280cb8518065c1c09523faaf2a61e7af4c633ae5de8d657284d87666b

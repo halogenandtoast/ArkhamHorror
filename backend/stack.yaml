@@ -5,7 +5,7 @@ concurrent-tests: false
 system-ghc: true
 install-ghc: false
 resolver: nightly-2023-03-15
-compiler: ghc-9.4.4
+compiler: ghc-9.6.1
 
 ghc-options:
   "$locals":
@@ -41,4 +41,7 @@ allow-newer: true
 
 extra-deps:
 - relude-1.2.0.0@sha256:e47f363d57e5551542cc567b68f375001f850732ebe9c226351c26e7af56f797,11937
+- unix-compat-0.7
+- happy-1.21.0
+- warp-3.3.25
 

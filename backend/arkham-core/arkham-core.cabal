@@ -1574,6 +1574,7 @@ library
       Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.APhantomOfTruth
+      Arkham.Scenario.Scenarios.AtDeathsDoorstep
       Arkham.Scenario.Scenarios.BlackStarsRise
       Arkham.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors

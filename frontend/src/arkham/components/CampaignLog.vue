@@ -17,7 +17,7 @@ const { recorded, recordedSets, recordedCounts } = campaignLog
 const hasSupplies = computed(() => Object.values(props.game.investigators).some((i) => i.supplies.length > 0))
 
 function toCapitalizedWords(name) {
-  const words = name.match(/[A-Za-z][a-z]*/g) || [];
+  const words = name.match(/[A-Za-z][a-z']*/g) || [];
   return capitalize(words.map(lowercase).join(" "));
 }
 
@@ -31,6 +31,14 @@ function lowercase(word) {
 
 const findCard = (cardCode: string): CardDef => {
   return props.cards.find((c) => c.cardCode == cardCode)
+}
+
+const displayRecordValue = (key: string, value: string): string => {
+  if (key === 'MementosDiscovered') {
+    return toCapitalizedWords(value)
+  }
+
+  return cardCodeToTitle(value)
 }
 
 const cardCodeToTitle = (cardCode: string): string => {
@@ -55,6 +63,8 @@ const fullName = (name: Name): string => {
 
   return name.title
 }
+
+
 </script>
 
 <template>
@@ -74,7 +84,7 @@ const fullName = (name: Name): string => {
     <ul>
       <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
         <ul>
-          <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{cardCodeToTitle(setValue.contents)}}</li>
+          <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{displayRecordValue(setKey, setValue.contents)}}</li>
         </ul>
       </li>
     </ul>

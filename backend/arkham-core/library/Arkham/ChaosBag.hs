@@ -21,7 +21,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Control.Monad.State hiding ( filterM )
+import Control.Monad.State
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True

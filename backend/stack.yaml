@@ -4,7 +4,7 @@ concurrent-tests: false
 
 system-ghc: true
 install-ghc: false
-resolver: nightly-2023-03-15
+resolver: nightly-2023-03-16
 compiler: ghc-9.6.1
 
 ghc-options:
@@ -44,4 +44,5 @@ extra-deps:
 - unix-compat-0.7
 - happy-1.21.0
 - warp-3.3.25
-
+- github: jmazon/clientsession
+  commit: 1221230770feff60f77ff676d52fc464cb77b2d9

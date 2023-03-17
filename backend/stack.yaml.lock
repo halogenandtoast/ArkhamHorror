@@ -32,9 +32,20 @@ packages:
       size: 3838
   original:
     hackage: warp-3.3.25
+- completed:
+    name: clientsession
+    pantry-tree:
+      sha256: e8f800c0c0fed1a148257f2d47361d1f08319092e38ab3ab5b11f0d9f74f8c9a
+      size: 699
+    sha256: 92f25a8aefb742124e8d6f9b83023f80a4f89e0a59e5e1516966151bbcc6e9d4
+    size: 11215
+    url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
+    version: 0.9.1.2
+  original:
+    url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
 snapshots:
 - completed:
-    sha256: c547ded280cb8518065c1c09523faaf2a61e7af4c633ae5de8d657284d87666b
-    size: 599236
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/3/15.yaml
-  original: nightly-2023-03-15
+    sha256: 8f85c305140e43633ec5e4db355be84365073bb58e0e138b99fd96f50ccd9724
+    size: 599242
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/3/16.yaml
+  original: nightly-2023-03-16

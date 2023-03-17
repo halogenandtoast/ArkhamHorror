@@ -16,7 +16,7 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Token
-import Control.Monad.Writer hiding ( filterM )
+import Control.Monad.Writer
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.NonEmpty qualified as NE
 

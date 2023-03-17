@@ -306,7 +306,7 @@ instance RunMessage ThePallidMask where
       chasingTheStrangerTallies <- getRecordCount ChasingTheStranger
       let
         updateSlain =
-          [ RecordSetInsert VIPsSlain [toCardCode haruko]
+          [ recordSetInsert VIPsSlain [toCardCode haruko]
           | haruko <- maybeToList harukoSlain
           ]
         (token, story') = case res of
@@ -321,7 +321,7 @@ instance RunMessage ThePallidMask where
                "Done having investigators read Act II"
                [ targetLabel
                    iid
-                   [ RecordSet ReadActII [unInvestigatorId iid]
+                   [ recordSetInsert ReadActII [unInvestigatorId iid]
                    , SearchCollectionForRandom
                      iid
                      (toSource attrs)

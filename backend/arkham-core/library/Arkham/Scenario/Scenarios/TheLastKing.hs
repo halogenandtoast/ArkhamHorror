@@ -302,8 +302,8 @@ instance RunMessage TheLastKing where
                | (iid, name) <- investigatorIdsWithNames
                ]
            ]
-        <> [ RecordSet VIPsInterviewed interviewed | notNull interviewed ]
-        <> [ RecordSet VIPsSlain vipsSlain | notNull vipsSlain ]
+        <> [ recordSetInsert VIPsInterviewed interviewed | notNull interviewed ]
+        <> [ recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain ]
         <> if n == 2 || n == 3
              then
                [ RemoveAllTokens Cultist
@@ -315,14 +315,14 @@ instance RunMessage TheLastKing where
                ]
              else
                []
-               <> [ CrossOutRecordSetEntries VIPsInterviewed interviewed
+               <> [ crossOutRecordSetEntries VIPsInterviewed interviewed
                   | n == 3
                   ]
                <> [ScenarioResolutionStep 1 (Resolution n)]
         )
     ScenarioResolutionStep 1 (Resolution n) -> do
       investigatorIds <- allInvestigatorIds
-      gainXp <- map (uncurry GainXP) <$> getXp
+      gainXp <- toGainXp getXp
       s <$ case n of
         1 ->
           pushAll

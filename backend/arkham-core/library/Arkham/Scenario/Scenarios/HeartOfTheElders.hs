@@ -278,7 +278,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         <$> scenarioField ScenarioVictoryDisplay
       gainXP <- map (uncurry GainXP) <$> getXp
       pushAll
-        $ RecordSet TheJungleWatches (map toCardCode vengeanceCards)
+        $ recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
         : gainXP
         <> [RestartScenario]
       pure $ HeartOfTheElders (attrs `With` metadata { scenarioStep = Two })

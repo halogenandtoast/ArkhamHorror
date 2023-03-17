@@ -11,6 +11,7 @@ import Arkham.Act.Types ( Field (ActSequence) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -194,30 +195,47 @@ instance RunMessage TheWitchingHour where
       pure s
     ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
-      gainXp <- map (uncurry GainXP) <$> getXpWithBonus 1
+      gainXp <- toGainXp $ getXpWithBonus 1
+      step <- actStep <$> selectJustField ActSequence AnyAct
       case resolution of
         NoResolution -> do
-          step <- actStep <$> selectJustField ActSequence AnyAct
           push $ ScenarioResolution $ Resolution $ if step == ActStep 4
             then 4
             else 3
         Resolution 1 -> do
           pushAll
-            $ [story iids resolution1, Record TheWitches'SpellWasBroken]
+            $ [ story iids resolution1
+              , Record TheWitches'SpellWasBroken
+              , recordSetInsert
+                MementosDiscovered
+                [MesmerizingFlute, RitualComponents]
+              ]
             <> gainXp
         Resolution 2 -> do
           pushAll
-            $ [story iids resolution2, Record TheWitches'SpellWasBroken]
+            $ [ story iids resolution2
+              , Record TheWitches'SpellWasBroken
+              , recordSetInsert
+                MementosDiscovered
+                [MesmerizingFlute, ScrapOfTownShadow]
+              ]
             <> gainXp
         Resolution 3 -> do
-          step <- actStep <$> selectJustField ActSequence AnyAct
-          gainXpNoBonus <- map (uncurry GainXP) <$> getXp
+          gainXpNoBonus <- toGainXp getXp
           pushAll
             $ [story iids resolution3, Record TheWitches'SpellWasCast]
-            <> if step == ActStep 3 then gainXp else gainXpNoBonus
+            <> if step == ActStep 3
+                 then
+                   (recordSetInsert MementosDiscovered [MesmerizingFlute]
+                   : gainXp
+                   )
+                 else gainXpNoBonus
         Resolution 4 -> do
           pushAll
-            $ [story iids resolution4, Record TheWitches'SpellWasCast]
+            $ [ story iids resolution4
+              , Record TheWitches'SpellWasCast
+              , recordSetInsert MementosDiscovered [MesmerizingFlute]
+              ]
             <> gainXp
         _ -> error "invalid resolution"
       pure s

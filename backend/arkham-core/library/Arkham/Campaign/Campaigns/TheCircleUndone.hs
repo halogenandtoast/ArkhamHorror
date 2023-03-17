@@ -13,6 +13,7 @@ import Arkham.CampaignStep
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Helpers
+import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message
@@ -94,7 +95,7 @@ instance RunMessage TheCircleUndone where
         readings = map readingFor $ toList (prologueInvestigators metadata)
       investigatorIds <- getInvestigatorIds
       pushAll
-        $ CrossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
+        $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
         : map (story investigatorIds) readings
       pure c
     NextCampaignStep _ -> do

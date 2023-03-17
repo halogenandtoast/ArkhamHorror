@@ -316,7 +316,7 @@ instance RunMessage TheUnspeakableOath where
 
       let
         updateSlain =
-          [ RecordSetInsert VIPsSlain [toCardCode constance]
+          [ recordSetInsert VIPsSlain [toCardCode constance]
           | constance <- maybeToList constanceSlain
           ]
         removeTokens =

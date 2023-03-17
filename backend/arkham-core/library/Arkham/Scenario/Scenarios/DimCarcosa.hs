@@ -289,12 +289,12 @@ instance RunMessage DimCarcosa where
           , Treacheries.possessionTorturous
           ]
       let
-        recordPossessed = RecordSet Possessed (map unInvestigatorId possessed)
+        recordPossessed = recordSetInsert Possessed (map unInvestigatorId possessed)
       case res of
         NoResolution -> case compare conviction doubt of
-          GT -> push $ ScenarioResolution $ Resolution 4
-          EQ -> push $ ScenarioResolution $ Resolution 4
-          LT -> push $ ScenarioResolution $ Resolution 5
+          GT -> push $ scenarioResolution 4
+          EQ -> push $ scenarioResolution 4
+          LT -> push $ scenarioResolution 5
         Resolution 1 -> do
           pushAll
             $ [story investigatorIds resolution1]

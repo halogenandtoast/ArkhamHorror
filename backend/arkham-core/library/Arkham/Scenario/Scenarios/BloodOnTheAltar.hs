@@ -301,7 +301,7 @@ instance RunMessage BloodOnTheAltar where
         pushAll
           $ [story iids resolution3, Record TheInvestigatorsBanishedSilasBishop]
           <> map (RemoveCampaignCard . toCardDef) sacrificed
-          <> [RecordSet SacrificedToYogSothoth $ map toCardCode sacrificed]
+          <> [recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed]
           <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]

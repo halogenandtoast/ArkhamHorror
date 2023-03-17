@@ -189,8 +189,8 @@ instance RunMessage TheMidnightMasks where
         ghoulPriestDefeated = "01116" `elem` victoryDisplay
       pushAll
         $ [ story iids resolution
-          , RecordSet CultistsWeInterrogated (setToList cultistsWeInterrogated)
-          , RecordSet CultistsWhoGotAway (setToList cultistsWhoGotAway)
+          , recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
+          , recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
           ]
         <> [ Record ItIsPastMidnight | n == 2 ]
         <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]

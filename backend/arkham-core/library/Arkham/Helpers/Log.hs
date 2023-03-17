@@ -8,6 +8,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
+import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
@@ -49,3 +50,13 @@ remembered k = member k <$> scenarioField ScenarioRemembered
 
 scenarioCount :: HasGame m => ScenarioCountKey -> m Int
 scenarioCount k = fromMaybe 0 . lookup k <$> scenarioField ScenarioCounts
+
+recordSetInsert
+  :: (Recordable a, MonoFoldable t, Element t ~ a)
+  => CampaignLogKey
+  -> t
+  -> Message
+recordSetInsert k xs = RecordSetInsert k $ map recorded $ toList xs
+
+crossOutRecordSetEntries :: Recordable a => CampaignLogKey -> [a] -> Message
+crossOutRecordSetEntries k xs = CrossOutRecordSetEntries k $ map recorded xs

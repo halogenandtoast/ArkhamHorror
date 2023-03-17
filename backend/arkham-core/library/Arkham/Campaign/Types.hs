@@ -18,7 +18,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Token
-import Control.Monad.Writer hiding ( filterM )
+import Control.Monad.Writer
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
 

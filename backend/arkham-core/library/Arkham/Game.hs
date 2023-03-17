@@ -3348,7 +3348,6 @@ runGameMessage msg g = case msg of
       [Window Timing.When (Window.LeavePlay $ EnemyTarget eid)]
     g <$ push window
   RemoveTreachery tid -> do
-    treachery <- getTreachery tid
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
@@ -3357,10 +3356,6 @@ runGameMessage msg g = case msg of
       & entitiesL
       . treacheriesL
       %~ deleteMap tid
-      & encounterDiscardEntitiesL
-      . treacheriesL
-      . at tid
-      ?~ treachery
   When (RemoveLocation lid) -> do
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
@@ -4369,7 +4364,7 @@ runGameMessage msg g = case msg of
                   )
         { skillTestIsRevelation = True
         }
-    push $ BeginSkillTest skillTest
+    pushAll [BeginSkillTest skillTest, UnsetActiveCard]
     pure $ g & (activeCardL ?~ card)
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do
@@ -4394,7 +4389,11 @@ runGameMessage msg g = case msg of
   ResolvedCard iid card | Just card == gameResolvingCard g -> do
     modifiers' <- getModifiers (toCardId card)
     when (AddKeyword Keyword.Surge `elem` modifiers' || Keyword.Surge `elem` cdKeywords (toCardDef card)) $ push $ Surge iid GameSource
-    pure $ g & resolvingCardL .~ Nothing
+    let
+      unsetActiveCard = \case
+        Just c | c == card -> Nothing
+        other -> other
+    pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
     push $ ResolvedCard iid (EncounterCard card)
     let
@@ -4446,13 +4445,6 @@ runGameMessage msg g = case msg of
           <> show (toCardType card)
           <> ": "
           <> show card
-  After (Revelation _ source) -> do
-    let
-      removeTreacheryLens = case source of
-        TreacherySource tid ->
-          encounterDiscardEntitiesL . treacheriesL %~ deleteMap tid
-        _ -> id
-    pure $ g & removeTreacheryLens
   DrewTreachery iid mdeck (EncounterCard card) -> do
     treacheryId <- getRandom
     let
@@ -4489,7 +4481,7 @@ runGameMessage msg g = case msg of
       then [Discard GameSource (TreacheryTarget treacheryId)]
       else
         resolve (Revelation iid (TreacherySource treacheryId))
-          <> [AfterRevelation iid treacheryId]
+          <> [AfterRevelation iid treacheryId, UnsetActiveCard]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
     treacheryId <- getRandom
@@ -4512,7 +4504,6 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (entitiesL . treacheriesL %~ insertMap treacheryId treachery)
-      & (activeCardL ?~ PlayerCard card)
       & (resolvingCardL ?~ PlayerCard card)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
@@ -4612,10 +4603,6 @@ runGameMessage msg g = case msg of
       & entitiesL
       . treacheriesL
       %~ deleteMap tid
-      & encounterDiscardEntitiesL
-      . treacheriesL
-      . at tid
-      ?~ treachery
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g

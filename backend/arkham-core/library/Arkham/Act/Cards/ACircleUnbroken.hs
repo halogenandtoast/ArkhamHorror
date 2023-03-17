@@ -13,7 +13,7 @@ import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Timing qualified as Timing
 
 newtype ACircleUnbroken = ACircleUnbroken ActAttrs
@@ -50,7 +50,8 @@ instance RunMessage ACircleUnbroken where
       push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      defeatedAnette <- selectNone $ enemyIs Enemies.anetteMason
+      defeatedAnette <- selectAny $ VictoryDisplayCardMatch $ cardIs
+        Enemies.anetteMason
       push $ scenarioResolution $ if defeatedAnette then 1 else 2
       pure a
     _ -> ACircleUnbroken <$> runMessage msg attrs

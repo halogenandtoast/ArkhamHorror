@@ -211,6 +211,7 @@ instance RunMessage TheWitchingHour where
                 [MesmerizingFlute, RitualComponents]
               ]
             <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
             $ [ story iids resolution2
@@ -220,6 +221,7 @@ instance RunMessage TheWitchingHour where
                 [MesmerizingFlute, ScrapOfTownShadow]
               ]
             <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 3 -> do
           gainXpNoBonus <- toGainXp getXp
           pushAll
@@ -230,6 +232,7 @@ instance RunMessage TheWitchingHour where
                    : gainXp
                    )
                  else gainXpNoBonus
+            <> [EndOfGame Nothing]
         Resolution 4 -> do
           pushAll
             $ [ story iids resolution4
@@ -237,6 +240,7 @@ instance RunMessage TheWitchingHour where
               , recordSetInsert MementosDiscovered [MesmerizingFlute]
               ]
             <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
     _ -> TheWitchingHour <$> runMessage msg attrs

@@ -4,34 +4,33 @@ import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.CampaignLogKey
-import Arkham.Card.CardCode
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey
   , campaignLogCrossedOut :: HashSet CampaignLogKey
   , campaignLogRecordedCounts :: HashMap CampaignLogKey Int
-  , campaignLogRecordedSets :: HashMap CampaignLogKey [Recorded CardCode]
+  , campaignLogRecordedSets :: HashMap CampaignLogKey [SomeRecorded]
   , campaignLogOrderedKeys :: [CampaignLogKey]
   }
   deriving stock (Show, Generic, Eq)
 
-recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
-recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }
+recordedL :: Lens' CampaignLog (HashSet CampaignLogKey)
+recordedL = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }
 
-crossedOut :: Lens' CampaignLog (HashSet CampaignLogKey)
-crossedOut =
+crossedOutL :: Lens' CampaignLog (HashSet CampaignLogKey)
+crossedOutL =
   lens campaignLogCrossedOut $ \m x -> m { campaignLogCrossedOut = x }
 
-recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [Recorded CardCode])
-recordedSets =
+recordedSetsL :: Lens' CampaignLog (HashMap CampaignLogKey [SomeRecorded])
+recordedSetsL =
   lens campaignLogRecordedSets $ \m x -> m { campaignLogRecordedSets = x }
 
-recordedCounts :: Lens' CampaignLog (HashMap CampaignLogKey Int)
-recordedCounts =
+recordedCountsL :: Lens' CampaignLog (HashMap CampaignLogKey Int)
+recordedCountsL =
   lens campaignLogRecordedCounts $ \m x -> m { campaignLogRecordedCounts = x }
 
-orderedKeys :: Lens' CampaignLog [CampaignLogKey]
-orderedKeys =
+orderedKeysL :: Lens' CampaignLog [CampaignLogKey]
+orderedKeysL =
   lens campaignLogOrderedKeys $ \m x -> m { campaignLogOrderedKeys = x }
 
 instance ToJSON CampaignLog where

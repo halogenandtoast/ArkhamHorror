@@ -30,8 +30,8 @@ markDoubt = do
 
 interviewed :: HasGame m => CardDef -> m Bool
 interviewed assetDef =
-  elem (Recorded $ toCardCode assetDef) <$> getRecordSet VIPsInterviewed
+  elem (recorded $ toCardCode assetDef) <$> getRecordSet VIPsInterviewed
 
 slain :: (HasGame m, HasCardCode cardCode) => cardCode -> m Bool
 slain (toCardCode -> cardCode) =
-  elem (Recorded cardCode) <$> getRecordSet VIPsSlain
+  elem (recorded cardCode) <$> getRecordSet VIPsSlain

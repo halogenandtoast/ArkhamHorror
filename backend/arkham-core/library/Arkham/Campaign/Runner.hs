@@ -96,61 +96,61 @@ instance RunMessage CampaignAttrs where
     CrossOutRecord key -> do
       let
         crossedOutModifier =
-          if key `member` view (logL . recorded) a then insertSet key else id
+          if key `member` view (logL . recordedL) a then insertSet key else id
         removeOrderedKey =
-          if key `member` view (logL . recorded) a then filter (/= key) else id
+          if key `member` view (logL . recordedL) a then filter (/= key) else id
 
       pure
         $ a
-        & (logL . recorded %~ deleteSet key)
-        & (logL . crossedOut %~ crossedOutModifier)
-        & (logL . recordedSets %~ deleteMap key)
-        & (logL . recordedCounts %~ deleteMap key)
-        & (logL . orderedKeys %~ removeOrderedKey)
+        & (logL . recordedL %~ deleteSet key)
+        & (logL . crossedOutL %~ crossedOutModifier)
+        & (logL . recordedSetsL %~ deleteMap key)
+        & (logL . recordedCountsL %~ deleteMap key)
+        & (logL . orderedKeysL %~ removeOrderedKey)
     Record key -> do
       send $ "Record \"" <> format key <> "\""
-      pure $ a & logL . recorded %~ insertSet key & logL . orderedKeys %~ (<> [key])
+      pure $ a & logL . recordedL %~ insertSet key & logL . orderedKeysL %~ (<> [key])
     RecordSet key cardCodes ->
-      pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
+      pure $ a & logL . recordedSetsL %~ insertMap key (map recorded cardCodes)
     RecordSetInsert key cardCodes -> do
       let defs = mapMaybe lookupCardDef cardCodes
       for_ defs $ \def ->
         send $ "Record \"" <> format (toName def) <> " " <> format key <> "\""
-      pure $ case a ^. logL . recordedSets . at key of
+      pure $ case a ^. logL . recordedSetsL . at key of
         Nothing ->
-          a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
+          a & logL . recordedSetsL %~ insertMap key (map recorded cardCodes)
         Just set ->
           let
             set' =
-              filter ((`notElem` cardCodes) . unrecorded) set
-                <> map Recorded cardCodes
-          in a & logL . recordedSets %~ insertMap key set'
+              filter (maybe True (`notElem` cardCodes) . unrecorded) set
+                <> map recorded cardCodes
+          in a & logL . recordedSetsL %~ insertMap key set'
     CrossOutRecordSetEntries key cardCodes ->
       pure
         $ a
         & logL
-        . recordedSets
+        . recordedSetsL
         %~ adjustMap
              (map
                (\case
-                 Recorded c | c `elem` cardCodes -> CrossedOut c
+                 SomeRecorded RecordableCardCode (Recorded c) | c `elem` cardCodes -> SomeRecorded RecordableCardCode (CrossedOut c)
                  other -> other
                )
              )
              key
     RecordCount key int ->
-      pure $ a & logL . recordedCounts %~ insertMap key int
+      pure $ a & logL . recordedCountsL %~ insertMap key int
     ScenarioResolution r -> case campaignStep of
       Just (ScenarioStep sid) -> pure $ a & resolutionsL %~ insertMap sid r
       _ -> error "must be called in a scenario"
-    DrivenInsane iid -> pure $ a & logL . recordedSets %~ insertWith
+    DrivenInsane iid -> pure $ a & logL . recordedSetsL %~ insertWith
       (<>)
       DrivenInsaneInvestigators
-      (singleton $ Recorded $ unInvestigatorId iid)
-    InvestigatorKilled _ iid -> pure $ a & logL . recordedSets %~ insertWith
+      (singleton $ recorded $ unInvestigatorId iid)
+    InvestigatorKilled _ iid -> pure $ a & logL . recordedSetsL %~ insertWith
       (<>)
       KilledInvestigators
-      (singleton $ Recorded $ unInvestigatorId iid)
+      (singleton $ recorded $ unInvestigatorId iid)
     CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
       pure
         $ a

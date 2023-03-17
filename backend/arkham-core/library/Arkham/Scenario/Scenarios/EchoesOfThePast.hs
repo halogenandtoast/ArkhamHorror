@@ -177,7 +177,7 @@ instance RunMessage EchoesOfThePast where
                 createEnemyAt_ (EncounterCard card) locationId Nothing
 
       sebastienInterviewed <-
-        elem (Recorded $ toCardCode Assets.sebastienMoreau)
+        elem (recorded $ toCardCode Assets.sebastienMoreau)
           <$> getRecordSet VIPsInterviewed
 
       fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty

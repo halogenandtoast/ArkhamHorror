@@ -82,7 +82,7 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
 
 export interface LogContents {
   recorded: string[];
-  recordedSets: any[]; // eslint-disable-line
+  recordedSets: Record<string, any[]>; // eslint-disable-line
   recordedCounts: [string, number][]; // eslint-disable-line
 }
 
@@ -94,9 +94,24 @@ export interface Campaign {
   difficulty: string;
 }
 
+export interface SomeRecordable {
+  recordType: string;
+  recordVal: any; // eslint-disable-line
+}
+
+const someRecordableDecoder = JsonDecoder.object<SomeRecordable>({
+  recordType: JsonDecoder.string,
+  recordVal: JsonDecoder.succeed
+}, 'SomeRecordable')
+
 export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recorded: JsonDecoder.array<string>(JsonDecoder.string, 'recorded[]'),
-  recordedSets: JsonDecoder.array<any>(JsonDecoder.succeed, 'recordedSets[]'), // eslint-disable-line
+  recordedSets: JsonDecoder.array<[string, any[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array(someRecordableDecoder.map((res) => res.recordVal), 'SomeRecorded[]')], '[string, somerecorded]'), '[string, any][]').map<Record<string, any>>(res => { // eslint-disable-line
+    return res.reduce<Record<string, any>>((acc, [k, v]) => { //eslint-disable-line
+      acc[k] = v
+      return acc
+    }, {})
+  }),
   recordedCounts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]'),
 }, 'LogContents');
 

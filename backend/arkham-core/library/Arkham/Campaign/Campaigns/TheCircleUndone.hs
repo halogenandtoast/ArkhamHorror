@@ -36,7 +36,7 @@ theCircleUndone difficulty = campaignWith
   (chaosBagContents difficulty)
   (logL .~ mkCampaignLog
     { campaignLogRecordedSets = singletonMap MissingPersons
-      $ map (Recorded . unInvestigatorId) allPrologueInvestigators
+      $ map (recorded . unInvestigatorId) allPrologueInvestigators
     }
   )
 

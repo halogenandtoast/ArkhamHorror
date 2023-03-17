@@ -809,12 +809,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   Record key -> do
     isStandalone <- getIsStandalone
     pure $ if isStandalone
-      then a & standaloneCampaignLogL . recorded %~ insertSet key
+      then a & standaloneCampaignLogL . recordedL %~ insertSet key
       else a
   RecordCount key n -> do
     isStandalone <- getIsStandalone
     pure $ if isStandalone
-      then a & standaloneCampaignLogL . recordedCounts %~ insertMap key n
+      then a & standaloneCampaignLogL . recordedCountsL %~ insertMap key n
       else a
   ShuffleDeck (Deck.ScenarioDeckByKey deckKey) -> do
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)

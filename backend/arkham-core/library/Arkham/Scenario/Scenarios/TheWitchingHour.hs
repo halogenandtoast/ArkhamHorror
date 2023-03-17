@@ -6,6 +6,8 @@ module Arkham.Scenario.Scenarios.TheWitchingHour
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Sequence ( ActStep (..), actStep )
+import Arkham.Act.Types ( Field (ActSequence) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -18,9 +20,11 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWitchingHour.Story
@@ -187,5 +191,34 @@ instance RunMessage TheWitchingHour where
         , AddToken ElderThing
         , AddToken ElderThing
         ]
+      pure s
+    ScenarioResolution resolution -> do
+      iids <- allInvestigatorIds
+      gainXp <- map (uncurry GainXP) <$> getXpWithBonus 1
+      case resolution of
+        NoResolution -> do
+          step <- actStep <$> selectJustField ActSequence AnyAct
+          push $ ScenarioResolution $ Resolution $ if step == ActStep 4
+            then 4
+            else 3
+        Resolution 1 -> do
+          pushAll
+            $ [story iids resolution1, Record TheWitches'SpellWasBroken]
+            <> gainXp
+        Resolution 2 -> do
+          pushAll
+            $ [story iids resolution2, Record TheWitches'SpellWasBroken]
+            <> gainXp
+        Resolution 3 -> do
+          step <- actStep <$> selectJustField ActSequence AnyAct
+          gainXpNoBonus <- map (uncurry GainXP) <$> getXp
+          pushAll
+            $ [story iids resolution3, Record TheWitches'SpellWasCast]
+            <> if step == ActStep 3 then gainXp else gainXpNoBonus
+        Resolution 4 -> do
+          pushAll
+            $ [story iids resolution4, Record TheWitches'SpellWasCast]
+            <> gainXp
+        _ -> error "invalid resolution"
       pure s
     _ -> TheWitchingHour <$> runMessage msg attrs

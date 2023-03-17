@@ -79,7 +79,7 @@ thePallidMask difficulty = scenario
 
 instance HasModifiersFor ThePallidMask where
   getModifiersFor (InvestigatorTarget iid) (ThePallidMask a) = do
-    extraXp <- elem (Recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
+    extraXp <- elem (recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
     pure $ toModifiers a [ XPModifier 2 | extraXp ]
   getModifiersFor _ _ = pure []
 
@@ -155,7 +155,7 @@ instance RunMessage ThePallidMask where
           didNotEscapeGazeOfThePhantom || unableToFindNigel
         intro = if awokeInsideTheCatacombs then intro1 else intro2
 
-      harukoInterviewed <- elem (Recorded $ toCardCode Assets.ishimaruHaruko)
+      harukoInterviewed <- elem (recorded $ toCardCode Assets.ishimaruHaruko)
         <$> getRecordSet VIPsInterviewed
 
       encounterDeck <- buildEncounterDeck

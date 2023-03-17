@@ -335,7 +335,7 @@ instance RunMessage APhantomOfTruth where
         <$> getXpWithBonus (if res == Resolution 2 then 2 else 0)
       let
         updateSlain =
-          [ RecordSetInsert VIPsSlain [toCardCode jordan]
+          [ recordSetInsert VIPsSlain [toCardCode jordan]
           | jordan <- maybeToList jordanSlain
           ]
         sufferTrauma = if res == Resolution 2

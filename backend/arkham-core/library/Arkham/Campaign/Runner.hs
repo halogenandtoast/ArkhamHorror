@@ -5,12 +5,12 @@ module Arkham.Campaign.Runner
 
 import Arkham.Prelude
 
-import Arkham.Classes.GameLogger
 import Arkham.Campaign.Types as X
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Helpers
@@ -109,23 +109,28 @@ instance RunMessage CampaignAttrs where
         & (logL . orderedKeysL %~ removeOrderedKey)
     Record key -> do
       send $ "Record \"" <> format key <> "\""
-      pure $ a & logL . recordedL %~ insertSet key & logL . orderedKeysL %~ (<> [key])
-    RecordSet key cardCodes ->
-      pure $ a & logL . recordedSetsL %~ insertMap key (map recorded cardCodes)
-    RecordSetInsert key cardCodes -> do
-      let defs = mapMaybe lookupCardDef cardCodes
+      pure
+        $ a
+        & logL
+        . recordedL
+        %~ insertSet key
+        & logL
+        . orderedKeysL
+        %~ (<> [key])
+    RecordSetInsert key recs -> do
+      let defs = mapMaybe lookupCardDef $ recordedCardCodes recs
       for_ defs $ \def ->
         send $ "Record \"" <> format (toName def) <> " " <> format key <> "\""
       pure $ case a ^. logL . recordedSetsL . at key of
         Nothing ->
-          a & logL . recordedSetsL %~ insertMap key (map recorded cardCodes)
+          a & logL . recordedSetsL %~ insertMap key recs
         Just set ->
           let
             set' =
-              filter (maybe True (`notElem` cardCodes) . unrecorded) set
-                <> map recorded cardCodes
+              filter (`notElem` recs) set
+                <> recs
           in a & logL . recordedSetsL %~ insertMap key set'
-    CrossOutRecordSetEntries key cardCodes ->
+    CrossOutRecordSetEntries key recs ->
       pure
         $ a
         & logL
@@ -133,7 +138,8 @@ instance RunMessage CampaignAttrs where
         %~ adjustMap
              (map
                (\case
-                 SomeRecorded RecordableCardCode (Recorded c) | c `elem` cardCodes -> SomeRecorded RecordableCardCode (CrossedOut c)
+                 someRec@(SomeRecorded k (Recorded c)) | someRec `elem` recs ->
+                   SomeRecorded k (CrossedOut c)
                  other -> other
                )
              )

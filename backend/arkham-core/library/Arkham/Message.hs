@@ -514,9 +514,8 @@ data Message
   | ReadyExhausted
   | Record CampaignLogKey
   | RecordCount CampaignLogKey Int
-  | RecordSet CampaignLogKey [CardCode]
-  | RecordSetInsert CampaignLogKey [CardCode]
-  | CrossOutRecordSetEntries CampaignLogKey [CardCode]
+  | RecordSetInsert CampaignLogKey [SomeRecorded]
+  | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
   | RefillSlots InvestigatorId SlotType [AssetId]
   | Remember ScenarioLogKey
   | ScenarioCountIncrementBy ScenarioCountKey Int

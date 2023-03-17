@@ -87,17 +87,17 @@ instance RunMessage JudgementXX where
               key = if n >= 5 && isSource attrs source
                 then DisappearedIntoTheMist
                 else WasPulledIntoTheSpectralRealm
-            push $ RecordSetInsert key [cardCode]
+            push $ RecordSetInsert key [recorded cardCode]
         case source of
           (EnemyAttackSource eid) -> do
             isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
             isMonster <- eid <=~> EnemyWithTrait Monster
             when isTheSpectralWatcher $ push $ RecordSetInsert
               WasTakenByTheWatcher
-              [cardCode]
+              [recorded cardCode]
             when isMonster $ push $ RecordSetInsert
               WasClaimedBySpecters
-              [cardCode]
+              [recorded cardCode]
             when (not isMonster && not isTheSpectralWatcher) handleOther
           _ -> handleOther
         push $ AdvanceAgenda $ toId attrs

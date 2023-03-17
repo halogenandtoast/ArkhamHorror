@@ -299,7 +299,7 @@ instance RunMessage EchoesOfThePast where
 
       let
         updateSlain =
-          [ RecordSetInsert VIPsSlain [toCardCode sebastien]
+          [ recordSetInsert VIPsSlain [toCardCode sebastien]
           | sebastien <- maybeToList sebastienSlain
           ]
         removeTokens =

@@ -11,9 +11,13 @@ import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
+import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Target
+
+toGainXp :: HasGame m => m [(InvestigatorId, Int)] -> m [Message]
+toGainXp f = map (uncurry GainXP) <$> f
 
 getXp :: HasGame m => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0

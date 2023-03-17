@@ -3,6 +3,7 @@ module Arkham.CampaignLogKey where
 import Arkham.Prelude hiding (toLower)
 import Arkham.Classes.GameLogger
 import Arkham.Card.CardCode
+import Arkham.Campaigns.TheCircleUndone.Memento
 import Control.Monad.Fail
 import Data.Char (isUpper, toLower)
 import Data.Typeable
@@ -168,6 +169,7 @@ data CampaignLogKey
   | YouHaveRejectedYourFate
   | TheWitches'SpellWasBroken
   | TheWitches'SpellWasCast
+  | MementosDiscovered
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -210,10 +212,6 @@ instance Recordable Memento where
 
 recorded :: forall a. Recordable a => a -> SomeRecorded
 recorded a = SomeRecorded (recordableType @a) (Recorded a)
-
-data Memento = MesmerizingFlute | RitualComponents | ScrapOfTownShadow | GilmansJournal | KeziahsFormulae | WornCrucifix | WispOfSpectralMist
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
 
 data RecordableType a where
   RecordableCardCode :: RecordableType CardCode

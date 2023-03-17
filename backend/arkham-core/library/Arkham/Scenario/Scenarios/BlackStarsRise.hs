@@ -264,7 +264,7 @@ instance RunMessage BlackStarsRise where
       iids <- allInvestigatorIds
       let
         updateSlain =
-          [ RecordSetInsert VIPsSlain [toCardCode ashleigh]
+          [ recordSetInsert VIPsSlain [toCardCode ashleigh]
           | ashleigh <- maybeToList ashleighSlain
           ]
       case res of

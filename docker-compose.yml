@@ -15,7 +15,7 @@ services:
     build:
       context: .
       args:
-        - GHC_VERSION=9.0.2
+        - GHC_VERSION=9.4.4
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/arkham-horror-backend
     ports:

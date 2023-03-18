@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
@@ -10,12 +11,15 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const cards = computed(() => props.cards.filter(c => c).reverse())
 </script>
 
 <template>
   <div class="card-row-cards">
-    <div v-for="card in props.cards" :key="card.id" class="card-row-card">
-      <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
+    <div class="card-row-cards--inner">
+      <div v-for="card in cards" :key="card.id" class="card-row-card">
+        <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
+      </div>
     </div>
   </div>
 </template>
@@ -40,16 +44,48 @@ const props = defineProps<Props>()
 }
 
 .card-row-cards {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  width: calc($card-width + 20px);
   padding-bottom: 10px;
-  flex-wrap: wrap;
+}
+
+.card-row-cards--inner {
+  display: grid;
+  direction: rtl;
+  grid-template-columns: repeat(auto-fit,  minmax(5px, max-content));
+  &:hover {
+    position: absolute;
+    padding-right: 10px;
+    background: rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: row;
+    transform: translateX(-100%) translateX($card-width + 30px);
+    .card-row-card {
+      margin-left: 10px;
+      width: $card-width;
+      display: inline !important;
+    }
+  }
 }
 
 .card-row-card {
-  margin-left: 10px;
   position: relative;
+  display: none;
+  &:nth-of-type(n) {
+    width: 5px;
+  }
+
+  &:nth-last-of-type(1) {
+    display:inline;
+  }
+
+  &:nth-last-of-type(2) {
+    display:inline;
+  }
+
+  &:nth-last-of-type(3) {
+    display:inline;
+  }
 }
 
 .card {

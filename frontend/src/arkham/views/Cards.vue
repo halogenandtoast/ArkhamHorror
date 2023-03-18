@@ -437,46 +437,9 @@ const setSet = (set) => {
 .cards {
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, calc(1 / 10 * 100%));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   padding: 10px;
   box-sizing: border-box;
-}
-
-@media (max-width: 2000px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 8 * 100%));
-  }
-}
-
-@media (max-width: 1700px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 6 * 100%));
-  }
-}
-
-@media (max-width: 1400px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 5 * 100%));
-  }
-}
-
-
-@media (max-width: 1100px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 3 * 100%));
-  }
-}
-
-@media (max-width: 900px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(1 / 2 * 100%));
-  }
-}
-
-@media (max-width: 700px) {
-  .cards {
-    grid-template-columns: repeat(auto-fill, calc(100%));
-  }
 }
 
 table {

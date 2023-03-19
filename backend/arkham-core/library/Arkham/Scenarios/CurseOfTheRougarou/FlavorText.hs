@@ -11,7 +11,7 @@ intro = FlavorText
     \ you a draft of the article over a cup of coffee at Velma's Diner. It\
     \ would have gone to print had Doyle Jeffries, the lead editor, not\
     \ scoffed at the concept. \"I believe his exact words were, 'I ain't\
-    \ printing the ravings of some Voodoo lunatic and passing is as news,'\"\
+    \ printing the ravings of some Voodoo lunatic and passing it off as news,'\"\
     \ she explained. From the sly grin spreading across her face, you could\
     \ tell she smelled a story."
   , "The headline was sensationalist. Three killings, in nine days was\
@@ -55,7 +55,7 @@ resolution3 = FlavorText
   [ "Somehow, you have managed to quell the rage and bloodlust\
     \ of the curse within the creature, and in moments the shape\
     \ of a young, dark-skinned man stands before you, panting and\
-    \ sweating. He seems to onky just now understand everything\
+    \ sweating. He seems to only just now understand everything\
     \ he's done, and agrees to flee to a secluded corner of the\
     \ earth where he can harm no one. However, the curse lives\
     \ on. He sees it in your eyes and grips your arm tightly.\

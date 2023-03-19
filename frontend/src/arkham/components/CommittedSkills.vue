@@ -46,6 +46,7 @@ const cards = computed(() => props.cards.filter(c => c).reverse())
 .card-row-cards {
   position: relative;
   width: calc($card-width + 20px);
+  height: $card-width * 1.4;
   padding-bottom: 10px;
 }
 
@@ -56,7 +57,8 @@ const cards = computed(() => props.cards.filter(c => c).reverse())
   &:hover {
     position: absolute;
     padding-right: 10px;
-    background: rgba(0,0,0,0.2);
+    padding-left: calc($card-width + 10px);
+    background: rgba(0,0,0,0.01);
     display: flex;
     flex-direction: row;
     transform: translateX(-100%) translateX($card-width + 30px);

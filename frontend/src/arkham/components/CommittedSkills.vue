@@ -45,49 +45,12 @@ const cards = computed(() => props.cards.filter(c => c).reverse())
 
 .card-row-cards {
   position: relative;
-  width: calc($card-width + 20px);
   height: $card-width * 1.4;
   padding-bottom: 10px;
 }
 
 .card-row-cards--inner {
-  display: grid;
-  direction: rtl;
-  grid-template-columns: repeat(auto-fit,  minmax(5px, max-content));
-  &:hover {
-    position: absolute;
-    padding-right: 10px;
-    padding-left: calc($card-width + 10px);
-    background: rgba(0,0,0,0.01);
-    display: flex;
-    flex-direction: row;
-    transform: translateX(-100%) translateX($card-width + 30px);
-    .card-row-card {
-      margin-left: 10px;
-      width: $card-width;
-      display: inline !important;
-    }
-  }
-}
-
-.card-row-card {
-  position: relative;
-  display: none;
-  &:nth-of-type(n) {
-    width: 5px;
-  }
-
-  &:nth-last-of-type(1) {
-    display:inline;
-  }
-
-  &:nth-last-of-type(2) {
-    display:inline;
-  }
-
-  &:nth-last-of-type(3) {
-    display:inline;
-  }
+  display: flex;
 }
 
 .card {

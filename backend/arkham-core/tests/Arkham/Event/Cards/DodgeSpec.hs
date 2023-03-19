@@ -4,27 +4,28 @@ module Arkham.Event.Cards.DodgeSpec
 
 import TestImport
 
-import Arkham.Attack
+import Arkham.Attack qualified as Attack
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Investigator.Types (InvestigatorAttrs(..))
+import Arkham.Investigator.Types ( InvestigatorAttrs (..) )
 
 spec :: Spec
 spec = do
   describe "Dodge" $ do
     it "cancels the attack" $ do
-      investigator <- testJenny
-        $ \attrs -> attrs { investigatorResources = 1 }
+      investigator <- testJenny $ \attrs -> attrs { investigatorResources = 1 }
       enemy <- testEnemy id
       location <- testLocation id
-      dodge <- genPlayerCard Cards.dodge
+      dodge <- genCard Cards.dodge
 
-      (didRunMessage, logger) <- createMessageMatcher
-        (PerformEnemyAttack "00000" (toId enemy) DamageAny RegularAttack)
+      (didRunMessage, logger) <-
+        createMessageMatcher $ PerformEnemyAttack $ Attack.enemyAttack
+          (toId enemy)
+          (toTarget investigator)
 
       gameTestWithLogger
           logger
           investigator
-          [ addToHand investigator (PlayerCard dodge)
+          [ addToHand investigator dodge
           , enemySpawn location enemy
           , moveTo investigator location
           , enemyAttack investigator enemy

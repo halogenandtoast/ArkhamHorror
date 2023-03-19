@@ -5,10 +5,10 @@ module Arkham.Asset.Cards.JimsTrumpetSpec
 import TestImport
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Investigator.Types qualified as Investigator
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Location.Cards qualified as Locations
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do
@@ -41,9 +41,10 @@ spec = describe "Jim's Trumpet" $ do
 
     it "on an investigator at your location" $ do
       investigator <- testJenny id
-      investigator2 <- testInvestigator Investigators.rolandBanks
+      investigator2 <- testInvestigator
+        Investigators.rolandBanks
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- createAsset <$> genPlayerCard Assets.jimsTrumpet
+      jimsTrumpet <- createAsset <$> genCard Assets.jimsTrumpet <*> getRandom
       location <- testLocation id
       gameTest
           investigator
@@ -70,7 +71,8 @@ spec = describe "Jim's Trumpet" $ do
 
     it "even when another player draws token" $ do
       investigator <- testJenny id
-      investigator2 <- testInvestigator Investigators.rolandBanks
+      investigator2 <- testInvestigator
+        Investigators.rolandBanks
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       location <- testLocation id
@@ -99,12 +101,15 @@ spec = describe "Jim's Trumpet" $ do
 
     it "on an investigator at a connected location" $ do
       investigator <- testJenny id
-      investigator2 <- testInvestigator Investigators.rolandBanks
+      investigator2 <- testInvestigator
+        Investigators.rolandBanks
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
-      rivertown <- createLocation <$> genEncounterCard Locations.rivertown
-      southside <- createLocation
-        <$> genEncounterCard Locations.southsideHistoricalSociety
+      rivertown <- createLocation <$> genCard Locations.rivertown <*> getRandom
+      southside <-
+        createLocation
+        <$> genCard Locations.southsideHistoricalSociety
+        <*> getRandom
       gameTest
           investigator
           [ SetTokens [Skull]
@@ -134,11 +139,13 @@ spec = describe "Jim's Trumpet" $ do
 
     it "cannot target an investigator at an unconnected location" $ do
       investigator <- testJenny id
-      investigator2 <- testInvestigator Investigators.rolandBanks
+      investigator2 <- testInvestigator
+        Investigators.rolandBanks
         ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
-      rivertown <- createLocation <$> genEncounterCard Locations.rivertown
-      downtown <- createLocation <$> genEncounterCard Locations.downtownArkhamAsylum
+      rivertown <- createLocation <$> genCard Locations.rivertown <*> getRandom
+      downtown <-
+        createLocation <$> genCard Locations.downtownArkhamAsylum <*> getRandom
       gameTest
           investigator
           [ SetTokens [Skull]

@@ -37,7 +37,7 @@ import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
 import Arkham.GameValue as X
 import Arkham.Helpers as X
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (createEnemy)
 import Arkham.Id as X
 import Arkham.Investigator as X
 import Arkham.Investigator.Cards qualified as Investigators
@@ -79,6 +79,7 @@ import Arkham.GameEnv
 import Arkham.LocationSymbol
 import Arkham.Name
 import Data.IntMap.Strict qualified as IntMap
+import Arkham.SkillTest.Type
 
 runMessages :: TestAppT ()
 runMessages = asks testLogger >>= Game.runMessages
@@ -110,7 +111,7 @@ duringTurn = Window Timing.When . DuringTurn
 
 data TestApp = TestApp
   { game :: IORef Game
-  , messageQueueRef :: IORef [Message]
+  , messageQueueRef :: Queue Message
   , gen :: IORef StdGen
   , testLogger :: Maybe (Message -> IO ())
   , testGameLogger :: Text -> IO ()
@@ -140,25 +141,40 @@ instance HasGameLogger TestApp where
   gameLoggerL = lens testGameLogger $ \m x -> m { testGameLogger = x }
 
 testScenario
-  :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
+  :: (MonadIO m, CardGen m)
+  => CardCode
+  -> (ScenarioAttrs -> ScenarioAttrs)
+  -> m Scenario
 testScenario cardCode f = do
   a1 <- testAgenda "01105" id
   let name = mkName $ unCardCode cardCode
-  pure . Scenario $ scenarioWith (TheGathering . f) cardCode name Easy [] $ \s -> s
-    { scenarioAgendaStack = IntMap.fromList
-      [(1, [toCardDef (toAttrs a1), toCardDef (toAttrs a1)])]
-    }
+  pure
+    . Scenario
+    $ scenarioWith (TheGathering . f) cardCode name Easy []
+    $ \s -> s
+        { scenarioAgendaStack = IntMap.fromList [(1, [toCard a1, toCard a1])]
+        }
 
-buildEvent :: MonadRandom m => CardDef -> Investigator -> m Event
-buildEvent cardDef investigator =
-  lookupEvent (toCardCode cardDef) (toId investigator) <$> getRandom
+buildEvent :: CardGen m => CardDef -> Investigator -> m Event
+buildEvent cardDef investigator = do
+  card <- genCard cardDef
+  createEvent card (toId investigator) <$> getRandom
 
-buildEnemy :: MonadRandom m => CardCode -> m Enemy
-buildEnemy cardCode = lookupEnemy cardCode <$> getRandom
+buildEnemy :: CardGen m => CardCode -> m Enemy
+buildEnemy cardCode = case lookupCardDef cardCode of
+  Nothing -> error $ "Test used invalid card code" <> show cardCode
+  Just def -> do
+    card <- genCard def
+    lookupEnemy cardCode <$> getRandom <*> pure (toCardId card)
 
-buildAsset :: MonadRandom m => CardDef -> Maybe Investigator -> m Asset
-buildAsset cardDef mOwner =
-  lookupAsset (toCardCode cardDef) . (, toId <$> mOwner) <$> getRandom
+buildAsset
+  :: CardGen m => CardDef -> Maybe Investigator -> m Asset
+buildAsset cardDef mOwner = do
+  card <- genCard cardDef
+  lookupAsset (toCardCode card)
+    <$> getRandom
+    <*> pure (toId <$> mOwner)
+    <*> pure (toCardId card)
 
 testPlayerCards :: CardGen m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
@@ -166,18 +182,21 @@ testPlayerCards count' = replicateM count' (testPlayerCard id)
 testPlayerCard :: CardGen m => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
 
-testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
+testEnemy
+  :: CardGen m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy = testEnemyWithDef id
 
-testWeaknessEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
+testWeaknessEnemy
+  :: CardGen m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testWeaknessEnemy = testEnemyWithDef (CardDef.subTypeL ?~ Weakness)
 
 testEnemyWithDef
-  :: MonadRandom m
+  :: CardGen m
   => (CardDef -> CardDef)
   -> (EnemyAttrs -> EnemyAttrs)
   -> m Enemy
-testEnemyWithDef defF attrsF =
+testEnemyWithDef defF attrsF = do
+  card <- genCard Cards.swarmOfRats
   cbCardBuilder
       (Enemy
       <$> enemyWith
@@ -187,41 +206,55 @@ testEnemyWithDef defF attrsF =
             (0, 0)
             attrsF
       )
+      (toCardId card)
     <$> getRandom
 
 testAsset
-  :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> Investigator -> m Asset
+  :: CardGen m
+  => (AssetAttrs -> AssetAttrs)
+  -> Investigator
+  -> m Asset
 testAsset f i = testAssetWithDef id f i
 
 testAssetWithDef
-  :: MonadRandom m
+  :: CardGen m
   => (CardDef -> CardDef)
   -> (AssetAttrs -> AssetAttrs)
   -> Investigator
   -> m Asset
-testAssetWithDef defF attrsF owner =
-  cbCardBuilder (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
-    . (, Just $ toId owner)
-    <$> getRandom
+testAssetWithDef defF attrsF owner = do
+  card <- genCard Cards.adaptable1
+  cbCardBuilder
+      (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
+      (toCardId card)
+    <$> ((, Just $ toId owner) <$> getRandom)
 
-testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda
-testAgenda cardCode f = pure $ cbCardBuilder
-  (Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f)
-  (1, AgendaId cardCode)
+testAgenda
+  :: (MonadIO m, CardGen m)
+  => CardCode
+  -> (AgendaAttrs -> AgendaAttrs)
+  -> m Agenda
+testAgenda cardCode f = do
+  card <- genCard Cards.whatsGoingOn
+  pure $ cbCardBuilder
+    (Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
+    )
+    (toCardId card)
+    (1, AgendaId cardCode)
 
-testLocation :: MonadRandom m => (LocationAttrs -> LocationAttrs) -> m Location
+testLocation :: CardGen m => (LocationAttrs -> LocationAttrs) -> m Location
 testLocation = testLocationWithDef id
 
 testLocationWithDef
-  :: MonadRandom m
+  :: CardGen m
   => (CardDef -> CardDef)
   -> (LocationAttrs -> LocationAttrs)
   -> m Location
 testLocationWithDef defF attrsF = do
+  card <- genCard Cards.study
   cbCardBuilder
-      (Location
-      <$> locationWith Study (defF Cards.study) 0 (Static 0) attrsF
-      )
+      (Location <$> locationWith Study (defF Cards.study) 0 (Static 0) attrsF)
+      (toCardId card)
     <$> getRandom
 
 -- | We use Jenny Barnes because here abilities are the least
@@ -240,14 +273,14 @@ testJenny
 testJenny = testInvestigator Investigators.jennyBarnes
 
 testConnectedLocations
-  :: MonadRandom m
+  :: CardGen m
   => (LocationAttrs -> LocationAttrs)
   -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
 testConnectedLocations f1 f2 = testConnectedLocationsWithDef (id, f1) (id, f2)
 
 testConnectedLocationsWithDef
-  :: MonadRandom m
+  :: CardGen m
   => (CardDef -> CardDef, LocationAttrs -> LocationAttrs)
   -> (CardDef -> CardDef, LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
@@ -271,7 +304,7 @@ testConnectedLocationsWithDef (defF1, attrsF1) (defF2, attrsF2) = do
   pure (location1, location2)
 
 testUnconnectedLocations
-  :: MonadRandom m
+  :: CardGen m
   => (LocationAttrs -> LocationAttrs)
   -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
@@ -299,7 +332,7 @@ didPassSkillTestBy investigator skillType n = createMessageMatcher
     Nothing
     (TestSource mempty)
     (SkillTestInitiatorTarget TestTarget)
-    skillType
+    (SkillSkillTest skillType)
     n
   )
 
@@ -315,7 +348,7 @@ didFailSkillTestBy investigator skillType n = createMessageMatcher
     Nothing
     (TestSource mempty)
     (SkillTestInitiatorTarget TestTarget)
-    skillType
+    (SkillSkillTest skillType)
     n
   )
 
@@ -330,7 +363,7 @@ withGame b = do
   runReaderT b g
 
 replaceScenario
-  :: (MonadReader env m, HasGameRef env, MonadIO m)
+  :: (MonadReader env m, HasGameRef env, MonadIO m, CardGen m)
   => (ScenarioAttrs -> ScenarioAttrs)
   -> m ()
 replaceScenario f = do
@@ -387,13 +420,13 @@ gameTestWithLogger
 gameTestWithLogger logger investigator queue f body = do
   g <- newGame investigator
   gameRef <- newIORef (f g)
-  queueRef <- newIORef queue
+  queueRef <- Queue <$> newIORef queue
   genRef <- newIORef $ mkStdGen (gameSeed g)
   runTestApp
     (TestApp gameRef queueRef genRef (Just logger) (pure . const ()))
     body
 
-newGame :: MonadIO m => Investigator -> m Game
+newGame :: (MonadIO m, CardGen m) => Investigator -> m Game
 newGame investigator = do
   scenario' <- testScenario "01104" id
   seed <- liftIO getRandom
@@ -440,6 +473,8 @@ newGame investigator = do
     , gameCards = mempty
     , gameActiveCost = mempty
     , gameActiveAbilities = mempty
+    , gameInSetup = False
+    , gameEnemyEvading = Nothing
     }
   where investigatorId = toId investigator
 

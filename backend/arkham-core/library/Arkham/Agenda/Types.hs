@@ -172,6 +172,19 @@ instance Sourceable Agenda where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
+instance HasCardDef Agenda where
+  toCardDef a = case lookup (toCardCode a) allAgendaCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for agenda " <> show (toId a)
+
+instance HasCardCode Agenda where
+  toCardCode = unAgendaId . toId
+
+instance IsCard Agenda where
+  toCardId = agendaCardId . toAttrs
+  toCardOwner = const Nothing
+
 data SomeAgendaCard = forall a . IsAgenda a => SomeAgendaCard (AgendaCard a)
 
 liftSomeAgendaCard :: (forall a . AgendaCard a -> b) -> SomeAgendaCard -> b

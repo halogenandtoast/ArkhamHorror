@@ -34,8 +34,8 @@ spec = describe "Daisy Walker" $ do
     it "forces you to draw one card for each Tome you control" $ do
       let daisyWalker = lookupInvestigator "01002"
       deckCards <- testPlayerCards 2
-      tome1 <- createAsset <$> genPlayerCard Cards.oldBookOfLore
-      tome2 <- createAsset <$> genPlayerCard Cards.medicalTexts
+      tome1 <- createAsset <$> genCard Cards.oldBookOfLore <*> getRandom
+      tome2 <- createAsset <$> genCard Cards.medicalTexts <*> getRandom
       gameTest
           daisyWalker
           [ SetTokens [ElderSign]

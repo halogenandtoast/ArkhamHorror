@@ -8,7 +8,6 @@ import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Helpers.Query
-import Arkham.Id
 import Arkham.Message
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs

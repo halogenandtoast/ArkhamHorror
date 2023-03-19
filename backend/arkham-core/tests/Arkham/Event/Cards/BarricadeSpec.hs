@@ -10,6 +10,7 @@ import Arkham.Investigator.Types (Field(..))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field(..))
 import Arkham.Projection
+import Arkham.Movement
 
 spec :: Spec
 spec = do
@@ -41,7 +42,7 @@ spec = do
           investigator
           [ moveAllTo location1
           , playEvent investigator barricade
-          , Move (toSource investigator2) (toId investigator2) (toId location2)
+          , Move $ move investigator2 (toId investigator2) (toId location2)
           ]
           ((entitiesL . eventsL %~ insertEntity barricade)
           . (entitiesL . locationsL %~ insertEntity location1)

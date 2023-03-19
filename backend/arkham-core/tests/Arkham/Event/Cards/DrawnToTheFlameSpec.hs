@@ -5,9 +5,9 @@ module Arkham.Event.Cards.DrawnToTheFlameSpec
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Events
+import Arkham.Investigator.Types ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Investigator.Types (Field(..), InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Drawn to the flame" $ do
@@ -16,11 +16,12 @@ spec = describe "Drawn to the flame" $ do
     -- We use "On Wings of Darkness" here to check that the Revelation effect
     -- resolves and that the clues discovered are at your location after the
     -- effect per the FAQ
-        investigator <- testJenny
-          $ \attrs -> attrs { investigatorAgility = 3 }
-        rivertown <- createLocation <$> genEncounterCard Cards.rivertown
-        southside <- createLocation
-          <$> genEncounterCard Cards.southsideHistoricalSociety
+        investigator <- testJenny $ \attrs -> attrs { investigatorAgility = 3 }
+        rivertown <- createLocation <$> genCard Cards.rivertown <*> getRandom
+        southside <-
+          createLocation
+          <$> genCard Cards.southsideHistoricalSociety
+          <*> getRandom
         drawnToTheFlame <- buildEvent Events.drawnToTheFlame investigator
         onWingsOfDarkness <- genEncounterCard Cards.onWingsOfDarkness
         gameTest

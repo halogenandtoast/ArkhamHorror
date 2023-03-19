@@ -5,7 +5,6 @@ import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
-import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
@@ -119,9 +118,6 @@ const hideCards = () => {
 const committedCards = computed(() => props.game.skillTest?.committedCards || [])
 const playerHand = computed(() => props.player.hand.filter((card) => !committedCards.value.some((cc) => card.contents.id == cc.contents.id)))
 
-const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === props.player.id))
-
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
@@ -173,17 +169,6 @@ function beforeLeaveHand(el) {
         :treachery="game.treacheries[treacheryId]"
         :game="game"
         :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
-      />
-
-      <Location
-        v-for="(location, key) in locations"
-        class="location"
-        :key="key"
-        :game="game"
-        :investigatorId="investigatorId"
-        :location="location"
-        :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
         @choose="$emit('choose', $event)"
       />
 

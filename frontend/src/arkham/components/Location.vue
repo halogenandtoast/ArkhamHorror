@@ -9,6 +9,7 @@ import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
+import CardStack from '@/arkham/components/CardStack.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 
@@ -166,23 +167,25 @@ const debugChoose = inject('debugChoose')
       </div>
     </div>
     <div class="location-asset-column">
-      <Asset
-        v-for="assetId in location.assets"
-        :asset="game.assets[assetId]"
-        :game="game"
-        :investigatorId="investigatorId"
-        :key="assetId"
-        @choose="$emit('choose', $event)"
-      />
-      <Enemy
-        v-for="enemyId in enemies"
-        :key="enemyId"
-        :enemy="game.enemies[enemyId]"
-        :game="game"
-        :investigatorId="investigatorId"
-        :atLocation="true"
-        @choose="$emit('choose', $event)"
-      />
+      <CardStack>
+        <Asset
+          v-for="assetId in location.assets"
+          :asset="game.assets[assetId]"
+          :game="game"
+          :investigatorId="investigatorId"
+          :key="assetId"
+          @choose="$emit('choose', $event)"
+        />
+        <Enemy
+          v-for="enemyId in enemies"
+          :key="enemyId"
+          :enemy="game.enemies[enemyId]"
+          :game="game"
+          :investigatorId="investigatorId"
+          :atLocation="true"
+          @choose="$emit('choose', $event)"
+        />
+      </CardStack>
     </div>
   </div>
 </template>
@@ -220,7 +223,10 @@ const debugChoose = inject('debugChoose')
 .location-container {
   display: flex;
   margin: 0 5px;
-  min-width: 187px;
+
+  &:hover .location-asset-column {
+    transform: translateX(0%) translateX(10px);
+  }
 }
 
 .button{
@@ -255,6 +261,8 @@ const debugChoose = inject('debugChoose')
 }
 
 .location-card {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  z-index:10;
   height: $card-width * 1.07;
   width: $card-width * 1.25;
   background-size: 100%;
@@ -284,11 +292,18 @@ const debugChoose = inject('debugChoose')
 }
 
 .location-asset-column {
-  min-width: $card-width * 0.6;
+  transition: transform 0.2s;
+  z-index: -1000;
+  transform: translateX(-80%);
   height: 100%;
   &:deep(.card) {
-    width: $card-width * 0.6 !important;
+    width: $card-width * 0.8 !important;
   }
+
+  &:deep(.pool) {
+    opacity: 0;
+  }
+  width: $card-width * 0.8 !important;
 }
 
 .pool {

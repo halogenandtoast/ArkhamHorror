@@ -238,7 +238,9 @@ const activeCard = computed(() => {
   return null;
 })
 
+
 const players = computed(() => props.game.investigators)
+const investigatorIds = computed(() => Object.keys(players.value))
 const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
 const outOfPlay = computed(() => (props.scenario?.setAsideCards || []))
@@ -288,6 +290,11 @@ const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
 
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === null))
+
+function inFrontOf(investigatorId: string) {
+  return Object.values(props.game.locations).
+    filter((a) => a.inFrontOf === investigatorId)
+}
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
@@ -424,6 +431,22 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
           @choose="choose"
         />
       </transition-group>
+
+      <template v-for="iid in investigatorIds">
+        <div v-if="inFrontOf(iid).length > 0" class="locations-in-front-of" :key="iid">
+          <h4>{{game.investigators[iid].name.title}}</h4>
+          <Location
+            v-for="(location, key) in inFrontOf(iid)"
+            class="location"
+            :key="key"
+            :game="game"
+            :investigatorId="investigatorId"
+            :location="location"
+            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+            @choose="choose"
+          />
+        </div>
+      </template>
 
       <PlayerTabs
         :game="game"
@@ -757,5 +780,16 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
 .scenario-decks {
   gap: 2px;
+}
+
+.locations-in-front-of {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  h4 {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    text-align: center;
+  }
 }
 </style>

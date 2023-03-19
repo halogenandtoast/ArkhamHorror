@@ -7,6 +7,7 @@ import TestImport.Lifted
 import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.SkillTest.Base
 
 spec :: Spec
 spec = describe "Rex's Curse" $ do
@@ -39,11 +40,10 @@ spec = describe "Rex's Curse" $ do
         [ SetTokens [PlusOne]
         , loadDeck investigator [rexsCurse]
         , drawing
-        , BeginSkillTest
+        , BeginSkillTest $ initSkillTest
           (toId investigator)
           (TestSource mempty)
           TestTarget
-          Nothing
           SkillIntellect
           5
         ]

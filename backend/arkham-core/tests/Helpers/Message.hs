@@ -4,17 +4,20 @@ import Arkham.Prelude
 
 import Arkham.Action (Action)
 import Arkham.Asset.Types
-import Arkham.Attack
+import Arkham.Attack qualified as Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Helpers
+import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Name
 import Arkham.Placement
+import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -25,7 +28,7 @@ playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand
 
 moveTo :: Investigator -> Location -> Message
-moveTo i l = MoveTo (toSource i) (toId i) (toId l)
+moveTo i l = MoveTo $ move (toSource i) (toId i) (toId l)
 
 moveFrom :: Investigator -> Location -> Message
 moveFrom i l = MoveFrom (toSource i) (toId i) (toId l)
@@ -46,7 +49,7 @@ chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (toId i)
 
 enemyAttack :: Investigator -> Enemy -> Message
-enemyAttack i e = EnemyAttack (toId i) (toId e) DamageAny RegularAttack
+enemyAttack i e = EnemyAttack $ Attack.enemyAttack (toId e) (toId i)
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
@@ -72,11 +75,15 @@ investigate i l =
   Investigate (toId i) (toId l) (TestSource mempty) Nothing SkillIntellect False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
-beginSkillTest i =
-  BeginSkillTest (toId i) (TestSource mempty) TestTarget Nothing
+beginSkillTest i sType n =
+  BeginSkillTest $ initSkillTest (toId i) (TestSource mempty) TestTarget sType n
 
 beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> Int -> Message
-beginActionSkillTest i a mt =
-  BeginSkillTest (toId i) (TestSource mempty) target (Just a)
+beginActionSkillTest i a mt sType n =
+  BeginSkillTest $ (initSkillTest (toId i) (TestSource mempty) target sType n)
+    { skillTestAction = Just a }
  where
    target = fromMaybe TestTarget mt
+
+playAssetCard :: IsCard a => AssetId -> a -> Investigator -> Message
+playAssetCard assetId (toCard -> card) investigator = CreateAssetAt assetId card (InPlayArea $ toId investigator)

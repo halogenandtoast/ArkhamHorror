@@ -8,6 +8,7 @@ import Arkham.Action qualified as Action
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Types as Location
 import Arkham.Projection
+import Arkham.SkillTest.Base
 
 spec :: Spec
 spec = describe "Rex Murphy" $ do
@@ -48,11 +49,10 @@ spec = describe "Rex Murphy" $ do
           rexMurphy
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
-          , BeginSkillTest
+          , BeginSkillTest $ initSkillTest
             (toId rexMurphy)
             (TestSource mempty)
             TestTarget
-            Nothing
             SkillIntellect
             2
           ]
@@ -82,11 +82,10 @@ spec = describe "Rex Murphy" $ do
           rexMurphy
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
-          , BeginSkillTest
+          , BeginSkillTest $ initSkillTest
             (toId rexMurphy)
             (TestSource mempty)
             TestTarget
-            Nothing
             SkillIntellect
             6 -- two higher
           ]

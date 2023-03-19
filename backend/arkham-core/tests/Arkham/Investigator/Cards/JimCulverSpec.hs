@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.JimCulverSpec
   ( spec
   ) where
 
+import Arkham.SkillTest.Base
 import TestImport.Lifted
 
 spec :: Spec
@@ -12,19 +13,17 @@ spec = describe "Jim Culver" $ do
       didResolveSkull <- newIORef False
       let
         logger = \case
-          ResolveToken _ token _ -> if token == Skull
-            then atomicWriteIORef didResolveSkull True
-            else pure ()
+          ResolveToken _ token _ ->
+            when (token == Skull) $ atomicWriteIORef didResolveSkull True
           _ -> pure ()
       gameTestWithLogger
           logger
           jimCulver
           [ SetTokens [ElderSign]
-          , BeginSkillTest
+          , BeginSkillTest $ initSkillTest
             (toId jimCulver)
             (TestSource mempty)
             TestTarget
-            Nothing
             SkillIntellect
             2
           ]
@@ -50,11 +49,10 @@ spec = describe "Jim Culver" $ do
           logger
           jimCulver
           [ SetTokens [ElderSign]
-          , BeginSkillTest
+          , BeginSkillTest $ initSkillTest
             (toId jimCulver)
             (TestSource mempty)
             TestTarget
-            Nothing
             SkillIntellect
             2
           ]
@@ -81,11 +79,10 @@ spec = describe "Jim Culver" $ do
           logger
           jimCulver
           [ SetTokens [Skull]
-          , BeginSkillTest
+          , BeginSkillTest $ initSkillTest
             (toId jimCulver)
             (TestSource mempty)
             TestTarget
-            Nothing
             SkillIntellect
             2
           ]

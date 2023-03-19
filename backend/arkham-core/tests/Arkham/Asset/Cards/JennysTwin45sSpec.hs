@@ -44,10 +44,11 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation id
+    assetId <- getRandom
     gameTest
         investigator
         [ SetTokens [Zero]
-        , playCard investigator (PlayerCard jennysTwin45s)
+        , playAssetCard assetId jennysTwin45s investigator
         ]
         ((entitiesL . enemiesL %~ insertEntity enemy)
         . (entitiesL . locationsL %~ insertEntity location)
@@ -63,7 +64,7 @@ spec = describe "Jenny's Twin .45s" $ do
             , moveTo investigator location
             , UseCardAbility
               (toId investigator)
-              (AssetSource . AssetId $ pcId jennysTwin45s)
+              (AssetSource assetId)
               1
               []
               (UsesPayment 1)

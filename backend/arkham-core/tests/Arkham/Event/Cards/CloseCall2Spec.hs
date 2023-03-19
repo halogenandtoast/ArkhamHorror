@@ -14,12 +14,12 @@ spec :: Spec
 spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" $ do
     investigator <- testJenny (Investigator.resourcesL .~ 2)
-    closeCall2 <- genPlayerCard Cards.closeCall2
+    closeCall2 <- genCard Cards.closeCall2
     enemy <- testEnemy id
     location <- testLocation id
     gameTest
         investigator
-        [ addToHand investigator (PlayerCard closeCall2)
+        [ addToHand investigator closeCall2
         , placedLocation location
         , enemySpawn location enemy
         , moveTo investigator location
@@ -44,13 +44,13 @@ spec = describe "Close Call (2)" $ do
   it "does not work on Elite enemies" $ do
     location <- testLocation id
     investigator <- testJenny id
-    closeCall2 <- genPlayerCard Cards.closeCall2
-    enemy <- createEnemy <$> genEncounterCard Cards.ghoulPriest
+    closeCall2 <- genCard Cards.closeCall2
+    enemy <- createEnemy <$> genCard Cards.ghoulPriest <*> getRandom
     gameTest
         investigator
         [ moveTo investigator location
         , enemySpawn location enemy
-        , addToHand investigator (PlayerCard closeCall2)
+        , addToHand investigator closeCall2
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         ( (entitiesL . locationsL %~ insertEntity location)
@@ -58,20 +58,20 @@ spec = describe "Close Call (2)" $ do
         )
       $ do
           runMessages
-          queueRef <- messageQueue
+          queueRef <- queueToRef <$> messageQueue
           queueRef `refShouldBe` []
 
   it "does not work on weakness enemies" $ do
     location <- testLocation id
     investigator <- testJenny id
-    closeCall2 <- genPlayerCard Cards.closeCall2
-    enemy <- createEnemy <$> genPlayerCard Cards.mobEnforcer
+    closeCall2 <- genCard Cards.closeCall2
+    enemy <- createEnemy <$> genCard Cards.mobEnforcer <*> getRandom
     gameTest
         investigator
         [ SetBearer (toTarget enemy) (toId investigator)
         , moveTo investigator location
         , enemySpawn location enemy
-        , addToHand investigator (PlayerCard closeCall2)
+        , addToHand investigator closeCall2
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         ( (entitiesL . locationsL %~ insertEntity location)
@@ -79,5 +79,5 @@ spec = describe "Close Call (2)" $ do
         )
       $ do
           runMessages
-          queueRef <- messageQueue
+          queueRef <- queueToRef <$> messageQueue
           queueRef `refShouldBe` []

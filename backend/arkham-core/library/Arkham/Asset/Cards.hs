@@ -135,6 +135,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , armorOfArdennes5
   , artStudent
   , backpack
+  , backpack2
   , bandolier
   , baronSamedi
   , baseballBat
@@ -2837,6 +2838,13 @@ mistsOfRlyeh2 = (asset "53007" "Mists of R'lyeh" 2 Mystic)
   , cdSlots = [ArcaneSlot]
   , cdUses = Uses Charge 5
   , cdLevel = 2
+  }
+
+backpack2 :: CardDef
+backpack2 = (asset "53011" "Backpack" 1 Neutral)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = singleton Item
+  , cdSlots = [BodySlot]
   }
 
 wellConnected3 :: CardDef

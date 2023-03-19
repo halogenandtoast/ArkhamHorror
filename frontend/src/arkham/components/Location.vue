@@ -81,6 +81,14 @@ const enemies = computed(() => {
     .filter((e) => props.game.enemies[e].engagedInvestigators.length === 0);
 })
 
+const exhaustedEnemies = computed(() =>
+  enemies.value.filter((e) => props.game.enemies[e].exhausted)
+)
+
+const readyEnemies = computed(() =>
+  enemies.value.filter((e) => !props.game.enemies[e].exhausted)
+)
+
 const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked"))
 
 const debug = inject('debug')
@@ -167,6 +175,17 @@ const debugChoose = inject('debugChoose')
       </div>
     </div>
     <div class="location-asset-column">
+      <CardStack rotated>
+        <Enemy
+          v-for="enemyId in exhaustedEnemies"
+          :key="enemyId"
+          :enemy="game.enemies[enemyId]"
+          :game="game"
+          :investigatorId="investigatorId"
+          :atLocation="true"
+          @choose="$emit('choose', $event)"
+        />
+      </CardStack>
       <CardStack>
         <Asset
           v-for="assetId in location.assets"
@@ -177,7 +196,7 @@ const debugChoose = inject('debugChoose')
           @choose="$emit('choose', $event)"
         />
         <Enemy
-          v-for="enemyId in enemies"
+          v-for="enemyId in readyEnemies"
           :key="enemyId"
           :enemy="game.enemies[enemyId]"
           :game="game"
@@ -284,8 +303,6 @@ const debugChoose = inject('debugChoose')
 }
 
 .location-investigator-column {
-  min-width: $card-width * 0.6;
-  height: 100%;
   &:deep(.portrait) {
     height: 25%;
   }

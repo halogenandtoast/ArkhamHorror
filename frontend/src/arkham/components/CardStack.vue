@@ -19,6 +19,7 @@
   direction: rtl;
   grid-template-columns: repeat(auto-fit,  minmax(5px, max-content));
   &:hover {
+    transition: display 1s ease;
     position: absolute;
     padding-right: 10px;
     padding-left: calc($card-width + 10px);

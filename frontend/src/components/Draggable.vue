@@ -3,11 +3,15 @@ import { ref } from 'vue';
 
 const posX = ref(0)
 const posY = ref(0)
+const width = ref(0)
+const height = ref(0)
 
 function drag(e) {
   e.preventDefault()
   posX.value = e.clientX
   posY.value = e.clientY
+  width.value = e.target.width
+  height.value = e.target.height
   document.onmouseup = stopDrag
   document.onmousemove = elementDrag(e.target)
 }
@@ -53,7 +57,7 @@ function elementDrag(el) {
 
 .draggable {
   position: absolute;
-  /*width: 80%;*/
+  width: 50%;
   top: 50%;
   left: 50%;
   background: hsl(150.9 13.6% 52.4% / 80%);

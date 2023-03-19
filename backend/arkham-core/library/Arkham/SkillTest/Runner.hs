@@ -61,6 +61,22 @@ calculateSkillTestResultsData s = do
     (resultValueModifiers <$ guard (resultValueModifiers /= 0))
     isSuccess
 
+autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData s = do
+  modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
+  tokenValues <- sum <$> for
+    (skillTestRevealedTokens s <> skillTestResolvedTokens s)
+    (getModifiedTokenValue s)
+  let
+    totaledTokenValues = tokenValues + (skillTestValueModifier s)
+  pure $ SkillTestResultsData
+    0
+    0
+    totaledTokenValues
+    modifiedSkillTestDifficulty
+    Nothing
+    False
+
 getCurrentSkillValue :: HasGame m => SkillTest -> m Int
 getCurrentSkillValue st = case skillTestBaseValue st of
   SkillBaseValue sType -> do
@@ -240,9 +256,11 @@ instance RunMessage SkillTest where
         ]
       pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
+      resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
       pushAll
-        $ [ Will
+        $ SkillTestResults resultsData
+        : [ Will
               (FailedSkillTest
                 skillTestInvestigator
                 skillTestAction
@@ -320,6 +338,7 @@ instance RunMessage SkillTest where
         & (setAsideTokensL .~ mempty)
         & (revealedTokensL .~ mempty)
         & (resolvedTokensL .~ mempty)
+        & (valueModifierL .~ 0)
     SkillTestEnds _ _ -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.

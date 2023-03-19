@@ -499,6 +499,8 @@ allAssets = mapFrom
   , SomeAssetCard coltVestPocket2
   --- mystic [rttfa]
   , SomeAssetCard mistsOfRlyeh2
+  --- neutral [rttfa]
+  , SomeAssetCard backpack2
   -- Return to the circle undone
   -- rogue [rttcu]
   , SomeAssetCard wellConnected3

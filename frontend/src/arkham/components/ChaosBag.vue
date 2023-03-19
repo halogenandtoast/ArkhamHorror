@@ -131,7 +131,7 @@ const choose = (idx: number) => emit('choose', idx)
         />
         </div>
     </template>
-    <ChaosBagChoice v-if="chaosBag.choice" :choice="chaosBag.choice" :game="game" :investigatorId="investigatorId" @choose="choose" />
+    <ChaosBagChoice v-if="chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice" :game="game" :investigatorId="investigatorId" @choose="choose" />
   </div>
 </template>
 

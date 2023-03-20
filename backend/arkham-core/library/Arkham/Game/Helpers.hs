@@ -1000,10 +1000,10 @@ passesCriteria iid source windows' = \case
       (map toCardId <$> getAsIfInHandCards iid)
     case source of
       EventSource eid -> do
-        cardId <- field EventCardId eid
+        cardId <- field InHandEventCardId eid
         pure $ cardId `elem` hand
       AssetSource aid -> do
-        cardId <- field AssetCardId aid
+        cardId <- field InHandAssetCardId aid
         pure $ cardId `elem` hand
       TreacherySource tid -> do
         member tid <$> select

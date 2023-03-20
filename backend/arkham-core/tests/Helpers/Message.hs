@@ -25,7 +25,7 @@ import Arkham.Window (defaultWindows)
 import Arkham.Zone
 
 playEvent :: Investigator -> Event -> Message
-playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand
+playEvent i e = Run [InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand, FinishedEvent (toId e)]
 
 moveTo :: Investigator -> Location -> Message
 moveTo i l = MoveTo $ move (toSource i) (toId i) (toId l)

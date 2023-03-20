@@ -509,7 +509,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           cs ->
             pushAll
               $ replicate (discardAmount handDiscard)
-              $ chooseOne investigatorId
+              $ chooseOrRunOne investigatorId
               $ [ targetLabel
                     (toCardId c)
                     [ DiscardCard

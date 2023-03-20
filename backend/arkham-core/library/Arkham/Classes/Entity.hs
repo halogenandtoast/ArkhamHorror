@@ -49,6 +49,15 @@ instance Entity a => Entity (DiscardedEntity a) where
   toAttrs (DiscardedEntity a) = toAttrs a
   overAttrs f (DiscardedEntity a) = DiscardedEntity $ overAttrs f a
 
+newtype InHandEntity a = InHandEntity a
+
+instance Entity a => Entity (InHandEntity a) where
+  type EntityId (InHandEntity a) = EntityId a
+  type EntityAttrs (InHandEntity a) = EntityAttrs a
+  toId (InHandEntity a) = toId a
+  toAttrs (InHandEntity a) = toAttrs a
+  overAttrs f (InHandEntity a) = InHandEntity $ overAttrs f a
+
 newtype SetAsideEntity a = SetAsideEntity a
 
 instance Entity a => Entity (SetAsideEntity a) where

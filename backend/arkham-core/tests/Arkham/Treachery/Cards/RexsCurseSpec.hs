@@ -32,7 +32,7 @@ spec = describe "Rex's Curse" $ do
     rexsCurse <- genPlayerCard Cards.rexsCurse
     drawing <- drawCards (toId investigator) investigator 1
 
-    (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
+    (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 1
 
     gameTestWithLogger
         logger
@@ -51,7 +51,6 @@ spec = describe "Rex's Curse" $ do
       $ do
           runMessages
           chooseOnlyOption "start skill test"
-          chooseOnlyOption "apply results"
           chooseOnlyOption "trigger rex's curse"
           chooseOnlyOption "apply results"
           selectAny
@@ -76,7 +75,9 @@ spec = describe "Rex's Curse" $ do
       $ do
           runMessages
           chooseOnlyOption "start skill test"
-          chooseOnlyOption "apply results"
+          -- we sneak in this modifier to cause the next test (with the same token) to fail instead
+          push $ skillTestModifier (TestSource mempty) (toTarget investigator) (SkillModifier SkillIntellect (-1))
+          runMessages
           chooseOnlyOption "trigger rex's curse"
           chooseOnlyOption "apply results"
           selectAny

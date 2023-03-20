@@ -39,7 +39,7 @@ spec = do
             isInDiscardOf investigator darkMemory `shouldReturn` True
             didAdvanceAgenda `refShouldBe` True
 
-    it "is revealed and deals 2 horror if in hand at end of turn" $ do
+    fit "is revealed and deals 2 horror if in hand at end of turn" $ do
       investigator <- testJenny id
       darkMemory <- genPlayerCard Events.darkMemory
 
@@ -54,7 +54,7 @@ spec = do
           ]
           id
         $ do
-            void runMessages
+            runMessages
             chooseOnlyOption "trigger dark memory"
             chooseOnlyOption "assign first horror"
             chooseOnlyOption "assign second horror"

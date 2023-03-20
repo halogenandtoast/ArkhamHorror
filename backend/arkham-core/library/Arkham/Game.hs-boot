@@ -59,12 +59,14 @@ instance Projection Act
 instance Projection Agenda
 instance Projection Asset
 instance Projection (DiscardedEntity Asset)
+instance Projection (InHandEntity Asset)
 instance Projection Campaign
 instance Projection Effect
 instance Projection Enemy
 instance Projection VoidEnemy
 instance Projection (SetAsideEntity Enemy)
 instance Projection Event
+instance Projection (InHandEntity Event)
 instance Projection Investigator
 instance Projection Location
 instance Projection Scenario

@@ -2720,23 +2720,57 @@ instance Projection Effect where
       EffectAbilities -> pure $ getAbilities e
       EffectCardCode -> pure $ effectCardCode $ toAttrs e
 
+eventField :: HasGame m => Event -> Field Event a -> m a
+eventField e fld = do
+  let
+    attrs@EventAttrs {..} = toAttrs e
+    cdef = toCardDef attrs
+  case fld of
+    EventCardId -> pure eventCardId
+    EventSealedTokens -> pure eventSealedTokens
+    EventPlacement -> pure eventPlacement
+    EventTraits -> pure $ cdCardTraits cdef
+    EventAbilities -> pure $ getAbilities e
+    EventOwner -> pure eventOwner
+    EventDoom -> pure eventDoom
+    EventCard ->
+      -- an event might need to be converted back to its original card
+      pure $ lookupCard eventOriginalCardCode eventCardId
+
 instance Projection Event where
   field fld eid = do
     e <- getEvent eid
-    let
-      attrs@EventAttrs {..} = toAttrs e
-      cdef = toCardDef attrs
-    case fld of
-      EventCardId -> pure eventCardId
-      EventSealedTokens -> pure eventSealedTokens
-      EventPlacement -> pure eventPlacement
-      EventTraits -> pure $ cdCardTraits cdef
-      EventAbilities -> pure $ getAbilities e
-      EventOwner -> pure eventOwner
-      EventDoom -> pure eventDoom
-      EventCard ->
-        -- an event might need to be converted back to its original card
-        pure $ lookupCard eventOriginalCardCode eventCardId
+    eventField e fld
+
+instance Projection (InHandEntity Event) where
+  field f eid = do
+    let missingEvent = "Unknown event: " <> show eid
+    e <-
+      fromJustNote missingEvent
+      . lookup eid
+      . entitiesEvents
+      . mconcat
+      . HashMap.elems
+      . gameInHandEntities
+      <$> getGame
+    let attrs = toAttrs e
+    case f of
+      InHandEventCardId -> pure $ toCardId attrs
+
+instance Projection (InHandEntity Asset) where
+  field f aid = do
+    let missingAsset = "Unknown asset: " <> show aid
+    a <-
+      fromJustNote missingAsset
+      . lookup aid
+      . entitiesAssets
+      . mconcat
+      . HashMap.elems
+      . gameInHandEntities
+      <$> getGame
+    let attrs = toAttrs a
+    case f of
+      InHandAssetCardId -> pure $ toCardId attrs
 
 instance Projection Scenario where
   field fld _ = do

@@ -35,6 +35,9 @@ data instance Field Event :: Type -> Type where
   EventCardId :: Field Event CardId
   EventSealedTokens :: Field Event [Token]
 
+data instance Field (InHandEntity Event) :: Type -> Type where
+  InHandEventCardId :: Field (InHandEntity Event) CardId
+
 -- These could be different, update in the future
 eventController :: EventAttrs -> InvestigatorId
 eventController = eventOwner

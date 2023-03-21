@@ -39,7 +39,7 @@ spec = do
             isInDiscardOf investigator darkMemory `shouldReturn` True
             didAdvanceAgenda `refShouldBe` True
 
-    fit "is revealed and deals 2 horror if in hand at end of turn" $ do
+    it "is revealed and deals 2 horror if in hand at end of turn" $ do
       investigator <- testJenny id
       darkMemory <- genPlayerCard Events.darkMemory
 

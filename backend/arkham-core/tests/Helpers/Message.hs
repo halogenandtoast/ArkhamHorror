@@ -42,8 +42,8 @@ enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)
 loadDeck :: Investigator -> [PlayerCard] -> Message
 loadDeck i cs = LoadDeck (toId i) (Deck cs)
 
-addToHand :: Investigator -> Card -> Message
-addToHand i = AddToHand (toId i)
+addToHand :: IsCard a => Investigator -> a -> Message
+addToHand i (toCard -> c) = AddToHand (toId i) c
 
 chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (toId i)

@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Helpers
-import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Message
@@ -85,5 +84,6 @@ beginActionSkillTest i a mt sType n =
  where
    target = fromMaybe TestTarget mt
 
-playAssetCard :: IsCard a => AssetId -> a -> Investigator -> Message
-playAssetCard assetId (toCard -> card) investigator = CreateAssetAt assetId card (InPlayArea $ toId investigator)
+playAssetCard :: PlayerCard -> Investigator -> Message
+playAssetCard card (toId -> iid) =
+  InitiatePlayCard iid (PlayerCard $ card { pcOwner = Just iid}) Nothing (defaultWindows iid) True

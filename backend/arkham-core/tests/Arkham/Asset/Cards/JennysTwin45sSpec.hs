@@ -12,7 +12,7 @@ import Arkham.Enemy.Types (Field(..))
 import Arkham.Asset.Types (Field(..))
 import Arkham.Investigator.Types (InvestigatorAttrs(..))
 import Arkham.Projection
-import Arkham.Matcher (assetIs)
+import Arkham.Matcher (assetIs, AbilityMatcher(..))
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
@@ -44,11 +44,10 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation id
-    assetId <- getRandom
     gameTest
         investigator
         [ SetTokens [Zero]
-        , playAssetCard assetId jennysTwin45s investigator
+        , playAssetCard jennysTwin45s investigator
         ]
         ((entitiesL . enemiesL %~ insertEntity enemy)
         . (entitiesL . locationsL %~ insertEntity location)
@@ -56,20 +55,17 @@ spec = describe "Jenny's Twin .45s" $ do
       $ do
           runMessages
           activeCost <- getActiveCost
-          push $
+          pushAndRun $
             PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
-          runMessages
           pushAll
             [ enemySpawn location enemy
             , moveTo investigator location
-            , UseCardAbility
-              (toId investigator)
-              (AssetSource assetId)
-              1
-              []
-              (UsesPayment 1)
             ]
+
           runMessages
+          [ability] <- getAbilitiesMatching (AbilityOnCardControlledBy $ toId investigator)
+          pushAndRun $ UseAbility (toId investigator) ability []
+          
           chooseOnlyOption "choose enemy"
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"

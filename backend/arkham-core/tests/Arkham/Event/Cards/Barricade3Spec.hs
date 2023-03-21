@@ -9,6 +9,7 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field(..))
+import Arkham.Movement
 import Arkham.Projection
 
 spec :: Spec
@@ -44,7 +45,7 @@ spec = do
           investigator
           [ moveAllTo location
           , playEvent investigator barricade3
-          , moveFrom investigator2 location
+          , Move $ move investigator2 (toId investigator2) (toId location)
           ]
           ((entitiesL . eventsL %~ insertEntity barricade3)
           . (entitiesL . locationsL %~ insertEntity location)
@@ -52,6 +53,7 @@ spec = do
           )
         $ do
             runMessages
+            chooseOnlyOption "trigger barricade"
             getModifiers (toTarget location)
               `shouldReturn` []
             assert $ fieldP LocationEvents null (toId location)

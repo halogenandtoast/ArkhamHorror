@@ -4670,7 +4670,7 @@ preloadEntities g = do
         then pure entities
         else do
           handEntities <- foldM
-            (addEntity investigator')
+            (addCardEntity investigator')
             defaultEntities
             handEffectCards
           pure $ insertMap (toId investigator') handEntities entities
@@ -4680,7 +4680,7 @@ preloadEntities g = do
         $ (concat . HashMap.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getInvestigator =<< getActiveInvestigatorId
-  searchEntities <- foldM (addEntity active) defaultEntities searchEffectCards
+  searchEntities <- foldM (addCardEntity active) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   pure $ g
     { gameInHandEntities = handEntities

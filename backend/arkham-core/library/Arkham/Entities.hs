@@ -18,6 +18,7 @@ import Arkham.Enemy ()
 import Arkham.Enemy.Types (Enemy)
 import Arkham.Event
 import Arkham.Event.Types (Event)
+import Arkham.Id
 import Arkham.Investigator ()
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
@@ -28,27 +29,31 @@ import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 
--- Entity id generation should be random, so even though this is pure now
--- this is using a Monad
-addEntity :: MonadRandom m => Investigator -> Entities -> Card -> m Entities
-addEntity i e card = case card of
+-- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
+addCardEntity :: MonadRandom m => Investigator -> Entities -> Card -> m Entities
+addCardEntity i e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType -> do
-      eventId <- getRandom
-      let event' = createEvent card (toId i) eventId
+      let
+        eventId = EventId uuid
+        event' = createEvent card (toId i) eventId
       pure $ e & eventsL %~ insertEntity event'
     AssetType -> do
-      assetId <- getRandom
-      let asset = createAsset card assetId
+      let
+        assetId = AssetId uuid
+        asset = createAsset card assetId
       pure $ e & assetsL %~ insertMap (toId asset) asset
     _ -> error "Unhandled"
   EncounterCard ec -> case toCardType ec of
     TreacheryType -> do
-      treacheryId <- getRandom
-      let treachery = createTreachery card (toId i) treacheryId
+      let
+        treacheryId = TreacheryId uuid
+        treachery = createTreachery card (toId i) treacheryId
       pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled"
   VengeanceCard _ -> error "vengeance card"
+ where
+  uuid = unsafeCardIdToUUID (toCardId card)
 
 type EntityMap a = HashMap (EntityId a) a
 

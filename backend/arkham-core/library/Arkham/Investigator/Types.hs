@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Investigator.Types where
 
 import Arkham.Prelude
@@ -189,159 +190,6 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
-deckL :: Lens' InvestigatorAttrs (Deck PlayerCard)
-deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
-
-decksL :: Lens' InvestigatorAttrs (HashMap InvestigatorDeckKey [Card])
-decksL = lens investigatorDecks $ \m x -> m { investigatorDecks = x }
-
-discardL :: Lens' InvestigatorAttrs [PlayerCard]
-discardL = lens investigatorDiscard $ \m x -> m { investigatorDiscard = x }
-
-handL :: Lens' InvestigatorAttrs [Card]
-handL = lens investigatorHand $ \m x -> m { investigatorHand = x }
-
-slotsL :: Lens' InvestigatorAttrs (HashMap SlotType [Slot])
-slotsL = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
-
-usedAbilitiesL :: Lens' InvestigatorAttrs [UsedAbility]
-usedAbilitiesL =
-  lens investigatorUsedAbilities $ \m x -> m { investigatorUsedAbilities = x }
-
-xpL :: Lens' InvestigatorAttrs Int
-xpL = lens investigatorXp $ \m x -> m { investigatorXp = x }
-
-healthL :: Lens' InvestigatorAttrs Int
-healthL = lens investigatorHealth $ \m x -> m { investigatorHealth = x }
-
-sanityL :: Lens' InvestigatorAttrs Int
-sanityL = lens investigatorSanity $ \m x -> m { investigatorSanity = x }
-
-willpowerL :: Lens' InvestigatorAttrs Int
-willpowerL =
-  lens investigatorWillpower $ \m x -> m { investigatorWillpower = x }
-
-intellectL :: Lens' InvestigatorAttrs Int
-intellectL =
-  lens investigatorIntellect $ \m x -> m { investigatorIntellect = x }
-
-idL :: Lens' InvestigatorAttrs InvestigatorId
-idL = lens investigatorId $ \m x -> m { investigatorId = x }
-
-combatL :: Lens' InvestigatorAttrs Int
-combatL = lens investigatorCombat $ \m x -> m { investigatorCombat = x }
-
-agilityL :: Lens' InvestigatorAttrs Int
-agilityL = lens investigatorAgility $ \m x -> m { investigatorAgility = x }
-
-healthDamageL :: Lens' InvestigatorAttrs Int
-healthDamageL =
-  lens investigatorHealthDamage $ \m x -> m { investigatorHealthDamage = x }
-
-assignedHealthDamageL :: Lens' InvestigatorAttrs Int
-assignedHealthDamageL =
-  lens investigatorAssignedHealthDamage $ \m x -> m { investigatorAssignedHealthDamage = x }
-
-sanityDamageL :: Lens' InvestigatorAttrs Int
-sanityDamageL =
-  lens investigatorSanityDamage $ \m x -> m { investigatorSanityDamage = x }
-
-assignedSanityDamageL :: Lens' InvestigatorAttrs Int
-assignedSanityDamageL =
-  lens investigatorAssignedSanityDamage $ \m x -> m { investigatorAssignedSanityDamage = x }
-
-cluesL :: Lens' InvestigatorAttrs Int
-cluesL = lens investigatorClues $ \m x -> m { investigatorClues = x }
-
-doomL :: Lens' InvestigatorAttrs Int
-doomL = lens investigatorDoom $ \m x -> m { investigatorDoom = x }
-
-resourcesL :: Lens' InvestigatorAttrs Int
-resourcesL =
-  lens investigatorResources $ \m x -> m { investigatorResources = x }
-
-mentalTraumaL :: Lens' InvestigatorAttrs Int
-mentalTraumaL =
-  lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
-
-physicalTraumaL :: Lens' InvestigatorAttrs Int
-physicalTraumaL =
-  lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
-
-foundCardsL :: Lens' InvestigatorAttrs (HashMap Zone [Card])
-foundCardsL =
-  lens investigatorFoundCards $ \m x -> m { investigatorFoundCards = x }
-
-engagedEnemiesL :: Lens' InvestigatorAttrs (HashSet EnemyId)
-engagedEnemiesL =
-  lens investigatorEngagedEnemies $ \m x -> m { investigatorEngagedEnemies = x }
-
-assetsL :: Lens' InvestigatorAttrs (HashSet AssetId)
-assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
-
-eventsL :: Lens' InvestigatorAttrs (HashSet EventId)
-eventsL = lens investigatorEvents $ \m x -> m { investigatorEvents = x }
-
-cardsUnderneathL :: Lens' InvestigatorAttrs [Card]
-cardsUnderneathL = lens investigatorCardsUnderneath
-  $ \m x -> m { investigatorCardsUnderneath = x }
-
-actionsTakenL :: Lens' InvestigatorAttrs [Action]
-actionsTakenL =
-  lens investigatorActionsTaken $ \m x -> m { investigatorActionsTaken = x }
-
-remainingActionsL :: Lens' InvestigatorAttrs Int
-remainingActionsL = lens investigatorRemainingActions
-  $ \m x -> m { investigatorRemainingActions = x }
-
-treacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
-treacheriesL =
-  lens investigatorTreacheries $ \m x -> m { investigatorTreacheries = x }
-
-resignedL :: Lens' InvestigatorAttrs Bool
-resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
-
-defeatedL :: Lens' InvestigatorAttrs Bool
-defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
-
-killedL :: Lens' InvestigatorAttrs Bool
-killedL = lens investigatorKilled $ \m x -> m { investigatorKilled = x }
-
-drivenInsaneL :: Lens' InvestigatorAttrs Bool
-drivenInsaneL = lens investigatorDrivenInsane $ \m x -> m { investigatorDrivenInsane = x }
-
-endedTurnL :: Lens' InvestigatorAttrs Bool
-endedTurnL =
-  lens investigatorEndedTurn $ \m x -> m { investigatorEndedTurn = x }
-
-locationL :: Lens' InvestigatorAttrs LocationId
-locationL = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
-
-horrorHealedL :: Lens' InvestigatorAttrs Int
-horrorHealedL =
-  lens investigatorHorrorHealed $ \m x -> m { investigatorHorrorHealed = x }
-
-suppliesL :: Lens' InvestigatorAttrs [Supply]
-suppliesL = lens investigatorSupplies $ \m x -> m { investigatorSupplies = x }
-
-drawnCardsL :: Lens' InvestigatorAttrs [PlayerCard]
-drawnCardsL = lens investigatorDrawnCards $ \m x -> m { investigatorDrawnCards = x }
-
-startsWithL :: Lens' InvestigatorAttrs [CardDef]
-startsWithL =
-  lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }
-
-startsWithInHandL :: Lens' InvestigatorAttrs [CardDef]
-startsWithInHandL =
-  lens investigatorStartsWithInHand $ \m x -> m { investigatorStartsWithInHand = x }
-
-additionalActionsL :: Lens' InvestigatorAttrs [AdditionalAction]
-additionalActionsL = lens investigatorAdditionalActions
-  $ \m x -> m { investigatorAdditionalActions = x }
-
-discardingL :: Lens' InvestigatorAttrs (Maybe HandDiscard)
-discardingL = lens investigatorDiscarding $ \m x -> m { investigatorDiscarding = x }
-
 data Investigator = forall a . IsInvestigator a => Investigator a
 
 instance Eq Investigator where
@@ -397,3 +245,5 @@ someInvestigatorCardCode = liftInvestigatorCard cbCardCode
 
 toInvestigator :: SomeInvestigatorCard -> Investigator
 toInvestigator (SomeInvestigatorCard f) = Investigator $ cbCardBuilder f nullCardId ()
+
+makeLensesWith suffixedFields ''InvestigatorAttrs

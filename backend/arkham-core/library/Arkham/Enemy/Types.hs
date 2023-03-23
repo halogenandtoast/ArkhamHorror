@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Enemy.Types
   ( module Arkham.Enemy.Types
@@ -17,7 +18,6 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.DamageEffect
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
 import Arkham.GameValue
@@ -29,7 +29,6 @@ import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
@@ -67,73 +66,6 @@ data instance Field Enemy :: Type -> Type where
 
 data instance Field (SetAsideEntity Enemy) :: Type -> Type where
   SetAsideEnemyField :: Field Enemy typ -> Field (SetAsideEntity Enemy) typ
-
-originalCardCodeL :: Lens' EnemyAttrs CardCode
-originalCardCodeL = lens enemyOriginalCardCode $ \m x -> m { enemyOriginalCardCode = x }
-
-sealedTokensL :: Lens' EnemyAttrs [Token]
-sealedTokensL = lens enemySealedTokens $ \m x -> m { enemySealedTokens = x }
-
-damageStrategyL :: Lens' EnemyAttrs DamageStrategy
-damageStrategyL =
-  lens enemyDamageStrategy $ \m x -> m { enemyDamageStrategy = x }
-
-movedFromHunterKeywordL :: Lens' EnemyAttrs Bool
-movedFromHunterKeywordL = lens enemyMovedFromHunterKeyword
-  $ \m x -> m { enemyMovedFromHunterKeyword = x }
-
-bearerL :: Lens' EnemyAttrs (Maybe InvestigatorId)
-bearerL = lens enemyBearer $ \m x -> m { enemyBearer = x }
-
-spawnAtL :: Lens' EnemyAttrs (Maybe SpawnAt)
-spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
-
-surgeIfUnableToSpawnL :: Lens' EnemyAttrs Bool
-surgeIfUnableToSpawnL =
-  lens enemySurgeIfUnabledToSpawn $ \m x -> m { enemySurgeIfUnabledToSpawn = x }
-
-placementL :: Lens' EnemyAttrs Placement
-placementL = lens enemyPlacement $ \m x -> m { enemyPlacement = x }
-
-healthDamageL :: Lens' EnemyAttrs Int
-healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
-
-sanityDamageL :: Lens' EnemyAttrs Int
-sanityDamageL = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
-
-healthL :: Lens' EnemyAttrs GameValue
-healthL = lens enemyHealth $ \m x -> m { enemyHealth = x }
-
-fightL :: Lens' EnemyAttrs Int
-fightL = lens enemyFight $ \m x -> m { enemyFight = x }
-
-evadeL :: Lens' EnemyAttrs (Maybe Int)
-evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
-
-asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
-asSelfLocationL =
-  lens enemyAsSelfLocation $ \m x -> m { enemyAsSelfLocation = x }
-
-preyL :: Lens' EnemyAttrs PreyMatcher
-preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
-
-damageL :: Lens' EnemyAttrs Int
-damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
-
-assignedDamageL :: Lens' EnemyAttrs (HashMap Source DamageAssignment)
-assignedDamageL = lens enemyAssignedDamage $ \m x -> m { enemyAssignedDamage = x }
-
-exhaustedL :: Lens' EnemyAttrs Bool
-exhaustedL = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
-
-doomL :: Lens' EnemyAttrs Int
-doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
-
-cluesL :: Lens' EnemyAttrs Int
-cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
-
-resourcesL :: Lens' EnemyAttrs Int
-resourcesL = lens enemyResources $ \m x -> m { enemyResources = x }
 
 allEnemyCards :: HashMap CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards
@@ -188,7 +120,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyClues = 0
       , enemyResources = 0
       , enemySpawnAt = Nothing
-      , enemySurgeIfUnabledToSpawn = False
+      , enemySurgeIfUnableToSpawn = False
       , enemyAsSelfLocation = Nothing
       , enemyMovedFromHunterKeyword = False
       , enemyDamageStrategy = DamageAny
@@ -297,3 +229,5 @@ liftSomeEnemyCard f (SomeEnemyCard a) = f a
 
 someEnemyCardCode :: SomeEnemyCard -> CardCode
 someEnemyCardCode = liftSomeEnemyCard cbCardCode
+
+makeLensesWith suffixedFields ''EnemyAttrs

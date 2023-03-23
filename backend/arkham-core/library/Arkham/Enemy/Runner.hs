@@ -895,7 +895,7 @@ instance RunMessage EnemyAttrs where
             $ Discard GameSource (EnemyTarget eid)
             : [ Surge iid (toSource a)
               | iid <- maybeToList miid
-              , enemySurgeIfUnabledToSpawn
+              , enemySurgeIfUnableToSpawn
               ]
         [lid] -> do
           windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]

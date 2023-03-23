@@ -93,18 +93,19 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     a <$ when standalone (push $ StartScenario scenarioId)
   InitDeck iid deck -> do
     standalone <- getIsStandalone
-    a <$ when
-      standalone
-      do
+    if standalone
+      then do
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
         weaknesses <- traverse genPlayerCard randomWeaknesses
         let
           mentalTrauma = getSum $ foldMap
             (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-            (unDeck deck')
+            deck'
         pushAll
           $ LoadDeck iid (withDeck (<> weaknesses) deck')
           : [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]
+        pure $ a & playerDecksL %~ insertMap iid deck'
+      else pure a
   PlaceLocationMatching cardMatcher -> do
     let
       matches = filter
@@ -126,8 +127,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         fromMaybe mempty $ lookup n scenarioCompletedAgendaStack
     (oldAgenda, agendaStack') <- case lookup n scenarioAgendaStack of
       Just (x : y : ys) -> do
-        let
-          fromAgendaId = AgendaId (toCardCode x)
+        let fromAgendaId = AgendaId (toCardCode x)
         push (ReplaceAgenda fromAgendaId y)
         pure (x, y : ys)
       _ -> error "Can not advance agenda deck"
@@ -140,13 +140,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       Just xs -> do
         let
           go [] as = (as, [])
-          go (y : ys) as =
-            if cdStage (toCardDef y) /= Just n then go ys (y : as) else (y : as, ys)
+          go (y : ys) as = if cdStage (toCardDef y) /= Just n
+            then go ys (y : as)
+            else (y : as, ys)
           (prepend, remaining) = go xs []
         case (prepend, lookup n scenarioAgendaStack) of
           (toAgenda : _, Just (fromAgenda : _)) -> do
-            let
-              fromAgendaId = AgendaId (toCardCode fromAgenda)
+            let fromAgendaId = AgendaId (toCardCode fromAgenda)
             push (ReplaceAgenda fromAgendaId toAgenda)
           _ -> error "Could not reset agenda deck to stage"
         pure
@@ -159,8 +159,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
     (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : y : ys) -> do
-        let
-          fromActId = ActId (toCardCode x)
+        let fromActId = ActId (toCardCode x)
         push (ReplaceAct fromActId y)
         pure (x, y : ys)
       _ -> error "Can not advance act deck"
@@ -193,8 +192,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
     (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : ys) -> do
-        let
-          fromActId = ActId (toCardCode x)
+        let fromActId = ActId (toCardCode x)
         case find (`isCard` actDef) ys of
           Nothing -> error $ "Missing act: " <> show actDef
           Just toAct -> do
@@ -222,13 +220,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       Just xs -> do
         let
           go [] as = (as, [])
-          go (y : ys) as =
-            if cdStage (toCardDef y) /= Just n then go ys (y : as) else (y : as, ys)
+          go (y : ys) as = if cdStage (toCardDef y) /= Just n
+            then go ys (y : as)
+            else (y : as, ys)
           (prepend, remaining) = go xs []
         case (prepend, lookup n scenarioActStack) of
           (toAct : _, Just (fromAct : _)) -> do
-            let
-              fromActId = ActId (toCardCode fromAct)
+            let fromActId = ActId (toCardCode fromAct)
             push (ReplaceAct fromActId toAct)
           _ -> error "Could not reset act deck to stage"
         pure
@@ -239,8 +237,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   AdvanceToAgenda n agendaDef newAgendaSide _ -> do
     agendaStack' <- case lookup n scenarioAgendaStack of
       Just (x : ys) -> do
-        let
-          fromAgendaId = AgendaId (toCardCode x)
+        let fromAgendaId = AgendaId (toCardCode x)
         case find (`isCard` agendaDef) ys of
           Nothing -> error $ "Missing agenda: " <> show agendaDef
           Just toAgenda -> do
@@ -250,7 +247,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             -- filter the stack so only agendas with higher stages are left
             pure $ filter
               (\c ->
-                (fromMaybe False (liftA2 (>) (cdStage $ toCardDef c) (cdStage agendaDef)))
+                (fromMaybe
+                    False
+                    (liftA2 (>) (cdStage $ toCardDef c) (cdStage agendaDef))
+                  )
                   || (toCardCode c `cardCodeExactEq` toCardCode agendaDef)
               )
               ys
@@ -532,12 +532,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   InvestigatorDoDrawEncounterCard iid -> case unDeck scenarioEncounterDeck of
     [] -> do
       when (notNull scenarioDiscard) $ do
-        pushAll [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
+        pushAll
+          [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
       pure a
       -- This case should not happen but this safeguards against it
     (card : encounterDeck) -> do
       when (null encounterDeck) $ do
-        windows' <- checkWindows [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+        windows' <- checkWindows
+          [Window Timing.When Window.EncounterDeckRunsOutOfCards]
         pushAll [windows', ShuffleEncounterDiscardBackIn]
       pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
       pure $ a & (encounterDeckL .~ Deck encounterDeck)
@@ -746,7 +748,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ [ TargetLabel
             (CardIdTarget $ toCardId card)
             [FoundAndDrewEncounterCard iid FromDiscard card]
-        | includeDiscard, card <- matchingDiscards
+        | includeDiscard
+        , card <- matchingDiscards
         ]
       <> [ TargetLabel
              (CardIdTarget $ toCardId card)
@@ -766,12 +769,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   DiscardTopOfEncounterDeck iid n source mtarget -> a <$ push
     (DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget [])
   DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards -> do
-    windows' <- checkWindows [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+    windows' <- checkWindows
+      [Window Timing.When Window.EncounterDeckRunsOutOfCards]
     pushAll
       $ [ DiscardedTopOfEncounterDeck iid cards source target
         | target <- maybeToList mtarget
         ]
-      <> (guard (null scenarioEncounterDeck) *> [ windows', ShuffleEncounterDiscardBackIn])
+      <> (guard (null scenarioEncounterDeck)
+         *> [windows', ShuffleEncounterDiscardBackIn]
+         )
     pure a
   DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards
     -> case unDeck scenarioEncounterDeck of

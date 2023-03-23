@@ -10,6 +10,7 @@ data Placement
   | AttachedToLocation LocationId
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
+  | StillInHand InvestigatorId
   | AttachedToEnemy EnemyId
   | AttachedToAsset AssetId (Maybe Placement)
   | AttachedToAct ActId
@@ -38,6 +39,7 @@ placementToAttached = \case
   Limbo -> Nothing
   TheVoid -> Nothing
   Pursuit -> Nothing
+  StillInHand _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = \case

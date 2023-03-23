@@ -955,6 +955,7 @@ onSameLocation iid = \case
   Limbo -> pure False
   TheVoid -> pure False
   Pursuit -> pure False
+  StillInHand _ -> pure False
 
 getSpendableResources :: HasGame m => InvestigatorId -> m Int
 getSpendableResources iid = do

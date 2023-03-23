@@ -477,6 +477,7 @@ library
       Arkham.Asset.Cards.Newspaper
       Arkham.Asset.Cards.Newspaper2
       Arkham.Asset.Cards.OccultLexicon
+      Arkham.Asset.Cards.OccultScraps
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldBookOfLore3
       Arkham.Asset.Cards.OldHuntingRifle3
@@ -533,6 +534,7 @@ library
       Arkham.Asset.Cards.SebastienMoreau
       Arkham.Asset.Cards.ShardsOfTheVoid3
       Arkham.Asset.Cards.Shotgun4
+      Arkham.Asset.Cards.Showmanship
       Arkham.Asset.Cards.ShrewdAnalysis
       Arkham.Asset.Cards.Shrivelling
       Arkham.Asset.Cards.Shrivelling3

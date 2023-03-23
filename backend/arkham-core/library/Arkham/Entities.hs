@@ -30,8 +30,8 @@ import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 
 -- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
-addCardEntity :: MonadRandom m => Investigator -> Entities -> Card -> m Entities
-addCardEntity i e card = case card of
+addCardEntityWith :: MonadRandom m => Investigator -> (forall a. Typeable a => a -> a) -> Entities -> Card -> m Entities
+addCardEntityWith i f e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType -> do
       let
@@ -41,7 +41,7 @@ addCardEntity i e card = case card of
     AssetType -> do
       let
         assetId = AssetId uuid
-        asset = createAsset card assetId
+        asset = f $ createAsset card assetId
       pure $ e & assetsL %~ insertMap (toId asset) asset
     _ -> error "Unhandled"
   EncounterCard ec -> case toCardType ec of

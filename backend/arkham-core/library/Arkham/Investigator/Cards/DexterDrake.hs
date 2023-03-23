@@ -7,6 +7,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Cost
@@ -42,7 +43,7 @@ instance HasAbilities DexterDrake where
     [ restrictedAbility
           a
           1
-          (Self <> DuringTurn You <> PlayableCardExistsWithCostReduction 1 (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard))
+          (Self <> DuringTurn You <> AnyCriterion [PlayableCardExistsWithCostReduction 1 (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard), ExtendedCardExists (InHandOf You <> BasicCardMatch (cardIs Assets.occultScraps))])
         $ FastAbility
         $ DiscardAssetCost
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand You (PlayableCardWithCostReduction 1 (BasicCardMatch AssetCard)) AnyAsset
@@ -60,7 +61,7 @@ toCardPaid _ = error "Invalid payment"
 instance RunMessage DexterDrake where
   runMessage msg i@(DexterDrake attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (toCardPaid -> card) -> do
-      cards <- selectList $ PlayableCardWithCostReduction 1 (InHandOf (InvestigatorWithId $ toId attrs) <> BasicCardMatch (AssetCard <> NotCard (CardWithTitle $ toTitle card)))
+      cards <- selectList $ ExtendedCardWithOneOf [PlayableCardWithCostReduction 1 (InHandOf (InvestigatorWithId $ toId attrs) <> BasicCardMatch (AssetCard <> NotCard (CardWithTitle $ toTitle card))), InHandOf (InvestigatorWithId iid) <> BasicCardMatch (cardIs Assets.occultScraps)]
       pushAll
         [ chooseOrRunOne
           iid
@@ -88,8 +89,9 @@ dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake
 
 instance HasModifiersFor DexterDrakeEffect where
   getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs)
-    | effectTarget attrs == target = pure
-    $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
+    | effectTarget attrs == target = do
+    card <- getCard cid
+    pure $ toModifiers attrs $ [ReduceCostOf (CardWithId cid) 1] <> [CanPlayWithOverride NoRestriction | card `cardIs` Assets.occultScraps]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DexterDrakeEffect where

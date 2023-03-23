@@ -1780,6 +1780,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (x : xs) -> do
         push (RequestedPlayerCard iid source (Just x))
         pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
+  RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> do
+    let
+      (revealed, remainingDeck) = 
+        break (`cardMatch` matcher) (unDeck investigatorDeck)
+    case remainingDeck of
+      [] -> do
+        pushAll
+          [RevealedCards iid source (Deck.InvestigatorDeck iid') Nothing (map PlayerCard revealed), DeckHasNoCards iid Nothing]
+        pure $ a & deckL .~ mempty
+      (x : xs) -> do
+        push (RevealedCards iid source (Deck.InvestigatorDeck iid') (Just $ PlayerCard x) (map PlayerCard revealed))
+        pure $ a & deckL .~ Deck xs
   DrawCards cardDraw
     | cardDrawInvestigator cardDraw == investigatorId && cardDrawAction cardDraw
     -> do

@@ -141,10 +141,8 @@ instance RunMessage AssetAttrs where
       a <$ push (RemoveFromPlay $ toSource a)
     Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
-      a <$ pushAll
-        (windows'
-        <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
-        )
+      pushAll $ windows' <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
+      pure a
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
     RemoveFromPlay source | isSource a source -> do

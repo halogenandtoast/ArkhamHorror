@@ -39,14 +39,14 @@ instance HasAbilities LibraryDocent1 where
             (HandCardWithDifferentTitleFromAtLeastOneAsset
               You
               (AssetWithTrait Tome)
-              (CardWithTrait Tome <> CardWithType AssetType)
+              (CardWithTrait Tome)
             )
           )
         $ ReactionAbility (AssetEntersPlay Timing.When $ AssetWithId $ toId a)
         $ ReturnMatchingAssetToHandCost
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand
             You
-            (CardWithTrait Tome <> CardWithType AssetType)
+            (BasicCardMatch $ CardWithTrait Tome)
             (AssetWithTrait Tome)
     ]
 

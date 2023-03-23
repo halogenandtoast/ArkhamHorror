@@ -85,6 +85,7 @@ data Question msg
   | QuestionLabel { label :: Text, question :: (Question msg) }
   | Read { flavorText :: FlavorText, readChoices :: [UI msg] }
   | PickSupplies { pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg] }
+  | DropDown { options :: [(Text, msg)] }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

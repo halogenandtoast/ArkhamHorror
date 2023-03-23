@@ -6,6 +6,7 @@ module Arkham.Criteria
 import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Cost.Status
 import Arkham.Criteria.Override
 import Arkham.GameValue
 import Arkham.Matcher
@@ -95,7 +96,7 @@ data Criterion
   | OnSameLocation
   | OwnCardWithDoom
   | ControlsThis -- really controls this
-  | PlayableCardExists ExtendedCardMatcher
+  | PlayableCardExists CostStatus ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher

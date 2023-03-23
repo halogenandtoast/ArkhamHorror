@@ -301,6 +301,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , mistsOfRlyeh2
   , mistsOfRlyeh4
   , mitchBrown
+  , mollyMaxwell
   , monstrousTransformation
   , moxie1
   , mysteriousRaven
@@ -3296,6 +3297,14 @@ theNecronomiconAdvanced =
     { cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [HandSlot]
     }
+
+mollyMaxwell :: CardDef
+mollyMaxwell = (asset "98017" ("Molly Maxwell" <:> "The Exotic Morgana") 3 Neutral)
+  { cdCardTraits = setFromList [Ally, Assistant]
+  , cdSkills = [#willpower, #agility, #wild]
+  , cdSlots = [AllySlot]
+  , cdUnique = True
+  }
 
 courage :: CardDef
 courage =

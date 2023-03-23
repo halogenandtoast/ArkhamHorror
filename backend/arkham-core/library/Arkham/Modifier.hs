@@ -125,6 +125,7 @@ data ModifierType
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlay CardMatcher
+  | CannotPutIntoPlay CardMatcher
   | CannotSpendClues
   | MaxCluesDiscovered Int
   | CannotDiscoverCluesAt LocationMatcher

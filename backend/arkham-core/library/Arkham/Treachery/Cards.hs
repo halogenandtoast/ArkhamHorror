@@ -139,6 +139,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , thriceDamnedCuriosity
   , voiceOfTheMessenger
   , wrackedByNightmares
+  , yaztaroth
   ]
 
 allEncounterTreacheryCards :: HashMap CardCode CardDef
@@ -1431,4 +1432,9 @@ abduction = (treachery "82036" "Abduction" CarnevaleOfHorrors 2)
 acridMiasma :: CardDef
 acridMiasma = (treachery "82037" "Acrid Miasma" CarnevaleOfHorrors 2)
   { cdCardTraits = singleton Hazard
+  }
+
+yaztaroth :: CardDef
+yaztaroth = (weakness "98018" "Yaztaroth")
+  { cdCardTraits = setFromList [Curse, Pact]
   }

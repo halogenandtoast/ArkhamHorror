@@ -39,6 +39,8 @@ lookupInvestigator iid = case lookup (unInvestigatorId iid) allInvestigators of
 lookupPromoInvestigator :: InvestigatorId -> Investigator
 lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
 lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
+lookupPromoInvestigator "98007" = lookupInvestigator "08004" -- Norman Withers
+lookupPromoInvestigator "98016" = lookupInvestigator "07004" -- Dexter Drake
 lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
 instance FromJSON Investigator where
@@ -92,6 +94,7 @@ allInvestigators = mapFromList $ map
   , SomeInvestigatorCard ritaYoung
   , SomeInvestigatorCard marieLambeau
   , SomeInvestigatorCard normanWithers
+  , SomeInvestigatorCard dexterDrake
   , SomeInvestigatorCard nathanielCho
   , SomeInvestigatorCard harveyWalters
   , SomeInvestigatorCard stellaClark

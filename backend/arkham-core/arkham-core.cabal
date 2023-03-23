@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -469,6 +469,7 @@ library
       Arkham.Asset.Cards.MistsOfRlyeh2
       Arkham.Asset.Cards.MistsOfRlyeh4
       Arkham.Asset.Cards.MitchBrown
+      Arkham.Asset.Cards.MollyMaxwell
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.Moxie1
       Arkham.Asset.Cards.MrPeabody
@@ -673,6 +674,7 @@ library
       Arkham.Constants
       Arkham.Cost
       Arkham.Cost.FieldCost
+      Arkham.Cost.Status
       Arkham.Criteria
       Arkham.Criteria.Override
       Arkham.Damage
@@ -1160,6 +1162,7 @@ library
       Arkham.Investigator.Cards.CarolynFern
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
+      Arkham.Investigator.Cards.DexterDrake
       Arkham.Investigator.Cards.DianaStanley
       Arkham.Investigator.Cards.FatherMateo
       Arkham.Investigator.Cards.FinnEdwards
@@ -1943,6 +1946,7 @@ library
       Arkham.Treachery.Cards.Wracked
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Cards.WrackedByTime
+      Arkham.Treachery.Cards.Yaztaroth
       Arkham.Treachery.Cards.YithianPresence
       Arkham.Treachery.Helpers
       Arkham.Treachery.Runner

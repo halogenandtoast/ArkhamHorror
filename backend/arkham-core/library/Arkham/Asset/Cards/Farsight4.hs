@@ -35,7 +35,7 @@ instance HasAbilities Farsight4 where
           <> DuringTurn You
           <> InvestigatorExists
                (You <> HandWith (LengthIs $ AtLeast $ Static 8))
-          <> PlayableCardExists
+          <> PlayableCardExists UnpaidCost
                (InHandOf You <> BasicCardMatch (CardWithType EventType))
           )
         $ FastAbility

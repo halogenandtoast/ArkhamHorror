@@ -302,6 +302,8 @@ data Message
   | Discard Source Target
   | DiscardHand InvestigatorId Source
   | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
+  | RevealUntilFirst InvestigatorId Source DeckSignifier CardMatcher
+  | RevealedCards InvestigatorId Source DeckSignifier (Maybe Card) [Card]
   | DiscardUntilFirst InvestigatorId Source CardMatcher
   | DiscardTopOfDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
@@ -727,6 +729,10 @@ questionLabel lbl iid q = Ask iid (QuestionLabel lbl q)
 chooseOne :: InvestigatorId -> [UI Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
+
+chooseOneDropDown :: InvestigatorId -> [(Text, Message)] -> Message
+chooseOneDropDown _ [] = throw $ InvalidState "No messages for chooseOne"
+chooseOneDropDown iid msgs = Ask iid (DropDown msgs)
 
 chooseOneAtATime :: InvestigatorId -> [UI Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"

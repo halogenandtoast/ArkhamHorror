@@ -7,13 +7,16 @@ const width = ref(0)
 const height = ref(0)
 
 function drag(e) {
-  e.preventDefault()
-  posX.value = e.clientX
-  posY.value = e.clientY
-  width.value = e.target.width
-  height.value = e.target.height
-  document.onmouseup = stopDrag
-  document.onmousemove = elementDrag(e.target)
+  if (e.target.tagName === "HEADER") {
+    const parent = e.target.parentNode;
+    e.preventDefault()
+    posX.value = e.clientX
+    posY.value = e.clientY
+    width.value = parent.width
+    height.value = parent.height
+    document.onmouseup = stopDrag
+    document.onmousemove = elementDrag(parent)
+  }
 }
 
 function stopDrag() {
@@ -43,15 +46,14 @@ function elementDrag(el) {
 </script>
 
 <template>
-  <div class="draggable" @mousedown="drag">
-    <header><slot name="handle"></slot></header>
+  <div class="draggable">
+    <header @mousedown="drag"><slot name="handle"></slot></header>
     <slot></slot>
   </div>
 </template>
 
 <style lang="scss">
 .draggable > header {
-  pointer-events: none;
   background: rgba(0 0 0 / 50%);
 }
 
@@ -85,6 +87,7 @@ function elementDrag(el) {
   > * {
     padding: 0;
     margin: 0;
+    pointer-events: none;
   }
 }
 

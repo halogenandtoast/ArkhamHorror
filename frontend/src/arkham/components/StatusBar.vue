@@ -6,6 +6,7 @@ import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable';
+import DropDown from '@/components/DropDown';
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 
 export interface Props {
@@ -103,6 +104,10 @@ const title = computed(() => {
     return "Story"
   }
 
+  if (question.value && question.value.tag === QuestionType.DROP_DOWN) {
+    return "Choose one"
+  }
+
   if (showChoices.value === true) {
     return "Choose"
   }
@@ -173,6 +178,10 @@ const label = function(body) {
           v-for="(paragraph, index) in question.flavorText.body"
           :key="index"
         >{{paragraph}}</p>
+      </div>
+
+      <div class="question-label" v-if="question && question.tag === 'DropDown'">
+        <DropDown @choose="choose" :options="question.options" />
       </div>
 
 

@@ -827,7 +827,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       _ -> pure True
 
     let
-      handleCriteriaReplacement m (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
+      handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _  = m
       duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]

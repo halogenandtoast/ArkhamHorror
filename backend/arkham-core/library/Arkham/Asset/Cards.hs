@@ -138,6 +138,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , backpack
   , backpack2
   , bandolier
+  , bandolier2
   , baronSamedi
   , baseballBat
   , beatCop
@@ -2828,6 +2829,14 @@ rabbitsFoot3 = (asset "50010" "Rabbit's Foot" 1 Survivor)
   , cdCardTraits = setFromList [Item, Charm]
   , cdLevel = 3
   , cdSlots = [AccessorySlot]
+  }
+
+bandolier2 :: CardDef
+bandolier2 = (asset "51001" "Bandolier" 2 Guardian)
+  { cdSkills = [#willpower, #combat]
+  , cdCardTraits = setFromList [Item]
+  , cdSlots = [BodySlot]
+  , cdLevel = 2
   }
 
 riteOfSeeking2 :: CardDef

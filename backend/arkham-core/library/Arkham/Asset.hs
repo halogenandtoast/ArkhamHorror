@@ -496,6 +496,8 @@ allAssets = mapFrom
   , SomeAssetCard digDeep2
   , SomeAssetCard rabbitsFoot3
   -- Return to the Dunwich Legacy
+  --- guardian [rtdwl]
+  , SomeAssetCard bandolier2
   --- mystic [rtdwl]
   , SomeAssetCard riteOfSeeking2
   -- Return to the Forgotten Age

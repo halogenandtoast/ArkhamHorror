@@ -818,6 +818,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     additionalResources <-
       sum <$> traverse (field InvestigatorResources . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorTarget iid)
+    cardModifiers <- getModifiers (toCardId c)
     let title = nameTitle (cdName pcDef)
     passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
       (True, AssetType) -> not <$> case nameSubtitle (cdName pcDef) of
@@ -826,6 +827,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       _ -> pure True
 
     let
+      handleCriteriaReplacement m (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
+      handleCriteriaReplacement m _  = m
       duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
       canBecomeFast =
@@ -841,7 +844,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     passesCriterias <- maybe
       (pure True)
       (passesCriteria iid (replaceThisCard c source) windows')
-      (cdCriteria pcDef)
+      (foldl' handleCriteriaReplacement (cdCriteria pcDef) cardModifiers)
     inFastWindow <- maybe
       (pure False)
       (cardInFastWindows iid source c windows')
@@ -857,7 +860,6 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       source
       windows'
     passesLimits <- allM passesLimit (cdLimits pcDef)
-    cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x

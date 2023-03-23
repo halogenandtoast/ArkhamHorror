@@ -195,7 +195,6 @@ data EnemyMatcher
   | AnyEnemy
   | CanFightEnemy
   | CanFightEnemyWithOverride CriteriaOverride
-  | CanPlayWithOverride CriteriaOverride
   | CanEvadeEnemy
   | CanEngageEnemy
   | ReadyEnemy

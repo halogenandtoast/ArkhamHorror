@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Ability
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
@@ -91,7 +92,7 @@ instance HasModifiersFor DexterDrakeEffect where
   getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs)
     | effectTarget attrs == target = do
     card <- getCard cid
-    pure $ toModifiers attrs $ [ReduceCostOf (CardWithId cid) 1] <> [CanPlayWithOverride NoRestriction | card `cardIs` Assets.occultScraps]
+    pure $ toModifiers attrs $ [ReduceCostOf (CardWithId cid) 1] <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DexterDrakeEffect where

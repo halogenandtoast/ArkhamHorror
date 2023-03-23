@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Asset.Types where
 
 import Arkham.Prelude
@@ -166,67 +167,6 @@ data AssetAttrs = AssetAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-discardWhenNoUsesL :: Lens' AssetAttrs Bool
-discardWhenNoUsesL =
-  lens assetDiscardWhenNoUses $ \m x -> m { assetDiscardWhenNoUses = x }
-
-canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
-canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans
-  $ \m x -> m { assetCanLeavePlayByNormalMeans = x }
-
-sealedTokensL :: Lens' AssetAttrs [Token]
-sealedTokensL = lens assetSealedTokens $ \m x -> m { assetSealedTokens = x }
-
-resourcesL :: Lens' AssetAttrs Int
-resourcesL = lens assetResources $ \m x -> m { assetResources = x }
-
-horrorL :: Lens' AssetAttrs Int
-horrorL = lens assetHorror $ \m x -> m { assetHorror = x }
-
-isStoryL :: Lens' AssetAttrs Bool
-isStoryL = lens assetIsStory $ \m x -> m { assetIsStory = x }
-
-placementL :: Lens' AssetAttrs Placement
-placementL = lens assetPlacement $ \m x -> m { assetPlacement = x }
-
-cardsUnderneathL :: Lens' AssetAttrs [Card]
-cardsUnderneathL =
-  lens assetCardsUnderneath $ \m x -> m { assetCardsUnderneath = x }
-
-healthL :: Lens' AssetAttrs (Maybe Int)
-healthL = lens assetHealth $ \m x -> m { assetHealth = x }
-
-sanityL :: Lens' AssetAttrs (Maybe Int)
-sanityL = lens assetSanity $ \m x -> m { assetSanity = x }
-
-slotsL :: Lens' AssetAttrs [SlotType]
-slotsL = lens assetSlots $ \m x -> m { assetSlots = x }
-
-doomL :: Lens' AssetAttrs Int
-doomL = lens assetDoom $ \m x -> m { assetDoom = x }
-
-cluesL :: Lens' AssetAttrs Int
-cluesL = lens assetClues $ \m x -> m { assetClues = x }
-
-usesL :: Lens' AssetAttrs Uses
-usesL = lens assetUses $ \m x -> m { assetUses = x }
-
-damageL :: Lens' AssetAttrs Int
-damageL = lens assetDamage $ \m x -> m { assetDamage = x }
-
-ownerL :: Lens' AssetAttrs (Maybe InvestigatorId)
-ownerL = lens assetOwner $ \m x -> m { assetOwner = x }
-
-controllerL :: Lens' AssetAttrs (Maybe InvestigatorId)
-controllerL = lens assetController $ \m x -> m { assetController = x }
-
-exhaustedL :: Lens' AssetAttrs Bool
-exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
-
-originalCardCodeL :: Lens' AssetAttrs CardCode
-originalCardCodeL =
-  lens assetOriginalCardCode $ \m x -> m { assetOriginalCardCode = x }
-
 allAssetCards :: HashMap CardCode CardDef
 allAssetCards =
   allPlayerAssetCards <> allEncounterAssetCards <> allSpecialPlayerAssetCards
@@ -257,27 +197,6 @@ asset
   -> CardDef
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
 asset f cardDef = assetWith f cardDef id
-
-ally
-  :: (AssetAttrs -> a)
-  -> CardDef
-  -> (Int, Int)
-  -> CardBuilder (AssetId, Maybe InvestigatorId) a
-ally f cardDef stats = allyWith f cardDef stats id
-
-allyWith
-  :: (AssetAttrs -> a)
-  -> CardDef
-  -> (Int, Int)
-  -> (AssetAttrs -> AssetAttrs)
-  -> CardBuilder (AssetId, Maybe InvestigatorId) a
-allyWith f cardDef (health, sanity) g = assetWith
-  f
-  cardDef
-  (g . setSanity . setHealth)
- where
-  setHealth = healthL .~ (health <$ guard (health > 0))
-  setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
 
 assetWith
   :: (AssetAttrs -> a)
@@ -351,8 +270,31 @@ whenControlledBy
   :: Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenControlledBy a iid f = if controlledBy a iid then f else pure []
 
+makeLensesWith suffixedFields ''AssetAttrs
+
 getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
 getOwner = fromJustNote "asset must be owned" . view ownerL
 
 getController :: HasCallStack => AssetAttrs -> InvestigatorId
 getController = fromJustNote "asset must be controlled" . view controllerL
+
+ally
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (Int, Int)
+  -> CardBuilder (AssetId, Maybe InvestigatorId) a
+ally f cardDef stats = allyWith f cardDef stats id
+
+allyWith
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (Int, Int)
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder (AssetId, Maybe InvestigatorId) a
+allyWith f cardDef (health, sanity) g = assetWith
+  f
+  cardDef
+  (g . setSanity . setHealth)
+ where
+  setHealth = healthL .~ (health <$ guard (health > 0))
+  setSanity = sanityL .~ (sanity <$ guard (sanity > 0))

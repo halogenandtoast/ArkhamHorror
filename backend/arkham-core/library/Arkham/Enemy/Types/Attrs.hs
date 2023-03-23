@@ -35,7 +35,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyClues :: Int
   , enemyResources :: Int
   , enemySpawnAt :: Maybe SpawnAt
-  , enemySurgeIfUnabledToSpawn :: Bool
+  , enemySurgeIfUnableToSpawn :: Bool
   , enemyAsSelfLocation :: Maybe Text
   , enemyMovedFromHunterKeyword :: Bool
   , enemyDamageStrategy :: DamageStrategy

@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Entities where
 
 import Arkham.Prelude
@@ -76,36 +77,6 @@ instance ToJSON Entities where
 
 instance FromJSON Entities where
   parseJSON = genericParseJSON $ aesonOptions $ Just "entities"
-
-locationsL :: Lens' Entities (EntityMap Location)
-locationsL = lens entitiesLocations $ \m x -> m { entitiesLocations = x }
-
-investigatorsL :: Lens' Entities (EntityMap Investigator)
-investigatorsL = lens entitiesInvestigators $ \m x -> m { entitiesInvestigators = x }
-
-enemiesL :: Lens' Entities (EntityMap Enemy)
-enemiesL = lens entitiesEnemies $ \m x -> m { entitiesEnemies = x }
-
-assetsL :: Lens' Entities (EntityMap Asset)
-assetsL = lens entitiesAssets $ \m x -> m { entitiesAssets = x }
-
-actsL :: Lens' Entities (EntityMap Act)
-actsL = lens entitiesActs $ \m x -> m { entitiesActs = x }
-
-agendasL :: Lens' Entities (EntityMap Agenda)
-agendasL = lens entitiesAgendas $ \m x -> m { entitiesAgendas = x }
-
-treacheriesL :: Lens' Entities (EntityMap Treachery)
-treacheriesL = lens entitiesTreacheries $ \m x -> m { entitiesTreacheries = x }
-
-eventsL :: Lens' Entities (EntityMap Event)
-eventsL = lens entitiesEvents $ \m x -> m { entitiesEvents = x }
-
-effectsL :: Lens' Entities (EntityMap Effect)
-effectsL = lens entitiesEffects $ \m x -> m { entitiesEffects = x }
-
-skillsL :: Lens' Entities (EntityMap Skill)
-skillsL = lens entitiesSkills $ \m x -> m { entitiesSkills = x }
 
 defaultEntities :: Entities
 defaultEntities = Entities
@@ -194,3 +165,4 @@ toSomeEntities Entities {..} =
     <> map SomeEntity (toList entitiesEffects)
     <> map SomeEntity (toList entitiesSkills)
 
+makeLensesWith suffixedFields ''Entities

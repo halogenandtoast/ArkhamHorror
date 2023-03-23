@@ -2,6 +2,7 @@ module Arkham.Helpers.Scenario where
 
 import Arkham.Prelude
 
+import Arkham.Campaign.Types
 import Arkham.Card
 import Arkham.Classes.Query
 import Arkham.Difficulty
@@ -9,6 +10,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
@@ -73,4 +75,21 @@ findTopOfDiscard :: HasGame m => CardMatcher -> m (Maybe EncounterCard)
 findTopOfDiscard = fmap listToMaybe . findInDiscard
 
 findInDiscard :: HasGame m => CardMatcher -> m [EncounterCard]
-findInDiscard matcher = scenarioFieldMap ScenarioDiscard (filter (`cardMatch` matcher))
+findInDiscard matcher =
+  scenarioFieldMap ScenarioDiscard (filter (`cardMatch` matcher))
+
+getOriginalDeck :: HasGame m => InvestigatorId -> m (Deck PlayerCard)
+getOriginalDeck iid = do
+  dict <- withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
+  pure $ findWithDefault mempty iid dict
+
+getKnownRemainingOriginalDeckCards
+  :: HasGame m => InvestigatorId -> m [PlayerCard]
+getKnownRemainingOriginalDeckCards iid = do
+  let onlyPlayerCards = mapMaybe (preview _PlayerCard)
+  cards <- unDeck <$> getOriginalDeck iid
+  inDiscard <- field InvestigatorDiscard iid
+  inHand <- fieldMap InvestigatorHand onlyPlayerCards iid
+  inVictory <- scenarioFieldMap ScenarioVictoryDisplay onlyPlayerCards
+  let knownNotInDeck = inDiscard <> inHand <> inVictory
+  pure $ filter (`notElem` knownNotInDeck) cards

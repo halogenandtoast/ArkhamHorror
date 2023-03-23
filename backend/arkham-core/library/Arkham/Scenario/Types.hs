@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Scenario.Types
   ( module Arkham.Scenario.Types
   , module X
@@ -48,6 +49,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioName :: Field Scenario Name
   ScenarioMeta :: Field Scenario Value
   ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
+  ScenarioPlayerDecks :: Field Scenario (HashMap InvestigatorId (Deck PlayerCard))
 
 deriving stock instance Show (Field Scenario typ)
 
@@ -80,6 +82,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioMeta :: Value
   -- for standalone
   , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
+  , scenarioPlayerDecks :: HashMap InvestigatorId (Deck PlayerCard)
   }
   deriving stock (Show, Eq, Generic)
 
@@ -135,6 +138,7 @@ scenario f cardCode name difficulty layout = f $ ScenarioAttrs
   , scenarioDecksLayout = ["agenda1 act1"]
   , scenarioMeta = Null
   , scenarioStoryCards = mempty
+  , scenarioPlayerDecks = mempty
   }
 
 instance Entity ScenarioAttrs where
@@ -156,102 +160,6 @@ instance Sourceable ScenarioAttrs where
   toSource _ = ScenarioSource
   isSource _ ScenarioSource = True
   isSource _ _ = False
-
-nameL :: Lens' ScenarioAttrs Name
-nameL = lens scenarioName $ \m x -> m { scenarioName = x }
-
-idL :: Lens' ScenarioAttrs ScenarioId
-idL = lens scenarioId $ \m x -> m { scenarioId = x }
-
-metaL :: Lens' ScenarioAttrs Value
-metaL = lens scenarioMeta $ \m x -> m { scenarioMeta = x }
-
-difficultyL :: Lens' ScenarioAttrs Difficulty
-difficultyL = lens scenarioDifficulty $ \m x -> m { scenarioDifficulty = x }
-
-cardsUnderScenarioReferenceL :: Lens' ScenarioAttrs [Card]
-cardsUnderScenarioReferenceL = lens scenarioCardsUnderScenarioReference
-  $ \m x -> m { scenarioCardsUnderScenarioReference = x }
-
-cardsUnderAgendaDeckL :: Lens' ScenarioAttrs [Card]
-cardsUnderAgendaDeckL = lens scenarioCardsUnderAgendaDeck
-  $ \m x -> m { scenarioCardsUnderAgendaDeck = x }
-
-cardsUnderActDeckL :: Lens' ScenarioAttrs [Card]
-cardsUnderActDeckL =
-  lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
-
-cardsNextToActDeckL :: Lens' ScenarioAttrs [Card]
-cardsNextToActDeckL =
-  lens scenarioCardsNextToActDeck $ \m x -> m { scenarioCardsNextToActDeck = x }
-
-actStackL :: Lens' ScenarioAttrs (IntMap [Card])
-actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
-
-agendaStackL :: Lens' ScenarioAttrs (IntMap [Card])
-agendaStackL = lens scenarioAgendaStack $ \m x -> m { scenarioAgendaStack = x }
-
-completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [Card])
-completedAgendaStackL = lens scenarioCompletedAgendaStack
-  $ \m x -> m { scenarioCompletedAgendaStack = x }
-
-completedActStackL :: Lens' ScenarioAttrs (IntMap [Card])
-completedActStackL = lens scenarioCompletedActStack
-  $ \m x -> m { scenarioCompletedActStack = x }
-
-locationLayoutL :: Lens' ScenarioAttrs [GridTemplateRow]
-locationLayoutL =
-  lens scenarioLocationLayout $ \m x -> m { scenarioLocationLayout = x }
-
-decksLayoutL :: Lens' ScenarioAttrs [GridTemplateRow]
-decksLayoutL =
-  lens scenarioDecksLayout $ \m x -> m { scenarioDecksLayout = x }
-
-decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
-decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
-
-logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
-logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
-
-countsL :: Lens' ScenarioAttrs (HashMap ScenarioCountKey Int)
-countsL = lens scenarioCounts $ \m x -> m { scenarioCounts = x }
-
-standaloneCampaignLogL :: Lens' ScenarioAttrs CampaignLog
-standaloneCampaignLogL = lens scenarioStandaloneCampaignLog
-  $ \m x -> m { scenarioStandaloneCampaignLog = x }
-
-setAsideCardsL :: Lens' ScenarioAttrs [Card]
-setAsideCardsL =
-  lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
-
-inResolutionL :: Lens' ScenarioAttrs Bool
-inResolutionL =
-  lens scenarioInResolution $ \m x -> m { scenarioInResolution = x }
-
-noRemainingInvestigatorsHandlerL :: Lens' ScenarioAttrs Target
-noRemainingInvestigatorsHandlerL = lens scenarioNoRemainingInvestigatorsHandler
-  $ \m x -> m { scenarioNoRemainingInvestigatorsHandler = x }
-
-victoryDisplayL :: Lens' ScenarioAttrs [Card]
-victoryDisplayL =
-  lens scenarioVictoryDisplay $ \m x -> m { scenarioVictoryDisplay = x }
-
-chaosBagL :: Lens' ScenarioAttrs ChaosBag
-chaosBagL = lens scenarioChaosBag $ \m x -> m { scenarioChaosBag = x }
-
-encounterDeckL :: Lens' ScenarioAttrs (Deck EncounterCard)
-encounterDeckL =
-  lens scenarioEncounterDeck $ \m x -> m { scenarioEncounterDeck = x }
-
-discardL :: Lens' ScenarioAttrs [EncounterCard]
-discardL = lens scenarioDiscard $ \m x -> m { scenarioDiscard = x }
-
-resignedCardCodesL :: Lens' ScenarioAttrs [CardCode]
-resignedCardCodesL =
-  lens scenarioResignedCardCodes $ \m x -> m { scenarioResignedCardCodes = x }
-
-storyCardsL :: Lens' ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
-storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
 
 data Scenario = forall a. IsScenario a => Scenario a
 
@@ -287,3 +195,4 @@ scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"
 
+makeLensesWith suffixedFields ''ScenarioAttrs

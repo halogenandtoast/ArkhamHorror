@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Treachery.Types where
 
 import Arkham.Prelude
@@ -87,28 +88,6 @@ treacheryInThreatAreaOf :: TreacheryAttrs -> Maybe InvestigatorId
 treacheryInThreatAreaOf attrs = case treacheryPlacement attrs of
   TreacheryAttachedTo (InvestigatorTarget iid) -> Just iid
   _ -> Nothing
-
-drawnFromL :: Lens' TreacheryAttrs (Maybe DeckSignifier)
-drawnFromL = lens treacheryDrawnFrom $ \m x -> m { treacheryDrawnFrom = x }
-
-placementL :: Lens' TreacheryAttrs TreacheryPlacement
-placementL = lens treacheryPlacement $ \m x -> m { treacheryPlacement = x }
-
-doomL :: Lens' TreacheryAttrs Int
-doomL = lens treacheryDoom $ \m x -> m { treacheryDoom = x }
-
-cluesL :: Lens' TreacheryAttrs Int
-cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
-
-horrorL :: Lens' TreacheryAttrs Int
-horrorL = lens treacheryHorror $ \m x -> m { treacheryHorror = x }
-
-resourcesL :: Lens' TreacheryAttrs Int
-resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
-
-canBeCommittedL :: Lens' TreacheryAttrs Bool
-canBeCommittedL =
-  lens treacheryCanBeCommitted $ \m x -> m { treacheryCanBeCommitted = x }
 
 instance HasCardCode TreacheryAttrs where
   toCardCode = treacheryCardCode
@@ -285,3 +264,5 @@ liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
 
 someTreacheryCardCode :: SomeTreacheryCard -> CardCode
 someTreacheryCardCode = liftSomeTreacheryCard cbCardCode
+
+makeLensesWith suffixedFields ''TreacheryAttrs

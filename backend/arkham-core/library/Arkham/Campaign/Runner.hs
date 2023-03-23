@@ -62,7 +62,7 @@ instance RunMessage CampaignAttrs where
       let
         mentalTrauma = getSum $ foldMap
           (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-          (unDeck deck')
+          deck'
       pushAll
         $ map (AddCampaignCardToDeck iid) randomWeaknesses
         <> [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]

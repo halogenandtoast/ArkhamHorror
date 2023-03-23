@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Location.Types
   ( module Arkham.Location.Types
@@ -120,86 +121,6 @@ instance FromJSON (SomeField Location) where
     "LocationVengeance" -> pure $ SomeField LocationVengeance
     _ -> error "no such field"
 
-investigateSkillL :: Lens' LocationAttrs SkillType
-investigateSkillL = lens locationInvestigateSkill $ \m x -> m { locationInvestigateSkill = x }
-
-inFrontOfL :: Lens' LocationAttrs (Maybe InvestigatorId)
-inFrontOfL = lens locationInFrontOf $ \m x -> m { locationInFrontOf = x }
-
-symbolL :: Lens' LocationAttrs LocationSymbol
-symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
-
-shroudL :: Lens' LocationAttrs Int
-shroudL = lens locationShroud $ \m x -> m { locationShroud = x }
-
-canBeFlippedL :: Lens' LocationAttrs Bool
-canBeFlippedL =
-  lens locationCanBeFlipped $ \m x -> m { locationCanBeFlipped = x }
-
-withoutCluesL :: Lens' LocationAttrs Bool
-withoutCluesL =
-  lens locationWithoutClues $ \m x -> m { locationWithoutClues = x }
-
-costToEnterUnrevealedL :: Lens' LocationAttrs Cost
-costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
-  $ \m x -> m { locationCostToEnterUnrevealed = x }
-
-connectsToL :: Lens' LocationAttrs (HashSet Direction)
-connectsToL = lens locationConnectsTo $ \m x -> m { locationConnectsTo = x }
-
-connectedMatchersL :: Lens' LocationAttrs [LocationMatcher]
-connectedMatchersL =
-  lens locationConnectedMatchers $ \m x -> m { locationConnectedMatchers = x }
-
-revealedConnectedMatchersL :: Lens' LocationAttrs [LocationMatcher]
-revealedConnectedMatchersL = lens locationRevealedConnectedMatchers
-  $ \m x -> m { locationRevealedConnectedMatchers = x }
-
-revealedSymbolL :: Lens' LocationAttrs LocationSymbol
-revealedSymbolL =
-  lens locationRevealedSymbol $ \m x -> m { locationRevealedSymbol = x }
-
-labelL :: Lens' LocationAttrs Text
-labelL = lens locationLabel $ \m x -> m { locationLabel = x }
-
-treacheriesL :: Lens' LocationAttrs (HashSet TreacheryId)
-treacheriesL = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
-
-eventsL :: Lens' LocationAttrs (HashSet EventId)
-eventsL = lens locationEvents $ \m x -> m { locationEvents = x }
-
-investigatorsL :: Lens' LocationAttrs (HashSet InvestigatorId)
-investigatorsL =
-  lens locationInvestigators $ \m x -> m { locationInvestigators = x }
-
-enemiesL :: Lens' LocationAttrs (HashSet EnemyId)
-enemiesL = lens locationEnemies $ \m x -> m { locationEnemies = x }
-
-assetsL :: Lens' LocationAttrs (HashSet AssetId)
-assetsL = lens locationAssets $ \m x -> m { locationAssets = x }
-
-doomL :: Lens' LocationAttrs Int
-doomL = lens locationDoom $ \m x -> m { locationDoom = x }
-
-horrorL :: Lens' LocationAttrs Int
-horrorL = lens locationHorror $ \m x -> m { locationHorror = x }
-
-cluesL :: Lens' LocationAttrs Int
-cluesL = lens locationClues $ \m x -> m { locationClues = x }
-
-resourcesL :: Lens' LocationAttrs Int
-resourcesL = lens locationResources $ \m x -> m { locationResources = x }
-
-revealedL :: Lens' LocationAttrs Bool
-revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
-
-directionsL :: Lens' LocationAttrs (HashMap Direction LocationId)
-directionsL = lens locationDirections $ \m x -> m { locationDirections = x }
-
-cardsUnderneathL :: Lens' LocationAttrs [Card]
-cardsUnderneathL =
-  lens locationCardsUnderneath $ \m x -> m { locationCardsUnderneath = x }
-
 instance Entity LocationAttrs where
   type EntityId LocationAttrs = LocationId
   type EntityAttrs LocationAttrs = LocationAttrs
@@ -243,15 +164,6 @@ location
   -> GameValue
   -> CardBuilder LocationId a
 location f def shroud' revealClues = locationWith f def shroud' revealClues id
-
-symbolLabel
-  :: (Entity a, EntityAttrs a ~ LocationAttrs)
-  => CardBuilder LocationId a
-  -> CardBuilder LocationId a
-symbolLabel = fmap
-  (overAttrs
-    (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs))
-  )
 
 locationWith
   :: (LocationAttrs -> a)
@@ -411,3 +323,14 @@ instance Named (Unrevealed LocationAttrs) where
 instance IsCard LocationAttrs where
   toCardId = locationCardId
   toCardOwner = const Nothing
+
+makeLensesWith suffixedFields ''LocationAttrs
+
+symbolLabel
+  :: (Entity a, EntityAttrs a ~ LocationAttrs)
+  => CardBuilder LocationId a
+  -> CardBuilder LocationId a
+symbolLabel = fmap
+  (overAttrs
+    (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs))
+  )

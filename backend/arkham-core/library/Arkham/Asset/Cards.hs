@@ -10,6 +10,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
+import Arkham.Criteria qualified as Criteria
 import Arkham.EncounterSet hiding ( Dunwich )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -308,6 +309,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , newspaper
   , newspaper2
   , occultLexicon
+  , occultScraps
   , oldBookOfLore
   , oldBookOfLore3
   , oldHuntingRifle3
@@ -360,6 +362,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , sealOfTheSeventhSign5
   , shardsOfTheVoid3
   , shotgun4
+  , showmanship
   , shrewdAnalysis
   , shrivelling
   , shrivelling3
@@ -2716,6 +2719,19 @@ oldBookOfLore3 = (asset "06279" "Old Book of Lore" 2 Seeker)
   , cdAlternateCardCodes = ["01531"]
   , cdUses = Uses Secret 2
   , cdLevel = 3
+  }
+
+showmanship :: CardDef
+showmanship = (asset "07012" "Showmanship" 1 Neutral)
+  { cdCardTraits = setFromList [Talent]
+  , cdSkills = [#combat, #agility, #wild]
+  }
+
+occultScraps :: CardDef
+occultScraps = (weakness "07013" "Occult Scraps")
+  { cdCardTraits = setFromList [Item]
+  , cdCriteria = Just Criteria.Never
+  , cdCardInHandEffects = True
   }
 
 keenEye :: CardDef

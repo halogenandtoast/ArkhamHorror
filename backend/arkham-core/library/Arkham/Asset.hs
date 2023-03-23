@@ -463,6 +463,10 @@ allAssets = mapFrom
   -- Where the Gods Dwell
   --- seeker [sfk]
   , SomeAssetCard oldBookOfLore3
+  -- The Innsmouth Conspiracy
+  --- signature [tic]
+  , SomeAssetCard showmanship
+  , SomeAssetCard occultScraps
   -- Devil Reef
   --- guardian [def]
   , SomeAssetCard keenEye

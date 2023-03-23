@@ -33,6 +33,7 @@ import Arkham.Asset.Assets
   , mistsOfRlyehEffect
   , oldBookOfLore3Effect
   , pnakoticManuscripts5Effect
+  , showmanshipEffect
   , wellConnectedEffect
   , wellConnected3Effect
   , yaotl1Effect
@@ -236,6 +237,7 @@ allEffects = mapFromList
   , ("05114", SomeEffect meatCleaver)
   , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("07004", SomeEffect dexterDrakeEffect)
+  , ("07012", SomeEffect showmanshipEffect)
   , ("50008", SomeEffect mindWipe3)
   , ("50044", SomeEffect jeremiahPierce)
   , ("51007", SomeEffect riteOfSeeking2)

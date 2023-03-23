@@ -152,6 +152,7 @@ import Data.Sequence qualified as Seq
 import Data.Text qualified as T
 import Data.These
 import Data.These.Lens
+import Data.Typeable
 import Data.UUID ( nil )
 import Data.UUID qualified as UUID
 import Safe ( headNote )
@@ -2210,6 +2211,7 @@ instance Projection Asset where
         Limbo -> pure Nothing
         TheVoid -> pure Nothing
         Pursuit -> pure Nothing
+        StillInHand _ -> pure Nothing
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> pure assetSlots
@@ -4681,6 +4683,10 @@ preloadEntities g = do
     preloadHandEntities entities investigator' = do
       asIfInHandCards <- getAsIfInHandCards (toId investigator')
       let
+        setAssetPlacement :: forall a. Typeable a => a -> a
+        setAssetPlacement a = case eqT @a @Asset of
+          Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand (toId investigator') }) a
+          Nothing -> a
         handEffectCards =
           (filter (cdCardInHandEffects . toCardDef) . investigatorHand $ toAttrs
               investigator'
@@ -4690,7 +4696,7 @@ preloadEntities g = do
         then pure entities
         else do
           handEntities <- foldM
-            (addCardEntity investigator')
+            (addCardEntityWith investigator' setAssetPlacement)
             defaultEntities
             handEffectCards
           pure $ insertMap (toId investigator') handEntities entities
@@ -4700,7 +4706,7 @@ preloadEntities g = do
         $ (concat . HashMap.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getInvestigator =<< getActiveInvestigatorId
-  searchEntities <- foldM (addCardEntity active) defaultEntities searchEffectCards
+  searchEntities <- foldM (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   pure $ g
     { gameInHandEntities = handEntities

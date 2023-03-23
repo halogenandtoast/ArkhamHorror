@@ -214,6 +214,7 @@ data ModifierType
   | IgnoreRevelation
   | InVictoryDisplayForCountingVengeance
   | EnemyFightActionCriteria CriteriaOverride
+  | CanPlayWithOverride CriteriaOverride
   | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
   | IgnoreLimit
   | DoNotExhaustEvaded

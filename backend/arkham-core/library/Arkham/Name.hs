@@ -28,6 +28,9 @@ data Name = Name
 class Named a where
   toName :: a -> Name
 
+toTitle :: Named a => a -> Text
+toTitle = nameTitle . toName
+
 instance Named Name where
   toName = id
 
@@ -60,8 +63,8 @@ instance ToJSON Name where
 instance FromJSON Name where
   parseJSON = genericParseJSON $ aesonOptions $ Just "name"
 
-nameToLabel :: Name -> Text
-nameToLabel = pack . toLabel . replaceNonLetters . unpack . nameTitle
+nameToLabel :: Named a => a -> Text
+nameToLabel = pack . toLabel . replaceNonLetters . unpack . toTitle
 
 instance ToGameLoggerFormat Name where
   format = display

@@ -12,6 +12,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.ClassSymbol
+import Arkham.Cost.Status
 import Arkham.Criteria.Override
 import Arkham.Damage
 import Arkham.Deck
@@ -154,7 +155,7 @@ data AssetMatcher
   | NonWeaknessAsset
   | AssetWithMatchingSkillTestIcon
   | UniqueAsset
-  | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher CardMatcher AssetMatcher
+  | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher ExtendedCardMatcher AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
   deriving stock (Show, Eq, Generic)
@@ -445,6 +446,8 @@ data ExtendedCardMatcher
   | HandCardWithDifferentTitleFromAtLeastOneAsset InvestigatorMatcher AssetMatcher CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
+  | PlayableCardWithCostReduction Int ExtendedCardMatcher
+  | PlayableCard CostStatus ExtendedCardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

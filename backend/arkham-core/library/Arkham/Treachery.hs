@@ -341,4 +341,7 @@ allTreacheries = mapFrom
   , SomeTreacheryCard mesmerize
   , SomeTreacheryCard abduction
   , SomeTreacheryCard acridMiasma
+  -- Promo
+  --- Blood of Baalshandor
+  , SomeTreacheryCard yaztaroth
   ]

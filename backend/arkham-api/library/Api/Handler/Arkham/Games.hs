@@ -502,4 +502,7 @@ handleAnswer Game {..} investigatorId = \case
     PickSupplies remaining chosen qs -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ f $ PickSupplies remaining chosen qs]
       Just msg -> [uiToRun msg]
+    DropDown qs -> case qs !!? qrChoice response of
+      Nothing -> [Ask investigatorId $ f $ DropDown qs] 
+      Just (_, msg) -> [msg]
     _ -> error "Wrong question type"

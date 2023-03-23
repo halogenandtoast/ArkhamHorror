@@ -573,6 +573,9 @@ allAssets = mapFrom
   --- Read or Die
   , SomeAssetCard daisysToteBagAdvanced
   , SomeAssetCard theNecronomiconAdvanced
+  -- Promo
+  --- Blood of Baalshandor
+  , SomeAssetCard mollyMaxwell
   -- Misc
   , SomeAssetCard courage
   ]

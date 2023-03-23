@@ -400,15 +400,15 @@ getCanAffordCost iid source mAction windows' = \case
   OrCost xs ->
     or <$> traverse (getCanAffordCost iid source mAction windows') xs
   ExhaustCost target -> case target of
-    AssetTarget aid -> do
-      readyAssetIds <- selectList Matcher.AssetReady
-      pure $ aid `elem` readyAssetIds
-    EventTarget eid -> do
-      readyEventIds <- selectList Matcher.EventReady
-      pure $ eid `elem` readyEventIds
+    AssetTarget aid ->
+      member aid <$> select Matcher.AssetReady
+    EventTarget eid ->
+      member eid <$> select Matcher.EventReady
     _ -> error $ "Not handled" <> show target
   ExhaustAssetCost matcher ->
-    notNull <$> select (matcher <> Matcher.AssetReady)
+    selectAny $ matcher <> Matcher.AssetReady
+  DiscardAssetCost matcher ->
+    selectAny $ matcher <> Matcher.DiscardableAsset
   UseCost assetMatcher uType n -> do
     assets <- selectList assetMatcher
     uses <-
@@ -908,6 +908,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
   prevents (CanOnlyUseCardsInRole role) =
     null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
   prevents (CannotPlay matcher) = cardMatch c matcher
+  prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
   prevents _ = False
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do
@@ -1137,7 +1138,7 @@ passesCriteria iid source windows' = \case
         updatedWindows
       )
       results
-  Criteria.PlayableCardExists cardMatcher -> do
+  Criteria.PlayableCardExists costStatus cardMatcher -> do
     mTurnInvestigator <- selectOne Matcher.TurnInvestigator
     let
       updatedWindows = case mTurnInvestigator of
@@ -1145,7 +1146,7 @@ passesCriteria iid source windows' = \case
         Just tIid ->
           nub $ Window Timing.When (Window.DuringTurn tIid) : windows'
     results <- selectList cardMatcher
-    anyM (getIsPlayable iid source UnpaidCost updatedWindows) results
+    anyM (getIsPlayable iid source costStatus updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of

@@ -5,8 +5,10 @@ module Arkham.Helpers.Card
 
 import Arkham.Prelude
 
+import Arkham.Classes.Query
 import Arkham.Card
 import Arkham.Cost
+import Arkham.Matcher
 import Arkham.ActiveCost.Base
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
@@ -19,16 +21,15 @@ isDiscardable = not . isWeakness
     EncounterCard _ -> True -- maybe?
     VengeanceCard _ -> False -- should be an error
 
-getCardPayments :: Card -> GameT (Maybe Payment)
+getCardPayments :: HasGame m => Card -> m (Maybe Payment)
 getCardPayments c = do
   costs <- getActiveCosts
-  let mcost = find (isCardTarget . activeCostTarget) costs
-  pure $ case mcost of
-    Just cost -> Just $ activeCostPayments cost
-    Nothing -> Nothing
+  pure $ activeCostPayments <$> find (isCardTarget . activeCostTarget) costs
  where
    isCardTarget = \case
     ForAbility{} -> False
     ForCard _ c' -> toCardId c == toCardId c'
     ForCost c' -> toCardId c == toCardId c'
 
+extendedCardMatch :: (HasGame m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
+extendedCardMatch (toCard -> c) matcher = selectAny (BasicCardMatch (CardWithId (toCardId c)) <> matcher)

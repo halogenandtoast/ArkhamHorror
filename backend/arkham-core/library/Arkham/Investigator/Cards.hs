@@ -88,6 +88,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , dianaStanley
   , ritaYoung
   , marieLambeau
+  , dexterDrake
   , normanWithers
   , nathanielCho
   , harveyWalters
@@ -101,10 +102,13 @@ allEncounterInvestigatorCards = mapFromList $ concatMap
   [ bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite ]
 
 withAlternate :: CardCode -> CardDef -> CardDef
-withAlternate ccode def = def { cdAlternateCardCodes = [ccode] }
+withAlternate ccode = withAlternates [ccode]
+
+withAlternates :: [CardCode] -> CardDef -> CardDef
+withAlternates ccodes def = def { cdAlternateCardCodes = ccodes }
 
 rolandBanks :: CardDef
-rolandBanks = withAlternate "01501" $ investigator
+rolandBanks = withAlternates ["01501", "98004"] $ investigator
   "01001"
   ("Roland Banks" <:> "The Fed")
   Guardian
@@ -145,7 +149,7 @@ rexMurphy =
 
 jennyBarnes :: CardDef
 jennyBarnes =
-  investigator "02003" ("Jenny Barnes" <:> "The Dilettante") Rogue [Drifter]
+  withAlternate "98001" $ investigator "02003" ("Jenny Barnes" <:> "The Dilettante") Rogue [Drifter]
 
 jimCulver :: CardDef
 jimCulver =
@@ -219,7 +223,7 @@ bodyOfAYithian = investigator
   [Monster, Yithian]
 
 carolynFern :: CardDef
-carolynFern = investigator
+carolynFern = withAlternate "98010" $ investigator
   "05001"
   ("Carolyn Fern" <:> "The Psychologist")
   Guardian
@@ -254,7 +258,7 @@ ritaYoung = investigator
   [Miskatonic]
 
 marieLambeau :: CardDef
-marieLambeau = investigator
+marieLambeau = withAlternate "99001" $ investigator
   "05006"
   ("Marie Lambeau" <:> "The Entertainer")
   Mystic
@@ -288,8 +292,15 @@ pennyWhite = investigator
   Neutral
   [Assistant]
 
+dexterDrake :: CardDef
+dexterDrake = withAlternate "98016" $ investigator
+  "07004"
+  ("Dexter Drake" <:> "The Magician")
+  Mystic
+  [Sorcerer, Veteran]
+
 normanWithers :: CardDef
-normanWithers = investigator
+normanWithers = withAlternate "98007" $ investigator
   "08004"
   ("Norman Withers" <:> "The Astronomer")
   Seeker

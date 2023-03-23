@@ -6,6 +6,7 @@ module Arkham.Cost
 import Arkham.Prelude
 
 import Arkham.Zone as X
+import Arkham.Cost.Status as X
 
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -20,9 +21,6 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token ( Token )
 import Data.Text qualified as T
-
-data CostStatus = UnpaidCost | PaidCost
-  deriving stock Eq
 
 totalActionCost :: Cost -> Int
 totalActionCost (ActionCost n) = n
@@ -90,6 +88,7 @@ data Cost
   | GroupClueCost GameValue LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
+  | DiscardAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
   | RemoveCost Target
   | Costs [Cost]
@@ -139,6 +138,7 @@ displayCostType = \case
   ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
+  DiscardAssetCost _ -> "Discard matching asset"
   DiscardCombinedCost n ->
     "Discard cards with a total combined cost of at least " <> tshow n
   DiscardHandCost -> "Discard your entire hand"

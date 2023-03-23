@@ -49,6 +49,7 @@ import Arkham.Game.Helpers hiding
   ( EnemyEvade, EnemyFight, getSpendableClueCount )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
@@ -1605,11 +1606,11 @@ getAssetsMatching matcher = do
         isHealthDamageable a =
           fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
       filterM isHealthDamageable assets
-    AssetWithDifferentTitleFromAtLeastOneCardInHand who cardMatcher assetMatcher
+    AssetWithDifferentTitleFromAtLeastOneCardInHand who extendedCardMatcher assetMatcher
       -> do
         iids <- selectList who
         handCards <- concatMapM
-          (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher)))
+          (fieldMapM InvestigatorHand (filterM (`extendedCardMatch` (extendedCardMatcher <> (BasicCardMatch $ CardWithType AssetType)))))
           iids
         assets <- filterMatcher as assetMatcher
         case handCards of
@@ -2470,7 +2471,7 @@ instance Query ExtendedCardMatcher where
         -> do
           iids <- selectList who
           handCards <- concatMapM
-            (fieldMap InvestigatorHand (filter (`cardMatch` cardMatcher)))
+            (fieldMap InvestigatorHand (filter (`cardMatch` (CardWithType AssetType <> cardMatcher))))
             iids
           assets <- selectList assetMatcher
           cards <- case assets of
@@ -2488,6 +2489,25 @@ instance Query ExtendedCardMatcher where
       VictoryDisplayCardMatch matcher' -> do
         cards <- scenarioField ScenarioVictoryDisplay
         pure $ c `elem` filter (`cardMatch` matcher') cards
+      PlayableCardWithCostReduction n matcher' -> do
+        mTurnInvestigator <- selectOne TurnInvestigator
+        case mTurnInvestigator of
+          Nothing -> pure False
+          Just iid -> do
+            let windows' = Window.defaultWindows iid
+            results <- selectList matcher'
+            availableResources <- getSpendableResources iid
+            playable <- filterM (getIsPlayableWithResources iid GameSource (availableResources + n) Cost.UnpaidCost windows') results
+            pure $ c `elem` playable
+      PlayableCard costStatus matcher' -> do
+        mTurnInvestigator <- selectOne TurnInvestigator
+        case mTurnInvestigator of
+          Nothing -> pure False
+          Just iid -> do
+            let windows' = Window.defaultWindows iid
+            results <- selectList matcher'
+            playable <- filterM (getIsPlayable iid GameSource costStatus windows') results
+            pure $ c `elem` playable
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
         iids <- selectList who

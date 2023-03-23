@@ -875,7 +875,7 @@ everVigilant1 = (event "03023" "Ever Vigilant" 0 Guardian)
   , cdCardTraits = singleton Tactic
   , cdLevel = 1
   , cdCriteria = Just
-    (Criteria.PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
+    (Criteria.PlayableCardExistsWithCostReduction 1 $ BasicCardMatch AssetCard <> InHandOf You)
   }
 
 noStoneUnturned :: CardDef
@@ -895,7 +895,7 @@ sleightOfHand = (event "03029" "Sleight of Hand" 1 Rogue)
   , cdCardTraits = singleton Trick
   , cdFastWindow = Just $ DuringTurn You
   , cdCriteria = Just
-    (Criteria.PlayableCardExists $ BasicCardMatch (CardWithTrait Item))
+    (Criteria.PlayableCardExists PaidCost $ BasicCardMatch (CardWithTrait Item))
   }
 
 daringManeuver :: CardDef

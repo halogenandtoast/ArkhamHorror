@@ -1,0 +1,99 @@
+module Arkham.Investigator.Cards.DexterDrake
+  ( dexterDrake
+  , dexterDrakeEffect
+  , DexterDrake(..)
+  )
+where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
+import Arkham.Helpers.Modifiers
+import Arkham.Investigator.Cards qualified as Cards
+import Arkham.Investigator.Runner
+import Arkham.Matcher hiding (DuringTurn, Discarded)
+import Arkham.Message
+import Arkham.Window (defaultWindows)
+
+newtype DexterDrake = DexterDrake InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+dexterDrake :: InvestigatorCard DexterDrake
+dexterDrake = investigator
+  DexterDrake
+  Cards.dexterDrake
+  Stats
+    { health = 6
+    , sanity = 8
+    , willpower = 5
+    , intellect = 2
+    , combat = 3
+    , agility = 2
+    }
+
+instance HasAbilities DexterDrake where
+  getAbilities (DexterDrake a) =
+    [ restrictedAbility
+          a
+          1
+          (Self <> DuringTurn You <> PlayableCardExistsWithCostReduction 1 (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard))
+        $ FastAbility
+        $ DiscardAssetCost
+        $ AssetWithDifferentTitleFromAtLeastOneCardInHand You (PlayableCardWithCostReduction 1 (BasicCardMatch AssetCard)) AnyAsset
+    ]
+
+instance HasTokenValue DexterDrake where
+  getTokenValue iid ElderSign (DexterDrake attrs) | iid == toId attrs = do
+    pure $ TokenValue ElderSign $ PositiveModifier 2
+  getTokenValue _ token _ = pure $ TokenValue token mempty
+
+toCardPaid :: Payment -> Card
+toCardPaid (DiscardPayment [(_, c)]) = c
+toCardPaid _ = error "Invalid payment"
+
+instance RunMessage DexterDrake where
+  runMessage msg i@(DexterDrake attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ (toCardPaid -> card) -> do
+      cards <- selectList $ PlayableCardWithCostReduction 1 (InHandOf (InvestigatorWithId $ toId attrs) <> BasicCardMatch (AssetCard <> NotCard (CardWithTitle $ toTitle card)))
+      pushAll
+        [ chooseOrRunOne
+          iid
+          [ targetLabel
+              (toCardId c)
+              [ createCardEffect
+                Cards.dexterDrake
+                Nothing
+                (toSource attrs)
+                (toTarget $ toCardId c)
+              , PayCardCost iid c $ defaultWindows iid
+              ]
+          | c <- cards
+          ]
+        ]
+      pure i
+    _ -> DexterDrake <$> runMessage msg attrs
+
+newtype DexterDrakeEffect = DexterDrakeEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+dexterDrakeEffect :: EffectArgs -> DexterDrakeEffect
+dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake
+
+instance HasModifiersFor DexterDrakeEffect where
+  getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs)
+    | effectTarget attrs == target = pure
+    $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
+  getModifiersFor _ _ = pure []
+
+instance RunMessage DexterDrakeEffect where
+  runMessage msg e@(DexterDrakeEffect attrs) = case msg of
+    ResolvedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
+      e <$ push (DisableEffect $ toId attrs)
+    _ -> DexterDrakeEffect <$> runMessage msg attrs

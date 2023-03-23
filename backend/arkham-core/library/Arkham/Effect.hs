@@ -53,7 +53,7 @@ import Arkham.Event.Events
   , willToSurviveEffect
   , vantagePointEffect
   )
-import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect )
+import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect, dexterDrakeEffect )
 import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect )
 
 createEffect
@@ -235,6 +235,7 @@ allEffects = mapFromList
   , ("05049", SomeEffect pennyWhiteEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("06279", SomeEffect oldBookOfLore3Effect)
+  , ("07004", SomeEffect dexterDrakeEffect)
   , ("50008", SomeEffect mindWipe3)
   , ("50044", SomeEffect jeremiahPierce)
   , ("51007", SomeEffect riteOfSeeking2)

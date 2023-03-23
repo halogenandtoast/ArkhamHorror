@@ -2597,6 +2597,7 @@ baronSamedi =
   (weakness "05019" ("Baron Samedi" <:> "Lord of the Cemetery"))
     { cdCardTraits = singleton Avatar
     , cdSlots = [AllySlot]
+    , cdAlternateCardCodes = ["99003"]
     }
 
 aceOfSwords1 :: CardDef
@@ -2862,6 +2863,7 @@ backpack2 = (asset "53011" "Backpack" 1 Neutral)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = singleton Item
   , cdSlots = [BodySlot]
+  , cdLevel = 2
   }
 
 wellConnected3 :: CardDef

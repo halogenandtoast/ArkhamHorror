@@ -1606,6 +1606,7 @@ mystifyingSong = (event "05018" "Mystifying Song" 3 Neutral)
   { cdSkills = [#wild, #wild]
   , cdCardTraits = setFromList [Spell, Song]
   , cdFastWindow = Just $ AgendaWouldAdvance Timing.When DoomThreshold AnyAgenda
+  , cdAlternateCardCodes = ["99002"]
   }
 
 interrogate :: CardDef

@@ -30,32 +30,6 @@ import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 
--- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
-addCardEntityWith :: MonadRandom m => Investigator -> (forall a. Typeable a => a -> a) -> Entities -> Card -> m Entities
-addCardEntityWith i f e card = case card of
-  PlayerCard pc -> case toCardType pc of
-    EventType -> do
-      let
-        eventId = EventId uuid
-        event' = createEvent card (toId i) eventId
-      pure $ e & eventsL %~ insertEntity event'
-    AssetType -> do
-      let
-        assetId = AssetId uuid
-        asset = f $ createAsset card assetId
-      pure $ e & assetsL %~ insertMap (toId asset) asset
-    _ -> error "Unhandled"
-  EncounterCard ec -> case toCardType ec of
-    TreacheryType -> do
-      let
-        treacheryId = TreacheryId uuid
-        treachery = createTreachery card (toId i) treacheryId
-      pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
-    _ -> error "Unhandled"
-  VengeanceCard _ -> error "vengeance card"
- where
-  uuid = unsafeCardIdToUUID (toCardId card)
-
 type EntityMap a = HashMap (EntityId a) a
 
 data Entities = Entities
@@ -91,19 +65,6 @@ defaultEntities = Entities
   , entitiesEffects = mempty
   , entitiesSkills = mempty
   }
-
-instance RunMessage Entities where
-  runMessage msg entities =
-    traverseOf (actsL . traverse) (runMessage msg) entities
-      >>= traverseOf (agendasL . traverse) (runMessage msg)
-      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
-      >>= traverseOf (eventsL . traverse) (runMessage msg)
-      >>= traverseOf (locationsL . traverse) (runMessage msg)
-      >>= traverseOf (enemiesL . traverse) (runMessage msg)
-      >>= traverseOf (effectsL . traverse) (runMessage msg)
-      >>= traverseOf (assetsL . traverse) (runMessage msg)
-      >>= traverseOf (skillsL . traverse) (runMessage msg)
-      >>= traverseOf (investigatorsL . traverse) (runMessage msg)
 
 instance Monoid Entities where
   mempty = defaultEntities
@@ -166,3 +127,42 @@ toSomeEntities Entities {..} =
     <> map SomeEntity (toList entitiesSkills)
 
 makeLensesWith suffixedFields ''Entities
+
+-- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
+addCardEntityWith :: MonadRandom m => Investigator -> (forall a. Typeable a => a -> a) -> Entities -> Card -> m Entities
+addCardEntityWith i f e card = case card of
+  PlayerCard pc -> case toCardType pc of
+    EventType -> do
+      let
+        eventId = EventId uuid
+        event' = createEvent card (toId i) eventId
+      pure $ e & eventsL %~ insertEntity event'
+    AssetType -> do
+      let
+        assetId = AssetId uuid
+        asset = f $ createAsset card assetId
+      pure $ e & assetsL %~ insertMap (toId asset) asset
+    _ -> error "Unhandled"
+  EncounterCard ec -> case toCardType ec of
+    TreacheryType -> do
+      let
+        treacheryId = TreacheryId uuid
+        treachery = createTreachery card (toId i) treacheryId
+      pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
+    _ -> error "Unhandled"
+  VengeanceCard _ -> error "vengeance card"
+ where
+  uuid = unsafeCardIdToUUID (toCardId card)
+
+instance RunMessage Entities where
+  runMessage msg entities =
+    traverseOf (actsL . traverse) (runMessage msg) entities
+      >>= traverseOf (agendasL . traverse) (runMessage msg)
+      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
+      >>= traverseOf (eventsL . traverse) (runMessage msg)
+      >>= traverseOf (locationsL . traverse) (runMessage msg)
+      >>= traverseOf (enemiesL . traverse) (runMessage msg)
+      >>= traverseOf (effectsL . traverse) (runMessage msg)
+      >>= traverseOf (assetsL . traverse) (runMessage msg)
+      >>= traverseOf (skillsL . traverse) (runMessage msg)
+      >>= traverseOf (investigatorsL . traverse) (runMessage msg)

@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -15,6 +15,7 @@ export enum QuestionType {
   QUESTION_LABEL = 'QuestionLabel',
   READ = 'Read',
   PICK_SUPPLIES = 'PickSupplies',
+  DROP_DOWN = 'DropDown',
 }
 
 export interface ChooseOne {
@@ -77,6 +78,11 @@ export interface PickSupplies {
   pointsRemaining: number
   chosenSupplies: Supply[]
   choices: Message[]
+}
+
+export interface DropDown {
+  tag: QuestionType.DROP_DOWN
+  options: string[]
 }
 
 export interface ChooseN {
@@ -212,6 +218,14 @@ export const pickSuppliesDecoder = JsonDecoder.object<PickSupplies>(
   'PickSupplies',
 );
 
+export const dropDownDecoder = JsonDecoder.object<DropDown>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.DROP_DOWN),
+    options: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.succeed], '[string, message]').map(([s,]) => s), 'string[]') //eslint-disable-line
+  },
+  'PickSupplies',
+);
+
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
     tag: JsonDecoder.isExactly(QuestionType.CHOOSE_ONE),
@@ -267,6 +281,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     questionLabelDecoder,
     readDecoder,
     pickSuppliesDecoder,
+    dropDownDecoder,
   ],
   'Question',
 );

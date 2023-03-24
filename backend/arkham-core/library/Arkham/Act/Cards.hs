@@ -84,6 +84,7 @@ allActCards = mapFromList $ map
   , descentIntoDark
   , discoveringTheTruth
   , disruptingTheRitual
+  , escapeTheCage
   , escapeTheRuins
   , exploringPnakotus
   , exploringTheRainforest
@@ -99,6 +100,7 @@ allActCards = mapFromList $ map
   , harlanIsInDanger
   , harlansCurseHarlanEarnstone
   , harlansCurseSafekeeping
+  , hiddenAgendas
   , huntingTheRougarou
   , huntressOfTheEztli
   , intoTheBeyond
@@ -170,6 +172,7 @@ allActCards = mapFromList $ map
   , theReallyBadOnesV2
   , theRelicIsMissing
   , theReturnTrip
+  , theSpectralRealm
   , theStrangerACityAflame
   , theStrangerThePathIsMine
   , theStrangerTheShoresOfHali
@@ -555,6 +558,15 @@ pathsIntoTwilight = act "05055" "Paths into Twilight" 3 TheWitchingHour
 
 aCircleUnbroken :: CardDef
 aCircleUnbroken = act "05056" "A Circle Unbroken" 4 TheWitchingHour
+
+hiddenAgendas :: CardDef
+hiddenAgendas = act "05068" "Hidden Agendas" 1 AtDeathsDoorstep
+
+theSpectralRealm :: CardDef
+theSpectralRealm = act "05069" "The Spectral Realm" 2 AtDeathsDoorstep
+
+escapeTheCage :: CardDef
+escapeTheCage = act "05070" "Escape the Cage" 3 AtDeathsDoorstep
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

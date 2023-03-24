@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Agenda.Types where
 
 import Arkham.Prelude
@@ -45,30 +46,6 @@ data AgendaAttrs = AgendaAttrs
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers
   }
   deriving stock (Show, Eq, Generic)
-
-removeDoomMatchersL :: Lens' AgendaAttrs RemoveDoomMatchers
-removeDoomMatchersL =
-  lens agendaRemoveDoomMatchers $ \m x -> m { agendaRemoveDoomMatchers = x }
-
-cardsUnderneathL :: Lens' AgendaAttrs [Card]
-cardsUnderneathL =
-  lens agendaCardsUnderneath $ \m x -> m { agendaCardsUnderneath = x }
-
-treacheriesL :: Lens' AgendaAttrs (HashSet TreacheryId)
-treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
-
-doomL :: Lens' AgendaAttrs Int
-doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
-
-doomThresholdL :: Lens' AgendaAttrs (Maybe GameValue)
-doomThresholdL =
-  lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
-
-sequenceL :: Lens' AgendaAttrs AgendaSequence
-sequenceL = lens agendaSequence $ \m x -> m { agendaSequence = x }
-
-flippedL :: Lens' AgendaAttrs Bool
-flippedL = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
 
 instance ToJSON AgendaAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "agenda"
@@ -193,3 +170,4 @@ liftSomeAgendaCard f (SomeAgendaCard a) = f a
 someAgendaCardCode :: SomeAgendaCard -> CardCode
 someAgendaCardCode = liftSomeAgendaCard cbCardCode
 
+makeLensesWith suffixedFields ''AgendaAttrs

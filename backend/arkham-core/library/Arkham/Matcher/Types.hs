@@ -738,6 +738,7 @@ data TokenMatcher
   | AnyToken
   | TokenMatches [TokenMatcher]
   | IncludeSealed TokenMatcher
+  | WouldReduceYourSkillValueToZero
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

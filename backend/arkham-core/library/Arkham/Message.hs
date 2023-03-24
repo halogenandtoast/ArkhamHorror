@@ -547,6 +547,7 @@ data Message
   | RemoveLocation LocationId
   | RemovedLocation LocationId
   | RemoveTraits Target [Trait]
+  | SetCardAside Card
   | SetOutOfPlay Target
   | DoSetOutOfPlay Target
   | RemoveFromPlay Source

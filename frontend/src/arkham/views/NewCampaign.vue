@@ -8,39 +8,16 @@ import { fetchDecks, newGame } from '@/arkham/api';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import NewDeck from '@/arkham/components/NewDeck';
 
+import campaignJSON from '@/arkham/data/campaigns.json';
+import scenarioJSON from '@/arkham/data/scenarios.json';
+import sideStoriesJSON from '@/arkham/data/side-stories.json';
+
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
 const baseUrl = inject('baseUrl')
 
 const scenarios = computed(() => {
-  return [
-    { id: '02041', name: 'Extracurricular Activity', campaign: "02", },
-    { id: '02062', name: 'The House Always Wins', campaign: "02", },
-    { id: '02118', name: 'The Miskatonic Museum', campaign: "02", },
-    { id: '02159', name: 'The Essex County Express', campaign: "02", },
-    { id: '02195', name: 'Blood on the Altar', campaign: "02", },
-    { id: '02236', name: 'Undimensioned and Unseen', campaign: "02", },
-    { id: '02274', name: 'Where Doom Awaits', campaign: "02", },
-    { id: '02311', name: 'Lost in Time and Space', campaign: "02", },
-
-    { id: '03043', name: 'Curtain Call', campaign: "03", },
-    { id: '03061', name: 'The Last King', campaign: "03", },
-    { id: '03120', name: 'Echoes of the Past', campaign: "03", },
-    { id: '03159', name: 'The Unspeakable Oath', campaign: "03", },
-    { id: '03200', name: 'A Phantom of Truth', campaign: "03", },
-    { id: '03240', name: 'The Pallid Mask', campaign: "03", },
-    { id: '03274', name: 'Black Stars Rise', campaign: "03", },
-    { id: '03316', name: 'Dim Carcosa', campaign: "03", },
-
-    { id: '04043', name: 'The Untamed Wilds', campaign: "04", beta: true },
-    { id: '04054', name: 'The Doom of Eztli', campaign: "04", beta: true },
-    { id: '04113', name: 'Threads of Fate', campaign: "04", beta: true },
-    { id: '04161', name: 'The Boundary Beyond', campaign: "04", beta: true },
-    { id: '04205', name: 'Heart of the Elders', campaign: "04", beta: true },
-    { id: '04237', name: 'The City of Archives', campaign: "04", beta: true },
-    { id: '04277', name: 'The Depths of Yoth', campaign: "04", beta: true },
-    { id: '04314', name: 'Shattered Aeons', campaign: "04", beta: true },
-  ].filter((s) => {
+  return scenarioJSON.filter((s) => {
     if (s.beta) {
       return currentUser.value && currentUser.value.beta
     }
@@ -49,10 +26,7 @@ const scenarios = computed(() => {
 })
 
 const sideStories = computed(() => {
-  return [
-    { id: '81001', name: 'Curse of the Rougarou', standaloneDifficulties: ['Standard', 'Hard'] },
-    { id: '82001', name: 'Carnevale of Horrors', standaloneDifficulties: ['Standard', 'Hard'] },
-  ].filter((s) => {
+  return sideStoriesJSON.filter((s) => {
     if (s.beta) {
       return currentUser.value && currentUser.value.beta
     }
@@ -61,13 +35,7 @@ const sideStories = computed(() => {
 })
 
 const campaigns = computed(() => {
-  return [
-    { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
-    { id: '02', name: 'The Dunwich Legacy', },
-    { id: '03', name: 'The Path to Carcosa', },
-    { id: '04', name: 'The Forgotten Age' },
-    { id: '05', name: 'The Circle Undone', beta: true },
-  ].filter((c) => {
+  return campaignJSON.filter((c) => {
     if (c.beta) {
       return currentUser.value && currentUser.value.beta
     }

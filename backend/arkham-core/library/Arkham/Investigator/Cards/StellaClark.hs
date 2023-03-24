@@ -8,6 +8,7 @@ import Arkham.Criteria
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 
@@ -30,16 +31,9 @@ stellaClark = investigator
 
 instance HasAbilities StellaClark where
   getAbilities (StellaClark a) =
-    [ restrictedAbility
-          a
-          1
-          Self
-          (ReactionAbility
-            (SkillTestResult Timing.After You SkillTestWasFailed AnyResult)
-            Free
-          )
-        & abilityLimitL
-        .~ PlayerLimit PerRound 1
+    [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility a 1 Self
+        $ ReactionAbility (SkillTestResult Timing.After You SkillTestWasFailed AnyResult) Free
     ]
 
 instance HasTokenValue StellaClark where
@@ -49,10 +43,12 @@ instance HasTokenValue StellaClark where
 
 instance RunMessage StellaClark where
   runMessage msg i@(StellaClark attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      i <$ push (GainActions iid source 1)
-    When (RevealToken _ iid token)
-      | iid == toId attrs && tokenFace token == ElderSign -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ GainActions iid source 1
+      pure i
+    When (RevealToken _ iid token) | iid == toId attrs -> do
+      faces <- getModifiedTokenFace token
+      when (ElderSign `elem` faces) $ do
         healDamage <- canHaveDamageHealed attrs iid
         mHealHorror <- getHealHorrorMessage attrs 1 iid
         push $ chooseOne
@@ -64,5 +60,5 @@ instance RunMessage StellaClark where
           : [ HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage ]
           <> maybeToList mHealHorror
           ]
-        pure i
+      pure i
     _ -> StellaClark <$> runMessage msg attrs

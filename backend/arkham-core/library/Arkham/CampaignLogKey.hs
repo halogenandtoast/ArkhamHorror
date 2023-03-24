@@ -213,6 +213,9 @@ instance Recordable Memento where
 recorded :: forall a. Recordable a => a -> SomeRecorded
 recorded a = SomeRecorded (recordableType @a) (Recorded a)
 
+crossedOut :: forall a. Recordable a => a -> SomeRecorded
+crossedOut a = SomeRecorded (recordableType @a) (CrossedOut a)
+
 data RecordableType a where
   RecordableCardCode :: RecordableType CardCode
   RecordableMemento :: RecordableType Memento

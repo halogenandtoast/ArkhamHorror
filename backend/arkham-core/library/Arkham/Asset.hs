@@ -174,7 +174,7 @@ allAssets = mapFrom
   , SomeAssetCard zebulonWhateley
   , SomeAssetCard earlSawyer
   , SomeAssetCard powderOfIbnGhazi
-  -- Udimensioned and Unseen
+  -- Undimensioned and Unseen
   --- guardian [uau]
   , SomeAssetCard springfieldM19034
   --- rogue [uau]

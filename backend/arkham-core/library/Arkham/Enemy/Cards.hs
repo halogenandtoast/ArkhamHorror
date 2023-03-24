@@ -165,6 +165,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , ishimaruHaruko
   , jeremiahPierce
   , jordanPerry
+  , josefMeiger
   , keeperOfTheGreatLibrary
   , lupineThrall
   , madPatient
@@ -1077,14 +1078,22 @@ hoods = (weakness "05017" "Hoods")
   }
 
 anetteMason :: CardDef
-anetteMason = (enemy "05057" ("Anette Mason" <:> "The High Priestess") TheWitchingHour 1)
+anetteMason = unique $ (enemy "05057" ("Anette Mason" <:> "The High Priestess") TheWitchingHour 1)
   { cdCardTraits = setFromList [Humanoid, Witch, Elite]
   , cdKeywords = singleton Keyword.Retaliate
   , cdVictoryPoints = Just 2
   }
 
+josefMeiger :: CardDef
+josefMeiger = unique $ (enemy "05085" ("Josef Meiger" <:> "Lodge Host") AtDeathsDoorstep 1)
+  { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
+  , cdKeywords = singleton Keyword.Retaliate
+  , cdDoubleSided = True
+  , cdVictoryPoints = Just 2
+  }
+
 theSpectralWatcher :: CardDef
-theSpectralWatcher = (enemy "05086" ("The Spectral Watcher" <:> "You Are Its Prey") TheWatcher 1)
+theSpectralWatcher = unique $ (enemy "05086" ("The Spectral Watcher" <:> "You Are Its Prey") TheWatcher 1)
   { cdCardTraits = setFromList [AncientOne, Spectral, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
   }

@@ -1,0 +1,16 @@
+[
+  { "name": "Core", "cycle": 1, "code": "core" },
+  { "name": "The Dunwich Legacy", "cycle": 2, "code": "dwl" },
+  { "name": "The Path to Carcosa", "cycle": 3, "code": "ptc" },
+  { "name": "The Forgotten Age", "cycle": 4, "code": "tfa" },
+  { "name": "The Circle Undone", "cycle": 5, "code": "tcu" },
+  { "name": "The Dream-Eaters", "cycle": 6, "code": "tde" },
+  { "name": "The Innsmouth Conspiracy", "cycle": 7, "code": "tic" },
+  { "name": "The Edge of the Earth", "cycle": 8, "code": "eoe" },
+  { "name": "The Scarlet Keys", "cycle": 9, "code": "tsk" },
+  { "name": "Return to...", "cycle": 50, "code": "return" },
+  { "name": "Investigator Starter Decks", "cycle": 60, "code": "investigator" },
+  { "name": "Side Stories", "cycle": 70, "code": "side_stories" },
+  { "name": "Promotional", "cycle": 80, "code": "promotional" },
+  { "name": "Parallel", "cycle": 90, "code": "parallel" }
+]

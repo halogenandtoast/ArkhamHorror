@@ -91,6 +91,7 @@ allAgendaCards = mapFromList $ map
   , intruders
   , inEveryShadow
   , judgementXX
+  , justiceXI
   , letTheStormRageTheFloodBelow
   , letTheStormRageTheVortexAbove
   , lockedInside
@@ -99,6 +100,7 @@ allAgendaCards = mapFromList $ map
   , madnessDies
   , madnessDrowns
   , outOfTime
+  , overTheThreshold
   , pastPresentAndFuture
   , pendulousThreads
   , predatorOrPrey
@@ -435,6 +437,12 @@ temperanceXIV = agenda "05051" "TEMPERANCE • XIV" 1 TheWitchingHour
 
 theNightHowls :: CardDef
 theNightHowls = agenda "05052" "The Night Howls" 2 TheWitchingHour
+
+justiceXI :: CardDef
+justiceXI = agenda "05066" "JUSTICE • XI" 1 AtDeathsDoorstep
+
+overTheThreshold :: CardDef
+overTheThreshold = agenda "05067" "Over the Threshold" 2 AtDeathsDoorstep
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

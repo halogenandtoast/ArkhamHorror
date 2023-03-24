@@ -2718,7 +2718,7 @@ oldBookOfLore3 = (asset "06279" "Old Book of Lore" 2 Seeker)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
-  , cdAlternateCardCodes = ["01531"]
+  , cdAlternateCardCodes = ["01686"]
   , cdUses = Uses Secret 2
   , cdLevel = 3
   }

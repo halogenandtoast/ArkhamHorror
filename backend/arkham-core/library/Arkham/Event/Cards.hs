@@ -149,6 +149,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , emergencyCache
   , emergencyCache2
   , emergencyCache3
+  , eucatastrophe3
   , everVigilant1
   , evidence
   , evidence1
@@ -1701,6 +1702,14 @@ bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [#willpower, #intellect, #combat]
   , cdCardTraits = singleton Spell
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  }
+
+eucatastrophe3 :: CardDef
+eucatastrophe3 = (event "05324" "Eucatastrophe" 2 Survivor)
+  { cdSkills = [#wild, #wild]
+  , cdCardTraits = setFromList [Fortune, Blessed]
+  , cdFastWindow = Just (RevealChaosToken Timing.When You WouldReduceYourSkillValueToZero)
+  , cdAlternateCardCodes = ["01692"]
   }
 
 astoundingRevelation :: CardDef

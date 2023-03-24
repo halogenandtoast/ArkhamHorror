@@ -227,6 +227,8 @@ allEnemies = mapFrom
   , SomeEnemyCard hoods
   -- The Witching Hour
   , SomeEnemyCard anetteMason
+  -- At Death's Doorstep
+  , SomeEnemyCard josefMeiger
   -- The Watcher
   , SomeEnemyCard theSpectralWatcher
   -- Agents of Azathoth

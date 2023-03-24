@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -42,6 +42,7 @@ library
       Arkham.Act.Cards.DescentIntoDark
       Arkham.Act.Cards.DiscoveringTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
+      Arkham.Act.Cards.EscapeTheCage
       Arkham.Act.Cards.EscapeTheRuins
       Arkham.Act.Cards.ExploringPnakotus
       Arkham.Act.Cards.ExploringTheRainforest
@@ -57,6 +58,7 @@ library
       Arkham.Act.Cards.HarlanIsInDanger
       Arkham.Act.Cards.HarlansCurseHarlanEarnstone
       Arkham.Act.Cards.HarlansCurseSafekeeping
+      Arkham.Act.Cards.HiddenAgendas
       Arkham.Act.Cards.HuntingTheRougarou
       Arkham.Act.Cards.HuntressOfTheEztli
       Arkham.Act.Cards.InLostCarcosa
@@ -128,6 +130,7 @@ library
       Arkham.Act.Cards.TheReallyBadOnesV2
       Arkham.Act.Cards.TheRelicIsMissing
       Arkham.Act.Cards.TheReturnTrip
+      Arkham.Act.Cards.TheSpectralRealm
       Arkham.Act.Cards.TheStrangerACityAflame
       Arkham.Act.Cards.TheStrangerThePathIsMine
       Arkham.Act.Cards.TheStrangerTheShoresOfHali
@@ -185,6 +188,7 @@ library
       Arkham.Agenda.Cards.InEveryShadow
       Arkham.Agenda.Cards.Intruders
       Arkham.Agenda.Cards.JudgementXX
+      Arkham.Agenda.Cards.JusticeXI
       Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
       Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
       Arkham.Agenda.Cards.LockedInside
@@ -193,6 +197,7 @@ library
       Arkham.Agenda.Cards.MadnessDies
       Arkham.Agenda.Cards.MadnessDrowns
       Arkham.Agenda.Cards.OutOfTime
+      Arkham.Agenda.Cards.OverTheThreshold
       Arkham.Agenda.Cards.PastPresentAndFuture
       Arkham.Agenda.Cards.PendulousThreads
       Arkham.Agenda.Cards.PredatorOrPrey
@@ -836,6 +841,7 @@ library
       Arkham.Enemy.Cards.IshimaruHaruko
       Arkham.Enemy.Cards.JeremiahPierce
       Arkham.Enemy.Cards.JordanPerry
+      Arkham.Enemy.Cards.JosefMeiger
       Arkham.Enemy.Cards.KeeperOfTheGreatLibrary
       Arkham.Enemy.Cards.LupineThrall
       Arkham.Enemy.Cards.MadPatient
@@ -993,6 +999,7 @@ library
       Arkham.Event.Cards.EmergencyCache
       Arkham.Event.Cards.EmergencyCache2
       Arkham.Event.Cards.EmergencyCache3
+      Arkham.Event.Cards.Eucatastrophe3
       Arkham.Event.Cards.EverVigilant1
       Arkham.Event.Cards.Evidence
       Arkham.Event.Cards.Evidence1
@@ -1242,6 +1249,7 @@ library
       Arkham.Location.Cards.BackAlley
       Arkham.Location.Cards.Backstage
       Arkham.Location.Cards.Balcony
+      Arkham.Location.Cards.BalconyAtDeathsDoorstep
       Arkham.Location.Cards.BalconySpectral
       Arkham.Location.Cards.Ballroom
       Arkham.Location.Cards.BasementHall
@@ -1249,6 +1257,7 @@ library
       Arkham.Location.Cards.Bathroom
       Arkham.Location.Cards.Bedroom
       Arkham.Location.Cards.BetweenWorlds
+      Arkham.Location.Cards.BilliardsRoom
       Arkham.Location.Cards.BilliardsRoomSpectral
       Arkham.Location.Cards.BishopsBrook_202
       Arkham.Location.Cards.BishopsBrook_203
@@ -1336,6 +1345,7 @@ library
       Arkham.Location.Cards.EngineCar_176
       Arkham.Location.Cards.EngineCar_177
       Arkham.Location.Cards.EntryHall
+      Arkham.Location.Cards.EntryHallAtDeathsDoorstep
       Arkham.Location.Cards.EntryHallSpectral
       Arkham.Location.Cards.Entryway
       Arkham.Location.Cards.ExhibitHallAthabaskanExhibit
@@ -1407,6 +1417,7 @@ library
       Arkham.Location.Cards.Lobby
       Arkham.Location.Cards.LostMemories
       Arkham.Location.Cards.MainPath
+      Arkham.Location.Cards.MasterBedroom
       Arkham.Location.Cards.MasterBedroomSpectral
       Arkham.Location.Cards.MessHall
       Arkham.Location.Cards.MetropolitanCathedral
@@ -1428,6 +1439,7 @@ library
       Arkham.Location.Cards.NorthTower_287
       Arkham.Location.Cards.NorthTower_288
       Arkham.Location.Cards.NotreDame
+      Arkham.Location.Cards.Office
       Arkham.Location.Cards.OfficeSpectral
       Arkham.Location.Cards.OperaGarnier212
       Arkham.Location.Cards.OperaGarnier213
@@ -1523,6 +1535,7 @@ library
       Arkham.Location.Cards.TrainTracks
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
+      Arkham.Location.Cards.TrophyRoom
       Arkham.Location.Cards.TrophyRoomSpectral
       Arkham.Location.Cards.TwistedUnderbrush
       Arkham.Location.Cards.UndergroundRuins
@@ -1531,6 +1544,7 @@ library
       Arkham.Location.Cards.VastPassages
       Arkham.Location.Cards.VelmasDiner
       Arkham.Location.Cards.VenetianGarden
+      Arkham.Location.Cards.VictorianHalls
       Arkham.Location.Cards.VictorianHallsSpectral
       Arkham.Location.Cards.VillageCommons
       Arkham.Location.Cards.VipArea
@@ -1620,6 +1634,7 @@ library
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
+      Arkham.Scenarios.AtDeathsDoorstep.Story
       Arkham.Scenarios.BlackStarsRise.Story
       Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.FlavorText

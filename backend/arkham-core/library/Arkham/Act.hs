@@ -184,6 +184,10 @@ allActs = mapFrom
   , SomeActCard witchHauntings
   , SomeActCard pathsIntoTwilight
   , SomeActCard aCircleUnbroken
+  --- At Death's Doorstep
+  , SomeActCard hiddenAgendas
+  , SomeActCard theSpectralRealm
+  , SomeActCard escapeTheCage
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

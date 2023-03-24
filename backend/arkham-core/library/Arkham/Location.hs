@@ -381,6 +381,13 @@ allLocations = mapFrom
   , SomeLocationCard witchHauntedWoodsHermitsHouse
   , SomeLocationCard witchHauntedWoodsOvergrownBarn
   -- At Death's Doorstep
+  , SomeLocationCard entryHallAtDeathsDoorstep
+  , SomeLocationCard victorianHalls
+  , SomeLocationCard trophyRoom
+  , SomeLocationCard billiardsRoom
+  , SomeLocationCard masterBedroom
+  , SomeLocationCard balconyAtDeathsDoorstep
+  , SomeLocationCard office
   , SomeLocationCard entryHallSpectral
   , SomeLocationCard victorianHallsSpectral
   , SomeLocationCard trophyRoomSpectral

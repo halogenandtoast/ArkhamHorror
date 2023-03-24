@@ -135,12 +135,14 @@ allLocationCards = mapFromList $ map
   , backAlley
   , backstage
   , balcony
+  , balconyAtDeathsDoorstep
   , balconySpectral
   , ballroom
   , baseOfTheHill
   , basementHall
   , bathroom
   , bedroom
+  , billiardsRoom
   , billiardsRoomSpectral
   , bishopsBrook_202
   , bishopsBrook_203
@@ -228,6 +230,7 @@ allLocationCards = mapFromList $ map
   , engineCar_176
   , engineCar_177
   , entryHall
+  , entryHallAtDeathsDoorstep
   , entryHallSpectral
   , entryway
   , exhibitHallAthabaskanExhibit
@@ -299,6 +302,7 @@ allLocationCards = mapFromList $ map
   , lobby
   , lostMemories
   , mainPath
+  , masterBedroom
   , masterBedroomSpectral
   , messHall
   , metropolitanCathedral
@@ -320,6 +324,7 @@ allLocationCards = mapFromList $ map
   , northTower_287
   , northTower_288
   , notreDame
+  , office
   , officeSpectral
   , operaGarnier212
   , operaGarnier213
@@ -415,6 +420,7 @@ allLocationCards = mapFromList $ map
   , trainTracks
   , trapRoom
   , trappersCabin
+  , trophyRoom
   , trophyRoomSpectral
   , twistedUnderbrush
   , undergroundRuins
@@ -423,6 +429,7 @@ allLocationCards = mapFromList $ map
   , vastPassages
   , velmasDiner
   , venetianGarden
+  , victorianHalls
   , victorianHallsSpectral
   , villageCommons
   , vipArea
@@ -3260,6 +3267,69 @@ witchHauntedWoodsOvergrownBarn = victory 1 $ locationWithUnrevealed
   Squiggle
   [Squiggle, Plus]
   TheWitchingHour
+
+entryHallAtDeathsDoorstep :: CardDef
+entryHallAtDeathsDoorstep = location
+  "05071"
+  "Entry Hall"
+  []
+  Square
+  [T]
+  AtDeathsDoorstep
+
+victorianHalls :: CardDef
+victorianHalls = location
+  "05072"
+  "Victorian Halls"
+  []
+  T
+  [Square, Star, Triangle, Heart]
+  AtDeathsDoorstep
+
+trophyRoom :: CardDef
+trophyRoom = location
+  "05073"
+  "Trophy Room"
+  []
+  Triangle
+  [T, Diamond]
+  AtDeathsDoorstep
+
+billiardsRoom :: CardDef
+billiardsRoom = location
+  "05074"
+  "Billiards Room"
+  []
+  Diamond
+  [Triangle]
+  AtDeathsDoorstep
+
+masterBedroom :: CardDef
+masterBedroom = location
+  "05075"
+  "Master Bedroom"
+  []
+  Heart
+  [T, Moon]
+  AtDeathsDoorstep
+
+balconyAtDeathsDoorstep :: CardDef
+balconyAtDeathsDoorstep = location
+  "05076"
+  "Balcony"
+  []
+  Moon
+  [Heart]
+  AtDeathsDoorstep
+
+office :: CardDef
+office = location
+  "05077"
+  "Office"
+  []
+  Star
+  [T]
+  AtDeathsDoorstep
 
 entryHallSpectral :: CardDef
 entryHallSpectral = location

@@ -160,6 +160,9 @@ allAgendas = mapFrom
   -- The Witching Hour
   , SomeAgendaCard temperanceXIV
   , SomeAgendaCard theNightHowls
+  -- At Death's Doorstep
+  , SomeAgendaCard justiceXI
+  , SomeAgendaCard overTheThreshold
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

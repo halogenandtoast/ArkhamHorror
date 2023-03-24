@@ -150,3 +150,10 @@ pushM :: GameT Message -> GameT ()
 pushM mmsg = do
   msg <- mmsg
   push msg
+
+removeMessageType :: (MonadIO m, HasQueue Message m) => MessageType -> m ()
+removeMessageType msgType = withQueue_ $ \queue ->
+  let
+    (before, after) = break ((== Just msgType) . messageType) queue
+    remaining = drop 1 after
+  in before <> remaining

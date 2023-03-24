@@ -44,21 +44,20 @@ instance HasTokenValue JimCulver where
 
 instance RunMessage JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
-    When (RevealToken _ iid token)
-      | iid == investigatorId && tokenFace token == ElderSign -> do
-        i <$ push
-          (chooseOne
-            iid
-            [ Label "Resolve as Elder Sign" []
-            , Label
-              "Resolve as Skull"
-              [ CreateTokenEffect
-                  (EffectModifiers
-                  $ toModifiers attrs [TokenFaceModifier [Skull]]
-                  )
-                  (toSource attrs)
-                  token
-              ]
+    When (RevealToken _ iid token) | iid == investigatorId -> do
+      faces <- getModifiedTokenFace token
+      when (ElderSign `elem` faces) $ do
+        push $ chooseOne iid
+          [ Label "Resolve as Elder Sign" []
+          , Label
+            "Resolve as Skull"
+            [ CreateTokenEffect
+                (EffectModifiers
+                $ toModifiers attrs [TokenFaceModifier [Skull]]
+                )
+                (toSource attrs)
+                token
             ]
-          )
+          ]
+      pure i
     _ -> JimCulver <$> runMessage msg attrs

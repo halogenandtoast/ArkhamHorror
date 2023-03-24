@@ -2670,12 +2670,12 @@ matchPhase p = \case
   Matcher.PhaseIs p' -> pure $ p == p'
 
 getModifiedTokenFaces :: HasGame m => [Token] -> m [TokenFace]
-getModifiedTokenFaces tokens = flip
-  concatMapM
-  tokens
-  \token -> do
-    modifiers' <- getModifiers (TokenTarget token)
-    pure $ foldl' applyModifier [tokenFace token] modifiers'
+getModifiedTokenFaces tokens = concatMapM getModifiedTokenFace tokens
+
+getModifiedTokenFace :: HasGame m => Token -> m [TokenFace]
+getModifiedTokenFace token = do
+  modifiers' <- getModifiers (TokenTarget token)
+  pure $ foldl' applyModifier [tokenFace token] modifiers'
  where
   applyModifier _ (TokenFaceModifier fs') = fs'
   applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs

@@ -76,8 +76,9 @@ instance RunMessage NormanWithers where
       drawing <- drawCards iid a 1
       push drawing
       pure nw
-    When (RevealToken _ iid token)
-      | iid == toId a && tokenFace token == ElderSign -> do
+    When (RevealToken _ iid token) | iid == toId a -> do
+      faces <- getModifiedTokenFace token
+      when (ElderSign `elem` faces) $ do
         drawing <- drawCards iid a 1
         push
           $ chooseOne iid
@@ -89,7 +90,7 @@ instance RunMessage NormanWithers where
                 ]
             | c <- mapMaybe (preview _PlayerCard) (investigatorHand a)
             ]
-        pure nw
+      pure nw
     BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
     PlayCard iid card _ _ False | iid == toId a ->
       case unDeck (investigatorDeck a) of

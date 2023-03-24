@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Event.Types where
 
 import Arkham.Prelude
@@ -60,31 +61,6 @@ data EventAttrs = EventAttrs
   , eventAfterPlay :: AfterPlayStrategy
   }
   deriving stock (Show, Eq, Generic)
-
-afterPlayL :: Lens' EventAttrs AfterPlayStrategy
-afterPlayL = lens eventAfterPlay $ \m x -> m { eventAfterPlay = x }
-
-placementL :: Lens' EventAttrs Placement
-placementL = lens eventPlacement $ \m x -> m { eventPlacement = x }
-
-exhaustedL :: Lens' EventAttrs Bool
-exhaustedL =
-  lens eventExhausted $ \m x -> m {eventExhausted = x}
-
-paymentMessagesL :: Lens' EventAttrs [Message]
-paymentMessagesL =
-  lens eventPaymentMessages $ \m x -> m {eventPaymentMessages = x}
-
-beingPaidForL :: Lens' EventAttrs Bool
-beingPaidForL =
-  lens eventBeingPaidFor $ \m x -> m {eventBeingPaidFor = x}
-
-originalCardCodeL :: Lens' EventAttrs CardCode
-originalCardCodeL =
-  lens eventOriginalCardCode $ \m x -> m {eventOriginalCardCode = x}
-
-sealedTokensL :: Lens' EventAttrs [Token]
-sealedTokensL = lens eventSealedTokens $ \m x -> m { eventSealedTokens = x }
 
 allEventCards :: HashMap CardCode CardDef
 allEventCards = allPlayerEventCards
@@ -215,3 +191,4 @@ liftSomeEventCard f (SomeEventCard a) = f a
 someEventCardCode :: SomeEventCard -> CardCode
 someEventCardCode = liftSomeEventCard cbCardCode
 
+makeLensesWith suffixedFields ''EventAttrs

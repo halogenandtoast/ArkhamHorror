@@ -2390,6 +2390,19 @@ instance Query TokenMatcher where
       IncludeSealed _ -> True
       _ -> False
     go = \case
+      WouldReduceYourSkillValueToZero -> \t -> do
+        mSkillTest <- getSkillTest
+        case mSkillTest of
+          Nothing -> pure False
+          Just skillTest -> do
+            iid' <- toId <$> getActiveInvestigator
+            tv <- getTokenValue iid' (tokenFace t) ()
+            case tv of
+              (TokenValue _ AutoFailModifier) -> pure True
+              (TokenValue _ other) -> do
+                currentSkillValue <- getCurrentSkillValue skillTest
+                let currentTokenModifier = fromMaybe 0 (tokenModifierToInt other)
+                pure $ (currentSkillValue + currentTokenModifier) <= 0
       WithNegativeModifier -> \t -> do
         iid' <- toId <$> getActiveInvestigator
         tv <- getTokenValue iid' (tokenFace t) ()

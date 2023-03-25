@@ -170,6 +170,10 @@ data CampaignLogKey
   | TheWitches'SpellWasBroken
   | TheWitches'SpellWasCast
   | MementosDiscovered
+  | TheInvestigatorsAreOnGavriella'sTrail
+  | TheInvestigatorsAreOnJerome'sTrail
+  | TheInvestigatorsAreOnPenny'sTrail
+  | TheInvestigatorsAreOnValentino'sTrail
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

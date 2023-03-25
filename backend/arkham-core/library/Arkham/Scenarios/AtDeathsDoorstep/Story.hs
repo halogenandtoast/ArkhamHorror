@@ -65,3 +65,65 @@ introPart4 = FlavorText
     \ action to remedy your fate, as the soothsayer advised? Or are you walking\
     \ willingly into the jaws of a grim destiny?"
   ]
+
+interlude1Gavriella :: FlavorText
+interlude1Gavriella = FlavorText
+  Nothing
+  [ "The entry hall to the manor is beautifully decorated, but you find it odd that\
+    \ the grand staircase’s wooden balustrade has been recently repaired and, by the\
+    \ looks of it, hastily so. While nobody is looking, you follow the handrail up\
+    \ and down the stairs until you spot what you are looking for: several splinters\
+    \ of wood, perhaps dislodged by a bullet. You ascend the staircase once more and\
+    \ position yourself where one would need to be standing in order to fire such a\
+    \ shot. After a moment of observation, a faint glimmer near one of the decorative\
+    \ ferns on the second floor catches your eye. There, you find proof: a bullet\
+    \ casing from a .45 handgun. A gun was indeed fired in the entry hall of the\
+    \ manor—but if that is true, how did nobody hear the shots?"
+  ]
+
+interlude1Jerome :: FlavorText
+interlude1Jerome = FlavorText
+  Nothing
+  [ "Josef Meiger’s personal office is pretty tidy for somebody whose personal\
+    \ secretary just went missing. Perhaps he’s just a fastidious person...or perhaps\
+    \ he’s been scrubbing evidence of some wrongdoing. You find nothing of note in\
+    \ any of Josef ’s files, but after some perusing, you realize there is one place\
+    \ you haven’t checked: the trash. Rooting through the garbage bin yields fruit.\
+    \ Near the bottom is a small pocket journal belonging to Jerome Davids, probably\
+    \ tossed there carelessly by the cleaning staff. You turn to the last page.\
+    \ There, Jerome had recorded a list of names, perhaps transcribed from Josef’s\
+    \ records. You don’t know what it means yet, but it must be important."
+  ]
+
+interlude1Penny :: FlavorText
+interlude1Penny = FlavorText
+  Nothing
+  [ "The balcony outside Josef Meiger’s bedroom overlooks the rainy streets and\
+    \ somber spires of French Hill. According to eyewitnesses, Penny was last seen\
+    \ entering Josef ’s bedroom, presumably to tidy it up, or perhaps to look for one\
+    \ of his personal belongings. The cigarette butt on the floor of the balcony\
+    \ tells a different story. Penny came here for a break, and judging from how busy\
+    \ the rest of the staff is, it was probably a much-needed one. If she had been in\
+    \ any danger, could she have climbed or jumped down from the balcony? You peer\
+    \ over the edge. It’s possible, but unlikely. A fall from here could break a leg,\
+    \ or worse. She likely would have retreated back into the manor, where she could\
+    \ have called for help...only, nobody saw her exit from the bedroom. Something\
+    \ doesn’t add up. You tuck the cigarette butt into your coat pocket, hoping it’s\
+    \ actually a lead and not a wild goose chase."
+  ]
+
+interlude1Valentino :: FlavorText
+interlude1Valentino = FlavorText
+  Nothing
+  [ "Tracing Valentino’s steps isn’t difficult. As the guest of honor (and life of\
+    \ the party, from what you hear) there was always a crowd around him. This makes\
+    \ the story that he “vanished when they weren’t looking” all the more\
+    \ unbelievable. In the billiards room, where Valentino was last seen, you corner\
+    \ Adam Gensler, the man he was playing billiards with just before his\
+    \ disappearance. “Look, I already told the cops and the reporters what I saw,” he\
+    \ explains, fidgeting and tapping his toes repeatedly. “Tino and I were playing\
+    \ billiards, I looked away, next thing I know he’s gone,” he insists angrily,\
+    \ returning to his billiards game. “Now where is that damned one ball?” he\
+    \ mutters. It might be nothing, but it looks like Valentino wasn’t the only thing\
+    \ to go missing that night."
+  ]

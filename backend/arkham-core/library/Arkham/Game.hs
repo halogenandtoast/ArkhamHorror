@@ -710,7 +710,7 @@ getInvestigatorsMatching matcher = do
     NearestToEnemy enemyMatcher -> \i -> do
       let
         hasMatchingEnemy lid =
-          selectAny $ EnemyAt (LocationWithId lid) <> enemyMatcher
+          selectAny $ enemyAt lid <> enemyMatcher
         getEnemyDistance start =
           Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
             (markDistances start hasMatchingEnemy mempty)

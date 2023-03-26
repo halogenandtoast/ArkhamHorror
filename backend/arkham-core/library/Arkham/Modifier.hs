@@ -157,6 +157,7 @@ data ModifierType
   | EnemyEvade Int
   | EnemyFight Int
   | AsIfEnemyFight Int
+  | CountsAsInvestigatorForHunterEnemies
   | FailTies
   | FewerSlots SlotType Int
   | ForcedTokenChange TokenFace [TokenFace]
@@ -212,6 +213,7 @@ data ModifierType
   | XPModifier Int
   | SkillTestAutomaticallySucceeds
   | IgnoreRevelation
+  | GainVictory Int
   | InVictoryDisplayForCountingVengeance
   | EnemyFightActionCriteria CriteriaOverride
   | CanPlayWithOverride CriteriaOverride

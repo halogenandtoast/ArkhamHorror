@@ -6,21 +6,20 @@ module Arkham.Asset.Cards.IchtacaTheForgottenGuardian
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Asset.Cards qualified as Cards
+import qualified Arkham.Action as Action
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
-import Arkham.Card.CardDef
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Damage
-import Arkham.Enemy.Types
+import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 
 newtype IchtacaTheForgottenGuardian = IchtacaTheForgottenGuardian AssetAttrs
   deriving anyclass IsAsset
@@ -39,21 +38,12 @@ instance HasModifiersFor IchtacaTheForgottenGuardian where
           mAction <- getSkillTestAction
           case mAction of
             Just Action.Fight -> do
-              isVictory <- fieldP
-                EnemyCard
-                (not . isNothing . cdVictoryPoints . toCardDef)
-                eid
-              pure $ toModifiers
-                a
-                [SkillModifier SkillCombat (if isVictory then 2 else 1)]
+              combatValue <- maybe 1 (const 2) <$> getVictoryPoints eid
+              pure $ toModifiers a [SkillModifier SkillCombat combatValue]
             Just Action.Evade -> do
-              isVengeance <- fieldP
-                EnemyCard
-                (not . isNothing . cdVengeancePoints . toCardDef)
-                eid
-              pure $ toModifiers
-                a
-                [SkillModifier SkillAgility (if isVengeance then 2 else 1)]
+              agilityValue <- maybe 1 (const 2)
+                <$> getVengeancePoints eid
+              pure $ toModifiers a [SkillModifier SkillAgility agilityValue]
             _ -> pure []
         _ -> pure []
   getModifiersFor _ _ = pure []

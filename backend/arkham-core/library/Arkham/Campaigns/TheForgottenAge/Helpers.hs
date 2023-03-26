@@ -9,6 +9,7 @@ import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Game.Helpers
 import Arkham.GameEnv
+import Arkham.Helpers.Card
 import Arkham.Helpers.Message
 import Arkham.History
 import Arkham.Id
@@ -21,7 +22,6 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Result (..), Window (..) )
@@ -37,13 +37,11 @@ getSupplyCount iid s =
 getAnyHasSupply :: HasGame m => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
-getInvestigatorsWithSupply
-  :: HasGame m => Supply -> m [InvestigatorId]
+getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s =
   getInvestigatorIds >>= filterM (`getHasSupply` s)
 
-getInvestigatorsWithoutSupply
-  :: HasGame m => Supply -> m [InvestigatorId]
+getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s =
   getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
 
@@ -54,7 +52,8 @@ getVengeanceInVictoryDisplay = do
     isVengeanceCard = \case
       VengeanceCard _ -> True
       _ -> False
-    inVictoryDisplay = sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
+    inVictoryDisplay =
+      sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
     vengeanceCards = count isVengeanceCard victoryDisplay
   locationsWithModifier <- getSum <$> selectAgg
     (Sum . fromMaybe 0)
@@ -139,7 +138,9 @@ explore iid source cardMatcher exploreRule matchCount = do
 
           pure
             $ locationAction
-            : [ Move $ move source iid lid | canMove && exploreRule == PlaceExplored ]
+            : [ Move $ move source iid lid
+              | canMove && exploreRule == PlaceExplored
+              ]
             <> [ UpdateHistory iid historyItem
                , afterExploredWindow
                , afterPutIntoPlayWindow
@@ -158,15 +159,15 @@ explore iid source cardMatcher exploreRule matchCount = do
         [ FocusCards (notMatched <> [x])
         , chooseOne
           iid
-          [ TargetLabel
-              (CardIdTarget $ toCardId x)
+          [ targetLabel
+              (toCardId x)
               (UnfocusCards : SetScenarioDeck ExplorationDeck deck' : msgs)
           ]
         ]
     xs -> do
       -- we assume only locations, triggered by forked path
       -- This can only be PlaceExplored
-      msgs :: [Message] <- do
+      msgs <- do
         placements <- traverse placeLocation xs
         let
           historyItem = mempty { historySuccessfulExplore = True }
@@ -185,7 +186,9 @@ explore iid source cardMatcher exploreRule matchCount = do
           $ map snd placements
           <> [ chooseOne
                  iid
-                 [ targetLabel lid [Move $ move source iid lid] | lid <- locationIds ]
+                 [ targetLabel lid [Move $ move source iid lid]
+                 | lid <- locationIds
+                 ]
              | canMove
              ]
           <> [ UpdateHistory iid historyItem
@@ -200,8 +203,14 @@ explore iid source cardMatcher exploreRule matchCount = do
           , chooseN
             iid
             (min matchCount $ length xs)
-            [ TargetLabel (CardIdTarget $ toCardId x) [] | x <- xs ]
+            [ targetLabel (toCardId x) [] | x <- xs ]
           , UnfocusCards
           , SetScenarioDeck ExplorationDeck deck'
           ]
         <> msgs
+
+getVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getVengeancePoints = getCardField cdVengeancePoints
+
+getHasVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m Bool
+getHasVengeancePoints c = isJust <$> getVengeancePoints c

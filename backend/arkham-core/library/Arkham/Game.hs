@@ -4079,9 +4079,12 @@ runGameMessage msg g = case msg of
       ]
     enemiesAttackWindow <- checkWindows
       [Window Timing.When Window.EnemiesAttackStep]
+    afterHuntersMoveWindow <- checkWindows
+      [Window Timing.After Window.HuntersMoveStep]
     pushAllEnd
       [ phaseBeginsWindow
       , HuntersMove
+      , afterHuntersMoveWindow
       , enemiesAttackWindow
       , EnemiesAttack
       , EndEnemy

@@ -5,17 +5,23 @@ module Arkham.Agenda.Cards.OverTheThreshold
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.DamageEffect
+import Arkham.Enemy.Types ( Field (EnemyHealthDamage) )
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Trait (toTraits, Trait(SilverTwilight))
+import Arkham.Projection
+import Arkham.Source
+import Arkham.Timing qualified as Timing
+import Arkham.Trait ( Trait (Humanoid, SilverTwilight, Spectral), toTraits )
 
 newtype OverTheThreshold = OverTheThreshold AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor OverTheThreshold where
@@ -35,8 +41,32 @@ overTheThreshold :: AgendaCard OverTheThreshold
 overTheThreshold =
   agenda (2, A) OverTheThreshold Cards.overTheThreshold (Static 11)
 
+instance HasAbilities OverTheThreshold where
+  getAbilities (OverTheThreshold a) =
+    [mkAbility a 1 $ ForcedAbility $ PhaseStep Timing.After HuntersMoveStep]
+
 instance RunMessage OverTheThreshold where
   runMessage msg a@(OverTheThreshold attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      spectralEnemies <- selectWithField EnemyHealthDamage
+        $ EnemyWithTrait Spectral
+      enemyPairs <- catMaybes <$> for
+        spectralEnemies
+        \(enemy, damage) -> do
+          humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt
+            (locationWithEnemy enemy)
+          pure $ guard (notNull humanoids) $> (enemy, damage, humanoids)
+      lead <- getLead
+      push $ chooseOrRunOneAtATime
+        lead
+        [ targetLabel
+            enemy
+            [ EnemyDamage humanoid $ nonAttack (EnemySource enemy) damage
+            | humanoid <- humanoids
+            ]
+        | (enemy, damage, humanoids) <- enemyPairs
+        ]
+      pure a
     _ -> OverTheThreshold <$> runMessage msg attrs

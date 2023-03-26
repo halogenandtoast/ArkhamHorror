@@ -615,7 +615,7 @@ data WindowMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data PhaseStepMatcher = EnemiesAttackStep
+data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -754,7 +754,9 @@ data PhaseMatcher = AnyPhase | PhaseIs Phase
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data WindowMythosStepMatcher = WhenAllDrawEncounterCard | AfterCheckDoomThreshold
+data WindowMythosStepMatcher
+  = WhenAllDrawEncounterCard
+  | AfterCheckDoomThreshold
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

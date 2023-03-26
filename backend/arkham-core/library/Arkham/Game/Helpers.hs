@@ -1737,6 +1737,8 @@ windowMatches iid source window' = \case
   Matcher.PhaseStep whenMatcher phaseStepMatcher -> case window' of
     Window t Window.EnemiesAttackStep | whenMatcher == t ->
       pure $ phaseStepMatcher == Matcher.EnemiesAttackStep
+    Window t Window.HuntersMoveStep | whenMatcher == t ->
+      pure $ phaseStepMatcher == Matcher.HuntersMoveStep
     _ -> pure False
   Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
     Window t (Window.TurnBegins who) | t == whenMatcher ->

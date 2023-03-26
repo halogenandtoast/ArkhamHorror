@@ -7,7 +7,6 @@ module Arkham.Enemy.Runner
 
 import Arkham.Prelude
 
-import Arkham.Target as X
 import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
@@ -15,15 +14,18 @@ import Arkham.Helpers.Enemy as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Spawn as X
+import Arkham.Target as X
 
 import Arkham.Action qualified as Action
 import Arkham.Attack
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
@@ -93,8 +95,7 @@ filterOutEnemyUiMessages eid = \case
   FightLabel eid' _ | eid == eid' -> Nothing
   other -> Just other
 
-getInvestigatorsAtSameLocation
-  :: HasGame m => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = do
   enemyLocation <- field EnemyLocation (toId attrs)
   case enemyLocation of
@@ -106,8 +107,8 @@ getPreyMatcher a = do
   modifiers' <- getModifiers (toTarget a)
   pure $ foldl' applyModifier (enemyPrey a) modifiers'
  where
-   applyModifier _ (ForcePrey p) = p
-   applyModifier p _ = p
+  applyModifier _ (ForcePrey p) = p
+  applyModifier p _ = p
 
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
@@ -148,10 +149,7 @@ instance RunMessage EnemyAttrs where
             do
               prey <- getPreyMatcher a
               preyIds <-
-                selectList
-                $ preyWith prey
-                $ InvestigatorAt
-                $ LocationWithId lid
+                selectList $ preyWith prey $ InvestigatorAt $ LocationWithId lid
               investigatorIds <- if null preyIds
                 then selectList $ InvestigatorAt $ LocationWithId lid
                 else pure []
@@ -163,14 +161,13 @@ instance RunMessage EnemyAttrs where
                 [] -> push $ EnemyEntered eid lid
                 [iid] -> pushAll
                   [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
-                iids -> push
-                  $ chooseOne
-                    leadInvestigatorId
-                    [ targetLabel
-                        iid
-                        [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
-                    | iid <- iids
-                    ]
+                iids -> push $ chooseOne
+                  leadInvestigatorId
+                  [ targetLabel
+                      iid
+                      [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
+                  | iid <- iids
+                  ]
           else
             when (Keyword.Massive `notElem` keywords) $ push $ EnemyEntered
               eid
@@ -322,7 +319,8 @@ instance RunMessage EnemyAttrs where
         =<< getInvestigatorsAtSameLocation a
       prey <- getPreyMatcher a
       preyIds <- selectList $ case prey of
-        Prey m -> Prey $ m <> AnyInvestigator (map InvestigatorWithId investigatorIds')
+        Prey m ->
+          Prey $ m <> AnyInvestigator (map InvestigatorWithId investigatorIds')
         other -> other
 
       let investigatorIds = if null preyIds then investigatorIds' else preyIds
@@ -388,23 +386,22 @@ instance RunMessage EnemyAttrs where
           -- to AnyPrey and then find if there are any investigators
           -- who qualify as prey to filter
           prey <- getPreyMatcher a
-          matchingClosestLocationIds <-
-            case (forcedTargetLocation, prey) of
-              (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
-                -- map unClosestPathLocationId <$> getSetList
-                --   (loc, forcedTargetLocationId, extraConnectionsMap)
-              (Nothing, BearerOf _) ->
-                selectList $ locationWithInvestigator $ fromJustNote
-                  "must have bearer"
-                  enemyBearer
-              (Nothing, OnlyPrey onlyPrey) ->
-                selectList $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy
-                  (EnemyWithId eid)
-              (Nothing, _prey) ->
-                selectList
-                  $ LocationWithInvestigator
-                  $ NearestToEnemy
-                  $ EnemyWithId eid
+          matchingClosestLocationIds <- case (forcedTargetLocation, prey) of
+            (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
+              -- map unClosestPathLocationId <$> getSetList
+              --   (loc, forcedTargetLocationId, extraConnectionsMap)
+            (Nothing, BearerOf _) ->
+              selectList $ locationWithInvestigator $ fromJustNote
+                "must have bearer"
+                enemyBearer
+            (Nothing, OnlyPrey onlyPrey) ->
+              selectList $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy
+                (EnemyWithId eid)
+            (Nothing, _prey) ->
+              selectList
+                $ LocationWithInvestigator
+                $ NearestToEnemy
+                $ EnemyWithId eid
 
           preyIds <- select prey
 
@@ -506,7 +503,9 @@ instance RunMessage EnemyAttrs where
              [iid]
              [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
            ]
-          <> [ EnemyAttack $ (enemyAttack enemyId iid) { attackDamageStrategy = enemyDamageStrategy }
+          <> [ EnemyAttack $ (enemyAttack enemyId iid)
+                 { attackDamageStrategy = enemyDamageStrategy
+                 }
              | Keyword.Retaliate
                `elem` keywords
                && IgnoreRetaliate
@@ -522,19 +521,27 @@ instance RunMessage EnemyAttrs where
         Just iid -> do
           shouldAttack <- member iid <$> select (investigatorEngagedWith eid)
           when shouldAttack $ push $ EnemyAttack $ (enemyAttack enemyId iid)
-            { attackDamageStrategy = enemyDamageStrategy }
+            { attackDamageStrategy = enemyDamageStrategy
+            }
         Nothing -> do
           iids <- selectList $ investigatorEngagedWith eid
           pushAll
-            [ EnemyAttack $ (enemyAttack enemyId iid) { attackDamageStrategy =  enemyDamageStrategy }
+            [ EnemyAttack $ (enemyAttack enemyId iid)
+                { attackDamageStrategy = enemyDamageStrategy
+                }
             | iid <- iids
             ]
       pure a
     EnemyEvaded iid eid | eid == enemyId -> do
       modifiers <- getModifiers (InvestigatorTarget iid)
       lid <- getJustLocation iid
-      let updatePlacement = if DoNotDisengageEvaded `elem` modifiers then id else placementL .~ AtLocation lid
-          updateExhausted = if DoNotExhaustEvaded `elem` modifiers then id else exhaustedL .~ True
+      let
+        updatePlacement = if DoNotDisengageEvaded `elem` modifiers
+          then id
+          else placementL .~ AtLocation lid
+        updateExhausted = if DoNotExhaustEvaded `elem` modifiers
+          then id
+          else exhaustedL .~ True
       pure $ a & updatePlacement & updateExhausted
     Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
@@ -577,7 +584,9 @@ instance RunMessage EnemyAttrs where
           [Window Timing.After (Window.FailEvadeEnemy iid enemyId n)]
         pushAll
           $ [whenWindow, afterWindow]
-          <> [ EnemyAttack $ (enemyAttack enemyId iid) { attackDamageStrategy =  enemyDamageStrategy }
+          <> [ EnemyAttack $ (enemyAttack enemyId iid)
+                 { attackDamageStrategy = enemyDamageStrategy
+                 }
              | Keyword.Alert `elem` keywords
              ]
         pure a
@@ -588,10 +597,7 @@ instance RunMessage EnemyAttrs where
       whenAttacksWindow <- checkWindows
         [Window Timing.When (Window.EnemyAttacks details)]
       afterAttacksEventIfCancelledWindow <- checkWindows
-        [ Window
-            Timing.After
-            (Window.EnemyAttacksEvenIfCancelled details)
-        ]
+        [Window Timing.After (Window.EnemyAttacksEvenIfCancelled details)]
       whenWouldAttackWindow <- checkWindows
         [Window Timing.When (Window.EnemyWouldAttack details)]
       a <$ pushAll
@@ -609,25 +615,31 @@ instance RunMessage EnemyAttrs where
         applyModifiers m _ = m
       allowAttack <- member enemyId <$> select validEnemyMatcher
       case attackTarget details of
-        InvestigatorTarget iid -> pushAll
-          $ [ InvestigatorAssignDamage
-                iid
-                (EnemyAttackSource enemyId)
-                (attackDamageStrategy details)
-                enemyHealthDamage
-                enemySanityDamage
-            | allowAttack
-            ]
-          <> [Exhaust (toTarget a) | attackExhaustsEnemy details]
-          <> [After (EnemyAttack details)]
+        InvestigatorTarget iid ->
+          pushAll
+            $ [ InvestigatorAssignDamage
+                  iid
+                  (EnemyAttackSource enemyId)
+                  (attackDamageStrategy details)
+                  enemyHealthDamage
+                  enemySanityDamage
+              | allowAttack
+              ]
+            <> [ Exhaust (toTarget a) | attackExhaustsEnemy details ]
+            <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
-      afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
+      afterWindow <- checkWindows
+        [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) source | eid == enemyId -> do
-      afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source (a ^. damageL))]
+      afterWindow <- checkWindows
+        [ Window
+            Timing.After
+            (Window.Healed DamageType (toTarget a) source (a ^. damageL))
+        ]
       push afterWindow
       pure $ a & damageL .~ 0
     Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
@@ -642,12 +654,22 @@ instance RunMessage EnemyAttrs where
           dealtDamageWhenMsg <- checkWindows
             [ Window
                 Timing.When
-                (Window.DealtDamage source damageEffect (toTarget a) damageAmount)
+                (Window.DealtDamage
+                  source
+                  damageEffect
+                  (toTarget a)
+                  damageAmount
+                )
             ]
           dealtDamageAfterMsg <- checkWindows
             [ Window
                 Timing.After
-                (Window.DealtDamage source damageEffect (toTarget a) damageAmount)
+                (Window.DealtDamage
+                  source
+                  damageEffect
+                  (toTarget a)
+                  damageAmount
+                )
             ]
           takeDamageWhenMsg <- checkWindows
             [ Window
@@ -791,9 +813,9 @@ instance RunMessage EnemyAttrs where
         [Window Timing.When (Window.EnemyDefeated miid eid)]
       afterMsg <- checkWindows
         [Window Timing.After (Window.EnemyDefeated miid eid)]
+      victory <- getVictoryPoints eid
+      vengeance <- getVengeancePoints eid
       let
-        victory = cdVictoryPoints $ toCardDef a
-        vengeance = cdVengeancePoints $ toCardDef a
         victoryMsgs =
           [ DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance) ]
         defeatMsgs = if isJust (victory <|> vengeance)
@@ -812,7 +834,9 @@ instance RunMessage EnemyAttrs where
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
-        <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
+        <> [ RemovedFromPlay $ toSource a
+           , Discarded (toTarget a) source (toCard a)
+           ]
       pure a
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll
@@ -859,13 +883,14 @@ instance RunMessage EnemyAttrs where
         modifiers' <- getModifiers (EnemyTarget enemyId)
         unless (CannotMakeAttacksOfOpportunity `elem` modifiers')
           $ push
-          $ EnemyWillAttack $ EnemyAttackDetails
-            { attackEnemy = enemyId
-            , attackTarget = InvestigatorTarget iid
-            , attackDamageStrategy = enemyDamageStrategy
-            , attackType = AttackOfOpportunity
-            , attackExhaustsEnemy = False
-            }
+          $ EnemyWillAttack
+          $ EnemyAttackDetails
+              { attackEnemy = enemyId
+              , attackTarget = InvestigatorTarget iid
+              , attackDamageStrategy = enemyDamageStrategy
+              , attackType = AttackOfOpportunity
+              , attackExhaustsEnemy = False
+              }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       lid <- getJustLocation iid
@@ -877,13 +902,17 @@ instance RunMessage EnemyAttrs where
         spawnAtMatcher = getModifiedSpawnAt modifiers'
       case spawnAtMatcher of
         Nothing -> do
-          windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+          windows' <- checkWindows
+            [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
           pushAll $ windows' : resolve (EnemySpawn (Just iid) lid eid)
         Just matcher -> do
-          let applyMatcherExclusions ms (SpawnAtFirst sas) = SpawnAtFirst (map (applyMatcherExclusions ms) sas)
-              applyMatcherExclusions [] m = m
-              applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnLocation m) = applyMatcherExclusions xs (SpawnLocation $ m <> NotLocation n)
-              applyMatcherExclusions (_ :xs) m = applyMatcherExclusions xs m
+          let
+            applyMatcherExclusions ms (SpawnAtFirst sas) =
+              SpawnAtFirst (map (applyMatcherExclusions ms) sas)
+            applyMatcherExclusions [] m = m
+            applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnLocation m) =
+              applyMatcherExclusions xs (SpawnLocation $ m <> NotLocation n)
+            applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
           spawnAt enemyId (applyMatcherExclusions modifiers' matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
@@ -898,7 +927,8 @@ instance RunMessage EnemyAttrs where
               , enemySurgeIfUnableToSpawn
               ]
         [lid] -> do
-          windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+          windows' <- checkWindows
+            [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
           pushAll $ windows' : resolve (EnemySpawn miid lid eid)
         xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
       pure a

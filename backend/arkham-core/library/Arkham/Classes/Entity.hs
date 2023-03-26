@@ -10,6 +10,8 @@ import Arkham.Classes.Entity.Source as X
 import Arkham.Target
 import Arkham.Token
 
+type family IdOf a
+
 class Entity a where
   type EntityId a
   type EntityAttrs a

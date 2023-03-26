@@ -25,7 +25,11 @@ scenarioField fld = scenarioFieldMap fld id
 
 scenarioFieldMap
   :: (HasCallStack, HasGame m) => Field Scenario a -> (a -> b) -> m b
-scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
+scenarioFieldMap fld f = scenarioFieldMapM fld (pure . f)
+
+scenarioFieldMapM
+  :: (HasCallStack, HasGame m) => Field Scenario a -> (a -> m b) -> m b
+scenarioFieldMapM fld f = selectJust TheScenario >>= fieldMapM fld f
 
 getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign

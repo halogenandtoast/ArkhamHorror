@@ -20,6 +20,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
+import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
@@ -337,13 +338,10 @@ instance RunMessage ShatteredAeons where
           mrelic <- selectOne $ AssetWithTitle "Relic of Ages"
           locations <- case mrelic of
             Nothing -> pure []
-            Just relic -> fieldMap
-              AssetCardsUnderneath
-              (filter (isJust . cdVictoryPoints . toCardDef))
-              relic
-          xp <- map (uncurry GainXP) <$> getXpWithBonus
-            (5 + sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations)
-            )
+            Just relic ->
+              fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
+          bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
+          xp <- map (uncurry GainXP) <$> getXpWithBonus (5 + bonus)
           pushAll
             $ story iids resolution1
             : Record TheInvestigatorsMendedTheTearInTheFabricOfTime
@@ -376,12 +374,10 @@ instance RunMessage ShatteredAeons where
           mrelic <- selectOne $ AssetWithTitle "Relic of Ages"
           locations <- case mrelic of
             Nothing -> pure []
-            Just relic -> fieldMap
-              AssetCardsUnderneath
-              (filter (isJust . cdVictoryPoints . toCardDef))
-              relic
-          xp <- map (uncurry GainXP) <$> getXpWithBonus
-            (sum (map (fromMaybe 0 . cdVictoryPoints . toCardDef) locations))
+            Just relic ->
+              fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
+          bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
+          xp <- map (uncurry GainXP) <$> getXpWithBonus bonus
           pushAll
             $ story iids resolution5
             : Record TheInvestigatorsTurnedBackTime

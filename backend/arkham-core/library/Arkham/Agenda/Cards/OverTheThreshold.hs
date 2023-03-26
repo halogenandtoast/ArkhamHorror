@@ -13,7 +13,9 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Types ( Field (EnemyHealthDamage) )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
-import Arkham.Matcher
+import Arkham.Helpers.Act
+import Arkham.Helpers.Message
+import Arkham.Matcher hiding ( InvestigatorDefeated )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
@@ -47,8 +49,17 @@ instance HasAbilities OverTheThreshold where
 
 instance RunMessage OverTheThreshold where
   runMessage msg a@(OverTheThreshold attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      step <- getCurrentActStep
+      iids <- getInvestigatorIds
+      if step == 2
+        then push $ scenarioResolution 3
+        else pushAll $ concatMap
+          (\iid ->
+            [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
+          )
+          iids
+      pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       spectralEnemies <- selectWithField EnemyHealthDamage
         $ EnemyWithTrait Spectral

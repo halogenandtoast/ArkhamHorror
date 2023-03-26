@@ -29,19 +29,19 @@ data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-move :: Sourceable source => source -> InvestigatorId -> LocationId -> Movement
-move (toSource -> source) iid lid = Movement
+move :: (Targetable target, Sourceable source) => source -> target -> LocationId -> Movement
+move (toSource -> source) (toTarget -> target) lid = Movement
   { moveSource = source
-  , moveTarget = InvestigatorTarget iid
+  , moveTarget = target
   , moveDestination = ToLocation lid
   , moveMeans = Direct
   , moveCancelable = True
   }
 
-moveToMatch :: Sourceable source => source -> InvestigatorId -> LocationMatcher -> Movement
-moveToMatch (toSource -> source) iid matcher = Movement
+moveToMatch :: (Targetable target, Sourceable source) => source -> target -> LocationMatcher -> Movement
+moveToMatch (toSource -> source) (toTarget -> target) matcher = Movement
   { moveSource = source
-  , moveTarget = InvestigatorTarget iid
+  , moveTarget = target
   , moveDestination = ToLocationMatching matcher
   , moveMeans = Direct
   , moveCancelable = True

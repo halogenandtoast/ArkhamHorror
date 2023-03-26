@@ -288,6 +288,8 @@ allTreacheries = mapFrom
   , SomeTreacheryCard diabolicVoices
   , SomeTreacheryCard wracked
   , SomeTreacheryCard bedeviled
+  -- Silver Twilight Lodge
+  , SomeTreacheryCard mysteriesOfTheLodge
   -- City of Sins
   , SomeTreacheryCard evilPast
   , SomeTreacheryCard centuriesOfSecrets

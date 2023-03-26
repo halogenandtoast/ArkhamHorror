@@ -56,6 +56,7 @@ import Arkham.Event.Events
   )
 import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect, dexterDrakeEffect )
 import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect )
+import Arkham.Treachery.Treacheries ( mysteriesOfTheLodgeEffect )
 
 createEffect
   :: MonadRandom m
@@ -234,6 +235,7 @@ allEffects = mapFromList
   , ("05037", SomeEffect actOfDesperationEffect)
   , ("05040", SomeEffect aceOfRods1Effect)
   , ("05049", SomeEffect pennyWhiteEffect)
+  , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("07004", SomeEffect dexterDrakeEffect)

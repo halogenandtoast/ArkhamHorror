@@ -6,8 +6,9 @@ module Arkham.Enemy.Cards.Acolyte
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -28,7 +29,7 @@ acolyte = enemyWith
 instance HasAbilities Acolyte where
   getAbilities (Acolyte a) = withBaseAbilities
     a
-    [ mkAbility a 1
+    [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis)
       $ ForcedAbility
       $ EnemySpawns Timing.After Anywhere
       $ EnemyWithId

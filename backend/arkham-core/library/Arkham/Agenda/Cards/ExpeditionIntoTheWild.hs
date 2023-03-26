@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
@@ -22,7 +21,6 @@ import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Types
 import Arkham.SkillType
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
@@ -50,9 +48,7 @@ instance RunMessage ExpeditionIntoTheWild where
         (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      setAsideAgentsOfYig <- scenarioFieldMap
-        ScenarioSetAsideCards
-        (filter ((== Just AgentsOfYig) . cdEncounterSet . toCardDef))
+      setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
       iids <- getInvestigatorIds
       pushAll
         $ [ ShuffleEncounterDiscardBackIn

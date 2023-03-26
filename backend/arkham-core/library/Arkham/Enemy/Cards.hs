@@ -166,7 +166,9 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , jeremiahPierce
   , jordanPerry
   , josefMeiger
+  , keeperOfSecrets
   , keeperOfTheGreatLibrary
+  , lodgeNeophyte
   , lupineThrall
   , madPatient
   , maniac
@@ -1115,6 +1117,18 @@ priestessOfTheCoven :: CardDef
 priestessOfTheCoven = (enemy "05091" "Priestess of the Coven" AnettesCoven 1)
   { cdCardTraits = setFromList [Humanoid, Witch]
   , cdKeywords = singleton Keyword.Retaliate
+  }
+
+lodgeNeophyte :: CardDef
+lodgeNeophyte = (enemy "05095" "Lodge Neophyte" SilverTwilightLodge 3)
+  { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+  , cdKeywords = singleton Keyword.Aloof
+  }
+
+keeperOfSecrets :: CardDef
+keeperOfSecrets = (enemy "05096" "Keeper of Secrets" SilverTwilightLodge 1)
+  { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+  , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
   }
 
 netherMist :: CardDef

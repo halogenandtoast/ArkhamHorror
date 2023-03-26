@@ -236,6 +236,9 @@ allEnemies = mapFrom
   -- Anette's Coven
   , SomeEnemyCard covenInitiate
   , SomeEnemyCard priestessOfTheCoven
+  -- Silver Twilight Lodge
+  , SomeEnemyCard lodgeNeophyte
+  , SomeEnemyCard keeperOfSecrets
   -- Spectral Predators
   , SomeEnemyCard netherMist
   , SomeEnemyCard shadowHound

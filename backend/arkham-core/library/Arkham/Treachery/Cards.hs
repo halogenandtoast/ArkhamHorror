@@ -224,6 +224,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , maskedHorrors
   , massHysteria
   , mesmerize
+  , mysteriesOfTheLodge
   , mysteriousChanting
   , noTurningBack
   , nobodysHome
@@ -1254,6 +1255,11 @@ wracked = (treachery "05093" "Wracked" Witchcraft 2)
 bedeviled :: CardDef
 bedeviled = (treachery "05094" "Bedeviled" Witchcraft 2)
   { cdCardTraits = singleton Hex
+  }
+
+mysteriesOfTheLodge :: CardDef
+mysteriesOfTheLodge = (treachery "05097" "Mysteries of the Lodge" SilverTwilightLodge 2)
+  { cdCardTraits = singleton Scheme
   }
 
 evilPast :: CardDef

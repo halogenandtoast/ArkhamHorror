@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -842,7 +842,9 @@ library
       Arkham.Enemy.Cards.JeremiahPierce
       Arkham.Enemy.Cards.JordanPerry
       Arkham.Enemy.Cards.JosefMeiger
+      Arkham.Enemy.Cards.KeeperOfSecrets
       Arkham.Enemy.Cards.KeeperOfTheGreatLibrary
+      Arkham.Enemy.Cards.LodgeNeophyte
       Arkham.Enemy.Cards.LupineThrall
       Arkham.Enemy.Cards.MadPatient
       Arkham.Enemy.Cards.Maniac
@@ -1859,6 +1861,7 @@ library
       Arkham.Treachery.Cards.MaskOfUmordhoth
       Arkham.Treachery.Cards.MassHysteria
       Arkham.Treachery.Cards.Mesmerize
+      Arkham.Treachery.Cards.MysteriesOfTheLodge
       Arkham.Treachery.Cards.MysteriousChanting
       Arkham.Treachery.Cards.NobodysHome
       Arkham.Treachery.Cards.NoTurningBack

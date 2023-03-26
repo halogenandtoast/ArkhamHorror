@@ -1,0 +1,57 @@
+module Arkham.Enemy.Cards.LodgeNeophyte
+  ( lodgeNeophyte
+  , LodgeNeophyte(..)
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Action qualified as Action
+import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.SkillTest.Base
+import Arkham.SkillType
+import Arkham.Timing qualified as Timing
+
+newtype LodgeNeophyte = LodgeNeophyte EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+lodgeNeophyte :: EnemyCard LodgeNeophyte
+lodgeNeophyte = enemyWith
+  LodgeNeophyte
+  Cards.lodgeNeophyte
+  (3, Static 1, 2)
+  (0, 1)
+  (spawnAtL ?~ SpawnLocation EmptyLocation)
+
+instance HasAbilities LodgeNeophyte where
+  getAbilities (LodgeNeophyte a) = withBaseAbilities
+    a
+    [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis)
+    $ ForcedAbility
+    $ EnemySpawns Timing.After Anywhere
+    $ EnemyWithId
+    $ toId a
+    , restrictedAbility a 2 OnSameLocation
+    $ ActionAbility (Just Action.Parley)
+    $ ActionCost 1
+    ]
+
+instance RunMessage LodgeNeophyte where
+  runMessage msg e@(LodgeNeophyte attrs) = case msg of
+    UseCardAbility _ source 1 _ _ | isSource attrs source ->
+      e <$ push (PlaceDoom (toTarget attrs) 1)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      push $ BeginSkillTest $ initSkillTest iid attrs attrs SkillWillpower 2
+      pure e
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push $ RemoveAllDoom (toTarget attrs)
+        pure e
+    _ -> LodgeNeophyte <$> runMessage msg attrs

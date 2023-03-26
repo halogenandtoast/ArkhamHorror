@@ -4,11 +4,14 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes.Query
+import Arkham.EncounterSet (EncounterSet)
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Helpers.Scenario
+import Arkham.Scenario.Types (Field(..))
 
 -- Anyone is bit of a hack, if all investigators are defeated there is not lead
 -- investigator so we use the `Anyone` scope to bring in all eliminated
@@ -61,6 +64,11 @@ getSetAsideCard def = do
 getSetAsideEncounterCard :: HasGame m => CardDef -> m EncounterCard
 getSetAsideEncounterCard =
   fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
+
+getSetAsideEncounterSet :: HasGame m => EncounterSet -> m [Card]
+getSetAsideEncounterSet encounterSet = scenarioFieldMap
+  ScenarioSetAsideCards
+  (filter ((== Just encounterSet) . cdEncounterSet . toCardDef))
 
 maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
 maybeGetSetAsideEncounterCard = fmap (preview _EncounterCard) . getSetAsideCard

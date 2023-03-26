@@ -363,6 +363,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
   SetCardAside card -> pure $ a & setAsideCardsL %~ (card:)
   PlaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card
+  ReplaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card
   CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
@@ -801,8 +802,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             (card : discardedCards)
           ]
         pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
-  SpawnEnemyAt (EncounterCard ec) _ -> do
-    pure $ a & discardL %~ filter (/= ec)
+  SpawnEnemyAt card@(EncounterCard ec) _ -> do
+    pure $ a & discardL %~ filter (/= ec) & setAsideCardsL %~ filter (/= card)
   SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
     pure $ a & discardL %~ filter (/= ec)
   InvestigatorDrewEncounterCard _ ec -> do

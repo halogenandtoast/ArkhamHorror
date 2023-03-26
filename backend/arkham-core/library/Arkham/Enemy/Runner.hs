@@ -397,11 +397,18 @@ instance RunMessage EnemyAttrs where
             (Nothing, OnlyPrey onlyPrey) ->
               selectList $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy
                 (EnemyWithId eid)
-            (Nothing, _prey) ->
-              selectList
+            (Nothing, _prey) -> do
+              mLocation <- field EnemyLocation eid
+              xs <- case mLocation of
+                      Nothing -> pure []
+                      Just lid -> selectList $ LocationWithEnemy $ NearestEnemyToLocation lid $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
+              ys <- selectList
                 $ LocationWithInvestigator
                 $ NearestToEnemy
                 $ EnemyWithId eid
+              case mLocation of
+                Nothing -> pure ys
+                Just lid -> selectList $ NearestLocationToLocation lid (LocationMatchAny $ map LocationWithId (xs <> ys))
 
           preyIds <- select prey
 

@@ -14,6 +14,7 @@ import Arkham.Cost
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Location.Types
 import Arkham.Matcher hiding ( AssetCard, LocationCard )
@@ -80,7 +81,17 @@ getCardField :: (ConvertToCard c, HasGame m) => (CardDef -> a) -> c -> m a
 getCardField f c = f . toCardDef <$> convertToCard c
 
 getVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
-getVictoryPoints = getCardField cdVictoryPoints
+getVictoryPoints c = do
+  card <- convertToCard c
+  printedVictory <- getPrintedVictoryPoints card
+  modifiers' <- getModifiers $ toCardId card
+  pure $ foldr applyModifier printedVictory modifiers'
+ where
+  applyModifier (GainVictory n) _ = Just n
+  applyModifier _ n = n
 
 getHasVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m Bool
 getHasVictoryPoints c = isJust <$> getVictoryPoints c
+
+getPrintedVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getPrintedVictoryPoints = getCardField cdVictoryPoints

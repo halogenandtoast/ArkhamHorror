@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Enemy.Types ( Field (EnemyHealthDamage) )
 import {-# SOURCE #-} Arkham.GameEnv
@@ -43,7 +44,15 @@ overTheThreshold =
 
 instance HasAbilities OverTheThreshold where
   getAbilities (OverTheThreshold a) =
-    [mkAbility a 1 $ ForcedAbility $ PhaseStep Timing.After HuntersMoveStep]
+    [ restrictedAbility
+          a
+          1
+          (EnemyCriteria $ EnemyExists $ ReadyEnemy <> EnemyWithTrait Spectral <> EnemyAt
+            (LocationWithEnemy $ EnemyWithTrait Humanoid)
+          )
+        $ ForcedAbility
+        $ PhaseStep Timing.After HuntersMoveStep
+    ]
 
 instance RunMessage OverTheThreshold where
   runMessage msg a@(OverTheThreshold attrs) = case msg of
@@ -60,7 +69,7 @@ instance RunMessage OverTheThreshold where
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       spectralEnemies <- selectWithField EnemyHealthDamage
-        $ EnemyWithTrait Spectral
+        $ EnemyWithTrait Spectral <> ReadyEnemy
       enemyPairs <- catMaybes <$> for
         spectralEnemies
         \(enemy, damage) -> do

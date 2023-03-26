@@ -10,17 +10,21 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.CampaignSteps ( pattern TheSecretName )
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Act
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.AtDeathsDoorstep.Story
@@ -230,5 +234,40 @@ instance RunMessage AtDeathsDoorstep where
         DamageAny
         1
         (if isHardExpert attrs then 1 else 0)
+      pure s
+    ScenarioResolution NoResolution -> do
+      step <- getCurrentActStep
+      case step of
+        1 -> push $ scenarioResolution 2
+        2 -> push $ scenarioResolution 3
+        3 -> push $ scenarioResolution 1
+        _ -> error "Invalid act step"
+      pure s
+    ScenarioResolution (Resolution n) -> do
+      iids <- allInvestigatorIds
+      gainXp <- toGainXp getXp
+      let
+        (storyText, key, nextStep) = case n of
+          1 ->
+            ( resolution1
+            , TheInvestigatorsEscapedTheSpectralRealm
+            , InterludeStep 2 Nothing
+            )
+          2 ->
+            ( resolution2
+            , TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
+            , TheSecretName
+            )
+          3 ->
+            ( resolution3
+            , TheInvestigatorsAreNeverSeenOrHeardFromAgain
+            , TheSecretName
+            )
+          _ -> error "Invalid resolution"
+
+      pushAll
+        $ [story iids storyText, Record key]
+        <> gainXp
+        <> [EndOfGame (Just nextStep)]
       pure s
     _ -> AtDeathsDoorstep <$> runMessage msg attrs

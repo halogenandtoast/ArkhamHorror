@@ -127,3 +127,46 @@ interlude1Valentino = FlavorText
     \ mutters. It might be nothing, but it looks like Valentino wasn’t the only thing\
     \ to go missing that night."
   ]
+
+resolution1 :: FlavorText
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "As soon as you emerge onto the patio, you are surrounded by grim men in trench\
+    \ coats. Several of them reach into their coat pockets: a warning not to do\
+    \ anything too hasty. Before any threats can be fulfilled, the silence is broken\
+    \ by an icy voice. “Now gentlemen, there is no need for that.” The men withdraw\
+    \ to reveal an elderly man you recognize as Carl Sanford, the president of the\
+    \ Silver Twilight Lodge. Despite the dangerous situation, his expression is\
+    \ almost too casual. The complete lack of fear in his posture and his actions\
+    \ suggests a confidence backed by substantial power. His bodyguards take several\
+    \ steps back, allowing you to speak with Mr. Sanford in private."
+  ]
+
+resolution2 :: FlavorText
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "You head out of the manor and are embraced by the brisk evening air. Your\
+    \ investigation has left you exhausted and strangely paranoid. Something about\
+    \ that event felt peculiar to you, though you aren’t sure why. Although the\
+    \ guests seemed oblivious, you noticed that the staff was sweaty and jittery, and\
+    \ the Lodge members seemed tense as well. More than once, you noticed their gaze\
+    \ drawn to you, watching your every move. If you didn’t know any better, you’d\
+    \ think the Silver Twilight Lodge was having you tailed for some reason.\
+    \ Regardless, you weren’t able to find much information about the four\
+    \ disappearances, and you doubt you ever will. Perhaps it was nothing, after all."
+  ]
+
+resolution3 :: FlavorText
+resolution3 = FlavorText
+  (Just "Resolution 3")
+  [ "You flee toward the manor’s entry hall, but the wall of spectral mist still\
+    \ blocks your way. Emerging from the mist are several ghostly faces and arms,\
+    \ writhing and screaming in torment. You turn and are confronted by the empty\
+    \ visage of the hooded Watcher. Before you even realize your doom, the creature’s\
+    \ ethereal body is swirling and swooping through the air as though composed of\
+    \ mist itself. The creature reconstitutes before you, and its charred hand grips\
+    \ your throat, holding you aloft with tremendous strength. You kick and dig your\
+    \ nails into the creature’s hand, struggling with the ferocity of a cornered\
+    \ animal, but it is no use. The last thing you see is the red glare of the\
+    \ thing’s eyes as it drills into your mind."
+  ]

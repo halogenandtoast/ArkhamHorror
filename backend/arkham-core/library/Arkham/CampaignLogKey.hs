@@ -174,6 +174,9 @@ data CampaignLogKey
   | TheInvestigatorsAreOnJerome'sTrail
   | TheInvestigatorsAreOnPenny'sTrail
   | TheInvestigatorsAreOnValentino'sTrail
+  | TheInvestigatorsEscapedTheSpectralRealm
+  | TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
+  | TheInvestigatorsAreNeverSeenOrHeardFromAgain
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

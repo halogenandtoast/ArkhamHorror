@@ -452,7 +452,7 @@ instance RunMessage EnemyAttrs where
               pure $ a & movedFromHunterKeywordL .~ True
             ls -> do
               pushAll
-                (chooseOne
+                (chooseOrRunOne
                     leadInvestigatorId
                     [ TargetLabel (LocationTarget l) [EnemyMove enemyId l]
                     | l <- ls

@@ -14,10 +14,8 @@ import Arkham.Enemy.Types ( Field (EnemyHealthDamage) )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Act
-import Arkham.Helpers.Message
 import Arkham.Matcher hiding ( InvestigatorDefeated )
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Humanoid, SilverTwilight, Spectral), toTraits )

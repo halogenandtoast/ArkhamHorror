@@ -380,6 +380,15 @@ instance RunMessage EnemyAttrs where
             -- extraConnectionsMap :: HashMap LocationId [LocationId] =
             --   foldl' applyConnectionMapModifier mempty modifiers'
 
+          mLocation <- field EnemyLocation eid
+          enemiesAsInvestigatorLocations <- case mLocation of
+            Nothing -> pure []
+            Just lid ->
+              selectList
+                (LocationWithEnemy
+                $ NearestEnemyToLocation lid
+                $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
+
           -- The logic here is an artifact of doing this incorrect
           -- Prey is only used for breaking ties unless we're dealing
           -- with the Only keyword for prey, so here we hardcode prey
@@ -398,24 +407,25 @@ instance RunMessage EnemyAttrs where
               selectList $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy
                 (EnemyWithId eid)
             (Nothing, _prey) -> do
-              mLocation <- field EnemyLocation eid
-              xs <- case mLocation of
-                      Nothing -> pure []
-                      Just lid -> selectList $ LocationWithEnemy $ NearestEnemyToLocation lid $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
-              ys <- selectList
+              investigatorLocations <-
+                selectList
                 $ LocationWithInvestigator
                 $ NearestToEnemy
                 $ EnemyWithId eid
               case mLocation of
-                Nothing -> pure ys
-                Just lid -> selectList $ NearestLocationToLocation lid (LocationMatchAny $ map LocationWithId (xs <> ys))
+                Nothing -> pure investigatorLocations
+                Just lid -> selectList $ NearestLocationToLocation
+                  lid
+                  (LocationMatchAny $ map LocationWithId (enemiesAsInvestigatorLocations <> investigatorLocations))
 
           preyIds <- select prey
+          let includeEnemies = prey == Prey Anyone
 
           filteredClosestLocationIds <-
-            flip filterM matchingClosestLocationIds $ \lid ->
-              notNull . intersect preyIds <$> select
-                (InvestigatorAt $ LocationWithId lid)
+            flip filterM matchingClosestLocationIds $ \lid -> do
+              hasInvestigators <- notNull . intersect preyIds <$> select (InvestigatorAt (LocationWithId lid))
+              hasEnemies <- notNull <$> select (EnemyAt (LocationWithId lid) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
+              pure $ hasInvestigators || (includeEnemies && hasEnemies)
 
           -- If we have any locations with prey, that takes priority, otherwise
           -- we return all locations which may have matched via AnyPrey

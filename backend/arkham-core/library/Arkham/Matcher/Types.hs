@@ -64,6 +64,7 @@ data InvestigatorMatcher
   | DeckWith CardListMatcher
   | HandWith CardListMatcher
   | DiscardWith CardListMatcher
+  | InvestigatorWithTrait Trait
   | InvestigatorWithoutModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithActionsRemaining ValueMatcher
@@ -73,6 +74,7 @@ data InvestigatorMatcher
   | InvestigatorWithHorror ValueMatcher
   | InvestigatorWithRemainingSanity ValueMatcher
   | InvestigatorWithResources ValueMatcher
+  | InvestigatorWithSpendableResources ValueMatcher
   | InvestigatorWithId InvestigatorId
   | InvestigatorWithTreacheryInHand TreacheryMatcher
   | InvestigatorWithTitle Text

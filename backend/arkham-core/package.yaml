@@ -29,28 +29,28 @@ default-extensions:
 library:
   source-dirs: library
   dependencies:
-    - aeson
-    - lens
-    - unordered-containers
-    - monoidal-containers
-    - safe
-    - these
-    - classy-prelude
-    - uuid
-    - random-shuffle
-    - containers
-    - text
     - MonadRandom
-    - extra
+    - aeson
     - aeson-casing
     - aeson-diff
+    - classy-prelude
+    - containers
+    - extra
+    - lens
+    - monoidal-containers
     - mtl
-    - these-lens
-    - semialign
-    - pretty-simple
-    - template-haskell
     - newtype
+    - pretty-simple
+    - random-shuffle
+    - safe
+    - semialign
+    - template-haskell
+    - text
+    - these
+    - these-lens
     - transformers
+    - unordered-containers
+    - uuid
 
 tests:
   spec:

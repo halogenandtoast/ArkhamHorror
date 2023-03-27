@@ -177,6 +177,12 @@ data CampaignLogKey
   | TheInvestigatorsEscapedTheSpectralRealm
   | TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
   | TheInvestigatorsAreNeverSeenOrHeardFromAgain
+  | JosefDisappearedIntoTheMist
+  | TheInvestigatorsAreEnemiesOfTheLodge
+  | TheInvestigatorsRescuedJosef
+  | JosefIsAliveAndWell
+  | TheInvestigatorsAreMembersOfTheLodge
+  | TheInvestigatorsAreDeceivingTheLodge
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

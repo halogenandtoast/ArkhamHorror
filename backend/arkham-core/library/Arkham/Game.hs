@@ -791,6 +791,8 @@ getInvestigatorsMatching matcher = do
       (`gameValueMatches` gameValueMatcher) . investigatorClues . toAttrs
     InvestigatorWithResources gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . investigatorResources . toAttrs
+    InvestigatorWithSpendableResources gameValueMatcher ->
+      (`gameValueMatches` gameValueMatcher) <=< getSpendableResources . toId
     InvestigatorWithActionsRemaining gameValueMatcher ->
       field InvestigatorRemainingActions
         . toId
@@ -821,6 +823,7 @@ getInvestigatorsMatching matcher = do
         . unDeck
         . investigatorDeck
         . toAttrs
+    InvestigatorWithTrait t -> \i -> fieldMap InvestigatorTraits (member t) (toId i)
     InvestigatorWithoutModifier modifierType -> \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'

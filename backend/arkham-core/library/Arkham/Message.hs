@@ -34,6 +34,7 @@ import Arkham.Draw.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
+import Arkham.Classes.Entity.Source
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.History
@@ -106,12 +107,12 @@ pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)
 
 createCardEffect
-  :: CardDef
+  :: (Sourceable source, Targetable target) => CardDef
   -> (Maybe (EffectMetadata Window Message))
-  -> Source
-  -> Target
+  -> source
+  -> target
   -> Message
-createCardEffect def = CreateEffect (toCardCode def)
+createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEffect (toCardCode def) mMeta source target
 
 data AbilityRef = AbilityRef Source Int
   deriving stock (Show, Eq, Generic)

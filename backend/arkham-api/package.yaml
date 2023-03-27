@@ -34,16 +34,14 @@ library:
         - -fwarn-tabs
         - -O2
   dependencies:
-    - arkham-core
-    - time
     - MonadRandom
     - aeson
     - aeson-casing
     - aeson-diff
+    - arkham-core
     - bcrypt
     - bytestring
     - case-insensitive
-    - relude
     - conduit
     - containers
     - directory
@@ -64,11 +62,13 @@ library:
     - persistent
     - persistent-postgresql
     - regex-posix
+    - relude
     - safe
     - stm
     - string-conversions
     - template-haskell
     - text
+    - time
     - unix
     - unliftio
     - unordered-containers

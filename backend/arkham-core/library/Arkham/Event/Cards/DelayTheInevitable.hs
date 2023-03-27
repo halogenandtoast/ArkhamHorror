@@ -62,8 +62,8 @@ instance RunMessage DelayTheInevitable where
           $ [ Label "Cancel Damage" [CancelDamage iid damage] | damage > 0 ]
           <> [ Label "Cancel Horror" [CancelHorror iid horror] | horror > 0 ]
           <> [ Label
-                 "Cancel Horror"
-                 [CancelHorror iid damage, CancelHorror iid horror]
+                 "Cancel Horror and Damage"
+                 [CancelDamage iid damage, CancelHorror iid horror]
              | damage > 0 && horror > 0
              ]
           ]

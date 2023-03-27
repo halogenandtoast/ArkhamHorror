@@ -38,7 +38,7 @@ import Arkham.Asset.Assets
   , wellConnected3Effect
   , yaotl1Effect
   )
-import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect )
+import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect, josefMeigerEffect )
 import Arkham.Event.Events
   ( actOfDesperationEffect
   , exposeWeakness3Effect
@@ -235,6 +235,7 @@ allEffects = mapFromList
   , ("05037", SomeEffect actOfDesperationEffect)
   , ("05040", SomeEffect aceOfRods1Effect)
   , ("05049", SomeEffect pennyWhiteEffect)
+  , ("05085", SomeEffect josefMeigerEffect)
   , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("06279", SomeEffect oldBookOfLore3Effect)

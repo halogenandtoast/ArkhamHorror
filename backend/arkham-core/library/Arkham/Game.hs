@@ -1610,6 +1610,22 @@ getAssetsMatching matcher = do
         isHealthDamageable a =
           fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
       filterM isHealthDamageable assets
+    AssetCanBeAssignedHorrorBy iid -> do
+      modifiers' <- getModifiers (InvestigatorTarget iid)
+      let
+        otherDamageableAssetIds = flip mapMaybe modifiers' $ \case
+          CanAssignHorrorToAsset aid -> Just aid
+          _ -> Nothing
+      assets <- filterMatcher
+        as
+        (AssetOneOf
+        $ AssetControlledBy (InvestigatorWithId iid)
+        : map AssetWithId otherDamageableAssetIds
+        )
+      let
+        isSanityDamageable a =
+          fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
+      filterM isSanityDamageable assets
     AssetWithDifferentTitleFromAtLeastOneCardInHand who extendedCardMatcher assetMatcher
       -> do
         iids <- selectList who
@@ -1625,22 +1641,6 @@ getAssetsMatching matcher = do
             )
             assets
           _ -> pure assets
-    AssetCanBeAssignedHorrorBy iid -> do
-      modifiers' <- getModifiers (InvestigatorTarget iid)
-      let
-        otherDamageableAssetIds = flip mapMaybe modifiers' $ \case
-          CanAssignDamageToAsset aid -> Just aid
-          _ -> Nothing
-      assets <- filterMatcher
-        as
-        (AssetOneOf
-        $ AssetControlledBy (InvestigatorWithId iid)
-        : map AssetWithId otherDamageableAssetIds
-        )
-      let
-        isSanityDamageable a =
-          fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
-      filterM isSanityDamageable assets
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
       aids <- selectList assetMatcher
       if toId asset `elem` aids

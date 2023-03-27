@@ -446,6 +446,8 @@ allAssets = mapFrom
   --- weakness [tcu]
   , SomeAssetCard theTowerXVI
   -- The Secret Name
+  --- guardian [tsn]
+  , SomeAssetCard somethingWorthFightingFor
   --- survivor [tsn]
   , SomeAssetCard meatCleaver
   -- The Wages of Sin

@@ -2,8 +2,7 @@ module Arkham.Enemy.Cards.JosefMeiger
   ( josefMeiger
   , josefMeigerEffect
   , JosefMeiger(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -22,7 +21,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
-import Arkham.Trait (Trait(SilverTwilight))
+import Arkham.Trait ( Trait (SilverTwilight) )
 
 newtype JosefMeiger = JosefMeiger EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -32,9 +31,19 @@ josefMeiger :: EnemyCard JosefMeiger
 josefMeiger = enemy JosefMeiger Cards.josefMeiger (3, Static 3, 3) (1, 1)
 
 instance HasAbilities JosefMeiger where
-  getAbilities (JosefMeiger a) = withBaseAbilities a
-    [ restrictedAbility a 1
-        (OnSameLocation <> Negate (EnemyCriteria $ EnemyExists $ EnemyWithTrait SilverTwilight <> EnemyWithAnyDoom <> NotEnemy (EnemyWithId $ toId a)))
+  getAbilities (JosefMeiger a) = withBaseAbilities
+    a
+    [ restrictedAbility
+        a
+        1
+        (OnSameLocation <> Negate
+          (EnemyCriteria
+          $ EnemyExists
+          $ EnemyWithTrait SilverTwilight
+          <> EnemyWithAnyDoom
+          <> NotEnemy (EnemyWithId $ toId a)
+          )
+        )
       $ ActionAbility (Just Action.Parley)
       $ ActionCost 1
     ]
@@ -56,7 +65,11 @@ instance RunMessage JosefMeiger where
       push $ ReadStory iid Story.josefsPlan
       pure e
     ResolveStory _ story' | story' == Story.josefsPlan -> do
-      pushAll [createCardEffect Cards.josefMeiger Nothing attrs attrs, RemoveAllDoom (toTarget attrs), DisengageEnemyFromAll (toId attrs)]
+      pushAll
+        [ createCardEffect Cards.josefMeiger Nothing attrs attrs
+        , RemoveAllDoom (toTarget attrs)
+        , DisengageEnemyFromAll (toId attrs)
+        ]
       pure e
     _ -> JosefMeiger <$> runMessage msg attrs
 
@@ -65,15 +78,18 @@ newtype JosefMeigerEffect = JosefMeigerEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 josefMeigerEffect :: EffectArgs -> JosefMeigerEffect
-josefMeigerEffect =
-  cardEffect JosefMeigerEffect Cards.josefMeiger
+josefMeigerEffect = cardEffect JosefMeigerEffect Cards.josefMeiger
 
 instance HasModifiersFor JosefMeigerEffect where
   getModifiersFor (EnemyTarget eid) (JosefMeigerEffect a) = do
     isSilverTwilight <- eid <=~> EnemyWithTrait SilverTwilight
     isJosefMeiger <- eid <=~> enemyIs Cards.josefMeiger
-    pure $ toModifiers a $ [CannotPlaceDoomOnThis | isSilverTwilight] <> [AddKeyword Keyword.Aloof | isJosefMeiger]
+    pure
+      $ toModifiers a
+      $ [ CannotPlaceDoomOnThis | isSilverTwilight ]
+      <> [ AddKeyword Keyword.Aloof | isJosefMeiger ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage JosefMeigerEffect where
-  runMessage msg (JosefMeigerEffect attrs) = JosefMeigerEffect <$> runMessage msg attrs
+  runMessage msg (JosefMeigerEffect attrs) =
+    JosefMeigerEffect <$> runMessage msg attrs

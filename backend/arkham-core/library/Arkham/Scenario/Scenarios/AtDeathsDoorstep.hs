@@ -22,7 +22,7 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field(..))
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -33,7 +33,7 @@ import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait ( Trait (Spectral, SilverTwilight) )
+import Arkham.Trait ( Trait (SilverTwilight, Spectral) )
 
 newtype AtDeathsDoorstep = AtDeathsDoorstep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -166,26 +166,34 @@ instance RunMessage AtDeathsDoorstep where
       -- placed clues on
       let
         locations =
-          [entryHallId | toCardCode Investigators.gavriellaMizrah `elem` missingPersons ]
-          <> [officeId | toCardCode Investigators.jeromeDavids `elem` missingPersons ]
-          <> [billiardsRoomId | toCardCode Investigators.valentinoRivas `elem` missingPersons ]
-          <> [balconyId | toCardCode Investigators.pennyWhite `elem` missingPersons ]
-        noTimes = ceiling (fromIntegral @_ @Double evidenceLeftBehind / fromIntegral (length locations))
+          [ entryHallId
+            | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
+            ]
+            <> [ officeId
+               | toCardCode Investigators.jeromeDavids `elem` missingPersons
+               ]
+            <> [ billiardsRoomId
+               | toCardCode Investigators.valentinoRivas `elem` missingPersons
+               ]
+            <> [ balconyId
+               | toCardCode Investigators.pennyWhite `elem` missingPersons
+               ]
+        noTimes = ceiling
+          (fromIntegral @_ @Double evidenceLeftBehind
+          / fromIntegral (length locations)
+          )
         doSplit n | n <= 0 = []
         doSplit n | n <= length locations = [n]
         doSplit n = length locations : doSplit (n - length locations)
-        removeClues =
-          if null locations
-            then []
-            else map
-              (\n -> chooseOrRunN
-                lead
-                n
-                [ targetLabel l [RemoveClues (toTarget l) 1]
-                | l <- locations
-                ]
-              )
-              (doSplit noTimes)
+        removeClues = if null locations
+          then []
+          else map
+            (\n -> chooseOrRunN
+              lead
+              n
+              [ targetLabel l [RemoveClues (toTarget l) 1] | l <- locations ]
+            )
+            (doSplit noTimes)
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
@@ -259,19 +267,28 @@ instance RunMessage AtDeathsDoorstep where
       iids <- allInvestigatorIds
       gainXp <- toGainXp getXp
       inVictory <- isInVictoryDisplay Enemies.josefMeiger
-      underEntryHall <- fieldMap LocationCardsUnderneath ((elem Enemies.josefMeiger) . map toCardDef) entryHall
-      silverTwilightInVictory <- scenarioFieldMap ScenarioVictoryDisplay (count (`cardMatch` CardWithTrait SilverTwilight))
-      silverTwilightUnderEntryHall <- fieldMap LocationCardsUnderneath (count (`cardMatch` CardWithTrait SilverTwilight)) entryHall
+      underEntryHall <- fieldMap
+        LocationCardsUnderneath
+        ((elem Enemies.josefMeiger) . map toCardDef)
+        entryHall
+      silverTwilightInVictory <- scenarioFieldMap
+        ScenarioVictoryDisplay
+        (count (`cardMatch` CardWithTrait SilverTwilight))
+      silverTwilightUnderEntryHall <- fieldMap
+        LocationCardsUnderneath
+        (count (`cardMatch` CardWithTrait SilverTwilight))
+        entryHall
 
       let
-        interludeKey =
-          if inVictory
-            then ThePriceOfProgress4
-            else if underEntryHall
-              then ThePriceOfProgress5
-              else if silverTwilightInVictory >= silverTwilightUnderEntryHall
-                then ThePriceOfProgress4
-                else ThePriceOfProgress6
+        interludeKey
+          | inVictory
+          = ThePriceOfProgress4
+          | underEntryHall
+          = ThePriceOfProgress5
+          | silverTwilightInVictory >= silverTwilightUnderEntryHall
+          = ThePriceOfProgress4
+          | otherwise
+          = ThePriceOfProgress6
 
       let
         (storyText, key, nextStep) = case n of

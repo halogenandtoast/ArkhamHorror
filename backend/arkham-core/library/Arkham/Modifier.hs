@@ -73,6 +73,7 @@ data ModifierType
   | Blocked
   | CannotEnter LocationId
   | CanAssignDamageToAsset AssetId
+  | CanAssignHorrorToAsset AssetId
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher

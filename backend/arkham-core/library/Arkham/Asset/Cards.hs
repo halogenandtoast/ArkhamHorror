@@ -369,6 +369,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , shrivelling3
   , shrivelling5
   , smokingPipe
+  , somethingWorthFightingFor
   , sophieInLovingMemory
   , sophieItWasAllMyFault
   , spiritAthame1
@@ -2679,6 +2680,12 @@ theTowerXVI =
     , cdCardInHandEffects = True
     , cdCanReplace = False
     }
+
+somethingWorthFightingFor :: CardDef
+somethingWorthFightingFor = (asset "05109" "Something Worth Fighting For" 3 Guardian)
+  { cdSkills = [#willpower]
+  , cdCardTraits = singleton Talent
+  }
 
 meatCleaver :: CardDef
 meatCleaver = (asset "05114" "Meat Cleaver" 3 Survivor)

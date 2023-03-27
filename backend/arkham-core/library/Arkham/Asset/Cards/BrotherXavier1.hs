@@ -32,10 +32,9 @@ instance HasModifiersFor BrotherXavier1 where
     | not (controlledBy a iid) = do
       locationId <- field InvestigatorLocation iid
       assetLocationId <- field AssetLocation (toId a)
-      pure
-        [ toModifier a (CanAssignDamageToAsset $ toId a)
-        | (locationId == assetLocationId) && isJust locationId
-        ]
+      pure $ toModifiers a $ if (locationId == assetLocationId) && isJust locationId
+        then [ CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a) ]
+        else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrotherXavier1 where

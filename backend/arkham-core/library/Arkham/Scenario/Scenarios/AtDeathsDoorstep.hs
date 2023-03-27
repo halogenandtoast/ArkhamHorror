@@ -22,8 +22,10 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -31,7 +33,7 @@ import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait ( Trait (Spectral) )
+import Arkham.Trait ( Trait (Spectral, SilverTwilight) )
 
 newtype AtDeathsDoorstep = AtDeathsDoorstep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -160,21 +162,30 @@ instance RunMessage AtDeathsDoorstep where
       lead <- getLead
 
       -- We want to distribute the removal of clues evenly. The logic here
-      -- tries to batch a group of four and then a smaller group
+      -- tries to batch a groups corresponding to the number of locations we
+      -- placed clues on
       let
-        noTimes = ceiling (fromIntegral @_ @Double evidenceLeftBehind / 4)
-        splitBy4 n | n <= 0 = []
-        splitBy4 n | n <= 4 = [n]
-        splitBy4 n = 4 : splitBy4 (n - 4)
-        removeClues = map
-          (\n -> chooseOrRunN
-            lead
-            n
-            [ targetLabel l [RemoveClues (toTarget l) 1]
-            | l <- [entryHallId, officeId, billiardsRoomId, balconyId]
-            ]
-          )
-          (splitBy4 noTimes)
+        locations =
+          [entryHallId | toCardCode Investigators.gavriellaMizrah `elem` missingPersons ]
+          <> [officeId | toCardCode Investigators.jeromeDavids `elem` missingPersons ]
+          <> [billiardsRoomId | toCardCode Investigators.valentinoRivas `elem` missingPersons ]
+          <> [balconyId | toCardCode Investigators.pennyWhite `elem` missingPersons ]
+        noTimes = ceiling (fromIntegral @_ @Double evidenceLeftBehind / fromIntegral (length locations))
+        doSplit n | n <= 0 = []
+        doSplit n | n <= length locations = [n]
+        doSplit n = length locations : doSplit (n - length locations)
+        removeClues =
+          if null locations
+            then []
+            else map
+              (\n -> chooseOrRunN
+                lead
+                n
+                [ targetLabel l [RemoveClues (toTarget l) 1]
+                | l <- locations
+                ]
+              )
+              (doSplit noTimes)
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
@@ -244,14 +255,30 @@ instance RunMessage AtDeathsDoorstep where
         _ -> error "Invalid act step"
       pure s
     ScenarioResolution (Resolution n) -> do
+      entryHall <- selectJust $ LocationWithTitle "Entry Hall"
       iids <- allInvestigatorIds
       gainXp <- toGainXp getXp
+      inVictory <- isInVictoryDisplay Enemies.josefMeiger
+      underEntryHall <- fieldMap LocationCardsUnderneath ((elem Enemies.josefMeiger) . map toCardDef) entryHall
+      silverTwilightInVictory <- scenarioFieldMap ScenarioVictoryDisplay (count (`cardMatch` CardWithTrait SilverTwilight))
+      silverTwilightUnderEntryHall <- fieldMap LocationCardsUnderneath (count (`cardMatch` CardWithTrait SilverTwilight)) entryHall
+
+      let
+        interludeKey =
+          if inVictory
+            then ThePriceOfProgress4
+            else if underEntryHall
+              then ThePriceOfProgress5
+              else if silverTwilightInVictory >= silverTwilightUnderEntryHall
+                then ThePriceOfProgress4
+                else ThePriceOfProgress6
+
       let
         (storyText, key, nextStep) = case n of
           1 ->
             ( resolution1
             , TheInvestigatorsEscapedTheSpectralRealm
-            , InterludeStep 2 Nothing
+            , InterludeStep 2 (Just interludeKey)
             )
           2 ->
             ( resolution2

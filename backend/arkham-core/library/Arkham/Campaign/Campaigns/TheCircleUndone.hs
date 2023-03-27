@@ -8,15 +8,18 @@ import Arkham.Prelude
 import Arkham.Campaign.Runner
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheCircleUndone.Import
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheCircleUndone.Import
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Token
+import Arkham.Trait (Trait(SilverTwilight))
 
 newtype Metadata = Metadata
   { prologueInvestigators :: HashMap InvestigatorId InvestigatorId
@@ -98,8 +101,41 @@ instance RunMessage TheCircleUndone where
         $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
         : map (story investigatorIds) readings
       pure c
-    NextCampaignStep _ -> do
-      let step = nextStep attrs
+    CampaignStep (Just (InterludeStep 2 mInterludeKey)) -> do
+      anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
+      iids <- allInvestigatorIds
+      lead <- getLead
+      let
+        showThePriceOfProgress4 = mInterludeKey == Just ThePriceOfProgress4
+        showThePriceOfProgress5 = mInterludeKey == Just ThePriceOfProgress5
+        showThePriceOfProgress6 = mInterludeKey == Just ThePriceOfProgress6
+        gainXp = map (\i -> GainXP i 2) iids
+        lodgeChoices =
+          [ Label "\"I refuse to be part of this\"" [CampaignStep (Just (InterludeStepPart 2 mInterludeKey 7))]
+          , Label "\"I agree\"" [CampaignStep (Just (InterludeStepPart 2 mInterludeKey 8))]
+          , Label "\"I agree\" (You are lying)" [CampaignStep (Just (InterludeStepPart 2 mInterludeKey 9))]
+          ]
+      pushAll $
+        [story iids (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2), story iids thePriceOfProgress3]
+        <> if showThePriceOfProgress4 then [story iids thePriceOfProgress4, Record JosefDisappearedIntoTheMist, Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing] else []
+        <> if showThePriceOfProgress5
+             then [Record TheInvestigatorsRescuedJosef , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices] <> gainXp
+             else []
+        <> if showThePriceOfProgress6
+             then [Record JosefIsAliveAndWell , storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
+             else []
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 _ 7)) -> do
+      pushAll [Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing]
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 _ 8)) -> do
+      pushAll [Record TheInvestigatorsAreMembersOfTheLodge, AddToken Cultist, NextCampaignStep Nothing]
+      pure c
+    CampaignStep (Just (InterludeStepPart 2 _ 9)) -> do
+      pushAll [Record TheInvestigatorsAreMembersOfTheLodge, AddToken Cultist, Record TheInvestigatorsAreDeceivingTheLodge, NextCampaignStep Nothing]
+      pure c
+    NextCampaignStep mOverrideStep -> do
+      let step = mOverrideStep <|> nextStep attrs
       push $ CampaignStep step
       pure
         . TheCircleUndone

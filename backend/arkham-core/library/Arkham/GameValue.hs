@@ -1,6 +1,7 @@
 module Arkham.GameValue
   ( GameValue(..)
   , fromGameValue
+  , toGameValue
   ) where
 
 import Arkham.Prelude
@@ -12,6 +13,15 @@ data GameValue
   | ByPlayerCount Int Int Int Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+class IsGameValue a where
+  toGameValue :: a -> GameValue
+
+instance IsGameValue GameValue where
+  toGameValue = id
+
+instance IsGameValue Int where
+  toGameValue = Static
 
 fromGameValue :: GameValue -> Int -> Int
 fromGameValue (Static n) _ = n

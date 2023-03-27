@@ -23,5 +23,9 @@ data InterludeKey
   | DanielWasPossessed
   | DanielDidNotSurvive
   | TheCustodianWasUnderControl
+  | -- The Circle Undone
+    ThePriceOfProgress4
+  | ThePriceOfProgress5
+  | ThePriceOfProgress6
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

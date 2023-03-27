@@ -193,3 +193,136 @@ valentinoIntro = FlavorText
     \ once again and jumps off the broken table, its hollow eyes gazing into your\
     \ soul."
   ]
+
+thePriceOfProgress1 :: FlavorText
+thePriceOfProgress1 = FlavorText
+  (Just "The Price of Progress 1")
+  [ "“Ah, it’s you. I did not expect you to be here, though perhaps I should have,”\
+    \ Mr. Sanford says with a hint of surprise in his voice. “I regret that you had\
+    \ to be involved in this unfortunate affair. I did not plan for you to be a part\
+    \ of any of this.” You narrow your eyes. You suspect fortune had nothing to do\
+    \ with it. You ask him what will happen to those still trapped inside. “Human\
+    \ progress requires sacrifice,” he recites stoically. “It is lamentable when that\
+    \ sacrifice is in blood, but the price in lamentation does not outweigh the yield\
+    \ of our labor.”"
+  ]
+
+thePriceOfProgress2 :: FlavorText
+thePriceOfProgress2 = FlavorText
+  (Just "The Price of Progress 2")
+  [ "“I regret that we must meet under such... unfortunate circumstances,” Mr.\
+    \ Sanford says offhandedly. You narrow your eyes. You suspect fortune had nothing\
+    \ to do with it. You ask him what will happen to those still trapped inside.\
+    \ “Human progress requires sacrifice,” he recites stoically. “It is lamentable\
+    \ when that sacrifice is in blood, but the price in lamentation does not outweigh\
+    \ the yield of our labor.”"
+  ]
+
+thePriceOfProgress3 :: FlavorText
+thePriceOfProgress3 = FlavorText
+  (Just "The Price of Progress 3")
+  [ "You didn’t come here to listen to Mr. Sanford proselytize about sacrifice. You\
+    \ came here for answers. You demand an explanation, but the elderly man cuts you\
+    \ off with a scowl. “Yes, yes. You speak of the incident last week. That was the\
+    \ creature’s first manifestation, and the arrival of the dark mist, which you\
+    \ encountered inside.” He glances at the front door to the manor and clears his\
+    \ throat. “The Lodge was not involved in the disappearances that occurred that\
+    \ night,” he explains after a short pause. “But we couldn’t exactly go to the\
+    \ police and tell them a creature made of mist kidnapped four people in Mr.\
+    \ Meiger’s household, could we? So, we had to take matters into our own hands. We\
+    \ suspected that creature was drawn to the crowd, so we recreated the incident in\
+    \ order to understand what happened—to discern its motives.” The decision to host\
+    \ another event at Mr. Meiger’s estate so soon after the disappearances makes\
+    \ sense to you now. As much as you hate to admit it, there is some logic to the\
+    \ plan the Lodge put into action, although you don’t particularly like being used\
+    \ as bait. Who knows how many innocent bystanders were put in mortal danger? Even\
+    \ if the goal was noble, was it worth the sacrifice?"
+  , "“I hope you understand that our organization only seeks the betterment of\
+    \ humankind. There are harsh truths that lie beyond our five senses,” Mr. Sanford\
+    \ says, his expression grim. “If we are to survive and prosper, we must adapt. We\
+    \ must learn. We must understand. That is what our order seeks to achieve—a\
+    \ greater understanding of the world around us. A worthy pursuit, don’t you\
+    \ agree?”"
+  ]
+
+thePriceOfProgress4 :: FlavorText
+thePriceOfProgress4 = FlavorText
+  (Just "The Price of Progress 4")
+  [ "Before you can reply, one of Sanford’s men emerges from the house behind you.\
+    \ He sheathes a long silver blade as he addresses Mr. Sanford. “There is no sign\
+    \ of Josef inside, sir.” The man eyes you suspiciously, keeping his hand on the\
+    \ hilt of his sword. His posture reminds you of that of a knight, stoic and\
+    \ rigidly disciplined."
+  , "“I see,” Sanford replies. He closes his eyes and takes a deep breath before\
+    \ continuing. “A great loss for our order, but one we anticipated. Gather the\
+    \ Lodge’s belongings from inside the estate, and I will deal with the\
+    \ consequences.” The knight nods and heads back inside. Carl’s cold blue eyes\
+    \ turn back toward you. “As for you, I would ask you to leave this place at once.\
+    \ You have done enough harm as it is.” Before you can protest, he commands the\
+    \ other men nearby to escort you off the premises, and you have little choice but\
+    \ to comply."
+  ]
+
+thePriceOfProgress5 :: FlavorText
+thePriceOfProgress5 = FlavorText
+  (Just "The Price of Progress 5")
+  [ "You consider Mr. Sanford’s words carefully. You believe that he is telling the\
+    \ truth, but you’re not sure if the ends justify his means. Before you can reply,\
+    \ Josef steps forward. “I believe our new comrades understand the value of\
+    \ working together,” he says politely, standing at your side. “They could have\
+    \ escaped on their own, but they stayed behind to make sure members of the Lodge\
+    \ were safe. Surely we are of the same mind.”"
+  , "“Courage is not the same as sacrifice, Josef,” Carl Sanford intones patiently.\
+    \ “Do they have the will to do what is truly right for all of humanity?” The\
+    \ elderly man turns his attention back to you, his cold eyes glinting in the\
+    \ moonlight. He approaches calmly, extending his hand. “Regardless, you have\
+    \ experienced firsthand the danger that we all face. Join us, and we can face it\
+    \ together. With our knowledge combined, we can protect Arkham from this threat.”"
+  ]
+
+thePriceOfProgress6 :: FlavorText
+thePriceOfProgress6 = FlavorText
+  (Just "The Price of Progress 6")
+  [ "You consider Mr. Sanford’s words carefully. You believe that he is telling the\
+    \ truth, but you’re not sure if the ends justify his means. Before you can reply,\
+    \ Josef Meiger emerges from the house behind you, flanked by two guards wearing\
+    \ expensive suits. One wields a long silver blade as he stands guard. The other\
+    \ observes the situation vigilantly, keeping one hand on the grip of a revolver\
+    \ holstered at his side. Josef recognizes you and addresses you curtly. “You have\
+    \ been poking your head where you don’t belong,” he threatens, narrowing his dark\
+    \ eyes."
+  , "“Stay your tongue, Josef,” Sanford interjects. He approaches calmly, extending\
+    \ his hand toward you. “You have experienced firsthand the danger that we all\
+    \ face. Join us, and we can face it together. With our knowledge combined, we can\
+    \ protect Arkham from this threat.”"
+  ]
+
+thePriceOfProgress7 :: FlavorText
+thePriceOfProgress7 = FlavorText
+  (Just "The Price of Progress 7")
+  [ "Mr. Sanford scowls, returning his hand to his side and narrowing his gaze. “I\
+    \ see. I cannot say I am not disappointed. I thought you would be insightful\
+    \ enough to see the value in working together. But I realize now that my\
+    \ confidence was misplaced.” He sighs and gazes past you, toward Josef ’s manor.\
+    \ “Very well. The Lodge will handle this problem on our own. Return to your state\
+    \ of ignorance. But I warn you: do not get in our way. I am not an enemy you want\
+    \ to have.” Before you can protest, Sanford commands the other men nearby to\
+    \ escort you off the premises, and you have little choice but to comply."
+  ]
+
+thePriceOfProgress8 :: FlavorText
+thePriceOfProgress8 = FlavorText
+  (Just "The Price of Progress 8")
+  [ "You shake Mr. Sanford’s hand. His grip is cold, but strong. The other members\
+    \ of the Lodge seem to relax around you. “We will do great works together, my\
+    \ friends,” says Sanford. “Great works indeed.”"
+  ]
+
+thePriceOfProgress9 :: FlavorText
+thePriceOfProgress9 = FlavorText
+  (Just "The Price of Progress 9")
+  [ "You shake Mr. Sanford’s hand. His grip is cold, but strong. The other members\
+    \ of the Lodge seem to relax around you. “We will do great works together, my\
+    \ friends,” says Sanford. “Great works indeed.” But out of the corner of your\
+    \ eye, you see one of the Lodge’s enforcers gripping his weapon a little tighter."
+  ]

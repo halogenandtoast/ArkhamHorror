@@ -1,5 +1,7 @@
 module Arkham.Matcher.Patterns where
 
+import Arkham.Prelude
+
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.GameValue
@@ -56,6 +58,9 @@ pattern InvestigatorWithAnyResources <-
   InvestigatorWithResources (GreaterThan (Static 0)) where
   InvestigatorWithAnyResources =
     InvestigatorWithResources (GreaterThan (Static 0))
+
+investigatorWithSpendableResources :: Int -> InvestigatorMatcher
+investigatorWithSpendableResources = InvestigatorWithSpendableResources . AtLeast . toGameValue
 
 pattern InvestigatorCanGainResources :: InvestigatorMatcher
 pattern InvestigatorCanGainResources <-

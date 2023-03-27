@@ -97,3 +97,6 @@ getKnownRemainingOriginalDeckCards iid = do
   inVictory <- scenarioFieldMap ScenarioVictoryDisplay onlyPlayerCards
   let knownNotInDeck = inDiscard <> inHand <> inVictory
   pure $ filter (`notElem` knownNotInDeck) cards
+
+isInVictoryDisplay :: HasGame m => CardDef -> m Bool
+isInVictoryDisplay def = scenarioFieldMap ScenarioVictoryDisplay ((elem def) . map toCardDef)

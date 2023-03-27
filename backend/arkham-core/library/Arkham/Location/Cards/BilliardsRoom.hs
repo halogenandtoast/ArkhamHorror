@@ -1,8 +1,7 @@
 module Arkham.Location.Cards.BilliardsRoom
   ( billiardsRoom
   , BilliardsRoom(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ billiardsRoom :: LocationCard BilliardsRoom
 billiardsRoom = location BilliardsRoom Cards.billiardsRoom 3 (Static 0)
 
 instance HasAbilities BilliardsRoom where
-  getAbilities (BilliardsRoom a) = withBaseAbilities a
+  getAbilities (BilliardsRoom a) = withBaseAbilities
+    a
     [ limitedAbility (PlayerLimit PerRound 1)
       $ restrictedAbility a 1 Here
       $ ActionAbility Nothing
@@ -35,9 +35,15 @@ instance HasAbilities BilliardsRoom where
 instance RunMessage BilliardsRoom where
   runMessage msg l@(BilliardsRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ BeginSkillTest $ initSkillTest iid (toAbilitySource attrs 1) attrs SkillAgility 3
+      push $ BeginSkillTest $ initSkillTest
+        iid
+        (toAbilitySource attrs 1)
+        attrs
+        SkillAgility
+        3
       pure l
-    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _ -> do
-      push $ GainClues iid 1
-      pure l
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
+      -> do
+        push $ GainClues iid 1
+        pure l
     _ -> BilliardsRoom <$> runMessage msg attrs

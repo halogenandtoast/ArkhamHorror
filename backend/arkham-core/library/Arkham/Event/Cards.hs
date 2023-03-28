@@ -115,6 +115,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , counterpunch
   , counterpunch2
   , counterspell2
+  , crackTheCase
   , crypticResearch4
   , crypticWritings
   , crypticWritings2
@@ -181,6 +182,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , improvisation
   , improvisedWeapon
   , infighting3
+  , intelReport
   , interrogate
   , iveGotAPlan
   , iveGotAPlan2
@@ -1634,7 +1636,7 @@ connectTheDots :: CardDef
 connectTheDots = (event "05025" "Connect the Dots" 4 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Insight
-  , cdFastWindow = Just $ DiscoveringLastClue Timing.After You Anywhere
+  , cdFastWindow = Just $ DiscoveringLastClue Timing.After You YourLocation
   , cdCriteria = Just $ Criteria.LocationExists $ LocationWithLowerShroudThan YourLocation <> LocationWithDiscoverableCluesBy You
   }
 
@@ -1672,6 +1674,22 @@ actOfDesperation = (event "05037" "Act of Desperation" 0 Survivor)
   { cdSkills = [#combat, #combat]
   , cdCardTraits = setFromList [Tactic, Gambit]
   , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (CardWithTrait Item <> CardFillsSlot HandSlot)
+  }
+
+crackTheCase :: CardDef
+crackTheCase = (event "05110" "Crack the Case" 0 Seeker)
+  { cdSkills = [#intellect]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just $ DiscoveringLastClue Timing.After You YourLocation
+  , cdCriteria = Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> InvestigatorAt YourLocation
+  }
+
+intelReport :: CardDef
+intelReport = (event "05111" "Intel Report" 2 Rogue)
+  { cdSkills = [#intellect, #intellect]
+  , cdCardTraits = setFromList [Favor, Service]
+  , cdCriteria = Just $ Criteria.ClueOnLocation <> Criteria.InvestigatorExists (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+  , cdCardInHandEffects = True
   }
 
 denyExistence5 :: CardDef

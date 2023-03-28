@@ -301,6 +301,11 @@ allEvents = mapFrom
   , SomeEventCard eldritchInspiration
   --- survivor [tcu]
   , SomeEventCard actOfDesperation
+  -- The Secret Name
+  --- seeker [tsn]
+  , SomeEventCard crackTheCase
+  --- rogue [tsn]
+  , SomeEventCard intelReport
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

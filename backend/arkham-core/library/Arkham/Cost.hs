@@ -11,6 +11,7 @@ import Arkham.Cost.Status as X
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
+import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.GameValue
 import Arkham.Id
@@ -82,6 +83,7 @@ data Payment
 
 data Cost
   = ActionCost Int
+  | IncreaseCostOfThis CardId Int
   | AdditionalActionsCost
   | ClueCost Int
   | PerPlayerClueCost Int
@@ -224,6 +226,7 @@ displayCostType = \case
   FieldResourceCost{} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"
+  IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n
  where
   pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
 

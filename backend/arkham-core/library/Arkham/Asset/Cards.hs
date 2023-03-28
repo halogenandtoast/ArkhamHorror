@@ -141,6 +141,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , bandolier2
   , baronSamedi
   , baseballBat
+  , bauta
   , beatCop
   , beatCop2
   , blackjack
@@ -225,6 +226,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fortyOneDerringer
   , fortyOneDerringer2
   , fourOfCups1
+  , gildedVolto
   , grannyOrne
   , grannyOrne3
   , gravediggersShovel
@@ -298,6 +300,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , maskedCarnevaleGoer_21
   , meatCleaver
   , medicalTexts
+  , medicoDellaPeste
   , miskatonicArchaeologyFunding4
   , mistsOfRlyeh
   , mistsOfRlyeh2
@@ -320,6 +323,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , ornateBow3
   , otherwordlyCompass2
   , painkillers
+  , pantalone
   , pathfinder1
   , peterSylvestre
   , peterSylvestre2

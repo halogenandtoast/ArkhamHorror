@@ -8,6 +8,8 @@ import Arkham.Prelude
 
 import Arkham.ActiveCost.Base as X
 
+import Arkham.EffectMetadata
+import Arkham.Effect.Window
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
@@ -296,6 +298,9 @@ instance RunMessage ActiveCost where
             iid
           push $ DiscardTopOfDeck iid n source Nothing
           withPayment $ DiscardCardPayment cards
+        IncreaseCostOfThis cardId n -> do
+          push $ CreateWindowModifierEffect EffectCostWindow (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n]) source (toTarget cardId)
+          pure c
         ExhaustCost target -> do
           push (Exhaust target)
           withPayment $ ExhaustPayment [target]

@@ -968,6 +968,7 @@ library
       Arkham.Event.Cards.Counterpunch2
       Arkham.Event.Cards.Counterspell2
       Arkham.Event.Cards.CoupDeGrace
+      Arkham.Event.Cards.CrackTheCase
       Arkham.Event.Cards.CrypticResearch4
       Arkham.Event.Cards.CrypticWritings
       Arkham.Event.Cards.CrypticWritings2
@@ -1034,6 +1035,7 @@ library
       Arkham.Event.Cards.Improvisation
       Arkham.Event.Cards.ImprovisedWeapon
       Arkham.Event.Cards.Infighting3
+      Arkham.Event.Cards.IntelReport
       Arkham.Event.Cards.Interrogate
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2

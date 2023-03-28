@@ -75,7 +75,8 @@
   { "name": "Murder at the Excelsior Hotel", "min": 84001, "max": 84052, "playerCards": 0, "code": "hotel", "cycle": 70 },
   { "name": "The Blob That Ate Everything", "min": 85001, "max": 85053, "playerCards": 0, "code": "blob", "cycle": 70 },
   { "name": "War of the Outer Gods", "min": 86001, "max": 86055, "playerCards": 0, "code": "wog", "cycle": 70 },
-  { "name": "Machinations Through Time", "min": 87001, "max": 87999, "playerCards": 0, "code": "mtt", "cycle": 70 },
+  { "name": "Machinations Through Time", "min": 87001, "max": 87057, "playerCards": 0, "code": "mtt", "cycle": 70 },
+  { "name": "Fortune and Folly", "min": 88001, "max": 88053, "playerCards": 0, "code": "faf", "cycle": 70 },
 
   { "name": "Hour of the Huntress", "min": 98001, "max": 98003, "playerCards": 3, "code": "hoth", "cycle": 80 },
   { "name": "The Dirge of Reason", "min": 98004, "max": 98006, "playerCards": 3, "code": "tdor", "cycle": 80 },

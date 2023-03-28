@@ -54,7 +54,7 @@
   { "name": "Edge of the Earth Campaign Expansion", "min": 8501, "max": 8738, "playerCards": 0, "code": "eoec", "cycle": 8 },
 
   { "name": "The Scarlet Keys Investigator Expansion", "min": 9001, "max": 9128, "playerCards": 128, "code": "tskp", "cycle": 9 },
-  { "name": "The Scarlet Keys Campaign Expansion", "min": 9501, "max": 9999, "playerCards": 0, "code": "tskc", "cycle": 9 },
+  { "name": "The Scarlet Keys Campaign Expansion", "min": 9501, "max": 9770, "playerCards": 0, "code": "tskc", "cycle": 9 },
 
   { "name": "Return to Night of the Zealot", "min": 50001, "max": 50046, "playerCards": 10, "code": "rtnotz", "cycle": 50 },
   { "name": "Return to The Dunwich Legacy", "min": 51001, "max": 51072, "playerCards": 11, "code": "rtdwl", "cycle": 50 },

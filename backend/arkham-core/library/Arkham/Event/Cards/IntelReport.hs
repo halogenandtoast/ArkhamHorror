@@ -39,6 +39,7 @@ instance HasAbilities IntelReport where
     , withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
       $ restrictedAbility a 2 InYourHand
+      $ ForcedWhen (LocationExists $ LocationWithoutClues <> YourLocation)
       $ ReactionAbility
           (PlayCard Timing.When You (BasicCardMatch $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)

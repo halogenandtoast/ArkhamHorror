@@ -68,6 +68,7 @@ const tooltip = computed(() => {
     const content = body.
       replace('{action}', '<span class="action-icon"></span>').
       replace('{fast}', '<span class="fast-icon"></span>').
+      replace('{reaction}', '<span class="reaction-icon"></span>').
       replace('{willpower}', '<span class="willpower-icon"></span>').
       replace('{intellect}', '<span class="intellect-icon"></span>').
       replace('{combat}', '<span class="combat-icon"></span>').

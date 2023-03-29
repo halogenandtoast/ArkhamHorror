@@ -107,4 +107,12 @@ body {
     margin-right: 5px;
   }
 }
+
+.reaction-icon {
+  &:before {
+    font-family: "arkham";
+    content: "\0079";
+    margin-right: 5px;
+  }
+}
 </style>

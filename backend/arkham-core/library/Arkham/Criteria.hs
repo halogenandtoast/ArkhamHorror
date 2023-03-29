@@ -93,6 +93,7 @@ data Criterion
   | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher
   | AllLocationsMatch LocationMatcher LocationMatcher
+  | CanAffordCostIncrease Int
   | OnSameLocation
   | OwnCardWithDoom
   | ControlsThis -- really controls this

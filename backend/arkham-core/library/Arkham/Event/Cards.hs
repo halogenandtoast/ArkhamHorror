@@ -1688,7 +1688,17 @@ intelReport :: CardDef
 intelReport = (event "05111" "Intel Report" 2 Rogue)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = setFromList [Favor, Service]
-  , cdCriteria = Just $ Criteria.ClueOnLocation <> Criteria.InvestigatorExists (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+  , cdCriteria = Just $ Criteria.AnyCriterion
+      [ Criteria.ClueOnLocation <> Criteria.InvestigatorExists (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+      , Criteria.CanAffordCostIncrease 2
+        <> Criteria.InvestigatorExists
+          ( You
+            <> InvestigatorCanDiscoverCluesAt
+              ( LocationMatchAny [LocationWithDistanceFrom n YourLocation | n <- [0..2]]
+                <> LocationWithAnyClues
+              )
+          )
+      ]
   , cdCardInHandEffects = True
   }
 

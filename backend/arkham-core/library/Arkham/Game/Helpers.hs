@@ -179,7 +179,7 @@ getCanPerformAbility !iid !source !window !ability = do
     , windowMatches iid source window (abilityWindow ability)
     , maybe
       (pure True)
-      (passesCriteria iid (abilitySource ability) [window])
+      (passesCriteria iid Nothing (abilitySource ability) [window])
       (abilityCriteria ability)
     , allM
       (getCanAffordCost iid (abilitySource ability) mAction [window])
@@ -848,7 +848,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
-      (passesCriteria iid (replaceThisCard c source) windows')
+      (passesCriteria iid (Just c) (replaceThisCard c source) windows')
       (foldl' handleCriteriaReplacement (cdCriteria pcDef) cardModifiers)
     inFastWindow <- maybe
       (pure False)
@@ -975,11 +975,12 @@ getSpendableResources iid = do
 passesCriteria
   :: (HasCallStack, HasGame m)
   => InvestigatorId
+  -> Maybe Card
   -> Source
   -> [Window]
   -> Criterion
   -> m Bool
-passesCriteria iid source windows' = \case
+passesCriteria iid mcard source windows' = \case
   Criteria.TokenCountIs tokenMatcher valueMatcher -> do
     n <- selectCount tokenMatcher
     gameValueMatches n valueMatcher
@@ -991,7 +992,7 @@ passesCriteria iid source windows' = \case
     doomCount <- getDoomCount
     gameValueMatches doomCount valueMatcher
   Criteria.Negate restriction ->
-    not <$> passesCriteria iid source windows' restriction
+    not <$> passesCriteria iid mcard source windows' restriction
   Criteria.AllUndefeatedInvestigatorsResigned -> andM
     [ selectNone Matcher.UneliminatedInvestigator
     , selectAny Matcher.ResignedInvestigator -- at least one investigator should have resigned
@@ -1203,8 +1204,12 @@ passesCriteria iid source windows' = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
-  Criteria.CanAffordCostIncrease _ -> do
-    pure False
+  Criteria.CanAffordCostIncrease n -> case mcard of
+    Just card -> do
+      cost <- getModifiedCardCost iid card
+      resources <- getSpendableResources iid
+      pure $ resources >= cost + n
+    Nothing -> error "no card for CanAffordCostIncrease"
   Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of
@@ -1240,8 +1245,8 @@ passesCriteria iid source windows' = \case
       InvestigatorClues
       (Matcher.InvestigatorWithoutModifier CannotSpendClues)
     total `gameValueMatches` valueMatcher
-  Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs
-  Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
+  Criteria.Criteria rs -> allM (passesCriteria iid mcard source windows') rs
+  Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source windows') rs
   Criteria.LocationExists matcher -> do
     mlid <- field InvestigatorLocation iid
     selectAny (Matcher.replaceYourLocation iid mlid matcher)
@@ -1281,7 +1286,7 @@ passesCriteria iid source windows' = \case
       <$> scenarioFieldMap ScenarioRemembered HashSet.toList
     gameValueMatches n (Matcher.AtLeast value)
   Criteria.AtLeastNCriteriaMet n criteria -> do
-    m <- countM (passesCriteria iid source windows') criteria
+    m <- countM (passesCriteria iid mcard source windows') criteria
     pure $ m >= n
 
 -- | Build a matcher and check the list

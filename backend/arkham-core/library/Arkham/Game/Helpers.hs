@@ -1203,6 +1203,8 @@ passesCriteria iid source windows' = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
+  Criteria.CanAffordCostIncrease _ -> do
+    pure False
   Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of

@@ -848,7 +848,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
-      (passesCriteria iid (Just c) (replaceThisCard c source) windows')
+      (passesCriteria iid (Just (c, costStatus)) (replaceThisCard c source) windows')
       (foldl' handleCriteriaReplacement (cdCriteria pcDef) cardModifiers)
     inFastWindow <- maybe
       (pure False)
@@ -975,7 +975,7 @@ getSpendableResources iid = do
 passesCriteria
   :: (HasCallStack, HasGame m)
   => InvestigatorId
-  -> Maybe Card
+  -> Maybe (Card, CostStatus)
   -> Source
   -> [Window]
   -> Criterion
@@ -1205,10 +1205,11 @@ passesCriteria iid mcard source windows' = \case
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
   Criteria.CanAffordCostIncrease n -> case mcard of
-    Just card -> do
+    Just (card, UnpaidCost) -> do
       cost <- getModifiedCardCost iid card
       resources <- getSpendableResources iid
       pure $ resources >= cost + n
+    Just (card, PaidCost) -> pure True
     Nothing -> error "no card for CanAffordCostIncrease"
   Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let

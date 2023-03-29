@@ -65,8 +65,8 @@ instance RunMessage IntelReport where
 
       if discoverUpToTwoAway
         then do
-          lids <- selectList $ LocationWithAnyClues <> LocationMatchAny
-            [ LocationWithDistanceFrom n (locationWithInvestigator iid)
+          lids <- selectList $ LocationMatchAny
+            [ LocationWithDistanceFrom n LocationWithAnyClues
             | n <- [0 .. 2]
             ]
           push $ chooseOrRunOne

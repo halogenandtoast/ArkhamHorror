@@ -1694,9 +1694,7 @@ intelReport = (event "05111" "Intel Report" 2 Rogue)
         <> Criteria.InvestigatorExists
           ( You
             <> InvestigatorCanDiscoverCluesAt
-              ( LocationMatchAny [LocationWithDistanceFrom n YourLocation | n <- [0..2]]
-                <> LocationWithAnyClues
-              )
+              ( LocationMatchAny [LocationWithDistanceFrom n LocationWithAnyClues | n <- [0..2]])
           )
       ]
   , cdCardInHandEffects = True

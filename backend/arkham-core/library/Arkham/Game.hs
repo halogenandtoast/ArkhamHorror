@@ -652,7 +652,7 @@ getInvestigatorsMatching matcher = do
         getInvalid
         mempty
         modifiers'
-      locations <- select matcher'
+      locations <- traceShowId <$> select (traceShowId matcher')
       pure $ any (`notElem` invalidLocations) locations
     InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
     AliveInvestigator -> \i -> do

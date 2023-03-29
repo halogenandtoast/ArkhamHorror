@@ -12,6 +12,7 @@ import Data.String
 import Prelude
 import System.Directory
 import System.FilePath
+import Control.Monad
 
 newtype Source = Source FilePath
 

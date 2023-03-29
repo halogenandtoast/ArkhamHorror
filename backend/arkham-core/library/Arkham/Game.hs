@@ -135,7 +135,7 @@ import Control.Exception ( throw )
 import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen )
 import Control.Monad.Reader ( runReader )
-import Control.Monad.State.Strict hiding ( filterM, foldM, state )
+import Control.Monad.State.Strict hiding ( state )
 import Data.Aeson ( Result (..) )
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap

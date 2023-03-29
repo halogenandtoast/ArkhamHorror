@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Ability.Limit
 import Arkham.Action
 import Arkham.Cost
+import Arkham.Criteria (Criterion)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType

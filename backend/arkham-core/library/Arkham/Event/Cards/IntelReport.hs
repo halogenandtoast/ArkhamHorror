@@ -5,21 +5,21 @@ module Arkham.Event.Cards.IntelReport
 
 import Arkham.Prelude
 
-import Data.Aeson
-import Arkham.EffectMetadata
-import Arkham.Effect.Window
-import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Helpers.Modifiers
 import Arkham.Criteria
+import Arkham.Effect.Window
+import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message hiding ( PlayCard )
 import Arkham.Timing qualified as Timing
+import Data.Aeson
+import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype IntelReport = IntelReport EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -51,24 +51,29 @@ instance RunMessage IntelReport where
 
       let
         updateClueCount :: Int -> ModifierType -> Int
-        updateClueCount n (MetaModifier (Object o)) = case fromJSON <$> KeyMap.lookup "clueCount" o of
-          Just (Success a) -> a
-          _ -> n
+        updateClueCount n (MetaModifier (Object o)) =
+          case fromJSON <$> KeyMap.lookup "clueCount" o of
+            Just (Success a) -> a
+            _ -> n
         updateClueCount n _ = n
         clueCount = foldl' updateClueCount 1 modifiers'
         updateDiscoverUpToTwoAway :: Bool -> ModifierType -> Bool
-        updateDiscoverUpToTwoAway n (MetaModifier (Object o)) = case fromJSON <$> KeyMap.lookup "discoverUpToTwoAway" o of
-          Just (Success a) -> a
-          _ -> n
+        updateDiscoverUpToTwoAway n (MetaModifier (Object o)) =
+          case fromJSON <$> KeyMap.lookup "discoverUpToTwoAway" o of
+            Just (Success a) -> a
+            _ -> n
         updateDiscoverUpToTwoAway n _ = n
         discoverUpToTwoAway = foldl' updateDiscoverUpToTwoAway False modifiers'
 
       if discoverUpToTwoAway
         then do
-          lids <- selectList $ LocationMatchAny
-            [ LocationWithDistanceFrom n LocationWithAnyClues
-            | n <- [0 .. 2]
-            ]
+          lids <-
+            selectList
+            $ LocationMatchAny
+            $ (locationWithInvestigator iid <> LocationWithAnyClues)
+            : [ LocationWithDistanceFrom n LocationWithAnyClues
+              | n <- [1 .. 2]
+              ]
           push $ chooseOrRunOne
             iid
             [ targetLabel
@@ -76,16 +81,27 @@ instance RunMessage IntelReport where
                 [InvestigatorDiscoverClues iid lid clueCount Nothing]
             | lid <- lids
             ]
-        else push $ InvestigatorDiscoverCluesAtTheirLocation
-          iid
-          clueCount
-          Nothing
+        else push
+          $ InvestigatorDiscoverCluesAtTheirLocation iid clueCount Nothing
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
-      push $ CreateWindowModifierEffect EffectEventWindow (EffectModifiers $ toModifiers attrs [MetaModifier $ object ["clueCount" .= (2 :: Int)]]) (toSource attrs) (CardIdTarget $ toCardId attrs)
+      push $ CreateWindowModifierEffect
+        EffectEventWindow
+        (EffectModifiers $ toModifiers
+          attrs
+          [MetaModifier $ object ["clueCount" .= (2 :: Int)]]
+        )
+        (toSource attrs)
+        (CardIdTarget $ toCardId attrs)
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
-
-      push $ CreateWindowModifierEffect EffectEventWindow (EffectModifiers $ toModifiers attrs [MetaModifier $ object ["discoverUpToTwoAway" .= True]]) (toSource attrs) (CardIdTarget $ toCardId attrs)
+      push $ CreateWindowModifierEffect
+        EffectEventWindow
+        (EffectModifiers $ toModifiers
+          attrs
+          [MetaModifier $ object ["discoverUpToTwoAway" .= True]]
+        )
+        (toSource attrs)
+        (CardIdTarget $ toCardId attrs)
       pure e
     _ -> IntelReport <$> runMessage msg attrs

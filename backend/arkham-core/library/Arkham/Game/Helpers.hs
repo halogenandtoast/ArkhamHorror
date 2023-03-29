@@ -1209,7 +1209,7 @@ passesCriteria iid mcard source windows' = \case
       cost <- getModifiedCardCost iid card
       resources <- getSpendableResources iid
       pure $ resources >= cost + n
-    Just (card, PaidCost) -> pure True
+    Just (_, PaidCost) -> pure True
     Nothing -> error "no card for CanAffordCostIncrease"
   Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let

@@ -8,10 +8,10 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (EnemyFight)
+import Arkham.Asset.Runner hiding ( EnemyFight )
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Enemy.Types (Field(..))
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
@@ -44,7 +44,7 @@ instance RunMessage FortyFiveThompsonRogue3 where
         ]
       pure a
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+      | useCount (assetUses attrs) > 0 -> do
         mSkillTestTarget <- getSkillTestTarget
         case mSkillTestTarget of
           Just (EnemyTarget eid) -> do
@@ -58,7 +58,9 @@ instance RunMessage FortyFiveThompsonRogue3 where
                 $ Label "Do not damage any enemies" []
                 : [ targetLabel
                       eid'
-                      [InvestigatorDamageEnemy iid eid' (toSource attrs)]
+                      [ SpendUses (toTarget attrs) Ammo 1
+                      , InvestigatorDamageEnemy iid eid' (toSource attrs)
+                      ]
                   | eid' <- enemies
                   ]
           _ -> pure ()

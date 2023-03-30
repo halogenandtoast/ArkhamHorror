@@ -1977,6 +1977,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n _ False | iid == investigatorId -> do
     cannotGainResources <- hasModifier a CannotGainResources
     pure $ if cannotGainResources then a else a & resourcesL +~ n
+  PlaceResources target n | isTarget a target -> do
+    pure $ a & resourcesL +~ n
   EmptyDeck iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     when (CardsCannotLeaveYourDiscardPile `notElem` modifiers')

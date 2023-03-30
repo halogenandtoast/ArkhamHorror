@@ -22,14 +22,18 @@ import Arkham.Trait hiding ( Supply )
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
-  baseAsset (Just (encounterSet, 1)) cardCode name cost Neutral
+  baseAsset (Just (encounterSet, 1)) cardCode name cost (singleton Neutral)
 
 storyAssetWithMany :: CardCode -> Name -> Int -> EncounterSet -> Int -> CardDef
 storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
-  baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost Neutral
+  baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost (singleton Neutral)
 
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
-asset = baseAsset Nothing
+asset cCode name cost classSymbol = baseAsset Nothing cCode name cost (singleton classSymbol)
+
+multiClassAsset :: CardCode -> Name -> Int -> [ClassSymbol] -> CardDef
+multiClassAsset cCode name cost classSymbols = baseAsset Nothing cCode name cost (setFromList classSymbols)
+
 
 permanent :: CardDef -> CardDef
 permanent cd = cd { cdPermanent = True, cdCost = Nothing }
@@ -38,7 +42,7 @@ fast :: CardDef -> CardDef
 fast cd = cd { cdFastWindow = Just (DuringTurn You) }
 
 weakness :: CardCode -> Name -> CardDef
-weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
+weakness cardCode name = (baseAsset Nothing cardCode name 0 (singleton Neutral))
   { cdCardSubType = Just Weakness
   , cdRevelation = True
   , cdCost = Nothing
@@ -46,7 +50,7 @@ weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
 
 storyWeakness :: CardCode -> Name -> EncounterSet -> CardDef
 storyWeakness cardCode name encounterSet =
-  (baseAsset (Just (encounterSet, 1)) cardCode name 0 Neutral)
+  (baseAsset (Just (encounterSet, 1)) cardCode name 0 (singleton Neutral))
     { cdCardSubType = Just Weakness
     , cdRevelation = True
     , cdCost = Nothing
@@ -57,9 +61,9 @@ baseAsset
   -> CardCode
   -> Name
   -> Int
-  -> ClassSymbol
+  -> HashSet ClassSymbol
   -> CardDef
-baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
+baseAsset mEncounterSet cardCode name cost classSymbols = CardDef
   { cdCardCode = cardCode
   , cdName = name
   , cdRevealedName = Nothing
@@ -68,7 +72,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdLevel = 0
   , cdCardType = AssetType
   , cdCardSubType = Nothing
-  , cdClassSymbols = singleton classSymbol
+  , cdClassSymbols = classSymbols
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdRevealedCardTraits = mempty
@@ -223,6 +227,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , forbiddenTomeSecretsRevealed3
   , fortyFiveAutomatic
   , fortyFiveAutomatic2
+  , fortyFiveThompson
+  , fortyFiveThompsonGuardian3
+  , fortyFiveThompsonRogue3
   , fortyOneDerringer
   , fortyOneDerringer2
   , fourOfCups1
@@ -2707,10 +2714,36 @@ meatCleaver = (asset "05114" "Meat Cleaver" 3 Survivor)
   , cdSlots = [HandSlot]
   }
 
+fortyFiveThompson :: CardDef
+fortyFiveThompson = (multiClassAsset "05115" ".45 Thompson" 6 [Guardian, Rogue])
+  { cdSkills = [#combat]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 5
+  }
+
 drawingThin :: CardDef
 drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = singleton Talent
+  }
+
+fortyFiveThompsonGuardian3 :: CardDef
+fortyFiveThompsonGuardian3 = (asset "05186" ".45 Thompson" 6 Guardian)
+  { cdSkills = [#combat, #combat]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 5
+  , cdLevel = 3
+  }
+
+fortyFiveThompsonRogue3 :: CardDef
+fortyFiveThompsonRogue3 = (asset "05187" ".45 Thompson" 5 Rogue)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdSlots = [HandSlot, HandSlot]
+  , cdUses = Uses Ammo 5
+  , cdLevel = 3
   }
 
 studious3 :: CardDef

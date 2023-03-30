@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -385,6 +385,9 @@ library
       Arkham.Asset.Cards.ForbiddenTomeSecretsRevealed3
       Arkham.Asset.Cards.FortyFiveAutomatic
       Arkham.Asset.Cards.FortyFiveAutomatic2
+      Arkham.Asset.Cards.FortyFiveThompson
+      Arkham.Asset.Cards.FortyFiveThompsonGuardian3
+      Arkham.Asset.Cards.FortyFiveThompsonRogue3
       Arkham.Asset.Cards.FortyOneDerringer
       Arkham.Asset.Cards.FortyOneDerringer2
       Arkham.Asset.Cards.FourOfCups1

@@ -41,6 +41,7 @@ import Arkham.Asset.Assets
 import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect, josefMeigerEffect )
 import Arkham.Event.Events
   ( actOfDesperationEffect
+  , banish1Effect
   , exposeWeakness3Effect
   , imDoneRunninEffect
   , marksmanship1Effect
@@ -237,6 +238,7 @@ allEffects = mapFromList
   , ("05049", SomeEffect pennyWhiteEffect)
   , ("05085", SomeEffect josefMeigerEffect)
   , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
+  , ("05113", SomeEffect banish1Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("07004", SomeEffect dexterDrakeEffect)

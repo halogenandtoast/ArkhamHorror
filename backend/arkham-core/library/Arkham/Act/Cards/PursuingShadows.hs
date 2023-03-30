@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Types
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Act.Helpers
 import Arkham.Classes
@@ -18,7 +18,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.APhantomOfTruth.Helpers
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype PursuingShadows = PursuingShadows ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

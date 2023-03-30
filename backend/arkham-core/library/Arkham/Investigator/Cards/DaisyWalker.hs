@@ -6,7 +6,7 @@ module Arkham.Investigator.Cards.DaisyWalker
 import Arkham.Prelude
 
 import Arkham.Action.Additional
-import qualified Arkham.Investigator.Cards as Cards
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message

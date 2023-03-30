@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-dodgy-imports #-}
 module Arkham.Helpers.Scenario where
 
 import Arkham.Prelude
@@ -16,7 +17,7 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Token
-import Control.Monad.Writer
+import Control.Monad.Writer hiding (filterM)
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.NonEmpty qualified as NE
 

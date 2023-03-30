@@ -14,8 +14,8 @@ import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Message
-import qualified Arkham.Timing as Timing
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata { chosenLocation :: Maybe LocationId }

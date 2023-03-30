@@ -372,6 +372,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , shrivelling
   , shrivelling3
   , shrivelling5
+  , signMagick
+  , signMagick3
   , smokingPipe
   , somethingWorthFightingFor
   , sophieInLovingMemory
@@ -2691,6 +2693,13 @@ somethingWorthFightingFor = (asset "05109" "Something Worth Fighting For" 3 Guar
   , cdCardTraits = singleton Talent
   }
 
+signMagick :: CardDef
+signMagick = (asset "05112" "Sign Magick" 3 Mystic)
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Ritual, Talent]
+  , cdSlots = [HandSlot]
+  }
+
 meatCleaver :: CardDef
 meatCleaver = (asset "05114" "Meat Cleaver" 3 Survivor)
   { cdSkills = [#willpower]
@@ -2891,6 +2900,14 @@ wellConnected3 = (asset "54006" "Well Connected" 2 Rogue)
   { cdCardTraits = singleton Condition
   , cdSkills = [#intellect, #agility]
   , cdLimits = [LimitPerInvestigator 1]
+  , cdLevel = 3
+  }
+
+signMagick3 :: CardDef
+signMagick3 = (asset "54008" "Sign Magick" 3 Mystic)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = setFromList [Ritual, Talent]
+  , cdSlots = [HandSlot]
   , cdLevel = 3
   }
 

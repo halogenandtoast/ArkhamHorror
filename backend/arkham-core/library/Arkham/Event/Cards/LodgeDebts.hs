@@ -6,7 +6,7 @@ where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Ability
 import Arkham.Criteria
 import Arkham.Matcher

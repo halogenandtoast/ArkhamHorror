@@ -805,12 +805,15 @@ instance RunMessage ActiveCost where
             iid = activeCostInvestigator c
           whenActivateAbilityWindow <- checkWindows
             [Window Timing.When (Window.ActivateAbility iid ability)]
+          afterActivateAbilityWindow <- checkWindows
+            [Window Timing.After (Window.ActivateAbility iid ability)]
           afterMsgs <- if isAction
             then do
               afterWindowMsgs <- checkWindows
                 [Window Timing.After (Window.PerformAction iid action)]
               pure [afterWindowMsgs, FinishAction]
             else pure []
+          -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
           isForced <- isForcedAbility iid ability
           pushAll
             $ [ whenActivateAbilityWindow | not isForced ]
@@ -822,6 +825,7 @@ instance RunMessage ActiveCost where
                    (activeCostPayments c)
                ]
             <> afterMsgs
+            <> [ afterActivateAbilityWindow | not isForced ]
         ForCard isPlayAction card -> do
           let iid = activeCostInvestigator c
           pushAll

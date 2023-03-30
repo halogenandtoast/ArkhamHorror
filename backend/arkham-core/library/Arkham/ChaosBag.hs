@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-dodgy-imports #-}
 {-# OPTIONs_GHC -Wno-orphans #-}
 module Arkham.ChaosBag
   ( ChaosBag
@@ -21,7 +22,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Control.Monad.State
+import Control.Monad.State hiding (filterM)
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True

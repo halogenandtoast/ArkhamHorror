@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.SkillType
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype LostSoul = LostSoul TreacheryAttrs

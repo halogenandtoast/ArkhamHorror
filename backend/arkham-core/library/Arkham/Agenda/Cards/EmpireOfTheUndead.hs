@@ -6,7 +6,7 @@ module Arkham.Agenda.Cards.EmpireOfTheUndead
 import Arkham.Prelude
 
 import Arkham.Agenda.Types
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue

@@ -448,6 +448,8 @@ allAssets = mapFrom
   -- The Secret Name
   --- guardian [tsn]
   , SomeAssetCard somethingWorthFightingFor
+  --- mystic [tsn]
+  , SomeAssetCard signMagick
   --- survivor [tsn]
   , SomeAssetCard meatCleaver
   -- The Wages of Sin
@@ -512,6 +514,8 @@ allAssets = mapFrom
   -- Return to the circle undone
   -- rogue [rttcu]
   , SomeAssetCard wellConnected3
+  -- mystic [rttcu]
+  , SomeAssetCard signMagick3
   -- Investigator Starter Decks
   --- Nathaniel Cho
   , SomeAssetCard randallCho

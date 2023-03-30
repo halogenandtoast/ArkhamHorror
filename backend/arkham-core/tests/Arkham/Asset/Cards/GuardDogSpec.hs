@@ -4,7 +4,7 @@ module Arkham.Asset.Cards.GuardDogSpec
 
 import TestImport.Lifted hiding (EnemyDamage)
 
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Types (Field(..), healthDamageL, healthL)
 
 spec :: Spec

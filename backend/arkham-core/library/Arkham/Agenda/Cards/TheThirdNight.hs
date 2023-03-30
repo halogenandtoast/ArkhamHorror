@@ -6,7 +6,7 @@ module Arkham.Agenda.Cards.TheThirdNight
 import Arkham.Prelude
 
 import Arkham.Agenda.Types
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes

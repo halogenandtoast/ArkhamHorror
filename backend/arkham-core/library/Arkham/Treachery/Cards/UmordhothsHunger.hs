@@ -9,7 +9,7 @@ import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs

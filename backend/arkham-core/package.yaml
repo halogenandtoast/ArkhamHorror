@@ -38,7 +38,7 @@ library:
     - extra
     - lens
     - monoidal-containers
-    - mtl
+    - mtl >= 2.3.1
     - newtype
     - pretty-simple
     - random-shuffle

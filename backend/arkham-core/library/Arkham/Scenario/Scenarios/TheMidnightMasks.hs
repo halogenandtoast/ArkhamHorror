@@ -2,16 +2,16 @@ module Arkham.Scenario.Scenarios.TheMidnightMasks where
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Acts
-import qualified Arkham.Agenda.Cards as Agendas
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
-import qualified Arkham.EncounterSet as EncounterSet
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
   (CardMatcher(..), EnemyMatcher(..), ExtendedCardMatcher(..))
 import Arkham.Message
@@ -21,7 +21,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Target
 import Arkham.Token
-import qualified Arkham.Trait as Trait
+import Arkham.Trait qualified as Trait
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock Generic

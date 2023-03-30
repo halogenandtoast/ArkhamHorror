@@ -64,6 +64,7 @@ pattern CanManipulateDeck <-
 
 data Criterion
   = AssetExists AssetMatcher
+  | ExcludeWindowAssetExists AssetMatcher
   | AgendaExists AgendaMatcher
   | InYourHand
   | DoomCountIs ValueMatcher

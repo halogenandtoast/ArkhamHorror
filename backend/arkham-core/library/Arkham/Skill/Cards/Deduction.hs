@@ -2,12 +2,12 @@ module Arkham.Skill.Cards.Deduction where
 
 import Arkham.Prelude
 
-import qualified Arkham.Action as Action
+import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Helpers.Modifiers
 import Arkham.Skill.Runner
-import qualified Arkham.Skill.Cards as Cards
+import Arkham.Skill.Cards qualified as Cards
 
 newtype Deduction = Deduction SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

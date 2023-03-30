@@ -13,8 +13,8 @@ import Arkham.LocationSymbol as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Target as X
+import Arkham.Ability as X
 
-import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Cost

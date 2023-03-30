@@ -2282,47 +2282,48 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -> do
       actions <- nub . concat <$> traverse (getActions iid) windows
       playableCards <- getPlayableCards a UnpaidCost windows
-      unless (null playableCards && null actions)
-        $ if any isForcedAbility actions
-            then do
-              let
-                (silent, normal) = partition isSilentForcedAbility actions
-                toForcedAbilities = map (($ windows) . UseAbility iid)
-                toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
-              -- Silent forced abilities should trigger automatically
-              pushAll
-                $ toForcedAbilities silent
-                <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
-                <> [RunWindow iid windows]
-            else do
-              actionsWithMatchingWindows <-
-                for actions $ \ability@Ability {..} ->
-                  (ability, )
-                    <$> filterM
-                          (\w -> windowMatches iid abilitySource w abilityWindow
-                          )
-                          windows
-              skippable <- getAllAbilitiesSkippable a windows
-              push
-                $ chooseOne iid
-                $ [ TargetLabel
-                      (CardIdTarget $ toCardId c)
-                      [ InitiatePlayCard iid c Nothing windows False
-                      , RunWindow iid windows
-                      ]
-                  | c <- playableCards
-                  ]
-                <> map
-                     (\(ability, windows') -> AbilityLabel
-                       iid
-                       ability
-                       windows'
-                       [RunWindow iid windows]
-                     )
-                     actionsWithMatchingWindows
-                <> [ Label "Skip playing fast cards or using reactions" []
-                   | skippable
-                   ]
+      unless (null playableCards && null actions) $ do
+        anyForced <- anyM (isForcedAbility investigatorId) actions
+        if anyForced
+          then do
+            let
+              (silent, normal) = partition isSilentForcedAbility actions
+              toForcedAbilities = map (($ windows) . UseAbility iid)
+              toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
+            -- Silent forced abilities should trigger automatically
+            pushAll
+              $ toForcedAbilities silent
+              <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
+              <> [RunWindow iid windows]
+          else do
+            actionsWithMatchingWindows <-
+              for actions $ \ability@Ability {..} ->
+                (ability, )
+                  <$> filterM
+                        (\w -> windowMatches iid abilitySource w abilityWindow
+                        )
+                        windows
+            skippable <- getAllAbilitiesSkippable a windows
+            push
+              $ chooseOne iid
+              $ [ TargetLabel
+                    (CardIdTarget $ toCardId c)
+                    [ InitiatePlayCard iid c Nothing windows False
+                    , RunWindow iid windows
+                    ]
+                | c <- playableCards
+                ]
+              <> map
+                   (\(ability, windows') -> AbilityLabel
+                     iid
+                     ability
+                     windows'
+                     [RunWindow iid windows]
+                   )
+                   actionsWithMatchingWindows
+              <> [ Label "Skip playing fast cards or using reactions" []
+                 | skippable
+                 ]
       pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
     mAdditionalAction <- findM
@@ -2744,7 +2745,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , Window Timing.When Window.NonFast
         ]
     actions <- nub <$> concatMapM (getActions iid) windows
-    if any isForcedAbility actions
+    anyForced <- anyM (isForcedAbility iid) actions
+    if anyForced
       then do
           -- Silent forced abilities should trigger automatically
         let
@@ -2804,7 +2806,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , Window Timing.When Window.FastPlayerWindow
         ]
     actions <- nub <$> concatMapM (getActions investigatorId) windows
-    unless (any isForcedAbility actions) $ do
+    anyForced <- anyM (isForcedAbility investigatorId) actions
+    unless anyForced $ do
       playableCards <- getPlayableCards a UnpaidCost windows
       let
         usesAction = not isAdditional

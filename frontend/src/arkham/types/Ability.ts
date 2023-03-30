@@ -119,7 +119,19 @@ export const hauntedDecoder = JsonDecoder.object<Haunted>({
   tag: JsonDecoder.isExactly("Haunted"),
 }, 'Haunted')
 
+
 export type AbilityType = FastAbility | ReactionAbility | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
+
+export interface ForcedWhen {
+  tag: "ForcedWhen"
+  abilityType: AbilityType
+}
+
+export const forcedWhenDecoder = JsonDecoder.object<ForcedWhen>({
+  tag: JsonDecoder.isExactly("ForcedWhen"),
+  abilityType: JsonDecoder.lazy(() => abilityTypeDecoder)
+}, 'Haunted')
+
 
 export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.oneOf<AbilityType>([
   fastAbilityDecoder,
@@ -133,6 +145,7 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   abilityEffectDecoder,
   objectiveDecoder,
   hauntedDecoder,
+  forcedWhenDecoder.map((fw: ForcedWhen) => fw.abilityType)
 ], 'AbilityType')
 
 export interface Ability {

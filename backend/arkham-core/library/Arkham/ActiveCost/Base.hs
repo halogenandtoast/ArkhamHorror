@@ -6,7 +6,7 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Id
 import Arkham.Token
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.Window ( Window )
 
 data ActiveCost = ActiveCost

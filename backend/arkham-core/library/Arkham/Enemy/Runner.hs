@@ -7,6 +7,7 @@ module Arkham.Enemy.Runner
 
 import Arkham.Prelude
 
+import Arkham.Ability as X
 import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X

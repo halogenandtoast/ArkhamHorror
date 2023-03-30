@@ -11,7 +11,7 @@ import Arkham.Question as X
 import Arkham.Strategy as X
 import Arkham.Text as X
 
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.Act.Sequence
 import Arkham.Action hiding ( Explore )
 import Arkham.Action.Additional

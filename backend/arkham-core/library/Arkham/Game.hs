@@ -47,7 +47,7 @@ import Arkham.Event
 import Arkham.Event.Types
 import Arkham.Game.Base as X
 import Arkham.Game.Helpers hiding
-  ( EnemyEvade, EnemyFight, getSpendableClueCount )
+  ( EnemyEvade, EnemyFight, getSpendableClueCount, createWindowModifierEffect )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch)

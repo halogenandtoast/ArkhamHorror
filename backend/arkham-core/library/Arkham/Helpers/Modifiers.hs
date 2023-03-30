@@ -13,6 +13,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Target
+import Arkham.Window (Window)
 
 getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
 getModifiers (toTarget -> target) = map modifierType <$> getModifiers' target
@@ -58,3 +59,12 @@ skillTestModifiers source target modifiers = CreateWindowModifierEffect
   (EffectModifiers $ toModifiers source modifiers)
   (toSource source)
   (toTarget target)
+
+effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
+effectModifiers source = EffectModifiers . toModifiers source 
+
+createWindowModifierEffect :: (Sourceable source, Targetable target) => EffectWindow -> source -> target -> [ModifierType] -> Message
+createWindowModifierEffect eWindow source target modifiers' = CreateWindowModifierEffect eWindow (effectModifiers source modifiers') (toSource source) (toTarget target)
+
+createRoundModifier :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+createRoundModifier = createWindowModifierEffect EffectRoundWindow

@@ -306,6 +306,8 @@ allEvents = mapFrom
   , SomeEventCard crackTheCase
   --- rogue [tsn]
   , SomeEventCard intelReport
+  --- mystic [tsn]
+  , SomeEventCard banish1
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

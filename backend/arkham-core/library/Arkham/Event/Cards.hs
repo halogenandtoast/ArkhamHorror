@@ -92,6 +92,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , astralTravel
   , alterFate3
   , backstab
+  , banish1
   , baitAndSwitch
   , barricade
   , barricade3
@@ -1698,6 +1699,15 @@ intelReport = (event "05111" "Intel Report" 2 Rogue)
           )
       ]
   , cdCardInHandEffects = True
+  }
+
+banish1 :: CardDef
+banish1 = (event "05113" "Banish" 2 Mystic)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = singleton Spell
+  , cdActions = [Action.Evade]
+  , cdLevel = 1
+  , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ NonEliteEnemy <> CanEvadeEnemy
   }
 
 denyExistence5 :: CardDef

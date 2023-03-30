@@ -31,10 +31,10 @@ banish1 =
 instance RunMessage Banish1 where
   runMessage msg e@(Banish1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ createCardEffect Cards.banish1 Nothing attrs iid
-        , ChooseEvadeEnemy iid (toSource attrs) Nothing SkillWillpower NonEliteEnemy False
-        ]
+      push $ ChooseEvadeEnemy iid (toSource attrs) Nothing SkillWillpower NonEliteEnemy False
+      pure e
+    ChosenEvadeEnemy source eid | isSource attrs source -> do
+      push $ createCardEffect Cards.banish1 Nothing attrs (EnemyTarget eid)
       pure e
     _ -> Banish1 <$> runMessage msg attrs
 
@@ -47,21 +47,25 @@ banish1Effect = cardEffect Banish1Effect Cards.banish1
 
 instance RunMessage Banish1Effect where
   runMessage msg e@(Banish1Effect attrs@EffectAttrs {..}) = case msg of
-    PassedSkillTest iid _ _ (EnemyTarget eid) _ _ -> do
-      mSkillTest <- getSkillTest
-      let
-        modifierMsgs = case mSkillTest of
-          Nothing -> []
-          Just st ->
-            let faces = map tokenFace (skillTestRevealedTokens st)
-            in [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
-               | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
-               ]
+    After (PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _) | source == effectSource-> do
+      mSkillTestTarget <- getSkillTestTarget
+      for_ mSkillTestTarget $ \case
+        target@(EnemyTarget eid) | target == effectTarget -> do
+          mSkillTest <- getSkillTest
+          let
+            modifierMsgs = case mSkillTest of
+              Nothing -> []
+              Just st ->
+                let faces = map tokenFace (skillTestRevealedTokens st)
+                in [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
+                   | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
+                   ]
 
-      locations <- selectList (LocationWithoutModifier CannotBeEnteredByNonElite)
-      let locationMsgs = if null locations then [] else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
+          locations <- selectList (LocationWithoutModifier CannotBeEnteredByNonElite)
+          let locationMsgs = if null locations then [] else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
 
-      pushAll $ locationMsgs <> modifierMsgs
+          pushAll $ locationMsgs <> modifierMsgs
+        _ -> pure ()
       pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> Banish1Effect <$> runMessage msg attrs

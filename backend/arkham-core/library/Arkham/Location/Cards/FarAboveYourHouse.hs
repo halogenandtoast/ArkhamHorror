@@ -7,12 +7,12 @@ import Arkham.Classes
 import Arkham.Discard
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards (farAboveYourHouse)
+import Arkham.Location.Cards qualified as Cards (farAboveYourHouse)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
 import Arkham.SkillType
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

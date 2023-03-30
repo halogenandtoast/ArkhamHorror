@@ -160,6 +160,7 @@ data AssetMatcher
   | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher ExtendedCardMatcher AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
+  | AssetWithPerformableAbility AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

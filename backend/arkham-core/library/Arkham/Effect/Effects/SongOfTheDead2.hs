@@ -10,7 +10,7 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Token
-import qualified Arkham.Window as Window
+import Arkham.Window qualified as Window
 
 newtype SongOfTheDead2 = SongOfTheDead2 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

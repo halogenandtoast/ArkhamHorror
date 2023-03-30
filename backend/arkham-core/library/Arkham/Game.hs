@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-dodgy-imports #-}
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -135,7 +136,7 @@ import Control.Exception ( throw )
 import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen )
 import Control.Monad.Reader ( runReader )
-import Control.Monad.State.Strict hiding ( state )
+import Control.Monad.State.Strict hiding ( state, foldM, filterM )
 import Data.Aeson ( Result (..) )
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -1641,6 +1642,11 @@ getAssetsMatching matcher = do
             )
             assets
           _ -> pure assets
+    AssetWithPerformableAbility abilityMatcher modifiers' -> flip filterM as $ \asset -> do
+      iid <- view activeInvestigatorIdL <$> getGame
+      let adjustAbility ab = applyAbilityModifiers ab modifiers'
+      abilities <- selectListMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
+      notNull <$> filterM (\ab -> anyM (\w -> getCanPerformAbility iid (InvestigatorSource iid) w ab) (Window.defaultWindows iid)) abilities
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
       aids <- selectList assetMatcher
       if toId asset `elem` aids

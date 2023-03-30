@@ -80,6 +80,19 @@ const tooltip = computed(() => {
   return null
 })
 
+const isZeroedActionAbility = computed(() => {
+  if (!ability.value) {
+    return false
+  }
+
+  if (ability.value.type.tag !== "ActionAbility") {
+    return false
+  }
+
+  const cost = ability.value.type.cost
+  return totalActionCost(cost) === 0
+})
+
 const isDoubleActionAbility = computed(() => {
   if (!ability.value) {
     return false
@@ -151,6 +164,7 @@ const abilityLabel = computed(() => {
 
 const classObject = computed(() => {
   return {
+    'zeroed-ability-button': isZeroedActionAbility.value && isNeutralAbility.value,
     'ability-button': isSingleActionAbility.value && isNeutralAbility.value,
     'double-ability-button': isDoubleActionAbility.value,
     'triple-ability-button': isTripleActionAbility.value,
@@ -231,6 +245,16 @@ const classObject = computed(() => {
     font-family: "arkham";
     content: "\0049";
     margin-right: 5px;
+  }
+}
+
+.zeroed-ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+    color: rgba(255, 255, 255, 0.5);
   }
 }
 

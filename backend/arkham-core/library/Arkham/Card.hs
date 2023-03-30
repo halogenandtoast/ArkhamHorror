@@ -24,7 +24,7 @@ import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
 import Arkham.Trait
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card

@@ -6,7 +6,7 @@ module Arkham.Enemy.Cards.DonLagorio
 import Arkham.Prelude
 
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers

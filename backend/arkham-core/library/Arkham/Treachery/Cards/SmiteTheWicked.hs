@@ -7,8 +7,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
-import qualified Arkham.Timing as Timing
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs

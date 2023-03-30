@@ -5,7 +5,7 @@ module Arkham.Event.Cards.MonsterSlayer
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Helpers
 import Arkham.Event.Runner

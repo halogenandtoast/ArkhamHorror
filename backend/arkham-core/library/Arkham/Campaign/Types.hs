@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-dodgy-imports #-}
 module Arkham.Campaign.Types where
 
 import Arkham.Prelude
@@ -18,7 +19,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Token
-import Control.Monad.Writer
+import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
 

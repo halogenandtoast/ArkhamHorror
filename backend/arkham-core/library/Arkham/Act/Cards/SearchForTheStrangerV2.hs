@@ -6,16 +6,16 @@ module Arkham.Act.Cards.SearchForTheStrangerV2
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype SearchForTheStrangerV2 = SearchForTheStrangerV2 ActAttrs
   deriving anyclass IsAct

@@ -8,11 +8,11 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs
   deriving anyclass IsEnemy

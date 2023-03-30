@@ -6,7 +6,7 @@ module Arkham.Event.Cards.ATestOfWill2
 import Arkham.Prelude
 
 import Arkham.Classes
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.SkillType

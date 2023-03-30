@@ -7,7 +7,7 @@ where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Classes

@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Treachery.Runner
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

@@ -7,7 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Criteria
 import Arkham.Matcher

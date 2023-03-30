@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.ScrollOfProphecies
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria

@@ -1245,6 +1245,11 @@ passesCriteria iid mcard source windows' = \case
   Criteria.AssetExists matcher -> do
     mlid <- field InvestigatorLocation iid
     selectAny (Matcher.resolveAssetMatcher iid mlid matcher)
+  Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
+    Nothing -> pure False
+    Just aid ->  do
+      mlid <- field InvestigatorLocation iid
+      selectAny $ Matcher.NotAsset (Matcher.AssetWithId aid) <> Matcher.resolveAssetMatcher iid mlid matcher
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
@@ -1299,6 +1304,13 @@ passesCriteria iid mcard source windows' = \case
   Criteria.AtLeastNCriteriaMet n criteria -> do
     m <- countM (passesCriteria iid mcard source windows') criteria
     pure $ m >= n
+
+getWindowAsset :: [Window] -> Maybe AssetId
+getWindowAsset [] = Nothing
+getWindowAsset (Window _ (Window.ActivateAbility _ ability):xs) = case abilitySource ability of
+  AssetSource aid -> Just aid
+  _ -> getWindowAsset xs
+getWindowAsset (_ : xs) = getWindowAsset xs
 
 -- | Build a matcher and check the list
 passesEnemyCriteria

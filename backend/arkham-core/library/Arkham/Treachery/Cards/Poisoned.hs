@@ -6,7 +6,7 @@ where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Treachery.Runner

@@ -6,8 +6,8 @@ module Arkham.Asset.Cards.IchtacaTheForgottenGuardian
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Action as Action
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card.CardType
@@ -19,7 +19,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.SkillType
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype IchtacaTheForgottenGuardian = IchtacaTheForgottenGuardian AssetAttrs
   deriving anyclass IsAsset

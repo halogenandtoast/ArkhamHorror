@@ -8,13 +8,13 @@ import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Ability
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Helpers
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
   deriving anyclass IsEnemy

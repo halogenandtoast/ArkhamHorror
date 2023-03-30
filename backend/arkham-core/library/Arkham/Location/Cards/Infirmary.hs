@@ -11,7 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Message

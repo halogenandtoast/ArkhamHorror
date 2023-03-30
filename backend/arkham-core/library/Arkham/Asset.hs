@@ -452,9 +452,15 @@ allAssets = mapFrom
   , SomeAssetCard signMagick
   --- survivor [tsn]
   , SomeAssetCard meatCleaver
+  --- multi [tsn]
+  , SomeAssetCard fortyFiveThompson
   -- The Wages of Sin
   --- survivor [wos]
   , SomeAssetCard drawingThin
+  -- For the Greater Good
+  --- survivor [fgg]
+  , SomeAssetCard fortyFiveThompsonGuardian3
+  , SomeAssetCard fortyFiveThompsonRogue3
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

@@ -131,6 +131,7 @@ startAbilityPayment activeCost@ActiveCost { activeCostId } iid window abilityTyp
     ForcedAbilityWithCost _ cost -> push (PayCost activeCostId iid False cost)
     AbilityEffect cost -> push (PayCost activeCostId iid False cost)
     FastAbility cost -> push (PayCost activeCostId iid False cost)
+    ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType abilitySource abilityDoesNotProvokeAttacksOfOpportunity
     ReactionAbility _ cost -> push (PayCost activeCostId iid False cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen
@@ -810,8 +811,9 @@ instance RunMessage ActiveCost where
                 [Window Timing.After (Window.PerformAction iid action)]
               pure [afterWindowMsgs, FinishAction]
             else pure []
+          isForced <- isForcedAbility iid ability
           pushAll
-            $ [ whenActivateAbilityWindow | not (isForcedAbility ability) ]
+            $ [ whenActivateAbilityWindow | not isForced ]
             <> [ UseCardAbility
                    iid
                    (abilitySource ability)

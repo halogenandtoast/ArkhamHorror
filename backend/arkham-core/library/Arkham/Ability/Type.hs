@@ -4,12 +4,10 @@ module Arkham.Ability.Type where
 
 import Arkham.Prelude
 
-import Arkham.Ability.Limit
 import Arkham.Action
 import Arkham.Cost
 import Arkham.Criteria (Criterion)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.SkillType
 
 data AbilityType
@@ -24,6 +22,6 @@ data AbilityType
   | AbilityEffect { cost :: Cost }
   | Objective { abilityType :: AbilityType }
   | Haunted
-  | ForcedWhen Criterion AbilityType
+  | ForcedWhen { criteria :: Criterion, abilityType :: AbilityType }
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

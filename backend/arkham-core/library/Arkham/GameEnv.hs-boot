@@ -2,7 +2,7 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Classes.GameLogger

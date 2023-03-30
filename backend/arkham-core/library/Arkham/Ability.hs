@@ -10,6 +10,15 @@ import Arkham.Ability.Type as X hiding ( abilityType )
 import Arkham.Ability.Types as X
 import Arkham.Ability.Used as X
 
+import Arkham.Cost
+import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Action hiding (Ability)
+import Arkham.Criteria (Criterion(InYourHand, Criteria, AnyCriterion))
+import Arkham.Criteria.Override
+import Arkham.Classes.Entity.Source
+import Control.Lens (set)
+
 inHandAbility :: Ability -> Bool
 inHandAbility = maybe False inHandCriteria . abilityCriteria
  where
@@ -95,9 +104,6 @@ isSilentForcedAbility :: Ability -> Bool
 isSilentForcedAbility Ability { abilityType } =
   isSilentForcedAbilityType abilityType
 
-isForcedAbility :: Ability -> Bool
-isForcedAbility Ability { abilityType } = isForcedAbilityType abilityType
-
 isReactionAbility :: Ability -> Bool
 isReactionAbility Ability { abilityType } = isReactionAbilityType abilityType
 
@@ -111,21 +117,6 @@ isActionAbility Ability { abilityType } =
 isTriggeredAbility :: Ability -> Bool
 isTriggeredAbility =
   or . sequence [isReactionAbility, isFastAbility, isActionAbility]
-
-isForcedAbilityType :: HasGame m => InvestigatorId -> Source -> AbilityType -> m Bool
-isForcedAbilityType iid source = \case
-  SilentForcedAbility{} -> True
-  ForcedAbility{} -> True
-  ForcedAbilityWithCost{} -> True
-  Objective aType -> isForcedAbilityType aType
-  FastAbility{} -> False
-  ReactionAbility{} -> False
-  ActionAbility{} -> False
-  ActionAbilityWithSkill{} -> False
-  ActionAbilityWithBefore{} -> False
-  AbilityEffect{} -> False
-  Haunted{} -> True -- Maybe? we wanted this to basically never be valid but still take forced precedence
-  ForcedWhen c _ -> passesCriteria iid Nothing source [] c
 
 abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case

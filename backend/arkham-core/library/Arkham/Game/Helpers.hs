@@ -214,6 +214,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
   go = \case
     Haunted -> pure False
     Objective aType -> go aType
+    ForcedWhen _ aType -> go aType
     ActionAbilityWithBefore _ mBeforeAction cost ->
       go $ ActionAbility mBeforeAction cost
     ActionAbilityWithSkill mAction _ cost -> go $ ActionAbility mAction cost
@@ -272,22 +273,25 @@ getCanAffordAbility iid ability window =
   andM [getCanAffordUse iid ability window, getCanAffordAbilityCost iid ability]
 
 getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> m Bool
-getCanAffordAbilityCost iid Ability {..} = case abilityType of
-  Haunted -> pure True
-  ActionAbility mAction cost ->
-    getCanAffordCost iid abilitySource mAction [] cost
-  ActionAbilityWithSkill mAction _ cost ->
-    getCanAffordCost iid abilitySource mAction [] cost
-  ActionAbilityWithBefore _ mBeforeAction cost ->
-    getCanAffordCost iid abilitySource mBeforeAction [] cost
-  ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost
-  FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
-  ForcedAbilityWithCost _ cost ->
-    getCanAffordCost iid abilitySource Nothing [] cost
-  ForcedAbility _ -> pure True
-  SilentForcedAbility _ -> pure True
-  AbilityEffect _ -> pure True
-  Objective{} -> pure True
+getCanAffordAbilityCost iid Ability {..} = go abilityType
+ where
+  go = \case
+    Haunted -> pure True
+    ActionAbility mAction cost ->
+      getCanAffordCost iid abilitySource mAction [] cost
+    ActionAbilityWithSkill mAction _ cost ->
+      getCanAffordCost iid abilitySource mAction [] cost
+    ActionAbilityWithBefore _ mBeforeAction cost ->
+      getCanAffordCost iid abilitySource mBeforeAction [] cost
+    ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost
+    FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
+    ForcedAbilityWithCost _ cost ->
+      getCanAffordCost iid abilitySource Nothing [] cost
+    ForcedAbility _ -> pure True
+    SilentForcedAbility _ -> pure True
+    AbilityEffect _ -> pure True
+    Objective{} -> pure True
+    ForcedWhen _ aType -> go aType
 
 filterDepthSpecificAbilities :: HasGame m => [UsedAbility] -> m [UsedAbility]
 filterDepthSpecificAbilities usedAbilities = do
@@ -316,21 +320,25 @@ getCanAffordUse iid ability window = do
     filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   limit <- getAbilityLimit iid ability
   case limit of
-    NoLimit -> case abilityType ability of
-      ReactionAbility _ _ ->
-        pure $ notElem ability (map usedAbility usedAbilities)
-      ForcedAbility _ -> pure $ notElem ability (map usedAbility usedAbilities)
-      SilentForcedAbility _ ->
-        pure $ notElem ability (map usedAbility usedAbilities)
-      ForcedAbilityWithCost _ _ ->
-        pure $ notElem ability (map usedAbility usedAbilities)
-      ActionAbility _ _ -> pure True
-      ActionAbilityWithBefore{} -> pure True
-      ActionAbilityWithSkill{} -> pure True
-      FastAbility _ -> pure True
-      AbilityEffect _ -> pure True
-      Objective{} -> pure True
-      Haunted -> pure True
+    NoLimit -> do
+      let
+        go = \case
+          ReactionAbility _ _ ->
+            pure $ notElem ability (map usedAbility usedAbilities)
+          ForcedWhen _ aType -> go aType
+          ForcedAbility _ -> pure $ notElem ability (map usedAbility usedAbilities)
+          SilentForcedAbility _ ->
+            pure $ notElem ability (map usedAbility usedAbilities)
+          ForcedAbilityWithCost _ _ ->
+            pure $ notElem ability (map usedAbility usedAbilities)
+          ActionAbility _ _ -> pure True
+          ActionAbilityWithBefore{} -> pure True
+          ActionAbilityWithSkill{} -> pure True
+          FastAbility _ -> pure True
+          AbilityEffect _ -> pure True
+          Objective{} -> pure True
+          Haunted -> pure True
+      go (abilityType ability)
     PlayerLimit (PerSearch trait) n -> do
       traitMatchingUsedAbilities <- filterM
         (fmap (elem trait) . sourceTraits . abilitySource . usedAbility)
@@ -603,11 +611,13 @@ getActionsWith iid window f = do
       cardClasses <- case abilitySource ability of
         AssetSource aid -> field AssetClasses aid
         _ -> pure $ singleton Neutral
+
+      isForced <- isForcedAbility iid ability
       let
         -- Lola Hayes: Forced abilities will always trigger
         prevents (CanOnlyUseCardsInRole role) =
           null (setFromList [role, Neutral] `intersect` cardClasses)
-            && not (isForcedAbility ability)
+            && not isForced
         prevents CannotTriggerFastAbilities = isFastAbility ability
         prevents _ = False
         -- Blank excludes any non-default abilities (index >= 100)
@@ -619,7 +629,7 @@ getActionsWith iid window f = do
         -- abilities need to be everpresent so we include them
         needsToBeFast = windowType window == Window.FastPlayerWindow && not
           (isFastAbility ability
-          || isForcedAbility ability
+          || isForced
           || isReactionAbility ability
           )
       pure
@@ -636,7 +646,7 @@ getActionsWith iid window f = do
       ]
     )
     actions''
-  let forcedActions = filter isForcedAbility actions'''
+  forcedActions <- filterM (isForcedAbility iid) actions'''
   pure $ if null forcedActions then actions''' else forcedActions
 
 getPlayerCountValue :: HasGame m => GameValue -> m Int
@@ -2840,3 +2850,21 @@ additionalActionCovers source maction = \case
   TraitRestrictedAdditionalAction t _ -> member t <$> sourceTraits source
   ActionRestrictedAdditionalAction a -> pure $ maction == Just a
   EffectAction _ _ -> pure False
+
+isForcedAbility :: HasGame m => InvestigatorId -> Ability -> m Bool
+isForcedAbility iid Ability { abilitySource, abilityType } = isForcedAbilityType iid abilitySource abilityType
+
+isForcedAbilityType :: HasGame m => InvestigatorId -> Source -> AbilityType -> m Bool
+isForcedAbilityType iid source = \case
+  SilentForcedAbility{} -> pure True
+  ForcedAbility{} -> pure True
+  ForcedAbilityWithCost{} -> pure True
+  Objective aType -> isForcedAbilityType iid source aType
+  FastAbility{} -> pure False
+  ReactionAbility{} -> pure False
+  ActionAbility{} -> pure False
+  ActionAbilityWithSkill{} -> pure False
+  ActionAbilityWithBefore{} -> pure False
+  AbilityEffect{} -> pure False
+  Haunted{} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
+  ForcedWhen c _ -> passesCriteria iid Nothing source [] c

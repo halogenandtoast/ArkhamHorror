@@ -317,7 +317,7 @@ allTreacheries = mapFrom
   -- Ghouls of Umordhoth
   , SomeTreacheryCard chillFromBelow
   -- The Devourer's Cult
-  , SomeTreacheryCard chillFromBelow
+  , SomeTreacheryCard maskOfUmordhoth
   -- Nathaniel Cho
   , SomeTreacheryCard selfDestructive
   -- Harvey Walters

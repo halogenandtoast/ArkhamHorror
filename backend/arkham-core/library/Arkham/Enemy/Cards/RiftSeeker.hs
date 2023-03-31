@@ -23,7 +23,7 @@ newtype RiftSeeker = RiftSeeker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riftSeeker :: EnemyCard RiftSeeker
-riftSeeker = enemy RiftSeeker Cards.riftSeeker (3, Static 3, 3) (1, 1)
+riftSeeker = enemy RiftSeeker Cards.riftSeeker (3, Static 3, 4) (1, 1)
 
 instance HasAbilities RiftSeeker where
   getAbilities (RiftSeeker a) = withBaseAbilities

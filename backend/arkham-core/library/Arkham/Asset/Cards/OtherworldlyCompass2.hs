@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.OtherwordlyCompass2
-  ( otherwordlyCompass2
-  , OtherwordlyCompass2(..)
+module Arkham.Asset.Cards.OtherworldlyCompass2
+  ( otherworldlyCompass2
+  , OtherworldlyCompass2(..)
   ) where
 
 import Arkham.Prelude
@@ -16,23 +16,23 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 
-newtype OtherwordlyCompass2 = OtherwordlyCompass2 AssetAttrs
+newtype OtherworldlyCompass2 = OtherworldlyCompass2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-otherwordlyCompass2 :: AssetCard OtherwordlyCompass2
-otherwordlyCompass2 = asset OtherwordlyCompass2 Cards.otherwordlyCompass2
+otherworldlyCompass2 :: AssetCard OtherworldlyCompass2
+otherworldlyCompass2 = asset OtherworldlyCompass2 Cards.otherworldlyCompass2
 
-instance HasAbilities OtherwordlyCompass2 where
-  getAbilities (OtherwordlyCompass2 a) =
+instance HasAbilities OtherworldlyCompass2 where
+  getAbilities (OtherworldlyCompass2 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
     ]
 
-instance RunMessage OtherwordlyCompass2 where
-  runMessage msg a@(OtherwordlyCompass2 attrs) = case msg of
+instance RunMessage OtherworldlyCompass2 where
+  runMessage msg a@(OtherworldlyCompass2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       lid <- getJustLocation iid
       revealedLocations <- selectCount $ RevealedLocation <> ConnectedTo
@@ -46,4 +46,4 @@ instance RunMessage OtherwordlyCompass2 where
         , Investigate iid lid (toSource attrs) Nothing skillType False
         ]
       pure a
-    _ -> OtherwordlyCompass2 <$> runMessage msg attrs
+    _ -> OtherworldlyCompass2 <$> runMessage msg attrs

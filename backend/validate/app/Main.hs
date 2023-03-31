@@ -3,6 +3,7 @@ module Main where
 
 import ClassyPrelude hiding ( throwIO )
 
+import Control.Monad.Validate
 import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types ( SomeAssetCard (..), assetHealth, assetSanity )
@@ -36,8 +37,7 @@ import Arkham.SkillType hiding (allSkills)
 import Arkham.Trait hiding ( Dunwich )
 import Arkham.Treachery
 import Arkham.Treachery.Cards qualified as Treacheries
-import Control.Exception
-import Control.Monad.Random.Lazy
+import Control.Monad.Random.Lazy hiding (mapM_)
 import Data.Aeson
 import Data.Text qualified as T
 import System.Directory
@@ -251,6 +251,7 @@ normalizeCardCode "03323" = "03323a"
 normalizeCardCode "04128" = "04128a"
 normalizeCardCode "04133" = "04133a"
 normalizeCardCode "04126" = "04126a"
+normalizeCardCode "50026" = "50026a"
 normalizeCardCode c = c
 
 runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
@@ -298,7 +299,9 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , "03325c" -- Shores of Hali
     , "03326d" -- Bleak Plains
     , "03326e" -- Bleak Plains
+    , "03327c" -- Inhabitant of Carcosa
     , "03327e" -- A Moment's Rest
+    , "03327f" -- The Coffin
     , "03327g" -- The Coffin
     , "03328d" -- The King's Parade
     , "03328e" -- The King's Parade
@@ -310,20 +313,38 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , "04117" -- Threads of Fate stuff
     , "04118" -- ^^
     , "04125d" -- ^^
+    , "04126c" -- ^^
     , "04127c" -- ^^
+    , "04128c" -- ^^
     , "04129c" -- ^^
+    , "04130c" -- ^^
     , "04132c" -- ^^
+    , "04134e" -- ^^
+    , "04134f" -- ^^
+    , "04135e" -- ^^
+    , "04136e" -- ^^
     , "04137e" -- ^^
     , "04139e" -- ^^
+    , "04140e" -- ^^
     ]
 
 runValidations :: HashMap CardCode CardJson -> IO ()
 runValidations cards = do
+  results <- getValidationResults cards
+  case results of
+    Right _ -> putStrLn "All good!"
+    Left errs -> mapM_ (print @SomeException) errs
+
+invariant :: (MonadValidate [SomeException] m, Exception e) => e -> m ()
+invariant = dispute . pure . SomeException
+
+getValidationResults :: HashMap CardCode CardJson -> IO (Either [SomeException] ())
+getValidationResults cards = runValidateT $ do
   -- validate card defs
   for_ (filterTest $ mapToList allCards) $ \(ccode', card) -> do
     let ccode = normalizeCardCode ccode'
     case lookup ccode cards of
-      Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
+      Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
       Just cardJson@CardJson {..} -> do
         if type_code == "location"
           then do
@@ -331,7 +352,7 @@ runValidations cards = do
               (Name (normalizeName code name') Nothing /= cdName card)
               (unless
                 (ignoreCardCode ccode)
-                (throw $ NameMismatch
+                (invariant $ NameMismatch
                   code
                   (Name (normalizeName code name') Nothing)
                   (cdName card)
@@ -343,7 +364,7 @@ runValidations cards = do
               )
               (unless
                 (ignoreCardCode ccode)
-                (throw $ NameMismatch
+                (invariant $ NameMismatch
                   code
                   (Name
                     (normalizeName code name)
@@ -359,7 +380,7 @@ runValidations cards = do
               )
               (unless
                 (ignoreCardCode ccode)
-                (throw $ NameMismatch
+                (invariant $ NameMismatch
                   code
                   (Name
                     (normalizeName code name)
@@ -375,7 +396,7 @@ runValidations cards = do
           && cdCardType card
           `notElem` [ActType, AgendaType]
           )
-          (throwIO $ QuantityMismatch
+          (invariant $ QuantityMismatch
             code
             (Name name subname)
             quantity
@@ -383,19 +404,19 @@ runValidations cards = do
           )
         when
           (is_unique /= cdUnique card)
-          (throw $ UniqueMismatch code (cdName card))
+          (invariant $ UniqueMismatch code (cdName card))
         when
           (fromMaybe 0 xp /= cdLevel card)
-          (throw $ XpMismatch code (cdName card) (fromMaybe 0 xp) (cdLevel card)
+          (invariant $ XpMismatch code (cdName card) (fromMaybe 0 xp) (cdLevel card)
           )
         when
           (normalizeCost code cost /= cdCost card)
-          (throw $ CardCostMismatch code (cdName card) cost (cdCost card))
+          (invariant $ CardCostMismatch code (cdName card) cost (cdCost card))
         when
           (toClassSymbol faction_name /= normalizeClassSymbol
             (headMay . setToList $ cdClassSymbols card)
           )
-          (throw $ ClassMismatch
+          (invariant $ ClassMismatch
             code
             (cdName card)
             faction_name
@@ -405,7 +426,7 @@ runValidations cards = do
           (sort (normalizeSkills code $ getSkills cardJson)
           /= sort (cdSkills card)
           )
-          (throw $ SkillsMismatch
+          (invariant $ SkillsMismatch
             code
             (cdName card)
             (getSkills cardJson)
@@ -419,7 +440,7 @@ runValidations cards = do
           )
           (unless
             (ignoreCardCode ccode)
-            (throw $ TraitsMismatch
+            (invariant $ TraitsMismatch
               code
               (cdName card)
               (getTraits cardJson)
@@ -428,7 +449,7 @@ runValidations cards = do
           )
         when
           (victory /= cdVictoryPoints card)
-          (throw $ VictoryMismatch
+          (invariant $ VictoryMismatch
             code
             (cdName card)
             victory
@@ -438,9 +459,9 @@ runValidations cards = do
   -- validate enemies
   for_ (filterTestEntities $ mapToList allEnemies)
     $ \(ccode, SomeEnemyCard builder) -> do
-        attrs <- toAttrs . cbCardBuilder builder nullCardId <$> getRandom
+        attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
         case lookup ccode cards of
-          Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
+          Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
           Just CardJson {..} -> do
             let
               cardStats =
@@ -460,7 +481,7 @@ runValidations cards = do
 
             when
               (cardStats /= enemyStats)
-              (throw $ EnemyStatsMismatch
+              (invariant $ EnemyStatsMismatch
                 code
                 (cdName $ toCardDef attrs)
                 cardStats
@@ -469,7 +490,7 @@ runValidations cards = do
 
             when
               (cardDamage /= enemyDamage)
-              (throw $ EnemyDamageMismatch
+              (invariant $ EnemyDamageMismatch
                 code
                 (cdName $ toCardDef attrs)
                 cardDamage
@@ -481,18 +502,18 @@ runValidations cards = do
         let mfunc = lookup (toCardCode def) allEnemies
         when
           (isNothing mfunc)
-          (throw $ MissingImplementation (toCardCode def) (cdName def))
+          (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate locations
   for_ (filterTestEntities $ mapToList allLocations)
     $ \(ccode, SomeLocationCard builder) -> do
-        attrs <- toAttrs . cbCardBuilder builder nullCardId <$> getRandom
+        attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
         case lookup ccode cards of
-          Nothing -> throw $ UnknownCard ccode
+          Nothing -> invariant $ UnknownCard ccode
           Just CardJson {..} -> do
             when
               (fromMaybe 0 shroud /= locationShroud attrs)
-              (throw $ ShroudMismatch
+              (invariant $ ShroudMismatch
                 code
                 (cdName $ toCardDef attrs)
                 (fromMaybe 0 shroud)
@@ -500,7 +521,7 @@ runValidations cards = do
               )
             when
               (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)
-              (throw $ ClueMismatch
+              (invariant $ ClueMismatch
                 code
                 (cdName $ toCardDef attrs)
                 (fromMaybe 0 clues)
@@ -511,16 +532,16 @@ runValidations cards = do
   for_ (filterTestEntities $ mapToList allAssets)
     $ \(ccode, SomeAssetCard builder) -> do
         attrs <-
-          toAttrs . cbCardBuilder builder nullCardId <$> ((, Just "01001") <$> getRandom)
+          toAttrs . cbCardBuilder builder nullCardId <$> ((, Just "01001") <$> lift getRandom)
         case lookup ccode cards of
-          Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
+          Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
           Just CardJson {..} -> do
             let
               cardStats = (health, sanity)
               assetStats = (assetHealth attrs, assetSanity attrs)
             when
               (cardStats /= assetStats)
-              (throw $ AssetStatsMismatch
+              (invariant $ AssetStatsMismatch
                 code
                 (cdName $ toCardDef attrs)
                 cardStats
@@ -532,20 +553,20 @@ runValidations cards = do
       let mfunc = lookup (toCardCode def) allAssets
       when
         (isNothing mfunc)
-        (throw $ MissingImplementation (toCardCode def) (cdName def))
+        (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate events
   for_ Events.allPlayerEventCards $ \def -> do
     let mfunc = lookup (toCardCode def) allEvents
     when
       (isNothing mfunc)
-      (throw $ MissingImplementation (toCardCode def) (cdName def))
+      (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   for_ Skills.allPlayerSkillCards $ \def -> do
     let mfunc = lookup (toCardCode def) allSkills
     when
       (isNothing mfunc)
-      (throw $ MissingImplementation (toCardCode def) (cdName def))
+      (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   for_
       (Treacheries.allPlayerTreacheryCards
@@ -555,7 +576,7 @@ runValidations cards = do
         let mfunc = lookup (toCardCode def) allTreacheries
         when
           (isNothing mfunc)
-          (throw $ MissingImplementation (toCardCode def) (cdName def))
+          (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
 normalizeImageCardCode :: CardCode -> Text
 normalizeImageCardCode "02214" = "02214b"

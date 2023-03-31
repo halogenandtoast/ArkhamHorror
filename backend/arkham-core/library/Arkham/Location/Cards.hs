@@ -2250,7 +2250,7 @@ brokenSteps_290 = location
   BlackStarsRise
 
 abbeyChurch :: CardDef
-abbeyChurch = location
+abbeyChurch = victory 1 $ location
   "03291"
   "Abbey Church"
   []
@@ -3041,7 +3041,7 @@ forkedPath = singleSided $ location
 bridgeOverNKai :: CardDef
 bridgeOverNKai = singleSided $ location
   "04292"
-  "Bridge ver N'Kai"
+  "Bridge over N'kai"
   [Ancient, Cave, Yoth]
   Heart
   [Equals, Circle, Droplet, Hourglass, Squiggle]

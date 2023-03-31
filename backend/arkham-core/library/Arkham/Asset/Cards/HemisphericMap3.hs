@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.HemisphericMap2
-  ( hemisphericMap2
-  , HemisphericMap2(..)
+module Arkham.Asset.Cards.HemisphericMap3
+  ( hemisphericMap3
+  , HemisphericMap3(..)
   ) where
 
 import Arkham.Prelude
@@ -10,12 +10,12 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.SkillType
 
-newtype HemisphericMap2 = HemisphericMap2 AssetAttrs
+newtype HemisphericMap3 = HemisphericMap3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-instance HasModifiersFor HemisphericMap2 where
-  getModifiersFor (InvestigatorTarget iid) (HemisphericMap2 a)
+instance HasModifiersFor HemisphericMap3 where
+  getModifiersFor (InvestigatorTarget iid) (HemisphericMap3 a)
     | controlledBy a iid = do
       connectedLocationCount <-
         selectCount $ ConnectedFrom $ locationWithInvestigator iid
@@ -27,9 +27,9 @@ instance HasModifiersFor HemisphericMap2 where
         _ -> []
   getModifiersFor _ _ = pure []
 
-hemisphericMap2 :: AssetCard HemisphericMap2
-hemisphericMap2 = asset HemisphericMap2 Cards.hemisphericMap2
+hemisphericMap3 :: AssetCard HemisphericMap3
+hemisphericMap3 = asset HemisphericMap3 Cards.hemisphericMap3
 
-instance RunMessage HemisphericMap2 where
-  runMessage msg (HemisphericMap2 attrs) =
-    HemisphericMap2 <$> runMessage msg attrs
+instance RunMessage HemisphericMap3 where
+  runMessage msg (HemisphericMap3 attrs) =
+    HemisphericMap3 <$> runMessage msg attrs

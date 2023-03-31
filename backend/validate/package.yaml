@@ -38,6 +38,7 @@ dependencies:
   - directory
   - text
   - MonadRandom
+  - monad-validate
 
 executables:
   validate:

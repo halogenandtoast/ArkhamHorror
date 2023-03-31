@@ -1206,13 +1206,14 @@ trueSurvivor3 = (event "03273" "True Survivor" 3 Survivor)
   }
 
 eatLead2 :: CardDef
-eatLead2 = (event "03304" "\"Eat Lead!\"" 0 Guardian)
+eatLead2 = (event "03304" "\"Eat lead!\"" 0 Guardian)
   { cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ ActivateAbility
     Timing.When
     You
     (AssetAbility (AssetWithTrait Firearm) <> AbilityIsAction Action.Fight)
   , cdLevel = 2
+  , cdSkills = [#combat, #agility]
   }
 
 eideticMemory3 :: CardDef
@@ -1450,6 +1451,7 @@ customAmmunition3 = (event "04193" "Custom Ammunition" 3 Guardian)
          (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
     )
   , cdFastWindow = Just $ DuringTurn You
+  , cdLevel = 3
   }
 
 exposeWeakness3 :: CardDef
@@ -2116,7 +2118,7 @@ eldritchInspiration1 = (event "60420" "Eldritch Inspiration" 0 Mystic)
 
 willToSurvive :: CardDef
 willToSurvive = (event "60512" "Will to Survive" 4 Survivor)
-  { cdSkills = [#combat, #wild]
+  { cdSkills = [#combat, #agility]
   , cdCardTraits = setFromList [Spirit]
   , cdFastWindow = Just (DuringTurn You)
   }

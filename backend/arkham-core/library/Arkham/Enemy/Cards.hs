@@ -851,7 +851,7 @@ serpentsOfYig = (weakness "04014" "Serpents of Yig")
 
 ichtaca :: CardDef
 ichtaca =
-  (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
+  unique $ (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
     { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
     , cdVictoryPoints = Just 1

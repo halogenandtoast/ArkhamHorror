@@ -188,13 +188,14 @@ normalizeName "01121a" _ = "Predator or Prey?"
 normalizeName "02219" _ = "Powder of Ibn-Ghazi"
 -- TODO: update these names
 normalizeName "03095" _ = "Maniac"
+normalizeName "03096" _ = "Young Psychopath"
 normalizeName "03184" _ = "Mad Patient"
-normalizeName _ a = a
+normalizeName _ a = T.replace "\8217" "'" a
 
 normalizeSubname :: CardCode -> Maybe Text -> Maybe Text
 normalizeSubname "02230" _ = Just "... Or Are They?"
 normalizeSubname "03182a" _ = Just "He's Not Doing All Too Well"
-normalizeSubname _ a = a
+normalizeSubname _ a = T.replace "\8217" "'" <$> a
 
 normalizeCost :: CardCode -> Maybe Int -> Maybe CardCost
 normalizeCost "02178" _ = Nothing
@@ -290,6 +291,10 @@ normalizeClassSymbol :: Maybe ClassSymbol -> Maybe ClassSymbol
 normalizeClassSymbol (Just Mythos) = Nothing
 normalizeClassSymbol c = c
 
+normalizeEnemyStats :: CardCode -> (Int, GameValue, Maybe Int) -> (Int, GameValue, Maybe Int)
+normalizeEnemyStats "05085" (fight, _, evade) = (fight, Static 3, evade)
+normalizeEnemyStats _ stats = stats
+
 ignoreCardCode :: CardCode -> Bool
 ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
  where
@@ -324,6 +329,7 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , "04135e" -- ^^
     , "04136e" -- ^^
     , "04137e" -- ^^
+    , "04138e" -- ^^
     , "04139e" -- ^^
     , "04140e" -- ^^
     ]
@@ -464,7 +470,7 @@ getValidationResults cards = runValidateT $ do
           Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
           Just CardJson {..} -> do
             let
-              cardStats =
+              cardStats = normalizeEnemyStats ccode $
                 ( max 0 $ fromMaybe 0 enemy_fight
                 , toGameVal
                   (fromMaybe False health_per_investigator)
@@ -509,7 +515,7 @@ getValidationResults cards = runValidateT $ do
     $ \(ccode, SomeLocationCard builder) -> do
         attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
         case lookup ccode cards of
-          Nothing -> invariant $ UnknownCard ccode
+          Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
           Just CardJson {..} -> do
             when
               (fromMaybe 0 shroud /= locationShroud attrs)

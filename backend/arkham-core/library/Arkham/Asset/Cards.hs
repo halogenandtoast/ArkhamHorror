@@ -328,7 +328,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , oliveMcBride
   , onYourOwn3
   , ornateBow3
-  , otherwordlyCompass2
+  , otherworldlyCompass2
   , painkillers
   , pantalone
   , pathfinder1
@@ -2343,8 +2343,8 @@ relicOfAgesForestallingTheFuture = (storyAsset
   , cdUnique = True
   }
 
-otherwordlyCompass2 :: CardDef
-otherwordlyCompass2 = (asset "04194" "Otherwordly Compass" 2 Seeker)
+otherworldlyCompass2 :: CardDef
+otherworldlyCompass2 = (asset "04194" "Otherworldly Compass" 2 Seeker)
   { cdCardTraits = setFromList [Item, Relic]
   , cdSkills = [#intellect, #intellect]
   , cdSlots = [HandSlot]
@@ -2358,6 +2358,7 @@ lolaSantiago3 =
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [AllySlot]
     , cdLevel = 3
+    , cdUnique = True
     }
 
 oliveMcBride :: CardDef
@@ -2366,6 +2367,7 @@ oliveMcBride =
     { cdCardTraits = setFromList [Ally, Witch]
     , cdSkills = [#willpower]
     , cdSlots = [AllySlot]
+    , cdUnique = True
     }
 
 trenchCoat :: CardDef
@@ -2381,6 +2383,7 @@ ornateBow3 = (asset "04204" "Ornate Bow" 4 Neutral)
   , cdSkills = [#combat, #agility]
   , cdSlots = [HandSlot, HandSlot]
   , cdUses = Uses Ammo 1
+  , cdLevel = 3
   }
 
 m1918Bar4 :: CardDef
@@ -2477,6 +2480,7 @@ theSkeletonKey2 = fast $ (asset "04270" "The Skeleton Key" 3 Rogue)
   , cdCardTraits = setFromList [Item, Relic, Cursed]
   , cdUnique = True
   , cdKeywords = setFromList [Keyword.Exceptional]
+  , cdLevel = 2
   }
 
 mistsOfRlyeh4 :: CardDef
@@ -3077,11 +3081,12 @@ feedTheMind = (asset "60209" "Feed the Mind" 3 Seeker)
   }
 
 forbiddenTome :: CardDef
-forbiddenTome = (asset "60210" "Forbidden Tome" 1 Seeker)
+forbiddenTome = (asset "60210" ("Forbidden Tome" <:> "Untranslated") 1 Seeker)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Item, Relic, Tome]
   , cdUses = Uses Secret 5
   , cdSlots = [HandSlot]
+  , cdUnique = True
   }
 
 higherEducation :: CardDef

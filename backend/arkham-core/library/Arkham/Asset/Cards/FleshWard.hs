@@ -20,7 +20,7 @@ newtype FleshWard = FleshWard AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fleshWard :: AssetCard FleshWard
-fleshWard = asset FleshWard Cards.fleshWard
+fleshWard = assetWith FleshWard Cards.fleshWard ((healthL ?~ 1) . (sanityL ?~ 1))
 
 instance HasAbilities FleshWard where
   getAbilities (FleshWard a) =

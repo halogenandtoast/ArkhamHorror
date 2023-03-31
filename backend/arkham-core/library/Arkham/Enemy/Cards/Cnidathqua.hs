@@ -27,7 +27,7 @@ cnidathqua = enemyWith
   Cards.cnidathqua
   (4, PerPlayer 8, 0)
   (2, 2)
-  (asSelfLocationL ?~ "cnidathqua")
+  ((asSelfLocationL ?~ "cnidathqua") . (evadeL .~ Nothing))
 
 instance HasModifiersFor Cnidathqua where
   getModifiersFor (EnemyTarget eid) (Cnidathqua attrs) | eid == toId attrs =

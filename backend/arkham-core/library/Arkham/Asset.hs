@@ -370,7 +370,7 @@ allAssets = mapFrom
   --- guardian [hote]
   , SomeAssetCard intrepid
   --- seeker [hote]
-  , SomeAssetCard otherwordlyCompass2
+  , SomeAssetCard otherworldlyCompass2
   --- rogue [hote]
   , SomeAssetCard lolaSantiago3
   --- mystic [hote]

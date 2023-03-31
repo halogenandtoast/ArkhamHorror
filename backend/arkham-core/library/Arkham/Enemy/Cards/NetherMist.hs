@@ -5,7 +5,6 @@ module Arkham.Enemy.Cards.NetherMist
 
 import Arkham.Prelude
 
-import Arkham.Ability.Types
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards

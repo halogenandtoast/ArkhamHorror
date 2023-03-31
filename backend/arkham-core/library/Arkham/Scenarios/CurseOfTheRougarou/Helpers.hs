@@ -44,7 +44,7 @@ locationsByTrait = mapFromList
   , ( Riverside
     , [ Locations.brackishWaters
       , Locations.audubonPark
-      , Locations.fauborgMarigny
+      , Locations.faubourgMarigny
       ]
     )
   , ( Wilderness

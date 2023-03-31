@@ -422,7 +422,7 @@ allLocations = mapFrom
   , SomeLocationCard broadmoor
   , SomeLocationCard brackishWaters
   , SomeLocationCard audubonPark
-  , SomeLocationCard fauborgMarigny
+  , SomeLocationCard faubourgMarigny
   , SomeLocationCard forgottenMarsh
   , SomeLocationCard trappersCabin
   , SomeLocationCard twistedUnderbrush

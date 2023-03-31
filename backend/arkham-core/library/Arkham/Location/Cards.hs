@@ -244,7 +244,7 @@ allLocationCards = mapFromList $ map
   , facultyOfficesTheHourIsLate
   , facultyOfficesTheNightIsStillYoung
   , farAboveYourHouse
-  , fauborgMarigny
+  , faubourgMarigny
   , floodedSquare
   , forgottenMarsh
   , forkedPath
@@ -2184,7 +2184,7 @@ tombOfShadows = victory 1 $ locationWithUnrevealed
 
 porteDeLAvancee :: CardDef
 porteDeLAvancee =
-  location "03283" "Porte de l’Avancée" [] Circle [Squiggle] BlackStarsRise
+  location "03283" "Porte de l'Avancée" [] Circle [Squiggle] BlackStarsRise
 
 grandRue :: CardDef
 grandRue = location
@@ -2802,7 +2802,7 @@ mouthOfKnYanTheDepthsBelow = singleSided $ location
   HeartOfTheElders
 
 timeWrackedWoods :: CardDef
-timeWrackedWoods = singleSided $ location
+timeWrackedWoods = victory 1 $ singleSided $ location
   "04217"
   "Time-Wracked Woods"
   [Jungle]
@@ -3359,7 +3359,7 @@ trophyRoomSpectral = location
   AtDeathsDoorstep
 
 billiardsRoomSpectral :: CardDef
-billiardsRoomSpectral = location
+billiardsRoomSpectral = victory 1 $ location
   "05081"
   "Billiards Room"
   [Spectral]
@@ -3368,7 +3368,7 @@ billiardsRoomSpectral = location
   AtDeathsDoorstep
 
 masterBedroomSpectral :: CardDef
-masterBedroomSpectral = location
+masterBedroomSpectral = victory 1 $ location
   "05082"
   "Master Bedroom"
   [Spectral]
@@ -3644,14 +3644,14 @@ audubonPark = victory 1 $ locationWithUnrevealed
   [Triangle, Squiggle]
   TheBayou
 
-fauborgMarigny :: CardDef
-fauborgMarigny = locationWithUnrevealed
+faubourgMarigny :: CardDef
+faubourgMarigny = locationWithUnrevealed
   "81012"
   "Riverside"
   [Riverside]
   Squiggle
   [Triangle, Squiggle]
-  "Fauborg Marigny"
+  "Faubourg Marigny"
   [Riverside]
   Squiggle
   [Triangle, Squiggle]

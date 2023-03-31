@@ -2454,6 +2454,7 @@ feedTheMind3 = (asset "04267" "Feed the Mind" 2 Seeker)
   , cdCardTraits = singleton Spell
   , cdUses = Uses Secret 3
   , cdSlots = [ArcaneSlot]
+  , cdLevel = 3
   }
 
 coltVestPocket :: CardDef
@@ -2557,7 +2558,7 @@ borrowedTime3 = (asset "04308" "Borrowed Time" 1 Rogue)
   }
 
 shardsOfTheVoid3 :: CardDef
-shardsOfTheVoid3 = (asset "04310" "Shard of the Void" 3 Mystic)
+shardsOfTheVoid3 = (asset "04310" "Shards of the Void" 3 Mystic)
   { cdSkills = [#willpower, #combat]
   , cdKeywords = singleton $ Keyword.Seal $ TokenFaceIs Token.Zero
   , cdCardTraits = singleton Spell
@@ -2574,6 +2575,7 @@ sealOfTheSeventhSign5 = (asset "04311" ("Seal of the Seventh Sign" <:> "Over the
   , cdUses = Uses Charge 7
   , cdSlots = [ArcaneSlot]
   , cdLevel = 5
+  , cdUnique = True
   }
 
 relicOfAgesUnleashTheTimestream :: CardDef
@@ -2617,6 +2619,7 @@ baronSamedi =
     { cdCardTraits = singleton Avatar
     , cdSlots = [AllySlot]
     , cdAlternateCardCodes = ["99003"]
+    , cdUnique = True
     }
 
 aceOfSwords1 :: CardDef
@@ -2696,6 +2699,7 @@ theTowerXVI =
     , cdSlots = [TarotSlot]
     , cdCardInHandEffects = True
     , cdCanReplace = False
+    , cdCost = Just (StaticCost 4)
     }
 
 somethingWorthFightingFor :: CardDef
@@ -2792,6 +2796,7 @@ occultScraps = (weakness "07013" "Occult Scraps")
   { cdCardTraits = setFromList [Item]
   , cdCriteria = Just Criteria.Never
   , cdCardInHandEffects = True
+  , cdCost = Just (StaticCost 0)
   }
 
 keenEye :: CardDef
@@ -2844,6 +2849,7 @@ fingerprintKit4 = (asset "09057" "Fingerprint Kit" 5 Seeker)
   , cdSkills = [#intellect, #intellect]
   , cdSlots = [HandSlot]
   , cdUses = Uses Supply 3
+  , cdLevel = 4
   }
 
 physicalTraining2 :: CardDef
@@ -3196,7 +3202,7 @@ oldKeyring = (asset "60507" "Old Keyring" 1 Survivor)
 
 grannyOrne :: CardDef
 grannyOrne = (asset "60508" ("Granny Orne" <:> "Tough Old Bird") 4 Survivor)
-  { cdSkills = [#intellect]
+  { cdSkills = [#willpower]
   , cdCardTraits = singleton Ally
   , cdSlots = [AllySlot]
   , cdUnique = True

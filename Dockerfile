@@ -63,10 +63,10 @@ ARG TARGETARCH
 # install ghcup
 RUN \
     if [ "$TARGETARCH" = "arm64" ]; then \
-    curl https://downloads.haskell.org/~ghcup/aarch64-linux-ghcup > /usr/bin/ghcup && \
+    curl https://downloads.haskell.org/~ghcup/aarch64-linux-ghcup > /usr/bin/ghcup; \
     else \
-    curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup && \
-    fi; && \
+    curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup; \
+    fi; \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGNone
 

@@ -712,7 +712,7 @@ toughCrowd = (treachery "03083" "Tough Crowd" TheLastKing 2)
 
 whispersInYourHeadDismay :: CardDef
 whispersInYourHeadDismay =
-  (treachery "03084a" "Whispers in Your Head (Dismay)" Delusions 1)
+  (treachery "03084a" ("Whispers in Your Head" <:> "Dismay") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True
@@ -720,7 +720,7 @@ whispersInYourHeadDismay =
 
 whispersInYourHeadDread :: CardDef
 whispersInYourHeadDread =
-  (treachery "03084b" "Whispers in Your Head (Dread)" Delusions 1)
+  (treachery "03084b" ("Whispers in Your Head" <:> "Dread") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True
@@ -728,7 +728,7 @@ whispersInYourHeadDread =
 
 whispersInYourHeadAnxiety :: CardDef
 whispersInYourHeadAnxiety =
-  (treachery "03084c" "Whispers in Your Head (Anxiety)" Delusions 1)
+  (treachery "03084c" ("Whispers in Your Head" <:> "Anxiety") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True
@@ -736,7 +736,7 @@ whispersInYourHeadAnxiety =
 
 whispersInYourHeadDoubt :: CardDef
 whispersInYourHeadDoubt =
-  (treachery "03084d" "Whispers in Your Head (Doubt)" Delusions 1)
+  (treachery "03084d" ("Whispers in Your Head" <:> "Doubt") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdCardInHandEffects = True
@@ -1214,7 +1214,7 @@ wrackedByTime = (treachery "04341" "Wracked by Time" ShatteredAeons 3)
 
 creepingDarkness :: CardDef
 creepingDarkness = (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
-  { cdCardTraits = singleton Hex
+  { cdCardTraits = singleton Hazard
   }
 
 rationalThought :: CardDef

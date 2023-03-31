@@ -229,6 +229,7 @@ getTraits CardJson {..} = case traits of
       . normalizeTrait
       . cleanText
       $ T.replace "á" "a"
+      $ T.replace "-" ""
       $ T.replace " " "" x
   handleEither _ (Right a) = a
   handleEither x (Left err) =
@@ -301,6 +302,7 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , "03327g" -- The Coffin
     , "03328d" -- The King's Parade
     , "03328e" -- The King's Parade
+    , "03328f" -- The King's Parade
     , "03328g" -- The Archway
     , "03329d" -- Steps of the Palace
     , "03330c" -- The Fall
@@ -308,6 +310,7 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , "04117" -- Threads of Fate stuff
     , "04118" -- ^^
     , "04125d" -- ^^
+    , "04127c" -- ^^
     , "04129c" -- ^^
     , "04132c" -- ^^
     , "04137e" -- ^^
@@ -561,6 +564,8 @@ normalizeImageCardCode other = unCardCode other
 normalizeSkills :: CardCode -> [SkillIcon] -> [SkillIcon]
 --normalizeSkills "02230" _ = [SkillIcon SkillWillpower, SkillIcon SkillAgility]
 normalizeSkills "04244" _ = [] -- Body of a Yithian
+normalizeSkills "05046" _ = [] -- Gavriella Mizrah
+normalizeSkills "05047" _ = [] -- Jerome Davids
 normalizeSkills "05048" _ = [] -- Valentino Rivas
 normalizeSkills "05049" _ = [] -- Penny White
 normalizeSkills _ skills = skills

@@ -2,7 +2,7 @@ FROM node:lts as frontend
 
 # Frontend
 
-ENV LC_ALL=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
 
 RUN npm install --location=global @vue/cli
 
@@ -21,10 +21,10 @@ COPY ./frontend /opt/arkham/src/frontend
 ENV VUE_APP_ASSET_HOST ${ASSET_HOST:-""}
 RUN npm run build
 
-FROM ubuntu:18.04 as base
+FROM ubuntu:22.04 as base
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV LC_ALL=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
 ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -36,6 +36,7 @@ RUN \
         libpq-dev \
         postgresql \
         curl \
+        libtinfo6 \
         libnuma-dev \
         zlib1g-dev \
         libgmp-dev \
@@ -51,22 +52,29 @@ RUN \
         autoconf \
         automake \
         build-essential && \
-  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub && \
   rm -rf /var/lib/apt/lists/*
 
 # install gpg keys
 ARG GPG_KEY=7784930957807690A66EBDBE3786C5262ECB4A3F
 RUN gpg --batch --keyserver keys.openpgp.org --recv-keys $GPG_KEY
 
+ARG TARGETARCH
+
 # install ghcup
 RUN \
+    if [ "$TARGETARCH" = "arm64" ]; then \
+    curl https://downloads.haskell.org/~ghcup/aarch64-linux-ghcup > /usr/bin/ghcup && \
+    else \
     curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup && \
+    fi; && \
     chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGNone
 
 ARG GHC=9.4.4
 ARG CABAL=latest
 ARG STACK=latest
+
+ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=1
 
 # install GHC and cabal
 RUN \
@@ -75,6 +83,7 @@ RUN \
     ghcup -v install stack --isolate /usr/local/bin --force ${STACK}
 
 FROM base as dependencies
+
 
 RUN mkdir -p \
   /opt/arkham/bin \
@@ -108,11 +117,11 @@ WORKDIR /opt/arkham/src/backend/arkham-api
 RUN stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 RUN stack --no-terminal --local-bin-path /opt/arkham/bin install
 
-FROM ubuntu:18.04 as app
+FROM ubuntu:22.04 as app
 
 # App
 
-ENV LC_ALL=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
 
 RUN apt-get update && \
   apt-get upgrade -y --assume-yes && \

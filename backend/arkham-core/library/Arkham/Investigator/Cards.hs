@@ -37,7 +37,7 @@ investigator cardCode name classSymbol traits = CardDef
   , cdPermanent = False
   , cdEncounterSet = Nothing
   , cdEncounterSetQuantity = Nothing
-  , cdUnique = False
+  , cdUnique = True
   , cdDoubleSided = False
   , cdLimits = []
   , cdExceptional = False
@@ -216,11 +216,11 @@ calvinWright = investigator
   [Cursed, Drifter]
 
 bodyOfAYithian :: CardDef
-bodyOfAYithian = investigator
+bodyOfAYithian = (investigator
   "04244"
   ("Body of a Yithian" <:> "Captive in Another Form")
   Neutral
-  [Monster, Yithian]
+  [Monster, Yithian]) { cdUnique = False }
 
 carolynFern :: CardDef
 carolynFern = withAlternate "98010" $ investigator

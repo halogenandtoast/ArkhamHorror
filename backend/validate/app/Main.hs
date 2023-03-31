@@ -184,6 +184,7 @@ toClassSymbol = \case
   _ -> Nothing
 
 normalizeName :: CardCode -> Text -> Text
+normalizeName "01121a" _ = "Predator or Prey?"
 normalizeName "02219" _ = "Powder of Ibn-Ghazi"
 -- TODO: update these names
 normalizeName "03095" _ = "Maniac"
@@ -227,6 +228,7 @@ getTraits CardJson {..} = case traits of
       . T.unpack
       . normalizeTrait
       . cleanText
+      $ T.replace "á" "a"
       $ T.replace " " "" x
   handleEither _ (Right a) = a
   handleEither x (Left err) =
@@ -290,17 +292,26 @@ ignoreCardCode :: CardCode -> Bool
 ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
  where
   ignoredCardCodes =
-    [ "03076"
-    , "03221a"
-    , "03325c"
-    , "03326d"
-    , "03326e"
-    , "03327e"
-    , "03327g"
-    , "03328g"
-    , "03329d"
-    , "03330c"
-    , "03331c"
+    [ "03076" -- Constance Dumaine
+    , "03221a" -- The Organist
+    , "03325c" -- Shores of Hali
+    , "03326d" -- Bleak Plains
+    , "03326e" -- Bleak Plains
+    , "03327e" -- A Moment's Rest
+    , "03327g" -- The Coffin
+    , "03328d" -- The King's Parade
+    , "03328e" -- The King's Parade
+    , "03328g" -- The Archway
+    , "03329d" -- Steps of the Palace
+    , "03330c" -- The Fall
+    , "03331c" -- Hastur's End
+    , "04117" -- Threads of Fate stuff
+    , "04118" -- ^^
+    , "04125d" -- ^^
+    , "04129c" -- ^^
+    , "04132c" -- ^^
+    , "04137e" -- ^^
+    , "04139e" -- ^^
     ]
 
 runValidations :: HashMap CardCode CardJson -> IO ()
@@ -424,7 +435,7 @@ runValidations cards = do
   -- validate enemies
   for_ (filterTestEntities $ mapToList allEnemies)
     $ \(ccode, SomeEnemyCard builder) -> do
-        attrs <- toAttrs . cbCardBuilder builder <$> getRandom
+        attrs <- toAttrs . cbCardBuilder builder nullCardId <$> getRandom
         case lookup ccode cards of
           Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
           Just CardJson {..} -> do
@@ -472,7 +483,7 @@ runValidations cards = do
   -- validate locations
   for_ (filterTestEntities $ mapToList allLocations)
     $ \(ccode, SomeLocationCard builder) -> do
-        attrs <- toAttrs . cbCardBuilder builder <$> getRandom
+        attrs <- toAttrs . cbCardBuilder builder nullCardId <$> getRandom
         case lookup ccode cards of
           Nothing -> throw $ UnknownCard ccode
           Just CardJson {..} -> do
@@ -497,7 +508,7 @@ runValidations cards = do
   for_ (filterTestEntities $ mapToList allAssets)
     $ \(ccode, SomeAssetCard builder) -> do
         attrs <-
-          toAttrs . cbCardBuilder builder <$> ((, Just "01001") <$> getRandom)
+          toAttrs . cbCardBuilder builder nullCardId <$> ((, Just "01001") <$> getRandom)
         case lookup ccode cards of
           Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
           Just CardJson {..} -> do
@@ -548,7 +559,10 @@ normalizeImageCardCode "02214" = "02214b"
 normalizeImageCardCode other = unCardCode other
 
 normalizeSkills :: CardCode -> [SkillIcon] -> [SkillIcon]
-normalizeSkills "02230" _ = [SkillIcon SkillWillpower, SkillIcon SkillAgility]
+--normalizeSkills "02230" _ = [SkillIcon SkillWillpower, SkillIcon SkillAgility]
+normalizeSkills "04244" _ = [] -- Body of a Yithian
+normalizeSkills "05048" _ = [] -- Valentino Rivas
+normalizeSkills "05049" _ = [] -- Penny White
 normalizeSkills _ skills = skills
 
 normalizeTraits :: CardCode -> HashSet Trait -> HashSet Trait

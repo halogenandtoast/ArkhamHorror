@@ -2109,6 +2109,7 @@ ancientStone1 = (asset "04022" ("Ancient Stone" <:> "Unidentified") 1 Seeker)
   { cdSkills = [#intellect]
   , cdCardTraits = setFromList [Item, Relic]
   , cdSlots = [HandSlot]
+  , cdLevel = 1
   }
 
 toothOfEztli :: CardDef
@@ -2543,6 +2544,7 @@ pnakoticManuscripts5 = (asset "04307" ("Pnakotic Manuscripts" <:> "Mind-Expandin
   , cdUses = Uses Secret 3
   , cdSlots = [HandSlot]
   , cdLevel = 5
+  , cdUnique = True
   }
 
 borrowedTime3 :: CardDef
@@ -2598,6 +2600,7 @@ detectivesColt1911s = (asset "05009" "Detective's Colt 1911s" 4 Neutral)
 familyInheritance :: CardDef
 familyInheritance = permanent (asset "05011" ("Family Inheritance" <:> "A Windfall? Or a Burden?") 0 Neutral)
   { cdCardTraits = singleton Boon
+  , cdUnique = True
   }
 
 twilightBlade :: CardDef
@@ -2605,6 +2608,7 @@ twilightBlade = (asset "05013" ("Twilight Blade" <:> "Sanctum's Reward") 3 Neutr
   { cdCardTraits = setFromList [Item, Relic, Weapon]
   , cdSkills = [#willpower, #combat, #wild]
   , cdSlots = [HandSlot]
+  , cdUnique = True
   }
 
 baronSamedi :: CardDef
@@ -2747,8 +2751,9 @@ fortyFiveThompsonRogue3 = (asset "05187" ".45 Thompson" 5 Rogue)
   }
 
 studious3 :: CardDef
-studious3 = permanent $ (asset "05276" "Studious" 0 Survivor)
+studious3 = permanent $ (asset "05276" "Studious" 0 Seeker)
   { cdCardTraits = singleton Talent
+  , cdLevel = 3
   }
 
 occultLexicon :: CardDef
@@ -2961,7 +2966,7 @@ boxingGloves = (asset "60105" "Boxing Gloves" 3 Guardian)
 
 fleshWard :: CardDef
 fleshWard = (asset "60106" "Flesh Ward" 3 Guardian)
-  { cdSkills = [#intellect]
+  { cdSkills = [#willpower]
   , cdCardTraits = singleton Ritual
   , cdSlots = [ArcaneSlot]
   , cdUses = Uses Charge 4
@@ -3162,6 +3167,7 @@ lockpicks = (asset "60305" "Lockpicks" 3 Rogue)
 streetwise :: CardDef
 streetwise = (asset "60311" "Streetwise" 0 Rogue)
   { cdCardTraits = singleton Talent
+  , cdSkills = [#intellect, #agility]
   }
 
 eighteenDerringer :: CardDef

@@ -40,6 +40,15 @@ validate:
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)
 
+.PHONY: revalidate
+revalidate:
+	cd arkham-core && \
+	stack build --pedantic --fast arkham-core \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+	stack clean validate && stack run validate
+
 .PHONY: test
 test:
 	cd arkham-core && \

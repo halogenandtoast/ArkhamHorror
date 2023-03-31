@@ -1161,6 +1161,7 @@ onTheHunt = (event "03263" "On the Hunt" 1 Guardian)
   { cdCardTraits = singleton Tactic
   , cdFastWindow = Just
     $ WouldDrawEncounterCard Timing.When You (PhaseIs MythosPhase)
+  , cdSkills = [#intellect, #combat]
   }
 
 guidance :: CardDef
@@ -1168,6 +1169,7 @@ guidance = (event "03265" "Guidance" 0 Seeker)
   { cdCardTraits = singleton Insight
   , cdCriteria = Just $ Criteria.InvestigatorExists
     (NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn)
+  , cdSkills = [#wild]
   }
 
 narrowEscape :: CardDef
@@ -1485,7 +1487,7 @@ againstAllOdds2 = (event "04202" "Against All Odds" 2 Survivor)
   }
 
 slipAway :: CardDef
-slipAway = (event "04232" "Against All Odds" 2 Rogue)
+slipAway = (event "04232" "Slip Away" 2 Rogue)
   { cdCardTraits = singleton Trick
   , cdSkills = [#intellect, #agility]
   , cdActions = [Action.Evade]
@@ -1575,7 +1577,7 @@ unsolvedCase = (event "05010" "Unsolved Case" 4 Neutral)
   }
 
 lodgeDebts :: CardDef
-lodgeDebts = (event "05012" "\"Lodge\" Debts" 10 Neutral)
+lodgeDebts = (event "05012" "Lodge \"Debts\"" 10 Neutral)
   { cdCardTraits = singleton Pact
   , cdCardSubType = Just Weakness
   , cdCardInHandEffects = True
@@ -1746,6 +1748,7 @@ eucatastrophe3 = (event "05324" "Eucatastrophe" 2 Survivor)
   , cdCardTraits = setFromList [Fortune, Blessed]
   , cdFastWindow = Just (RevealChaosToken Timing.When You WouldReduceYourSkillValueToZero)
   , cdAlternateCardCodes = ["01692"]
+  , cdLevel = 3
   }
 
 astoundingRevelation :: CardDef

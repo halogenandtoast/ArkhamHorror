@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.2
--- Dumped by pg_dump version 14.3
+-- Dumped from database version 14.6 (Homebrew)
+-- Dumped by pg_dump version 14.6 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -56,9 +56,9 @@ CREATE TABLE public.arkham_decks (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id bigint NOT NULL,
     name text NOT NULL,
-    url text NOT NULL,
     investigator_name text NOT NULL,
-    list jsonb NOT NULL
+    list jsonb NOT NULL,
+    url text NOT NULL
 );
 
 
@@ -89,12 +89,43 @@ CREATE TABLE public.arkham_games (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     current_data jsonb NOT NULL,
-    choices jsonb NOT NULL,
-    log jsonb NOT NULL,
     multiplayer_variant text NOT NULL,
-    created_at timestamp DEFAULT now() NOT NULL,
-    updated_at timestamp DEFAULT now() NOT NULL
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    step integer
 );
+
+
+--
+-- Name: arkham_log_entries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arkham_log_entries (
+    id bigint NOT NULL,
+    body text NOT NULL,
+    arkham_game_id uuid NOT NULL,
+    step integer NOT NULL,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+--
+-- Name: arkham_log_entries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arkham_log_entries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arkham_log_entries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arkham_log_entries_id_seq OWNED BY public.arkham_log_entries.id;
 
 
 --
@@ -148,6 +179,18 @@ ALTER SEQUENCE public.arkham_players_user_id_seq OWNED BY public.arkham_players.
 
 
 --
+-- Name: arkham_steps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arkham_steps (
+    id uuid DEFAULT public.uuid_generate_v4(),
+    arkham_game_id uuid NOT NULL,
+    choice jsonb NOT NULL,
+    step integer NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -156,7 +199,7 @@ CREATE TABLE public.users (
     username character varying NOT NULL,
     email character varying NOT NULL,
     password_digest character varying NOT NULL,
-    beta boolean NOT NULL DEFAULT FALSE
+    beta boolean DEFAULT false NOT NULL
 );
 
 
@@ -671,6 +714,13 @@ ALTER TABLE ONLY public.arkham_decks ALTER COLUMN user_id SET DEFAULT nextval('p
 
 
 --
+-- Name: arkham_log_entries id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkham_log_entries ALTER COLUMN id SET DEFAULT nextval('public.arkham_log_entries_id_seq'::regclass);
+
+
+--
 -- Name: arkham_players id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -705,6 +755,14 @@ ALTER TABLE ONLY public.arkham_decks
 
 ALTER TABLE ONLY public.arkham_games
     ADD CONSTRAINT arkham_games_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arkham_log_entries arkham_log_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkham_log_entries
+    ADD CONSTRAINT arkham_log_entries_pkey PRIMARY KEY (id);
 
 
 --
@@ -812,11 +870,33 @@ ALTER TABLE ONLY sqitch.tags
 
 
 --
+-- Name: log_entries_game_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX log_entries_game_id ON public.arkham_log_entries USING btree (arkham_game_id);
+
+
+--
+-- Name: steps_game_step_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX steps_game_step_idx ON public.arkham_steps USING btree (arkham_game_id, step);
+
+
+--
 -- Name: arkham_decks arkham_decks_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arkham_decks
     ADD CONSTRAINT arkham_decks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: arkham_log_entries arkham_log_entries_arkham_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkham_log_entries
+    ADD CONSTRAINT arkham_log_entries_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id);
 
 
 --
@@ -833,6 +913,14 @@ ALTER TABLE ONLY public.arkham_players
 
 ALTER TABLE ONLY public.arkham_players
     ADD CONSTRAINT arkham_players_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: arkham_steps arkham_steps_arkham_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkham_steps
+    ADD CONSTRAINT arkham_steps_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id);
 
 
 --

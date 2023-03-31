@@ -1443,4 +1443,5 @@ acridMiasma = (treachery "82037" "Acrid Miasma" CarnevaleOfHorrors 2)
 yaztaroth :: CardDef
 yaztaroth = (weakness "98018" "Yaztaroth")
   { cdCardTraits = setFromList [Curse, Pact]
+  , cdUnique = True
   }

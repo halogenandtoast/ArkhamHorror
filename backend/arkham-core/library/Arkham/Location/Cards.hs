@@ -2887,7 +2887,7 @@ interviewRoomArrivalChamber = locationWithUnrevealed
   TheCityOfArchives
 
 interviewRoomRestrainingChamber :: CardDef
-interviewRoomRestrainingChamber = locationWithUnrevealed
+interviewRoomRestrainingChamber = victory 1 $ locationWithUnrevealed
   "04246"
   "Interview Room"
   [Ancient, Pnakotus]
@@ -2900,7 +2900,7 @@ interviewRoomRestrainingChamber = locationWithUnrevealed
   TheCityOfArchives
 
 interviewRoomIchorFilledChamber :: CardDef
-interviewRoomIchorFilledChamber = locationWithUnrevealed
+interviewRoomIchorFilledChamber = victory 1 $ locationWithUnrevealed
   "04247"
   "Interview Room"
   [Ancient, Pnakotus]
@@ -3386,7 +3386,7 @@ balconySpectral = location
   AtDeathsDoorstep
 
 officeSpectral :: CardDef
-officeSpectral = location
+officeSpectral = victory 2 $ location
   "05084"
   "Office"
   [Spectral]

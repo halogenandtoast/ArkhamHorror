@@ -978,6 +978,7 @@ apexStrangleweed =
     )
     { cdCardTraits = setFromList [Creature, Flora]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
     }
 
 basilisk :: CardDef

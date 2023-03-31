@@ -404,7 +404,7 @@ allAssets = mapFrom
   , SomeAssetCard oldHuntingRifle3
   --- neutral [tdoy]
   , SomeAssetCard thermos
-  , SomeAssetCard hemisphericMap2
+  , SomeAssetCard hemisphericMap3
   , SomeAssetCard timewornBrand5
   --- story [tdoy]
   , SomeAssetCard relicOfAgesRepossessThePast

@@ -1117,7 +1117,7 @@ windowToAnotherTime =
 
 timelineDestabilization :: CardDef
 timelineDestabilization =
-  (treachery "04190" "Timeline Destablization" EncounterSet.TheBoundaryBeyond 3)
+  (treachery "04190" "Timeline Destabilization" EncounterSet.TheBoundaryBeyond 3)
     { cdCardTraits = singleton Hex
     }
 

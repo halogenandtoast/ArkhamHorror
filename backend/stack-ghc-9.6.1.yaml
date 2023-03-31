@@ -44,5 +44,6 @@ extra-deps:
 - unix-compat-0.7
 - happy-1.21.0
 - warp-3.3.25
+- monad-validate-1.2.0.1
 - github: jmazon/clientsession
   commit: 1221230770feff60f77ff676d52fc464cb77b2d9

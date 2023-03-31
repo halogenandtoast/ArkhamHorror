@@ -11,6 +11,13 @@ packages:
       size: 4286
   original:
     hackage: relude-1.2.0.0@sha256:e47f363d57e5551542cc567b68f375001f850732ebe9c226351c26e7af56f797,11937
+- completed:
+    hackage: monad-validate-1.2.0.1@sha256:5a100da896f11ca4b7c123da85decbedeb46c37054a097f258ac911e715cb68d,2587
+    pantry-tree:
+      sha256: 034ee4de9765e38b763f5d73b236cc112205728e680cefbfe12d2882accc3264
+      size: 611
+  original:
+    hackage: monad-validate-1.2.0.1
 snapshots:
 - completed:
     sha256: 66fad1bb5e35649d4f4a38f3e89197beeb567754eb07f8c5351bf161569b1373

@@ -250,7 +250,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , hardKnocks
   , hardKnocks2
   , heirloomOfHyperborea
-  , hemisphericMap2
+  , hemisphericMap3
   , henryDeveau
   , highRoller2
   , higherEducation
@@ -1995,6 +1995,7 @@ charonsObol1 =
     { cdCardTraits = setFromList [Item, Relic]
     , cdLevel = 1
     , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
+    , cdUnique = True
     }
 
 lupara3 :: CardDef
@@ -2165,6 +2166,7 @@ protectiveIncantation1 = (asset "04031" "Protective Incantation" 1 Mystic)
   , cdCardTraits = setFromList [Ritual, Blessed]
   , cdSlots = [ArcaneSlot]
   , cdKeywords = singleton (Keyword.Seal $ TokenFaceIsNot Token.AutoFail)
+  , cdLevel = 1
   }
 
 yaotl1 :: CardDef
@@ -2172,6 +2174,8 @@ yaotl1 = (asset "04035" ("Yaotl" <:> "Lost Son of Eztli") 3 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
+  , cdUnique = True
+  , cdLevel = 1
   }
 
 backpack :: CardDef
@@ -2198,7 +2202,7 @@ relicOfAgesADeviceOfSomeSort :: CardDef
 relicOfAgesADeviceOfSomeSort = (storyAsset
                                  "04061"
                                  ("Relic of Ages"
-                                 <:> "...A Device, of Some Sort"
+                                 <:> "\8230A Device, of Some Sort"
                                  )
                                  2
                                  TheDoomOfEztli
@@ -2440,6 +2444,8 @@ theCustodian =
       TheCityOfArchives
     )
     { cdCardTraits = setFromList [Ally, Yithian]
+    , cdUnique = True
+    , cdCost = Nothing
     }
 
 handcuffs :: CardDef
@@ -2498,12 +2504,12 @@ thermos = (asset "04274" "Thermos" 4 Neutral)
   , cdUses = Uses Supply 3
   }
 
-hemisphericMap2 :: CardDef
-hemisphericMap2 = (asset "04275" "Hemispheric Map" 2 Neutral)
+hemisphericMap3 :: CardDef
+hemisphericMap3 = (asset "04275" "Hemispheric Map" 2 Neutral)
   { cdSkills = [#willpower, #intellect]
   , cdCardTraits = setFromList [Item, Relic]
   , cdSlots = [AccessorySlot]
-  , cdLevel = 2
+  , cdLevel = 3
   }
 
 timewornBrand5 :: CardDef
@@ -3003,6 +3009,7 @@ boxingGloves3 = (asset "60127" "Boxing Gloves" 2 Guardian)
   { cdSkills = [#combat, #combat]
   , cdCardTraits = setFromList [Item, Weapon]
   , cdSlots = [HandSlot, HandSlot]
+  , cdLevel = 3
   }
 
 greteWagner3 :: CardDef
@@ -3161,6 +3168,7 @@ theNecronomiconPetrusDeDaciaTranslation5 =
     { cdCardTraits = setFromList [Item, Tome]
     , cdUses = Uses Secret 6
     , cdLevel = 5
+    , cdSkills = [#intellect, #intellect, #intellect, #intellect, #intellect]
     }
 
 lockpicks :: CardDef

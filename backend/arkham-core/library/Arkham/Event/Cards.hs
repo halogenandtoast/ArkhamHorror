@@ -1729,7 +1729,7 @@ denyExistence5 = (event "05280" "Deny Existence" 0 Mystic)
   source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
 
 trialByFire :: CardDef
-trialByFire = (event "05281" "Trial By Fire" 3 Survivor)
+trialByFire = (event "05281" "Trial by Fire" 3 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You

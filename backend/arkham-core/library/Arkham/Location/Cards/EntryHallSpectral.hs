@@ -5,7 +5,6 @@ module Arkham.Location.Cards.EntryHallSpectral
 
 import Arkham.Prelude
 
-import Arkham.Ability.Types
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers

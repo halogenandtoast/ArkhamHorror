@@ -1059,7 +1059,7 @@ alejandroVela =
 
 formlessSpawn :: CardDef
 formlessSpawn =
-  (enemy "04337" "Formless Spawn" ShatteredAeons 1
+  (enemy "04337" ("Formless Spawn" <:> "From the Abyss") ShatteredAeons 1
     )
     { cdCardTraits = setFromList [Monster, Abomination, Elite]
     , cdKeywords = singleton Keyword.Massive

@@ -486,6 +486,7 @@ perception2 =
   (skill "60228" "Perception" [#intellect, #intellect, #intellect] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = 2
     }
 
 neitherRainNorSnow :: CardDef

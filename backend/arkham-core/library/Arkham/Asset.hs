@@ -454,13 +454,17 @@ allAssets = mapFrom
   , SomeAssetCard meatCleaver
   --- multi [tsn]
   , SomeAssetCard fortyFiveThompson
+  , SomeAssetCard scrollOfSecrets
   -- The Wages of Sin
   --- survivor [wos]
   , SomeAssetCard drawingThin
   -- For the Greater Good
-  --- survivor [fgg]
+  --- survivor + rogue [fgg]
   , SomeAssetCard fortyFiveThompsonGuardian3
   , SomeAssetCard fortyFiveThompsonRogue3
+  --- seeker + mystic [fgg]
+  , SomeAssetCard scrollOfSecretsSeeker3
+  , SomeAssetCard scrollOfSecretsMystic3
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

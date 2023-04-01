@@ -459,6 +459,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & cardsUnderActDeckL %~ (card :)
   PlaceNextTo ActDeckTarget cards -> do
     pure $ a & cardsNextToActDeckL <>~ cards
+  ShuffleCardsIntoDeck Deck.EncounterDeck [] -> do
+    pure a
   ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
@@ -558,6 +560,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             (<>)
             Zone.FromDeck
             (map EncounterCard . take n $ unDeck scenarioEncounterDeck)
+            hmap
+          Zone.FromBottomOfDeck n -> insertWith
+            (<>)
+            Zone.FromDeck
+            (map EncounterCard . take n . reverse $ unDeck scenarioEncounterDeck)
             hmap
           Zone.FromDiscard -> insertWith
             (<>)

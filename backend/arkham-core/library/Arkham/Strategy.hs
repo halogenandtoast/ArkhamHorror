@@ -48,5 +48,8 @@ data ChosenCardStrategy
 fromTopOfDeck :: Int -> (Zone, ZoneReturnStrategy)
 fromTopOfDeck n = (FromTopOfDeck n, ShuffleBackIn)
 
+fromBottomOfDeck :: Int -> (Zone, ZoneReturnStrategy)
+fromBottomOfDeck n = (FromBottomOfDeck n, ShuffleBackIn)
+
 fromDeck :: (Zone, ZoneReturnStrategy)
 fromDeck = (FromDeck, ShuffleBackIn)

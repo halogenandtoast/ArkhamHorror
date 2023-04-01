@@ -68,6 +68,7 @@ import Arkham.Zone qualified as Zone
 import Control.Monad.Extra ( findM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
+import Control.Lens (each)
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -499,7 +500,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ mapMaybe (preview _PlayerCard) investigatorHand
       ]
     pure a
-  AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
+  AddToDiscard iid pc | iid == investigatorId ->
+    pure $ a & discardL %~ (pc :) & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard
     | discardInvestigator handDiscard == investigatorId -> do
       push $ DoneDiscarding investigatorId
@@ -2363,14 +2365,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   TakenAction iid action | iid == investigatorId ->
     pure $ a & actionsTakenL %~ (<> [action])
-  PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid') card
-    | iid == investigatorId && iid == iid' -> case card of
+  PutCardOnTopOfDeck _ (Deck.InvestigatorDeck iid) card
+    | iid == investigatorId -> case card of
       PlayerCard pc ->
         pure
           $ a
           & (deckL %~ Deck . (pc :) . unDeck)
           & (handL %~ filter (/= card))
           & (discardL %~ filter (/= pc))
+          & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on top of investigator deck"
       VengeanceCard _ ->
@@ -2382,16 +2385,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (deckL %~ Deck . filter (/= pc) . unDeck)
         & (handL %~ filter (/= card))
         & (discardL %~ filter (/= pc))
+          & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure $ a & (handL %~ filter (/= card))
     VengeanceCard vcard -> pure $ a & (handL %~ filter (/= vcard))
-  PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') card
-    | iid == investigatorId && iid == iid' -> case card of
+  PutCardOnBottomOfDeck _ (Deck.InvestigatorDeck iid) card
+    | iid == investigatorId -> case card of
       PlayerCard pc ->
         pure
           $ a
           & (deckL %~ Deck . (<> [pc]) . unDeck)
           & (handL %~ filter (/= card))
           & (discardL %~ filter (/= pc))
+          & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on bottom of investigator deck"
       VengeanceCard _ ->
@@ -2403,6 +2408,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (deckL %~ Deck . filter (/= pc) . unDeck)
         & (handL %~ filter (/= card))
         & (discardL %~ filter (/= pc))
+        & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
   AddToHand iid card | iid == investigatorId -> do
@@ -2422,6 +2428,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assetsL %~ maybe id deleteSet mAssetId)
       & (slotsL %~ maybe id removeFromSlots mAssetId)
       & (discardL %~ filter ((/= card) . PlayerCard))
+      & (foundCardsL . each %~ filter (/= card))
+  ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [] | iid == investigatorId -> do
+    -- can't shuffle zero cards
+    pure a
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
     | iid == investigatorId -> do
       let cards' = mapMaybe (preview _PlayerCard) cards
@@ -2472,6 +2482,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let
         foundKey = \case
           Zone.FromTopOfDeck _ -> Zone.FromDeck
+          Zone.FromBottomOfDeck _ -> Zone.FromDeck
           other -> other
       for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
         PutBackInAnyOrder -> do
@@ -2482,9 +2493,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (findWithDefault [] Zone.FromDeck investigatorFoundCards)
         ShuffleBackIn -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-          push $ ShuffleCardsIntoDeck
-            (Deck.InvestigatorDeck iid)
-            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+          when (notNull investigatorFoundCards) $ do
+            push $ ShuffleCardsIntoDeck
+              (Deck.InvestigatorDeck iid)
+              (findWithDefault [] Zone.FromDeck investigatorFoundCards)
         PutBack -> when
           (foundKey cardSource == Zone.FromDeck)
           (error "Can not take deck")
@@ -2523,6 +2535,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (<>)
               Zone.FromDeck
               (map PlayerCard . take n $ unDeck investigatorDeck)
+              hmap
+            Zone.FromBottomOfDeck n -> insertWith
+              (<>)
+              Zone.FromDeck
+              (map PlayerCard . take n . reverse $ unDeck investigatorDeck)
               hmap
             Zone.FromDiscard -> insertWith
               (<>)
@@ -2594,7 +2611,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             else SearchFound
               iid
               searchTarget
-              (Deck.InvestigatorDeck iid)
+              (Deck.InvestigatorDeck iid')
               (concat $ toList targetCards)
         ReturnCards -> pure ()
 

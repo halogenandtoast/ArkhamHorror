@@ -3307,8 +3307,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
-  PutCardOnTopOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
-  PutCardOnBottomOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
+  PutCardOnTopOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c)
+  PutCardOnBottomOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c)
   ShuffleCardsIntoDeck _ cards ->
     pure $ g & focusedCardsL %~ filter (`notElem` cards)
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
@@ -3560,37 +3560,39 @@ runGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
-  EndSearch iid _ target cardSources -> do
-    when (target == EncounterDeckTarget) $ do
-      let
-        foundKey = \case
-          Zone.FromTopOfDeck _ -> Zone.FromDeck
-          other -> other
-        foundCards = gameFoundCards g
-      for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
-        PutBackInAnyOrder -> do
-          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
-          push $ chooseOneAtATime iid $ map
-            (\c -> TargetLabel
-              (CardIdTarget $ toCardId c)
-              [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c]
-            )
-            (findWithDefault [] Zone.FromDeck foundCards)
-        ShuffleBackIn -> do
-          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
-          push $ ShuffleCardsIntoDeck Deck.EncounterDeck $ findWithDefault
-            []
-            Zone.FromDeck
-            foundCards
-        PutBack -> do
-          when (foundKey cardSource /= Zone.FromDeck)
-            $ error "Can not take deck"
-          pushAll
-            $ map (AddFocusedToTopOfDeck iid EncounterDeckTarget . toCardId)
-            $ reverse
-            $ mapMaybe (preview _EncounterCard)
-            $ findWithDefault [] Zone.FromDeck foundCards
+  EndSearch iid _ EncounterDeckTarget cardSources -> do
+    let
+      foundKey = \case
+        Zone.FromTopOfDeck _ -> Zone.FromDeck
+        Zone.FromBottomOfDeck _ -> Zone.FromDeck
+        other -> other
+      foundCards = gameFoundCards g
+    for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
+      PutBackInAnyOrder -> do
+        when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
+        push $ chooseOneAtATime iid $ map
+          (\c -> TargetLabel
+            (CardIdTarget $ toCardId c)
+            [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c]
+          )
+          (findWithDefault [] Zone.FromDeck foundCards)
+      ShuffleBackIn -> do
+        when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
+        when (notNull foundCards) $ push $ ShuffleCardsIntoDeck Deck.EncounterDeck $ findWithDefault
+          []
+          Zone.FromDeck
+          foundCards
+      PutBack -> do
+        when (foundKey cardSource /= Zone.FromDeck)
+          $ error "Can not take deck"
+        pushAll
+          $ map (AddFocusedToTopOfDeck iid EncounterDeckTarget . toCardId)
+          $ reverse
+          $ mapMaybe (preview _EncounterCard)
+          $ findWithDefault [] Zone.FromDeck foundCards
     pure g
+  AddToEncounterDiscard card -> do
+    pure $ g & (focusedCardsL %~ filter (/= EncounterCard card)) . (foundCardsL .each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
     push $ AddToHand iid card

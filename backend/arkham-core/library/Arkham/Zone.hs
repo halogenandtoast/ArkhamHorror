@@ -8,6 +8,7 @@ data Zone
   = FromHand
   | FromDeck
   | FromTopOfDeck Int
+  | FromBottomOfDeck Int
   | FromDiscard
   | FromPlay
   | FromOutOfPlay

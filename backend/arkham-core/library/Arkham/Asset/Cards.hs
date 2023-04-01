@@ -369,6 +369,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , scrapper
   , scrapper3
   , scrollOfProphecies
+  , scrollOfSecrets
+  , scrollOfSecretsMystic3
+  , scrollOfSecretsSeeker3
   , scrying
   , scrying3
   , sealOfTheSeventhSign5
@@ -2740,6 +2743,14 @@ fortyFiveThompson = (multiClassAsset "05115" ".45 Thompson" 6 [Guardian, Rogue])
   , cdUses = Uses Ammo 5
   }
 
+scrollOfSecrets :: CardDef
+scrollOfSecrets = (multiClassAsset "05116" "Scroll of Secrets" 1 [Seeker, Mystic])
+  { cdSkills = [#intellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Secret 3
+  }
+
 drawingThin :: CardDef
 drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
   { cdSkills = [#willpower]
@@ -2761,6 +2772,23 @@ fortyFiveThompsonRogue3 = (asset "05187" ".45 Thompson" 5 Rogue)
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdSlots = [HandSlot, HandSlot]
   , cdUses = Uses Ammo 5
+  , cdLevel = 3
+  }
+
+scrollOfSecretsSeeker3 :: CardDef
+scrollOfSecretsSeeker3 = (asset "05188" "Scroll of Secrets" 1 Seeker)
+  { cdSkills = [#intellect, #intellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Secret 3
+  }
+
+scrollOfSecretsMystic3 :: CardDef
+scrollOfSecretsMystic3 = (asset "05189" "Scroll of Secrets" 1 Mystic)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Secret 4
   , cdLevel = 3
   }
 

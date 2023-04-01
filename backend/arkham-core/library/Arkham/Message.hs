@@ -686,6 +686,7 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
+  | DoStep Int Message
   | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId

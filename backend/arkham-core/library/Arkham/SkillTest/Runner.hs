@@ -31,6 +31,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+import Control.Lens (each)
 import Data.HashMap.Strict qualified as HashMap
 
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
@@ -351,6 +352,13 @@ instance RunMessage SkillTest where
                skillTestResult
            ]
       pure s
+    ReturnToHand _ (CardIdTarget cardId) -> do
+      liftIO $ do
+        print skillTestCommittedCards
+        print $ skillTestCommittedCards & each %~ filter ((/= cardId) . toCardId)
+      pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
+    ReturnToHand _ (CardTarget card) -> do
+      pure $ s & committedCardsL . each %~ filter (/= card)
     SkillTestResults{} -> do
       modifiers' <- getModifiers (toTarget s)
       -- We may be recalculating so we want to remove all windows an buttons to apply

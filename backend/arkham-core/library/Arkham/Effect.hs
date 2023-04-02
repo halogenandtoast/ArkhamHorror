@@ -26,6 +26,7 @@ import Arkham.Asset.Assets
   ( aceOfRods1Effect
   , fence1Effect
   , grislyTotemSeeker3Effect
+  , grislyTotemSurvivor3Effect
   , highRoller2Effect
   , libraryDocent1Effect
   , miskatonicArchaeologyFunding4Effect
@@ -242,6 +243,7 @@ allEffects = mapFromList
   , ("05113", SomeEffect banish1Effect)
   , ("05114", SomeEffect meatCleaver)
   , ("05194", SomeEffect grislyTotemSeeker3Effect)
+  , ("05195", SomeEffect grislyTotemSurvivor3Effect)
   , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("07004", SomeEffect dexterDrakeEffect)
   , ("07012", SomeEffect showmanshipEffect)

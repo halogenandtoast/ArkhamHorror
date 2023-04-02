@@ -179,11 +179,6 @@ data CampaignStoryCard = CampaignStoryCard
   , campaignStoryCardPlayerCard :: PlayerCard
   }
 
-instance HasSkillIcons Card where
-  getSkillIcons (PlayerCard card) = getSkillIcons card
-  getSkillIcons (EncounterCard _) = []
-  getSkillIcons (VengeanceCard _) = []
-
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost (EncounterCard _) = 0

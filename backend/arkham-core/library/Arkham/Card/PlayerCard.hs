@@ -34,9 +34,6 @@ instance FromJSON PlayerCard where
 instance HasCardCode PlayerCard where
   toCardCode = pcCardCode
 
-instance HasSkillIcons PlayerCard where
-  getSkillIcons = getSkillIcons . toCardDef
-
 instance HasCost PlayerCard where
   getCost c = case cdCost (toCardDef c) of
     Just (StaticCost n) -> n

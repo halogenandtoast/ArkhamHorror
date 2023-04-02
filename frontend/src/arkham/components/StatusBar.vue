@@ -122,7 +122,8 @@ const replaceIcons = function(body) {
     replace('{willpower}', '<span class="willpower-icon"></span>').
     replace('{intellect}', '<span class="intellect-icon"></span>').
     replace('{combat}', '<span class="combat-icon"></span>').
-    replace('{agility}', '<span class="agility-icon"></span>')
+    replace('{agility}', '<span class="agility-icon"></span>').
+    replace('{wild}', '<span class="wild-icon"></span>')
 }
 
 const label = function(body) {

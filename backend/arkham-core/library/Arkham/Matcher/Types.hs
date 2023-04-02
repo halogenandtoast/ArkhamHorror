@@ -384,6 +384,7 @@ data SkillMatcher
   | SkillWithId SkillId
   | SkillWithTrait Trait
   | SkillWithClass ClassSymbol
+  | SkillWithCardId CardId
   | SkillControlledBy InvestigatorMatcher
   | SkillWithPlacement Placement
   | SkillMatches [SkillMatcher]

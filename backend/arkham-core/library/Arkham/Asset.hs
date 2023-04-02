@@ -476,6 +476,7 @@ allAssets = mapFrom
   , SomeAssetCard enchantedBladeMystic3
   --- seeker + survivor [fgg]
   , SomeAssetCard grislyTotemSeeker3
+  , SomeAssetCard grislyTotemSurvivor3
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

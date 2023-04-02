@@ -1725,6 +1725,7 @@ getSkillsMatching matcher = do
     SkillWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName) as
     SkillWithId skillId -> pure $ filter ((== skillId) . toId) as
+    SkillWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
     SkillWithClass role -> filterM
       (fmap (member role . cdClassSymbols . toCardDef) . field SkillCard . toId)
       as
@@ -3584,6 +3585,16 @@ runGameMessage msg g = case msg of
     card <- field SkillCard skillId
     push $ AddToHand iid card
     pure $ g & entitiesL . skillsL %~ deleteMap skillId
+  ReturnToHand iid (CardIdTarget cardId) -> do
+    -- We need to check skills specifically as they aren't covered by the skill
+    -- test runner
+    mSkill <- selectOne $ SkillWithCardId cardId
+    case mSkill of
+      Just skillId -> do
+        card <- field SkillCard skillId
+        push $ AddToHand iid card
+        pure $ g & entitiesL . skillsL %~ deleteMap skillId
+      Nothing -> pure g
   ReturnToHand iid (AssetTarget assetId) -> do
     -- If we try to return to hand but the asset is gone, then do nothing
     mAsset <- maybeAsset assetId

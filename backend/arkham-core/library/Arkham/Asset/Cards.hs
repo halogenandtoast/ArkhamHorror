@@ -245,6 +245,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grimmsFairyTales
   , grislyTotem
   , grislyTotemSeeker3
+  , grislyTotemSurvivor3
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -2861,6 +2862,13 @@ grislyTotemSeeker3 :: CardDef
 grislyTotemSeeker3 = (asset "05194" "Grisly Totem" 3 Seeker)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Item, Charm, Cursed]
+  , cdSlots = [AccessorySlot]
+  }
+
+grislyTotemSurvivor3 :: CardDef
+grislyTotemSurvivor3 = (asset "05195" "Grisly Totem" 2 Survivor)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = setFromList [Item, Charm, Blessed]
   , cdSlots = [AccessorySlot]
   }
 

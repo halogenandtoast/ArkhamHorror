@@ -2880,3 +2880,18 @@ isForcedAbilityType iid source = \case
   AbilityEffect{} -> pure False
   Haunted{} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   ForcedWhen c _ -> passesCriteria iid Nothing source [] c
+
+iconsForCard :: HasGame m => Card -> m [SkillIcon]
+iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
+  modifiers' <- getModifiers (CardIdTarget pcId)
+  pure $ foldr
+    applyAfterSkillModifiers
+    (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
+    modifiers'
+ where
+  applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
+  applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
+  applySkillModifiers _ ys = ys
+  applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
+  applyAfterSkillModifiers _ ys = ys
+iconsForCard _ = pure []

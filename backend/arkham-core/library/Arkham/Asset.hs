@@ -457,6 +457,7 @@ allAssets = mapFrom
   , SomeAssetCard scrollOfSecrets
   , SomeAssetCard tennesseeSourMash
   , SomeAssetCard enchantedBlade
+  , SomeAssetCard grislyTotem
   -- The Wages of Sin
   --- survivor [wos]
   , SomeAssetCard drawingThin

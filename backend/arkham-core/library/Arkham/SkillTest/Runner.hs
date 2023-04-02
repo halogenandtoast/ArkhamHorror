@@ -99,22 +99,10 @@ skillIconCount SkillTest {..} = do
         else totalIcons
     ResourceSkillTest -> pure totalIcons
  where
-  iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-    modifiers' <- getModifiers (CardIdTarget pcId)
-    pure $ foldr
-      applyAfterSkillModifiers
-      (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
-      modifiers'
-  iconsForCard _ = pure []
   matches WildIcon = True
   matches (SkillIcon s) = case skillTestType of
     SkillSkillTest sType -> s == sType
     ResourceSkillTest -> False
-  applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
-  applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
-  applySkillModifiers _ ys = ys
-  applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
-  applyAfterSkillModifiers _ ys = ys
 
 getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do

@@ -243,6 +243,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , greteWagner
   , greteWagner3
   , grimmsFairyTales
+  , grislyTotem
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -2770,6 +2771,13 @@ enchantedBlade = (multiClassAsset "05118" "Enchanted Blade" 3 [Mystic, Guardian]
   , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
   , cdUses = Uses Charge 3
   , cdSlots = [HandSlot, ArcaneSlot]
+  }
+
+grislyTotem :: CardDef
+grislyTotem = (multiClassAsset "05119" "Grisly Totem" 3 [Survivor, Seeker])
+  { cdSkills = [#agility]
+  , cdCardTraits = setFromList [Item, Charm]
+  , cdSlots = [AccessorySlot]
   }
 
 drawingThin :: CardDef

@@ -13,6 +13,7 @@ import Arkham.CommitRestriction
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria
 import Arkham.EncounterSet
+import Arkham.GameValue
 import Arkham.Json
 import Arkham.Keyword ( HasKeywords (..), Keyword )
 import Arkham.LocationSymbol
@@ -69,7 +70,7 @@ data CardDef = CardDef
   , cdDoubleSided :: Bool
   , cdLimits :: [CardLimit]
   , cdExceptional :: Bool
-  , cdUses :: Uses
+  , cdUses :: Uses GameValue
   , cdPlayableFromDiscard :: Bool
   , cdStage :: Maybe Int
   , cdSlots :: [SlotType]

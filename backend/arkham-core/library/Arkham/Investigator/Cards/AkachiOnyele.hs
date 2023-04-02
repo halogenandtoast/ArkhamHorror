@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers
+import Arkham.Helpers.Use
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
@@ -19,9 +20,12 @@ instance HasModifiersFor AkachiOnyele where
     akachiAsset <- fieldP AssetController (== Just (toId attrs)) aid
     if akachiAsset
       then do
-        startingChargesCount <- fieldMap
+        startingChargesCount <- fieldMapM
           AssetStartingUses
-          (\u -> if useType u == Just Charge then useCount u else 0)
+          (\u -> do
+            u' <- toStartingUses u
+            pure $ if useType u' == Just Charge then useCount u' else 0
+          )
           aid
         pure $ toModifiers
           attrs

@@ -18,6 +18,7 @@ import Arkham.Card
 import Arkham.Damage
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Use
 import Arkham.Matcher ( AssetMatcher (AnyAsset) )
 import Arkham.Message qualified as Msg
 import Arkham.Placement
@@ -160,8 +161,8 @@ instance RunMessage AssetAttrs where
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
       modifiers <- getModifiers (toTarget a)
+      startingUses <- toStartingUses $ cdUses $ toCardDef a
       let
-        startingUses = cdUses $ toCardDef a
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m

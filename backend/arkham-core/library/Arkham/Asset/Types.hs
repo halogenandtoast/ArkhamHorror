@@ -12,6 +12,7 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.ClassSymbol
+import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
@@ -88,8 +89,8 @@ data instance Field Asset :: Type -> Type where
   AssetRemainingSanity :: Field Asset (Maybe Int)
   AssetDoom :: Field Asset Int
   AssetExhausted :: Field Asset Bool
-  AssetUses :: Field Asset Uses
-  AssetStartingUses :: Field Asset Uses
+  AssetUses :: Field Asset (Uses Int)
+  AssetStartingUses :: Field Asset (Uses GameValue)
   AssetController :: Field Asset (Maybe InvestigatorId)
   AssetOwner :: Field Asset (Maybe InvestigatorId)
   AssetLocation :: Field Asset (Maybe LocationId)
@@ -152,7 +153,7 @@ data AssetAttrs = AssetAttrs
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
-  , assetUses :: Uses
+  , assetUses :: Uses Int
   , assetExhausted :: Bool
   , assetDoom :: Int
   , assetClues :: Int

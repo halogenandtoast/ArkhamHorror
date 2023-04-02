@@ -611,6 +611,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             [Label "No cards found" [SearchNoneFound iid searchTarget]]
           else SearchFound iid searchTarget Deck.EncounterDeck targetCards
       PlayFound{} -> error "PlayFound is not a valid EncounterDeck strategy"
+      PlayFoundNoCost{} -> error "PlayFound is not a valid EncounterDeck strategy"
       ReturnCards -> pure ()
 
     push (FoundCards foundCards)

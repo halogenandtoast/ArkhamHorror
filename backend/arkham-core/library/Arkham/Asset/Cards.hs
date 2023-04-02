@@ -244,6 +244,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , greteWagner3
   , grimmsFairyTales
   , grislyTotem
+  , grislyTotemSeeker3
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -2854,6 +2855,13 @@ enchantedBladeMystic3 = (asset "05193" "Enchanted Blade" 3 Mystic)
   , cdUses = Uses Charge 4
   , cdSlots = [HandSlot, ArcaneSlot]
   , cdLevel = 3
+  }
+
+grislyTotemSeeker3 :: CardDef
+grislyTotemSeeker3 = (asset "05194" "Grisly Totem" 3 Seeker)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = setFromList [Item, Charm, Cursed]
+  , cdSlots = [AccessorySlot]
   }
 
 studious3 :: CardDef

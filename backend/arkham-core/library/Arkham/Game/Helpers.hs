@@ -361,12 +361,12 @@ getCanAffordUse iid ability window = do
       -- relevant investigator ids from the window. If this becomes more prevalent
       -- we may want a method from `Window -> Maybe InvestigatorId`
       case window of
-        Window _ (Window.CommittedCards iid' _) -> do
+        Window _ (Window.CommittedCard iid' _) -> do
           let
             matchingPerInvestigatorCount =
-              flip count usedAbilities $ \usedAbility ->
-                flip any (usedAbilityWindows usedAbility) $ \case
-                  Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
+              flip count usedAbilities $ \usedAbility' ->
+                flip any (usedAbilityWindows usedAbility') $ \case
+                  Window _ (Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
                   _ -> False
           pure $ matchingPerInvestigatorCount < n
         _ -> error "Unhandled per investigator limit"

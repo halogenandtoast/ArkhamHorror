@@ -26,6 +26,7 @@ data ZoneReturnStrategy
 
 data FoundCardsStrategy
   = PlayFound InvestigatorId Int
+  | PlayFoundNoCost InvestigatorId Int
   | DrawFound InvestigatorId Int
   | DrawFoundUpTo InvestigatorId Int
   | DeferSearchedToTarget Target

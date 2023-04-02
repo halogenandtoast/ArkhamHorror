@@ -26,6 +26,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.CommitRestriction
 import Arkham.Cost
+import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
@@ -72,6 +73,11 @@ import Control.Lens (each)
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
+
+onlyCampaignAbilities :: UsedAbility -> Bool
+onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit usedAbility) of
+  Just PerCampaign -> True
+  _ -> False
 
 -- There are a few conditions that can occur that mean we must need to use an ability.
 -- No valid targets. For example Marksmanship
@@ -169,6 +175,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , investigatorStartsWith = investigatorStartsWith
       , investigatorStartsWithInHand = investigatorStartsWithInHand
       , investigatorSupplies = investigatorSupplies
+      , investigatorUsedAbilities = filter onlyCampaignAbilities investigatorUsedAbilities
       }
   SetupInvestigator iid | iid == investigatorId -> do
     (startsWithMsgs, deck') <- foldM
@@ -2596,6 +2603,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [ TargetLabel
                   (CardIdTarget $ toCardId card)
                   [AddToHand who card, PayCardCost iid card windows']
+              | (_, cards) <- playableCards
+              , card <- cards
+              ]
+          push
+            (chooseN iid n
+            $ if null choices then [Label "No cards found" []] else choices
+            )
+        PlayFoundNoCost who n -> do
+          let
+            windows' =
+              [ Window Timing.When Window.NonFast
+              , Window Timing.When (Window.DuringTurn iid)
+              ]
+          playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
+            cards' <- filterM
+              (getIsPlayable who source Cost.PaidCost windows')
+              cards
+            pure (zone, cards')
+          let
+            choices =
+              [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [AddToHand who card, PutCardIntoPlay iid card Nothing windows']
               | (_, cards) <- playableCards
               , card <- cards
               ]

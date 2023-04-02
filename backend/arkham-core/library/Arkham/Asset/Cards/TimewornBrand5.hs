@@ -34,7 +34,7 @@ instance HasAbilities TimewornBrand5 where
       $ ActionCost 1
     , withTooltip
         "{action} Exhaust Timeworn Brand: _Fight_. Add your {willpower} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)"
-      $ limitedAbility (PlayerLimit PerGame 1)
+      $ limitedAbility (PerCopyLimit Cards.timewornBrand5 PerGame 1)
       $ restrictedAbility a 2 ControlsThis
       $ ActionAbility (Just Action.Fight)
       $ ActionCost 1

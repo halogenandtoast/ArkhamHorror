@@ -37,5 +37,6 @@ data AbilityLimitType
   | PerTestOrAbility
   | PerSearch Trait
   | PerDepthLevel
+  | PerCampaign
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

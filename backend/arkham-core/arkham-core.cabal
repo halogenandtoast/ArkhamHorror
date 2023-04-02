@@ -588,6 +588,7 @@ library
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
       Arkham.Asset.Cards.TheChthonianStone
       Arkham.Asset.Cards.TheCodexOfAges
+      Arkham.Asset.Cards.TheCouncilsCoffer2
       Arkham.Asset.Cards.TheCustodian
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheKingInYellow
@@ -1181,6 +1182,7 @@ library
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest
       Arkham.Helpers.Slot
+      Arkham.Helpers.Use
       Arkham.Helpers.Window
       Arkham.Helpers.Xp
       Arkham.History

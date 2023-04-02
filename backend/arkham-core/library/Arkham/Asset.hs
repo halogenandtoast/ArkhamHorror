@@ -477,6 +477,8 @@ allAssets = mapFrom
   --- seeker + survivor [fgg]
   , SomeAssetCard grislyTotemSeeker3
   , SomeAssetCard grislyTotemSurvivor3
+  --- neutral [fgg]
+  , SomeAssetCard theCouncilsCoffer2
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

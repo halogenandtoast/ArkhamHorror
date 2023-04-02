@@ -407,6 +407,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , survivalKnife
   , switchblade
   , switchblade2
+  , tennesseeSourMash
+  , tennesseeSourMashRogue3
+  , tennesseeSourMashSurvivor3
   , theChthonianStone
   , theCodexOfAges
   , theCustodian
@@ -2751,6 +2754,13 @@ scrollOfSecrets = (multiClassAsset "05116" "Scroll of Secrets" 1 [Seeker, Mystic
   , cdUses = Uses Secret 3
   }
 
+tennesseeSourMash :: CardDef
+tennesseeSourMash = (multiClassAsset "05117" "Tennessee Sour Mash" 3 [Rogue, Survivor])
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Item, Illicit]
+  , cdUses = Uses Supply 2
+  }
+
 drawingThin :: CardDef
 drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
   { cdSkills = [#willpower]
@@ -2781,6 +2791,7 @@ scrollOfSecretsSeeker3 = (asset "05188" "Scroll of Secrets" 1 Seeker)
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
   , cdUses = Uses Secret 3
+  , cdLevel = 3
   }
 
 scrollOfSecretsMystic3 :: CardDef
@@ -2789,6 +2800,22 @@ scrollOfSecretsMystic3 = (asset "05189" "Scroll of Secrets" 1 Mystic)
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
   , cdUses = Uses Secret 4
+  , cdLevel = 3
+  }
+
+tennesseeSourMashRogue3 :: CardDef
+tennesseeSourMashRogue3 = (asset "05190" "Tennessee Sour Mash" 3 Rogue)
+  { cdSkills = [#willpower, #combat]
+  , cdCardTraits = setFromList [Item, Illicit]
+  , cdUses = Uses Supply 2
+  , cdLevel = 3
+  }
+
+tennesseeSourMashSurvivor3 :: CardDef
+tennesseeSourMashSurvivor3 = (asset "05191" "Tennessee Sour Mash" 2 Survivor)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = setFromList [Item, Illicit]
+  , cdUses = Uses Supply 3
   , cdLevel = 3
   }
 

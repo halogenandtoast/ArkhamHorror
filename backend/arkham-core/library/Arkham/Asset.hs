@@ -455,6 +455,7 @@ allAssets = mapFrom
   --- multi [tsn]
   , SomeAssetCard fortyFiveThompson
   , SomeAssetCard scrollOfSecrets
+  , SomeAssetCard tennesseeSourMash
   -- The Wages of Sin
   --- survivor [wos]
   , SomeAssetCard drawingThin
@@ -465,6 +466,9 @@ allAssets = mapFrom
   --- seeker + mystic [fgg]
   , SomeAssetCard scrollOfSecretsSeeker3
   , SomeAssetCard scrollOfSecretsMystic3
+  --- rogue + survivor [fgg]
+  , SomeAssetCard tennesseeSourMashRogue3
+  , SomeAssetCard tennesseeSourMashSurvivor3
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

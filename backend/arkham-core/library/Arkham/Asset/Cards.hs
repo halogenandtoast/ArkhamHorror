@@ -198,6 +198,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , eighteenDerringer
   , eighteenDerringer2
   , elderSignAmulet3
+  , enchantedBlade
+  , enchantedBladeGuardian3
+  , enchantedBladeMystic3
   , encyclopedia
   , encyclopedia2
   , esotericAtlas2
@@ -2761,6 +2764,14 @@ tennesseeSourMash = (multiClassAsset "05117" "Tennessee Sour Mash" 3 [Rogue, Sur
   , cdUses = Uses Supply 2
   }
 
+enchantedBlade :: CardDef
+enchantedBlade = (multiClassAsset "05118" "Enchanted Blade" 3 [Mystic, Guardian])
+  { cdSkills = [#combat]
+  , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+  , cdUses = Uses Charge 3
+  , cdSlots = [HandSlot, ArcaneSlot]
+  }
+
 drawingThin :: CardDef
 drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
   { cdSkills = [#willpower]
@@ -2816,6 +2827,24 @@ tennesseeSourMashSurvivor3 = (asset "05191" "Tennessee Sour Mash" 2 Survivor)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = setFromList [Item, Illicit]
   , cdUses = Uses Supply 3
+  , cdLevel = 3
+  }
+
+enchantedBladeGuardian3 :: CardDef
+enchantedBladeGuardian3 = (asset "05192" "Enchanted Blade" 3 Guardian)
+  { cdSkills = [#intellect, #combat]
+  , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+  , cdUses = Uses Charge 3
+  , cdSlots = [HandSlot, ArcaneSlot]
+  , cdLevel = 3
+  }
+
+enchantedBladeMystic3 :: CardDef
+enchantedBladeMystic3 = (asset "05193" "Enchanted Blade" 3 Mystic)
+  { cdSkills = [#willpower, #combat]
+  , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+  , cdUses = Uses Charge 4
+  , cdSlots = [HandSlot, ArcaneSlot]
   , cdLevel = 3
   }
 

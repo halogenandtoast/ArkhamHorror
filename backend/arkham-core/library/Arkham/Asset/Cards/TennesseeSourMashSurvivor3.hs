@@ -11,9 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Game.Helpers
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Projection
 import Arkham.SkillType
 
 newtype TennesseeSourMashSurvivor3 = TennesseeSourMashSurvivor3 AssetAttrs

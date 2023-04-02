@@ -37,12 +37,12 @@ getCard (Window _ (Window.CommittedCard _ c) : _) = c
 getCard (_ : ws) = getCard ws
 
 toSkillLabel :: SkillIcon -> Text
-toSkillLabel WildIcon = "{wild}"
+toSkillLabel WildIcon = "Choose {wild}"
 toSkillLabel (SkillIcon sType) = case sType of
-  SkillWillpower -> "{willpower}"
-  SkillIntellect -> "{intellect}"
-  SkillCombat -> "{combat}"
-  SkillAgility -> "{agility}"
+  SkillWillpower -> "Choose {willpower}"
+  SkillIntellect -> "Choose {intellect}"
+  SkillCombat -> "Choose {combat}"
+  SkillAgility -> "Choose {agility}"
 
 instance RunMessage GrislyTotem where
   runMessage msg a@(GrislyTotem attrs) = case msg of

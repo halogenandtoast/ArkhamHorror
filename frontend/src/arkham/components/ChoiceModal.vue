@@ -200,6 +200,17 @@ const title = computed(() => {
 
   return null
 })
+
+const replaceIcons = function(body) {
+  return body.
+    replace('{action}', '<span class="action-icon"></span>').
+    replace('{fast}', '<span class="fast-icon"></span>').
+    replace('{willpower}', '<span class="willpower-icon"></span>').
+    replace('{intellect}', '<span class="intellect-icon"></span>').
+    replace('{combat}', '<span class="combat-icon"></span>').
+    replace('{agility}', '<span class="agility-icon"></span>').
+    replace('{wild}', '<span class="wild-icon"></span>')
+}
 </script>
 
 <template>
@@ -220,7 +231,7 @@ const title = computed(() => {
       <div v-if="showChoices" class="choices">
         <template v-for="(choice, index) in choices" :key="index">
           <div v-if="choice.tag === MessageType.LABEL">
-            <button @click="$emit('choose', index)">{{choice.label}}</button>
+            <button @click="$emit('choose', index)" v-html="replaceIcons(choice.label)"></button>
           </div>
         </template>
       </div>

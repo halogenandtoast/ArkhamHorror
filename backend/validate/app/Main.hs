@@ -58,6 +58,7 @@ data CardJson = CardJson
   , skill_willpower :: Maybe Int
   , skill_wild :: Maybe Int
   , faction_name :: String
+  , faction2_name :: Maybe String
   , victory :: Maybe Int
   , enemy_fight :: Maybe Int
   , health :: Maybe Int
@@ -419,8 +420,7 @@ getValidationResults cards = runValidateT $ do
           (normalizeCost code cost /= cdCost card)
           (invariant $ CardCostMismatch code (cdName card) cost (cdCost card))
         when
-          (toClassSymbol faction_name /= normalizeClassSymbol
-            (headMay . setToList $ cdClassSymbols card)
+          (sort (mapMaybe normalizeClassSymbol (toClassSymbol faction_name : maybe [] (pure . toClassSymbol) faction2_name)) /= sort (mapMaybe (normalizeClassSymbol . Just) (setToList $ cdClassSymbols card))
           )
           (invariant $ ClassMismatch
             code

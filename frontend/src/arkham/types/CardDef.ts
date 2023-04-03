@@ -3,7 +3,7 @@ import { Name, nameDecoder } from '@/arkham/types/Name';
 
 type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" }
 
-type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" }
+type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" } | { tag: "WildMinusIcon" }
 
 
 export interface CardDef {
@@ -25,7 +25,8 @@ const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
 
 const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
   JsonDecoder.object({ contents: JsonDecoder.string, tag: JsonDecoder.isExactly("SkillIcon") }, 'SkillIcon'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("WildIcon") }, 'WildIcon')
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("WildIcon") }, 'WildIcon'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("WildMinusIcon") }, 'WildMinusIcon')
 ], 'SkillIcon')
 
 export const cardDefDecoder = JsonDecoder.object<CardDef>(

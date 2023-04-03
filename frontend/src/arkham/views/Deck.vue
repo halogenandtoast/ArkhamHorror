@@ -113,7 +113,7 @@ const cardIcons = (card: Arkham.CardDef) => {
       }
     }
 
-    if (s.tag == "WildIcon") {
+    if (s.tag == "WildIcon" || s.tag == "WildMinusIcon") {
       return "wild"
     }
 

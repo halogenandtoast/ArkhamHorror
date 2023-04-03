@@ -57,7 +57,7 @@ import Arkham.Event.Events
   , willToSurviveEffect
   , vantagePointEffect
   )
-import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect, dexterDrakeEffect )
+import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect, dexterDrakeEffect, winifredHabbamockEffect )
 import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect )
 import Arkham.Treachery.Treacheries ( mysteriesOfTheLodgeEffect )
 
@@ -259,6 +259,7 @@ allEffects = mapFromList
   , ("60220", SomeEffect libraryDocent1Effect)
   , ("60226", SomeEffect mindOverMatter2Effect)
   , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
+  , ("60301", SomeEffect winifredHabbamockEffect)
   , ("60305", SomeEffect lockpicks)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)

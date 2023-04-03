@@ -73,6 +73,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )
 import Data.HashSet qualified as HashSet
+import Data.List.Extra (nubOrdOn)
 
 replaceThisCard :: Card -> Source -> Source
 replaceThisCard c = \case
@@ -1139,6 +1140,11 @@ passesCriteria iid mcard source windows' = \case
   Criteria.DuringTurn who -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher -> selectAny cardMatcher
+  Criteria.CommitedCardsMatch cardListMatcher -> do
+    mSkillTest <- getSkillTest
+    case mSkillTest of
+      Nothing -> pure False
+      Just st -> cardListMatches (concat $ toList (skillTestCommittedCards st)) cardListMatcher
   Criteria.PlayableCardExistsWithCostReduction n cardMatcher -> do
     mTurnInvestigator <- selectOne Matcher.TurnInvestigator
     let
@@ -2722,6 +2728,7 @@ cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
   Matcher.AnyCards -> pure True
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
+  Matcher.DifferentLengthIsAtLeast n cardMatcher -> pure $ length (nubOrdOn toTitle $ filter (`cardMatch` cardMatcher) cards) >= n
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
 
 targetListMatches

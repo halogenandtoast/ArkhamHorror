@@ -120,6 +120,7 @@ cardMatch a = \case
     elem sym . cdLocationRevealedConnections $ toCardDef a
   CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
   DiscardableCard -> cardMatch a NonWeakness
+  CardOwnedBy iid -> toCardOwner a == Just iid
 
 instance IsCard PlayerCard where
   toCardId = pcId

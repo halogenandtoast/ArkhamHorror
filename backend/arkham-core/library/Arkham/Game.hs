@@ -3514,7 +3514,7 @@ runGameMessage msg g = case msg of
         _ -> pure g
       _ -> pure g
   SkillTestResults resultsData -> pure $ g & skillTestResultsL ?~ resultsData
-  SkillTestEnds iid _ -> do
+  Do (SkillTestEnds iid _) -> do
     skillPairs <-
       for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do
         modifiers' <- getModifiers (SkillTarget skillId)

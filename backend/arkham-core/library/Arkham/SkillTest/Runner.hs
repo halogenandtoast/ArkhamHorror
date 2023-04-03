@@ -41,6 +41,9 @@ calculateSkillTestResultsData s = do
   iconCount <- if CancelSkills `elem` modifiers'
     then pure 0
     else skillIconCount s
+  subtractIconCount <- if CancelSkills `elem` modifiers'
+    then pure 0
+    else subtractSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
   tokenValues <- sum <$> for
     (skillTestRevealedTokens s <> skillTestResolvedTokens s)
@@ -51,12 +54,12 @@ calculateSkillTestResultsData s = do
     resultValueModifiers = foldl' addResultModifier 0 modifiers'
     totaledTokenValues = tokenValues + (skillTestValueModifier s)
     modifiedSkillValue' =
-      max 0 (currentSkillValue + totaledTokenValues + iconCount)
+      max 0 (currentSkillValue + totaledTokenValues + iconCount - subtractIconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
     isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
   pure $ SkillTestResultsData
     currentSkillValue
-    iconCount
+    (iconCount - subtractIconCount)
     totaledTokenValues
     modifiedSkillTestDifficulty
     (resultValueModifiers <$ guard (resultValueModifiers /= 0))
@@ -100,10 +103,19 @@ skillIconCount SkillTest {..} = do
         else totalIcons
     ResourceSkillTest -> pure totalIcons
  where
+  matches WildMinusIcon = False
   matches WildIcon = True
   matches (SkillIcon s) = case skillTestType of
     SkillSkillTest sType -> s == sType
     ResourceSkillTest -> False
+
+subtractSkillIconCount :: HasGame m => SkillTest -> m Int
+subtractSkillIconCount SkillTest {..} =
+  length . filter matches <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
+ where
+  matches WildMinusIcon = True
+  matches WildIcon = False
+  matches (SkillIcon _) = False
 
 getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
@@ -153,10 +165,10 @@ getModifiedTokenValue s t = do
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     Discard _ target | target == skillTestTarget -> do
-      push $ SkillTestEnds skillTestInvestigator skillTestSource
+      pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)]
       pure s
     RemoveFromGame target | target == skillTestTarget -> do
-      push $ SkillTestEnds skillTestInvestigator skillTestSource
+      pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)]
       pure s
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
@@ -242,6 +254,7 @@ instance RunMessage SkillTest where
       pushAll
         [ chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
         , SkillTestEnds skillTestInvestigator skillTestSource
+        , Do (SkillTestEnds skillTestInvestigator skillTestSource)
         ]
       pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
@@ -271,6 +284,7 @@ instance RunMessage SkillTest where
              )
            , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
            , SkillTestEnds skillTestInvestigator skillTestSource
+           , Do (SkillTestEnds skillTestInvestigator skillTestSource)
            ]
       pure $ s & resultL .~ FailedBy True difficulty
     StartSkillTest _ -> do
@@ -328,7 +342,7 @@ instance RunMessage SkillTest where
         & (revealedTokensL .~ mempty)
         & (resolvedTokensL .~ mempty)
         & (valueModifierL .~ 0)
-    SkillTestEnds _ _ -> do
+    Do (SkillTestEnds _ _) -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
       let
@@ -428,7 +442,7 @@ instance RunMessage SkillTest where
       pure s
     SkillTestApplyResultsAfter -> do
       -- ST.7 -- apply results
-      push $ SkillTestEnds skillTestInvestigator skillTestSource -- -> ST.8 -- Skill test ends
+      pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)] -- -> ST.8 -- Skill test ends
       modifiers' <- getModifiers (toTarget s)
       let
         modifiedSkillTestResult =

@@ -78,6 +78,7 @@ data Criterion
   | DuringTurn InvestigatorMatcher
   | EnemyCriteria EnemyCriterion
   | ExtendedCardExists ExtendedCardMatcher
+  | CommitedCardsMatch CardListMatcher
   | FirstAction
   | HasSupply Supply
   | Here

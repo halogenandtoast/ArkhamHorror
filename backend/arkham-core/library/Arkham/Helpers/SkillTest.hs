@@ -46,8 +46,8 @@ getSkillTestSkillTypes = getSkillTestSource <&> \case
 getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
 getSkillTestMatchingSkillIcons = getSkillTestSource <&> \case
   Just (SkillTestSource _ stType _ _) -> case stType of
-    SkillSkillTest skillType -> setFromList [#wild, SkillIcon skillType]
-    ResourceSkillTest -> singleton #wild
+    SkillSkillTest skillType -> setFromList [#wildMinus, #wild, SkillIcon skillType]
+    ResourceSkillTest -> setFromList [#wildMinus, #wild]
   _ -> mempty
 
 getIsBeingInvestigated :: HasGame m => LocationId -> m Bool

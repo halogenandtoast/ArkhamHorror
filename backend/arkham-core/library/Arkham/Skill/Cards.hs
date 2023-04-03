@@ -68,6 +68,8 @@ allPlayerSkillCards = mapFromList $ concatMap
   toCardCodePairs
   [ ableBodied
   , allIn5
+  , anythingYouCanDoBetter
+  , arrogance
   , cunning
   , curiosity
   , daring
@@ -90,6 +92,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , leadership
   , manualDexterity
   , neitherRainNorSnow
+  , nimble
   , notWithoutAFight
   , opportunist
   , opportunist2
@@ -489,13 +492,31 @@ perception2 =
     , cdLevel = 2
     }
 
-neitherRainNorSnow :: CardDef
-neitherRainNorSnow = (skill
-                       "60502"
-                       "Neither Rain nor Snow"
-                       [#wild, #wild, #wild]
-                       Survivor
+anythingYouCanDoBetter :: CardDef
+anythingYouCanDoBetter = (skill
+                       "60302"
+                       "Anything You Can Do, Better"
+                       [#wild, #wild, #wild, #wild, #wild, #wild]
+                       Rogue
                      )
+  { cdCardTraits = setFromList [Innate, Developed]
+  , cdCommitRestrictions = [OnlyYourTest]
+  }
+
+arrogance :: CardDef
+arrogance = (skill "60303" "Arrogance" [#wildMinus] Neutral)
+  { cdCardTraits = singleton Flaw
+  , cdCardSubType = Just Weakness
+  , cdCommitRestrictions = [MustBeCommittedToYourTest]
+  }
+
+nimble :: CardDef
+nimble = (skill "60317" "Nimble" [#agility] Rogue)
+  { cdCardTraits = singleton Innate
+  }
+
+neitherRainNorSnow :: CardDef
+neitherRainNorSnow = (skill "60502" "Neither Rain nor Snow" [#wild, #wild, #wild] Survivor)
   { cdCardTraits = setFromList [Innate, Developed]
   }
 

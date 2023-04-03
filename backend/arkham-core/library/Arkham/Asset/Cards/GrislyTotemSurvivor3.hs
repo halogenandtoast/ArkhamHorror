@@ -40,6 +40,7 @@ getCard (Window _ (Window.CommittedCard _ c) : _) = c
 getCard (_ : ws) = getCard ws
 
 toSkillLabel :: SkillIcon -> Text
+toSkillLabel WildMinusIcon = "Choose Minus {wild}"
 toSkillLabel WildIcon = "Choose {wild}"
 toSkillLabel (SkillIcon sType) = case sType of
   SkillWillpower -> "Choose {willpower}"

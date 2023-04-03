@@ -29,7 +29,7 @@ instance IsLabel "combat" SkillType where
 instance IsLabel "agility" SkillType where
   fromLabel = SkillAgility
 
-data SkillIcon = SkillIcon SkillType | WildIcon
+data SkillIcon = SkillIcon SkillType | WildIcon | WildMinusIcon
   deriving stock (Show, Eq, Generic, Ord)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -47,3 +47,6 @@ instance IsLabel "agility" SkillIcon where
 
 instance IsLabel "wild" SkillIcon where
   fromLabel = WildIcon
+
+instance IsLabel "wildMinus" SkillIcon where
+  fromLabel = WildMinusIcon

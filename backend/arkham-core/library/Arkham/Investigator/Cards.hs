@@ -92,6 +92,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , normanWithers
   , nathanielCho
   , harveyWalters
+  , winifredHabbamock
   , stellaClark
   , daisyWalkerParallel
   ]
@@ -319,6 +320,13 @@ harveyWalters = investigator
   ("Harvey Walters" <:> "The Professor")
   Seeker
   [Miskatonic]
+
+winifredHabbamock :: CardDef
+winifredHabbamock = investigator
+  "60301"
+  ("Winifred Habbamock" <:> "The Aviatrix")
+  Rogue
+  [Criminal]
 
 stellaClark :: CardDef
 stellaClark = investigator

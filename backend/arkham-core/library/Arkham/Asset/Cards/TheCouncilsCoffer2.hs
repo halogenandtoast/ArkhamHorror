@@ -34,7 +34,7 @@ instance HasAbilities TheCouncilsCoffer2 where
 
 instance RunMessage TheCouncilsCoffer2 where
   runMessage msg a@(TheCouncilsCoffer2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 0 _ _ -> do
+    UseCardAbility _ (isSource attrs -> True) 0 _ _ -> do
       iids <- getInvestigatorIds
       pushAll
         $ [ chooseOne

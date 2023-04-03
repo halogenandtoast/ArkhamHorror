@@ -70,6 +70,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , allIn5
   , anythingYouCanDoBetter
   , arrogance
+  , copycat3
   , cunning
   , curiosity
   , daredevil
@@ -536,6 +537,12 @@ manualDexterity2 =
   (skill "60325" "Manual Dexterity" [#agility, #agility, #agility] Rogue)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+copycat3 :: CardDef
+copycat3 =
+  (skill "60330" "Copycat" [#wild] Rogue)
+    { cdCardTraits = singleton Gambit
     }
 
 neitherRainNorSnow :: CardDef

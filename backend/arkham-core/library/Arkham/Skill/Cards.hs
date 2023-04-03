@@ -72,6 +72,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , arrogance
   , cunning
   , curiosity
+  , daredevil
   , daring
   , deduction
   , deduction2
@@ -91,6 +92,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , lastChance
   , leadership
   , manualDexterity
+  , manualDexterity2
   , neitherRainNorSnow
   , nimble
   , notWithoutAFight
@@ -102,6 +104,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , perception2
   , prophesy
   , quickThinking
+  , reckless
   , recklessAssault
   , resourceful
   , riseToTheOccasion
@@ -183,7 +186,7 @@ manualDexterity =
   (skill "01092" "Manual Dexterity" [#agility, #agility] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
-  , cdAlternateCardCodes = ["01592"]
+    , cdAlternateCardCodes = ["01592"]
     }
 
 unexpectedCourage :: CardDef
@@ -510,10 +513,30 @@ arrogance = (skill "60303" "Arrogance" [#wildMinus] Neutral)
   , cdCommitRestrictions = [MustBeCommittedToYourTest]
   }
 
+reckless :: CardDef
+reckless = (skill "60304" "Reckless" [] Neutral)
+  { cdCardTraits = singleton Flaw
+  , cdCardSubType = Just Weakness
+  , cdCommitRestrictions = [OnlyCardCommittedToTest]
+  , cdCardInHandEffects = True
+  }
+
 nimble :: CardDef
 nimble = (skill "60317" "Nimble" [#agility] Rogue)
   { cdCardTraits = singleton Innate
   }
+
+daredevil :: CardDef
+daredevil = (skill "60318" "Daredevil" [#wild] Rogue)
+  { cdCardTraits = setFromList [Fortune, Practiced]
+  }
+
+manualDexterity2 :: CardDef
+manualDexterity2 =
+  (skill "60325" "Manual Dexterity" [#agility, #agility, #agility] Rogue)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
 
 neitherRainNorSnow :: CardDef
 neitherRainNorSnow = (skill "60502" "Neither Rain nor Snow" [#wild, #wild, #wild] Survivor)

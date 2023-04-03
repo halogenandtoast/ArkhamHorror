@@ -305,7 +305,7 @@ data Message
   | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
   | RevealUntilFirst InvestigatorId Source DeckSignifier CardMatcher
   | RevealedCards InvestigatorId Source DeckSignifier (Maybe Card) [Card]
-  | DiscardUntilFirst InvestigatorId Source CardMatcher
+  | DiscardUntilFirst InvestigatorId Source ExtendedCardMatcher
   | DiscardTopOfDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int Source (Maybe Target) [EncounterCard]
@@ -558,7 +558,7 @@ data Message
   | RequestTokens Source (Maybe InvestigatorId) RevealStrategy RequestedTokenStrategy
   | RequestedEncounterCard Source (Maybe InvestigatorId) (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
-  | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
+  | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard) [PlayerCard]
   | RequestedSetAsideCard Source Card
   | RequestedTokens Source (Maybe InvestigatorId) [Token]
   | RerunSkillTest

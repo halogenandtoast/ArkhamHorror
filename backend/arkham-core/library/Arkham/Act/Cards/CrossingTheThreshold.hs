@@ -69,7 +69,7 @@ instance RunMessage CrossingTheThreshold where
           $ PlayerTreachery
           <> CardWithOneOf (map CardWithTrait [Madness, Injury])
         pure a
-    RequestedPlayerCard iid (isSource attrs -> True) (Just card) -> do
+    RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure a
     _ -> CrossingTheThreshold . (`with` metadata) <$> runMessage msg attrs

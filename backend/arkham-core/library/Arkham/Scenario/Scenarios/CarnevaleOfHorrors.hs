@@ -397,7 +397,7 @@ instance RunMessage CarnevaleOfHorrors where
             | reward <- rewards
             ]
         pure s
-    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+    RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . AddCardToDeckForCampaign iid
       pure s
     _ -> CarnevaleOfHorrors <$> runMessage msg attrs

@@ -273,7 +273,7 @@ instance RunMessage UndimensionedAndUnseen where
             _ -> pure ()
         _ -> pure ()
       pure s
-    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+    RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ \card -> push
         $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s

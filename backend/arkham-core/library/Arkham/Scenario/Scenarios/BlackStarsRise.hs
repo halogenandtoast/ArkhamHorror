@@ -307,7 +307,7 @@ instance RunMessage BlackStarsRise where
             <> [GameOver]
         _ -> error "Unknown resolution"
       pure s
-    RequestedPlayerCard iid source mcard | isSource attrs source -> do
+    RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . AddCardToDeckForCampaign iid
       pure s
     _ -> BlackStarsRise <$> runMessage msg attrs

@@ -43,7 +43,9 @@ import Arkham.Asset.Assets
 import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect, josefMeigerEffect )
 import Arkham.Event.Events
   ( actOfDesperationEffect
+  , backstab3Effect
   , banish1Effect
+  , cheapShot2Effect
   , exposeWeakness3Effect
   , imDoneRunninEffect
   , marksmanship1Effect
@@ -53,6 +55,7 @@ import Arkham.Event.Events
   , onTheLamEffect
   , oneTwoPunch5Effect
   , oneTwoPunchEffect
+  , pilfer3Effect
   , slipAwayEffect
   , willToSurviveEffect
   , vantagePointEffect
@@ -261,6 +264,9 @@ allEffects = mapFromList
   , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
   , ("60301", SomeEffect winifredHabbamockEffect)
   , ("60305", SomeEffect lockpicks)
+  , ("60323", SomeEffect cheapShot2Effect)
+  , ("60328", SomeEffect pilfer3Effect)
+  , ("60329", SomeEffect backstab3Effect)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)
   , ("81007", SomeEffect cursedShores)

@@ -62,7 +62,7 @@ instance RunMessage TheNightHowls where
         $ msgs
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
-    RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       case mcard of
         Just card -> push $ AddCardToDeckForCampaign iid card
         Nothing -> push $ SufferTrauma iid 0 1

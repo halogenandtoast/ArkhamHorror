@@ -379,6 +379,14 @@ allEvents = mapFrom
   , SomeEventCard iveGotAPlan2
   , SomeEventCard mindOverMatter2
   , SomeEventCard seekingAnswers2
+  -- Winifred Habbacmock
+  , SomeEventCard pilfer
+  , SomeEventCard sneakBy
+  , SomeEventCard daringManeuver2
+  , SomeEventCard cheapShot2
+  , SomeEventCard slipAway2
+  , SomeEventCard pilfer3
+  , SomeEventCard backstab3
   --- Jacqueline Fine
   , SomeEventCard eldritchInspiration1
   --- Stella Clark

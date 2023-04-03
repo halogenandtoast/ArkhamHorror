@@ -452,6 +452,7 @@ data ExtendedCardMatcher
   | ExtendedCardMatches [ExtendedCardMatcher]
   | PlayableCardWithCostReduction Int ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
+  | CommittableCard InvestigatorId ExtendedCardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

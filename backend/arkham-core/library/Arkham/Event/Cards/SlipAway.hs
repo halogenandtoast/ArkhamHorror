@@ -13,11 +13,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Projection
 import Arkham.SkillType
 
 newtype SlipAway = SlipAway EventAttrs
@@ -30,19 +28,9 @@ slipAway = event SlipAway Cards.slipAway
 instance RunMessage SlipAway where
   runMessage msg e@(SlipAway attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      n <- field InvestigatorAgility iid
       pushAll
-        [ skillTestModifier
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          (SkillModifier SkillAgility n)
-        , ChooseEvadeEnemy
-          iid
-          (toSource attrs)
-          Nothing
-          SkillAgility
-          AnyEnemy
-          False
+        [ skillTestModifier attrs iid (AddSkillValue SkillAgility)
+        , ChooseEvadeEnemy iid (toSource attrs) Nothing SkillAgility AnyEnemy False
         ]
       pure e
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
@@ -51,11 +39,7 @@ instance RunMessage SlipAway where
         case mTarget of
           Just target@(EnemyTarget enemyId) -> do
             nonElite <- enemyId <=~> NonEliteEnemy
-            when nonElite $ push $ createCardEffect
-              Cards.slipAway
-              Nothing
-              (toSource attrs)
-              target
+            when nonElite $ push $ createCardEffect Cards.slipAway Nothing attrs target
           _ -> error "Invalid call, expected enemy skill test target"
         pure e
     _ -> SlipAway <$> runMessage msg attrs

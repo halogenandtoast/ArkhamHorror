@@ -330,6 +330,8 @@ instance RunMessage SkillTest where
       pure $ s & committedCardsL %~ map (filter (/= card))
     SkillTestCommitCard iid card -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
+    CommitCard iid card | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
+      pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))
     ReturnSkillTestRevealedTokens -> do

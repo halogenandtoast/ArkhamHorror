@@ -289,18 +289,22 @@ allPlayerAssetCards = mapFromList $ concatMap
   , lantern
   , leatherCoat
   , leatherCoat1
+  , leatherJacket
   , leoDeLuca
   , leoDeLuca1
   , libraryDocent1
   , lightningGun5
   , liquidCourage
+  , liquidCourage1
   , litaChantler
   , livreDeibon
   , lockpicks
   , lockpicks1
   , lolaSantiago3
   , loneWolf
+  , lonnieRitter
   , luckyCigaretteCase
+  , luckyCigaretteCase3
   , luckyDice2
   , lupara3
   , m1918Bar4
@@ -314,6 +318,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , maskedCarnevaleGoer_19
   , maskedCarnevaleGoer_20
   , maskedCarnevaleGoer_21
+  , mauserC96
+  , mauserC962
   , meatCleaver
   , medicalTexts
   , medicoDellaPeste
@@ -3306,10 +3312,57 @@ lockpicks = (asset "60305" "Lockpicks" 3 Rogue)
   , cdSlots = [HandSlot]
   }
 
+mauserC96 :: CardDef
+mauserC96 = (asset "60306" "Mauser C96" 4 Rogue)
+  { cdSkills = [#agility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdSlots = [HandSlot]
+  , cdUses = uses Ammo 5
+  }
+
+lonnieRitter :: CardDef
+lonnieRitter = (asset "60309" ("Lonnie Ritter" <:> "Feisty Mechanic") 4 Rogue)
+  { cdSkills = [#combat]
+  , cdCardTraits = singleton Ally
+  , cdSlots = [AllySlot]
+  }
+
+leatherJacket :: CardDef
+leatherJacket = fast $ (asset "60310" "Leather Jacket" 2 Rogue)
+  { cdSkills = [#combat]
+  , cdCardTraits = setFromList [Item, Armor]
+  , cdSlots = [BodySlot]
+  }
+
 streetwise :: CardDef
 streetwise = (asset "60311" "Streetwise" 0 Rogue)
   { cdCardTraits = singleton Talent
   , cdSkills = [#intellect, #agility]
+  }
+
+liquidCourage1 :: CardDef
+liquidCourage1 = (asset "60320" "Liquid Courage" 1 Rogue)
+  { cdSkills = [#willpower, #willpower]
+  , cdCardTraits = setFromList [Item, Illicit]
+  , cdUses = uses Supply 4
+  , cdLevel = 1
+  }
+
+mauserC962 :: CardDef
+mauserC962 = (asset "60321" "Mauser C96" 3 Rogue)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdSlots = [HandSlot]
+  , cdUses = uses Ammo 5
+  , cdLevel = 2
+  }
+
+luckyCigaretteCase3 :: CardDef
+luckyCigaretteCase3 = (asset "60326" "Lucky Cigarette Case" 2 Rogue)
+  { cdSkills = [#willpower, #willpower]
+  , cdCardTraits = setFromList [Item, Charm]
+  , cdSlots = [AccessorySlot]
+  , cdLevel = 3
   }
 
 eighteenDerringer :: CardDef

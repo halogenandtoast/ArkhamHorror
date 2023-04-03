@@ -89,7 +89,10 @@ allSkills = mapFrom
   , SomeSkillCard perception2
   , SomeSkillCard anythingYouCanDoBetter
   , SomeSkillCard arrogance
+  , SomeSkillCard reckless
   , SomeSkillCard nimble
+  , SomeSkillCard daredevil
+  , SomeSkillCard manualDexterity2
   , SomeSkillCard neitherRainNorSnow
   , SomeSkillCard unexpectedCourage2
   ]

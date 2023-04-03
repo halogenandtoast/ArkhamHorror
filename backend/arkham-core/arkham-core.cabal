@@ -451,18 +451,22 @@ library
       Arkham.Asset.Cards.Lantern
       Arkham.Asset.Cards.LeatherCoat
       Arkham.Asset.Cards.LeatherCoat1
+      Arkham.Asset.Cards.LeatherJacket
       Arkham.Asset.Cards.LeoDeLuca
       Arkham.Asset.Cards.LeoDeLuca1
       Arkham.Asset.Cards.LibraryDocent1
       Arkham.Asset.Cards.LightningGun5
       Arkham.Asset.Cards.LiquidCourage
+      Arkham.Asset.Cards.LiquidCourage1
       Arkham.Asset.Cards.LitaChantler
       Arkham.Asset.Cards.LivreDeibon
       Arkham.Asset.Cards.Lockpicks
       Arkham.Asset.Cards.Lockpicks1
       Arkham.Asset.Cards.LolaSantiago3
       Arkham.Asset.Cards.LoneWolf
+      Arkham.Asset.Cards.LonnieRitter
       Arkham.Asset.Cards.LuckyCigaretteCase
+      Arkham.Asset.Cards.LuckyCigaretteCase3
       Arkham.Asset.Cards.LuckyDice2
       Arkham.Asset.Cards.Lupara3
       Arkham.Asset.Cards.M1918Bar4
@@ -476,6 +480,8 @@ library
       Arkham.Asset.Cards.MaskedCarnevaleGoer_19
       Arkham.Asset.Cards.MaskedCarnevaleGoer_20
       Arkham.Asset.Cards.MaskedCarnevaleGoer_21
+      Arkham.Asset.Cards.MauserC96
+      Arkham.Asset.Cards.MauserC962
       Arkham.Asset.Cards.MeatCleaver
       Arkham.Asset.Cards.MedicalTexts
       Arkham.Asset.Cards.MedicoDellaPeste
@@ -963,6 +969,7 @@ library
       Arkham.Event.Cards.ATestOfWill1
       Arkham.Event.Cards.ATestOfWill2
       Arkham.Event.Cards.Backstab
+      Arkham.Event.Cards.Backstab3
       Arkham.Event.Cards.BaitAndSwitch
       Arkham.Event.Cards.Banish1
       Arkham.Event.Cards.Barricade
@@ -977,6 +984,7 @@ library
       Arkham.Event.Cards.BuryThemDeep
       Arkham.Event.Cards.CallingInFavors
       Arkham.Event.Cards.CheapShot
+      Arkham.Event.Cards.CheapShot2
       Arkham.Event.Cards.CheatDeath5
       Arkham.Event.Cards.CleanThemOut
       Arkham.Event.Cards.CloseCall2
@@ -994,6 +1002,7 @@ library
       Arkham.Event.Cards.CunningDistraction
       Arkham.Event.Cards.CustomAmmunition3
       Arkham.Event.Cards.DaringManeuver
+      Arkham.Event.Cards.DaringManeuver2
       Arkham.Event.Cards.DarkInsight
       Arkham.Event.Cards.DarkMemory
       Arkham.Event.Cards.DarkPact
@@ -1096,6 +1105,8 @@ library
       Arkham.Event.Cards.PayDay1
       Arkham.Event.Cards.Perseverance
       Arkham.Event.Cards.Persuasion
+      Arkham.Event.Cards.Pilfer
+      Arkham.Event.Cards.Pilfer3
       Arkham.Event.Cards.Premonition
       Arkham.Event.Cards.PreparedForTheWorst
       Arkham.Event.Cards.PreposterousSketches
@@ -1114,10 +1125,12 @@ library
       Arkham.Event.Cards.Shortcut2
       Arkham.Event.Cards.SleightOfHand
       Arkham.Event.Cards.SlipAway
+      Arkham.Event.Cards.SlipAway2
       Arkham.Event.Cards.SmuggledGoods
       Arkham.Event.Cards.SnareTrap2
       Arkham.Event.Cards.SneakAttack
       Arkham.Event.Cards.SneakAttack2
+      Arkham.Event.Cards.SneakBy
       Arkham.Event.Cards.StandTogether
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.StormOfSpirits
@@ -1710,6 +1723,7 @@ library
       Arkham.Skill.Cards.Arrogance
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity
+      Arkham.Skill.Cards.Daredevil
       Arkham.Skill.Cards.Daring
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2
@@ -1729,6 +1743,7 @@ library
       Arkham.Skill.Cards.LastChance
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.ManualDexterity
+      Arkham.Skill.Cards.ManualDexterity2
       Arkham.Skill.Cards.NeitherRainNorSnow
       Arkham.Skill.Cards.Nimble
       Arkham.Skill.Cards.NotWithoutAFight
@@ -1740,6 +1755,7 @@ library
       Arkham.Skill.Cards.Perception2
       Arkham.Skill.Cards.Prophesy
       Arkham.Skill.Cards.QuickThinking
+      Arkham.Skill.Cards.Reckless
       Arkham.Skill.Cards.RecklessAssault
       Arkham.Skill.Cards.Resourceful
       Arkham.Skill.Cards.RiseToTheOccasion

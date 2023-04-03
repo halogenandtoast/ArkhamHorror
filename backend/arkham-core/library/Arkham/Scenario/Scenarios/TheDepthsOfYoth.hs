@@ -307,7 +307,7 @@ instance RunMessage TheDepthsOfYoth where
       allKilled <- selectNone AliveInvestigator
       when allKilled $ push GameOver
       pure s
-    RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       for_ mcard $ \card -> push
         $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s

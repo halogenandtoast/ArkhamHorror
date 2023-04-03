@@ -56,10 +56,10 @@ instance RunMessage TemploMayor_175 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ ShuffleDiscardBackIn iid
-        , DiscardUntilFirst iid (toSource attrs) WeaknessCard
+        , DiscardUntilFirst iid (toSource attrs) (BasicCardMatch WeaknessCard)
         ]
       pure l
-    RequestedPlayerCard iid (isSource attrs -> True) mcard -> do
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       for_ mcard $ push . AddToHand iid . PlayerCard
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

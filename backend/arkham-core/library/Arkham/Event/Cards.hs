@@ -92,6 +92,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , astralTravel
   , alterFate3
   , backstab
+  , backstab3
   , banish1
   , baitAndSwitch
   , barricade
@@ -106,6 +107,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , buryThemDeep
   , callingInFavors
   , cheapShot
+  , cheapShot2
   , cheatDeath5
   , cleanThemOut
   , closeCall2
@@ -123,6 +125,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , cunningDistraction
   , customAmmunition3
   , daringManeuver
+  , daringManeuver2
   , darkInsight
   , darkMemory
   , darkPact
@@ -225,6 +228,8 @@ allPlayerEventCards = mapFromList $ concatMap
   , payDay1
   , perseverance
   , persuasion
+  , pilfer
+  , pilfer3
   , premonition
   , preparedForTheWorst
   , preposterousSketches
@@ -243,10 +248,12 @@ allPlayerEventCards = mapFromList $ concatMap
   , shortcut2
   , sleightOfHand
   , slipAway
+  , slipAway2
   , smuggledGoods
   , snareTrap2
   , sneakAttack
   , sneakAttack2
+  , sneakBy
   , standTogether
   , standTogether3
   , stormOfSpirits
@@ -2106,6 +2113,62 @@ seekingAnswers2 = (event "60227" "Seeking Answers" 1 Seeker)
   , cdCardTraits = singleton Insight
   , cdLevel = 2
   , cdAlternateCardCodes = ["01685"]
+  }
+
+pilfer :: CardDef
+pilfer = (event "60315" "Pilfer" 4 Rogue)
+  { cdSkills = [#intellect, #agility]
+  , cdCardTraits = singleton Trick
+  , cdActions = [Action.Investigate]
+  }
+
+sneakBy :: CardDef
+sneakBy = (event "60316" "Sneak By" 0 Rogue)
+  { cdCardTraits = singleton Trick
+  , cdActions = [Action.Evade]
+  , cdSkills = [#agility, #agility]
+  }
+
+daringManeuver2 :: CardDef
+daringManeuver2 = (event "60322" "Daring Maneuver" 0 Rogue)
+  { cdSkills = [#wild]
+  , cdCardTraits = singleton Gambit
+  , cdFastWindow =
+    Just $ WouldHaveSkillTestResult Timing.When You AnySkillTest $ SuccessResult
+      AnyValue
+  , cdLevel = 2
+  }
+
+cheapShot2 :: CardDef
+cheapShot2 = (event "60323" "Cheap Shot" 2 Rogue)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = singleton Trick
+  , cdActions = [Action.Fight]
+  , cdLevel = 2
+  }
+
+slipAway2 :: CardDef
+slipAway2 = (event "60324" "Slip Away" 2 Rogue)
+  { cdCardTraits = singleton Trick
+  , cdSkills = [#intellect, #agility]
+  , cdActions = [Action.Evade]
+  , cdLevel = 2
+  }
+
+pilfer3 :: CardDef
+pilfer3 = (event "60328" "Pilfer" 4 Rogue)
+  { cdSkills = [#intellect, #agility]
+  , cdCardTraits = singleton Trick
+  , cdActions = [Action.Investigate]
+  , cdLevel = 3
+  }
+
+backstab3 :: CardDef
+backstab3 = (event "60329" "Backstab" 3 Rogue)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = setFromList [Tactic]
+  , cdActions = [Action.Fight]
+  , cdLevel = 3
   }
 
 eldritchInspiration1 :: CardDef

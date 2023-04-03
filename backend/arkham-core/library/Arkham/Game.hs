@@ -31,6 +31,8 @@ import Arkham.Card.PlayerCard
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Classes.HasDistance
+import Arkham.ClassSymbol
+import Arkham.CommitRestriction
 import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.DamageEffect
@@ -2478,6 +2480,7 @@ instance Query ExtendedCardMatcher where
       <> victoryDisplayCards
       )
    where
+    matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher
         -> do
@@ -2520,6 +2523,84 @@ instance Query ExtendedCardMatcher where
             results <- selectList matcher'
             playable <- filterM (getIsPlayable iid GameSource costStatus windows') results
             pure $ c `elem` playable
+      CommittableCard iid matcher' -> do
+        mSkillTest <- getSkillTest
+        case mSkillTest of
+          Nothing -> pure False
+          Just skillTest -> do
+            modifiers' <- getModifiers (toTarget iid)
+            committedCards <- field InvestigatorCommittedCards iid
+            allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
+            let
+              onlyCardComittedToTestCommitted = any
+                (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
+                allCommittedCards
+              committedCardTitles = map toTitle allCommittedCards
+              skillDifficulty = skillTestDifficulty skillTest
+            cannotCommitCards <- elem (CannotCommitCards AnyCard)
+              <$> getModifiers (InvestigatorTarget iid)
+            if cannotCommitCards || onlyCardComittedToTestCommitted
+              then pure False
+              else do
+                matchInitial <- c `matches'` matcher'
+                resources <- field InvestigatorResources iid
+                isScenarioAbility <- getIsScenarioAbility
+                mlid <- field InvestigatorLocation iid
+                skillIcons <- getSkillTestMatchingSkillIcons
+                case c of
+                  PlayerCard card -> do
+                    let
+                      passesCommitRestriction = \case
+                        CommittableTreachery -> error "unhandled"
+                        OnlyCardCommittedToTest -> pure $ null committedCardTitles
+                        MaxOnePerTest ->
+                          pure $ toTitle card `notElem` committedCardTitles
+                        OnlyYourTest -> pure $ skillTestInvestigator skillTest == iid
+                        MustBeCommittedToYourTest -> pure True
+                        OnlyIfYourLocationHasClues -> case mlid of
+                          Nothing -> pure False
+                          Just lid -> fieldMap LocationClues (> 0) lid
+                        OnlyTestWithActions as ->
+                          pure $ maybe False (`elem` as) (skillTestAction skillTest)
+                        ScenarioAbility -> pure isScenarioAbility
+                        SelfCanCommitWhen matcher'' ->
+                          notNull <$> select (InvestigatorWithId iid <> matcher'')
+                        MinSkillTestValueDifference n ->
+                          case skillTestType skillTest of
+                            SkillSkillTest skillType -> do
+                              baseValue <- baseSkillValueFor skillType Nothing [] iid
+                              pure $ (skillDifficulty - baseValue) >= n
+                            ResourceSkillTest ->
+                              pure $ (skillDifficulty - resources) >= n
+                      prevented = flip
+                        any
+                        modifiers'
+                        \case
+                          CanOnlyUseCardsInRole role -> null $ intersect
+                            (cdClassSymbols $ toCardDef card)
+                            (setFromList [Neutral, role])
+                          CannotCommitCards matcher'' -> cardMatch card matcher''
+                          _ -> False
+                    passesCommitRestrictions <- allM
+                      passesCommitRestriction
+                      (cdCommitRestrictions $ toCardDef card)
+                    pure
+                      $ PlayerCard card
+                      `notElem` committedCards
+                      && (any (`member` skillIcons) (cdSkills (toCardDef card))
+                         || (null (cdSkills $ toCardDef card)
+                            && toCardType card
+                            == SkillType
+                            )
+                         )
+                      && passesCommitRestrictions
+                      && not prevented
+                      && matchInitial
+                  EncounterCard card ->
+                    pure
+                      $ CommittableTreachery
+                      `elem` (cdCommitRestrictions $ toCardDef card) && matchInitial
+                  VengeanceCard _ -> error "vengeance card"
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
         iids <- selectList who
@@ -4411,7 +4492,7 @@ runGameMessage msg g = case msg of
       of
         [] -> pure Nothing
         (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
-    g <$ push (RequestedPlayerCard iid source mcard)
+    g <$ push (RequestedPlayerCard iid source mcard [])
   GainSurge source target -> do
     cardId <- case target of
       EnemyTarget eid -> field EnemyCardId eid

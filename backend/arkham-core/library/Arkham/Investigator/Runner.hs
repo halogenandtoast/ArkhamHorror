@@ -38,6 +38,7 @@ import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Attrs
@@ -1778,16 +1779,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
     pure $ a & deckL .~ deck' & discardL %~ (reverse cs <>)
   DiscardUntilFirst iid source matcher | iid == investigatorId -> do
-    let
-      (discards, remainingDeck) =
-        break (`cardMatch` matcher) (unDeck investigatorDeck)
+    (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
     case remainingDeck of
       [] -> do
         pushAll
-          [RequestedPlayerCard iid source Nothing, DeckHasNoCards iid Nothing]
+          [RequestedPlayerCard iid source Nothing discards, DeckHasNoCards iid Nothing]
         pure $ a & deckL .~ mempty & discardL %~ (reverse discards <>)
       (x : xs) -> do
-        push (RequestedPlayerCard iid source (Just x))
+        push (RequestedPlayerCard iid source (Just x) discards)
         pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
   RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> do
     let
@@ -2437,7 +2436,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == investigatorId -> do
       let cards' = mapMaybe (preview _PlayerCard) cards
       deck <- shuffleM (cards' <> unDeck investigatorDeck)
-      pure $ a & deckL .~ Deck deck & handL %~ filter (`notElem` cards)
+      pure
+        $ a
+        & (deckL .~ Deck deck)
+        & (handL %~ filter (`notElem` cards))
+        & (cardsUnderneathL %~ filter (`notElem` cards))
+        & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+        & (foundCardsL . each  %~ filter (`notElem` cards))
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId
     | iid' == investigatorId -> do
       let

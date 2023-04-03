@@ -571,7 +571,12 @@ allAssets = mapFrom
   , SomeAssetCard theNecronomiconPetrusDeDaciaTranslation5
   --- Winnifred Habbamock
   , SomeAssetCard lockpicks
+  , SomeAssetCard mauserC96
+  , SomeAssetCard lonnieRitter
+  , SomeAssetCard leatherJacket
   , SomeAssetCard streetwise
+  , SomeAssetCard liquidCourage1
+  , SomeAssetCard mauserC962
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

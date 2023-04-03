@@ -543,6 +543,7 @@ copycat3 :: CardDef
 copycat3 =
   (skill "60330" "Copycat" [#wild] Rogue)
     { cdCardTraits = singleton Gambit
+    , cdLevel = 3
     }
 
 neitherRainNorSnow :: CardDef

@@ -61,7 +61,7 @@ import Arkham.Event.Events
   , vantagePointEffect
   )
 import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect, dexterDrakeEffect, winifredHabbamockEffect )
-import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect )
+import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect, copycat3Effect )
 import Arkham.Treachery.Treacheries ( mysteriesOfTheLodgeEffect )
 
 createEffect
@@ -267,6 +267,7 @@ allEffects = mapFromList
   , ("60323", SomeEffect cheapShot2Effect)
   , ("60328", SomeEffect pilfer3Effect)
   , ("60329", SomeEffect backstab3Effect)
+  , ("60330", SomeEffect copycat3Effect)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)
   , ("81007", SomeEffect cursedShores)

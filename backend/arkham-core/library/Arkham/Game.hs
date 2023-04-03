@@ -3376,8 +3376,14 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
-  PutCardOnTopOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c)
-  PutCardOnBottomOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c)
+  PutCardOnTopOfDeck _ _ c ->  do
+    mSkillId <- selectOne $ SkillWithCardId (toCardId c)
+    let skillsF = maybe id deleteMap mSkillId
+    pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c) & entitiesL . skillsL %~ skillsF
+  PutCardOnBottomOfDeck _ _ c -> do
+    mSkillId <- selectOne $ SkillWithCardId (toCardId c)
+    let skillsF = maybe id deleteMap mSkillId
+    pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c) & entitiesL . skillsL %~ skillsF
   ShuffleCardsIntoDeck _ cards ->
     pure $ g & focusedCardsL %~ filter (`notElem` cards)
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens

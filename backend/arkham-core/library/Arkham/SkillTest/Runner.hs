@@ -334,6 +334,10 @@ instance RunMessage SkillTest where
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
+    PutCardOnBottomOfDeck _ _ card -> do
+      pure $ s & committedCardsL %~ map (filter (/= card))
+    PutCardOnTopOfDeck _ _ card -> do
+      pure $ s & committedCardsL %~ map (filter (/= card))
     PutCardIntoPlay _ card _ _ -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
     CardEnteredPlay _ card -> do

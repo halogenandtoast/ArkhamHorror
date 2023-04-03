@@ -579,6 +579,7 @@ allAssets = mapFrom
   , SomeAssetCard mauserC962
   , SomeAssetCard luckyCigaretteCase3
   , SomeAssetCard sharpshooter3
+  , SomeAssetCard berettaM19184
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

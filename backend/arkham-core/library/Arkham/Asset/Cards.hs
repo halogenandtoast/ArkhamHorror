@@ -151,6 +151,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , bauta
   , beatCop
   , beatCop2
+  , berettaM19184
   , blackjack
   , bloodPact3
   , bookOfShadows1
@@ -3371,6 +3372,15 @@ sharpshooter3 = (asset "60327" "Sharpshooter" 2 Rogue)
   { cdSkills = [#combat, #agility]
   , cdCardTraits = singleton Talent
   , cdLevel = 3
+  }
+
+berettaM19184 :: CardDef
+berettaM19184 = (asset "60331" "Beretta M1918" 4 Rogue)
+  { cdSkills = [#combat, #combat, #agility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdUses = uses Ammo 4
+  , cdSlots = [HandSlot, HandSlot]
+  , cdLevel = 4
   }
 
 eighteenDerringer :: CardDef

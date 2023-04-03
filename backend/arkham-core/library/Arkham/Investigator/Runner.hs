@@ -34,6 +34,7 @@ import Arkham.DefeatedBy
 import Arkham.Discard
 import Arkham.Draw.Types
 import Arkham.Event.Types ( Field (..) )
+import Arkham.Enemy.Types qualified as Field
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
@@ -56,6 +57,7 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Placement
 import Arkham.Projection
@@ -652,11 +654,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           EnemyFightActionCriteria override -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
+        applyMatcherModifiers :: ModifierType -> EnemyMatcher -> EnemyMatcher
+        applyMatcherModifiers (Modifier.AlternateFightField someField) original = case someField of
+          SomeField Field.EnemyEvade -> original <> EnemyWithEvade
+          _ -> original
+        applyMatcherModifiers _ n = n
         canFightMatcher = case overrides of
           [] -> CanFightEnemy
           [o] -> CanFightEnemyWithOverride o
           _ -> error "multiple overrides found"
-      enemyIds <- selectList $ canFightMatcher <> enemyMatcher
+      enemyIds <- selectList $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
       push $ chooseOne
         iid
         [ FightLabel eid [FightEnemy iid eid source mTarget skillType isAction]

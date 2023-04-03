@@ -577,6 +577,8 @@ allAssets = mapFrom
   , SomeAssetCard streetwise
   , SomeAssetCard liquidCourage1
   , SomeAssetCard mauserC962
+  , SomeAssetCard luckyCigaretteCase3
+  , SomeAssetCard sharpshooter3
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

@@ -477,7 +477,7 @@ instance RunMessage EnemyAttrs where
           iids
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      enemyFight' <- modifiedEnemyFight a
+      enemyFight' <- modifiedEnemyFight iid a
       push $ fight
         iid
         source

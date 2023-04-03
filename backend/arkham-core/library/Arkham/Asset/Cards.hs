@@ -391,6 +391,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , scrying3
   , sealOfTheSeventhSign5
   , shardsOfTheVoid3
+  , sharpshooter3
   , shotgun4
   , showmanship
   , shrewdAnalysis
@@ -3362,6 +3363,13 @@ luckyCigaretteCase3 = (asset "60326" "Lucky Cigarette Case" 2 Rogue)
   { cdSkills = [#willpower, #willpower]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
+  , cdLevel = 3
+  }
+
+sharpshooter3 :: CardDef
+sharpshooter3 = (asset "60327" "Sharpshooter" 2 Rogue)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = singleton Talent
   , cdLevel = 3
   }
 

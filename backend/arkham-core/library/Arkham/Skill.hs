@@ -87,6 +87,9 @@ allSkills = mapFrom
   , SomeSkillCard ableBodied
   , SomeSkillCard overpower2
   , SomeSkillCard perception2
+  , SomeSkillCard anythingYouCanDoBetter
+  , SomeSkillCard arrogance
+  , SomeSkillCard nimble
   , SomeSkillCard neitherRainNorSnow
   , SomeSkillCard unexpectedCourage2
   ]

@@ -2054,9 +2054,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         onlyCardComittedToTestCommitted = any
           (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
           allCommittedCards
-        committedCardCodes =
-          concatMap (map toCardCode) . HashMap.elems $ skillTestCommittedCards
-            skillTest
+        committedCardTitles = map toTitle allCommittedCards
       let
         window =
           Window Timing.When (Window.SkillTest $ skillTestType skillTest)
@@ -2068,12 +2066,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       skillTestModifiers' <- getModifiers SkillTestTarget
       cannotCommitCards <- elem (CannotCommitCards AnyCard)
         <$> getModifiers (InvestigatorTarget investigatorId)
-      let
-        triggerMessage =
-          [ StartSkillTestButton investigatorId
-          | CannotPerformSkillTest `notElem` skillTestModifiers'
-          ]
-        beginMessage = BeforeSkillTest skillTest
       committableCards <-
         if cannotCommitCards || onlyCardComittedToTestCommitted
           then pure []
@@ -2088,10 +2080,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 let
                   passesCommitRestriction = \case
                     CommittableTreachery -> error "unhandled"
-                    OnlyCardCommittedToTest -> pure $ null committedCardCodes
+                    OnlyCardCommittedToTest -> pure $ null committedCardTitles
                     MaxOnePerTest ->
-                      pure $ toCardCode card `notElem` committedCardCodes
+                      pure $ toTitle card `notElem` committedCardTitles
                     OnlyYourTest -> pure True
+                    MustBeCommittedToYourTest -> pure True
                     OnlyIfYourLocationHasClues -> pure $ clueCount > 0
                     OnlyTestWithActions as ->
                       pure $ maybe False (`elem` as) (skillTestAction skillTest)
@@ -2137,6 +2130,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   $ CommittableTreachery
                   `elem` (cdCommitRestrictions $ toCardDef card)
               VengeanceCard _ -> error "vengeance card"
+      let
+        mustCommit = any (any (== MustBeCommittedToYourTest) . cdCommitRestrictions . toCardDef) committableCards
+        triggerMessage =
+          [ StartSkillTestButton investigatorId
+          | CannotPerformSkillTest `notElem` skillTestModifiers' && not mustCommit
+          ]
+        beginMessage = BeforeSkillTest skillTest
       if notNull committableCards || notNull committedCards || notNull actions
         then push
           (SkillTestAsk $ chooseOne
@@ -2185,10 +2185,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef
             )
             allCommittedCards
-          committedCardNames =
-            concatMap (map (cdName . toCardDef))
-              . HashMap.elems
-              $ skillTestCommittedCards skillTest
+          committedCardTitles = map toTitle allCommittedCards
         modifiers' <- getModifiers (toTarget a)
         skillIcons <- getSkillTestMatchingSkillIcons
         let beginMessage = BeforeSkillTest skillTest
@@ -2209,13 +2206,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     let
                       passesCommitRestriction = \case
                         CommittableTreachery -> error "unhandled"
-                        MaxOnePerTest ->
-                          pure
-                            $ cdName (toCardDef card)
-                            `notElem` committedCardNames
-                        OnlyCardCommittedToTest ->
-                          pure $ null committedCardNames
+                        MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
+                        OnlyCardCommittedToTest -> pure $ null committedCardTitles
                         OnlyYourTest -> pure False
+                        MustBeCommittedToYourTest -> pure False
                         OnlyIfYourLocationHasClues -> pure $ clueCount > 0
                         OnlyTestWithActions as -> pure $ maybe
                           False

@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -1226,6 +1226,7 @@ library
       Arkham.Investigator.Cards.ValentinoRivas
       Arkham.Investigator.Cards.WendyAdams
       Arkham.Investigator.Cards.WilliamYorick
+      Arkham.Investigator.Cards.WinifredHabbamock
       Arkham.Investigator.Cards.ZoeySamaras
       Arkham.Investigator.DamageAssignment
       Arkham.Investigator.Deck
@@ -1705,6 +1706,8 @@ library
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied
       Arkham.Skill.Cards.AllIn5
+      Arkham.Skill.Cards.AnythingYouCanDoBetter
+      Arkham.Skill.Cards.Arrogance
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity
       Arkham.Skill.Cards.Daring
@@ -1727,6 +1730,7 @@ library
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.NeitherRainNorSnow
+      Arkham.Skill.Cards.Nimble
       Arkham.Skill.Cards.NotWithoutAFight
       Arkham.Skill.Cards.Opportunist
       Arkham.Skill.Cards.Opportunist2

@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Matcher hiding ( EnemyDefeated )
 import Arkham.SkillType
 
 newtype Metadata = Metadata { empowered :: Bool }
@@ -26,11 +25,6 @@ enchantedBladeGuardian3 :: AssetCard EnchantedBladeGuardian3
 enchantedBladeGuardian3 = asset
   (EnchantedBladeGuardian3 . (`with` Metadata False))
   Cards.enchantedBladeGuardian3
-
-getPaidUse :: Payment -> Bool
-getPaidUse (UsesPayment _) = True
-getPaidUse (Payments ps) = any getPaidUse ps
-getPaidUse _ = False
 
 instance HasAbilities EnchantedBladeGuardian3 where
   getAbilities (EnchantedBladeGuardian3 (attrs `With` _)) =

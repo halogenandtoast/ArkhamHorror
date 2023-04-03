@@ -97,6 +97,7 @@ allInvestigators = mapFromList $ map
   , SomeInvestigatorCard dexterDrake
   , SomeInvestigatorCard nathanielCho
   , SomeInvestigatorCard harveyWalters
+  , SomeInvestigatorCard winifredHabbamock
   , SomeInvestigatorCard stellaClark
   , SomeInvestigatorCard daisyWalkerParallel
   ]

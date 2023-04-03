@@ -488,6 +488,7 @@ data CardMatcher
   | CardWithVengeance
   | CardFillsSlot SlotType
   | DiscardableCard
+  | CardOwnedBy InvestigatorId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -799,7 +800,7 @@ instance Semigroup AbilityMatcher where
 instance Monoid AbilityMatcher where
   mempty = AnyAbility
 
-data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards
+data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards | DifferentLengthIsAtLeast Int CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

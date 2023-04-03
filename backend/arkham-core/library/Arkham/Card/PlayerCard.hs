@@ -2,14 +2,15 @@ module Arkham.Card.PlayerCard where
 
 import Arkham.Prelude
 
-import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
 import Arkham.Id
+import Arkham.Json
+import Arkham.Name
+import Arkham.PlayerCard
 
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
@@ -45,6 +46,9 @@ instance HasCardDef PlayerCard where
     Just def -> def
     Nothing ->
       error $ "missing card def for player card " <> show (pcCardCode c)
+
+instance Named PlayerCard where
+  toName = toName . toCardDef
 
 instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode

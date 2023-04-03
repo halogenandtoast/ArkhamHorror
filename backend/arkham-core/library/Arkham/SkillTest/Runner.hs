@@ -81,13 +81,23 @@ autoFailSkillTestResultsData s = do
     Nothing
     False
 
+getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
+getAlternateSkill st sType = do
+  modifiers' <- getModifiers (skillTestInvestigator st)
+  pure $ foldr applyModifier sType modifiers'
+ where
+   applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
+   applyModifier _ a = a
+
 getCurrentSkillValue :: HasGame m => SkillTest -> m Int
-getCurrentSkillValue st = case skillTestBaseValue st of
-  SkillBaseValue sType -> do
-    stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
-    pure $ statsSkillValue stats sType
-  HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
-  StaticBaseValue n -> pure n
+getCurrentSkillValue st = do
+  case skillTestBaseValue st of
+    SkillBaseValue sType -> do
+      sType' <- getAlternateSkill st sType
+      stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
+      pure $ statsSkillValue stats sType'
+    HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
+    StaticBaseValue n -> pure n
 
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do

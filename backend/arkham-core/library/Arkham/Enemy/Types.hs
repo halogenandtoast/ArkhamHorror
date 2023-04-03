@@ -64,6 +64,33 @@ data instance Field Enemy :: Type -> Type where
   EnemyPlacement :: Field Enemy Placement
   EnemySealedTokens :: Field Enemy [Token]
 
+deriving stock instance Show (Field Enemy typ)
+
+instance ToJSON (Field Enemy typ) where
+  toJSON = toJSON . show
+
+instance FromJSON (SomeField Enemy) where
+  parseJSON = withText "Field Enemy" $ \case
+    "EnemyEngagedInvestigators" -> pure $ SomeField EnemyEngagedInvestigators
+    "EnemyDoom" -> pure $ SomeField EnemyDoom
+    "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
+    "EnemyFight" -> pure $ SomeField Arkham.Enemy.Types.EnemyFight
+    "EnemyClues" -> pure $ SomeField EnemyClues
+    "EnemyDamage" -> pure $ SomeField EnemyDamage
+    "EnemyRemainingHealth" -> pure $ SomeField EnemyRemainingHealth
+    "EnemyHealthDamage" -> pure $ SomeField EnemyHealthDamage
+    "EnemySanityDamage" -> pure $ SomeField EnemySanityDamage
+    "EnemyTraits" -> pure $ SomeField EnemyTraits
+    "EnemyKeywords" -> pure $ SomeField EnemyKeywords
+    "EnemyAbilities" -> pure $ SomeField EnemyAbilities
+    "EnemyCard" -> pure $ SomeField EnemyCard
+    "EnemyCardCode" -> pure $ SomeField EnemyCardCode
+    "EnemyCardId" -> pure $ SomeField EnemyCardId
+    "EnemyLocation" -> pure $ SomeField EnemyLocation
+    "EnemyPlacement" -> pure $ SomeField EnemyPlacement
+    "EnemySealedTokens" -> pure $ SomeField EnemySealedTokens
+    _ -> error "no such field"
+
 data instance Field (SetAsideEntity Enemy) :: Type -> Type where
   SetAsideEnemyField :: Field Enemy typ -> Field (SetAsideEntity Enemy) typ
 

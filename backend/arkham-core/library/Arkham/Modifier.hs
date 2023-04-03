@@ -16,6 +16,8 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ClassSymbol
 import Arkham.Criteria.Override
 import {-# SOURCE #-} Arkham.Cost
+import {-# SOURCE #-} Arkham.Enemy.Types
+import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
@@ -158,6 +160,7 @@ data ModifierType
   | EnemyEvade Int
   | EnemyFight Int
   | AsIfEnemyFight Int
+  | AlternateFightField (SomeField Enemy)
   | CountsAsInvestigatorForHunterEnemies
   | FailTies
   | FewerSlots SlotType Int
@@ -210,6 +213,8 @@ data ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedTokenAs TokenFace
   | UseSkillInPlaceOf SkillType SkillType
+  | UseSkillInsteadOf SkillType SkillType
+  | SkillModifiersAffectOtherSkill SkillType SkillType
   | AddSkillToOtherSkill SkillType SkillType
   | XPModifier Int
   | SkillTestAutomaticallySucceeds

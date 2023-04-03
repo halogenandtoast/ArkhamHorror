@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
+import Arkham.Enemy.Types qualified as Field
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
@@ -77,12 +78,19 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
       pushAll $ locationPlacement : windows' <> resolve
         (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
 
-modifiedEnemyFight :: HasGame m => EnemyAttrs -> m Int
-modifiedEnemyFight EnemyAttrs {..} = do
+modifiedEnemyFight :: HasGame m => InvestigatorId -> EnemyAttrs -> m Int
+modifiedEnemyFight iid EnemyAttrs {..} = do
+  investigatorModifiers <- getModifiers iid
   modifiers' <- getModifiers (EnemyTarget enemyId)
-  let initialFight = foldr applyModifier enemyFight modifiers'
+  let
+    fieldValue = foldr applyBefore enemyFight investigatorModifiers
+    initialFight = foldr applyModifier fieldValue modifiers'
   pure $ foldr applyAfterModifier initialFight modifiers'
  where
+  applyBefore (Modifier.AlternateFightField someField) original = case someField of
+    SomeField Field.EnemyEvade -> fromMaybe original enemyEvade
+    _ -> original
+  applyBefore _ n = n
   applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
   applyAfterModifier (Modifier.AsIfEnemyFight m) _ = m

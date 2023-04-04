@@ -171,6 +171,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , cherishedKeepsake
   , cherishedKeepsake1
   , chicagoTypewriter4
+  , chuckFergus2
+  , chuckFergus5
   , clarityOfMind
   , claspOfBlackOnyx
   , coltVestPocket
@@ -2993,6 +2995,15 @@ fingerprintKit4 = (asset "09057" "Fingerprint Kit" 5 Seeker)
   , cdLevel = 4
   }
 
+chuckFergus2 :: CardDef
+chuckFergus2 = (asset "09072" ("Chuck Fergus" <:> "O'Bannion Driver") 4 Rogue)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = setFromList [Ally, Criminal]
+  , cdSlots = [AllySlot]
+  , cdLevel = 2
+  , cdUnique = True
+  }
+
 physicalTraining2 :: CardDef
 physicalTraining2 = (asset "50001" "Physical Training" 0 Guardian)
   { cdSkills = [#willpower, #willpower, #combat, #combat]
@@ -3381,6 +3392,15 @@ berettaM19184 = (asset "60331" "Beretta M1918" 4 Rogue)
   , cdUses = uses Ammo 4
   , cdSlots = [HandSlot, HandSlot]
   , cdLevel = 4
+  }
+
+chuckFergus5 :: CardDef
+chuckFergus5 = (asset "60332" ("Chuck Fergus" <:> "O'Bannion Driver") 3 Rogue)
+  { cdSkills = [#combat, #agility, #wild]
+  , cdCardTraits = setFromList [Ally, Criminal]
+  , cdSlots = [AllySlot]
+  , cdLevel = 5
+  , cdUnique = True
   }
 
 eighteenDerringer :: CardDef

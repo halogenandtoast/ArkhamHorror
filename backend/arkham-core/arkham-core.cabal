@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -322,6 +322,8 @@ library
       Arkham.Asset.Cards.CherishedKeepsake
       Arkham.Asset.Cards.CherishedKeepsake1
       Arkham.Asset.Cards.ChicagoTypewriter4
+      Arkham.Asset.Cards.ChuckFergus2
+      Arkham.Asset.Cards.ChuckFergus5
       Arkham.Asset.Cards.ClarityOfMind
       Arkham.Asset.Cards.ClaspOfBlackOnyx
       Arkham.Asset.Cards.ColtVestPocket

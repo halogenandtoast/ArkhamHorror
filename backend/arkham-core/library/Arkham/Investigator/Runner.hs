@@ -93,13 +93,23 @@ getWindowSkippable :: InvestigatorAttrs -> [Window] -> Window -> GameT Bool
 getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc)))
   | iid == toId attrs
   = do
+    modifiers' <- getModifiers (CardIdTarget $ toCardId card)
+    modifiers'' <- getModifiers (CardTarget card)
     cost <- getModifiedCardCost iid card
-    getCanAffordCost
-      (toId attrs)
-      (PlayerCardSource pc)
-      (Just Action.Play)
-      ws
-      (ResourceCost cost)
+    let
+      allModifiers = modifiers' <> modifiers''
+      isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
+    andM
+      [ getCanAffordCost
+        (toId attrs)
+        (PlayerCardSource pc)
+        (Just Action.Play)
+        ws
+        (ResourceCost cost)
+      , if isFast
+          then pure True
+          else getCanAffordCost (toId attrs) (PlayerCardSource pc) (Just Action.Play) ws (ActionCost 1)
+      ]
 getWindowSkippable _ _ _ = pure True
 
 getHealthDamageableAssets

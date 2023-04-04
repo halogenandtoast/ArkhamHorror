@@ -511,6 +511,8 @@ allAssets = mapFrom
   , SomeAssetCard handcuffs2
   --- seeker [tsk]
   , SomeAssetCard fingerprintKit4
+  --- rogue [tsk]
+  , SomeAssetCard chuckFergus2
   -- Return to Night of the Zealot
   --- guardian [rtnotz]
   , SomeAssetCard physicalTraining2
@@ -580,6 +582,7 @@ allAssets = mapFrom
   , SomeAssetCard luckyCigaretteCase3
   , SomeAssetCard sharpshooter3
   , SomeAssetCard berettaM19184
+  , SomeAssetCard chuckFergus5
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

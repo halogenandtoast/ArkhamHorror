@@ -842,7 +842,11 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
       _ -> pure True
 
+    modifiedCardCost <-
+      getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
+
     let
+      canAffordCost = modifiedCardCost <= (availableResources + additionalResources)
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _  = m
       duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
@@ -854,9 +858,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       canBecomeFastWindow =
         if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
+      applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher
       applyModifier _ val = val
-    modifiedCardCost <-
-      getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
       (passesCriteria iid (Just (c, costStatus)) (replaceThisCard c source) windows')
@@ -901,9 +904,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
 
     pure
       $ (cdCardType pcDef /= SkillType)
-      && ((costStatus == PaidCost)
-         || (modifiedCardCost <= (availableResources + additionalResources))
-         )
+      && ((costStatus == PaidCost) || canAffordCost)
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
       && (Action.Evade
@@ -1396,6 +1397,10 @@ getPotentiallyModifiedCardCost iid c@(PlayerCard _) startingCost = do
  where
   applyModifier n (CanReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n (CanBecomeFastOrReduceCostOf cardMatcher m) = do
+    -- get is playable will check if this has to be used, will likely break if
+    -- anything else aside from Chuck Fergus (2) interacts with this
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
 getPotentiallyModifiedCardCost iid c@(EncounterCard _) _ = do
   modifiers <- getModifiers (InvestigatorTarget iid)
@@ -1405,6 +1410,9 @@ getPotentiallyModifiedCardCost iid c@(EncounterCard _) _ = do
     modifiers
  where
   applyModifier n (CanReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n (CanBecomeFastOrReduceCostOf cardMatcher m) = do
+    -- get is playable will check if this has to be used
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
 getPotentiallyModifiedCardCost _ (VengeanceCard _) _ =

@@ -39,6 +39,7 @@ instance RunMessage OliveMcBride where
           [ ReplaceCurrentDraw drawSource iid
             $ Choose
             2
+            ResolveChoice
             [Undecided Draw, Undecided Draw, Undecided Draw]
             []
           , ignoreWindow

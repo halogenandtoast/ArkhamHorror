@@ -316,69 +316,77 @@ getAbilityLimit iid ability = do
 -- that we need to sum uses across all investigators. So we should fix this
 -- soon.
 getCanAffordUse :: HasGame m => InvestigatorId -> Ability -> Window -> m Bool
-getCanAffordUse iid ability window = do
+getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
+
+-- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
+getCanAffordUseWith :: HasGame m => ([UsedAbility] -> [UsedAbility]) -> CanIgnoreAbilityLimit -> InvestigatorId -> Ability -> Window -> m Bool
+getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
   usedAbilities <-
-    filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
+    fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   limit <- getAbilityLimit iid ability
-  case limit of
-    NoLimit -> do
-      let
-        go = \case
-          ReactionAbility _ _ ->
-            pure $ notElem ability (map usedAbility usedAbilities)
-          ForcedWhen _ aType -> go aType
-          ForcedAbility _ -> pure $ notElem ability (map usedAbility usedAbilities)
-          SilentForcedAbility _ ->
-            pure $ notElem ability (map usedAbility usedAbilities)
-          ForcedAbilityWithCost _ _ ->
-            pure $ notElem ability (map usedAbility usedAbilities)
-          ActionAbility _ _ -> pure True
-          ActionAbilityWithBefore{} -> pure True
-          ActionAbilityWithSkill{} -> pure True
-          FastAbility _ -> pure True
-          AbilityEffect _ -> pure True
-          Objective{} -> pure True
-          Haunted -> pure True
-      go (abilityType ability)
-    PlayerLimit (PerSearch trait) n -> do
-      traitMatchingUsedAbilities <- filterM
-        (fmap (elem trait) . sourceTraits . abilitySource . usedAbility)
+  ignoreLimit <- or . sequence [(IgnoreLimit `elem`), (CanIgnoreLimit `elem`)]
+    <$> getModifiers (AbilityTarget iid ability)
+  if ignoreLimit && canIgnoreAbilityLimit == CanIgnoreAbilityLimit
+    then pure True
+    else case limit of
+      NoLimit -> do
+        let
+          go = \case
+            ReactionAbility _ _ ->
+              pure $ notElem ability (map usedAbility usedAbilities)
+            ForcedWhen _ aType -> go aType
+            ForcedAbility _ -> pure $ notElem ability (map usedAbility usedAbilities)
+            SilentForcedAbility _ ->
+              pure $ notElem ability (map usedAbility usedAbilities)
+            ForcedAbilityWithCost _ _ ->
+              pure $ notElem ability (map usedAbility usedAbilities)
+            ActionAbility _ _ -> pure True
+            ActionAbilityWithBefore{} -> pure True
+            ActionAbilityWithSkill{} -> pure True
+            FastAbility _ -> pure True
+            AbilityEffect _ -> pure True
+            Objective{} -> pure True
+            Haunted -> pure True
+        go (abilityType ability)
+      PlayerLimit (PerSearch trait) n -> do
+        traitMatchingUsedAbilities <- filterM
+          (fmap (elem trait) . sourceTraits . abilitySource . usedAbility)
+          usedAbilities
+        let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
+        pure $ usedCount < n
+      PlayerLimit _ n -> pure . (< n) . maybe 0 usedTimes $ find
+        ((== ability) . usedAbility)
         usedAbilities
-      let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
-      pure $ usedCount < n
-    PlayerLimit _ n -> pure . (< n) . maybe 0 usedTimes $ find
-      ((== ability) . usedAbility)
-      usedAbilities
-    PerCopyLimit cardDef _ n -> do
-      let
-        abilityCardDef = \case
-          PerCopyLimit cDef _ _ -> Just cDef
-          _ -> Nothing
-      pure . (< n) . getSum . foldMap (Sum . usedTimes) $ filter
-        ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
-        usedAbilities
-    PerInvestigatorLimit _ n -> do
-      -- This is difficult and based on the window, so we need to match out the
-      -- relevant investigator ids from the window. If this becomes more prevalent
-      -- we may want a method from `Window -> Maybe InvestigatorId`
-      case window of
-        Window _ (Window.CommittedCard iid' _) -> do
-          let
-            matchingPerInvestigatorCount =
-              flip count usedAbilities $ \usedAbility' ->
-                flip any (usedAbilityWindows usedAbility') $ \case
-                  Window _ (Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
-                  _ -> False
-          pure $ matchingPerInvestigatorCount < n
-        _ -> error "Unhandled per investigator limit"
-    GroupLimit _ n -> do
-      usedAbilities' <-
-        fmap (map usedAbility)
-        . filterDepthSpecificAbilities
-        =<< concatMapM (field InvestigatorUsedAbilities)
-        =<< allInvestigatorIds
-      let total = count (== ability) usedAbilities'
-      pure $ total < n
+      PerCopyLimit cardDef _ n -> do
+        let
+          abilityCardDef = \case
+            PerCopyLimit cDef _ _ -> Just cDef
+            _ -> Nothing
+        pure . (< n) . getSum . foldMap (Sum . usedTimes) $ filter
+          ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+          usedAbilities
+      PerInvestigatorLimit _ n -> do
+        -- This is difficult and based on the window, so we need to match out the
+        -- relevant investigator ids from the window. If this becomes more prevalent
+        -- we may want a method from `Window -> Maybe InvestigatorId`
+        case window of
+          Window _ (Window.CommittedCard iid' _) -> do
+            let
+              matchingPerInvestigatorCount =
+                flip count usedAbilities $ \usedAbility' ->
+                  flip any (usedAbilityWindows usedAbility') $ \case
+                    Window _ (Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
+                    _ -> False
+            pure $ matchingPerInvestigatorCount < n
+          _ -> error "Unhandled per investigator limit"
+      GroupLimit _ n -> do
+        usedAbilities' <-
+          fmap (map usedAbility)
+          . filterDepthSpecificAbilities
+          =<< concatMapM (field InvestigatorUsedAbilities)
+          =<< allInvestigatorIds
+        let total = count (== ability) usedAbilities'
+        pure $ total < n
 
 applyActionCostModifier
   :: [Action] -> Maybe Action -> ModifierType -> Int -> Int

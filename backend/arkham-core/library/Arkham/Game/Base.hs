@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE StrictData #-}
 module Arkham.Game.Base where
 
@@ -90,3 +91,5 @@ data Game = Game
     gameActiveCost :: HashMap ActiveCostId ActiveCost
   }
   deriving stock (Eq, Show)
+
+makeLensesWith suffixedFields ''Game

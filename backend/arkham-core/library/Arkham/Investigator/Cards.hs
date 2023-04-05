@@ -93,6 +93,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , nathanielCho
   , harveyWalters
   , winifredHabbamock
+  , jacquelineFine
   , stellaClark
   , daisyWalkerParallel
   ]
@@ -327,6 +328,13 @@ winifredHabbamock = investigator
   ("Winifred Habbamock" <:> "The Aviatrix")
   Rogue
   [Criminal]
+
+jacquelineFine :: CardDef
+jacquelineFine = investigator
+  "60401"
+  ("Jacqueline Fine" <:> "The Psychic")
+  Mystic
+  [Clairvoyant]
 
 stellaClark :: CardDef
 stellaClark = investigator

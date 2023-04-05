@@ -756,6 +756,9 @@ instance Semigroup TokenMatcher where
   x <> TokenMatches xs = TokenMatches $ x : xs
   x <> y = TokenMatches [x, y]
 
+instance Monoid TokenMatcher where
+  mempty = AnyToken
+
 data PhaseMatcher = AnyPhase | PhaseIs Phase
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
@@ -782,6 +785,7 @@ data AbilityMatcher
   | AbilityIsReactionAbility
   | AbilityMatches [AbilityMatcher]
   | AbilityOneOf [AbilityMatcher]
+  | AbilityIs Source Int
   | AnyAbility
   | AbilityOnEncounterCard
   | AbilityOnCardControlledBy InvestigatorId

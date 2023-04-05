@@ -3,6 +3,7 @@
 module Arkham.ChaosBagStepState
   ( ChaosBagStepState(..)
   , ChaosBagStep(..)
+  , TokenStrategy(..)
   ) where
 
 import Arkham.Prelude
@@ -18,9 +19,29 @@ data ChaosBagStepState
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+data TokenStrategy = ResolveChoice | CancelChoice | IgnoreChoice
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 data ChaosBagStep
   = Draw
-  | Choose { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]] }
-  | ChooseMatch { amount :: Int, steps :: [ChaosBagStepState], tokenGroups :: [[Token]], tokenMatcher :: TokenMatcher }
+  | Choose
+    { amount :: Int
+    , tokenStrategy :: TokenStrategy
+    , steps :: [ChaosBagStepState]
+    , tokenGroups :: [[Token]]
+    }
+  | ChooseMatch
+    { amount :: Int
+    , tokenStrategy :: TokenStrategy
+    , steps :: [ChaosBagStepState]
+    , tokenGroups :: [[Token]]
+    , tokenMatcher :: TokenMatcher
+    }
+  | ChooseMatchChoice
+    { steps :: [ChaosBagStepState]
+    , tokenGroups :: [[Token]]
+    , tokenMatcherChoices :: [(TokenMatcher, (Text, ChaosBagStep))]
+    }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ChaosToken } from '@/arkham/types/ChaosToken';
-import { computed, inject } from 'vue';
+import { withDefaults, computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 
@@ -8,9 +8,11 @@ export interface Props {
   game: Game
   token: ChaosToken
   investigatorId: string
+  cancelled?: boolean
+  selected?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { cancelled: false, selected: false })
 const emit = defineEmits(['choose'])
 const baseUrl = inject('baseUrl')
 
@@ -56,6 +58,10 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const revealedTokenAction = computed(() => {
+  if (props.cancelled || props.selected) {
+    return -1
+  }
+
   return choices.value.findIndex((c) => {
     if (c.tag === "TokenGroupChoice") {
       return c.step.tokenGroups.some((g) => g.some((t) => t.tokenId === props.token.tokenId))
@@ -80,7 +86,9 @@ const choose = (idx: number) => emit('choose', idx)
 
 const classObject = computed(() => ({
   'active-token': revealedTokenAction.value !== -1,
-  ignored: isIgnored.value
+  ignored: isIgnored.value,
+  selected: props.selected,
+  cancelled: props.cancelled
 }))
 </script>
 
@@ -98,5 +106,17 @@ const classObject = computed(() => ({
   border: 5px solid #ff00ff;
   border-radius: 500px;
   cursor: pointer;
+}
+
+.cancelled {
+  filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
+}
+
+.selected {
+  filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(50deg) saturate(1000%) contrast(0.8);
+}
+
+.token {
+  position:relative;
 }
 </style>

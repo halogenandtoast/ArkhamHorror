@@ -50,7 +50,9 @@ export const chaosBagStepStateDecoder = JsonDecoder.oneOf<ChaosBagStepState>([
   decidingDecoder,
 ], 'ChaosBagStepState')
 
-export type ChaosBagStep = Draw | Choose | ChooseMatch
+export type ChaosBagStep = Draw | Choose | ChooseMatch | ChooseMatchChoice
+
+export type TokenStrategy = "IgnoreChoice" | "CancelChoice" | "ResolveChoice"
 
 export interface Draw {
   tag: "Draw"
@@ -60,8 +62,15 @@ export const drawDecoder = JsonDecoder.object<Draw>({
   tag: JsonDecoder.isExactly("Draw")
 }, 'Draw')
 
+export const tokenStrategyDecoder = JsonDecoder.oneOf<TokenStrategy>([
+  JsonDecoder.isExactly("IgnoreChoice"),
+  JsonDecoder.isExactly("CancelChoice"),
+  JsonDecoder.isExactly("ResolveChoice"),
+], 'TokenStrategy')
+
 export interface Choose {
   tag: "Choose"
+  tokenStrategy: TokenStrategy
   amount: number
   steps: ChaosBagStepState[]
   tokenGroups: ChaosToken[][]
@@ -69,6 +78,7 @@ export interface Choose {
 
 export const chooseDecoder = JsonDecoder.object<Choose>({
   tag: JsonDecoder.isExactly("Choose"),
+  tokenStrategy: tokenStrategyDecoder,
   amount: JsonDecoder.number,
   steps: JsonDecoder.array(chaosBagStepStateDecoder, 'ChaosBagStepState[]'),
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
@@ -76,6 +86,7 @@ export const chooseDecoder = JsonDecoder.object<Choose>({
 
 export interface ChooseMatch {
   tag: "ChooseMatch"
+  tokenStrategy: TokenStrategy
   amount: number
   steps: ChaosBagStepState[]
   tokenGroups: ChaosToken[][]
@@ -84,7 +95,21 @@ export interface ChooseMatch {
 
 export const chooseMatchDecoder = JsonDecoder.object<ChooseMatch>({
   tag: JsonDecoder.isExactly("ChooseMatch"),
+  tokenStrategy: tokenStrategyDecoder,
   amount: JsonDecoder.number,
+  steps: JsonDecoder.array(chaosBagStepStateDecoder, 'ChaosBagStepState[]'),
+  tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
+}, 'ChooseMatch')
+
+export interface ChooseMatchChoice {
+  tag: "ChooseMatchChoice"
+  steps: ChaosBagStepState[]
+  tokenGroups: ChaosToken[][]
+  // tokenMatcher
+}
+
+export const chooseMatchChoiceDecoder = JsonDecoder.object<ChooseMatchChoice>({
+  tag: JsonDecoder.isExactly("ChooseMatchChoice"),
   steps: JsonDecoder.array(chaosBagStepStateDecoder, 'ChaosBagStepState[]'),
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
 }, 'ChooseMatch')
@@ -93,6 +118,7 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
   drawDecoder,
   chooseDecoder,
   chooseMatchDecoder,
+  chooseMatchChoiceDecoder,
 ], 'ChaosBagStep')
 
 

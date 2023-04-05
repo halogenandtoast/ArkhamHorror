@@ -24,6 +24,7 @@ import Arkham.Act.Acts ( theYithianRelicEffect )
 import Arkham.Agenda.Agendas ( lostMemoriesEffect, theRedDepthsEffect )
 import Arkham.Asset.Assets
   ( aceOfRods1Effect
+  , arbiterOfFatesEffect
   , fence1Effect
   , grislyTotemSeeker3Effect
   , grislyTotemSurvivor3Effect
@@ -268,6 +269,7 @@ allEffects = mapFromList
   , ("60328", SomeEffect pilfer3Effect)
   , ("60329", SomeEffect backstab3Effect)
   , ("60330", SomeEffect copycat3Effect)
+  , ("60402", SomeEffect arbiterOfFatesEffect)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)
   , ("81007", SomeEffect cursedShores)

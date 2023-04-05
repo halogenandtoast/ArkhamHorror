@@ -109,6 +109,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , coverUp
   , crisisOfIdentity
   , curseOfTheRougarou
+  , darkFuture
   , doomed
   , drawingTheSign
   , finalRhapsody
@@ -1352,6 +1353,11 @@ thriceDamnedCuriosity = (weakness "60203" "Thrice-Damned Curiosity")
 obsessive :: CardDef
 obsessive = (weakness "60204" "Obsessive")
   { cdCardTraits = singleton Flaw
+  }
+
+darkFuture :: CardDef
+darkFuture = (weakness "60403" "Dark Future")
+  { cdCardTraits = setFromList [Omen, Endtimes]
   }
 
 calledByTheMists :: CardDef

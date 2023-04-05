@@ -583,6 +583,8 @@ allAssets = mapFrom
   , SomeAssetCard sharpshooter3
   , SomeAssetCard berettaM19184
   , SomeAssetCard chuckFergus5
+  --- Jacqueline Fine
+  , SomeAssetCard arbiterOfFates
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

@@ -102,6 +102,7 @@ data ModifierType
   | CannotBeEvaded
   | CannotBeRevealed
   | CannotCancelHorror
+  | CannotCancelOrIgnoreToken TokenFace
   | CannotCommitCards CardMatcher
   | CannotDiscoverClues
   | CannotDrawCards
@@ -226,6 +227,7 @@ data ModifierType
   | CanPlayWithOverride CriteriaOverride
   | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
   | IgnoreLimit
+  | CanIgnoreLimit
   | DoNotExhaustEvaded
   | DoNotDisengageEvaded
   | CannotBeAdvancedByDoomThreshold

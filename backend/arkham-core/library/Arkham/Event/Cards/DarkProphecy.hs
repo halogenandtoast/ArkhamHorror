@@ -33,6 +33,7 @@ instance RunMessage DarkProphecy where
         pushAll
           [ ReplaceCurrentDraw drawSource iid $ ChooseMatch
             1
+            ResolveChoice
             (replicate 5 $ Undecided Draw)
             []
             (TokenMatchesAny

@@ -5,6 +5,9 @@ import Arkham.Prelude
 import Arkham.Card.CardDef
 import Arkham.Trait
 
+data CanIgnoreAbilityLimit = CanIgnoreAbilityLimit | CanNotIgnoreAbilityLimit
+  deriving stock Eq
+
 data AbilityLimit
   = PerInvestigatorLimit AbilityLimitType Int
   | PlayerLimit AbilityLimitType Int

@@ -323,6 +323,8 @@ allTreacheries = mapFrom
   -- Harvey Walters
   , SomeTreacheryCard thriceDamnedCuriosity
   , SomeTreacheryCard obsessive
+  -- Jacqueline Fine
+  , SomeTreacheryCard darkFuture
   -- Stella Clark
   , SomeTreacheryCard calledByTheMists
   , SomeTreacheryCard atychiphobia

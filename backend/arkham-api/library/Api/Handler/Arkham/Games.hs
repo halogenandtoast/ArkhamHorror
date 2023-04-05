@@ -21,6 +21,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Difficulty
 import Arkham.Game
+import Arkham.Game.Diff
 import Arkham.Id
 import Arkham.Investigator
 import Arkham.Message

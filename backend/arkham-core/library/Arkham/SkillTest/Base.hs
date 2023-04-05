@@ -26,10 +26,12 @@ data SkillTest = SkillTest
   , skillTestType :: SkillTestType
   , skillTestBaseValue :: SkillTestBaseValue
   , skillTestDifficulty :: Int
+
   , skillTestSetAsideTokens :: [Token]
   , skillTestRevealedTokens :: [Token] -- tokens may change from physical representation
   , skillTestResolvedTokens :: [Token]
   , skillTestValueModifier :: Int
+
   , skillTestResult :: SkillTestResult
   , skillTestCommittedCards :: HashMap InvestigatorId [Card]
   , skillTestSource :: Source
@@ -52,37 +54,21 @@ instance ToJSON SkillTest where
 instance FromJSON SkillTest where
   parseJSON = withObject "SkillTest" $ \o ->
     SkillTest
-      <$> o
-      .: "investigator"
-      <*> o
-      .: "type"
-      <*> o
-      .: "baseValue"
-      <*> o
-      .: "difficulty"
-      <*> o
-      .: "setAsideTokens"
-      <*> o
-      .: "revealedTokens"
-      <*> o
-      .: "resolvedTokens"
-      <*> o
-      .: "valueModifier"
-      <*> o
-      .: "result"
-      <*> o
-      .: "committedCards"
-      <*> o
-      .: "source"
-      <*> o
-      .: "target"
-      <*> o
-      .: "action"
-      <*> o
-      .: "subscribers"
-      <*> o
-      .:? "isRevelation"
-      .!= False
+      <$> (o .: "investigator")
+      <*> (o .: "type")
+      <*> (o .: "baseValue")
+      <*> (o .: "difficulty")
+      <*> (o .: "setAsideTokens")
+      <*> (o .: "revealedTokens")
+      <*> (o .: "resolvedTokens")
+      <*> (o .: "valueModifier")
+      <*> (o .: "result")
+      <*> (o .: "committedCards")
+      <*> (o .: "source")
+      <*> (o .: "target")
+      <*> (o .: "action")
+      <*> (o .: "subscribers")
+      <*> (o .:? "isRevelation" .!= False)
 
 instance Targetable SkillTest where
   toTarget _ = SkillTestTarget
@@ -148,6 +134,6 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestSource = source
     , skillTestTarget = target
     , skillTestAction = Nothing
-    , skillTestSubscribers = [InvestigatorTarget iid]
+    , skillTestSubscribers = [toTarget iid]
     , skillTestIsRevelation = False
     }

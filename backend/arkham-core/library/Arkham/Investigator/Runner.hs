@@ -110,6 +110,12 @@ getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc))
           then pure True
           else getCanAffordCost (toId attrs) (PlayerCardSource pc) (Just Action.Play) ws (ActionCost 1)
       ]
+getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
+  let
+    excludeOne [] = []
+    excludeOne (uab : xs) | ab == usedAbility uab = if usedTimes uab <= 1 then xs else uab { usedTimes = usedTimes uab - 1 } : xs
+    excludeOne (uab : xs) = uab : excludeOne xs
+  getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
 getWindowSkippable _ _ _ = pure True
 
 getHealthDamageableAssets
@@ -2962,12 +2968,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             , usedDepth = depth
             }
         pure $ a & usedAbilitiesL %~ (used :)
-      Just current -> do
+      Just _ -> do
         let
-          updated = current { usedTimes = usedTimes current + 1 }
-          updatedUsedAbilities =
-            updated : deleteFirst current investigatorUsedAbilities
-        pure $ a & usedAbilitiesL .~ updatedUsedAbilities
+          updateUsed used
+            | usedAbility used == ability = used { usedTimes = usedTimes used + 1 }
+            | otherwise = used
+        pure $ a & usedAbilitiesL %~ map updateUsed
+  DoNotCountUseTowardsAbilityLimit iid ability | iid == investigatorId -> do
+    let
+      updateUsed used
+        | usedAbility used == ability = used { usedTimes = max 0 (usedTimes used - 1) }
+        | otherwise = used
+    pure $ a & usedAbilitiesL %~ map updateUsed
   SkillTestEnds _ _ -> do
     pure
       $ a

@@ -97,6 +97,7 @@ executables:
       - foreign-store
       - warp
       - arkham-api
+      - arkham-core
     when:
       - condition: flag(library-only)
         buildable: false

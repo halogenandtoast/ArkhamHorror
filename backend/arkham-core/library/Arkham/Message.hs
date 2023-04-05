@@ -554,6 +554,7 @@ data Message
   | RemoveFromPlay Source
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
+  | SetChaosBagChoice Source InvestigatorId ChaosBagStep -- internal
   | RequestSetAsideCard Source CardCode
   | RequestTokens Source (Maybe InvestigatorId) RevealStrategy RequestedTokenStrategy
   | RequestedEncounterCard Source (Maybe InvestigatorId) (Maybe EncounterCard)
@@ -658,6 +659,7 @@ data Message
   | SealToken Token
   | SealedToken Token Card
   | UnsealToken Token
+  | TokenCanceledOrIgnored Token
   | UnsetActiveCard
   | UseCardAbility InvestigatorId Source Int [Window] Payment
   | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int
@@ -665,6 +667,7 @@ data Message
   | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target
   | ResetMetadata Target
+  | DoNotCountUseTowardsAbilityLimit InvestigatorId Ability  
   | When Message
   | WhenWillEnterLocation InvestigatorId LocationId
   | EnterLocation InvestigatorId LocationId

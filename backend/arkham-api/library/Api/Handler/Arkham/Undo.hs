@@ -9,6 +9,7 @@ import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
 import Arkham.Game
+import Arkham.Game.Diff
 import Arkham.Id
 import Control.Lens ( view )
 import Data.Aeson.Patch

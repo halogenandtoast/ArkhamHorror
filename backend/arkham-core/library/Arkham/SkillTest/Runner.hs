@@ -17,7 +17,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers hiding ( matches )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -31,19 +31,16 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Control.Lens (each)
+import Control.Lens ( each )
 import Data.HashMap.Strict qualified as HashMap
 
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers SkillTestTarget
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  iconCount <- if CancelSkills `elem` modifiers'
-    then pure 0
-    else skillIconCount s
-  subtractIconCount <- if CancelSkills `elem` modifiers'
-    then pure 0
-    else subtractSkillIconCount s
+  let cancelSkills = CancelSkills `elem` modifiers'
+  iconCount <- if cancelSkills then pure 0 else skillIconCount s
+  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
   tokenValues <- sum <$> for
     (skillTestRevealedTokens s <> skillTestResolvedTokens s)
@@ -101,13 +98,12 @@ getCurrentSkillValue st = do
 
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
-  totalIcons <- length . filter matches <$> concatMapM
+  totalIcons <- count matches <$> concatMapM
       iconsForCard
       (concat $ toList skillTestCommittedCards)
   case skillTestType of
     SkillSkillTest sType -> do
-      investigatorModifiers <- getModifiers
-        (InvestigatorTarget skillTestInvestigator)
+      investigatorModifiers <- getModifiers skillTestInvestigator
       pure $ if SkillCannotBeIncreased sType `elem` investigatorModifiers
         then 0
         else totalIcons
@@ -121,7 +117,7 @@ skillIconCount SkillTest {..} = do
 
 subtractSkillIconCount :: HasGame m => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =
-  length . filter matches <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
+  count matches <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
  where
   matches WildMinusIcon = True
   matches WildIcon = False
@@ -147,8 +143,7 @@ getModifiedTokenValue :: HasGame m => SkillTest -> Token -> m Int
 getModifiedTokenValue s t = do
   tokenModifiers' <- getModifiers (TokenTarget t)
   modifiedTokenFaces' <- getModifiedTokenFaces [t]
-  getSum . mconcat <$> for
-    modifiedTokenFaces'
+  getSum <$> foldMapM
     (\tokenFace -> do
       baseTokenValue <- getTokenValue (skillTestInvestigator s) tokenFace ()
       let
@@ -156,6 +151,7 @@ getModifiedTokenValue s t = do
           tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
       pure . Sum $ fromMaybe 0 updatedTokenValue
     )
+    modifiedTokenFaces'
  where
   applyModifier IgnoreToken (TokenValue token _) = TokenValue token NoModifier
   applyModifier (ChangeTokenModifier modifier') (TokenValue token _) =
@@ -266,7 +262,7 @@ instance RunMessage SkillTest where
         , SkillTestEnds skillTestInvestigator skillTestSource
         , Do (SkillTestEnds skillTestInvestigator skillTestSource)
         ]
-      pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
+      pure $ s & resultL .~ SucceededBy Automatic modifiedSkillValue'
     FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
@@ -296,7 +292,7 @@ instance RunMessage SkillTest where
            , SkillTestEnds skillTestInvestigator skillTestSource
            , Do (SkillTestEnds skillTestInvestigator skillTestSource)
            ]
-      pure $ s & resultL .~ FailedBy True difficulty
+      pure $ s & resultL .~ FailedBy Automatic difficulty
     StartSkillTest _ -> do
       windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
       pushAll
@@ -306,9 +302,9 @@ instance RunMessage SkillTest where
         <> [windowMsg, TriggerSkillTest skillTestInvestigator]
       pure s
     CheckAdditionalCommitCosts iid cards -> do
-      modifiers' <- getModifiers (InvestigatorTarget iid)
+      modifiers' <- getModifiers iid
       let
-        msgs = [CommitCard iid card | card <- cards]
+        msgs = map (CommitCard iid) cards
         additionalCosts = mapMaybe
           (\case
             CommitCost c -> Just c
@@ -622,7 +618,7 @@ instance RunMessage SkillTest where
         Unrun -> pure ()
       pure s
     RerunSkillTest -> case skillTestResult of
-      FailedBy True _ -> pure s
+      FailedBy Automatic _ -> pure s
       _ -> do
         withQueue_ $ filter $ \case
           Will FailedSkillTest{} -> False
@@ -638,7 +634,7 @@ instance RunMessage SkillTest where
           Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
             | skillTestInvestigator == skillTestInvestigator' -> False
           _ -> True
-        push (RunSkillTest skillTestInvestigator)
+        push $ RunSkillTest skillTestInvestigator
         -- We need to subtract the current token values to prevent them from
         -- doubling. However, we need to keep any existing value modifier on
         -- the stack (such as a token no longer visible who effect still
@@ -663,25 +659,12 @@ instance RunMessage SkillTest where
       let
         modifiedSkillValue' =
           max 0 (skillTestResultsSkillValue results + totaledTokenValues + skillTestResultsIconValue results)
-
         totaledTokenValues = tokenValues + skillTestValueModifier
-      if skillTestResultsSuccess results
-        then
-          pure
-          $ s
-          & (resultL .~ SucceededBy
-              False
-              (modifiedSkillValue' - skillTestResultsDifficulty results)
-            )
-          & (valueModifierL .~ totaledTokenValues)
-        else
-          pure
-          $ s
-          & (resultL .~ FailedBy
-              False
-              (skillTestResultsDifficulty results - modifiedSkillValue')
-            )
-          & (valueModifierL .~ totaledTokenValues)
+        result = if skillTestResultsSuccess results
+          then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
+          else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
+
+      pure $ s & valueModifierL .~ totaledTokenValues & resultL .~ result
     ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->
       pure $ s & typeL .~ newSkillTestType & baseValueL .~ newSkillTestBaseValue
     _ -> pure s

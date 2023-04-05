@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -279,6 +279,7 @@ library
       Arkham.Asset.Cards.AncientStoneMindsInHarmony4
       Arkham.Asset.Cards.Aquinnah1
       Arkham.Asset.Cards.Aquinnah3
+      Arkham.Asset.Cards.ArbiterOfFates
       Arkham.Asset.Cards.ArcaneEnlightenment
       Arkham.Asset.Cards.ArcaneInitiate
       Arkham.Asset.Cards.ArcaneInitiate3
@@ -1173,7 +1174,9 @@ library
       Arkham.Field.Matchers
       Arkham.Game
       Arkham.Game.Base
+      Arkham.Game.Diff
       Arkham.Game.Helpers
+      Arkham.Game.Json
       Arkham.GameEnv
       Arkham.GameValue
       Arkham.Helpers
@@ -1220,6 +1223,7 @@ library
       Arkham.Investigator.Cards.FinnEdwards
       Arkham.Investigator.Cards.GavriellaMizrah
       Arkham.Investigator.Cards.HarveyWalters
+      Arkham.Investigator.Cards.JacquelineFine
       Arkham.Investigator.Cards.JennyBarnes
       Arkham.Investigator.Cards.JeromeDavids
       Arkham.Investigator.Cards.JimCulver
@@ -1858,6 +1862,7 @@ library
       Arkham.Treachery.Cards.CurseOfYig
       Arkham.Treachery.Cards.DaemonicPiping
       Arkham.Treachery.Cards.DanceOfTheYellowKing
+      Arkham.Treachery.Cards.DarkFuture
       Arkham.Treachery.Cards.DeadlyFate
       Arkham.Treachery.Cards.DeepDark
       Arkham.Treachery.Cards.DescentIntoMadness

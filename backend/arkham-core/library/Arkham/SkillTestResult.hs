@@ -2,10 +2,13 @@ module Arkham.SkillTestResult where
 
 import Arkham.Prelude
 
--- TODO: figure out what the bool is for
+data SkillTestResultType = Automatic | NonAutomatic
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 data SkillTestResult
   = Unrun
-  | SucceededBy Bool Int
-  | FailedBy Bool Int
+  | SucceededBy SkillTestResultType Int
+  | FailedBy SkillTestResultType Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

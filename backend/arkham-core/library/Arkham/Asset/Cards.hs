@@ -130,6 +130,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , ancientStoneMindsInHarmony4
   , aquinnah1
   , aquinnah3
+  , arbiterOfFates
   , arcaneEnlightenment
   , arcaneInitiate
   , arcaneInitiate3
@@ -3401,6 +3402,12 @@ chuckFergus5 = (asset "60332" ("Chuck Fergus" <:> "O'Bannion Driver") 3 Rogue)
   , cdSlots = [AllySlot]
   , cdLevel = 5
   , cdUnique = True
+  }
+
+arbiterOfFates :: CardDef
+arbiterOfFates = (asset "60402" "Arbiter of Fates" 3 Mystic)
+  { cdSkills = [#willpower, #agility, #wild]
+  , cdCardTraits = singleton Talent
   }
 
 eighteenDerringer :: CardDef

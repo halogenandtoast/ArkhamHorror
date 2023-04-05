@@ -86,17 +86,20 @@ data TokenFace
   deriving anyclass (Hashable, ToJSON, FromJSON)
 
 isNumberToken :: TokenFace -> Bool
-isNumberToken t =
-  t
-    `elem` [ PlusOne
-           , Zero
-           , MinusOne
-           , MinusTwo
-           , MinusThree
-           , MinusFour
-           , MinusFive
-           , MinusSix
-           , MinusSeven
-           , MinusEight
-           ]
-
+isNumberToken = \case
+  PlusOne -> True
+  Zero -> True
+  MinusOne -> True
+  MinusTwo -> True
+  MinusThree -> True
+  MinusFour -> True
+  MinusFive -> True
+  MinusSix -> True
+  MinusSeven -> True
+  MinusEight -> True
+  Skull -> False
+  Cultist -> False
+  Tablet -> False
+  ElderThing -> False
+  AutoFail -> False
+  ElderSign -> False

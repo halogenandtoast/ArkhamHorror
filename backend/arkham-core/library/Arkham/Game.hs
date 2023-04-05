@@ -1,8 +1,4 @@
-{-# OPTIONS_GHC -Wno-dodgy-imports #-}
-{-# LANGUAGE StrictData #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game
   ( module Arkham.Game
   , module X
@@ -10,6 +6,8 @@ module Arkham.Game
 
 import Arkham.Prelude
 
+import Arkham.Game.Diff
+import Arkham.Game.Json ()
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
@@ -142,7 +140,6 @@ import Control.Monad.State.Strict hiding ( state, foldM, filterM )
 import Data.Aeson ( Result (..) )
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Aeson.TH
 import Data.Align hiding ( nil )
 import Data.HashMap.Monoidal ( getMonoidalHashMap )
 import Data.HashMap.Monoidal qualified as MonoidalHashMap
@@ -161,11 +158,6 @@ import Data.UUID qualified as UUID
 import Safe ( headNote )
 import System.Environment
 import Text.Pretty.Simple
-
-$(deriveJSON defaultOptions ''GameState)
-$(deriveJSON defaultOptions ''GameParams)
-$(deriveJSON defaultOptions ''Game)
-makeLensesWith suffixedFields ''Game
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -355,26 +347,12 @@ modeCampaign = \case
   These c _ -> Just c
   This c -> Just c
 
-diff :: Game -> Game -> Diff.Patch
-diff a b = Diff.diff (toJSON a) (toJSON b)
-
-patch :: Game -> Diff.Patch -> Result Game
-patch g p = case Diff.patch p (toJSON g) of
-  Error e -> Error e
-  Success a -> fromJSON a
-
-unsafePatch :: Game -> Diff.Patch -> Game
-unsafePatch g p = case patch g p of
-  Success a -> a
-  _ -> error "Could not patch safely"
-
 getScenario :: HasGame m => m (Maybe Scenario)
 getScenario = modeScenario . view modeL <$> getGame
 
 getCampaign :: HasGame m => m (Maybe Campaign)
 getCampaign = modeCampaign . view modeL <$> getGame
 
--- Todo: this is rough because it won't currently work, we need to calc modifiers outside of GameT
 withModifiers :: (HasGame m, Targetable a) => a -> m (With a ModifierData)
 withModifiers a = do
   modifiers' <- getModifiers' (toTarget a)
@@ -1065,6 +1043,8 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityIsActionAbility -> pure $ filter abilityIsActionAbility abilities
     AbilityIsReactionAbility ->
       pure $ filter abilityIsReactionAbility abilities
+    AbilityIs source idx ->
+      pure $ filter (and . sequence [(== source) . abilitySource, (== idx) . abilityIndex]) abilities
     AbilityWindow windowMatcher ->
       pure $ filter ((== windowMatcher) . abilityWindow) abilities
     AbilityMatches [] -> pure []

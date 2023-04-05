@@ -22,6 +22,14 @@ docker-compose up
 
 And launch http://localhost:3000
 
+If you pull updates in the future make sure to run
+
+```
+docker-compose down
+docker-compose build
+docker-compose up
+```
+
 ## Features
 
 * Multiplayer up to 4 players
@@ -32,7 +40,7 @@ And launch http://localhost:3000
 
 ### Player Cards
 
-* All player cards through the Carcosa cycle
+* All player cards through The Circle Undon deluxe box
 
 ### Campaigns
 
@@ -40,6 +48,7 @@ And launch http://localhost:3000
   * Return to Night of the Zealot
 * The Dunwich Legacy
 * The Path To Carcosa
+* The Forgotten Age
 
 ### Side Stories
 
@@ -53,7 +62,6 @@ And launch http://localhost:3000
 * Stack for GHC
 * Node
 * Postgresql
-* Nginx (for local development)
 * Sqitch (optional: for migrations)
 
 ### Local Setup
@@ -66,7 +74,6 @@ The image is setup to use an external database passed via the `DATABASE_URL` env
 docker build -t arkham .
 docker run -t -i -e PORT=3000 -e DATABASE_URL="postgres://docker:docker@host.docker.internal:5432/arkham-horror-backend" -p 3000:3000 arkham
 ```
-
 
 #### Backend
 

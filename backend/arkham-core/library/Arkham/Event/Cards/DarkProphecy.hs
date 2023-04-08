@@ -32,6 +32,7 @@ instance RunMessage DarkProphecy where
         ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         pushAll
           [ ReplaceCurrentDraw drawSource iid $ ChooseMatch
+            (toSource attrs)
             1
             ResolveChoice
             (replicate 5 $ Undecided Draw)

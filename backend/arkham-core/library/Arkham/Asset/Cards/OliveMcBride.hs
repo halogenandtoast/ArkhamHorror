@@ -38,6 +38,7 @@ instance RunMessage OliveMcBride where
         pushAll
           [ ReplaceCurrentDraw drawSource iid
             $ Choose
+            (toSource attrs)
             2
             ResolveChoice
             [Undecided Draw, Undecided Draw, Undecided Draw]

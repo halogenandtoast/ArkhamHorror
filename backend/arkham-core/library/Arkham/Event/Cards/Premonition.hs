@@ -44,7 +44,7 @@ instance RunMessage Premonition where
         CancelNext (toSource attrs) RunWindowMessage
         : map UnsealToken ts
         <> [ ReplaceCurrentDraw (toSource attrs) iid
-               $ Choose 1 ResolveChoice [Resolved ts] []
+               $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
            ]
       pure e
     _ -> Premonition <$> runMessage msg attrs

@@ -2056,6 +2056,16 @@ windowMatches iid source window' = \case
       Window t (Window.RevealToken who token) | whenMatcher == t ->
         andM [matchWho iid who whoMatcher, matchToken who token tokenMatcher]
       _ -> pure False
+  Matcher.CancelChaosToken whenMatcher whoMatcher tokenMatcher ->
+    case window' of
+      Window t (Window.CancelToken who token) | whenMatcher == t ->
+        andM [matchWho iid who whoMatcher, matchToken who token tokenMatcher]
+      _ -> pure False
+  Matcher.IgnoreChaosToken whenMatcher whoMatcher tokenMatcher ->
+    case window' of
+      Window t (Window.IgnoreToken who token) | whenMatcher == t ->
+        andM [matchWho iid who whoMatcher, matchToken who token tokenMatcher]
+      _ -> pure False
   Matcher.AddedToVictory timingMatcher cardMatcher -> case window' of
     Window t (Window.AddedToVictory card) | timingMatcher == t ->
       pure $ cardMatch card cardMatcher

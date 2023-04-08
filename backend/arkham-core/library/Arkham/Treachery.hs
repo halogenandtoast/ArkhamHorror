@@ -325,6 +325,7 @@ allTreacheries = mapFrom
   , SomeTreacheryCard obsessive
   -- Jacqueline Fine
   , SomeTreacheryCard darkFuture
+  , SomeTreacheryCard nihilism
   -- Stella Clark
   , SomeTreacheryCard calledByTheMists
   , SomeTreacheryCard atychiphobia

@@ -589,6 +589,7 @@ allAssets = mapFrom
   , SomeAssetCard azureFlame
   , SomeAssetCard clairvoyance
   , SomeAssetCard ineffibleTruth
+  , SomeAssetCard familiarSpirit
   , SomeAssetCard azureFlame3
   , SomeAssetCard clairvoyance3
   , SomeAssetCard ineffibleTruth3

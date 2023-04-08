@@ -59,6 +59,7 @@ instance RunMessage BalefulReveler where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       e <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
+      push $ ResetTokens (toSource attrs)
       tokenFaces <- getModifiedTokenFaces tokens
       let
         moveMsg =

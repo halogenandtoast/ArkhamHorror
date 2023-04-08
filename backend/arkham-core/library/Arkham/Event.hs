@@ -388,6 +388,7 @@ allEvents = mapFrom
   , SomeEventCard pilfer3
   , SomeEventCard backstab3
   --- Jacqueline Fine
+  , SomeEventCard parallelFates
   , SomeEventCard eldritchInspiration1
   --- Stella Clark
   , SomeEventCard willToSurvive

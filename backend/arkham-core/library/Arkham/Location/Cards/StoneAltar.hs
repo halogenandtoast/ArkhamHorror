@@ -32,6 +32,7 @@ instance RunMessage StoneAltar where
       push $ RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       pure l
     RequestedTokens (isSource attrs -> True) (Just iid) tokens -> do
+      push $ ResetTokens (toSource attrs)
       when
           (any
             ((`elem` [ElderSign, Skull, Cultist, Tablet, ElderThing, AutoFail])

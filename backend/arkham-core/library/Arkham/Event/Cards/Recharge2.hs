@@ -46,7 +46,8 @@ instance RunMessage Recharge2 where
     ResolveEvent iid eid (Just (AssetTarget aid)) _ | eid == toId attrs -> do
       pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
       pure $ Recharge2 $ attrs `with` Meta (Just aid)
-    RequestedTokens source _ tokens | isSource attrs source ->
+    RequestedTokens source _ tokens | isSource attrs source -> do
+      push $ ResetTokens (toSource attrs)
       case chosenAsset meta of
         Nothing -> error "invalid use"
         Just aid -> do

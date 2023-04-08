@@ -51,6 +51,7 @@ instance RunMessage DiningRoom where
         <> [RequestTokens source (Just iid) (Reveal 1) SetAside]
       pure l
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
+      push $ ResetTokens (toSource attrs)
       tokenFaces <- getModifiedTokenFaces tokens
       let
         msgs = concatMap

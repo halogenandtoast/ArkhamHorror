@@ -80,6 +80,7 @@ data ModifierType
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
   | CanBecomeFastOrReduceCostOf CardMatcher Int -- Used by Chuck Fergus (2), check for notes
+  | RevealTokensBeforeCommittingCards
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CanOnlyUseCardsInRole ClassSymbol

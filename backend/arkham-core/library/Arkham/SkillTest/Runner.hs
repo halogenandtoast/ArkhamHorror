@@ -225,7 +225,11 @@ instance RunMessage SkillTest where
       pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
     RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces
       -> do
-        push (RevealSkillTestTokens iid)
+        skillTestModifiers' <- getModifiers SkillTestTarget
+        windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
+        push $ if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'
+          then CommitToSkillTest s (Label "Done Comitting" $ [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestTokens iid])
+          else RevealSkillTestTokens iid
         for_ tokenFaces $ \tokenFace -> do
           let
             revealMsg = RevealToken (SkillTestSource siid skillType source maction) iid tokenFace
@@ -295,11 +299,10 @@ instance RunMessage SkillTest where
       pure $ s & resultL .~ FailedBy Automatic difficulty
     StartSkillTest _ -> do
       windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
-      pushAll
-        $ HashMap.foldMapWithKey
-            (\i cs -> [CheckAdditionalCommitCosts i cs])
-            skillTestCommittedCards
-        <> [windowMsg, TriggerSkillTest skillTestInvestigator]
+      pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
+      pure s
+    CheckAllAdditionalCommitCosts -> do
+      pushAll $ HashMap.foldMapWithKey (\i cs -> [CheckAdditionalCommitCosts i cs]) skillTestCommittedCards
       pure s
     CheckAdditionalCommitCosts iid cards -> do
       modifiers' <- getModifiers iid

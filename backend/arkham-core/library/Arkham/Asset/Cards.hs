@@ -393,6 +393,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , scrollOfSecretsSeeker3
   , scrying
   , scrying3
+  , scryingMirror
   , sealOfTheSeventhSign5
   , shardsOfTheVoid3
   , sharpshooter3
@@ -3408,6 +3409,14 @@ arbiterOfFates :: CardDef
 arbiterOfFates = (asset "60402" "Arbiter of Fates" 3 Mystic)
   { cdSkills = [#willpower, #agility, #wild]
   , cdCardTraits = singleton Talent
+  }
+
+scryingMirror :: CardDef
+scryingMirror = (asset "60406" "Scrying Mirror" 3 Mystic)
+  { cdSkills = [#intellect]
+  , cdCardTraits = setFromList [Item, Charm]
+  , cdSlots = [HandSlot]
+  , cdUses = uses Secret 4
   }
 
 eighteenDerringer :: CardDef

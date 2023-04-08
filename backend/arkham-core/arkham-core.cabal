@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -558,6 +558,7 @@ library
       Arkham.Asset.Cards.ScrollOfSecretsSeeker3
       Arkham.Asset.Cards.Scrying
       Arkham.Asset.Cards.Scrying3
+      Arkham.Asset.Cards.ScryingMirror
       Arkham.Asset.Cards.SealOfTheSeventhSign5
       Arkham.Asset.Cards.SebastienMoreau
       Arkham.Asset.Cards.ShardsOfTheVoid3

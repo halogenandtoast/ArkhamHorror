@@ -25,6 +25,12 @@ import Arkham.Agenda.Agendas ( lostMemoriesEffect, theRedDepthsEffect )
 import Arkham.Asset.Assets
   ( aceOfRods1Effect
   , arbiterOfFatesEffect
+  , azureFlameEffect
+  , azureFlame3Effect
+  , azureFlame5Effect
+  , clairvoyanceEffect
+  , clairvoyance3Effect
+  , clairvoyance5Effect
   , fence1Effect
   , grislyTotemSeeker3Effect
   , grislyTotemSurvivor3Effect
@@ -270,6 +276,12 @@ allEffects = mapFromList
   , ("60329", SomeEffect backstab3Effect)
   , ("60330", SomeEffect copycat3Effect)
   , ("60402", SomeEffect arbiterOfFatesEffect)
+  , ("60407", SomeEffect azureFlameEffect)
+  , ("60408", SomeEffect clairvoyanceEffect)
+  , ("60425", SomeEffect azureFlame3Effect)
+  , ("60426", SomeEffect clairvoyance3Effect)
+  , ("60430", SomeEffect azureFlame5Effect)
+  , ("60431", SomeEffect clairvoyance5Effect)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)
   , ("81007", SomeEffect cursedShores)

@@ -586,6 +586,12 @@ allAssets = mapFrom
   --- Jacqueline Fine
   , SomeAssetCard arbiterOfFates
   , SomeAssetCard scryingMirror
+  , SomeAssetCard azureFlame
+  , SomeAssetCard clairvoyance
+  , SomeAssetCard azureFlame3
+  , SomeAssetCard clairvoyance3
+  , SomeAssetCard azureFlame5
+  , SomeAssetCard clairvoyance5
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

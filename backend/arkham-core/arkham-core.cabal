@@ -293,6 +293,9 @@ library
       Arkham.Asset.Cards.ArmorOfArdennes5
       Arkham.Asset.Cards.ArtStudent
       Arkham.Asset.Cards.AshleighClarke
+      Arkham.Asset.Cards.AzureFlame
+      Arkham.Asset.Cards.AzureFlame3
+      Arkham.Asset.Cards.AzureFlame5
       Arkham.Asset.Cards.Backpack
       Arkham.Asset.Cards.Backpack2
       Arkham.Asset.Cards.Bandolier
@@ -325,6 +328,9 @@ library
       Arkham.Asset.Cards.ChicagoTypewriter4
       Arkham.Asset.Cards.ChuckFergus2
       Arkham.Asset.Cards.ChuckFergus5
+      Arkham.Asset.Cards.Clairvoyance
+      Arkham.Asset.Cards.Clairvoyance3
+      Arkham.Asset.Cards.Clairvoyance5
       Arkham.Asset.Cards.ClarityOfMind
       Arkham.Asset.Cards.ClaspOfBlackOnyx
       Arkham.Asset.Cards.ColtVestPocket

@@ -219,6 +219,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , esotericAtlas2
   , esotericFormula
   , expeditionJournal
+  , familiarSpirit
   , familyInheritance
   , farsight4
   , feedTheMind
@@ -3450,6 +3451,13 @@ ineffibleTruth = (asset "60409" "Ineffible Truth" 3 Mystic)
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]
   , cdUses = uses Charge 3
+  }
+
+familiarSpirit :: CardDef
+familiarSpirit = (asset "60410" "Familiar Spirit" 1 Mystic)
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Ally, Creature, Summon]
+  , cdSlots = [AllySlot]
   }
 
 azureFlame3 :: CardDef

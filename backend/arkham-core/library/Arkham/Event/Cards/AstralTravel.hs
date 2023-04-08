@@ -36,6 +36,7 @@ instance RunMessage AstralTravel where
         ]
       pure e
     RequestedTokens source _ tokens | isSource attrs source -> do
+      push $ ResetTokens (toSource attrs)
       let faces = [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when (any ((`elem` faces) . tokenFace) tokens) $ do
         targets <- selectList

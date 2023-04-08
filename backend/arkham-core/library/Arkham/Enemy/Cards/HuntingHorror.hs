@@ -42,6 +42,7 @@ instance RunMessage HuntingHorror where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       e <$ push (RequestTokens source Nothing (Reveal 1) SetAside)
     RequestedTokens source _ tokens | isSource attrs source -> do
+      push $ ResetTokens (toSource attrs)
       e <$ when
         (any
           (`elem` map tokenFace tokens)

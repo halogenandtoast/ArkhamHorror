@@ -55,6 +55,7 @@ instance RunMessage HypnoticGaze where
         ]
       pure $ HypnoticGaze (attrs `with` Metadata (Just enemyId))
     RequestedTokens source _ faces | isSource attrs source -> do
+      push $ ResetTokens (toSource attrs)
       let
         enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
         shouldDamageEnemy = any

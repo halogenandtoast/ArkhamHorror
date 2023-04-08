@@ -225,6 +225,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , onTheHunt
   , onTheLam
   , oops
+  , parallelFates
   , payDay1
   , perseverance
   , persuasion
@@ -2169,6 +2170,12 @@ backstab3 = (event "60329" "Backstab" 3 Rogue)
   , cdCardTraits = setFromList [Tactic]
   , cdActions = [Action.Fight]
   , cdLevel = 3
+  }
+
+parallelFates :: CardDef
+parallelFates = (event "60415" "Parallel Fates" 0 Mystic)
+  { cdSkills = [#wild]
+  , cdCardTraits = singleton Augury
   }
 
 eldritchInspiration1 :: CardDef

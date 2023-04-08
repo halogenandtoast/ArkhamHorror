@@ -31,6 +31,7 @@ import Arkham.Asset.Assets
   , clairvoyanceEffect
   , clairvoyance3Effect
   , clairvoyance5Effect
+  , crystalPendulumEffect
   , fence1Effect
   , grislyTotemSeeker3Effect
   , grislyTotemSurvivor3Effect
@@ -282,6 +283,7 @@ allEffects = mapFromList
   , ("60407", SomeEffect azureFlameEffect)
   , ("60408", SomeEffect clairvoyanceEffect)
   , ("60409", SomeEffect ineffibleTruthEffect)
+  , ("60410", SomeEffect crystalPendulumEffect)
   , ("60425", SomeEffect azureFlame3Effect)
   , ("60426", SomeEffect clairvoyance3Effect)
   , ("60427", SomeEffect ineffibleTruth3Effect)

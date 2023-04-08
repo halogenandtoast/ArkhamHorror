@@ -269,6 +269,7 @@ data Message
   | ChosenRandomLocation Target LocationId
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId Card
+  | CommitToSkillTest SkillTest (UI Message)
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
@@ -415,6 +416,7 @@ data Message
   | InitiatePlayCard InvestigatorId Card (Maybe Target) [Window] Bool
   -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | CheckAdditionalActionCosts InvestigatorId Target Action [Message]
+  | CheckAllAdditionalCommitCosts
   | CheckAdditionalCommitCosts InvestigatorId [Card]
   | -- Maybe Target is handler for success
     Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool

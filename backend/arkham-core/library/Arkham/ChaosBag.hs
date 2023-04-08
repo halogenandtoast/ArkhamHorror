@@ -501,11 +501,12 @@ instance RunMessage ChaosBag where
               [ Window Timing.When (Window.RevealToken iid token)
               | token <- tokenFaces'
               ]
-          c <$ pushAll
+          pushAll
             (FocusTokens tokenFaces'
             : checkWindowMsgs
             <> [RequestedTokens source miid tokenFaces', UnfocusTokens]
             )
+          pure $ c & choiceL .~ Nothing
         _ -> do
           iid <- maybe getLeadInvestigatorId pure miid
           ((choice'', msgs), c') <- runStateT

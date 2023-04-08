@@ -585,6 +585,7 @@ allAssets = mapFrom
   , SomeAssetCard chuckFergus5
   --- Jacqueline Fine
   , SomeAssetCard arbiterOfFates
+  , SomeAssetCard scryingMirror
   --- Stella Clark
   , SomeAssetCard eighteenDerringer
   , SomeAssetCard grimmsFairyTales

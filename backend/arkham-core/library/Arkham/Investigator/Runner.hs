@@ -2065,7 +2065,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       )
       cards
     pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
-  BeforeSkillTest skillTest
+  BeforeSkillTest skillTest | skillTestInvestigator skillTest == investigatorId -> do
+    skillTestModifiers' <- getModifiers SkillTestTarget
+    push $ if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'
+      then StartSkillTest investigatorId
+      else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
+    pure a
+  CommitToSkillTest skillTest triggerMessage'
     | skillTestInvestigator skillTest == investigatorId -> do
       let iid = skillTestInvestigator skillTest
       modifiers' <- getModifiers (toTarget a)
@@ -2155,10 +2161,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let
         mustCommit = any (any (== MustBeCommittedToYourTest) . cdCommitRestrictions . toCardDef) committableCards
         triggerMessage =
-          [ StartSkillTestButton investigatorId
+          [ triggerMessage'
           | CannotPerformSkillTest `notElem` skillTestModifiers' && not mustCommit
           ]
-        beginMessage = BeforeSkillTest skillTest
+        beginMessage = CommitToSkillTest skillTest triggerMessage'
       if notNull committableCards || notNull committedCards || notNull actions
         then push
           (SkillTestAsk $ chooseOne
@@ -2185,7 +2191,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           triggerMessage
       pure a
-  BeforeSkillTest skillTest
+  CommitToSkillTest skillTest triggerMessage
     | skillTestInvestigator skillTest /= investigatorId -> do
       let iid = skillTestInvestigator skillTest
       locationId <- getJustLocation iid
@@ -2210,7 +2216,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           committedCardTitles = map toTitle allCommittedCards
         modifiers' <- getModifiers (toTarget a)
         skillIcons <- getSkillTestMatchingSkillIcons
-        let beginMessage = BeforeSkillTest skillTest
+        let beginMessage = CommitToSkillTest skillTest triggerMessage
         committableCards <-
           if notNull committedCards || onlyCardComittedToTestCommitted
             then pure []

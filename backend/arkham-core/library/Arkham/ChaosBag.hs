@@ -66,16 +66,18 @@ replaceFirstChoice source iid strategy replacement = \case
   Resolved tokens' -> Resolved tokens'
   Decided step -> case step of
     Draw -> Decided Draw
-    Choose n tokenStrategy steps tokens' -> if all isResolved steps
+    Choose chooseSource n tokenStrategy steps tokens' -> if all isResolved steps
       then Decided replacement
       else Decided $ Choose
+        chooseSource
         n
         tokenStrategy
         (replaceFirstChooseChoice source iid strategy replacement steps)
         tokens'
-    ChooseMatch n tokenStrategy steps tokens' matcher -> if all isResolved steps
+    ChooseMatch chooseSource n tokenStrategy steps tokens' matcher -> if all isResolved steps
       then Decided replacement
       else Decided $ ChooseMatch
+        chooseSource
         n
         tokenStrategy
         (replaceFirstChooseChoice source iid strategy replacement steps)
@@ -144,12 +146,12 @@ resolveFirstUnresolved source iid strategy = \case
           (drawn, remaining) <- splitAt 1 <$> shuffleM bagTokens
           modify' ((tokensL .~ remaining) . (setAsideTokensL %~ (drawn <>)))
           pure (Resolved drawn, [])
-    Choose n tokenStrategy steps tokens' ->
-      pure (Decided $ ChooseMatch n tokenStrategy steps tokens' AnyToken, [])
-    ChooseMatch 0 CancelChoice steps tokenGroups _ -> pure (Resolved $ concatMap toTokens steps, concatMap (map TokenCanceledOrIgnored) tokenGroups)
-    ChooseMatch 0 IgnoreChoice steps tokenGroups _ -> pure (Resolved $ concatMap toTokens steps, concatMap (map TokenCanceledOrIgnored) tokenGroups)
-    ChooseMatch n tokenStrategy steps tokens' matcher -> if length tokens' >= n && tokenStrategy == ResolveChoice
-      then pure (Resolved $ concat tokens', concatMap (map TokenCanceledOrIgnored . toTokens) steps)
+    Choose chooseSource n tokenStrategy steps tokens' ->
+      pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps tokens' AnyToken, [])
+    ChooseMatch chooseSource 0 CancelChoice steps tokenGroups _ -> pure (Resolved $ concatMap toTokens steps, concatMap (map (TokenCanceled iid chooseSource)) tokenGroups)
+    ChooseMatch chooseSource 0 IgnoreChoice steps tokenGroups _ -> pure (Resolved $ concatMap toTokens steps, concatMap (map (TokenIgnored iid chooseSource)) tokenGroups)
+    ChooseMatch chooseSource n tokenStrategy steps tokens' matcher -> if length tokens' >= n && tokenStrategy == ResolveChoice
+      then pure (Resolved $ concat tokens', concatMap (map (TokenIgnored iid chooseSource) . toTokens) steps)
       else if all isResolved steps
         then do
             modifiers' <- lift $ getModifiers iid
@@ -165,7 +167,7 @@ resolveFirstUnresolved source iid strategy = \case
                    tokens'' = map toTokens uncanceleableSteps
                    n' = if tokenStrategy == ResolveChoice then n else max 0 (n - length uncanceleableSteps)
                  pure $ if tokenStrategy == ResolveChoice
-                    then ( Decided (ChooseMatch n' tokenStrategy remainingSteps (tokens' <> tokens'') matcher) , [])
+                    then ( Decided (ChooseMatch chooseSource n' tokenStrategy remainingSteps (tokens' <> tokens'') matcher) , [])
                     else ( Resolved $ concatMap toTokens steps, [])
                else if (length steps + length tokens') <= n && tokenStrategy == ResolveChoice
                 then pure (Resolved $ concat tokens' <> concatMap toTokens steps, [])
@@ -188,13 +190,13 @@ resolveFirstUnresolved source iid strategy = \case
                   pure $ if tokenStrategy /= ResolveChoice && null matchedGroups
                     then ( Resolved $ concatMap toTokens steps, [])
                     else
-                      ( Decided (ChooseMatch n tokenStrategy steps tokens' matcher)
+                      ( Decided (ChooseMatch chooseSource n tokenStrategy steps tokens' matcher)
                       , [ chooseOne
                             iid
                             [ TokenGroupChoice
                                 source
                                 iid
-                                (ChooseMatch (nFunc n) tokenStrategy remaining chosen matcher)
+                                (ChooseMatch chooseSource (nFunc n) tokenStrategy remaining chosen matcher)
                             | (remaining, chosen) <- groups'
                             ]
                         ]
@@ -205,7 +207,7 @@ resolveFirstUnresolved source iid strategy = \case
             iid
             strategy
             steps
-          pure (Decided $ ChooseMatch n tokenStrategy steps' tokens' matcher, msgs)
+          pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher, msgs)
     ChooseMatchChoice steps tokens' choices -> do
       if all isResolved steps
         then do
@@ -217,8 +219,8 @@ resolveFirstUnresolved source iid strategy = \case
             allTokens = concatMap toTokens steps 
             toStrategy = \case
               Draw -> ResolveChoice
-              Choose _ st _ _ -> st
-              ChooseMatch _ st _ _ _ -> st
+              Choose _ _ st _ _ -> st
+              ChooseMatch _ _ st _ _ _ -> st
               ChooseMatchChoice{} -> error "Do not nest these"
             isValidMatcher tokenStrategy matcher =
               let matcher' = if tokenStrategy == ResolveChoice || null tokensThatCannotBeIgnored then matcher else matcher <> foldMap TokenFaceIsNot tokensThatCannotBeIgnored
@@ -227,8 +229,8 @@ resolveFirstUnresolved source iid strategy = \case
           let
             fixStep = \case
               Draw -> Draw
-              Choose n tokenStrategy _ _ -> Choose n tokenStrategy steps []
-              ChooseMatch n tokenStrategy _ _ matcher -> ChooseMatch n tokenStrategy steps [] matcher
+              Choose chooseSource n tokenStrategy _ _ -> Choose chooseSource n tokenStrategy steps []
+              ChooseMatch chooseSource n tokenStrategy _ _ matcher -> ChooseMatch chooseSource n tokenStrategy steps [] matcher
               ChooseMatchChoice _ _ matchers -> ChooseMatchChoice steps [] matchers
 
           pure $ (Decided $ ChooseMatchChoice steps tokens' choices, [chooseOrRunOne iid [Label label [SetChaosBagChoice source iid (fixStep step')] | (label, step') <- choices']])
@@ -277,20 +279,20 @@ decideFirstUndecided source iid strategy f = \case
         , NextChaosBagStep source (Just iid) strategy
         ]
       )
-    Choose n tokenStrategy steps tokens' -> if any isUndecided steps
+    Choose chooseSource n tokenStrategy steps tokens' -> if any isUndecided steps
       then
         let
           (steps', msgs) =
             decideFirstChooseUndecided source iid strategy f steps
-        in (Deciding $ Choose n tokenStrategy steps' tokens', msgs)
-      else (f $ Deciding (Choose n tokenStrategy steps tokens'), [])
-    ChooseMatch n tokenStrategy steps tokens' matcher -> if any isUndecided steps
+        in (Deciding $ Choose chooseSource n tokenStrategy steps' tokens', msgs)
+      else (f $ Deciding (Choose chooseSource n tokenStrategy steps tokens'), [])
+    ChooseMatch chooseSource n tokenStrategy steps tokens' matcher -> if any isUndecided steps
       then
         let
           (steps', msgs) =
             decideFirstChooseUndecided source iid strategy f steps
-        in (Deciding $ ChooseMatch n tokenStrategy steps' tokens' matcher, msgs)
-      else (f $ Deciding (ChooseMatch n tokenStrategy steps tokens' matcher), [])
+        in (Deciding $ ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher, msgs)
+      else (f $ Deciding (ChooseMatch chooseSource n tokenStrategy steps tokens' matcher), [])
     ChooseMatchChoice steps tokens' matchers -> if any isUndecided steps
       then
         let
@@ -300,20 +302,20 @@ decideFirstUndecided source iid strategy f = \case
       else (f $ Deciding (ChooseMatchChoice steps tokens' matchers), [])
   Deciding step -> case step of
     Draw -> (f $ Deciding Draw, [NextChaosBagStep source (Just iid) strategy])
-    Choose n tokenStrategy steps tokens' -> if any isUndecided steps
+    Choose chooseSource n tokenStrategy steps tokens' -> if any isUndecided steps
       then
         let
           (steps', msgs) =
             decideFirstChooseUndecided source iid strategy f steps
-        in (Deciding $ Choose n tokenStrategy steps' tokens', msgs)
-      else (f $ Deciding (Choose n tokenStrategy steps tokens'), [])
-    ChooseMatch n tokenStrategy steps tokens' matcher -> if any isUndecided steps
+        in (Deciding $ Choose chooseSource n tokenStrategy steps' tokens', msgs)
+      else (f $ Deciding (Choose chooseSource n tokenStrategy steps tokens'), [])
+    ChooseMatch chooseSource n tokenStrategy steps tokens' matcher -> if any isUndecided steps
       then
         let
           (steps', msgs) =
             decideFirstChooseUndecided source iid strategy f steps
-        in (Deciding $ ChooseMatch n tokenStrategy steps' tokens' matcher, msgs)
-      else (f $ Deciding (ChooseMatch n tokenStrategy steps tokens' matcher), [])
+        in (Deciding $ ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher, msgs)
+      else (f $ Deciding (ChooseMatch chooseSource n tokenStrategy steps tokens' matcher), [])
     ChooseMatchChoice steps tokens' matchers -> if any isUndecided steps
       then
         let
@@ -352,12 +354,12 @@ replaceDeciding :: ChaosBagStepState -> ChaosBagStepState -> ChaosBagStepState
 replaceDeciding current replacement = case current of
   Deciding step -> case step of
     Draw -> replacement
-    ChooseMatch n tokenStrategy steps tokens' matcher -> Deciding
-      $ ChooseMatch n tokenStrategy (replaceDecidingList steps replacement) tokens' matcher
+    ChooseMatch chooseSource n tokenStrategy steps tokens' matcher -> Deciding
+      $ ChooseMatch chooseSource n tokenStrategy (replaceDecidingList steps replacement) tokens' matcher
     ChooseMatchChoice steps tokens' matchers -> Deciding
       $ ChooseMatchChoice (replaceDecidingList steps replacement) tokens' matchers
-    Choose n tokenStrategy steps tokens' ->
-      Deciding $ Choose n tokenStrategy (replaceDecidingList steps replacement) tokens'
+    Choose chooseSource n tokenStrategy steps tokens' ->
+      Deciding $ Choose chooseSource n tokenStrategy (replaceDecidingList steps replacement) tokens'
   _ -> error $ "should be impossible, seen: " <> show current
 
 replaceDecidingList
@@ -375,10 +377,10 @@ replaceChooseMatchChoice :: ChaosBagStepState -> ChaosBagStepState -> ChaosBagSt
 replaceChooseMatchChoice current replacement = case current of
   Decided step -> case step of
     Draw -> Decided Draw
-    Choose n tokenStrategy steps tokens' ->
-      Decided $ Choose n tokenStrategy (replaceChooseMatchChoiceList steps replacement) tokens'
-    ChooseMatch n tokenStrategy steps tokens' matcher -> Decided
-      $ ChooseMatch n tokenStrategy (replaceChooseMatchChoiceList steps replacement) tokens' matcher
+    Choose chooseSource n tokenStrategy steps tokens' ->
+      Decided $ Choose chooseSource n tokenStrategy (replaceChooseMatchChoiceList steps replacement) tokens'
+    ChooseMatch chooseSource n tokenStrategy steps tokens' matcher -> Decided
+      $ ChooseMatch chooseSource n tokenStrategy (replaceChooseMatchChoiceList steps replacement) tokens' matcher
     ChooseMatchChoice steps tokens' matchers ->
       let candidate = replaceChooseMatchChoiceList steps replacement
       in if candidate == steps
@@ -394,11 +396,11 @@ replaceChooseMatchChoiceList steps replacement = case steps of
     ChooseMatchChoice{} -> replaceChooseMatchChoice (Decided step) replacement : xs
     Draw -> Decided Draw : replaceChooseMatchChoiceList xs replacement
 
-    ChooseMatch n tokenStrategy steps' tokens'  matcher -> let candidate = replaceChooseMatchChoiceList steps' replacement in if candidate == steps' then Decided step : replaceChooseMatchChoiceList xs replacement else Decided (ChooseMatch n tokenStrategy candidate tokens' matcher) : xs
+    ChooseMatch chooseSource n tokenStrategy steps' tokens'  matcher -> let candidate = replaceChooseMatchChoiceList steps' replacement in if candidate == steps' then Decided step : replaceChooseMatchChoiceList xs replacement else Decided (ChooseMatch chooseSource n tokenStrategy candidate tokens' matcher) : xs
 
-    Choose n tokenStrategy steps' tokens' ->
+    Choose chooseSource n tokenStrategy steps' tokens' ->
       let candidate = replaceChooseMatchChoiceList steps' replacement
-      in if candidate == steps' then Decided step : replaceChooseMatchChoiceList xs replacement else Decided (Choose n tokenStrategy candidate tokens') : xs
+      in if candidate == steps' then Decided step : replaceChooseMatchChoiceList xs replacement else Decided (Choose chooseSource n tokenStrategy candidate tokens') : xs
   (stepState : xs) -> stepState : replaceChooseMatchChoiceList xs replacement
 
 instance RunMessage ChaosBag where
@@ -426,7 +428,7 @@ instance RunMessage ChaosBag where
             pure
               $ c
               & (choiceL
-                ?~ Undecided (Choose x ResolveChoice (replicate x (Undecided Draw)) [])
+                ?~ Undecided (Choose source x ResolveChoice (replicate x (Undecided Draw)) [])
                 )
               & (revealedTokensL .~ [])
         RevealAndChoose n m -> case n of
@@ -436,7 +438,7 @@ instance RunMessage ChaosBag where
             pure
               $ c
               & (choiceL
-                ?~ Undecided (Choose m ResolveChoice (replicate x (Undecided Draw)) [])
+                ?~ Undecided (Choose source m ResolveChoice (replicate x (Undecided Draw)) [])
                 )
               & (revealedTokensL .~ [])
     RunBag source miid strategy -> case chaosBagChoice of

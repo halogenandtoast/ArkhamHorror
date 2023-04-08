@@ -141,6 +141,8 @@ data WindowType
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
+  | IgnoreToken InvestigatorId Token
+  | CancelToken InvestigatorId Token
   | RevealTokenEffect InvestigatorId Token EffectId
   | RevealTokenEventEffect InvestigatorId [Token] EventId
   | RevealTokenAssetAbilityEffect InvestigatorId [Token] AssetId

@@ -2065,6 +2065,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       )
       cards
     pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
+  TokenCanceled iid _ token | iid == investigatorId -> do
+    whenWindow <- checkWindows [Window Timing.When (Window.CancelToken iid token)]
+    afterWindow <- checkWindows [Window Timing.After (Window.CancelToken iid token)]
+    pushAll [whenWindow, afterWindow]
+    pure a
+  TokenIgnored iid _ token | iid == investigatorId -> do
+    whenWindow <- checkWindows [Window Timing.When (Window.IgnoreToken iid token)]
+    afterWindow <- checkWindows [Window Timing.After (Window.IgnoreToken iid token)]
+    pushAll [whenWindow, afterWindow]
+    pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == investigatorId -> do
     skillTestModifiers' <- getModifiers SkillTestTarget
     push $ if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'

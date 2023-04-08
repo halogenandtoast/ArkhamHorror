@@ -661,7 +661,8 @@ data Message
   | SealToken Token
   | SealedToken Token Card
   | UnsealToken Token
-  | TokenCanceledOrIgnored Token
+  | TokenIgnored InvestigatorId Source Token
+  | TokenCanceled InvestigatorId Source Token
   | UnsetActiveCard
   | UseCardAbility InvestigatorId Source Int [Window] Payment
   | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int

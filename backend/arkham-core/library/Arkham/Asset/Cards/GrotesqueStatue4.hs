@@ -39,7 +39,7 @@ instance RunMessage GrotesqueStatue4 where
         ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
         pushAll
           [ ReplaceCurrentDraw drawSource iid
-            $ Choose 1 ResolveChoice [Undecided Draw, Undecided Draw] []
+            $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []
           , ignoreWindow
           ]
         pure a

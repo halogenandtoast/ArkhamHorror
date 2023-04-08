@@ -559,6 +559,8 @@ data WindowMatcher
   | EnemyAttacksEvenIfCancelled Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
+  | CancelChaosToken Timing Who TokenMatcher
+  | IgnoreChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing Who SourceMatcher CardMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher

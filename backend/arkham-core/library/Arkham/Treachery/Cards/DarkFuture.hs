@@ -11,7 +11,6 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
-import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
@@ -46,7 +45,7 @@ instance RunMessage DarkFuture where
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       t <$ push (RequestTokens (toSource attrs) (Just iid) (Reveal 5) SetAside)
-    RequestedTokens source (Just iid) (traceShowId -> tokens) | isSource attrs source -> do
+    RequestedTokens source _ tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces tokens
       push $ ResetTokens source
       when (ElderSign `elem` tokenFaces) $

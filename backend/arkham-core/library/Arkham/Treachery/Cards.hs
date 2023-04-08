@@ -119,6 +119,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , indebted
   , internalInjury
   , lostSoul
+  , nihilism
   , obsessive
   , outOfBodyExperience
   , overzealous
@@ -1343,7 +1344,7 @@ maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
 
 selfDestructive :: CardDef
 selfDestructive =
-  (weakness "60104" "Self-Destructive") { cdCardTraits = singleton Flaw }
+  (basicWeakness "60104" "Self-Destructive") { cdCardTraits = singleton Flaw }
 
 thriceDamnedCuriosity :: CardDef
 thriceDamnedCuriosity = (weakness "60203" "Thrice-Damned Curiosity")
@@ -1351,13 +1352,18 @@ thriceDamnedCuriosity = (weakness "60203" "Thrice-Damned Curiosity")
   }
 
 obsessive :: CardDef
-obsessive = (weakness "60204" "Obsessive")
+obsessive = (basicWeakness "60204" "Obsessive")
   { cdCardTraits = singleton Flaw
   }
 
 darkFuture :: CardDef
 darkFuture = (weakness "60403" "Dark Future")
   { cdCardTraits = setFromList [Omen, Endtimes]
+  }
+
+nihilism :: CardDef
+nihilism = (basicWeakness "60404" "Nihilism")
+  { cdCardTraits = singleton Madness
   }
 
 calledByTheMists :: CardDef

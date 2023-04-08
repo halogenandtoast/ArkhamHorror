@@ -54,15 +54,19 @@ instance RunMessage JacquelineFine where
           $ ChooseMatchChoice
             [Undecided Draw, Undecided Draw, Undecided Draw]
             []
-            [ (TokenFaceIs AutoFail , ("Cancel 1 {autofail} token", ChooseMatch 1 CancelChoice [] [] (TokenFaceIs AutoFail)))
-            , (TokenFaceIsNot AutoFail, ("Cancel 2 non-{autofail} tokens", ChooseMatch 2 CancelChoice [] [] (TokenFaceIsNot AutoFail)))
+            [ (TokenFaceIs AutoFail , ("Cancel 1 {autofail} token", ChooseMatch (toSource attrs) 1 CancelChoice [] [] (TokenFaceIs AutoFail)))
+            , (TokenFaceIsNot AutoFail, ("Cancel 2 non-{autofail} tokens", ChooseMatch (toSource attrs) 2 CancelChoice [] [] (TokenFaceIsNot AutoFail)))
             ]
           -- $ Choose 1 [Undecided Draw, Undecided Draw, Undecided Draw] []
         , ignoreWindow
         ]
       pure i
-    TokenCanceledOrIgnored token | tokenFace token == ElderSign -> do
+    TokenCanceled iid _ (tokenFace -> ElderSign) | iid == toId attrs -> do
       drawing <- drawCards (toId attrs) (toSource attrs) 1
       push drawing
-      pure i
+      JacquelineFine <$> runMessage msg attrs
+    TokenIgnored iid _ (tokenFace -> ElderSign) | iid == toId attrs -> do
+      drawing <- drawCards (toId attrs) (toSource attrs) 1
+      push drawing
+      JacquelineFine <$> runMessage msg attrs
     _ -> JacquelineFine <$> runMessage msg attrs

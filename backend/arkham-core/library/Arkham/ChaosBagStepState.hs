@@ -10,6 +10,7 @@ import Arkham.Prelude
 
 import Arkham.Token
 import Arkham.Matcher
+import Arkham.Source
 
 data ChaosBagStepState
   = Resolved { tokens :: [Token] }
@@ -26,13 +27,15 @@ data TokenStrategy = ResolveChoice | CancelChoice | IgnoreChoice
 data ChaosBagStep
   = Draw
   | Choose
-    { amount :: Int
+    { source :: Source
+    , amount :: Int
     , tokenStrategy :: TokenStrategy
     , steps :: [ChaosBagStepState]
     , tokenGroups :: [[Token]]
     }
   | ChooseMatch
-    { amount :: Int
+    { source :: Source
+    , amount :: Int
     , tokenStrategy :: TokenStrategy
     , steps :: [ChaosBagStepState]
     , tokenGroups :: [[Token]]

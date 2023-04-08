@@ -340,6 +340,7 @@ library
       Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
       Arkham.Asset.Cards.CrystallineElderSign3
+      Arkham.Asset.Cards.CrystalPendulum
       Arkham.Asset.Cards.DaisysToteBag
       Arkham.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Asset.Cards.DanielChesterfield
@@ -555,6 +556,8 @@ library
       Arkham.Asset.Cards.RiteOfSeeking2
       Arkham.Asset.Cards.RiteOfSeeking4
       Arkham.Asset.Cards.RitualCandles
+      Arkham.Asset.Cards.RobesOfEndlessNight
+      Arkham.Asset.Cards.RobesOfEndlessNight2
       Arkham.Asset.Cards.Rolands38Special
       Arkham.Asset.Cards.RunicAxe
       Arkham.Asset.Cards.Safeguard

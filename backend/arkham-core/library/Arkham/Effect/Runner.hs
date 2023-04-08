@@ -31,7 +31,9 @@ instance RunMessage EffectAttrs where
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)
       _ -> pure a
-    PaidCost _ _ _ _ | isEndOfWindow a EffectCostWindow ->
+    PaidCost {}| isEndOfWindow a EffectCostWindow ->
+      a <$ push (DisableEffect effectId)
+    PayCostFinished {} | isEndOfWindow a EffectCostWindow ->
       a <$ push (DisableEffect effectId)
     After (PerformEnemyAttack {}) | isEndOfWindow a EffectAttackWindow ->
       a <$ push (DisableEffect effectId)

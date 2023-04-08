@@ -186,6 +186,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , coltVestPocket2
   , cornered2
   , combatTraining1
+  , crystalPendulum
   , crystallineElderSign3
   , daisysToteBag
   , daisysToteBagAdvanced
@@ -391,6 +392,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , riteOfSeeking2
   , riteOfSeeking4
   , ritualCandles
+  , robesOfEndlessNight
+  , robesOfEndlessNight2
   , rolands38Special
   , safeguard
   , scavenging
@@ -3458,6 +3461,28 @@ familiarSpirit = (asset "60410" "Familiar Spirit" 1 Mystic)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Ally, Creature, Summon]
   , cdSlots = [AllySlot]
+  }
+
+crystalPendulum :: CardDef
+crystalPendulum = (asset "60411" "Crystal Pendulum" 2 Mystic)
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Item, Charm]
+  , cdSlots = [AccessorySlot]
+  }
+
+robesOfEndlessNight :: CardDef
+robesOfEndlessNight = (asset "60412" "Robes of Endless Night" 3 Mystic)
+  { cdSkills = [#agility]
+  , cdCardTraits = setFromList [Item, Clothing]
+  , cdSlots = [BodySlot]
+  }
+
+robesOfEndlessNight2 :: CardDef
+robesOfEndlessNight2 = (asset "60422" "Robes of Endless Night" 2 Mystic)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = setFromList [Item, Clothing]
+  , cdSlots = [BodySlot]
+  , cdLevel = 2
   }
 
 azureFlame3 :: CardDef

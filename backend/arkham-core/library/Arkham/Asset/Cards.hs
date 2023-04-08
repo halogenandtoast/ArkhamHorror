@@ -280,6 +280,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , hyperawareness2
   , hypnoticTherapy
   , ichtacaTheForgottenGuardian
+  , ineffibleTruth
+  , ineffibleTruth3
+  , ineffibleTruth5
   , innocentReveler
   , inTheKnow1
   , jakeWilliams
@@ -3441,6 +3444,14 @@ clairvoyance = (asset "60408" "Clairvoyance" 4 Mystic)
   , cdUses = uses Charge 3
   }
 
+ineffibleTruth :: CardDef
+ineffibleTruth = (asset "60409" "Ineffible Truth" 3 Mystic)
+  { cdSkills = [#agility]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 3
+  }
+
 azureFlame3 :: CardDef
 azureFlame3 = (asset "60425" "Azure Flame" 3 Mystic)
   { cdSkills = [#willpower, #combat]
@@ -3459,6 +3470,15 @@ clairvoyance3 = (asset "60426" "Clairvoyance" 4 Mystic)
   , cdLevel = 3
   }
 
+ineffibleTruth3 :: CardDef
+ineffibleTruth3 = (asset "60427" "Ineffible Truth" 3 Mystic)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 3
+  , cdLevel = 3
+  }
+
 azureFlame5 :: CardDef
 azureFlame5 = (asset "60430" "Azure Flame" 3 Mystic)
   { cdSkills = [#willpower, #combat, #combat]
@@ -3471,6 +3491,15 @@ azureFlame5 = (asset "60430" "Azure Flame" 3 Mystic)
 clairvoyance5 :: CardDef
 clairvoyance5 = (asset "60431" "Clairvoyance" 4 Mystic)
   { cdSkills = [#willpower, #intellect, #intellect]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 3
+  , cdLevel = 5
+  }
+
+ineffibleTruth5 :: CardDef
+ineffibleTruth5 = (asset "60432" "Ineffible Truth" 3 Mystic)
+  { cdSkills = [#willpower, #agility, #agility]
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]
   , cdUses = uses Charge 3

@@ -143,6 +143,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , archaicGlyphsProphecyForetold3
   , armorOfArdennes5
   , artStudent
+  , azureFlame
+  , azureFlame3
+  , azureFlame5
   , backpack
   , backpack2
   , bandolier
@@ -175,6 +178,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , chuckFergus2
   , chuckFergus5
   , clarityOfMind
+  , clairvoyance
+  , clairvoyance3
+  , clairvoyance5
   , claspOfBlackOnyx
   , coltVestPocket
   , coltVestPocket2
@@ -3417,6 +3423,58 @@ scryingMirror = (asset "60406" "Scrying Mirror" 3 Mystic)
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [HandSlot]
   , cdUses = uses Secret 4
+  }
+
+azureFlame :: CardDef
+azureFlame = (asset "60407" "Azure Flame" 3 Mystic)
+  { cdSkills = [#combat]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 4
+  }
+
+clairvoyance :: CardDef
+clairvoyance = (asset "60408" "Clairvoyance" 4 Mystic)
+  { cdSkills = [#intellect]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 3
+  }
+
+azureFlame3 :: CardDef
+azureFlame3 = (asset "60425" "Azure Flame" 3 Mystic)
+  { cdSkills = [#willpower, #combat]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 4
+  , cdLevel = 3
+  }
+
+clairvoyance3 :: CardDef
+clairvoyance3 = (asset "60426" "Clairvoyance" 4 Mystic)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 3
+  , cdLevel = 3
+  }
+
+azureFlame5 :: CardDef
+azureFlame5 = (asset "60430" "Azure Flame" 3 Mystic)
+  { cdSkills = [#willpower, #combat, #combat]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 4
+  , cdLevel = 5
+  }
+
+clairvoyance5 :: CardDef
+clairvoyance5 = (asset "60431" "Clairvoyance" 4 Mystic)
+  { cdSkills = [#willpower, #intellect, #intellect]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = uses Charge 3
+  , cdLevel = 5
   }
 
 eighteenDerringer :: CardDef

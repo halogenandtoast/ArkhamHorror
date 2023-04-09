@@ -226,6 +226,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , onTheLam
   , oops
   , parallelFates
+  , parallelFates2
   , payDay1
   , perseverance
   , persuasion
@@ -1810,6 +1811,13 @@ moneyTalks2 = (event "08054" "Money Talks" 0 Rogue)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Favor, Gambit]
   , cdFastWindow = Just $ InitiatedSkillTest Timing.When (InvestigatorAt Anywhere) AnySkillType AnySkillTestValue
+  , cdLevel = 2
+  }
+
+parallelFates2 :: CardDef
+parallelFates2 = (event "08066" "Parallel Fates" 0 Mystic)
+  { cdSkills = [#willpower, #wild]
+  , cdCardTraits = singleton Augury
   , cdLevel = 2
   }
 

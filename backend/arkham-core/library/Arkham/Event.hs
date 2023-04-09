@@ -334,6 +334,8 @@ allEvents = mapFrom
   , SomeEventCard unearthTheAncients2
   --- rogue [eote]
   , SomeEventCard moneyTalks2
+  --- mystic [eote]
+  , SomeEventCard parallelFates2
   -- Return to Night of the Zealot
   --- guardian [rtnotz]
   , SomeEventCard dynamiteBlast2

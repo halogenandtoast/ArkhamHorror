@@ -2474,7 +2474,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
     | iid == investigatorId -> do
       let cards' = mapMaybe (preview _PlayerCard) cards
-      deck <- shuffleM (cards' <> unDeck investigatorDeck)
+      deck <- shuffleM $ cards' <> filter (`notElem` cards') (unDeck investigatorDeck)
       pure
         $ a
         & (deckL .~ Deck deck)

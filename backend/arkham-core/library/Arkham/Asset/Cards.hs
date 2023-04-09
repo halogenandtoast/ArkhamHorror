@@ -138,6 +138,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , arcaneResearch
   , arcaneStudies
   , arcaneStudies2
+  , arcaneStudies4
   , archaicGlyphs
   , archaicGlyphsGuidingStones3
   , archaicGlyphsProphecyForetold3
@@ -261,6 +262,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grislyTotem
   , grislyTotemSeeker3
   , grislyTotemSurvivor3
+  , grotesqueStatue2
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -3477,6 +3479,15 @@ robesOfEndlessNight = (asset "60412" "Robes of Endless Night" 3 Mystic)
   , cdSlots = [BodySlot]
   }
 
+grotesqueStatue2 :: CardDef
+grotesqueStatue2 = (asset "60421" "Grotesque Statue" 3 Mystic)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdLevel = 2
+  , cdUses = uses Charge 3
+  , cdSlots = [HandSlot]
+  }
+
 robesOfEndlessNight2 :: CardDef
 robesOfEndlessNight2 = (asset "60422" "Robes of Endless Night" 2 Mystic)
   { cdSkills = [#willpower, #agility]
@@ -3510,6 +3521,14 @@ ineffibleTruth3 = (asset "60427" "Ineffible Truth" 3 Mystic)
   , cdSlots = [ArcaneSlot]
   , cdUses = uses Charge 3
   , cdLevel = 3
+  }
+
+arcaneStudies4 :: CardDef
+arcaneStudies4 = (asset "60428" "Arcane Studies" 2 Mystic)
+  { cdSkills = [#willpower, #willpower, #intellect, #intellect]
+  , cdCardTraits = setFromList [Talent]
+  , cdLevel = 4
+  , cdUses = uses Resource 2
   }
 
 azureFlame5 :: CardDef

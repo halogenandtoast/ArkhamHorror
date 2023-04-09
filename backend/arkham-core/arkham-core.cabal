@@ -287,6 +287,7 @@ library
       Arkham.Asset.Cards.ArcaneResearch
       Arkham.Asset.Cards.ArcaneStudies
       Arkham.Asset.Cards.ArcaneStudies2
+      Arkham.Asset.Cards.ArcaneStudies4
       Arkham.Asset.Cards.ArchaicGlyphs
       Arkham.Asset.Cards.ArchaicGlyphsGuidingStones3
       Arkham.Asset.Cards.ArchaicGlyphsProphecyForetold3
@@ -416,6 +417,7 @@ library
       Arkham.Asset.Cards.GrislyTotem
       Arkham.Asset.Cards.GrislyTotemSeeker3
       Arkham.Asset.Cards.GrislyTotemSurvivor3
+      Arkham.Asset.Cards.GrotesqueStatue2
       Arkham.Asset.Cards.GrotesqueStatue4
       Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
@@ -1074,6 +1076,7 @@ library
       Arkham.Event.Cards.HotStreak2
       Arkham.Event.Cards.HotStreak4
       Arkham.Event.Cards.HypnoticGaze
+      Arkham.Event.Cards.HypnoticGaze2
       Arkham.Event.Cards.IfItBleeds
       Arkham.Event.Cards.IllSeeYouInHell
       Arkham.Event.Cards.ImDoneRunnin
@@ -1134,6 +1137,7 @@ library
       Arkham.Event.Cards.PreposterousSketches2
       Arkham.Event.Cards.QuantumFlux
       Arkham.Event.Cards.Recharge2
+      Arkham.Event.Cards.Recharge4
       Arkham.Event.Cards.Reliable1
       Arkham.Event.Cards.Sacrifice1
       Arkham.Event.Cards.SceneOfTheCrime
@@ -1762,6 +1766,7 @@ library
       Arkham.Skill.Cards.Fearless
       Arkham.Skill.Cards.Fearless2
       Arkham.Skill.Cards.Guts
+      Arkham.Skill.Cards.Guts2
       Arkham.Skill.Cards.HatchetMan
       Arkham.Skill.Cards.InquiringMind
       Arkham.Skill.Cards.InspiringPresence

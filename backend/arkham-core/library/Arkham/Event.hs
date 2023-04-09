@@ -393,6 +393,8 @@ allEvents = mapFrom
   , SomeEventCard parallelFates
   , SomeEventCard voiceOfRa
   , SomeEventCard eldritchInspiration1
+  , SomeEventCard hypnoticGaze2
+  , SomeEventCard recharge4
   --- Stella Clark
   , SomeEventCard willToSurvive
   , SomeEventCard aTestOfWill

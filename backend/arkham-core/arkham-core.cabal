@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -271,6 +271,7 @@ library
       Arkham.Asset.Cards.AlchemicalConcoction
       Arkham.Asset.Cards.AlchemicalTransmutation
       Arkham.Asset.Cards.AlejandroVela
+      Arkham.Asset.Cards.AliceLuxley
       Arkham.Asset.Cards.AlyssaGraham
       Arkham.Asset.Cards.AnalyticalMind
       Arkham.Asset.Cards.AncestralKnowledge3
@@ -1181,6 +1182,7 @@ library
       Arkham.Event.Cards.WardOfProtection2
       Arkham.Event.Cards.WardOfProtection5
       Arkham.Event.Cards.Waylay
+      Arkham.Event.Cards.WellMaintained1
       Arkham.Event.Cards.WillToSurvive
       Arkham.Event.Cards.WillToSurvive3
       Arkham.Event.Cards.WingingIt

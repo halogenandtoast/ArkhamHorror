@@ -283,6 +283,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , wardOfProtection2
   , wardOfProtection5
   , waylay
+  , wellMaintained1
   , willToSurvive
   , willToSurvive3
   , wingingIt
@@ -1727,6 +1728,14 @@ banish1 = (event "05113" "Banish" 2 Mystic)
   , cdActions = [Action.Evade]
   , cdLevel = 1
   , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ NonEliteEnemy <> CanEvadeEnemy
+  }
+
+wellMaintained1 :: CardDef
+wellMaintained1 = (event "05152" "Well-Maintained" 0 Guardian)
+  { cdSkills = [#agility]
+  , cdCardTraits = singleton Upgrade
+  , cdLevel = 1
+  , cdCriteria = Just $ Criteria.AssetExists $ AssetControlledBy You <> AssetWithTrait Item <> NotAsset (AssetWithAttachedEvent $ EventIs "05152")
   }
 
 denyExistence5 :: CardDef

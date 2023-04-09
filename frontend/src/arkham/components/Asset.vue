@@ -217,10 +217,10 @@ const choose = (idx: number) => emit('choose', idx)
   height: 30px;
 }
 
-:deep(.event) {
+:deep(.event img) {
   object-fit: cover;
   object-position: 0 -72px;
-  height: 68px;
+  height: 36px;
   margin-top: 2px;
 }
 </style>

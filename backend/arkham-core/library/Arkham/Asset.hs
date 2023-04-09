@@ -459,6 +459,8 @@ allAssets = mapFrom
   , SomeAssetCard enchantedBlade
   , SomeAssetCard grislyTotem
   -- The Wages of Sin
+  --- guardian [wos]
+  , SomeAssetCard aliceLuxley
   --- survivor [wos]
   , SomeAssetCard drawingThin
   -- For the Greater Good

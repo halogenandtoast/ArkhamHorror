@@ -259,10 +259,12 @@ data EventMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher
+  | EventIs CardCode
   | EventReady
   | EventCardMatch CardMatcher
   | EventMatches [EventMatcher]
   | AnyEvent
+  | NotEvent EventMatcher
   | EventWithPlacement Placement
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

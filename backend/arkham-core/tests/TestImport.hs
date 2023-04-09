@@ -160,7 +160,7 @@ buildEvent cardDef investigator = do
   card <- genCard cardDef
   createEvent card (toId investigator) <$> getRandom
 
-buildEnemy :: CardGen m => CardCode -> m Enemy
+buildEnemy :: HasCallStack => CardGen m => CardCode -> m Enemy
 buildEnemy cardCode = case lookupCardDef cardCode of
   Nothing -> error $ "Test used invalid card code" <> show cardCode
   Just def -> do
@@ -371,7 +371,7 @@ replaceScenario f = do
   ref <- view gameRefL
   atomicModifyIORef' ref (\g -> (g { gameMode = That scenario' }, ()))
 
-chooseOnlyOption :: String -> TestAppT ()
+chooseOnlyOption :: HasCallStack => String -> TestAppT ()
 chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -383,7 +383,7 @@ chooseOnlyOption _reason = do
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
-chooseFirstOption :: String -> TestAppT ()
+chooseFirstOption :: HasCallStack => String -> TestAppT ()
 chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -393,7 +393,7 @@ chooseFirstOption _reason = do
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
-chooseOptionMatching :: String -> (UI Message -> Bool) -> TestAppT ()
+chooseOptionMatching :: HasCallStack => String -> (UI Message -> Bool) -> TestAppT ()
 chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of

@@ -40,7 +40,8 @@ docker-compose up
 
 ### Player Cards
 
-* All player cards through The Circle Undon deluxe box
+* All player cards through The Circle Undone deluxe box
+* All the standlone investigator cards
 
 ### Campaigns
 

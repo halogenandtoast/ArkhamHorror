@@ -72,7 +72,7 @@ import Arkham.Event.Events
   , vantagePointEffect
   )
 import Arkham.Investigator.Investigators ( fatherMateoElderSignEffect, ritaYoungElderSignEffect, pennyWhiteEffect, dexterDrakeEffect, winifredHabbamockEffect )
-import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect, copycat3Effect )
+import Arkham.Skill.Skills ( defianceEffect, defiance2Effect, hatchetManEffect, copycat3Effect, prescientEffect )
 import Arkham.Treachery.Treacheries ( mysteriesOfTheLodgeEffect )
 
 createEffect
@@ -283,7 +283,8 @@ allEffects = mapFromList
   , ("60407", SomeEffect azureFlameEffect)
   , ("60408", SomeEffect clairvoyanceEffect)
   , ("60409", SomeEffect ineffibleTruthEffect)
-  , ("60410", SomeEffect crystalPendulumEffect)
+  , ("60411", SomeEffect crystalPendulumEffect)
+  , ("60419", SomeEffect prescientEffect)
   , ("60425", SomeEffect azureFlame3Effect)
   , ("60426", SomeEffect clairvoyance3Effect)
   , ("60427", SomeEffect ineffibleTruth3Effect)

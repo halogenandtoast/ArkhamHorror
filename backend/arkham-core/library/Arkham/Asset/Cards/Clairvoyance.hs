@@ -42,7 +42,7 @@ instance RunMessage Clairvoyance where
       lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
-        [ createCardEffect Cards.clairvoyance Nothing source (InvestigationTarget iid lid)
+        [ createCardEffect Cards.clairvoyance Nothing source iid
         , skillTestModifier attrs iid (DiscoveredClues 1)
         , Investigate
           iid

@@ -103,6 +103,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , overpower2
   , perception
   , perception2
+  , prescient
   , prophesy
   , quickThinking
   , reckless
@@ -544,6 +545,13 @@ copycat3 =
   (skill "60330" "Copycat" [#wild] Rogue)
     { cdCardTraits = singleton Gambit
     , cdLevel = 3
+    }
+
+prescient :: CardDef
+prescient =
+  (skill "60419" "Prescient" [#willpower] Mystic)
+    { cdCardTraits = setFromList [Practiced, Augury]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 neitherRainNorSnow :: CardDef

@@ -68,7 +68,7 @@ instance RunMessage ParallelFates2 where
         , UnfocusCards
         ]
       pure e
-    SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards -> do
+    SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck _) cards -> do
       drawing <- drawCards iid attrs 1
       pushAll
         [ FocusCards cards

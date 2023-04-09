@@ -282,7 +282,9 @@ const setSet = (set) => {
         </div>
       </header>
       <div class="cards" v-if="view == View.Image">
-        <img class="card" v-for="card in cards" :key="card.art" :src="image(card)" />
+        <a v-for="card in cards" :key="card.art" target="_blank" :href="`https://arkhamdb.com/card/${card.art}`">
+          <img class="card" :src="image(card)" />
+        </a>
       </div>
       <table class="list" v-if="view == View.List">
         <thead>
@@ -290,7 +292,7 @@ const setSet = (set) => {
         </thead>
         <tbody>
           <tr v-for="card in cards" :key="card.art">
-            <td>{{cardName(card)}}{{levelText(card)}}</td>
+            <td><a target="_blank" :href="`https://arkhamdb.com/card/${card.art}`">{{cardName(card)}}{{levelText(card)}}</a></td>
             <td>{{card.classSymbols.join(', ')}}</td>
             <td>{{cardCost(card)}}</td>
             <td>{{cardType(card)}}</td>

@@ -73,7 +73,7 @@ instance RunMessage MollyMaxwell where
             [ targetLabel
                 (toCardId c)
                 [ UnfocusCards
-                , AddToHand iid c
+                , addToHand iid c
                 , ShuffleCardsIntoDeck (InvestigatorDeck iid) rest
                 ]
             ]

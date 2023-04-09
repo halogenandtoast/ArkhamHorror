@@ -77,7 +77,7 @@ instance RunMessage DianaStanley where
           $ [ FocusCards cardsUnderneath
             , chooseOrRunOne iid
             $ Label "Do not add any cards to your Hand" []
-            : [ TargetLabel (CardIdTarget $ toCardId c) [AddToHand iid c]
+            : [ TargetLabel (CardIdTarget $ toCardId c) [addToHand iid c]
               | c <- cardsUnderneath
               ]
             , UnfocusCards

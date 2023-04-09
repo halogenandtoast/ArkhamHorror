@@ -55,7 +55,7 @@ instance RunMessage SearchForTheStrangerV1 where
       leadInvestigatorId <- getLeadInvestigatorId
       thePallidMask <- genPlayerCard Assets.thePallidMask
       pushAll
-        [ AddToHand leadInvestigatorId (PlayerCard thePallidMask)
+        [ addToHand leadInvestigatorId (PlayerCard thePallidMask)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

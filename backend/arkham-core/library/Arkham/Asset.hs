@@ -461,6 +461,8 @@ allAssets = mapFrom
   -- The Wages of Sin
   --- guardian [wos]
   , SomeAssetCard aliceLuxley
+  --- seeker [wos]
+  , SomeAssetCard mrRook
   --- survivor [wos]
   , SomeAssetCard drawingThin
   -- For the Greater Good

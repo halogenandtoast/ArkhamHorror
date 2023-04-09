@@ -146,7 +146,7 @@ instance RunMessage JoeDiamond where
     InitiatePlayCard iid card mTarget windows' _
       | iid == toId attrs && Just (toCardId card) == revealedHunchCard meta -> do
         pushAll
-          [ AddToHand iid card
+          [ addToHand iid card
           , InitiatePlayCard iid card mTarget windows' False
           ]
         let hunchDeck' = filter (/= card) (hunchDeck attrs)

@@ -1033,8 +1033,13 @@ passesCriteria iid mcard source windows' = \case
         cardId <- field InHandEventCardId eid
         pure $ cardId `elem` hand
       AssetSource aid -> do
-        cardId <- field InHandAssetCardId aid
-        pure $ cardId `elem` hand
+        inPlay <- selectAny $ Matcher.AssetWithId aid
+        if inPlay
+           then pure False
+           else do
+             -- todo we should make a cleaner method for this
+             cardId <- field InHandAssetCardId aid
+             pure $ cardId `elem` hand
       TreacherySource tid -> do
         member tid <$> select
           (Matcher.TreacheryInHandOf $ Matcher.InvestigatorWithId iid)

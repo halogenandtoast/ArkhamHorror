@@ -102,7 +102,7 @@ instance RunMessage ScrollOfSecretsSeeker3 where
             : [ targetLabel
                   (toCardId card)
                   [ UnfocusCards
-                  , AddToHand iid' (PlayerCard card)
+                  , addToHand iid' (PlayerCard card)
                   , DoStep 3 $ SearchFound
                     iid
                     (toTarget attrs)

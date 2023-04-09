@@ -181,7 +181,7 @@ data Message
   | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
-  | AddToHand InvestigatorId Card
+  | AddToHand InvestigatorId [Card]
   | ReturnToHand InvestigatorId Target
   | -- Adding Cards to Deck
     AddFocusedToTopOfDeck InvestigatorId Target CardId

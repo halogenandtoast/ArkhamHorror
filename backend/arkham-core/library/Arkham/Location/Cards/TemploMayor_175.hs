@@ -60,7 +60,7 @@ instance RunMessage TemploMayor_175 where
         ]
       pure l
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
-      for_ mcard $ push . AddToHand iid . PlayerCard
+      for_ mcard $ push . addToHand iid . PlayerCard
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing

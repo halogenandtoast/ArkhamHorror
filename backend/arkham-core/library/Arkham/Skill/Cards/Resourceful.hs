@@ -34,7 +34,7 @@ instance RunMessage Resourceful where
           [ TargetLabel
               (CardIdTarget $ toCardId card)
               [ RemoveFromDiscard (skillOwner attrs) (toCardId card)
-              , AddToHand (skillOwner attrs) card
+              , addToHand (skillOwner attrs) card
               ]
           | card <- targets
           ]

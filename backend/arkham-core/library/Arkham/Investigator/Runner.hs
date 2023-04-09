@@ -71,6 +71,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Monad.Extra ( findM )
 import Data.HashMap.Strict qualified as HashMap
+import Data.HashSet qualified as HashSet
 import Data.Monoid
 import Control.Lens (each)
 
@@ -1534,7 +1535,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (\a' slotType ->
         a' & slotsL . ix slotType %~ placeInAvailableSlot aid assetCard
       )
-      (a & assetsUpdate)
+      (a & handL %~ (filter (/= assetCard)) & assetsUpdate)
       slotTypes
   RemoveCampaignCard cardDef -> do
     pure
@@ -2452,24 +2453,30 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
-  AddToHand iid card | iid == investigatorId -> do
-    case card of
-      PlayerCard card' -> do
-        when (hasRevelation card') $ if toCardType card' == PlayerTreacheryType
-          then push (DrewTreachery iid Nothing card)
-          else push (Revelation iid $ PlayerCardSource card')
-        when (toCardType card' == PlayerEnemyType)
-          $ push (DrewPlayerEnemy iid card)
-      _ -> pure ()
-    mAssetId <- selectOne $ AssetWithCardId $ toCardId card
+  AddToHand iid cards | iid == investigatorId -> do
+    let
+      choices = mapMaybe cardChoice cards
+      cardChoice = \case
+        card@(PlayerCard card') -> do
+          if hasRevelation card'
+            then if toCardType card' == PlayerTreacheryType
+              then Just (card, DrewTreachery iid Nothing card)
+              else Just (card, Revelation iid $ PlayerCardSource card')
+            else if toCardType card' == PlayerEnemyType
+              then Just (card, DrewPlayerEnemy iid card)
+              else Nothing
+        _ -> Nothing
+    when (notNull choices) $
+      push $ chooseOrRunOneAtATime iid [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
+    assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a
-      & (handL %~ (card :))
-      & (cardsUnderneathL %~ filter (/= card))
-      & (assetsL %~ maybe id deleteSet mAssetId)
-      & (slotsL %~ maybe id removeFromSlots mAssetId)
-      & (discardL %~ filter ((/= card) . PlayerCard))
-      & (foundCardsL . each %~ filter (/= card))
+      & (handL %~ (cards <>))
+      & (cardsUnderneathL %~ filter (`notElem` cards))
+      & (assetsL %~ HashSet.filter (`notElem` assetIds))
+      & (slotsL %~ flip (foldr removeFromSlots) assetIds)
+      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+      & (foundCardsL . each %~ filter (`notElem` cards))
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [] | iid == investigatorId -> do
     -- can't shuffle zero cards
     pure a
@@ -2491,7 +2498,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           ((== cardId) . toCardId)
           (findWithDefault [] cardSource investigatorFoundCards)
         foundCards = investigatorFoundCards & ix cardSource %~ filter (/= card)
-      push $ AddToHand iid' card
+      push $ addToHand iid' card
       pure $ a & foundCardsL .~ foundCards
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId
     | iid' == investigatorId -> do
@@ -2642,7 +2649,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             choices =
               [ TargetLabel
                   (CardIdTarget $ toCardId card)
-                  [AddToHand who card, PayCardCost iid card windows']
+                  [addToHand who card, PayCardCost iid card windows']
               | (_, cards) <- playableCards
               , card <- cards
               ]
@@ -2665,7 +2672,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             choices =
               [ TargetLabel
                   (CardIdTarget $ toCardId card)
-                  [AddToHand who card, PutCardIntoPlay iid card Nothing windows']
+                  [addToHand who card, PutCardIntoPlay iid card Nothing windows']
               | (_, cards) <- playableCards
               , card <- cards
               ]

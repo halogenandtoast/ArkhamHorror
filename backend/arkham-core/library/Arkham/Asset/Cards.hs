@@ -349,6 +349,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , mollyMaxwell
   , monstrousTransformation
   , moxie1
+  , mrRook
   , mysteriousRaven
   , newspaper
   , newspaper2
@@ -2820,6 +2821,15 @@ aliceLuxley = (asset "05151" ("Alice Luxley" <:> "Fearless Flatfoot") 4 Guardian
   , cdCardTraits = setFromList [Ally, Detective, Police]
   , cdSlots = [AllySlot]
   , cdUnique = True
+  }
+
+mrRook :: CardDef
+mrRook = (asset "05153" ("Mr. \"Rook\"" <:> "Dealer in Secrets") 3 Seeker)
+  { cdSkills = [#willpower]
+  , cdCardTraits = singleton Ally
+  , cdSlots = [AllySlot]
+  , cdUnique = True
+  , cdUses = uses Secret 3
   }
 
 drawingThin :: CardDef

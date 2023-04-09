@@ -19,7 +19,7 @@ spec = describe "Wendy Adams" $ do
           logger
           wendyAdams
           [ SetTokens [MinusOne]
-          , AddToHand (toId wendyAdams) (PlayerCard card)
+          , addToHand (toId wendyAdams) (PlayerCard card)
           , beginSkillTest wendyAdams SkillWillpower 3
           ]
           id

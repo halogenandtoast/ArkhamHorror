@@ -77,7 +77,7 @@ instance RunMessage PrescientEffect where
           [ FocusCards spells
           , chooseOne iid
           $ Label "Do not return spell card" []
-          : [ targetLabel (toCardId spell) [AddToHand iid spell]
+          : [ targetLabel (toCardId spell) [addToHand iid spell]
             | spell <- spells
             ]
           , UnfocusCards

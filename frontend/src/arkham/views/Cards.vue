@@ -355,12 +355,20 @@ tr th:nth-child(1){
 }
 
 tbody td {
-  border-top: 1px solid #999;
+  border-top: 1px solid #111;
   padding: 2px 0;
 }
 
+tr {
+  color: #ccc;
+}
+
+tr:nth-child(odd) {
+  background-color: #333;
+}
+
 tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #222;
 }
 
 .willpower {
@@ -411,7 +419,8 @@ i {
 }
 
 thead tr th {
-  background-color: #BBB;
+  background-color: #111;
+  color: #aaa;
 
   &:nth-child(1) {
     border-top-left-radius: 10px;

@@ -276,6 +276,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , unearthTheAncients2
   , unsolvedCase
   , vantagePoint
+  , voiceOfRa
   , wardOfProtection
   , wardOfProtection2
   , wardOfProtection5
@@ -565,6 +566,7 @@ emergencyCache :: CardDef
 emergencyCache = (event "01088" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdAlternateCardCodes = ["01588"]
+  , cdCriteria = Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> You
   }
 
 searchForTheTruth :: CardDef
@@ -749,6 +751,7 @@ emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 2
   , cdAlternateCardCodes = ["01693"]
+  , cdCriteria = Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> You
   }
 
 ifItBleeds :: CardDef
@@ -1163,6 +1166,7 @@ emergencyCache3 :: CardDef
 emergencyCache3 = (event "03239" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 3
+  , cdCriteria = Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> You
   }
 
 onTheHunt :: CardDef
@@ -2184,6 +2188,13 @@ parallelFates :: CardDef
 parallelFates = (event "60415" "Parallel Fates" 0 Mystic)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Augury
+  }
+
+voiceOfRa :: CardDef
+voiceOfRa = (event "60416" "Voice of Ra" 0 Mystic)
+  { cdSkills = [#willpower]
+  , cdCardTraits = singleton Spell
+  , cdCriteria = Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> You
   }
 
 eldritchInspiration1 :: CardDef

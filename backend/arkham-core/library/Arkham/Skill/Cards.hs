@@ -86,6 +86,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , fearless
   , fearless2
   , guts
+  , guts2
   , hatchetMan
   , inquiringMind
   , inspiringPresence
@@ -553,6 +554,13 @@ prescient =
     { cdCardTraits = setFromList [Practiced, Augury]
     , cdCommitRestrictions = [MaxOnePerTest]
     }
+
+guts2 :: CardDef
+guts2 = (skill "60424" "Guts" [#willpower, #willpower, #willpower] Mystic)
+  { cdCardTraits = setFromList [Innate, Developed]
+  , cdCommitRestrictions = [MaxOnePerTest]
+  , cdLevel = 2
+  }
 
 neitherRainNorSnow :: CardDef
 neitherRainNorSnow = (skill "60502" "Neither Rain nor Snow" [#wild, #wild, #wild] Survivor)

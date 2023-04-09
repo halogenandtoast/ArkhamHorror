@@ -592,10 +592,12 @@ allAssets = mapFrom
   , SomeAssetCard familiarSpirit
   , SomeAssetCard crystalPendulum
   , SomeAssetCard robesOfEndlessNight
+  , SomeAssetCard grotesqueStatue2
   , SomeAssetCard robesOfEndlessNight2
   , SomeAssetCard azureFlame3
   , SomeAssetCard clairvoyance3
   , SomeAssetCard ineffibleTruth3
+  , SomeAssetCard arcaneStudies4
   , SomeAssetCard azureFlame5
   , SomeAssetCard clairvoyance5
   , SomeAssetCard ineffibleTruth5

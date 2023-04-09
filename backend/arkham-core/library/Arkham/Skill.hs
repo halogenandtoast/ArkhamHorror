@@ -95,6 +95,7 @@ allSkills = mapFrom
   , SomeSkillCard manualDexterity2
   , SomeSkillCard copycat3
   , SomeSkillCard prescient
+  , SomeSkillCard guts2
   , SomeSkillCard neitherRainNorSnow
   , SomeSkillCard unexpectedCourage2
   ]

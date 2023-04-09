@@ -178,6 +178,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , hotStreak2
   , hotStreak4
   , hypnoticGaze
+  , hypnoticGaze2
   , ifItBleeds
   , illSeeYouInHell
   , imDoneRunnin
@@ -238,6 +239,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , preposterousSketches2
   , quantumFlux
   , recharge2
+  , recharge4
   , reliable1
   , sacrifice1
   , sceneOfTheCrime
@@ -2203,6 +2205,29 @@ eldritchInspiration1 = (event "60420" "Eldritch Inspiration" 0 Mystic)
   , cdCardTraits = setFromList [Spell, Spirit]
   , cdFastWindow = Just $ WouldTriggerTokenRevealEffectOnCard You MysticCard [minBound ..]
   , cdLevel = 1
+  }
+
+hypnoticGaze2 :: CardDef
+hypnoticGaze2 = (event "60423" "Hypnotic Gaze" 3 Mystic)
+  { cdSkills = [#combat, #agility, #agility]
+  , cdCardTraits = singleton Spell
+  , cdFastWindow = Just
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack
+    $ EnemyWithoutModifier AttacksCannotBeCancelled
+    )
+  , cdLevel = 2
+  }
+
+recharge4 :: CardDef
+recharge4 = (event "60429" "Recharge" 0 Mystic)
+  { cdSkills = [#willpower, #willpower, #willpower]
+  , cdCardTraits = singleton Spell
+  , cdCriteria = Just
+    (Criteria.AssetExists
+    $ AssetControlledBy (InvestigatorAt YourLocation)
+    <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+    )
+  , cdLevel = 4
   }
 
 willToSurvive :: CardDef

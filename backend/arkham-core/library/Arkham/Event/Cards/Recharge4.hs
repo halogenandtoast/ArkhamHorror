@@ -1,6 +1,6 @@
-module Arkham.Event.Cards.Recharge2
-  ( recharge2
-  , Recharge2(..)
+module Arkham.Event.Cards.Recharge4
+  ( recharge4
+  , Recharge4(..)
   ) where
 
 import Arkham.Prelude
@@ -22,15 +22,15 @@ newtype Meta = Meta { chosenAsset :: Maybe AssetId }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype Recharge2 = Recharge2 (EventAttrs `With` Meta)
+newtype Recharge4 = Recharge4 (EventAttrs `With` Meta)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-recharge2 :: EventCard Recharge2
-recharge2 = event (Recharge2 . (`With` Meta Nothing)) Cards.recharge2
+recharge4 :: EventCard Recharge4
+recharge4 = event (Recharge4 . (`With` Meta Nothing)) Cards.recharge4
 
-instance RunMessage Recharge2 where
-  runMessage msg e@(Recharge2 (attrs `With` meta)) = case msg of
+instance RunMessage Recharge4 where
+  runMessage msg e@(Recharge4 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
         selectListMap AssetTarget
@@ -45,7 +45,7 @@ instance RunMessage Recharge2 where
       pure e
     ResolveEvent iid eid (Just (AssetTarget aid)) _ | eid == toId attrs -> do
       pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
-      pure $ Recharge2 $ attrs `with` Meta (Just aid)
+      pure $ Recharge4 $ attrs `with` Meta (Just aid)
     RequestedTokens source _ tokens | isSource attrs source -> do
       push $ ResetTokens (toSource attrs)
       case chosenAsset meta of
@@ -62,7 +62,7 @@ instance RunMessage Recharge2 where
                 tokens
                 (toId attrs)
               )
-              [Discard (toSource attrs) $ AssetTarget aid]
-            else push (AddUses aid Charge 3)
+              [AddUses aid Charge 1]
+            else push (AddUses aid Charge 4)
           pure e
-    _ -> Recharge2 . (`with` meta) <$> runMessage msg attrs
+    _ -> Recharge4 . (`with` meta) <$> runMessage msg attrs

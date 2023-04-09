@@ -1,6 +1,6 @@
-module Arkham.Event.Cards.HypnoticGaze
-  ( hypnoticGaze
-  , HypnoticGaze(..)
+module Arkham.Event.Cards.HypnoticGaze2
+  ( hypnoticGaze2
+  , HypnoticGaze2(..)
   ) where
 
 import Arkham.Prelude
@@ -26,19 +26,19 @@ newtype Metadata = Metadata { selectedEnemy :: Maybe EnemyId }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Metadata)
+newtype HypnoticGaze2 = HypnoticGaze2 (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hypnoticGaze :: EventCard HypnoticGaze
-hypnoticGaze =
-  event (HypnoticGaze . (`with` Metadata Nothing)) Cards.hypnoticGaze
+hypnoticGaze2 :: EventCard HypnoticGaze2
+hypnoticGaze2 =
+  event (HypnoticGaze2 . (`with` Metadata Nothing)) Cards.hypnoticGaze2
 
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
-instance RunMessage HypnoticGaze where
-  runMessage msg e@(HypnoticGaze (attrs `With` meta)) = case msg of
+instance RunMessage HypnoticGaze2 where
+  runMessage msg e@(HypnoticGaze2 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
       enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
         PerformEnemyAttack details : _ -> attackEnemy details
@@ -53,8 +53,8 @@ instance RunMessage HypnoticGaze where
         , RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
         , ignoreWindow
         ]
-      pure $ HypnoticGaze (attrs `with` Metadata (Just enemyId))
-    RequestedTokens source _ faces | isSource attrs source -> do
+      pure $ HypnoticGaze2 (attrs `with` Metadata (Just enemyId))
+    RequestedTokens source (Just iid) faces | isSource attrs source -> do
       push $ ResetTokens (toSource attrs)
       let
         enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
@@ -63,8 +63,20 @@ instance RunMessage HypnoticGaze where
           faces
       when shouldDamageEnemy $ do
         healthDamage' <- field EnemyHealthDamage enemyId
-        when (healthDamage' > 0) $ push $ If
+        sanityDamage' <- field EnemySanityDamage enemyId
+        when (healthDamage' > 0 || sanityDamage' > 0) $ push $ If
           (Window.RevealTokenEventEffect (eventOwner attrs) faces (toId attrs))
-          [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+          [ chooseOrRunOne iid
+            $ [ Label
+                  "Deal health damage"
+                  [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+              | healthDamage' > 0
+              ]
+            <> [ Label
+                   "Deal sanity damage"
+                   [EnemyDamage enemyId $ nonAttack attrs sanityDamage']
+               | sanityDamage' > 0
+               ]
+          ]
       pure e
-    _ -> HypnoticGaze . (`with` meta) <$> runMessage msg attrs
+    _ -> HypnoticGaze2 . (`with` meta) <$> runMessage msg attrs

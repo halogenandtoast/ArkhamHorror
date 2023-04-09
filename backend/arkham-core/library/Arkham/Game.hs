@@ -3365,7 +3365,7 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure $ g & focusedCardsL %~ filter (/= c) & foundCardsL . each %~ filter (/= c) & entitiesL . skillsL %~ skillsF
   ShuffleCardsIntoDeck _ cards ->
-    pure $ g & focusedCardsL %~ filter (`notElem` cards)
+    pure $ g & focusedCardsL %~ filter (`notElem` cards) & foundCardsL . each %~ filter (`notElem` cards)
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> do

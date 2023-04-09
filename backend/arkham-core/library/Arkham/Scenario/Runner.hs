@@ -465,7 +465,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
       filterCards = filter (`notElem` cards)
-    deck' <- withDeckM (shuffleM . (<> encounterCards)) scenarioEncounterDeck
+    deck' <- withDeckM (shuffleM . (<> encounterCards) . filter (`notElem` encounterCards)) scenarioEncounterDeck
     pure
       $ a
       & (cardsUnderAgendaDeckL %~ filterCards)
@@ -836,7 +836,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
-    deck' <- shuffleM $ cards <> fromMaybe [] (view (decksL . at deckKey) a)
+    deck' <- shuffleM $ cards <> fromMaybe [] (filter (`notElem` cards) <$> view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck' & discardL %~ filter
       ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do

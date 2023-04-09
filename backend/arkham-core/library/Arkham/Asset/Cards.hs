@@ -273,6 +273,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , harlanEarnstone
   , hardKnocks
   , hardKnocks2
+  , hawkEyeFoldingCamera
   , heirloomOfHyperborea
   , hemisphericMap3
   , henryDeveau
@@ -2830,6 +2831,13 @@ mrRook = (asset "05153" ("Mr. \"Rook\"" <:> "Dealer in Secrets") 3 Seeker)
   , cdSlots = [AllySlot]
   , cdUnique = True
   , cdUses = uses Secret 3
+  }
+
+hawkEyeFoldingCamera :: CardDef
+hawkEyeFoldingCamera = (asset "05154" "Hawk-Eye Folding Camera" 2 Seeker)
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Item, Tool]
+  , cdSlots = [HandSlot]
   }
 
 drawingThin :: CardDef

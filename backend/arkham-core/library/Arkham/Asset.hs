@@ -463,6 +463,7 @@ allAssets = mapFrom
   , SomeAssetCard aliceLuxley
   --- seeker [wos]
   , SomeAssetCard mrRook
+  , SomeAssetCard hawkEyeFoldingCamera
   --- survivor [wos]
   , SomeAssetCard drawingThin
   -- For the Greater Good

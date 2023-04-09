@@ -1667,11 +1667,15 @@ getEventsMatching matcher = do
   filterMatcher events matcher
  where
   filterMatcher as = \case
+    NotEvent matcher' -> do
+      matches' <- getEventsMatching matcher'
+      pure $ filter (`notElem` matches') as
     EventWithTitle title ->
       pure $ filter ((== title) . nameTitle . toName . toAttrs) as
     EventWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
     EventWithId eventId -> pure $ filter ((== eventId) . toId) as
+    EventIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     EventWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
@@ -3666,6 +3670,10 @@ runGameMessage msg g = case msg of
     -- If we try to return to hand but the asset is gone, then do nothing
     mAsset <- maybeAsset assetId
     for_ mAsset $ \asset -> do
+      removeAllMessagesMatching $ \case
+        Discarded (AssetTarget assetId') _ _ -> assetId == assetId'
+        _ -> False
+
       card <- field AssetCard assetId
       if assetIsStory $ toAttrs asset
         then push $ Discard GameSource $ AssetTarget assetId
@@ -3711,7 +3719,6 @@ runGameMessage msg g = case msg of
             . at iid
             ?~ (dEntities & assetsL . at assetId ?~ asset)
     pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
-    -- pure $ g & entitiesL . assetsL %~ deleteMap assetId
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ AddToHand iid card

@@ -308,6 +308,9 @@ allEvents = mapFrom
   , SomeEventCard intelReport
   --- mystic [tsn]
   , SomeEventCard banish1
+  -- The Wages of Sin
+  -- guardian [tws]
+  , SomeEventCard wellMaintained1
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

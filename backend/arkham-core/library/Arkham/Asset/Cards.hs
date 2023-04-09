@@ -122,6 +122,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , adaptable1
   , alchemicalTransmutation
   , alejandroVela
+  , aliceLuxley
   , alyssaGraham
   , analyticalMind
   , ancestralKnowledge3
@@ -2811,6 +2812,14 @@ grislyTotem = (multiClassAsset "05119" "Grisly Totem" 3 [Survivor, Seeker])
   { cdSkills = [#agility]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
+  }
+
+aliceLuxley :: CardDef
+aliceLuxley = (asset "05151" ("Alice Luxley" <:> "Fearless Flatfoot") 4 Guardian)
+  { cdSkills = [#intellect]
+  , cdCardTraits = setFromList [Ally, Detective, Police]
+  , cdSlots = [AllySlot]
+  , cdUnique = True
   }
 
 drawingThin :: CardDef

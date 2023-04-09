@@ -269,6 +269,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           & (discardL .~ discard)
           & (handL .~ hand)
           & (deckL .~ Deck deck)
+  ReturnToHand iid (AssetTarget aid) | iid == investigatorId -> do
+    pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
     -- Card is assumed to be in your discard
     -- but since find card can also return cards in your hand
@@ -473,7 +475,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
-  TakeControlOfAsset iid aid | iid /= investigatorId ->
+  TakeControlOfAsset iid aid | iid /= investigatorId -> do
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList

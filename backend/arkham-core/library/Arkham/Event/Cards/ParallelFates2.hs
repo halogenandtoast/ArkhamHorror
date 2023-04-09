@@ -6,17 +6,13 @@ module Arkham.Event.Cards.ParallelFates2
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Deck
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
 
 newtype Metadata = Metadata { drawnCards :: [EncounterCard] }
   deriving stock (Show, Eq, Generic)

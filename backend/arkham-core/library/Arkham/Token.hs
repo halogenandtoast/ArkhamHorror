@@ -103,3 +103,60 @@ isNumberToken = \case
   ElderThing -> False
   AutoFail -> False
   ElderSign -> False
+
+isEvenToken :: TokenFace -> Bool
+isEvenToken = \case
+  PlusOne -> False
+  Zero -> True
+  MinusOne -> False
+  MinusTwo -> True
+  MinusThree -> False
+  MinusFour -> True
+  MinusFive -> False
+  MinusSix -> True
+  MinusSeven -> False
+  MinusEight -> True
+  Skull -> False
+  Cultist -> False
+  Tablet -> False
+  ElderThing -> False
+  AutoFail -> False
+  ElderSign -> False
+
+isOddToken :: TokenFace -> Bool
+isOddToken = \case
+  PlusOne -> True
+  Zero -> False
+  MinusOne -> True
+  MinusTwo -> False
+  MinusThree -> True
+  MinusFour -> False
+  MinusFive -> True
+  MinusSix -> False
+  MinusSeven -> True
+  MinusEight -> False
+  Skull -> False
+  Cultist -> False
+  Tablet -> False
+  ElderThing -> False
+  AutoFail -> False
+  ElderSign -> False
+
+isSymbolToken :: TokenFace -> Bool
+isSymbolToken = \case
+  PlusOne -> False
+  Zero -> False
+  MinusOne -> False
+  MinusTwo -> False
+  MinusThree -> False
+  MinusFour -> False
+  MinusFive -> False
+  MinusSix -> False
+  MinusSeven -> False
+  MinusEight -> False
+  Skull -> True
+  Cultist -> True
+  Tablet -> True
+  ElderThing -> True
+  AutoFail -> True
+  ElderSign -> True

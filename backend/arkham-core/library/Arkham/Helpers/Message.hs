@@ -157,3 +157,6 @@ removeMessageType msgType = withQueue_ $ \queue ->
     (before, after) = break ((== Just msgType) . messageType) queue
     remaining = drop 1 after
   in before <> remaining
+
+addToHand :: IsCard a => InvestigatorId -> a -> Message
+addToHand i (toCard -> c) = AddToHand i [c]

@@ -22,7 +22,7 @@ instance RunMessage OccultLexicon where
       deckBloodRites <- replicateM 2 (genCard Events.bloodRite)
       canShuffleDeck <- getCanShuffleDeck iid
       pushAll
-        $ AddToHand iid handBloodRite
+        $ addToHand iid handBloodRite
         : [ ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck ]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do

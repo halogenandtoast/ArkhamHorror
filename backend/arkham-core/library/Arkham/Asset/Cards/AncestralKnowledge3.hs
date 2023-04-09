@@ -54,7 +54,7 @@ instance RunMessage AncestralKnowledge3 where
         [ FocusCards (assetCardsUnderneath attrs)
         , chooseOne
           iid
-          [ TargetLabel (CardIdTarget $ toCardId c) [AddToHand iid c]
+          [ targetLabel (toCardId c) [addToHand iid c]
           | c <- assetCardsUnderneath attrs
           ]
         , UnfocusCards

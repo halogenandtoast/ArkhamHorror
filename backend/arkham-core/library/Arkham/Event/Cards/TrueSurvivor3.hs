@@ -33,7 +33,7 @@ instance RunMessage TrueSurvivor3 where
         [ chooseN
           iid
           3
-          [ TargetLabel (CardIdTarget $ toCardId target) [AddToHand iid target]
+          [ TargetLabel (CardIdTarget $ toCardId target) [addToHand iid target]
           | target <- targets
           ]
         ]

@@ -99,7 +99,7 @@ instance RunMessage ScrollOfSecretsMystic3 where
                 [ chooseOne
                     iid
                     [ Label "Discard" [AddToDiscard iid' card]
-                    , Label "Add to Hand" [AddToHand iid' (PlayerCard card)]
+                    , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
                     , Label
                       "Place on bottom of deck"
                       [PutCardOnBottomOfDeck iid deck (PlayerCard card)]

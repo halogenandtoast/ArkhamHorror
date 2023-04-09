@@ -74,7 +74,7 @@ instance RunMessage TheYithianRelic where
       push $ case mDiscard of
         Just relic -> chooseOne
           iid
-          [TargetLabel (CardIdTarget $ toCardId relic) [AddToHand iid relic]]
+          [TargetLabel (CardIdTarget $ toCardId relic) [addToHand iid relic]]
         Nothing -> Search
           iid
           (toSource attrs)

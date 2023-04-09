@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Helpers.Message
 import Arkham.Message
 import Arkham.Projection
 
@@ -32,9 +33,9 @@ instance RunMessage WilliamYorick where
               $ push
               $ chooseOne iid
               $ Done "Do not return card to hand"
-              : [ TargetLabel
-                    (CardIdTarget $ toCardId card)
-                    [AddToHand iid $ PlayerCard card]
+              : [ targetLabel
+                    (toCardId card)
+                    [addToHand iid $ PlayerCard card]
                 | card <- discards
                 ]
           pure e

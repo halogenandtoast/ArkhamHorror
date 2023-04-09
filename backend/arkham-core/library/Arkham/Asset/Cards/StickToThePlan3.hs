@@ -84,7 +84,7 @@ instance RunMessage StickToThePlan3 where
             )
             (toSource attrs)
             (CardIdTarget $ toCardId card)
-          , AddToHand iid card
+          , addToHand iid card
           , msg
           ]
         pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining

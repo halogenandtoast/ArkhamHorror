@@ -53,6 +53,6 @@ instance RunMessage TheRitualBegins where
           <> CardWithTrait Madness
         pure a
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard $ push . AddToHand iid . PlayerCard
+      for_ mcard $ push . addToHand iid . PlayerCard
       pure a
     _ -> TheRitualBegins <$> runMessage msg attrs

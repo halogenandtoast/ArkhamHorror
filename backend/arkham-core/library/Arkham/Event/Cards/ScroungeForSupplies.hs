@@ -31,7 +31,7 @@ instance RunMessage ScroungeForSupplies where
       e <$ pushAll
         [ chooseOne
           iid
-          [ TargetLabel (CardIdTarget $ toCardId target) [AddToHand iid target]
+          [ TargetLabel (CardIdTarget $ toCardId target) [addToHand iid target]
           | target <- targets
           ]
         ]

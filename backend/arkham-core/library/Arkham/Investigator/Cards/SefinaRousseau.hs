@@ -47,7 +47,7 @@ instance RunMessage SefinaRousseau where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> i <$ push
       (chooseOne
         (toId i)
-        [ TargetLabel (CardIdTarget $ toCardId card) [AddToHand (toId i) card]
+        [ TargetLabel (CardIdTarget $ toCardId card) [addToHand (toId i) card]
         | card <- investigatorCardsUnderneath attrs
         ]
       )
@@ -59,7 +59,7 @@ instance RunMessage SefinaRousseau where
           (Done "Do not use elder sign ability"
           : [ TargetLabel
                 (CardIdTarget $ toCardId card)
-                [AddToHand (toId i) card]
+                [addToHand (toId i) card]
             | card <- investigatorCardsUnderneath attrs
             ]
           )

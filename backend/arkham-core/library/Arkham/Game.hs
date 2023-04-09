@@ -3654,7 +3654,7 @@ runGameMessage msg g = case msg of
     pure $ g & (focusedCardsL %~ filter (/= EncounterCard card)) . (foundCardsL .each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
-    push $ AddToHand iid card
+    push $ addToHand iid card
     pure $ g & entitiesL . skillsL %~ deleteMap skillId
   ReturnToHand iid (CardIdTarget cardId) -> do
     -- We need to check skills specifically as they aren't covered by the skill
@@ -3663,7 +3663,7 @@ runGameMessage msg g = case msg of
     case mSkill of
       Just skillId -> do
         card <- field SkillCard skillId
-        push $ AddToHand iid card
+        push $ addToHand iid card
         pure $ g & entitiesL . skillsL %~ deleteMap skillId
       Nothing -> pure g
   ReturnToHand iid (AssetTarget assetId) -> do
@@ -3678,7 +3678,7 @@ runGameMessage msg g = case msg of
       if assetIsStory $ toAttrs asset
         then push $ Discard GameSource $ AssetTarget assetId
         else do
-          pushAll [RemoveFromPlay (AssetSource assetId), AddToHand iid card]
+          pushAll [RemoveFromPlay (AssetSource assetId), addToHand iid card]
     pure g
   PlaceEnemy enemyId Pursuit -> do
     push $ SetOutOfPlay (EnemyTarget enemyId)
@@ -3721,7 +3721,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
-    push $ AddToHand iid card
+    push $ addToHand iid card
     pure $ g & entitiesL . eventsL %~ deleteMap eventId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid

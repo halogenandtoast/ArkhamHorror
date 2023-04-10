@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -434,6 +434,7 @@ library
       Arkham.Asset.Cards.HelplessPassenger
       Arkham.Asset.Cards.HemisphericMap3
       Arkham.Asset.Cards.HenryDeveau
+      Arkham.Asset.Cards.HenryWan
       Arkham.Asset.Cards.HigherEducation
       Arkham.Asset.Cards.HigherEducation3
       Arkham.Asset.Cards.HighRoller2

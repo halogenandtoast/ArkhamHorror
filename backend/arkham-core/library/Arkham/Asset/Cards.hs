@@ -277,6 +277,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , heirloomOfHyperborea
   , hemisphericMap3
   , henryDeveau
+  , henryWan
   , highRoller2
   , higherEducation
   , higherEducation3
@@ -2838,6 +2839,14 @@ hawkEyeFoldingCamera = (asset "05154" "Hawk-Eye Folding Camera" 2 Seeker)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Item, Tool]
   , cdSlots = [HandSlot]
+  }
+
+henryWan :: CardDef
+henryWan = (asset "05155" ("Henry Wan" <:> "Aspiring Actor") 3 Rogue)
+  { cdSkills = [#agility]
+  , cdCardTraits = setFromList [Ally, Criminal]
+  , cdSlots = [AllySlot]
+  , cdUnique = True
   }
 
 drawingThin :: CardDef

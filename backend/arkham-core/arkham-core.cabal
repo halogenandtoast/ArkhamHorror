@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -591,6 +591,7 @@ library
       Arkham.Asset.Cards.SignMagick
       Arkham.Asset.Cards.SignMagick3
       Arkham.Asset.Cards.SixthSense
+      Arkham.Asset.Cards.SixthSense4
       Arkham.Asset.Cards.SmokingPipe
       Arkham.Asset.Cards.SomethingWorthFightingFor
       Arkham.Asset.Cards.SongOfTheDead2

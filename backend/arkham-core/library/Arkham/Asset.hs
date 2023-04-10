@@ -497,6 +497,7 @@ allAssets = mapFrom
   , SomeAssetCard occultLexicon
   --- mystic [bbt]
   , SomeAssetCard wither4
+  , SomeAssetCard sixthSense4
   -- The Search for Kadath
   --- mystic [sfk]
   , SomeAssetCard scrollOfProphecies

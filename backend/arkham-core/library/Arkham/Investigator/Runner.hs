@@ -2805,6 +2805,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     Timing.When
                     (Window.PassInvestigationSkillTest iid lid n)
                 ]
+              Just (BothTarget (LocationTarget lid1) (LocationTarget lid2)) ->
+                [ Window
+                    Timing.When
+                    (Window.PassInvestigationSkillTest iid lid1 n)
+                , Window
+                    Timing.When
+                    (Window.PassInvestigationSkillTest iid lid2 n)
+                ]
               _ -> error "expecting location source for investigate"
             _ -> []
           )
@@ -2831,6 +2839,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 [ Window
                     Timing.After
                     (Window.PassInvestigationSkillTest iid lid n)
+                ]
+              Just (BothTarget (LocationTarget lid1) (LocationTarget lid2)) ->
+                [ Window
+                    Timing.After
+                    (Window.PassInvestigationSkillTest iid lid1 n)
+                , Window
+                    Timing.After
+                    (Window.PassInvestigationSkillTest iid lid2 n)
                 ]
               _ -> error "expecting location source for investigate"
             _ -> []

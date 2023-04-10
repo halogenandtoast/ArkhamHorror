@@ -425,6 +425,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , signMagick
   , signMagick3
   , sixthSense
+  , sixthSense4
   , smokingPipe
   , somethingWorthFightingFor
   , sophieInLovingMemory
@@ -2983,6 +2984,14 @@ occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
 wither4 :: CardDef
 wither4 = (asset "05321" "Wither" 2 Mystic)
   { cdSkills = [#combat, #combat]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 4
+  }
+
+sixthSense4 :: CardDef
+sixthSense4 = (asset "05322" "Sixth Sense" 3 Mystic)
+  { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]
   , cdLevel = 4

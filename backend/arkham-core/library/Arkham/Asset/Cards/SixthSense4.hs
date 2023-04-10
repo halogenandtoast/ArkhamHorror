@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.SixthSense
-  ( sixthSense
-  , sixthSenseEffect
-  , SixthSense(..)
+module Arkham.Asset.Cards.SixthSense4
+  ( sixthSense4
+  , sixthSense4Effect
+  , SixthSense4(..)
   ) where
 
 import Arkham.Ability
@@ -22,31 +22,35 @@ import Arkham.Source
 import Arkham.Token
 import Arkham.Window qualified as Window
 
-newtype SixthSense = SixthSense AssetAttrs
+newtype SixthSense4 = SixthSense4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sixthSense :: AssetCard SixthSense
-sixthSense = asset SixthSense Cards.sixthSense
+sixthSense4 :: AssetCard SixthSense4
+sixthSense4 = asset SixthSense4 Cards.sixthSense4
 
-instance HasAbilities SixthSense where
-  getAbilities (SixthSense a) =
+instance HasAbilities SixthSense4 where
+  getAbilities (SixthSense4 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ ActionCost 1
     ]
 
-instance RunMessage SixthSense where
-  runMessage msg a@(SixthSense attrs) = case msg of
+instance RunMessage SixthSense4 where
+  runMessage msg a@(SixthSense4 attrs) = case msg of
     UseCardAbility iid source@(isSource attrs -> True) 1 _ _ -> do
       lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
         [ createCardEffect
-          Cards.sixthSense
+          Cards.sixthSense4
           Nothing
           source
           (InvestigationTarget iid lid)
+        , skillTestModifier
+          (toAbilitySource attrs 1)
+          iid
+          (SkillModifier SkillWillpower 2)
         , Investigate
           iid
           lid
@@ -56,25 +60,28 @@ instance RunMessage SixthSense where
           False
         ]
       pure a
-    _ -> SixthSense <$> runMessage msg attrs
+    _ -> SixthSense4 <$> runMessage msg attrs
 
-newtype SixthSenseEffect = SixthSenseEffect EffectAttrs
+newtype SixthSense4Effect = SixthSense4Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sixthSenseEffect :: EffectArgs -> SixthSenseEffect
-sixthSenseEffect = cardEffect SixthSenseEffect Cards.sixthSense
+sixthSense4Effect :: EffectArgs -> SixthSense4Effect
+sixthSense4Effect = cardEffect SixthSense4Effect Cards.sixthSense4
 
-instance RunMessage SixthSenseEffect where
-  runMessage msg e@(SixthSenseEffect attrs@EffectAttrs {..}) = case msg of
+instance RunMessage SixthSense4Effect where
+  runMessage msg e@(SixthSense4Effect attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' lid | iid == iid' -> do
         when (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
           currentShroud <- field LocationShroud lid
           locations <-
             selectWithField LocationShroud
-            $ ConnectedLocation
-            <> RevealedLocation
+            $ RevealedLocation
+            <> LocationMatchAny
+                 [ LocationWithDistanceFrom n Anywhere
+                 | n <- [1 .. 2]
+                 ]
           pushAll
             [ If
               (Window.RevealTokenEffect iid token effectId)
@@ -82,7 +89,8 @@ instance RunMessage SixthSenseEffect where
                 $ Label "Do not choose other location" []
                 : [ targetLabel
                       location
-                      [ SetSkillTestTarget (toTarget location)
+                      [ SetSkillTestTarget
+                        (BothTarget (toTarget location) (toTarget lid))
                       , chooseOne
                         iid
                         [ Label
@@ -109,4 +117,4 @@ instance RunMessage SixthSenseEffect where
         pure e
       _ -> error "Invalid target"
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
-    _ -> SixthSenseEffect <$> runMessage msg attrs
+    _ -> SixthSense4Effect <$> runMessage msg attrs

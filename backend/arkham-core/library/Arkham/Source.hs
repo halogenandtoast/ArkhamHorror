@@ -56,5 +56,6 @@ data Source
   | CampaignSource
   | ThisCard
   | CardCostSource CardId
+  | BothSource Source Source
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

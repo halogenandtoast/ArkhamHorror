@@ -47,6 +47,7 @@ import Arkham.Asset.Assets
   , oldBookOfLore3Effect
   , pnakoticManuscripts5Effect
   , sixthSenseEffect
+  , sixthSense4Effect
   , showmanshipEffect
   , wellConnectedEffect
   , wellConnected3Effect
@@ -264,6 +265,7 @@ allEffects = mapFromList
   , ("05194", SomeEffect grislyTotemSeeker3Effect)
   , ("05195", SomeEffect grislyTotemSurvivor3Effect)
   , ("05321", SomeEffect wither4Effect)
+  , ("05322", SomeEffect sixthSense4Effect)
   , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("07004", SomeEffect dexterDrakeEffect)
   , ("07012", SomeEffect showmanshipEffect)

@@ -91,12 +91,12 @@ instance RunMessage LocationAttrs where
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ n
       | isTarget a target
-      -> a <$ push (Successful (Action.Investigate, target) iid source target n)
+      -> a <$ push (Successful (Action.Investigate, toTarget a) iid source (toTarget a) n)
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ n
       | isTarget a target
       -> do
         push $ Successful
-          (Action.Investigate, target)
+          (Action.Investigate, toTarget a)
           iid
           source
           investigationTarget
@@ -254,7 +254,7 @@ instance RunMessage LocationAttrs where
     RemovedFromPlay (EnemySource eid) -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo target | not (isTarget a target) -> do
-      when (locationClues > 0) (push $ PlaceClues target locationClues)
+      when (locationClues > 0) (push $ PlaceClues (toTarget a) locationClues)
       pure $ a & cluesL .~ 0 & withoutCluesL .~ True
     PlaceClues target n | isTarget a target -> do
       modifiers' <- getModifiers (toTarget a)
@@ -317,7 +317,7 @@ instance RunMessage LocationAttrs where
     LookAtRevealed iid source target | isTarget a target -> do
       push $ chooseOne
         iid
-        [Label "Continue" [After (LookAtRevealed iid source target)]]
+        [Label "Continue" [After (LookAtRevealed iid source $ toTarget a)]]
       pure $ a & revealedL .~ True
     After (LookAtRevealed _ _ target) | isTarget a target ->
       pure $ a & revealedL .~ False

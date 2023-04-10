@@ -711,6 +711,7 @@ targetToSource = \case
   AgendaMatcherTarget _ -> error "can not convert"
   CampaignTarget -> CampaignSource
   AbilityTarget _ _ -> error "can not convert"
+  BothTarget t1 t2 -> BothSource (targetToSource t1) (targetToSource t2)
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -752,6 +753,7 @@ sourceToTarget = \case
   CampaignSource -> CampaignTarget
   ThisCard -> error "not converted"
   CardCostSource _ -> error "not converted"
+  BothSource s1 s2 -> BothTarget (sourceToTarget s1) (sourceToTarget s2)
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -2399,6 +2401,7 @@ targetTraits = \case
   AgendaMatcherTarget _ -> pure mempty
   CampaignTarget -> pure mempty
   AbilityTarget _ _ -> pure mempty
+  BothTarget _ _ -> error "won't make sense, or need to determine later"
 
 targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case

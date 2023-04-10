@@ -54,6 +54,7 @@ data Target
   | AgendaMatcherTarget AgendaMatcher
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability
+  | BothTarget Target Target
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

@@ -133,6 +133,7 @@ instance Targetable LocationAttrs where
   isTarget LocationAttrs { locationId } (LocationTarget lid) =
     locationId == lid
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
+  isTarget attrs (BothTarget t1 t2) = isTarget attrs t1 || isTarget attrs t2
   isTarget _ _ = False
 
 instance Sourceable LocationAttrs where

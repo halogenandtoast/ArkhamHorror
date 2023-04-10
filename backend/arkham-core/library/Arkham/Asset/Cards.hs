@@ -287,9 +287,9 @@ allPlayerAssetCards = mapFromList $ concatMap
   , hyperawareness2
   , hypnoticTherapy
   , ichtacaTheForgottenGuardian
-  , ineffibleTruth
-  , ineffibleTruth3
-  , ineffibleTruth5
+  , ineffableTruth
+  , ineffableTruth3
+  , ineffableTruth5
   , innocentReveler
   , inTheKnow1
   , jakeWilliams
@@ -3425,6 +3425,7 @@ lonnieRitter = (asset "60309" ("Lonnie Ritter" <:> "Feisty Mechanic") 4 Rogue)
   { cdSkills = [#combat]
   , cdCardTraits = singleton Ally
   , cdSlots = [AllySlot]
+  , cdUnique = True
   }
 
 leatherJacket :: CardDef
@@ -3520,8 +3521,8 @@ clairvoyance = (asset "60408" "Clairvoyance" 4 Mystic)
   , cdUses = uses Charge 3
   }
 
-ineffibleTruth :: CardDef
-ineffibleTruth = (asset "60409" "Ineffible Truth" 3 Mystic)
+ineffableTruth :: CardDef
+ineffableTruth = (asset "60409" "Ineffable Truth" 3 Mystic)
   { cdSkills = [#agility]
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]
@@ -3584,8 +3585,8 @@ clairvoyance3 = (asset "60426" "Clairvoyance" 4 Mystic)
   , cdLevel = 3
   }
 
-ineffibleTruth3 :: CardDef
-ineffibleTruth3 = (asset "60427" "Ineffible Truth" 3 Mystic)
+ineffableTruth3 :: CardDef
+ineffableTruth3 = (asset "60427" "Ineffable Truth" 3 Mystic)
   { cdSkills = [#willpower, #agility]
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]
@@ -3619,8 +3620,8 @@ clairvoyance5 = (asset "60431" "Clairvoyance" 4 Mystic)
   , cdLevel = 5
   }
 
-ineffibleTruth5 :: CardDef
-ineffibleTruth5 = (asset "60432" "Ineffible Truth" 3 Mystic)
+ineffableTruth5 :: CardDef
+ineffableTruth5 = (asset "60432" "Ineffable Truth" 3 Mystic)
   { cdSkills = [#willpower, #agility, #agility]
   , cdCardTraits = singleton Spell
   , cdSlots = [ArcaneSlot]

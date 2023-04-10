@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.IneffibleTruth5
-  ( ineffibleTruth5
-  , IneffibleTruth5(..)
-  , ineffibleTruth5Effect
+module Arkham.Asset.Cards.IneffableTruth
+  ( ineffableTruth
+  , IneffableTruth(..)
+  , ineffableTruthEffect
   ) where
 
 import Arkham.Prelude
@@ -21,56 +21,55 @@ import Arkham.Source
 import Arkham.Token
 import Arkham.Window qualified as Window
 
-newtype IneffibleTruth5 = IneffibleTruth5 AssetAttrs
+newtype IneffableTruth = IneffableTruth AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ineffibleTruth5 :: AssetCard IneffibleTruth5
-ineffibleTruth5 = asset IneffibleTruth5 Cards.ineffibleTruth5
+ineffableTruth :: AssetCard IneffableTruth
+ineffableTruth = asset IneffableTruth Cards.ineffableTruth
 
-instance HasAbilities IneffibleTruth5 where
-  getAbilities (IneffibleTruth5 a) =
+instance HasAbilities IneffableTruth where
+  getAbilities (IneffableTruth a) =
     [ restrictedAbility a 1 ControlsThis $ ActionAbility
         (Just Action.Evade)
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
-instance RunMessage IneffibleTruth5 where
-  runMessage msg a@(IneffibleTruth5 attrs) = case msg of
+instance RunMessage IneffableTruth where
+  runMessage msg a@(IneffableTruth attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
         [ createCardEffect
-          Cards.ineffibleTruth5
+          Cards.ineffableTruth
           Nothing
           source
           (InvestigatorTarget iid)
         , createCardEffect
-          Cards.ineffibleTruth5
+          Cards.ineffableTruth
           Nothing
           source
           SkillTestTarget
-        , skillTestModifier source iid (SkillModifier SkillWillpower 3)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
       pure a
-    _ -> IneffibleTruth5 <$> runMessage msg attrs
+    _ -> IneffableTruth <$> runMessage msg attrs
 
-newtype IneffibleTruth5Effect = IneffibleTruth5Effect EffectAttrs
+newtype IneffableTruthEffect = IneffableTruthEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ineffibleTruth5Effect :: EffectArgs -> IneffibleTruth5Effect
-ineffibleTruth5Effect = cardEffect IneffibleTruth5Effect Cards.ineffibleTruth5
+ineffableTruthEffect :: EffectArgs -> IneffableTruthEffect
+ineffableTruthEffect = cardEffect IneffableTruthEffect Cards.ineffableTruth
 
-instance RunMessage IneffibleTruth5Effect where
-  runMessage msg e@(IneffibleTruth5Effect attrs@EffectAttrs {..}) = case msg of
+instance RunMessage IneffableTruthEffect where
+  runMessage msg e@(IneffableTruthEffect attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       when
         (tokenFace token `elem` [ElderSign, PlusOne, Zero])
         (pushAll
           [ If
             (Window.RevealTokenEffect iid token effectId)
-            [LoseResources iid (AbilitySource effectSource 1) 2]
+            [LoseResources iid (AbilitySource effectSource 1) 1]
           , DisableEffect effectId
           ]
         )
@@ -80,7 +79,7 @@ instance RunMessage IneffibleTruth5Effect where
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
       -> e <$ pushAll
-        [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 2
+        [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 1
         , DisableEffect effectId
         ]
-    _ -> IneffibleTruth5Effect <$> runMessage msg attrs
+    _ -> IneffableTruthEffect <$> runMessage msg attrs

@@ -539,6 +539,7 @@ manualDexterity2 =
   (skill "60325" "Manual Dexterity" [#agility, #agility, #agility] Rogue)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = 2
     }
 
 copycat3 :: CardDef

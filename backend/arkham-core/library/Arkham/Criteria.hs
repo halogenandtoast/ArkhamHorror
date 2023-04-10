@@ -127,6 +127,7 @@ data Criterion
   | NoRestriction
   | Never
   | Negate Criterion
+  | DuringAction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

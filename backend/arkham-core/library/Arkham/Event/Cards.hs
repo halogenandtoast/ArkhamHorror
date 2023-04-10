@@ -262,6 +262,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , standTogether3
   , stormOfSpirits
   , sureGamble3
+  , swiftReflexes
   , taunt
   , taunt2
   , taunt3
@@ -1736,6 +1737,14 @@ wellMaintained1 = (event "05152" "Well-Maintained" 0 Guardian)
   , cdCardTraits = singleton Upgrade
   , cdLevel = 1
   , cdCriteria = Just $ Criteria.AssetExists $ AssetControlledBy You <> AssetWithTrait Item <> NotAsset (AssetWithAttachedEvent $ EventIs "05152")
+  }
+
+swiftReflexes :: CardDef
+swiftReflexes = (event "05156" "Swift Reflexes" 2 Rogue)
+  { cdSkills = [#agility, #agility]
+  , cdCardTraits = singleton Gambit
+  , cdCriteria = Just $ Criteria.Negate Criteria.DuringAction
+  , cdFastWindow = Just $ DuringTurn Anyone
   }
 
 denyExistence5 :: CardDef

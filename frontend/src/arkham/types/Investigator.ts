@@ -23,6 +23,7 @@ type AdditionalAction
   = { tag: "ActionRestrictedAdditionalAction" }
   | { tag: "EffectAction", contents: [string, string] }
   | { tag: "TraitRestrictedAdditionalAction" }
+  | { tag: "AnyAdditionalAction" }
 
 export const additionalActionContentsDecoder = JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.string], 'AdditionalActionContents')
 
@@ -30,6 +31,7 @@ export const additionalActionDecoder = JsonDecoder.oneOf<AdditionalAction>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly("EffectAction"), contents: additionalActionContentsDecoder}, 'EffectAction')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("ActionRestrictedAdditionalAction") }, "ActionRestrictedAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("TraitRestrictedAdditionalAction") }, "TraitRestrictedAdditionalAction")
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly("AnyAdditionalAction") }, "AnyAdditionalAction")
   ], "AdditionalAction")
 
 export interface Investigator {

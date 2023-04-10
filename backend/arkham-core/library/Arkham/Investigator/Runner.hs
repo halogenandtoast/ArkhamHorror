@@ -2372,10 +2372,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  ]
       pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
+    -- We want to try and spend the most restrictive action so we get any
+    -- action that is not any additional action first, and if not that then the
+    -- any additional action
     mAdditionalAction <- findM
-      (additionalActionCovers source mAction)
-      investigatorAdditionalActions
-    case mAdditionalAction of
+        (andM . sequence
+          [ additionalActionCovers source mAction
+          , pure . (/= AnyAdditionalAction)
+          ]
+        )
+        investigatorAdditionalActions
+    let mAnyAdditionalAction = find (== AnyAdditionalAction) investigatorAdditionalActions
+    case mAdditionalAction <|> mAnyAdditionalAction of
       Nothing -> pure $ a & remainingActionsL %~ max 0 . subtract n
       Just aa -> pure $ a & additionalActionsL %~ deleteFirst aa
   UseEffectAction iid eid _ | iid == investigatorId -> do

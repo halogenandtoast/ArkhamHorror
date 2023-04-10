@@ -1,10 +1,7 @@
-module Arkham.Asset.Cards.HenryWan
-  ( henryWan
-  , HenryWan(..)
-  )
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.HenryWan (
+  henryWan,
+  HenryWan (..),
+) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -13,10 +10,11 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
 
-newtype Metadata = Metadata { revealedTokens :: [Token] }
+newtype Metadata = Metadata {revealedTokens :: [Token]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -28,7 +26,7 @@ henryWan :: AssetCard HenryWan
 henryWan = ally (HenryWan . (`with` Metadata [])) Cards.henryWan (1, 2)
 
 instance HasAbilities HenryWan where
- getAbilities (HenryWan (a `With` _)) = [restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ ActionCost 1 <> ExhaustCost (toTarget a)]
+  getAbilities (HenryWan (a `With` _)) = [restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ ActionCost 1 <> ExhaustCost (toTarget a)]
 
 instance RunMessage HenryWan where
   runMessage msg a@(HenryWan (attrs `With` meta)) = case msg of
@@ -42,15 +40,16 @@ instance RunMessage HenryWan where
       pure $ HenryWan (attrs `with` Metadata (tokens <> revealedTokens meta))
     HandleTargetChoice iid (isSource attrs -> True) _ -> do
       push $ ResetTokens (toSource attrs)
-      unless (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . tokenFace) (revealedTokens meta)) $  do
+      unless (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . tokenFace) (revealedTokens meta)) $ do
         canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
         canGainResources <- iid <=~> InvestigatorCanGainResources
         when (canDraw || canGainResources) $ do
           msgs <- for (revealedTokens meta) $ \_ -> do
             drawing <- drawCards iid attrs 1
-            pure $ chooseOrRunOne iid
-              $ [ Label "Draw 1 card" [drawing] | canDraw]
-              <> [ Label "Gain 1 resources" [TakeResources iid 1 (toSource attrs) False] | canGainResources ]
+            pure $
+              chooseOrRunOne iid $
+                [Label "Draw 1 card" [drawing] | canDraw]
+                  <> [Label "Gain 1 resources" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
           pushAll msgs
       pure $ HenryWan (attrs `with` Metadata [])
     _ -> HenryWan . (`with` meta) <$> runMessage msg attrs

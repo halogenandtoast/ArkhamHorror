@@ -164,3 +164,6 @@ getActiveAbilities = gameActiveAbilities <$> getGame
 
 getActionCanBeUndone :: HasGame m => m Bool
 getActionCanBeUndone = gameActionCanBeUndone <$> getGame
+
+getGameInAction :: HasGame m => m Bool
+getGameInAction = gameInAction <$> getGame

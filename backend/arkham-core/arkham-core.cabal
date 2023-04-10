@@ -1164,6 +1164,7 @@ library
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.StormOfSpirits
       Arkham.Event.Cards.SureGamble3
+      Arkham.Event.Cards.SwiftReflexes
       Arkham.Event.Cards.Taunt
       Arkham.Event.Cards.Taunt2
       Arkham.Event.Cards.Taunt3
@@ -1197,6 +1198,7 @@ library
       Arkham.Event.Types
       Arkham.Exception
       Arkham.Field
+      Arkham.Field.Import
       Arkham.Field.Matchers
       Arkham.Game
       Arkham.Game.Base
@@ -1228,6 +1230,7 @@ library
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest
       Arkham.Helpers.Slot
+      Arkham.Helpers.Source
       Arkham.Helpers.Use
       Arkham.Helpers.Window
       Arkham.Helpers.Xp

@@ -284,6 +284,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , wardOfProtection
   , wardOfProtection2
   , wardOfProtection5
+  , warningShot
   , waylay
   , wellMaintained1
   , willToSurvive
@@ -1758,6 +1759,23 @@ bellyOfTheBeast = (event "05160" "Belly of the Beast" 1 Survivor)
     $ AtLeast
     $ Static 2
   , cdCriteria = Just $ Criteria.LocationExists $ YourLocation <> LocationWithDiscoverableCluesBy You
+  }
+
+warningShot :: CardDef
+warningShot = (event "05229" "Warning Shot" 2 Guardian)
+  { cdSkills = [#combat, #agility]
+  , cdCardTraits = setFromList [Tactic, Trick]
+  , cdAdditionalCost = Just
+    $ UseCost (AssetWithTrait Firearm <> AssetControlledBy You) Uses.Ammo 1
+  , cdCriteria =
+    Just
+    $ Criteria.LocationExists
+        (ConnectedLocation
+        <> NotLocation (LocationWithModifier CannotBeEnteredByNonElite)
+        )
+    <> Criteria.EnemyCriteria
+         (Criteria.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
 denyExistence5 :: CardDef

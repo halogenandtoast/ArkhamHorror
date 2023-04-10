@@ -315,6 +315,9 @@ allEvents = mapFrom
   , SomeEventCard swiftReflexes
   -- survivor [tws]
   , SomeEventCard bellyOfTheBeast
+  -- Union and Disillusion
+  --- guardian [uad]
+  , SomeEventCard warningShot
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

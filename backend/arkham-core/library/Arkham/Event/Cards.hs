@@ -97,6 +97,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , baitAndSwitch
   , barricade
   , barricade3
+  , bellyOfTheBeast
   , bindMonster2
   , blindingLight
   , blindingLight2
@@ -1745,6 +1746,18 @@ swiftReflexes = (event "05156" "Swift Reflexes" 2 Rogue)
   , cdCardTraits = singleton Gambit
   , cdCriteria = Just $ Criteria.Negate Criteria.DuringAction
   , cdFastWindow = Just $ DuringTurn Anyone
+  }
+
+bellyOfTheBeast :: CardDef
+bellyOfTheBeast = (event "05160" "Belly of the Beast" 1 Survivor)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = setFromList [Gambit, Trick]
+  , cdFastWindow = Just
+    $ SkillTestResult Timing.After You (WhileEvadingAnEnemy AnyEnemy)
+    $ SuccessResult
+    $ AtLeast
+    $ Static 2
+  , cdCriteria = Just $ Criteria.LocationExists $ YourLocation <> LocationWithDiscoverableCluesBy You
   }
 
 denyExistence5 :: CardDef

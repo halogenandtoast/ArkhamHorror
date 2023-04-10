@@ -313,6 +313,8 @@ allEvents = mapFrom
   , SomeEventCard wellMaintained1
   -- rogue [tws]
   , SomeEventCard swiftReflexes
+  -- survivor [tws]
+  , SomeEventCard bellyOfTheBeast
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

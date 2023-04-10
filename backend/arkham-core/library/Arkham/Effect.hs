@@ -36,9 +36,9 @@ import Arkham.Asset.Assets
   , grislyTotemSeeker3Effect
   , grislyTotemSurvivor3Effect
   , highRoller2Effect
-  , ineffibleTruthEffect
-  , ineffibleTruth3Effect
-  , ineffibleTruth5Effect
+  , ineffableTruthEffect
+  , ineffableTruth3Effect
+  , ineffableTruth5Effect
   , libraryDocent1Effect
   , miskatonicArchaeologyFunding4Effect
   , mistsOfRlyeh4Effect
@@ -290,15 +290,15 @@ allEffects = mapFromList
   , ("60402", SomeEffect arbiterOfFatesEffect)
   , ("60407", SomeEffect azureFlameEffect)
   , ("60408", SomeEffect clairvoyanceEffect)
-  , ("60409", SomeEffect ineffibleTruthEffect)
+  , ("60409", SomeEffect ineffableTruthEffect)
   , ("60411", SomeEffect crystalPendulumEffect)
   , ("60419", SomeEffect prescientEffect)
   , ("60425", SomeEffect azureFlame3Effect)
   , ("60426", SomeEffect clairvoyance3Effect)
-  , ("60427", SomeEffect ineffibleTruth3Effect)
+  , ("60427", SomeEffect ineffableTruth3Effect)
   , ("60430", SomeEffect azureFlame5Effect)
   , ("60431", SomeEffect clairvoyance5Effect)
-  , ("60432", SomeEffect ineffibleTruth5Effect)
+  , ("60432", SomeEffect ineffableTruth5Effect)
   , ("60512", SomeEffect willToSurviveEffect)
   , ("81001", SomeEffect curseOfTheRougarouTabletToken)
   , ("81007", SomeEffect cursedShores)

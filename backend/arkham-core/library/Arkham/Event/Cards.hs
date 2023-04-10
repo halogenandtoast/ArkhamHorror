@@ -2239,7 +2239,7 @@ eldritchInspiration1 = (event "60420" "Eldritch Inspiration" 0 Mystic)
   }
 
 hypnoticGaze2 :: CardDef
-hypnoticGaze2 = (event "60423" "Hypnotic Gaze" 3 Mystic)
+hypnoticGaze2 = (event "60423" "Hypnotic Gaze" 2 Mystic)
   { cdSkills = [#combat, #agility, #agility]
   , cdCardTraits = singleton Spell
   , cdFastWindow = Just

@@ -46,9 +46,12 @@ import Arkham.Asset.Assets
   , mistsOfRlyehEffect
   , oldBookOfLore3Effect
   , pnakoticManuscripts5Effect
+  , sixthSenseEffect
   , showmanshipEffect
   , wellConnectedEffect
   , wellConnected3Effect
+  , witherEffect
+  , wither4Effect
   , yaotl1Effect
   )
 import Arkham.Enemy.Enemies ( boaConstrictorEffect, ichtacaScionOfYigEffect, alejandroVelaEffect, josefMeigerEffect )
@@ -256,8 +259,11 @@ allEffects = mapFromList
   , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
   , ("05113", SomeEffect banish1Effect)
   , ("05114", SomeEffect meatCleaver)
+  , ("05157", SomeEffect witherEffect)
+  , ("05158", SomeEffect sixthSenseEffect)
   , ("05194", SomeEffect grislyTotemSeeker3Effect)
   , ("05195", SomeEffect grislyTotemSurvivor3Effect)
+  , ("05321", SomeEffect wither4Effect)
   , ("06279", SomeEffect oldBookOfLore3Effect)
   , ("07004", SomeEffect dexterDrakeEffect)
   , ("07012", SomeEffect showmanshipEffect)

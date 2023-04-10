@@ -466,6 +466,9 @@ allAssets = mapFrom
   , SomeAssetCard hawkEyeFoldingCamera
   --- rogue [wos]
   , SomeAssetCard henryWan
+  --- mystic [wos]
+  , SomeAssetCard wither
+  , SomeAssetCard sixthSense
   --- survivor [wos]
   , SomeAssetCard drawingThin
   -- For the Greater Good
@@ -492,6 +495,8 @@ allAssets = mapFrom
   -- Before the Black Throne
   --- seeker [bbt]
   , SomeAssetCard occultLexicon
+  --- mystic [bbt]
+  , SomeAssetCard wither4
   -- The Search for Kadath
   --- mystic [sfk]
   , SomeAssetCard scrollOfProphecies

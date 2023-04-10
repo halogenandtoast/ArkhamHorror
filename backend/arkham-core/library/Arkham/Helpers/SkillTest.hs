@@ -142,3 +142,12 @@ getIsScenarioAbility = do
       ActSource _ -> pure True
       _ -> pure False
     _ -> pure False
+
+getAttackedEnemy :: HasGame m => m (Maybe EnemyId)
+getAttackedEnemy = do
+  mTarget <- getSkillTestTarget
+  case mTarget of
+    Just (EnemyTarget eid) -> pure (Just eid)
+    Just (ProxyTarget (EnemyTarget eid) _) -> pure (Just eid)
+    Just _ -> pure Nothing
+    Nothing -> pure Nothing

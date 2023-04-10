@@ -170,6 +170,8 @@ getModifiedTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
+    SetSkillTestTarget target -> do
+      pure $ s { skillTestTarget = target }
     Discard _ target | target == skillTestTarget -> do
       pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)]
       pure s

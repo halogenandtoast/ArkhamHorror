@@ -236,6 +236,7 @@ data Message
   | BeginRound
   | BeginSkillTest SkillTest
   | BeginSkillTestAfterFast SkillTest
+  | SetSkillTestTarget Target
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
   | Blanked Message

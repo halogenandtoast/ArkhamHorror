@@ -464,6 +464,8 @@ allAssets = mapFrom
   --- seeker [wos]
   , SomeAssetCard mrRook
   , SomeAssetCard hawkEyeFoldingCamera
+  --- rogue [wos]
+  , SomeAssetCard henryWan
   --- survivor [wos]
   , SomeAssetCard drawingThin
   -- For the Greater Good

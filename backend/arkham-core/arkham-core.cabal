@@ -590,6 +590,7 @@ library
       Arkham.Asset.Cards.Shrivelling5
       Arkham.Asset.Cards.SignMagick
       Arkham.Asset.Cards.SignMagick3
+      Arkham.Asset.Cards.SixthSense
       Arkham.Asset.Cards.SmokingPipe
       Arkham.Asset.Cards.SomethingWorthFightingFor
       Arkham.Asset.Cards.SongOfTheDead2
@@ -654,6 +655,8 @@ library
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
       Arkham.Asset.Cards.WhittonGreene2
+      Arkham.Asset.Cards.Wither
+      Arkham.Asset.Cards.Wither4
       Arkham.Asset.Cards.Yaotl1
       Arkham.Asset.Cards.ZebulonWhateley
       Arkham.Asset.Cards.ZoeysCross

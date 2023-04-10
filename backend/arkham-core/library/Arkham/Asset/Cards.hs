@@ -424,6 +424,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , shrivelling5
   , signMagick
   , signMagick3
+  , sixthSense
   , smokingPipe
   , somethingWorthFightingFor
   , sophieInLovingMemory
@@ -487,6 +488,8 @@ allPlayerAssetCards = mapFromList $ concatMap
   , wendysAmulet
   , whittonGreene
   , whittonGreene2
+  , wither
+  , wither4
   , yaotl1
   , zebulonWhateley
   , zoeysCross
@@ -2849,6 +2852,20 @@ henryWan = (asset "05155" ("Henry Wan" <:> "Aspiring Actor") 3 Rogue)
   , cdUnique = True
   }
 
+wither :: CardDef
+wither = (asset "05157" "Wither" 2 Mystic)
+  { cdSkills = [#combat]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  }
+
+sixthSense :: CardDef
+sixthSense = (asset "05158" "Sixth Sense" 3 Mystic)
+  { cdSkills = [#intellect]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  }
+
 drawingThin :: CardDef
 drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
   { cdSkills = [#willpower]
@@ -2961,6 +2978,14 @@ occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
   { cdSkills = [#intellect]
   , cdCardTraits = setFromList [Item, Tome, Occult]
   , cdSlots = [HandSlot]
+  }
+
+wither4 :: CardDef
+wither4 = (asset "05321" "Wither" 2 Mystic)
+  { cdSkills = [#combat, #combat]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 4
   }
 
 scrollOfProphecies :: CardDef

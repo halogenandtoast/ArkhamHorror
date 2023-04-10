@@ -162,6 +162,8 @@ data ModifierType
   | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int
   | EnemyFight Int
+  | EnemyEvadeWithMin Int (Min Int)
+  | EnemyFightWithMin Int (Min Int)
   | AsIfEnemyFight Int
   | AlternateFightField (SomeField Enemy)
   | CountsAsInvestigatorForHunterEnemies
@@ -173,6 +175,7 @@ data ModifierType
   | IgnoreHandSizeReduction
   | HandSizeCardCount Int
   | HealthModifier Int
+  | HealthModifierWithMin Int (Min Int)
   | HealHorrorOnThisAsIfInvestigator InvestigatorId
   | HorrorDealt Int
   | HunterConnectedTo LocationId

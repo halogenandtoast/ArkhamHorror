@@ -2,10 +2,8 @@ module Arkham.Helpers.Investigator where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Treacheries
-import Data.UUID qualified as UUID
-import Data.Monoid
 import Arkham.Action
+import Arkham.Action.Additional
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.Query
@@ -14,17 +12,21 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
+import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding ( InvestigatorDefeated )
-import Arkham.Message (Message(HealHorror))
+import Arkham.Message ( Message (HealHorror) )
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Foldable ( foldrM )
+import Data.Monoid
 import Data.UUID ( nil )
+import Data.UUID qualified as UUID
 
 getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = case st of
@@ -291,7 +293,10 @@ getSpendableClueCount a = do
 getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
-  pure $ actionCost <= investigatorRemainingActions
+  additionalActionCount <- countM
+    (\aa -> anyM (\ac -> additionalActionCovers (toSource a) (Just ac) aa) as)
+    investigatorAdditionalActions
+  pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 drawOpeningHand
   :: HasCallStack => InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -409,3 +414,12 @@ getInvestigatorsWithHealHorror
   -> m [(InvestigatorId, Message)]
 getInvestigatorsWithHealHorror a n =
   selectList >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
+
+additionalActionCovers
+  :: HasGame m => Source -> Maybe Action -> AdditionalAction -> m Bool
+additionalActionCovers source maction = \case
+  TraitRestrictedAdditionalAction t _ -> member t <$> sourceTraits source
+  ActionRestrictedAdditionalAction a -> pure $ maction == Just a
+  EffectAction _ _ -> pure False
+  AnyAdditionalAction -> pure True
+

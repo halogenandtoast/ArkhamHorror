@@ -40,6 +40,7 @@ getActiveCosts :: HasGame m => m [ActiveCost]
 getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: HasGame m => m [Ability]
 getActionCanBeUndone :: HasGame m => m Bool
+getGameInAction :: HasGame m => m Bool
 getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 

@@ -311,6 +311,8 @@ allEvents = mapFrom
   -- The Wages of Sin
   -- guardian [tws]
   , SomeEventCard wellMaintained1
+  -- rogue [tws]
+  , SomeEventCard swiftReflexes
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

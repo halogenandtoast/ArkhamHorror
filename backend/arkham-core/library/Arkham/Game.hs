@@ -6,6 +6,7 @@ module Arkham.Game
 
 import Arkham.Prelude
 
+import Control.Monad.Reader ( local )
 import Arkham.Game.Diff
 import Arkham.Game.Json ()
 import Arkham.Ability
@@ -2470,14 +2471,17 @@ instance Query ExtendedCardMatcher where
         let
           setAssetPlacement :: forall a. Typeable a => a -> a
           setAssetPlacement a = case eqT @a @Asset of
-            Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand iid }) a
+            Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand iid, assetController = Just iid }) a
             Nothing -> a
-        let abilities = traceShowId $ getAbilities $ addCardEntityWith investigator' setAssetPlacement defaultEntities c
-        abilities' <- traceShowId <$> filterM (`abilityMatches` traceShowId abilityMatcher) abilities
+        let extraEntities = addCardEntityWith investigator' setAssetPlacement defaultEntities c
 
-        flip anyM abilities' $ \ab -> do
-          let adjustedAbility = applyAbilityModifiers ab modifiers'
-          anyM (\w -> getCanPerformAbility iid (InvestigatorSource iid) w adjustedAbility) (Window.defaultWindows iid)
+        let abilities = getAbilities extraEntities
+        abilities' <- filterM (`abilityMatches` abilityMatcher) abilities
+        g <- getGame
+        flip runReaderT g $ local (\g' -> g' { gameEntities = gameEntities g <> extraEntities }) $ do
+          flip anyM abilities' $ \ab -> do
+            let adjustedAbility = applyAbilityModifiers ab modifiers'
+            anyM (\w -> traceShowId <$> getCanPerformAbility iid (InvestigatorSource iid) w (traceShowId adjustedAbility)) (Window.defaultWindows iid)
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher
         -> do
           iids <- selectList who

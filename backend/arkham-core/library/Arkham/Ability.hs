@@ -38,13 +38,21 @@ abilityIs :: Ability -> Action -> Bool
 abilityIs a = (== abilityAction a) . Just
 
 abilityIsActionAbility :: Ability -> Bool
-abilityIsActionAbility = isActionAbility
+abilityIsActionAbility a = case abilityType a of
+  ActionAbility{} -> True
+  ActionAbilityWithSkill{} -> True
+  ActionAbilityWithBefore{} -> True
+  _ -> False
 
 abilityIsFastAbility :: Ability -> Bool
-abilityIsFastAbility = isFastAbility
+abilityIsFastAbility a = case abilityType a of
+  FastAbility{} -> True
+  _ -> False
 
 abilityIsReactionAbility :: Ability -> Bool
-abilityIsReactionAbility = isReactionAbility
+abilityIsReactionAbility a = case abilityType a of
+  ReactionAbility{} -> True
+  _ -> False
 
 doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
 doesNotProvokeAttacksOfOpportunity =

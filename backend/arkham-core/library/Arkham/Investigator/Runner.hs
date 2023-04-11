@@ -33,14 +33,14 @@ import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Discard
 import Arkham.Draw.Types
-import Arkham.Event.Types ( Field (..) )
 import Arkham.Enemy.Types qualified as Field
+import Arkham.Event.Types ( Field (..) )
+import {-# SOURCE #-} Arkham.Game ( withoutCanModifiers )
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
-import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Card (extendedCardMatch)
+import Arkham.Helpers.Card ( extendedCardMatch )
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Attrs
@@ -70,12 +70,12 @@ import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
+import Control.Lens ( each )
 import Control.Monad.Extra ( findM )
+import Control.Monad.Reader ( local )
 import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
 import Data.Monoid
-import Control.Lens (each)
-import Control.Monad.Reader ( local )
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -101,7 +101,8 @@ getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc))
     cost <- getModifiedCardCost iid card
     let
       allModifiers = modifiers' <> modifiers''
-      isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
+      isFast =
+        isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
     andM
       [ getCanAffordCost
         (toId attrs)
@@ -110,18 +111,33 @@ getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc))
         ws
         (ResourceCost cost)
       , if isFast
-          then pure True
-          else getCanAffordCost (toId attrs) (PlayerCardSource pc) (Just Action.Play) ws (ActionCost 1)
+        then pure True
+        else getCanAffordCost
+          (toId attrs)
+          (PlayerCardSource pc)
+          (Just Action.Play)
+          ws
+          (ActionCost 1)
       ]
 getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
   let
     excludeOne [] = []
-    excludeOne (uab : xs) | ab == usedAbility uab = if usedTimes uab <= 1 then xs else uab { usedTimes = usedTimes uab - 1 } : xs
+    excludeOne (uab : xs) | ab == usedAbility uab = if usedTimes uab <= 1
+      then xs
+      else uab { usedTimes = usedTimes uab - 1 } : xs
     excludeOne (uab : xs) = uab : excludeOne xs
   game <- getGame
   andM
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
-    , maybe (pure True) (\c -> flip runReaderT game $ (local withoutCanModifiers $ passesCriteria iid Nothing (abilitySource ab) [w] c)) (traceShowId $ abilityCriteria ab)
+    , maybe
+      (pure True)
+      (flip runReaderT game . local withoutCanModifiers . passesCriteria
+        iid
+        Nothing
+        (abilitySource ab)
+        [w]
+      )
+      (abilityCriteria ab)
     ]
 getWindowSkippable _ _ _ = pure True
 
@@ -1823,7 +1839,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
   RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> do
     let
-      (revealed, remainingDeck) = 
+      (revealed, remainingDeck) =
         break (`cardMatch` matcher) (unDeck investigatorDeck)
     case remainingDeck of
       [] -> do

@@ -1011,57 +1011,47 @@ getScenariosMatching matcher = do
   go = \case
     TheScenario -> pure . const True
 
-getAbilitiesMatching
-  :: (HasCallStack, HasGame m) => AbilityMatcher -> m [Ability]
+abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
+abilityMatches a@Ability {..} = \case
+  AnyAbility -> pure True
+  HauntedAbility -> pure $ abilityType == Haunted
+  AssetAbility assetMatcher -> do
+    abilities <- concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
+    pure $ a `elem` abilities
+  AbilityOnCardControlledBy iid -> do
+    let
+      sourceMatch = \case
+        AssetSource aid -> member aid <$> select (assetControlledBy iid)
+        EventSource eid -> member eid <$> select (eventControlledBy iid)
+        InvestigatorSource iid' -> pure $ iid == iid'
+        AbilitySource s _ -> sourceMatch s
+        ProxySource s _ -> sourceMatch s
+        _ -> pure False
+    sourceMatch abilitySource
+  AbilityOnLocation locationMatcher -> case abilitySource of
+    LocationSource lid' -> member lid' <$> select locationMatcher
+    ProxySource (LocationSource lid') _ -> member lid' <$> select locationMatcher
+    _ -> pure False
+  AbilityIsAction action -> pure $ abilityAction a == Just action
+  AbilityIsActionAbility -> pure $ abilityIsActionAbility a
+  AbilityIsFastAbility -> pure $ abilityIsFastAbility a
+  AbilityIsReactionAbility -> pure $ abilityIsReactionAbility a
+  AbilityIs source idx -> pure $ abilitySource == source && abilityIndex == idx
+  AbilityWindow windowMatcher -> pure $ abilityWindow == windowMatcher
+  AbilityMatches [] -> pure True
+  AbilityMatches (x : xs) -> do
+    result <- abilityMatches a x
+    if result then abilityMatches a (AbilityMatches xs) else pure False
+  AbilityOneOf [] -> pure False
+  AbilityOneOf (x : xs) -> do
+    result <- abilityMatches a x
+    if result then pure True else abilityMatches a (AbilityOneOf xs)
+  AbilityOnEncounterCard -> abilitySource `sourceMatches` M.EncounterCardSource
+
+getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
-
-  case matcher of
-    AnyAbility -> pure abilities
-    HauntedAbility -> pure $ filter ((== Haunted) . abilityType) abilities
-    AssetAbility assetMatcher ->
-      concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
-    AbilityOnCardControlledBy iid -> do
-      let
-        sourceMatch = \case
-          AssetSource aid -> member aid <$> select (assetControlledBy iid)
-          EventSource eid -> member eid <$> select (eventControlledBy iid)
-          InvestigatorSource iid' -> pure $ iid == iid'
-          AbilitySource s _ -> sourceMatch s
-          ProxySource s _ -> sourceMatch s
-          _ -> pure False
-      flip filterM abilities $ \ability -> sourceMatch (abilitySource ability)
-    AbilityOnLocation locationMatcher -> do
-      lids <- selectList locationMatcher
-      let
-        toLocationSources ab lid = case abilitySource ab of
-          LocationSource lid' | lid == lid' -> pure $ Just ab
-          ProxySource (LocationSource lid') _ | lid == lid' -> pure $ Just ab
-          _ -> pure Nothing
-      flip concatMapM abilities (\ab -> mapMaybeM (toLocationSources ab) lids)
-    AbilityIsAction action ->
-      pure $ filter ((== Just action) . abilityAction) abilities
-    AbilityIsActionAbility -> pure $ filter abilityIsActionAbility abilities
-    AbilityIsReactionAbility ->
-      pure $ filter abilityIsReactionAbility abilities
-    AbilityIs source idx ->
-      pure $ filter (and . sequence [(== source) . abilitySource, (== idx) . abilityIndex]) abilities
-    AbilityWindow windowMatcher ->
-      pure $ filter ((== windowMatcher) . abilityWindow) abilities
-    AbilityMatches [] -> pure []
-    AbilityMatches (x : xs) ->
-      toList
-        <$> (foldl' intersection
-            <$> (setFromList @(HashSet Ability) <$> getAbilitiesMatching x)
-            <*> traverse (fmap setFromList . getAbilitiesMatching) xs
-            )
-    AbilityOneOf xs ->
-      toList
-        . unions @(HashSet Ability)
-        <$> traverse (fmap setFromList . getAbilitiesMatching) xs
-    AbilityOnEncounterCard -> filterM
-      ((`sourceMatches` M.EncounterCardSource) . abilitySource)
-      abilities
+  filterM (`abilityMatches` matcher) abilities
 
 getGameAbilities :: HasGame m => m [Ability]
 getGameAbilities = do
@@ -2474,6 +2464,20 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      CardWithPerformableAbility abilityMatcher modifiers' -> do
+        iid <- view activeInvestigatorIdL <$> getGame
+        investigator' <- getInvestigator iid
+        let
+          setAssetPlacement :: forall a. Typeable a => a -> a
+          setAssetPlacement a = case eqT @a @Asset of
+            Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand iid }) a
+            Nothing -> a
+        let abilities = traceShowId $ getAbilities $ addCardEntityWith investigator' setAssetPlacement defaultEntities c
+        abilities' <- traceShowId <$> filterM (`abilityMatches` traceShowId abilityMatcher) abilities
+
+        flip anyM abilities' $ \ab -> do
+          let adjustedAbility = applyAbilityModifiers ab modifiers'
+          anyM (\w -> getCanPerformAbility iid (InvestigatorSource iid) w adjustedAbility) (Window.defaultWindows iid)
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher
         -> do
           iids <- selectList who
@@ -4802,19 +4806,20 @@ preloadEntities g = do
             <> filter (cdCardInHandEffects . toCardDef) asIfInHandCards
       if null handEffectCards
         then pure entities
-        else do
-          handEntities <- foldM
-            (addCardEntityWith investigator' setAssetPlacement)
-            defaultEntities
-            handEffectCards
-          pure $ insertMap (toId investigator') handEntities entities
+        else
+          let
+            handEntities = foldl'
+              (addCardEntityWith investigator' setAssetPlacement)
+              defaultEntities
+              handEffectCards
+           in pure $ insertMap (toId investigator') handEntities entities
     foundOfElems = concat . HashMap.elems . investigatorFoundCards . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
         $ (concat . HashMap.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getInvestigator =<< getActiveInvestigatorId
-  searchEntities <- foldM (addCardEntityWith active id) defaultEntities searchEffectCards
+  let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   pure $ g
     { gameInHandEntities = handEntities

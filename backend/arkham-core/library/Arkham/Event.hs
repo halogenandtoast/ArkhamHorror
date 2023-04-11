@@ -319,6 +319,8 @@ allEvents = mapFrom
   --- guardian [uad]
   , SomeEventCard warningShot
   , SomeEventCard telescopicSight3
+  --- seeker [uad]
+  , SomeEventCard knowledgeIsPower
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

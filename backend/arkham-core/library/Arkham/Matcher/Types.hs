@@ -456,6 +456,7 @@ data ExtendedCardMatcher
   | PlayableCardWithCostReduction Int ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
   | CommittableCard InvestigatorId ExtendedCardMatcher
+  | CardWithPerformableAbility AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -788,6 +789,7 @@ data AbilityMatcher
   | AbilityIsAction Action
   | AbilityIsActionAbility
   | AbilityIsReactionAbility
+  | AbilityIsFastAbility
   | AbilityMatches [AbilityMatcher]
   | AbilityOneOf [AbilityMatcher]
   | AbilityIs Source Int

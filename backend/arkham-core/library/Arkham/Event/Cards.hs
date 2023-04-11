@@ -268,6 +268,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , taunt2
   , taunt3
   , teamwork
+  , telescopicSight3
   , thePaintedWorld
   , thinkOnYourFeet
   , timeWarp2
@@ -1778,6 +1779,14 @@ warningShot = (event "05229" "Warning Shot" 2 Guardian)
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
+telescopicSight3 :: CardDef
+telescopicSight3 = (event "05230" "Telescopic Sight" 3 Guardian)
+  { cdSkills = [#intellect, #combat, #agility]
+  , cdCardTraits = setFromList [Item, Upgrade]
+  , cdFastWindow = Just (DuringTurn You)
+  , cdCriteria = Just $ Criteria.AssetExists (AssetControlledBy You <> AssetInTwoHandSlots)
+  }
+
 denyExistence5 :: CardDef
 denyExistence5 = (event "05280" "Deny Existence" 0 Mystic)
   { cdSkills = [#wild]
@@ -1964,7 +1973,7 @@ getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
     $ Criteria.EnemyExists
     $ NonEliteEnemy
     <> EnemyOneOf
-         [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy]
+         [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
          , EnemyAt $ ConnectedFrom YourLocation
          ]
   , cdOverrideActionPlayableIfCriteriaMet = True
@@ -2046,7 +2055,7 @@ getOverHere2 = (event "60123" "\"Get over here!\"" 2 Guardian)
     $ Criteria.EnemyExists
     $ NonEliteEnemy
     <> EnemyOneOf
-         [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy]
+         [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
          , EnemyAt $ ConnectedFrom YourLocation
          , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
          ]

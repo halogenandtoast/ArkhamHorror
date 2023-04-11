@@ -1,9 +1,11 @@
+{-# LANGUAGE ImplicitParams #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module GHCI
   ( module GHCI
   , module X
   ) where
 
-import Import.NoFoundation as X
+import Import.NoFoundation as X hiding (selectList)
 
 import Api.Arkham.Helpers
 import Application
@@ -13,9 +15,22 @@ import Arkham.Message
 import Control.Monad.Logger
 import Control.Monad.Random ( mkStdGen )
 import Data.String.Conversions ( cs )
+import Data.Maybe (fromJust)
 import Data.Time
+import Data.UUID (UUID)
 import Data.UUID qualified as UUID
-import Database.Persist.Postgresql
+import Database.Persist.Postgresql hiding (selectList)
+
+instance IsString UUID where
+  fromString = fromJust . UUID.fromString
+
+instance IsString (Key ArkhamGame) where
+  fromString = ArkhamGameKey . fromString
+
+lookupGame :: Key ArkhamGame -> IO Game
+lookupGame gameId = do
+  ArkhamGame {..} <- dbGhci $ get404 gameId
+  pure arkhamGameCurrentData
 
 dbGhci :: SqlPersistT IO a -> IO a
 dbGhci action = do
@@ -48,3 +63,6 @@ runGameMessage gameUUID msg = do
       arkhamGameMultiplayerVariant
       arkhamGameCreatedAt
       now
+
+gameDB :: Game -> ReaderT Game IO a -> IO a
+gameDB g = flip runReaderT g

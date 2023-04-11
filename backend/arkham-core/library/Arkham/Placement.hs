@@ -12,7 +12,7 @@ data Placement
   | InThreatArea InvestigatorId
   | StillInHand InvestigatorId
   | AttachedToEnemy EnemyId
-  | AttachedToAsset AssetId (Maybe Placement)
+  | AttachedToAsset AssetId (Maybe Placement) -- Maybe Placement for Dr. Elli Horowitz
   | AttachedToAct ActId
   | AttachedToAgenda AgendaId
   | AttachedToInvestigator InvestigatorId

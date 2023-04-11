@@ -8,6 +8,7 @@ import Import hiding ( appLogger, (==.), (>=.) )
 import Arkham.Card
 import Arkham.Classes hiding ( Entity (..), select )
 import Arkham.Game
+import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
@@ -72,6 +73,9 @@ data GameApp = GameApp
   , appGen :: IORef StdGen
   , appLogger :: Text -> IO ()
   }
+
+instance HasGame GameAppT where
+  getGame = readIORef =<< asks appGame
 
 newApp :: MonadIO m => Game -> (Text -> IO ()) -> [Message] -> m GameApp
 newApp g logger msgs = do

@@ -236,6 +236,7 @@ data ModifierType
   | DoNotDisengageEvaded
   | CannotBeAdvancedByDoomThreshold
   | MetaModifier Value
+  | CanModify ModifierType
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

@@ -77,6 +77,7 @@ instance HasTokenValue InvestigatorId
 instance HasTokenValue ()
 
 delve :: Game -> Game
+withoutCanModifiers :: Game -> Game
 
 instance HasDistance Game
 instance HasAbilities Game

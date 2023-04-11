@@ -255,6 +255,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameInAction = False
       , gameActiveCost = mempty
       , gameInSetup = True
+      , gameIgnoreCanModifiers = False -- only to be used with local
       }
     )
  where
@@ -1918,6 +1919,7 @@ enemyMatcherFilter = \case
     let
       isOverride = \case
         EnemyFightActionCriteria override -> Just override
+        CanModify (EnemyFightActionCriteria override) -> Just override
         _ -> Nothing
       overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
       enemyFilters = mapMaybe
@@ -4927,6 +4929,9 @@ handleActionDiff old new
 
 delve :: Game -> Game
 delve g = g { gameDepthLock = gameDepthLock g + 1 }
+
+withoutCanModifiers :: Game -> Game
+withoutCanModifiers g = g { gameIgnoreCanModifiers = True }
 
 instance HasAbilities Game where
   getAbilities g =

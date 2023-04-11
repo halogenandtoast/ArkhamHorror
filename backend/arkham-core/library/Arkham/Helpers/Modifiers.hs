@@ -16,7 +16,13 @@ import Arkham.Target
 import Arkham.Window (Window)
 
 getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
-getModifiers (toTarget -> target) = map modifierType <$> getModifiers' target
+getModifiers (toTarget -> target) = do
+  ignoreCanModifiers <- getIgnoreCanModifiers
+  let
+    notCanModifier CanModify{} = False
+    notCanModifier _ = True
+    filterF = if ignoreCanModifiers then notCanModifier else const True
+  filter filterF . map modifierType <$> getModifiers' target
 
 getModifiers' :: (HasGame m, Targetable a) => a -> m [Modifier]
 getModifiers' (toTarget -> target) =

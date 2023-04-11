@@ -665,6 +665,8 @@ data Message
   | TokenIgnored InvestigatorId Source Token
   | TokenCanceled InvestigatorId Source Token
   | UnsetActiveCard
+  | AddCardEntity Card
+  | RemoveCardEntity Card
   | UseCardAbility InvestigatorId Source Int [Window] Payment
   | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment

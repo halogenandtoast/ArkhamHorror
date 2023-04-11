@@ -811,6 +811,11 @@ getIsPlayable iid source costStatus windows' c = do
   availableResources <- getSpendableResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
+withAlteredGame :: HasGame m => (Game -> Game) -> ReaderT Game m a -> m a
+withAlteredGame f body = do
+  game <- getGame
+  runReaderT body (f game)
+
 withDepthGuard :: HasGame m => Int -> a -> ReaderT Game m a -> m a
 withDepthGuard maxDepth defaultValue body = do
   game <- getGame

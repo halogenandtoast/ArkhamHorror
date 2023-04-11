@@ -129,13 +129,13 @@ toSomeEntities Entities {..} =
 makeLensesWith suffixedFields ''Entities
 
 -- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
-addCardEntityWith :: Investigator -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
+addCardEntityWith :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
 addCardEntityWith i f e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType ->
       let
         eventId = EventId uuid
-        event' = createEvent card (toId i) eventId
+        event' = createEvent card i eventId
        in e & eventsL %~ insertEntity event'
     AssetType -> do
       let
@@ -147,7 +147,7 @@ addCardEntityWith i f e card = case card of
     TreacheryType -> do
       let
         treacheryId = TreacheryId uuid
-        treachery = createTreachery card (toId i) treacheryId
+        treachery = createTreachery card i treacheryId
        in e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled"
   VengeanceCard _ -> error "vengeance card"

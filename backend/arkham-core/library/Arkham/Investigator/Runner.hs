@@ -72,7 +72,6 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens ( each )
 import Control.Monad.Extra ( findM )
-import Control.Monad.Reader ( local )
 import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
 import Data.Monoid
@@ -126,12 +125,11 @@ getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
       then xs
       else uab { usedTimes = usedTimes uab - 1 } : xs
     excludeOne (uab : xs) = uab : excludeOne xs
-  game <- getGame
   andM
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
     , maybe
       (pure True)
-      (flip runReaderT game . local withoutCanModifiers . passesCriteria
+      (withAlteredGame withoutCanModifiers . passesCriteria
         iid
         Nothing
         (abilitySource ab)

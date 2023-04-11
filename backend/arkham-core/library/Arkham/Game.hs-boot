@@ -4,9 +4,11 @@ module Arkham.Game
   , module X
   ) where
 
+import Arkham.Ability.Types
 import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
+import Arkham.Card
 import Arkham.Campaign.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -17,6 +19,7 @@ import Arkham.Effect.Types
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Game.Base as X
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
@@ -78,6 +81,8 @@ instance HasTokenValue ()
 
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
+withCardEntity :: InvestigatorId -> Card -> Game -> Game
+abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 
 instance HasDistance Game
 instance HasAbilities Game

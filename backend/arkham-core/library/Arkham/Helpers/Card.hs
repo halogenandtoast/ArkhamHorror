@@ -5,13 +5,16 @@ module Arkham.Helpers.Card
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.ActiveCost.Base
 import Arkham.Asset.Types
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
 import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.Enemy.Types
+import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Modifiers
@@ -95,3 +98,7 @@ getHasVictoryPoints c = isJust <$> getVictoryPoints c
 
 getPrintedVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
 getPrintedVictoryPoints = getCardField cdVictoryPoints
+
+-- To get abilities we convert to some entity in Entities and get all abilities
+getCardAbilities :: InvestigatorId -> Card -> [Ability]
+getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c

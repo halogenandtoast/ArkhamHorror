@@ -6,7 +6,6 @@ module Arkham.Game
 
 import Arkham.Prelude
 
-import Control.Monad.Reader ( local )
 import Arkham.Game.Diff
 import Arkham.Game.Json ()
 import Arkham.Ability
@@ -2467,21 +2466,20 @@ instance Query ExtendedCardMatcher where
     matches' c = \case
       CardWithPerformableAbility abilityMatcher modifiers' -> do
         iid <- view activeInvestigatorIdL <$> getGame
-        investigator' <- getInvestigator iid
         let
           setAssetPlacement :: forall a. Typeable a => a -> a
           setAssetPlacement a = case eqT @a @Asset of
             Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand iid, assetController = Just iid }) a
             Nothing -> a
-        let extraEntities = addCardEntityWith investigator' setAssetPlacement defaultEntities c
+        let extraEntities = addCardEntityWith iid setAssetPlacement defaultEntities c
 
         let abilities = getAbilities extraEntities
         abilities' <- filterM (`abilityMatches` abilityMatcher) abilities
         g <- getGame
-        flip runReaderT g $ local (\g' -> g' { gameEntities = gameEntities g <> extraEntities }) $ do
+        flip runReaderT (g { gameEntities = gameEntities g <> extraEntities }) $ do
           flip anyM abilities' $ \ab -> do
             let adjustedAbility = applyAbilityModifiers ab modifiers'
-            anyM (\w -> traceShowId <$> getCanPerformAbility iid (InvestigatorSource iid) w (traceShowId adjustedAbility)) (Window.defaultWindows iid)
+            anyM (\w -> getCanPerformAbility iid (InvestigatorSource iid) w (adjustedAbility)) (Window.defaultWindows iid)
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher
         -> do
           iids <- selectList who
@@ -4681,6 +4679,19 @@ runGameMessage msg g = case msg of
       & setTurnHistory
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
+  AddCardEntity card -> do
+    let
+      iid = view activeInvestigatorIdL g
+      setAssetPlacement :: forall a. Typeable a => a -> a
+      setAssetPlacement a = case eqT @a @Asset of
+        Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand iid, assetController = Just iid }) a
+        Nothing -> a
+      extraEntities = addCardEntityWith iid setAssetPlacement mempty card
+    pure $ g & entitiesL <>~ extraEntities
+  RemoveCardEntity card -> do
+    case toCardType card of
+      AssetType -> pure $ g & entitiesL . assetsL %~ deleteMap (AssetId (unsafeCardIdToUUID $ toCardId card))
+      _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility _ -> pure $ g & activeAbilitiesL %~ drop 1
   Discarded (AssetTarget aid) _ (EncounterCard _) ->
@@ -4813,7 +4824,7 @@ preloadEntities g = do
         else
           let
             handEntities = foldl'
-              (addCardEntityWith investigator' setAssetPlacement)
+              (addCardEntityWith (toId investigator') setAssetPlacement)
               defaultEntities
               handEffectCards
            in pure $ insertMap (toId investigator') handEntities entities
@@ -4822,7 +4833,7 @@ preloadEntities g = do
       filter (cdCardInSearchEffects . toCardDef)
         $ (concat . HashMap.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
-  active <- getInvestigator =<< getActiveInvestigatorId
+  active <- getActiveInvestigatorId
   let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   pure $ g
@@ -4941,6 +4952,16 @@ delve g = g { gameDepthLock = gameDepthLock g + 1 }
 
 withoutCanModifiers :: Game -> Game
 withoutCanModifiers g = g { gameIgnoreCanModifiers = True }
+
+withCardEntity :: InvestigatorId -> Card -> Game -> Game
+withCardEntity controller c g =
+  let
+    setAssetPlacement :: forall a. Typeable a => a -> a
+    setAssetPlacement a = case eqT @a @Asset of
+      Just Refl -> overAttrs (\attrs -> attrs { assetPlacement = StillInHand controller, assetController = Just controller }) a
+      Nothing -> a
+    extraEntities = addCardEntityWith controller setAssetPlacement defaultEntities c
+   in g { gameEntities = gameEntities g <> extraEntities }
 
 instance HasAbilities Game where
   getAbilities g =

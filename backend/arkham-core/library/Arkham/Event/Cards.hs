@@ -193,6 +193,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , iveGotAPlan
   , iveGotAPlan2
   , iveHadWorse4
+  , knowledgeIsPower
   , lessonLearned2
   , letMeHandleThis
   , liveAndLearn
@@ -1785,6 +1786,28 @@ telescopicSight3 = (event "05230" "Telescopic Sight" 3 Guardian)
   , cdCardTraits = setFromList [Item, Upgrade]
   , cdFastWindow = Just (DuringTurn You)
   , cdCriteria = Just $ Criteria.AssetExists (AssetControlledBy You <> AssetInTwoHandSlots)
+  }
+
+knowledgeIsPower :: CardDef
+knowledgeIsPower = (event "05231" "Knowledge is Power" 0 Seeker)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just (DuringTurn You)
+  , cdCriteria = Just $ Criteria.AnyCriterion
+    [ Criteria.AssetExists
+      (AssetControlledBy You
+      <> AssetOneOf [AssetWithTrait Tome, AssetWithTrait Spell]
+      )
+    , Criteria.ExtendedCardExists
+    $ InHandOf You
+    <> BasicCardMatch
+         (CardWithOneOf [CardWithTrait Tome, CardWithTrait Spell]
+         <> CardWithType AssetType
+         )
+    <> CardWithPerformableAbility
+         (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
+         [IgnoreAllCosts]
+    ]
   }
 
 denyExistence5 :: CardDef

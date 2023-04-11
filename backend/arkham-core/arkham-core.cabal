@@ -1099,6 +1099,7 @@ library
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse4
+      Arkham.Event.Cards.KnowledgeIsPower
       Arkham.Event.Cards.LessonLearned2
       Arkham.Event.Cards.LetMeHandleThis
       Arkham.Event.Cards.LiveAndLearn

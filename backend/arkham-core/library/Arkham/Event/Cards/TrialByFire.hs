@@ -24,19 +24,17 @@ trialByFire = event TrialByFire Cards.trialByFire
 instance RunMessage TrialByFire where
   runMessage msg e@(TrialByFire attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ chooseOne
-          iid
-          [ SkillLabel
-              skill
-              [ CreateWindowModifierEffect
-                  EffectTurnWindow
-                  (EffectModifiers $ toModifiers attrs [BaseSkillOf skill 5])
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              ]
-          | skill <- allSkills
-          ]
+      push $ chooseOne
+        iid
+        [ SkillLabel
+            skill
+            [ CreateWindowModifierEffect
+                EffectTurnWindow
+                (EffectModifiers $ toModifiers attrs [BaseSkillOf skill 5])
+                (toSource attrs)
+                (InvestigatorTarget iid)
+            ]
+        | skill <- allSkills
         ]
       pure e
     _ -> TrialByFire <$> runMessage msg attrs

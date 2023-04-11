@@ -180,6 +180,7 @@ data ModifierType
   | HorrorDealt Int
   | HunterConnectedTo LocationId
   | CanRetaliateWhileExhausted
+  | IgnoreAllCosts
   | IgnoreRetaliate
   | IgnoreAloof
   | IgnoreText

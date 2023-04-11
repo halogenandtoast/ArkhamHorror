@@ -38,17 +38,13 @@ abilityIs :: Ability -> Action -> Bool
 abilityIs a = (== abilityAction a) . Just
 
 abilityIsActionAbility :: Ability -> Bool
-abilityIsActionAbility a = case abilityType a of
-  ActionAbility{} -> True
-  ActionAbilityWithSkill{} -> True
-  ActionAbilityWithBefore{} -> True
-  _ -> False
+abilityIsActionAbility = isActionAbility
+
+abilityIsFastAbility :: Ability -> Bool
+abilityIsFastAbility = isFastAbility
 
 abilityIsReactionAbility :: Ability -> Bool
-abilityIsReactionAbility a = case abilityType a of
-  ReactionAbility{} -> True
-  _ -> False
-
+abilityIsReactionAbility = isReactionAbility
 
 doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
 doesNotProvokeAttacksOfOpportunity =
@@ -173,6 +169,7 @@ applyCostModifiers :: Cost -> [ModifierType] -> Cost
 applyCostModifiers = foldl' applyCostModifier
 
 applyCostModifier :: Cost -> ModifierType -> Cost
+applyCostModifier _ IgnoreAllCosts = Free
 applyCostModifier (ActionCost n) (ActionCostModifier m) =
   ActionCost (max 0 $ n + m)
 applyCostModifier (Costs (x : xs)) modifier@(ActionCostModifier _) = case x of

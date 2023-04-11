@@ -67,7 +67,7 @@ instance HasModifiersFor Marksmanship1 where
                   (toCard a)
                 pure $ toModifiers
                   a
-                  [ EnemyFightActionCriteria
+                  [ CanModify $ EnemyFightActionCriteria
                     $ CriteriaOverride
                     $ EnemyCriteria
                     $ ThisEnemy

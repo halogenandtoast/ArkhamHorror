@@ -50,7 +50,7 @@ instance HasModifiersFor TelescopicSight3 where
                     [EnemyFightActionCriteria $ CriteriaOverride Never]
                   else toModifiers
                     a
-                    [ EnemyFightActionCriteria
+                    [ CanModify $ EnemyFightActionCriteria
                       $ CriteriaOverride
                       $ EnemyCriteria
                       $ ThisEnemy

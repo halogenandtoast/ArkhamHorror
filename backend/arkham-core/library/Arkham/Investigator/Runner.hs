@@ -37,6 +37,7 @@ import Arkham.Event.Types ( Field (..) )
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
+import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch)
@@ -74,6 +75,7 @@ import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
 import Data.Monoid
 import Control.Lens (each)
+import Control.Monad.Reader ( local )
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -116,7 +118,11 @@ getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
     excludeOne [] = []
     excludeOne (uab : xs) | ab == usedAbility uab = if usedTimes uab <= 1 then xs else uab { usedTimes = usedTimes uab - 1 } : xs
     excludeOne (uab : xs) = uab : excludeOne xs
-  getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
+  game <- getGame
+  andM
+    [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
+    , maybe (pure True) (\c -> flip runReaderT game $ (local withoutCanModifiers $ passesCriteria iid Nothing (abilitySource ab) [w] c)) (traceShowId $ abilityCriteria ab)
+    ]
 getWindowSkippable _ _ _ = pure True
 
 getHealthDamageableAssets
@@ -671,6 +677,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let
         isOverride = \case
           EnemyFightActionCriteria override -> Just override
+          CanModify (EnemyFightActionCriteria override) -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
         applyMatcherModifiers :: ModifierType -> EnemyMatcher -> EnemyMatcher

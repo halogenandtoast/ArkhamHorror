@@ -231,6 +231,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
               let
                 isOverride = \case
                   EnemyFightActionCriteria override -> Just override
+                  CanModify (EnemyFightActionCriteria override) -> Just override
                   _ -> Nothing
                 overrides = mapMaybe isOverride modifiers
               case overrides of

@@ -46,6 +46,7 @@ data Game = Game
   , gameParams :: GameParams
   , gameWindowDepth :: Int
   , gameDepthLock :: Int
+  , gameIgnoreCanModifiers :: Bool
   , -- Active Scenario/Campaign
     gameMode :: GameMode
   , -- Entities

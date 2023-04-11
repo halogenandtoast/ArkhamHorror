@@ -167,3 +167,6 @@ getActionCanBeUndone = gameActionCanBeUndone <$> getGame
 
 getGameInAction :: HasGame m => m Bool
 getGameInAction = gameInAction <$> getGame
+
+getIgnoreCanModifiers :: HasGame m => m Bool
+getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame

@@ -25,6 +25,7 @@ gameDepthLock :: Game -> Int
 gamePhaseHistory :: Game -> HashMap InvestigatorId History
 gameTurnHistory :: Game -> HashMap InvestigatorId History
 gameRoundHistory :: Game -> HashMap InvestigatorId History
+gameIgnoreCanModifiers :: Game -> Bool
 
 -- Time Warp
 gameActionCanBeUndone :: Game -> Bool

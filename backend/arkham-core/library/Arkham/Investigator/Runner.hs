@@ -679,7 +679,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> original
         applyMatcherModifiers _ n = n
         canFightMatcher = case overrides of
-          [] -> CanFightEnemy
+          [] -> CanFightEnemy source
           [o] -> CanFightEnemyWithOverride o
           _ -> error "multiple overrides found"
       enemyIds <- selectList $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers

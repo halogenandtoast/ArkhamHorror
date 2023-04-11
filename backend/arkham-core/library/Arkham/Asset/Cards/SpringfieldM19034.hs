@@ -6,8 +6,8 @@ module Arkham.Asset.Cards.SpringfieldM19034
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
@@ -21,11 +21,13 @@ newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
 springfieldM19034 :: AssetCard SpringfieldM19034
 springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034
 
+-- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
 instance HasAbilities SpringfieldM19034 where
   getAbilities (SpringfieldM19034 a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
+    [ restrictedAbility a 1 (ControlsThis <> EnemyCriteria (EnemyExists $ CanFightEnemy (toAbilitySource a 1) <> NotEnemy EnemyEngagedWithYou))
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage SpringfieldM19034 where

@@ -38,7 +38,7 @@ instance HasAbilities Sharpshooter3 where
 instance RunMessage Sharpshooter3 where
   runMessage msg a@(Sharpshooter3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      anyFightableWithEvade <- selectAny $ CanFightEnemy <> EnemyWithEvade
+      anyFightableWithEvade <- selectAny $ CanFightEnemy (toAbilitySource attrs 1) <> EnemyWithEvade
       push
         $ chooseOrRunOne
             iid

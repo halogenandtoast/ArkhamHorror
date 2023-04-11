@@ -318,6 +318,7 @@ allEvents = mapFrom
   -- Union and Disillusion
   --- guardian [uad]
   , SomeEventCard warningShot
+  , SomeEventCard telescopicSight3
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 
 newtype Metadata = Metadata { chosenCards :: [Card] }
@@ -114,7 +113,7 @@ instance RunMessage MrRook where
     DoStep 3 (SearchFound iid (isTarget attrs -> True) _ _) -> do
       push $ AddToHand iid (chosenCards meta)
       pure $ MrRook (attrs `with` Metadata [])
-    HandleTargetChoice iid (isSource attrs -> True) (CardTarget card) -> do
+    HandleTargetChoice _ (isSource attrs -> True) (CardTarget card) -> do
       pure $ MrRook $ attrs `with` Metadata
         { chosenCards = card : chosenCards meta
         }

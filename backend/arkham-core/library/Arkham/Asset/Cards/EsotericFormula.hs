@@ -31,7 +31,7 @@ instance HasAbilities EsotericFormula where
         x
         1
         (ControlsThis <> EnemyCriteria
-          (EnemyExists $ CanFightEnemy <> EnemyWithTrait Abomination)
+          (EnemyExists $ CanFightEnemy (toAbilitySource x 1) <> EnemyWithTrait Abomination)
         )
         (ActionAbility (Just Action.Fight) (ActionCost 1))
     ]

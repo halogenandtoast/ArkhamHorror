@@ -138,6 +138,7 @@ data AssetMatcher
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher
   | AssetInSlot SlotType
+  | AssetInTwoHandSlots
   | AssetIs CardCode
   | AssetWithCardId CardId
   | AssetCardMatch CardMatcher
@@ -196,7 +197,7 @@ data EnemyMatcher
   | EnemyIs CardCode
   | EnemyWithCardId CardId
   | AnyEnemy
-  | CanFightEnemy
+  | CanFightEnemy Source
   | CanFightEnemyWithOverride CriteriaOverride
   | CanEvadeEnemy
   | CanEngageEnemy

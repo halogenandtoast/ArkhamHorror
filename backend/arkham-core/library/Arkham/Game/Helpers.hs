@@ -234,7 +234,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
                   _ -> Nothing
                 overrides = mapMaybe isOverride modifiers
               case overrides of
-                [] -> notNull <$> select Matcher.CanFightEnemy
+                [] -> notNull <$> select (Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex)
                 [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
                 _ -> error "multiple overrides found"
           Action.Evade -> case abilitySource of

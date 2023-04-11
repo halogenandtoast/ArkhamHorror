@@ -1489,6 +1489,7 @@ getAssetsMatching matcher = do
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . assetSlots . toAttrs) as
+    AssetInTwoHandSlots -> pure $ filter ((== 2) . count (== HandSlot) . assetSlots . toAttrs) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
     AssetWithPlacement placement ->
       pure $ filter ((== placement) . assetPlacement . toAttrs) as
@@ -1905,15 +1906,20 @@ enemyMatcherFilter = \case
     case enemyLocation of
       Nothing -> pure False
       Just loc -> member loc <$> select locationMatcher
-  CanFightEnemy -> \enemy -> do
+  CanFightEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)
     enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
+    sourceModifiers <- case source of
+      AbilitySource abSource idx -> do
+        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+        foldMapM (getModifiers  . AbilityTarget iid) abilities
+      _ -> pure []
     let
       isOverride = \case
         EnemyFightActionCriteria override -> Just override
         _ -> Nothing
-      overrides = mapMaybe isOverride enemyModifiers
+      overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
       enemyFilters = mapMaybe
         (\case
           CannotFight m -> Just m

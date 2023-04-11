@@ -72,6 +72,7 @@ import Arkham.Event.Events
   , oneTwoPunchEffect
   , pilfer3Effect
   , slipAwayEffect
+  , telescopicSight3Effect
   , willToSurviveEffect
   , vantagePointEffect
   )
@@ -264,6 +265,7 @@ allEffects = mapFromList
   , ("05158", SomeEffect sixthSenseEffect)
   , ("05194", SomeEffect grislyTotemSeeker3Effect)
   , ("05195", SomeEffect grislyTotemSurvivor3Effect)
+  , ("05230", SomeEffect telescopicSight3Effect)
   , ("05321", SomeEffect wither4Effect)
   , ("05322", SomeEffect sixthSense4Effect)
   , ("06279", SomeEffect oldBookOfLore3Effect)

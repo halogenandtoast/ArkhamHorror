@@ -57,7 +57,7 @@ toLocation (Window _ (Window.DiscoveringLastClue _ lid) : _) = lid
 toLocation (_ : xs) = toLocation xs
 
 instance RunMessage HawkEyeFoldingCamera where
-  runMessage msg a@(HawkEyeFoldingCamera (attrs `With` meta)) = case msg of
+  runMessage msg (HawkEyeFoldingCamera (attrs `With` meta)) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (toLocation -> lid) _ -> do
       push $ PlaceResources (toTarget attrs) 1
       pure $ HawkEyeFoldingCamera (attrs `with` Metadata (lid : locations meta))

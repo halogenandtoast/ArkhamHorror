@@ -293,6 +293,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , ineffableTruth3
   , ineffableTruth5
   , innocentReveler
+  , investments
   , inTheKnow1
   , jakeWilliams
   , jennysTwin45s
@@ -2972,12 +2973,19 @@ theCouncilsCoffer2 = (asset "05196" ("The Council's Coffer" <:> "What's in the B
 
 
 esotericAtlas1 :: CardDef
-esotericAtlas1 = (asset "05232" "Esoteric Atlas" 2 Seeker )
+esotericAtlas1 = (asset "05232" "Esoteric Atlas" 2 Seeker)
   { cdSkills = [#agility]
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
   , cdUses = uses Secret 4
   , cdLevel = 2
+  }
+
+investments :: CardDef
+investments = (asset "05233" "Investments" 1 Rogue)
+  { cdSkills = [#intellect]
+  , cdCardTraits = singleton Connection
+  , cdUses = UsesWithLimit Supply (Static 0) (Static 10)
   }
 
 studious3 :: CardDef

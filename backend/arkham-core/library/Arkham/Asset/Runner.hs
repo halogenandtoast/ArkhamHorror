@@ -125,6 +125,8 @@ instance RunMessage AssetAttrs where
     AddUses aid useType' n | aid == assetId -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
+      UsesWithLimit useType'' m  l | useType' == useType'' ->
+        pure $ a & usesL .~ UsesWithLimit useType' (min (n + m) l) l
       _ -> error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
     SpendUses target useType' n | isTarget a target -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
@@ -165,6 +167,8 @@ instance RunMessage AssetAttrs where
       let
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
+        applyModifier (UsesWithLimit uType m l) (AdditionalStartingUses n) =
+          UsesWithLimit uType (min l (n + m)) l
         applyModifier m _ = m
       whenEnterMsg <- checkWindows
         [Window Timing.When (Window.EnterPlay $ toTarget a)]

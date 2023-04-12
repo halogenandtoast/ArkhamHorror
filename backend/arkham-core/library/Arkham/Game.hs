@@ -19,7 +19,7 @@ import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Asset
 import Arkham.Asset.Types ( Asset, AssetAttrs (..), Field (..) )
-import Arkham.Asset.Uses ( useCount, useType )
+import Arkham.Asset.Uses ( useCount, useType, Uses(..) )
 import Arkham.Attack
 import Arkham.Campaign
 import Arkham.Campaign.Types hiding ( campaign, modifiersL )
@@ -1538,6 +1538,12 @@ getAssetsMatching matcher = do
       modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `elem` modifiers'
     AssetMatches ms -> foldM filterMatcher as ms
+    AssetNotAtUseLimit -> 
+      let
+        atUseLimit (UsesWithLimit _ a b) = a >= b
+        atUseLimit (Uses{}) = False
+        atUseLimit (NoUses{}) = True
+      in pure $ filter (atUseLimit . assetUses . toAttrs) as
     AssetWithUseType uType -> filterM
       (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)
       as

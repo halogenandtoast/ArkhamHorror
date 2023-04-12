@@ -326,6 +326,7 @@ allEvents = mapFrom
   , SomeEventCard denyExistence5
   --- survivor [icc]
   , SomeEventCard trialByFire
+  , SomeEventCard baitAndSwitch3
   -- Before the Black Throne
   --- guardian [bbt]
   , SomeEventCard soothingMelody

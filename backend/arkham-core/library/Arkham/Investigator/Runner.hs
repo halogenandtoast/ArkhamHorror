@@ -803,18 +803,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   -- TODO: WARNING: HERE BE DRAGONS
   ChooseEvadeEnemy iid source mTarget skillType enemyMatcher isAction
     | iid == investigatorId -> do
-      enemyIds <- selectList (CanEvadeEnemy <> enemyMatcher)
-      a <$ push
-        (chooseOne
-          iid
-          [ EvadeLabel
-              eid
-              [ ChosenEvadeEnemy source eid
-              , EvadeEnemy iid eid source mTarget skillType isAction
-              ]
-          | eid <- enemyIds
-          ]
-        )
+      modifiers <- getModifiers (InvestigatorTarget iid)
+      let
+        isOverride = \case
+          EnemyEvadeActionCriteria override -> Just override
+          CanModify (EnemyEvadeActionCriteria override) -> Just override
+          _ -> Nothing
+        overrides = mapMaybe isOverride modifiers
+        applyMatcherModifiers :: ModifierType -> EnemyMatcher -> EnemyMatcher
+        applyMatcherModifiers (Modifier.AlternateEvadeField someField) original = case someField of
+          SomeField Field.EnemyEvade -> original <> EnemyWithEvade
+          _ -> original
+        applyMatcherModifiers _ n = n
+        canEvadeMatcher = case overrides of
+          [] -> CanEvadeEnemy source
+          [o] -> CanEvadeEnemyWithOverride o
+          _ -> error "multiple overrides found"
+      enemyIds <- selectList $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher) modifiers
+      push $ chooseOne
+        iid
+        [ EvadeLabel eid [EvadeEnemy iid eid source mTarget skillType isAction]
+        | eid <- enemyIds
+        ]
+      pure a
   EvadeEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <- checkWindows

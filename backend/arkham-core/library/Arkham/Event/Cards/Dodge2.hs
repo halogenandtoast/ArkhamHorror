@@ -1,4 +1,4 @@
-module Arkham.Event.Cards.Dodge2 where
+module Arkham.Event.Cards.Dodge2 (dodge2, Dodge2) where
 
 import Arkham.Prelude
 

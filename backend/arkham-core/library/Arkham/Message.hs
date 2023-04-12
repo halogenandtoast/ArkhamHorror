@@ -573,6 +573,7 @@ data Message
   | ResignWith Target
   | ResolveAmounts InvestigatorId [(Text, Int)] Target
   | ResolveEvent InvestigatorId EventId (Maybe Target) [Window]
+  | ResolveEventChoice InvestigatorId EventId Int (Maybe Target) [Window]
   | ResolveSkill SkillId
   | ResolveToken Token TokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
   | ReturnSkillTestRevealedTokens

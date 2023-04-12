@@ -240,7 +240,18 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
                 _ -> error "multiple overrides found"
           Action.Evade -> case abilitySource of
             EnemySource _ -> pure True
-            _ -> notNull <$> select Matcher.CanEvadeEnemy
+            _ -> do
+              modifiers <- getModifiers (AbilityTarget iid ab)
+              let
+                isOverride = \case
+                  EnemyEvadeActionCriteria override -> Just override
+                  CanModify (EnemyEvadeActionCriteria override) -> Just override
+                  _ -> Nothing
+                overrides = mapMaybe isOverride modifiers
+              case overrides of
+                [] -> notNull <$> select (Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex)
+                [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
+                _ -> error "multiple overrides found"
           Action.Engage -> case abilitySource of
             EnemySource _ -> pure True
             _ -> notNull <$> select Matcher.CanEngageEnemy

@@ -198,8 +198,9 @@ data EnemyMatcher
   | EnemyWithCardId CardId
   | AnyEnemy
   | CanFightEnemy Source
+  | CanEvadeEnemy Source
   | CanFightEnemyWithOverride CriteriaOverride
-  | CanEvadeEnemy
+  | CanEvadeEnemyWithOverride CriteriaOverride
   | CanEngageEnemy
   | ReadyEnemy
   | ExhaustedEnemy

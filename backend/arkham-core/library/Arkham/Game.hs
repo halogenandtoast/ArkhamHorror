@@ -1964,10 +1964,21 @@ enemyMatcherFilter = \case
           ]
         )
         (getAbilities enemy)
-  CanEvadeEnemy -> \enemy -> do
+  CanEvadeEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)
+    enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
+    sourceModifiers <- case source of
+      AbilitySource abSource idx -> do
+        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+        foldMapM (getModifiers  . AbilityTarget iid) abilities
+      _ -> pure []
     let
+      isOverride = \case
+        EnemyEvadeActionCriteria override -> Just override
+        CanModify (EnemyEvadeActionCriteria override) -> Just override
+        _ -> Nothing
+      overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
       enemyFilters = mapMaybe
         (\case
           CannotEvade m -> Just m
@@ -1975,9 +1986,12 @@ enemyMatcherFilter = \case
         )
         modifiers'
       window = Window Timing.When (Window.DuringTurn iid)
-    excluded <- if null enemyFilters
-      then pure False
-      else member (toId enemy) <$> select (mconcat enemyFilters)
+      overrideFunc = case overrides of
+        [] -> id
+        [o] -> overrideAbilityCriteria o
+        _ -> error "multiple overrides found"
+    excluded <- member (toId enemy)
+      <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
     if excluded
       then pure False
       else anyM
@@ -1985,6 +1999,33 @@ enemyMatcherFilter = \case
           [ pure . (`abilityIs` Action.Evade)
           , getCanPerformAbility iid (InvestigatorSource iid) window
             . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+            . overrideFunc
+          ]
+        )
+        (getAbilities enemy)
+  CanEvadeEnemyWithOverride override -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    modifiers' <- getModifiers (EnemyTarget $ toId enemy)
+    let
+      enemyFilters = mapMaybe
+        (\case
+          CannotEvade m -> Just m
+          _ -> Nothing
+        )
+        modifiers'
+      window = Window Timing.When Window.NonFast
+    excluded <- member (toId enemy)
+      <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
+    if excluded
+      then pure False
+      else anyM
+        (andM . sequence
+          [ pure . (`abilityIs` Action.Evade)
+          , -- Because ChooseEvadeEnemy happens after taking a fight action we
+            -- need to decrement the action cost
+            getCanPerformAbility iid (InvestigatorSource iid) window
+          . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+          . overrideAbilityCriteria override
           ]
         )
         (getAbilities enemy)

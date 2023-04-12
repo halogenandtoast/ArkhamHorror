@@ -166,6 +166,7 @@ data ModifierType
   | EnemyFightWithMin Int (Min Int)
   | AsIfEnemyFight Int
   | AlternateFightField (SomeField Enemy)
+  | AlternateEvadeField (SomeField Enemy)
   | CountsAsInvestigatorForHunterEnemies
   | FailTies
   | FewerSlots SlotType Int
@@ -229,6 +230,7 @@ data ModifierType
   | GainVictory Int
   | InVictoryDisplayForCountingVengeance
   | EnemyFightActionCriteria CriteriaOverride
+  | EnemyEvadeActionCriteria CriteriaOverride
   | CanPlayWithOverride CriteriaOverride
   | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
   | IgnoreLimit

@@ -95,6 +95,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , backstab3
   , banish1
   , baitAndSwitch
+  , baitAndSwitch3
   , barricade
   , barricade3
   , bellyOfTheBeast
@@ -1736,7 +1737,7 @@ banish1 = (event "05113" "Banish" 2 Mystic)
   , cdCardTraits = singleton Spell
   , cdActions = [Action.Evade]
   , cdLevel = 1
-  , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ NonEliteEnemy <> CanEvadeEnemy
+  , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ NonEliteEnemy <> CanEvadeEnemy ThisCard
   }
 
 wellMaintained1 :: CardDef
@@ -1835,6 +1836,27 @@ trialByFire = (event "05281" "Trial by Fire" 3 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
+  }
+
+baitAndSwitch3 :: CardDef
+baitAndSwitch3 = (event "05282" "Bait and Switch" 1 Survivor)
+  { cdSkills = [#intellect, #agility, #agility]
+  , cdCardTraits = setFromList [Trick]
+  , cdActions = [Action.Evade]
+  , cdLevel = 3
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyOneOf
+         [ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
+         , CanEvadeEnemyWithOverride
+           $ Criteria.CriteriaOverride
+           $ Criteria.EnemyCriteria
+           $ Criteria.EnemyExists
+           $ EnemyAt (ConnectedFrom YourLocation) <> NonEliteEnemy
+         ]
+  , cdOverrideActionPlayableIfCriteriaMet = True
   }
 
 soothingMelody :: CardDef

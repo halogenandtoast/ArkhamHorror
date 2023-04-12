@@ -329,9 +329,12 @@ allEvents = mapFrom
   -- Before the Black Throne
   --- guardian [bbt]
   , SomeEventCard soothingMelody
+  , SomeEventCard iveHadWorse2
   --- seeker [bbt]
   , SomeEventCard bloodRite
+  , SomeEventCard glimpseTheUnthinkable5
   --- survivor [bbt]
+  , SomeEventCard lure2
   , SomeEventCard eucatastrophe3
   -- The Dream-Eaters
   --- seeker [tde]

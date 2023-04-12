@@ -1078,6 +1078,7 @@ library
       Arkham.Event.Cards.GetOverHere
       Arkham.Event.Cards.GetOverHere2
       Arkham.Event.Cards.GlimpseTheUnthinkable1
+      Arkham.Event.Cards.GlimpseTheUnthinkable5
       Arkham.Event.Cards.Glory
       Arkham.Event.Cards.GritYourTeeth
       Arkham.Event.Cards.Guidance
@@ -1099,6 +1100,7 @@ library
       Arkham.Event.Cards.Interrogate
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
+      Arkham.Event.Cards.IveHadWorse2
       Arkham.Event.Cards.IveHadWorse4
       Arkham.Event.Cards.KnowledgeIsPower
       Arkham.Event.Cards.LessonLearned2
@@ -1112,6 +1114,7 @@ library
       Arkham.Event.Cards.Lucky2
       Arkham.Event.Cards.Lucky3
       Arkham.Event.Cards.Lure1
+      Arkham.Event.Cards.Lure2
       Arkham.Event.Cards.ManoAMano1
       Arkham.Event.Cards.ManoAMano2
       Arkham.Event.Cards.Marksmanship1

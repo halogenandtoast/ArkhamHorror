@@ -513,7 +513,7 @@ southsideHistoricalSociety = location
   ("Southside" <:> "Historical Society")
   [Arkham]
   Square
-  [Triangle, Plus, Circle]
+  [Diamond, Plus, Circle]
   TheMidnightMasks
 
 southsideMasBoardingHouse :: CardDef
@@ -522,7 +522,7 @@ southsideMasBoardingHouse = location
   ("Southside" <:> "Ma's Boarding House")
   [Arkham]
   Square
-  [Triangle, Plus, Circle]
+  [Diamond, Plus, Circle]
   TheMidnightMasks
 
 stMarysHospital :: CardDef

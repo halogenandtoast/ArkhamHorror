@@ -397,9 +397,8 @@ instance RunMessage EnemyAttrs where
           -- who qualify as prey to filter
           prey <- getPreyMatcher a
           matchingClosestLocationIds <- case (forcedTargetLocation, prey) of
-            (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
-              -- map unClosestPathLocationId <$> getSetList
-              --   (loc, forcedTargetLocationId, extraConnectionsMap)
+            (Just forcedTargetLocationId, _) -> -- Lure (1)
+              selectList $ ClosestPathLocation loc forcedTargetLocationId
             (Nothing, BearerOf _) ->
               selectList $ locationWithInvestigator $ fromJustNote
                 "must have bearer"

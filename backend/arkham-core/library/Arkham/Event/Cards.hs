@@ -171,6 +171,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , getOverHere
   , getOverHere2
   , glimpseTheUnthinkable1
+  , glimpseTheUnthinkable5
   , glory
   , gritYourTeeth
   , guidance
@@ -192,6 +193,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , interrogate
   , iveGotAPlan
   , iveGotAPlan2
+  , iveHadWorse2
   , iveHadWorse4
   , knowledgeIsPower
   , lessonLearned2
@@ -205,6 +207,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , lucky2
   , lucky3
   , lure1
+  , lure2
   , manoAMano1
   , manoAMano2
   , marksmanship1
@@ -1847,11 +1850,36 @@ soothingMelody = (event "05314" "Soothing Melody" 0 Guardian)
     ]
   }
 
+iveHadWorse2 :: CardDef
+iveHadWorse2 = (event "05315" "\"I've had worse…\"" 0 Guardian)
+  { cdSkills = [#willpower, #agility]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just
+    (DealtDamageOrHorror Timing.When (SourceIsCancelable AnySource) You)
+  , cdLevel = 2
+  }
+
 bloodRite :: CardDef
 bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [#willpower, #intellect, #combat]
   , cdCardTraits = singleton Spell
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  }
+
+glimpseTheUnthinkable5 :: CardDef
+glimpseTheUnthinkable5 = (event "05318" "Glimpse the Unthinkable" 1 Seeker)
+  { cdSkills = [#intellect, #intellect, #intellect]
+  , cdCardTraits = singleton Insight
+  , cdLevel = 5
+  , cdCriteria = Just
+    $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
+  }
+
+lure2 :: CardDef
+lure2 = (event "05323" "Lure" 1 Survivor)
+  { cdSkills = [#agility, #agility]
+  , cdCardTraits = singleton Trick
+  , cdLevel = 2
   }
 
 eucatastrophe3 :: CardDef

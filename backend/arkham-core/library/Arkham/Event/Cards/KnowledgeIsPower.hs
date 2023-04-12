@@ -54,6 +54,9 @@ instance RunMessage KnowledgeIsPower where
         (filterM (`extendedCardMatch` cardMatcher))
         iid
 
+      canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
+      drawing <- drawCards iid attrs 1
+
       push
         $ chooseOne iid
         $ [ targetLabel
@@ -63,13 +66,21 @@ instance RunMessage KnowledgeIsPower where
           ]
         <> [ targetLabel
                (toCardId card)
-               [ AddCardEntity card
-               , HandleTargetChoice
-                 iid
-                 (toSource attrs)
-                 (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-               , RemoveCardEntity card
-               ]
+               $ [ AddCardEntity card
+                 , HandleTargetChoice
+                   iid
+                   (toSource attrs)
+                   (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+                 , RemoveCardEntity card
+                 ]
+                 <> [ chooseOne iid
+                      [ Label
+                        "Discard to draw 1 card"
+                        [DiscardCard iid (toSource attrs) (toCardId card) , drawing]
+                      , Label "Do not discard" []
+                      ]
+                    | canDraw
+                    ]
            | card <- cards
            ]
       pure e

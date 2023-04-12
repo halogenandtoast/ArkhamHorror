@@ -219,6 +219,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , enchantedBladeMystic3
   , encyclopedia
   , encyclopedia2
+  , esotericAtlas1
   , esotericAtlas2
   , esotericFormula
   , expeditionJournal
@@ -2967,6 +2968,16 @@ theCouncilsCoffer2 = (asset "05196" ("The Council's Coffer" <:> "What's in the B
   , cdLevel = 2
   , cdUses = Uses Lock (PerPlayer 1)
   , cdUnique = True
+  }
+
+
+esotericAtlas1 :: CardDef
+esotericAtlas1 = (asset "05232" "Esoteric Atlas" 2 Seeker )
+  { cdSkills = [#agility]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdUses = uses Secret 4
+  , cdLevel = 2
   }
 
 studious3 :: CardDef

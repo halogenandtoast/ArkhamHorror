@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -423,6 +423,7 @@ library
       Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
       Arkham.Asset.Cards.GuardDog2
+      Arkham.Asset.Cards.HallowedMirror
       Arkham.Asset.Cards.Handcuffs
       Arkham.Asset.Cards.Handcuffs2
       Arkham.Asset.Cards.HardKnocks
@@ -1166,6 +1167,7 @@ library
       Arkham.Event.Cards.SneakAttack
       Arkham.Event.Cards.SneakAttack2
       Arkham.Event.Cards.SneakBy
+      Arkham.Event.Cards.SoothingMelody
       Arkham.Event.Cards.StandTogether
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.StormOfSpirits

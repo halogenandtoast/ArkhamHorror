@@ -493,6 +493,8 @@ allAssets = mapFrom
   --- seeker [icc]
   , SomeAssetCard studious3
   -- Before the Black Throne
+  --- guardian [bbt]
+  , SomeAssetCard hallowedMirror
   --- seeker [bbt]
   , SomeAssetCard occultLexicon
   --- mystic [bbt]

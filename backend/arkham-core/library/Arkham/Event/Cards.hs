@@ -260,6 +260,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , sneakAttack
   , sneakAttack2
   , sneakBy
+  , soothingMelody
   , standTogether
   , standTogether3
   , stormOfSpirits
@@ -1831,6 +1832,19 @@ trialByFire = (event "05281" "Trial by Fire" 3 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
+  }
+
+soothingMelody :: CardDef
+soothingMelody = (event "05314" "Soothing Melody" 0 Guardian)
+  { cdSkills = [#willpower, #intellect, #agility]
+  , cdCardTraits = singleton Spell
+  , cdCriteria = Just $ Criteria.AnyCriterion
+    [ Criteria.InvestigatorExists (HealableInvestigator ThisCard DamageType $ InvestigatorAt YourLocation)
+    , Criteria.InvestigatorExists (HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation)
+    , Criteria.AssetExists (HealableAsset ThisCard DamageType $ AssetAt YourLocation <> AllyAsset)
+    , Criteria.AssetExists (HealableAsset ThisCard HorrorType $ AssetAt YourLocation <> AllyAsset)
+    , Criteria.CanDrawCards
+    ]
   }
 
 bloodRite :: CardDef

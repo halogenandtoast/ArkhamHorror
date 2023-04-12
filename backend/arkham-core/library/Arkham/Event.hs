@@ -327,6 +327,8 @@ allEvents = mapFrom
   --- survivor [icc]
   , SomeEventCard trialByFire
   -- Before the Black Throne
+  --- guardian [bbt]
+  , SomeEventCard soothingMelody
   --- seeker [bbt]
   , SomeEventCard bloodRite
   --- survivor [bbt]

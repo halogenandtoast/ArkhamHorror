@@ -268,6 +268,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grounded1
   , guardDog
   , guardDog2
+  , hallowedMirror
   , handcuffs
   , handcuffs2
   , harlanEarnstone
@@ -2972,6 +2973,13 @@ studious3 :: CardDef
 studious3 = permanent $ (asset "05276" "Studious" 0 Seeker)
   { cdCardTraits = singleton Talent
   , cdLevel = 3
+  }
+
+hallowedMirror :: CardDef
+hallowedMirror = (asset "05313" "Hallowed Mirror" 2 Guardian)
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Item, Relic, Occult, Blessed]
+  , cdSlots = [AccessorySlot]
   }
 
 occultLexicon :: CardDef

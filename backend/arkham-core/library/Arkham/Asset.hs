@@ -489,6 +489,9 @@ allAssets = mapFrom
   , SomeAssetCard grislyTotemSurvivor3
   --- neutral [fgg]
   , SomeAssetCard theCouncilsCoffer2
+  -- Union and Disillusion
+  --- seeker [uad]
+  , SomeAssetCard esotericAtlas1
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

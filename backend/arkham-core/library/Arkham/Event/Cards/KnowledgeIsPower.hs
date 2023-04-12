@@ -64,23 +64,25 @@ instance RunMessage KnowledgeIsPower where
               [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)]
           | asset <- assets
           ]
-        <> [ targetLabel
-               (toCardId card)
-               $ [ AddCardEntity card
-                 , HandleTargetChoice
-                   iid
-                   (toSource attrs)
-                   (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-                 , RemoveCardEntity card
-                 ]
-                 <> [ chooseOne iid
-                      [ Label
-                        "Discard to draw 1 card"
-                        [DiscardCard iid (toSource attrs) (toCardId card) , drawing]
-                      , Label "Do not discard" []
+        <> [ targetLabel (toCardId card)
+             $ [ AddCardEntity card
+               , HandleTargetChoice
+                 iid
+                 (toSource attrs)
+                 (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+               , RemoveCardEntity card
+               ]
+             <> [ chooseOne
+                    iid
+                    [ Label
+                      "Discard to draw 1 card"
+                      [ DiscardCard iid (toSource attrs) (toCardId card)
+                      , drawing
                       ]
-                    | canDraw
+                    , Label "Do not discard" []
                     ]
+                | canDraw
+                ]
            | card <- cards
            ]
       pure e

@@ -31,7 +31,7 @@ instance RunMessage Contraband where
         $ InvestigatorWithId iid
 
       ammoAssets <- selectList
-        (AssetWithUseType Ammo <> AssetOneOf
+        (AssetWithUseType Ammo <> AssetNotAtUseLimit <> AssetOneOf
           (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
 
@@ -40,7 +40,7 @@ instance RunMessage Contraband where
         (\aid -> (, aid) . useCount <$> field AssetUses aid)
 
       supplyAssets <- selectList
-        (AssetWithUseType Supply <> AssetOneOf
+        (AssetWithUseType Supply <> AssetNotAtUseLimit <> AssetOneOf
           (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
 

@@ -492,6 +492,8 @@ allAssets = mapFrom
   -- Union and Disillusion
   --- seeker [uad]
   , SomeAssetCard esotericAtlas1
+  --- rogue [uad]
+  , SomeAssetCard investments
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

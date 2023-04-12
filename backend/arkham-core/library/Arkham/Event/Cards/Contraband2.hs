@@ -30,11 +30,11 @@ instance RunMessage Contraband2 where
         $ InvestigatorWithId iid
 
       ammoAssets <-
-        selectWithField AssetUses $ AssetWithUseType Ammo <> AssetOneOf
+        selectWithField AssetUses $ AssetWithUseType Ammo <> AssetNotAtUseLimit <> AssetOneOf
           (map assetControlledBy investigatorIds)
 
       supplyAssets <-
-        selectWithField AssetUses $ AssetWithUseType Supply <> AssetOneOf
+        selectWithField AssetUses $ AssetWithUseType Supply <> AssetNotAtUseLimit <> AssetOneOf
           (map assetControlledBy investigatorIds)
 
       let

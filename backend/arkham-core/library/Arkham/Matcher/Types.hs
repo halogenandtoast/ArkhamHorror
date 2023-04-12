@@ -132,6 +132,7 @@ data AssetMatcher
   | AssetCanLeavePlayByNormalMeans
   | AssetWithModifier ModifierType
   | AssetWithoutModifier ModifierType
+  | AssetNotAtUseLimit
   | AssetWithUseType UseType
   | AssetWithUses UseType
   | AssetWithUseCount UseType Int

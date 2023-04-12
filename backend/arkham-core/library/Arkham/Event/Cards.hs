@@ -681,6 +681,7 @@ contraband = (event "02109" "Contraband" 4 Rogue)
   , cdCriteria = Just $ Criteria.AssetExists
     (AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
+    <> AssetNotAtUseLimit
     )
   }
 
@@ -2017,6 +2018,7 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
   , cdLevel = 2
   , cdCriteria = Just $ Criteria.AssetExists
     (AssetControlledBy (InvestigatorAt YourLocation)
+    <> AssetNotAtUseLimit
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
   }

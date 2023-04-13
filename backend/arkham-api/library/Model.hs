@@ -14,3 +14,4 @@ import Entity.Arkham.Deck as X
 import Entity.Arkham.Game as X
 import Entity.Arkham.Player as X
 import Entity.User as X
+import Entity.PasswordReset as X

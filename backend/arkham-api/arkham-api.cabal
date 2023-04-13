@@ -34,6 +34,7 @@ library
       Auth.JWT
       Base.Api.Handler.Authentication
       Base.Api.Handler.CurrentUser
+      Base.Api.Handler.PasswordReset
       Base.Api.Handler.Registration
       Base.Api.Handler.Settings
       Base.Util
@@ -44,6 +45,7 @@ library
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
       Entity.Arkham.Step
+      Entity.PasswordReset
       Entity.User
       Foundation
       GHCI

@@ -4194,7 +4194,7 @@ runGameMessage msg g = case msg of
     pure g
   After (EndTurn _) ->
     pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
-  EndPhase -> do
+  After EndPhase -> do
     clearQueue
     case g ^. phaseL of
       MythosPhase -> pushEnd $ Begin InvestigationPhase
@@ -4208,7 +4208,7 @@ runGameMessage msg g = case msg of
       & (roundHistoryL %~ (<> view phaseHistoryL g))
       & (phaseHistoryL %~ mempty)
   EndInvestigation -> do
-    pushAll . (: [EndPhase]) =<< checkWindows
+    pushAll . (: [EndPhase, After EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds InvestigationPhase)]
     pure
       $ g
@@ -4242,7 +4242,7 @@ runGameMessage msg g = case msg of
       }
     pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
   EndEnemy -> do
-    pushAll . (: [EndPhase]) =<< checkWindows
+    pushAll . (: [EndPhase, After EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds EnemyPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   Begin UpkeepPhase -> do
@@ -4261,7 +4261,7 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & phaseL .~ UpkeepPhase
   EndUpkeep -> do
-    pushAll . (: [EndPhase]) =<< checkWindows
+    pushAll . (: [EndPhase, After EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds UpkeepPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
@@ -4314,7 +4314,7 @@ runGameMessage msg g = case msg of
       <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
     pure g
   EndMythos -> do
-    pushAll . (: [EndPhase]) =<< checkWindows
+    pushAll . (: [EndPhase, After EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   BeginSkillTest skillTest -> do

@@ -3,6 +3,9 @@
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
     /register ApiV1RegistrationR POST
+    /password-reset ApiV1PasswordResetP:
+      / ApiV1PasswordResetsR POST
+      /#PasswordResetId ApiV1PasswordResetR PUT
     /whoami ApiV1CurrentUserR GET
     /settings ApiV1SettingsR PUT
     /arkham ApiV1ArkhamP:

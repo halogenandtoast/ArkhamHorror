@@ -67,8 +67,9 @@ import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
-import Base.Api.Handler.Settings
+import Base.Api.Handler.PasswordReset
 import Base.Api.Handler.Registration
+import Base.Api.Handler.Settings
 import Data.List (lookup)
 import Handler.Health
 

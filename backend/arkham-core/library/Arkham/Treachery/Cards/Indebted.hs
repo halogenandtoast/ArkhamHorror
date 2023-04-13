@@ -21,8 +21,9 @@ indebted = treachery Indebted Cards.indebted
 
 instance HasModifiersFor Indebted where
   getModifiersFor (InvestigatorTarget iid) (Indebted attrs) =
-    pure $ toModifiers
+    pure $ toModifiersWith
       attrs
+      setActiveDuringSetup
       [ StartingResources (-2) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ = pure []
 

@@ -534,7 +534,10 @@ instance RunMessage ActiveCost where
             mAction = case activeCostTarget c of
               ForAbility a -> abilityAction a
               _ -> Nothing
-          push (SpendActions iid source mAction modifiedActionCost)
+            source' = case activeCostTarget c of
+              ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
+              _ -> source
+          push (SpendActions iid source' mAction modifiedActionCost)
           withPayment $ ActionPayment x
         UseCost assetMatcher uType n -> do
           assets <- selectList assetMatcher

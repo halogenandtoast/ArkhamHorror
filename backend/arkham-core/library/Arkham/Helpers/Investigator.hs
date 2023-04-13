@@ -418,7 +418,11 @@ getInvestigatorsWithHealHorror a n =
 additionalActionCovers
   :: HasGame m => Source -> Maybe Action -> AdditionalAction -> m Bool
 additionalActionCovers source maction = \case
-  TraitRestrictedAdditionalAction t _ -> member t <$> sourceTraits source
+  TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
+    NoRestriction -> member t <$> sourceTraits source
+    AbilitiesOnly -> case source of
+      AbilitySource{} -> member t <$> sourceTraits source
+      _ -> pure False
   ActionRestrictedAdditionalAction a -> pure $ maction == Just a
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True

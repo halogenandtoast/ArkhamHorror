@@ -9,6 +9,7 @@ import Arkham.EffectMetadata as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Target as X
 
+import Arkham.Card
 import Arkham.Classes.RunMessage
 import Arkham.Classes.HasQueue
 import Arkham.Source
@@ -34,6 +35,8 @@ instance RunMessage EffectAttrs where
     PaidCost {}| isEndOfWindow a EffectCostWindow ->
       a <$ push (DisableEffect effectId)
     PayCostFinished {} | isEndOfWindow a EffectCostWindow ->
+      a <$ push (DisableEffect effectId)
+    PlayCard _ card _ _ _ | isEndOfWindow a (EffectCardCostWindow $ toCardId card) ->
       a <$ push (DisableEffect effectId)
     After (PerformEnemyAttack {}) | isEndOfWindow a EffectAttackWindow ->
       a <$ push (DisableEffect effectId)

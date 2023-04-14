@@ -321,6 +321,8 @@ allEvents = mapFrom
   , SomeEventCard telescopicSight3
   --- seeker [uad]
   , SomeEventCard knowledgeIsPower
+  --- rogue [uad]
+  , SomeEventCard decoy
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

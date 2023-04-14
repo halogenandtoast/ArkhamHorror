@@ -496,6 +496,8 @@ allAssets = mapFrom
   , SomeAssetCard investments
   --- mystic [uad]
   , SomeAssetCard deVermisMysteriis2
+  --- survivor [uad]
+  , SomeAssetCard guidingSpirit1
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

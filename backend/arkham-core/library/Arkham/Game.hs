@@ -4800,11 +4800,11 @@ runGameMessage msg g = case msg of
     case mEvent of
       Nothing -> pure g
       Just event' -> do
-        modifiers' <- getModifiers (EventTarget eid)
+        card <- field EventCard eid
+        modifiers' <- liftA2 (<>) (getModifiers $ EventTarget eid) (getModifiers $ toCardId card)
         if RemoveFromGameInsteadOfDiscard `elem` modifiers'
           then g <$ push (RemoveFromGame (EventTarget eid))
           else do
-            card <- field EventCard eid
             case card of
               PlayerCard pc ->
                 if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'

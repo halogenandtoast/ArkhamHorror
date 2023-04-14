@@ -497,6 +497,8 @@ allAssets = mapFrom
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3
+  --- rogue [icc]
+  , SomeAssetCard anotherDayAnotherDollar3
   -- Before the Black Throne
   --- guardian [bbt]
   , SomeAssetCard hallowedMirror

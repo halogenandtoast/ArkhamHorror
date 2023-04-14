@@ -129,6 +129,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , ancientStone1
   , ancientStoneKnowledgeOfTheElders4
   , ancientStoneMindsInHarmony4
+  , anotherDayAnotherDollar3
   , aquinnah1
   , aquinnah3
   , arbiterOfFates
@@ -2990,6 +2991,12 @@ investments = (asset "05233" "Investments" 1 Rogue)
 
 studious3 :: CardDef
 studious3 = permanent $ (asset "05276" "Studious" 0 Seeker)
+  { cdCardTraits = singleton Talent
+  , cdLevel = 3
+  }
+
+anotherDayAnotherDollar3 :: CardDef
+anotherDayAnotherDollar3 = permanent $ (asset "05278" "Another Day, Another Dollar " 0 Rogue)
   { cdCardTraits = singleton Talent
   , cdLevel = 3
   }

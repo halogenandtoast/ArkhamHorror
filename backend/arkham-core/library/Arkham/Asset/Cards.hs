@@ -3004,6 +3004,7 @@ guidingSpirit1 = (asset "05236" "Guiding Spirit" 1 Survivor)
   { cdSkills = [#willpower]
   , cdCardTraits = setFromList [Ally, Geist]
   , cdSlots = [AllySlot]
+  , cdLevel = 1
   }
 
 studious3 :: CardDef

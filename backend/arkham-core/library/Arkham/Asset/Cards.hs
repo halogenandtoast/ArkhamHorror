@@ -200,6 +200,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , decoratedSkull
   , dejaVu5
   , detectivesColt1911s
+  , deVermisMysteriis2
   , digDeep
   , digDeep2
   , discOfItzamna
@@ -2987,6 +2988,14 @@ investments = (asset "05233" "Investments" 1 Rogue)
   { cdSkills = [#intellect]
   , cdCardTraits = singleton Connection
   , cdUses = UsesWithLimit Supply (Static 0) (Static 10)
+  }
+
+deVermisMysteriis2 :: CardDef
+deVermisMysteriis2 = (asset "05235" ("De Vermis Mysteriis" <:> "Signs of the Black Stars") 2 Mystic)
+  { cdSkills = [#intellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdSlots = [HandSlot]
+  , cdUnique = True
   }
 
 studious3 :: CardDef

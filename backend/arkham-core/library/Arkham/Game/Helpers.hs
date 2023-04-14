@@ -917,7 +917,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
 
     canAffordAdditionalCosts <- allM
       (getCanAffordCost iid (CardSource c) Nothing windows')
-      ([ ActionCost 1 | not inFastWindow && costStatus /= PaidCost ]
+      ([ ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]
       <> additionalCosts
       <> sealedTokenCost
       )

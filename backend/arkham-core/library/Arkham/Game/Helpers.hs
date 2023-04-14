@@ -915,6 +915,9 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
           if costStatus == PaidCost then Nothing else Just $ SealCost matcher
         _ -> Nothing
 
+    -- Warning: We check if the source is GameSource, this affects the
+    -- PlayableCardWithCostReduction matcher currently only used by Dexter
+    -- Drake and De Vermis Mysteriis (2) which are non-action situations
     canAffordAdditionalCosts <- allM
       (getCanAffordCost iid (CardSource c) Nothing windows')
       ([ ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]

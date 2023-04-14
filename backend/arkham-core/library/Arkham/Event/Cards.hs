@@ -133,6 +133,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , darkPact
   , darkProphecy
   , decipheredReality5
+  , decoy
   , delayTheInevitable
   , delveTooDeep
   , denyExistence
@@ -1814,6 +1815,27 @@ knowledgeIsPower = (event "05231" "Knowledge is Power" 0 Seeker)
          (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
          [IgnoreAllCosts]
     ]
+  }
+
+decoy :: CardDef
+decoy = (event "05234" "Decoy" 2 Rogue)
+  { cdSkills = [#agility, #agility]
+  , cdCardTraits = setFromList [Favor, Service]
+  , cdActions = [Action.Evade]
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyOneOf
+         [ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
+         , CanEvadeEnemyWithOverride
+           $ Criteria.CriteriaOverride
+           $ Criteria.EnemyCriteria
+           $ Criteria.EnemyExists
+           $ EnemyOneOf [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1..2]] <> NonEliteEnemy
+         ]
+  , cdOverrideActionPlayableIfCriteriaMet = True
+  , cdCardInHandEffects = True
   }
 
 denyExistence5 :: CardDef

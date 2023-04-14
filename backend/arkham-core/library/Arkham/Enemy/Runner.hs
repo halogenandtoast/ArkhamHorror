@@ -551,7 +551,7 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemyEvaded iid eid | eid == enemyId -> do
       modifiers <- getModifiers (InvestigatorTarget iid)
-      lid <- getJustLocation iid
+      lid <- fieldJust EnemyLocation eid
       let
         updatePlacement = if DoNotDisengageEvaded `elem` modifiers
           then id

@@ -3,6 +3,7 @@ module Arkham.Effect.Window
   ) where
 
 import Arkham.Prelude
+import Arkham.Card.Id
 
 data EffectWindow
   = EffectPhaseWindow
@@ -16,5 +17,6 @@ data EffectWindow
   | FirstEffectWindow [EffectWindow]
   | EffectEventWindow
   | EffectAbilityWindow
+  | EffectCardCostWindow CardId
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

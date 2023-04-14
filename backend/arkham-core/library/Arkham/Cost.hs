@@ -54,6 +54,13 @@ increaseActionCost (Costs (a : as)) y = case a of
   _ -> a <> increaseActionCost (Costs as) y
 increaseActionCost other _ = other
 
+increaseResourceCost :: Cost -> Int -> Cost
+increaseResourceCost (ResourceCost x) y = ResourceCost $ max 0 (x + y)
+increaseResourceCost (Costs (a : as)) y = case a of
+  ResourceCost x -> Costs (ResourceCost (x + y) : as)
+  _ -> a <> increaseResourceCost (Costs as) y
+increaseResourceCost other _ = other
+
 data Payment
   = ActionPayment Int
   | AdditionalActionPayment

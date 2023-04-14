@@ -300,7 +300,7 @@ instance RunMessage ActiveCost where
           push $ DiscardTopOfDeck iid n source Nothing
           withPayment $ DiscardCardPayment cards
         IncreaseCostOfThis cardId n -> do
-          push $ CreateWindowModifierEffect EffectCostWindow (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n]) source (toTarget cardId)
+          push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n]) source (toTarget cardId)
           pure c
         ExhaustCost target -> do
           push (Exhaust target)

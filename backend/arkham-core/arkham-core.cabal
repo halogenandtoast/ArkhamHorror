@@ -1081,6 +1081,7 @@ library
       Arkham.Event.Cards.FirstWatch
       Arkham.Event.Cards.Flare1
       Arkham.Event.Cards.Forewarned1
+      Arkham.Event.Cards.FortuneOrFate2
       Arkham.Event.Cards.Galvanize1
       Arkham.Event.Cards.GetOverHere
       Arkham.Event.Cards.GetOverHere2

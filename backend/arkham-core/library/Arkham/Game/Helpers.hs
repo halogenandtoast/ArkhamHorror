@@ -2429,6 +2429,15 @@ targetMatches s = \case
   Matcher.TargetIs s' -> pure $ s == s'
   Matcher.AnyTarget -> pure True
   Matcher.TargetMatches ms -> allM (targetMatches s) ms
+  Matcher.ScenarioCardTarget -> case s of
+    EnemyTarget _ -> pure True
+    TreacheryTarget _ -> pure True
+    AgendaTarget _ -> pure True
+    ActTarget _ -> pure True
+    LocationTarget _ -> pure True
+    ProxyTarget proxyTarget _ -> targetMatches proxyTarget Matcher.ScenarioCardTarget
+    BothTarget left right -> orM [targetMatches left Matcher.ScenarioCardTarget, targetMatches right Matcher.ScenarioCardTarget]
+    _ -> pure False
 
 enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = member enemyId <$> select mtchr

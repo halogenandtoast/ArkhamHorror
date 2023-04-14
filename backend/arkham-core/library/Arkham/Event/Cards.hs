@@ -169,6 +169,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , firstWatch
   , flare1
   , forewarned1
+  , fortuneOrFate2
   , galvanize1
   , getOverHere
   , getOverHere2
@@ -1836,6 +1837,13 @@ decoy = (event "05234" "Decoy" 2 Rogue)
          ]
   , cdOverrideActionPlayableIfCriteriaMet = True
   , cdCardInHandEffects = True
+  }
+
+fortuneOrFate2 :: CardDef
+fortuneOrFate2 = (event "05237" "Fortune or Fate" 2 Survivor)
+  { cdSkills = [#wild]
+  , cdCardTraits = setFromList [Fortune, Blessed]
+  , cdFastWindow = Just $ PlacedDoomCounter Timing.When ScenarioCardTarget
   }
 
 denyExistence5 :: CardDef

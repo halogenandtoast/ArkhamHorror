@@ -693,6 +693,7 @@ data TargetMatcher
   | TargetMatchesAny [TargetMatcher]
   | AnyTarget
   | TargetMatches [TargetMatcher]
+  | ScenarioCardTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

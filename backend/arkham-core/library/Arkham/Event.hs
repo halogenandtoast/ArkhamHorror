@@ -323,6 +323,8 @@ allEvents = mapFrom
   , SomeEventCard knowledgeIsPower
   --- rogue [uad]
   , SomeEventCard decoy
+  --- survivor [uad]
+  , SomeEventCard fortuneOrFate2
   -- In the Clutches of Chaos
   --- mystic [icc]
   , SomeEventCard denyExistence5

@@ -271,6 +271,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , grounded1
   , guardDog
   , guardDog2
+  , guidingSpirit1
   , hallowedMirror
   , handcuffs
   , handcuffs2
@@ -2996,6 +2997,13 @@ deVermisMysteriis2 = (asset "05235" ("De Vermis Mysteriis" <:> "Signs of the Bla
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
   , cdUnique = True
+  }
+
+guidingSpirit1 :: CardDef
+guidingSpirit1 = (asset "05236" "Guiding Spirit" 1 Survivor)
+  { cdSkills = [#willpower]
+  , cdCardTraits = setFromList [Ally, Geist]
+  , cdSlots = [AllySlot]
   }
 
 studious3 :: CardDef

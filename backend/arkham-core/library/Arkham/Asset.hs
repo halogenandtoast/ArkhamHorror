@@ -494,6 +494,8 @@ allAssets = mapFrom
   , SomeAssetCard esotericAtlas1
   --- rogue [uad]
   , SomeAssetCard investments
+  --- mystic [uad]
+  , SomeAssetCard deVermisMysteriis2
   -- In the Clutches of Chaos
   --- seeker [icc]
   , SomeAssetCard studious3

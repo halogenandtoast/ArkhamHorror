@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -354,6 +354,7 @@ library
       Arkham.Asset.Cards.DecoratedSkull
       Arkham.Asset.Cards.DejaVu5
       Arkham.Asset.Cards.DetectivesColt1911s
+      Arkham.Asset.Cards.DeVermisMysteriis2
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
       Arkham.Asset.Cards.DiscOfItzamna

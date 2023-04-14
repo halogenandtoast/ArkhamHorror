@@ -75,8 +75,18 @@ instance RunMessage DeVermisMysteriis2 where
               )
               (toSource attrs)
               (toTarget $ toCardId card)
+            , CreateWindowModifierEffect
+              EffectAbilityWindow
+              (EffectModifiers $ toModifiers
+                (toSource attrs)
+                [ RemoveFromGameInsteadOfDiscard
+                ]
+              )
+              (toSource attrs)
+              (toTarget $ toCardId card)
             , AddToHand iid [card]
             , PayCardCost iid card windows''
+            , RemoveFromGame (CardIdTarget $ toCardId card)
             ]
         | card <- cards
         ]

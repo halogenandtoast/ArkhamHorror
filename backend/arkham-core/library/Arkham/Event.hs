@@ -326,6 +326,8 @@ allEvents = mapFrom
   --- survivor [uad]
   , SomeEventCard fortuneOrFate2
   -- In the Clutches of Chaos
+  --- seeker [uad]
+  , SomeEventCard ghastlyRevelation
   --- mystic [icc]
   , SomeEventCard denyExistence5
   --- survivor [icc]

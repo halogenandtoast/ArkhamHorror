@@ -120,6 +120,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , aceOfRods1
   , aceOfSwords1
   , adaptable1
+  , agencyBackup5
   , alchemicalTransmutation
   , alejandroVela
   , aliceLuxley
@@ -3014,6 +3015,14 @@ mk1Grenades4 = (asset "05273" "Mk 1 Grenades" 3 Guardian)
   , cdCardTraits = setFromList [Item, Weapon, Ranged]
   , cdUses = uses Supply 3
   , cdLevel = 4
+  }
+
+agencyBackup5 :: CardDef
+agencyBackup5 = (asset "05274" "Agency Backup" 7 Guardian)
+  { cdSkills = [#willpower, #intellect, #combat]
+  , cdCardTraits = setFromList [Item, Weapon, Ranged]
+  , cdLevel = 5
+  , cdSlots = [AllySlot]
   }
 
 studious3 :: CardDef

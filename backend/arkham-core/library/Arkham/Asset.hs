@@ -501,6 +501,7 @@ allAssets = mapFrom
   -- In the Clutches of Chaos
   --- guardian [icc]
   , SomeAssetCard mk1Grenades4
+  , SomeAssetCard agencyBackup5
   --- seeker [icc]
   , SomeAssetCard studious3
   --- rogue [icc]

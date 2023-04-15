@@ -262,6 +262,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , sleightOfHand
   , slipAway
   , slipAway2
+  , smallFavor
   , smuggledGoods
   , snareTrap2
   , sneakAttack
@@ -1824,18 +1825,22 @@ decoy = (event "05234" "Decoy" 2 Rogue)
   { cdSkills = [#agility, #agility]
   , cdCardTraits = setFromList [Favor, Service]
   , cdActions = [Action.Evade]
-  , cdCriteria =
-    Just
-    $ Criteria.EnemyCriteria
+  , cdCriteria = Just $ Criteria.AnyCriterion
+    [ Criteria.EnemyCriteria
     $ Criteria.EnemyExists
-    $ EnemyOneOf
-         [ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
-         , CanEvadeEnemyWithOverride
-           $ Criteria.CriteriaOverride
-           $ Criteria.EnemyCriteria
-           $ Criteria.EnemyExists
-           $ EnemyOneOf [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1..2]] <> NonEliteEnemy
-         ]
+    $ EnemyAt YourLocation
+    <> CanEvadeEnemy ThisCard
+    , Criteria.CanAffordCostIncrease 2 <> Criteria.EnemyCriteria
+      (Criteria.EnemyExists
+      $ CanEvadeEnemyWithOverride
+      $ Criteria.CriteriaOverride
+      $ Criteria.EnemyCriteria
+      $ Criteria.EnemyExists
+      $ EnemyOneOf
+          [ EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2] ]
+      <> NonEliteEnemy
+      )
+    ]
   , cdOverrideActionPlayableIfCriteriaMet = True
   , cdCardInHandEffects = True
   }
@@ -1852,6 +1857,24 @@ ghastlyRevelation = (event "05275" "Ghastly Revelation" 0 Seeker)
   { cdSkills = [#intellect, #intellect]
   , cdCardTraits = singleton Spirit
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  }
+
+smallFavor :: CardDef
+smallFavor = (event "05277" "Small Favor" 2 Rogue)
+  { cdSkills = [#combat, #combat]
+  , cdCardTraits = setFromList [Favor, Service]
+  , cdCriteria = Just $ Criteria.AnyCriterion
+    [ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt YourLocation
+    <> NonEliteEnemy
+    , Criteria.EnemyCriteria
+        (Criteria.EnemyExists $ EnemyOneOf
+          [ EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2] ]
+        )
+      <> Criteria.CanAffordCostIncrease 2
+    ]
+  , cdCardInHandEffects = True
   }
 
 denyExistence5 :: CardDef

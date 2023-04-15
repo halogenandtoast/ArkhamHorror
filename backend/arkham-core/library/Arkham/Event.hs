@@ -328,6 +328,8 @@ allEvents = mapFrom
   -- In the Clutches of Chaos
   --- seeker [uad]
   , SomeEventCard ghastlyRevelation
+  --- rogue [uad]
+  , SomeEventCard smallFavor
   --- mystic [icc]
   , SomeEventCard denyExistence5
   --- survivor [icc]

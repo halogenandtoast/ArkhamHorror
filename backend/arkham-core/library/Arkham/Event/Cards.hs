@@ -173,6 +173,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , galvanize1
   , getOverHere
   , getOverHere2
+  , ghastlyRevelation
   , glimpseTheUnthinkable1
   , glimpseTheUnthinkable5
   , glory
@@ -1844,6 +1845,13 @@ fortuneOrFate2 = (event "05237" "Fortune or Fate" 2 Survivor)
   { cdSkills = [#wild]
   , cdCardTraits = setFromList [Fortune, Blessed]
   , cdFastWindow = Just $ PlacedDoomCounter Timing.When ScenarioCardTarget
+  }
+
+ghastlyRevelation :: CardDef
+ghastlyRevelation = (event "05275" "Ghastly Revelation" 0 Seeker)
+  { cdSkills = [#intellect, #intellect]
+  , cdCardTraits = singleton Spirit
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
 denyExistence5 :: CardDef

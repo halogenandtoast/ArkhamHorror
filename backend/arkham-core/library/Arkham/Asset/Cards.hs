@@ -354,6 +354,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , mistsOfRlyeh2
   , mistsOfRlyeh4
   , mitchBrown
+  , mk1Grenades4
   , mollyMaxwell
   , monstrousTransformation
   , moxie1
@@ -3005,6 +3006,14 @@ guidingSpirit1 = (asset "05236" "Guiding Spirit" 1 Survivor)
   , cdCardTraits = setFromList [Ally, Geist]
   , cdSlots = [AllySlot]
   , cdLevel = 1
+  }
+
+mk1Grenades4 :: CardDef
+mk1Grenades4 = (asset "05273" "Mk 1 Grenades" 3 Guardian)
+  { cdSkills = [#combat]
+  , cdCardTraits = setFromList [Item, Weapon, Ranged]
+  , cdUses = uses Supply 3
+  , cdLevel = 4
   }
 
 studious3 :: CardDef

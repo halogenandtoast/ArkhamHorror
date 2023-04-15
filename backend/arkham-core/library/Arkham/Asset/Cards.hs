@@ -130,6 +130,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , ancientStone1
   , ancientStoneKnowledgeOfTheElders4
   , ancientStoneMindsInHarmony4
+  , annaKaslow4
   , anotherDayAnotherDollar3
   , aquinnah1
   , aquinnah3
@@ -3035,6 +3036,15 @@ anotherDayAnotherDollar3 :: CardDef
 anotherDayAnotherDollar3 = permanent $ (asset "05278" "Another Day, Another Dollar " 0 Rogue)
   { cdCardTraits = singleton Talent
   , cdLevel = 3
+  }
+
+annaKaslow4 :: CardDef
+annaKaslow4 = (asset "05283" ("Anna Kaslow" <:> "Mysterious Soothsayer") 3 Neutral)
+  { cdSkills = [#wild]
+  , cdCardTraits = setFromList [Ally, Clairvoyant]
+  , cdLevel = 4
+  , cdSlots = [AllySlot]
+  , cdCardInHandEffects = True
   }
 
 hallowedMirror :: CardDef

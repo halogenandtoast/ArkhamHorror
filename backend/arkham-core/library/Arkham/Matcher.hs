@@ -135,6 +135,22 @@ cardIs = CardWithCardCode . toCardCode
 
 -- ** Replacements
 
+resolveEventMatcher
+  :: InvestigatorId -> (Maybe LocationId) -> EventMatcher -> EventMatcher
+resolveEventMatcher _ Nothing = id
+resolveEventMatcher iid (Just lid) = go
+ where
+  go matcher = case matcher of
+    EventControlledBy investigatorMatcher ->
+      EventControlledBy $ replaceYouMatcher iid investigatorMatcher
+    EventAt locationMatcher ->
+      EventAt (replaceYourLocation iid (Just lid) locationMatcher)
+    EventAttachedToAsset assetMatcher ->
+      EventAttachedToAsset (resolveAssetMatcher iid (Just lid) assetMatcher)
+    EventMatches es -> EventMatches $ map go es
+    NotEvent eventMatcher -> NotEvent (go eventMatcher)
+    other -> other
+
 resolveAssetMatcher
   :: InvestigatorId -> (Maybe LocationId) -> AssetMatcher -> AssetMatcher
 resolveAssetMatcher _ Nothing = id

@@ -644,6 +644,7 @@ data Message
   | CheckTrauma InvestigatorId
   | HealTrauma InvestigatorId Int Int
   | GainSurge Source Target
+  | CancelSurge Source
   | Surge InvestigatorId Source
   | TakeAction InvestigatorId (Maybe Action) Cost
   | TakeControlOfAsset InvestigatorId AssetId

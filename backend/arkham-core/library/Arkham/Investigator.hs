@@ -41,6 +41,7 @@ lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
 lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
 lookupPromoInvestigator "98007" = lookupInvestigator "08004" -- Norman Withers
 lookupPromoInvestigator "98016" = lookupInvestigator "07004" -- Dexter Drake
+lookupPromoInvestigator "99001" = lookupInvestigator "05006" -- Marie Lambeau
 lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
 instance FromJSON Investigator where

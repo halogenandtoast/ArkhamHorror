@@ -506,6 +506,8 @@ allAssets = mapFrom
   , SomeAssetCard studious3
   --- rogue [icc]
   , SomeAssetCard anotherDayAnotherDollar3
+  --- mystic [icc]
+  , SomeAssetCard dayanaEsperence3
   --- neutral [icc]
   , SomeAssetCard annaKaslow4
   -- Before the Black Throne

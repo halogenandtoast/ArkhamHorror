@@ -240,6 +240,7 @@ data ModifierType
   | CannotBeAdvancedByDoomThreshold
   | MetaModifier Value
   | CanModify ModifierType
+  | NoSurge
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

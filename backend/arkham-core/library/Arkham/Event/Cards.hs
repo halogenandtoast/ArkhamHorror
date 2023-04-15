@@ -858,7 +858,7 @@ wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   , cdFastWindow = Just $ DrawCard
     Timing.When
     You
-    (BasicCardMatch NonWeaknessTreachery)
+    (BasicCardMatch IsEncounterCard)
     EncounterDeck
   , cdLevel = 5
   }

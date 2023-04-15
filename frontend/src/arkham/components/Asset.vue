@@ -45,7 +45,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {
-    return c.target.contents === id.value
+    return c.target.contents === id.value || c.target.contents === props.asset.cardId
   }
 
   return false

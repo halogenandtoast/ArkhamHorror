@@ -40,7 +40,7 @@ instance HasAbilities GuidingSpirit1 where
 
 instance RunMessage GuidingSpirit1 where
   runMessage msg a@(GuidingSpirit1 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ Exile (toTarget attrs)
       pure a
     _ -> GuidingSpirit1 <$> runMessage msg attrs

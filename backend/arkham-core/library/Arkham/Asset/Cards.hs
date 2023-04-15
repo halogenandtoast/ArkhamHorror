@@ -198,6 +198,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , darioElAmin
   , darkHorse
   , davidRenfield
+  , dayanaEsperence3
   , deathXiii1
   , decoratedSkull
   , dejaVu5
@@ -3038,6 +3039,16 @@ anotherDayAnotherDollar3 = permanent $ (asset "05278" "Another Day, Another Doll
   , cdLevel = 3
   }
 
+dayanaEsperence3 :: CardDef
+dayanaEsperence3 = (asset "05279" ("Dayana Esperence" <:> "Deals with \"Devils\"") 4 Mystic)
+  { cdSkills = [#willpower, #willpower]
+  , cdCardTraits = setFromList [Ally, Witch]
+  , cdLevel = 3
+  , cdSlots = [AllySlot]
+  , cdUnique = True
+  , cdUses = uses Secret 3
+  }
+
 annaKaslow4 :: CardDef
 annaKaslow4 = (asset "05283" ("Anna Kaslow" <:> "Mysterious Soothsayer") 3 Neutral)
   { cdSkills = [#wild]
@@ -3045,6 +3056,7 @@ annaKaslow4 = (asset "05283" ("Anna Kaslow" <:> "Mysterious Soothsayer") 3 Neutr
   , cdLevel = 4
   , cdSlots = [AllySlot]
   , cdCardInHandEffects = True
+  , cdUnique = True
   }
 
 hallowedMirror :: CardDef

@@ -12,6 +12,7 @@ data EffectWindow
   | EffectRoundWindow
   | EffectSetupWindow
   | EffectTurnWindow
+  | EffectCardResolutionWindow
   | EffectGameWindow
   | EffectAttackWindow
   | FirstEffectWindow [EffectWindow]

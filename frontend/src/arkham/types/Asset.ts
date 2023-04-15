@@ -16,6 +16,7 @@ export const usesDecoder = JsonDecoder.object<Uses>({
 export interface Asset {
   id: string;
   cardCode: string;
+  cardId: string;
   owner: string | null;
   health: number | null;
   damage: number;
@@ -35,6 +36,7 @@ export interface Asset {
 export const assetDecoder = JsonDecoder.object<Asset>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
+  cardId: JsonDecoder.string,
   owner: JsonDecoder.nullable(JsonDecoder.string),
   health: JsonDecoder.nullable(JsonDecoder.number),
   damage: JsonDecoder.number,

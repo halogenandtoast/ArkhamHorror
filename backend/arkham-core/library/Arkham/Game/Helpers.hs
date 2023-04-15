@@ -1287,6 +1287,9 @@ passesCriteria iid mcard source windows' = \case
   Criteria.AssetExists matcher -> do
     mlid <- field InvestigatorLocation iid
     selectAny (Matcher.resolveAssetMatcher iid mlid matcher)
+  Criteria.EventExists matcher -> do
+    mlid <- field InvestigatorLocation iid
+    selectAny (Matcher.resolveEventMatcher iid mlid matcher)
   Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
     Nothing -> pure False
     Just aid ->  do

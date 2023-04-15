@@ -39,6 +39,7 @@ import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
 import Arkham.Effect.Types
+import Arkham.Effect.Window (EffectWindow(EffectCardResolutionWindow))
 import Arkham.EffectMetadata
 import Arkham.Enemy
 import Arkham.Enemy.Types ( Enemy, EnemyAttrs (..), Field (..), VoidEnemy )
@@ -1694,8 +1695,12 @@ getEventsMatching matcher = do
       pure $ filter ((`member` eids) . toId) as
     EventAttachedToAsset assetMatcher -> do
       assets <- selectListMap AssetTarget assetMatcher
+      let
+        attached = \case
+          AttachedToAsset aid _ -> AssetTarget aid `elem` assets
+          _ -> False
       pure $ filter
-        (maybe False (`elem` assets) . eventAttachedTarget . toAttrs)
+        (or . sequence [attached. eventPlacement, maybe False (`elem` assets) . eventAttachedTarget] . toAttrs)
         as
     EventWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
 
@@ -4547,6 +4552,10 @@ runGameMessage msg g = case msg of
         [] -> pure Nothing
         (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
     g <$ push (RequestedPlayerCard iid source mcard [])
+  CancelSurge _ -> do
+    for_ (view resolvingCardL g) $ \c ->
+      push $ CreateWindowModifierEffect EffectCardResolutionWindow (EffectModifiers $ toModifiers GameSource [NoSurge]) GameSource (CardIdTarget $ toCardId c)
+    pure g 
   GainSurge source target -> do
     cardId <- case target of
       EnemyTarget eid -> field EnemyCardId eid
@@ -4605,7 +4614,8 @@ runGameMessage msg g = case msg of
       error $ "Currently not handling Revelations from type " <> show other
   ResolvedCard iid card | Just card == gameResolvingCard g -> do
     modifiers' <- getModifiers (toCardId card)
-    when (AddKeyword Keyword.Surge `elem` modifiers' || Keyword.Surge `elem` cdKeywords (toCardDef card)) $ push $ Surge iid GameSource
+    push $ After msg
+    when (NoSurge `notElem` modifiers' && (AddKeyword Keyword.Surge `elem` modifiers' || Keyword.Surge `elem` cdKeywords (toCardDef card))) $ push $ Surge iid GameSource
     let
       unsetActiveCard = \case
         Just c | c == card -> Nothing

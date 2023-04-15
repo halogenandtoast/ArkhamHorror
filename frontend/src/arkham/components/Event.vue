@@ -30,8 +30,8 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
-    return true
+  if (c.tag === MessageType.TARGET_LABEL) {
+    return c.target.contents === id.value || c.target.contents === props.event.cardId
   }
   return false
 }

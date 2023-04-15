@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Message
 
 newtype Investments = Investments AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

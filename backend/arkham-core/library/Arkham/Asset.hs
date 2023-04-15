@@ -499,6 +499,8 @@ allAssets = mapFrom
   --- survivor [uad]
   , SomeAssetCard guidingSpirit1
   -- In the Clutches of Chaos
+  --- guardian [icc]
+  , SomeAssetCard mk1Grenades4
   --- seeker [icc]
   , SomeAssetCard studious3
   --- rogue [icc]

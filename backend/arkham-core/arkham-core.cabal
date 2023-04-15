@@ -1177,6 +1177,7 @@ library
       Arkham.Event.Cards.SleightOfHand
       Arkham.Event.Cards.SlipAway
       Arkham.Event.Cards.SlipAway2
+      Arkham.Event.Cards.SmallFavor
       Arkham.Event.Cards.SmuggledGoods
       Arkham.Event.Cards.SnareTrap2
       Arkham.Event.Cards.SneakAttack

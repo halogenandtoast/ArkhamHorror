@@ -163,6 +163,11 @@ allAgendas = mapFrom
   -- At Death's Doorstep
   , SomeAgendaCard justiceXI
   , SomeAgendaCard overTheThreshold
+  -- The Secret Name
+  , SomeAgendaCard theHermitIX
+  , SomeAgendaCard theFamiliar
+  , SomeAgendaCard theWitchLight
+  , SomeAgendaCard markedForSacrifice
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , SomeAgendaCard returnToPredatorOrPrey

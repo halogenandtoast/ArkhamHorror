@@ -458,6 +458,8 @@ allAssets = mapFrom
   , SomeAssetCard tennesseeSourMash
   , SomeAssetCard enchantedBlade
   , SomeAssetCard grislyTotem
+  --- story [tfa]
+  , SomeAssetCard theBlackBook
   -- The Wages of Sin
   --- guardian [wos]
   , SomeAssetCard aliceLuxley

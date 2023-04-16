@@ -303,6 +303,12 @@ allTreacheries = mapFrom
   -- Inexorable Fate
   , SomeTreacheryCard terrorInTheNight
   , SomeTreacheryCard fateOfAllFools
+  -- The Secret Name
+  , SomeTreacheryCard meddlesomeFamiliar
+  , SomeTreacheryCard ghostlyPresence
+  , SomeTreacheryCard extradimensionalVisions
+  , SomeTreacheryCard pulledByTheStars
+  , SomeTreacheryCard disquietingDreams
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

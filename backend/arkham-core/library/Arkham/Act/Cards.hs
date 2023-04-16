@@ -76,6 +76,7 @@ allActCards = mapFromList $ map
   , atTheStationTrainTracks
   , awakening
   , beginnersLuck
+  , beyondTheWitchHouse
   , breakingAndEntering
   , campusSafety
   , cavernOfTheForgottenAge
@@ -108,6 +109,7 @@ allActCards = mapFromList $ map
   , intoTheDarkness
   , intoTheRuins
   , intoTheRuinsOnceAgain
+  , investigatingTheWitchHouse
   , inLostCarcosa
   , investigatingTheTrail
   , journeyToTheNexus
@@ -149,6 +151,7 @@ allActCards = mapFromList $ map
   , searchingForTheTome
   , skinGame
   , stalkedByShadows
+  , stoppingTheRitual
   , strangeOccurences
   , strangeRelicsMariaDeSilva
   , strangeRelicsMariasInformation
@@ -568,6 +571,15 @@ theSpectralRealm = act "05069" "The Spectral Realm" 2 AtDeathsDoorstep
 
 escapeTheCage :: CardDef
 escapeTheCage = act "05070" "Escape the Cage" 3 AtDeathsDoorstep
+
+investigatingTheWitchHouse :: CardDef
+investigatingTheWitchHouse = act "05125" "Investigating the Witch House" 1 TheSecretName
+
+beyondTheWitchHouse :: CardDef
+beyondTheWitchHouse = act "05126" "Beyond the Witch House" 2 TheSecretName
+
+stoppingTheRitual :: CardDef
+stoppingTheRitual = act "05127" "Stopping the Ritual" 3 TheSecretName
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

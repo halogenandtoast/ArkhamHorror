@@ -464,6 +464,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , tennesseeSourMash
   , tennesseeSourMashRogue3
   , tennesseeSourMashSurvivor3
+  , theBlackBook
   , theChthonianStone
   , theCodexOfAges
   , theCouncilsCoffer2
@@ -2852,6 +2853,19 @@ grislyTotem = (multiClassAsset "05119" "Grisly Totem" 3 [Survivor, Seeker])
   { cdSkills = [#agility]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
+  }
+
+theBlackBook :: CardDef
+theBlackBook = (storyAsset
+                     "05150"
+                     ("The Black Book" <:> "Signed in Blood")
+                     3
+                     TheSecretName
+                   )
+  { cdSkills = [#willpower, #intellect, #wild]
+  , cdCardTraits = setFromList [Item, Tome, Relic]
+  , cdSlots = [HandSlot]
+  , cdUnique = True
   }
 
 aliceLuxley :: CardDef

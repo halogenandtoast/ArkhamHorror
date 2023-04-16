@@ -96,7 +96,7 @@ h2 {
 }
 
 .scenario-icon {
-  width: 18px;
+  height: 30px;
   margin: 0 20px 0 10px;
   filter: invert(100%);
 }

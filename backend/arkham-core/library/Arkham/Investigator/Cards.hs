@@ -56,6 +56,7 @@ investigator cardCode name classSymbol traits = CardDef
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 allInvestigatorCards :: HashMap CardCode CardDef

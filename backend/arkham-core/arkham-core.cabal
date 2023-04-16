@@ -1219,6 +1219,7 @@ library
       Arkham.Event.Cards.WingingIt
       Arkham.Event.Cards.WorkingAHunch
       Arkham.Event.Cards.YouHandleThisOne
+      Arkham.Event.Cards.YouOweMeOne
       Arkham.Event.Events
       Arkham.Event.Helpers
       Arkham.Event.Runner

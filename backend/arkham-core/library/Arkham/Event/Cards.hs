@@ -73,6 +73,7 @@ event cardCode name cost classSymbol = CardDef
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
@@ -303,6 +304,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , wingingIt
   , workingAHunch
   , youHandleThisOne
+  , youOweMeOne
   ]
 
 onTheLam :: CardDef
@@ -311,6 +313,7 @@ onTheLam = (event "01010" "On the Lam" 1 Neutral)
   , cdSkills = [#intellect, #agility, #wild, #wild]
   , cdFastWindow = Just (TurnBegins Timing.After You)
   , cdAlternateCardCodes = ["01510"]
+  , cdDeckRestrictions = [Signature "01003"]
   }
 
 darkMemory :: CardDef
@@ -590,6 +593,7 @@ searchForTheTruth :: CardDef
 searchForTheTruth = (event "02008" "Search for the Truth" 1 Neutral)
   { cdSkills = [#intellect, #intellect, #wild]
   , cdCardTraits = setFromList [Insight]
+  , cdDeckRestrictions = [Signature "02002"]
   }
 
 taunt :: CardDef
@@ -872,6 +876,7 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
       (NonExceptional <> EventCard)
     )
   , cdCost = Nothing
+  , cdDeckRestrictions = [Signature "03003"]
   }
 
 buryThemDeep :: CardDef
@@ -881,6 +886,7 @@ buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   , cdFastWindow = Just
     (EnemyDefeated Timing.After Anyone $ NonEliteEnemy <> EnemyAt YourLocation)
   , cdVictoryPoints = Just 1
+  , cdDeckRestrictions = [Signature "03005"]
   }
 
 improvisation :: CardDef
@@ -888,6 +894,7 @@ improvisation = (event "03018" "Improvisation" 0 Neutral)
   { cdSkills = [#wild, #wild]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just (DuringTurn You)
+  , cdDeckRestrictions = [Signature "03006"]
   }
 
 letMeHandleThis :: CardDef
@@ -1309,6 +1316,7 @@ smuggledGoods = (event "04010" "Smuggled Goods" 0 Neutral)
     $ Criteria.EnemyExists
     $ EnemyAt YourLocation
     <> ReadyEnemy
+  , cdDeckRestrictions = [Signature "04003"]
   }
 
 trusted :: CardDef
@@ -1631,6 +1639,7 @@ darkInsight = (event "05014" "Dark Insight" 2 Neutral)
       (BasicCardMatch $ CardWithOneOf [IsEncounterCard, WeaknessCard])
       AnyDeck
     ]
+  , cdDeckRestrictions = [Signature "05004"]
   }
 
 imDoneRunnin :: CardDef
@@ -1638,6 +1647,7 @@ imDoneRunnin = (event "05016" "\"I'm done runnin'!\"" 0 Neutral)
   { cdSkills = [#combat, #agility, #wild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
+  , cdDeckRestrictions = [Signature "05005"]
   }
 
 mystifyingSong :: CardDef
@@ -1646,6 +1656,7 @@ mystifyingSong = (event "05018" "Mystifying Song" 3 Neutral)
   , cdCardTraits = setFromList [Spell, Song]
   , cdFastWindow = Just $ AgendaWouldAdvance Timing.When DoomThreshold AnyAgenda
   , cdAlternateCardCodes = ["99002"]
+  , cdDeckRestrictions = [Signature "05006"]
   }
 
 interrogate :: CardDef
@@ -1957,6 +1968,13 @@ glimpseTheUnthinkable5 = (event "05318" "Glimpse the Unthinkable" 1 Seeker)
   , cdLevel = 5
   , cdCriteria = Just
     $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
+  }
+
+youOweMeOne :: CardDef
+youOweMeOne = (event "05319" "\"You owe me one!\"" 0 Rogue)
+  { cdSkills = [#intellect, #combat, #agility]
+  , cdCardTraits = setFromList [Favor, Gambit]
+  , cdCriteria = Just $ Criteria.InvestigatorExists (NotInvestigator You <> HandWith AnyCards)
   }
 
 lure2 :: CardDef

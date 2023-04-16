@@ -61,6 +61,7 @@ skill cardCode name icons classSymbol = CardDef
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef
@@ -285,6 +286,7 @@ theHomeFront :: CardDef
 theHomeFront =
   (skill "03007" "The Home Front" (replicate 4 #combat) Neutral)
     { cdCardTraits = setFromList [Practiced, Expert]
+    , cdDeckRestrictions = [Signature "03001"]
     }
 
 resourceful :: CardDef
@@ -507,6 +509,7 @@ anythingYouCanDoBetter = (skill
                      )
   { cdCardTraits = setFromList [Innate, Developed]
   , cdCommitRestrictions = [OnlyYourTest]
+  , cdDeckRestrictions = [Signature "60301"]
   }
 
 arrogance :: CardDef
@@ -566,6 +569,7 @@ guts2 = (skill "60424" "Guts" [#willpower, #willpower, #willpower] Mystic)
 neitherRainNorSnow :: CardDef
 neitherRainNorSnow = (skill "60502" "Neither Rain nor Snow" [#wild, #wild, #wild] Survivor)
   { cdCardTraits = setFromList [Innate, Developed]
+  , cdDeckRestrictions = [Signature "60501"]
   }
 
 unexpectedCourage2 :: CardDef

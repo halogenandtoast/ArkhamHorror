@@ -489,6 +489,7 @@ data CardMatcher
   | CardIsUnique
   | FastCard
   | NonWeakness
+  | NonSignature
   | WeaknessCard
   | NonExceptional
   | AnyCard

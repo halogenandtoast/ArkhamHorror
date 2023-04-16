@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria
 import Arkham.EncounterSet
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword ( HasKeywords (..), Keyword )
 import Arkham.LocationSymbol
@@ -85,9 +86,20 @@ data CardDef = CardDef
   , cdLocationRevealedConnections :: [LocationSymbol]
   , cdPurchaseMentalTrauma :: Maybe Int
   , cdCanReplace :: Bool
+  , cdDeckRestrictions :: [DeckRestriction]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
+
+data DeckRestriction = Signature InvestigatorId
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (Hashable, ToJSON, FromJSON)
+
+isSignature :: CardDef -> Bool
+isSignature = any isSignatureDeckRestriction . cdDeckRestrictions
+  where
+    isSignatureDeckRestriction = \case
+      Signature _ -> True
 
 data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
   deriving stock (Show, Eq, Generic)

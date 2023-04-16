@@ -342,6 +342,8 @@ allEvents = mapFrom
   --- seeker [bbt]
   , SomeEventCard bloodRite
   , SomeEventCard glimpseTheUnthinkable5
+  --- rogue [bbt]
+  , SomeEventCard youOweMeOne
   --- survivor [bbt]
   , SomeEventCard lure2
   , SomeEventCard eucatastrophe3

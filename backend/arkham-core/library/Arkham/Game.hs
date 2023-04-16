@@ -807,6 +807,7 @@ getInvestigatorsMatching matcher = do
         . investigatorDeck
         . toAttrs
     InvestigatorWithTrait t -> \i -> fieldMap InvestigatorTraits (member t) (toId i)
+    InvestigatorWithClass t -> \i -> fieldMap InvestigatorClass (== t) (toId i)
     InvestigatorWithoutModifier modifierType -> \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'

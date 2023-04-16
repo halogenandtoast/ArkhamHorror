@@ -12,6 +12,12 @@ data FlavorText = FlavorText
   }
   deriving stock (Show, Eq, Generic)
 
+instance Semigroup FlavorText where
+  FlavorText mTitle1 body1 <> FlavorText mTitle2 body2 = FlavorText (mTitle1 <|> mTitle2) (body1 <> body2)
+
+instance Monoid FlavorText where
+  mempty = FlavorText Nothing []
+
 instance IsString FlavorText where
   fromString s = FlavorText Nothing [fromString s]
 

@@ -67,6 +67,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 surge :: CardDef -> CardDef

@@ -109,6 +109,7 @@ scenarioCard cCode name ecSet = CardDef
   , cdLocationRevealedConnections = mempty
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 allScenarioCards :: HashMap CardCode CardDef

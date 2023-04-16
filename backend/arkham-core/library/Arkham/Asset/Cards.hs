@@ -111,6 +111,7 @@ baseAsset mEncounterSet cardCode name cost classSymbols = CardDef
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
@@ -539,6 +540,7 @@ rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
   , cdUses = uses Ammo 4
   , cdSlots = [HandSlot]
   , cdAlternateCardCodes = ["01506"]
+  , cdDeckRestrictions = [Signature "01001"]
   }
 
 daisysToteBag :: CardDef
@@ -547,6 +549,7 @@ daisysToteBag = (asset "01008" "Daisy's Tote Bag" 2 Neutral)
   , cdCardTraits = setFromList [Item]
   , cdUnique = True
   , cdAlternateCardCodes = ["01508"]
+  , cdDeckRestrictions = [Signature "01002"]
   }
 
 theNecronomicon :: CardDef
@@ -571,6 +574,7 @@ heirloomOfHyperborea = (asset
   , cdUnique = True
   , cdSlots = [AccessorySlot]
   , cdAlternateCardCodes = ["01512"]
+  , cdDeckRestrictions = [Signature "01004"]
   }
 
 wendysAmulet :: CardDef
@@ -580,6 +584,7 @@ wendysAmulet = (asset "01014" "Wendy's Amulet" 2 Neutral)
   , cdUnique = True
   , cdSlots = [AccessorySlot]
   , cdAlternateCardCodes = ["01514"]
+  , cdDeckRestrictions = [Signature "01005"]
   }
 
 fortyFiveAutomatic :: CardDef
@@ -982,6 +987,7 @@ zoeysCross =
     , cdCardTraits = setFromList [Item, Charm]
     , cdUnique = True
     , cdSlots = [AccessorySlot]
+    , cdDeckRestrictions = [Signature "02001"]
     }
 
 jennysTwin45s :: CardDef
@@ -992,6 +998,7 @@ jennysTwin45s =
     , cdCost = Just DynamicCost
     , cdUnique = True
     , cdSlots = [HandSlot, HandSlot]
+    , cdDeckRestrictions = [Signature "02003"]
     }
 
 jimsTrumpet :: CardDef
@@ -1000,12 +1007,14 @@ jimsTrumpet = (asset "02012" ("Jim's Trumpet" <:> "The Dead Listen") 2 Neutral)
   , cdCardTraits = setFromList [Item, Instrument, Relic]
   , cdUnique = True
   , cdSlots = [HandSlot]
+  , cdDeckRestrictions = [Signature "02004"]
   }
 
 duke :: CardDef
 duke = (asset "02014" ("Duke" <:> "Loyal Hound") 2 Neutral)
   { cdCardTraits = setFromList [Ally, Creature]
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "02005"]
   }
 
 blackjack :: CardDef
@@ -1591,6 +1600,7 @@ sophieInLovingMemory =
     { cdCardTraits = setFromList [Item, Spirit]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDeckRestrictions = [Signature "03001"]
     }
 
 sophieItWasAllMyFault :: CardDef
@@ -1599,6 +1609,7 @@ sophieItWasAllMyFault =
     { cdCardTraits = setFromList [Item, Madness]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDeckRestrictions = [Signature "03001"]
     }
 
 analyticalMind :: CardDef
@@ -1606,6 +1617,7 @@ analyticalMind =
   (asset "03010" ("Analytical Mind" <:> "Between the Lines") 3 Neutral)
     { cdCardTraits = singleton Talent
     , cdSkills = [#wild, #wild]
+    , cdDeckRestrictions = [Signature "03002"]
     }
 
 theKingInYellow :: CardDef
@@ -1620,6 +1632,7 @@ spiritSpeaker =
   (asset "03014" ("Spirit-Speaker" <:> "Envoy of the Alusi") 2 Neutral)
     { cdSkills = [#willpower, #intellect, #wild]
     , cdCardTraits = singleton Ritual
+    , cdDeckRestrictions = [Signature "03004"]
     }
 
 thirtyTwoColt :: CardDef
@@ -2099,6 +2112,7 @@ mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Survivor") 3 Neutral)
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "04001"]
   }
 
 jakeWilliams :: CardDef
@@ -2108,6 +2122,7 @@ jakeWilliams = (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "04002"]
   }
 
 finnsTrustyThirtyEight :: CardDef
@@ -2124,6 +2139,7 @@ finnsTrustyThirtyEight = fast $ (asset
   , cdSlots = [HandSlot]
   , cdUses = uses Ammo 3
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "04003"]
   }
 
 theCodexOfAges :: CardDef
@@ -2134,12 +2150,14 @@ theCodexOfAges =
     , cdSlots = [HandSlot]
     , cdKeywords = singleton (Keyword.Seal $ TokenFaceIs Token.ElderSign)
     , cdUnique = True
+    , cdDeckRestrictions = [Signature "04004"]
     }
 
 untilTheEndOfTime :: CardDef
 untilTheEndOfTime = (asset "04015" "Until the End of Time" 1 Neutral)
   { cdSkills = [#combat, #wild]
   , cdCardTraits = singleton Talent
+  , cdDeckRestrictions = [Signature "04005"]
   }
 
 survivalKnife :: CardDef
@@ -2660,6 +2678,7 @@ hypnoticTherapy :: CardDef
 hypnoticTherapy = (asset "05007" "Hypnotic Therapy" 2 Neutral)
   { cdCardTraits = singleton Talent
   , cdSkills = [#willpower, #intellect, #wild]
+  , cdDeckRestrictions = [Signature "05001"]
   }
 
 detectivesColt1911s :: CardDef
@@ -2668,12 +2687,14 @@ detectivesColt1911s = (asset "05009" "Detective's Colt 1911s" 4 Neutral)
   , cdSkills = [#intellect, #combat, #wild]
   , cdSlots = [HandSlot, HandSlot]
   , cdUses = uses Ammo 4
+  , cdDeckRestrictions = [Signature "05002"]
   }
 
 familyInheritance :: CardDef
 familyInheritance = permanent (asset "05011" ("Family Inheritance" <:> "A Windfall? Or a Burden?") 0 Neutral)
   { cdCardTraits = singleton Boon
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "05003"]
   }
 
 twilightBlade :: CardDef
@@ -2682,6 +2703,7 @@ twilightBlade = (asset "05013" ("Twilight Blade" <:> "Sanctum's Reward") 3 Neutr
   , cdSkills = [#willpower, #combat, #wild]
   , cdSlots = [HandSlot]
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "05004"]
   }
 
 baronSamedi :: CardDef
@@ -3111,6 +3133,7 @@ showmanship :: CardDef
 showmanship = (asset "07012" "Showmanship" 1 Neutral)
   { cdCardTraits = setFromList [Talent]
   , cdSkills = [#combat, #agility, #wild]
+  , cdDeckRestrictions = [Signature "07004"]
   }
 
 occultScraps :: CardDef
@@ -3141,6 +3164,7 @@ livreDeibon =
     , cdSkills = [#willpower, #willpower, #wild]
     , cdUnique = True
     , cdSlots = [HandSlot]
+    , cdDeckRestrictions = [Signature "08004"]
     }
 
 runicAxe :: CardDef
@@ -3292,6 +3316,7 @@ randallCho = (asset "60102" ("Randall Cho" <:> "Concerned Brother") 2 Guardian)
   , cdCardTraits = setFromList [Ally, Medic]
   , cdUnique = True
   , cdSlots = [AllySlot]
+  , cdDeckRestrictions = [Signature "60101"]
   }
 
 boxingGloves :: CardDef
@@ -3358,6 +3383,7 @@ vaultOfKnowledge :: CardDef
 vaultOfKnowledge = (asset "60202" "Vault of Knowledge" 3 Seeker)
   { cdSkills = [#willpower, #agility, #wild]
   , cdCardTraits = singleton Talent
+  , cdDeckRestrictions = [Signature "60202"]
   }
 
 arcaneEnlightenment :: CardDef
@@ -3587,6 +3613,7 @@ arbiterOfFates :: CardDef
 arbiterOfFates = (asset "60402" "Arbiter of Fates" 3 Mystic)
   { cdSkills = [#willpower, #agility, #wild]
   , cdCardTraits = singleton Talent
+  , cdDeckRestrictions = [Signature "60401"]
   }
 
 scryingMirror :: CardDef
@@ -3934,6 +3961,7 @@ daisysToteBagAdvanced = (asset "90002" "Daisy's Tote Bag" 2 Neutral)
   { cdSkills = [#willpower, #intellect, #wild, #wild]
   , cdCardTraits = setFromList [Item]
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "01002"]
   }
 
 theNecronomiconAdvanced :: CardDef
@@ -3949,6 +3977,7 @@ mollyMaxwell = (asset "98017" ("Molly Maxwell" <:> "The Exotic Morgana") 3 Neutr
   , cdSkills = [#willpower, #agility, #wild]
   , cdSlots = [AllySlot]
   , cdUnique = True
+  , cdDeckRestrictions = [Signature "07004"]
   }
 
 courage :: CardDef

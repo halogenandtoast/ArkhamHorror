@@ -64,6 +64,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdLocationRevealedConnections = []
   , cdPurchaseMentalTrauma = Nothing
   , cdCanReplace = True
+  , cdDeckRestrictions = []
   }
 
 unique :: CardDef -> CardDef

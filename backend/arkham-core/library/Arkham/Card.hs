@@ -111,6 +111,7 @@ cardMatch a = \case
   CardWithOneOf ms -> any (cardMatch a) ms
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a
+  NonSignature -> not . isSignature $ toCardDef a
   WeaknessCard -> isJust . cdCardSubType $ toCardDef a
   NonExceptional -> not . cdExceptional $ toCardDef a
   NotCard m -> not (cardMatch a m)

@@ -97,6 +97,7 @@ data InvestigatorMatcher
   | IncludeEliminated InvestigatorMatcher
   | HealableInvestigator Source DamageType InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
+  | InvestigatorWithClass ClassSymbol
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -183,6 +183,8 @@ data CampaignLogKey
   | JosefIsAliveAndWell
   | TheInvestigatorsAreMembersOfTheLodge
   | TheInvestigatorsAreDeceivingTheLodge
+  | TheInvestigatorsToldTheLodgeAboutTheCoven
+  | TheInvestigatorsHidTheirKnowledgeOfTheCoven
   -- ^ The Circle Undone
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

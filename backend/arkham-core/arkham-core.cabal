@@ -1798,6 +1798,7 @@ library
       Arkham.Scenarios.TheMiskatonicMuseum.Story
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePallidMask.Story
+      Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.TheWitchingHour.Story

@@ -113,7 +113,7 @@ instance RunMessage TheMiskatonicMuseum where
 
       restrictedHall <- genCard Locations.exhibitHallRestrictedHall
 
-      bottom' <- shuffleM $ restrictedHall : bottom -- 02137 is the restricted hall
+      bottom' <- shuffleM $ restrictedHall : bottom
 
       let exhibitDeck = top <> bottom'
 

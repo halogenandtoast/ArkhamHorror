@@ -1477,7 +1477,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         $ chosenCardMsgs
         <> msgs
-        <> [InitiatePlayCard iid card Nothing windows' asAction]
+        <> [InitiatePlayCard iid (PlayerCard choiceAsCard) Nothing windows' asAction]
       pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter (/= card)
   InitiatePlayCard iid card mtarget windows' asAction | iid == investigatorId ->
     do

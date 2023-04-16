@@ -209,6 +209,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , digDeep2
   , discOfItzamna
   , discOfItzamna2
+  , doubleDouble4
   , drElliHorowitz
   , drFrancisMorgan
   , drHenryArmitage
@@ -3093,6 +3094,15 @@ occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
   { cdSkills = [#intellect]
   , cdCardTraits = setFromList [Item, Tome, Occult]
   , cdSlots = [HandSlot]
+  }
+
+doubleDouble4 :: CardDef
+doubleDouble4 = (asset "05320" "Double, Double" 4 Rogue)
+  { cdSkills = [#willpower, #intellect]
+  , cdCardTraits = singleton Ritual
+  , cdExceptional = True
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 4
   }
 
 wither4 :: CardDef

@@ -182,6 +182,7 @@ allLocationCards = mapFromList $ map
   , choeurGothique_292
   , choeurGothique_293
   , circuitousTrail
+  , cityOfElderThings
   , cityOfTheSerpents
   , cityOfTheUnseen
   , cloister
@@ -193,6 +194,7 @@ allLocationCards = mapFromList $ map
   , congregationalChurch_208
   , congregationalChurch_209
   , courtyard
+  , courtOfTheGreatOldOnes
   , coyoacan
   , crumblingPrecipice
   , cryptOfTheSepulchralLamp
@@ -251,6 +253,7 @@ allLocationCards = mapFromList $ map
   , forkedPath
   , foulSwamp
   , foyer
+  , frankElwoodsRoom
   , frozenSpring
   , gallery
   , garden
@@ -289,6 +292,8 @@ allLocationCards = mapFromList $ map
   , interviewRoomArrivalChamber
   , interviewRoomIchorFilledChamber
   , interviewRoomRestrainingChamber
+  , joeMazurewiczsRoom
+  , keziahsRoom
   , kitchen
   , knightsHall
   , laBellaLuna
@@ -296,6 +301,7 @@ allLocationCards = mapFromList $ map
   , labyrinthOfBones
   , lakeXochimilco_182
   , lakeXochimilco_183
+  , landlordsQuarters
   , leMarais217
   , leMarais218
   , lightingBox
@@ -310,6 +316,8 @@ allLocationCards = mapFromList $ map
   , miskatonicQuad
   , miskatonicUniversity
   , miskatonicUniversityMiskatonicMuseum
+  , moldyHalls
+  , moldyHallsEarlierTonight
   , montmartre209
   , montmartre210
   , montparnasse
@@ -351,6 +359,7 @@ allLocationCards = mapFromList $ map
   , patientConfinementFamiliarCell
   , pereLachaiseCemetery
   , perilousGulch
+  , physicsClassroom
   , plateauOfLeng
   , pnakotus
   , porteDeLAvancee
@@ -374,6 +383,7 @@ allLocationCards = mapFromList $ map
   , ruinsOfNewYork
   , sacredWoods_184
   , sacredWoods_185
+  , salemGaol1692
   , sanMarcoBasilica
   , schoolhouse_212
   , schoolhouse_213
@@ -386,6 +396,7 @@ allLocationCards = mapFromList $ map
   , shiveringPools
   , shoresOfHali
   , shoresOfRlyeh
+  , siteOfTheSacrifice
   , slaughteredWoods
   , sleepingCar
   , southsideHistoricalSociety
@@ -395,6 +406,7 @@ allLocationCards = mapFromList $ map
   , stepsOfYoth
   , stoneAltar
   , stoneArchways
+  , strangeGeometry
   , streetsOfVenice
   , studentUnion
   , study
@@ -423,6 +435,7 @@ allLocationCards = mapFromList $ map
   , trappersCabin
   , trophyRoom
   , trophyRoomSpectral
+  , twilightAbyss
   , twistedUnderbrush
   , undergroundRuins
   , uprootedWoods
@@ -434,6 +447,7 @@ allLocationCards = mapFromList $ map
   , victorianHallsSpectral
   , villageCommons
   , vipArea
+  , walterGilmansRoom
   , wellOfSouls
   , whateleyRuins_250
   , whateleyRuins_251
@@ -444,6 +458,7 @@ allLocationCards = mapFromList $ map
   , witchHauntedWoodsOvergrownBarn
   , witchHauntedWoodsTaintedWell
   , witchHauntedWoodsTheLonelyTree
+  , witchHouseRuins
   , witchesCircle
   , xochimilco
   , yard
@@ -3394,6 +3409,184 @@ officeSpectral = victory 2 $ location
   Star
   [T]
   AtDeathsDoorstep
+
+moldyHalls :: CardDef
+moldyHalls = location
+  "05128"
+  "Moldy Halls"
+  [WitchHouse]
+  Triangle
+  [Plus, Circle, Heart, Square, Triangle]
+  TheSecretName
+
+landlordsQuarters :: CardDef
+landlordsQuarters = locationWithUnrevealed
+  "05129"
+  "Decrepit Door"
+  [WitchHouse]
+  Plus
+  [Triangle]
+  "Landlord's Quarters"
+  [WitchHouse]
+  Circle
+  [Triangle]
+  TheSecretName
+
+joeMazurewiczsRoom :: CardDef
+joeMazurewiczsRoom = locationWithUnrevealed
+  "05130"
+  "Decrepit Door"
+  [WitchHouse]
+  Plus
+  [Triangle]
+  "Joe Mazurewicz's Room"
+  [WitchHouse]
+  Heart
+  [Triangle]
+  TheSecretName
+
+frankElwoodsRoom :: CardDef
+frankElwoodsRoom = locationWithUnrevealed
+  "05131"
+  "Decrepit Door"
+  [WitchHouse]
+  Plus
+  [Triangle]
+  "Frank Elwood's room"
+  [WitchHouse]
+  Diamond
+  [Triangle]
+  TheSecretName
+
+walterGilmansRoom :: CardDef
+walterGilmansRoom = location
+  "05132"
+  "Walter Gilman's Room"
+  [WitchHouse]
+  Square
+  [Triangle]
+  TheSecretName
+
+keziahsRoom :: CardDef
+keziahsRoom = location
+  "05133"
+  "Keziah's Room"
+  [Spectral, WitchHouse]
+  Square
+  [Moon, Hourglass, T, Equals, Squiggle]
+  TheSecretName
+
+moldyHallsEarlierTonight :: CardDef
+moldyHallsEarlierTonight = locationWithUnrevealed
+  "05134"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  ("Moldy Halls" <:> "Earlier Tonight")
+  [Extradimensional, WitchHouse]
+  Moon
+  [Square]
+  TheSecretName
+
+twilightAbyss :: CardDef
+twilightAbyss = victory 1 $ locationWithUnrevealed
+  "05135"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  "Twilight Abyss"
+  [Extradimensional, Otherworld]
+  Equals
+  [Square, Squiggle]
+  TheSecretName
+
+cityOfElderThings :: CardDef
+cityOfElderThings = victory 1 $ locationWithUnrevealed
+  "05136"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  "City of Elder Things"
+  [Extradimensional, Otherworld]
+  Moon
+  [Square]
+  TheSecretName
+
+witchHouseRuins :: CardDef
+witchHouseRuins = locationWithUnrevealed
+  "05137"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  "Witch House Ruins"
+  [Extradimensional, WitchHouse]
+  Hourglass
+  [Square, T]
+  TheSecretName
+
+salemGaol1692 :: CardDef
+salemGaol1692 = locationWithUnrevealed
+  "05138"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  "Salem Gaol, 1692"
+  [Extradimensional, Salem]
+  Moon
+  [Square]
+  TheSecretName
+
+physicsClassroom :: CardDef
+physicsClassroom = victory 1 $ locationWithUnrevealed
+  "05139"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  "Physics Classroom"
+  [Extradimensional, Miskatonic]
+  Moon
+  [Square]
+  TheSecretName
+
+courtOfTheGreatOldOnes :: CardDef
+courtOfTheGreatOldOnes = victory 1 $ locationWithUnrevealed
+  "05140"
+  "Unknown Places"
+  [Extradimensional]
+  Moon
+  [Square]
+  ("Court of the Great Old Ones" <:> "A Not-Too-Distant Future")
+  [Extradimensional, Otherworld]
+  Squiggle
+  [Square, Equals]
+  TheSecretName
+
+siteOfTheSacrifice :: CardDef
+siteOfTheSacrifice = location
+  "05141"
+  "Site of the Sacrifice"
+  [Extradimensional, WitchHouse]
+  T
+  [Hourglass]
+  TheSecretName
+
+strangeGeometry :: CardDef
+strangeGeometry = (location
+                    "05142"
+                    "Strange Geometry"
+                    [Extradimensional]
+                    NoSymbol
+                    []
+                    TheSecretName
+                  )
+  { cdDoubleSided = False
+  }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway = location

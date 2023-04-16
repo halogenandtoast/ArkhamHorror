@@ -395,6 +395,22 @@ allLocations = mapFrom
   , SomeLocationCard masterBedroomSpectral
   , SomeLocationCard balconySpectral
   , SomeLocationCard officeSpectral
+  -- The Secret Name
+  , SomeLocationCard moldyHalls
+  , SomeLocationCard landlordsQuarters
+  , SomeLocationCard joeMazurewiczsRoom
+  , SomeLocationCard frankElwoodsRoom
+  , SomeLocationCard walterGilmansRoom
+  , SomeLocationCard keziahsRoom
+  , SomeLocationCard moldyHallsEarlierTonight
+  , SomeLocationCard twilightAbyss
+  , SomeLocationCard cityOfElderThings
+  , SomeLocationCard witchHouseRuins
+  , SomeLocationCard salemGaol1692
+  , SomeLocationCard physicsClassroom
+  , SomeLocationCard courtOfTheGreatOldOnes
+  , SomeLocationCard siteOfTheSacrifice
+  , SomeLocationCard strangeGeometry
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

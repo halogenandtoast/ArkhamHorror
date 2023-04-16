@@ -71,6 +71,7 @@ data Trait
   | Expert
   | Extradimensional
   | Eztli
+  | Familiar
   | Fated
   | Favor
   | Firearm
@@ -139,6 +140,7 @@ data Trait
   | Ritual
   | Riverside
   | Ruins
+  | Salem
   | Scheme
   | Scholar
   | Science
@@ -182,6 +184,7 @@ data Trait
   | Weapon
   | Wilderness
   | Witch
+  | WitchHouse
   | Woods
   | Yithian
   | Yoth

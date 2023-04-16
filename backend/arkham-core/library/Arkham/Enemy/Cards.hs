@@ -117,6 +117,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , broodOfYig
   , broodOfYogSothoth
   , brotherhoodCultist
+  , brownJenkin
   , carnevaleSentinel
   , catacombsDocent
   , cloverClubPitBoss
@@ -176,6 +177,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , mariaDeSilvaKnowsMoreThanSheLetsOn
   , marshGug
   , mobster
+  , nahab
   , narogath
   , netherMist
   , oBannionsThug
@@ -1150,6 +1152,18 @@ wraith :: CardDef
 wraith = (enemy "05103" "Wraith" TrappedSpirits 2)
   { cdCardTraits = setFromList [Monster, Geist, Spectral]
   , cdKeywords = singleton Keyword.Hunter
+  }
+
+brownJenkin :: CardDef
+brownJenkin = unique $ (enemy "05148" ("Brown Jenkin" <:> "The Witch's Familiar") TheSecretName 1)
+  { cdCardTraits = setFromList [Creature, Familiar, Elite]
+  , cdKeywords = setFromList [Keyword.Aloof,  Keyword.Hunter]
+  }
+
+nahab :: CardDef
+nahab = unique $ (enemy "05149" ("Nahab" <:> "She Who Signed the Black Book") TheSecretName 1)
+  { cdCardTraits = setFromList [Monster, Geist, Witch, Elite]
+  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
   }
 
 corpseHungryGhoul :: CardDef

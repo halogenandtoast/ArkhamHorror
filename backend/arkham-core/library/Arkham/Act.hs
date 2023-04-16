@@ -188,6 +188,10 @@ allActs = mapFrom
   , SomeActCard hiddenAgendas
   , SomeActCard theSpectralRealm
   , SomeActCard escapeTheCage
+  --- The Secret Name
+  , SomeActCard investigatingTheWitchHouse
+  , SomeActCard beyondTheWitchHouse
+  , SomeActCard stoppingTheRitual
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeActCard mysteriousGateway

@@ -100,6 +100,7 @@ allAgendaCards = mapFromList $ map
   , madnessCoils
   , madnessDies
   , madnessDrowns
+  , markedForSacrifice
   , outOfTime
   , overTheThreshold
   , pastPresentAndFuture
@@ -131,8 +132,10 @@ allAgendaCards = mapFromList $ map
   , theEndOfAllThings
   , theEntityAboveTheFloodBelow
   , theEntityAboveTheVortexAbove
+  , theFamiliar
   , theFestivitiesBegin
   , theFirstNight
+  , theHermitIX
   , theJunglesHeart
   , theLonelyCaverns
   , theMawWidens
@@ -150,6 +153,7 @@ allAgendaCards = mapFromList $ map
   , theThirdNight
   , theTideRises
   , theTruthIsHidden
+  , theWitchLight
   , theyreGettingOut
   , threadsOfTime
   , threeFates
@@ -444,6 +448,18 @@ justiceXI = agenda "05066" "JUSTICE • XI" 1 AtDeathsDoorstep
 
 overTheThreshold :: CardDef
 overTheThreshold = agenda "05067" "Over the Threshold" 2 AtDeathsDoorstep
+
+theHermitIX :: CardDef
+theHermitIX = agenda "05121" "THE HERMIT • IX" 1 TheSecretName
+
+theFamiliar :: CardDef
+theFamiliar = agenda "05122" "The Familiar" 2 TheSecretName
+
+theWitchLight :: CardDef
+theWitchLight = agenda "05123" "The Witch Light" 3 TheSecretName
+
+markedForSacrifice :: CardDef
+markedForSacrifice = agenda "05124" "Marked for Sacrifice" 4 TheSecretName
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

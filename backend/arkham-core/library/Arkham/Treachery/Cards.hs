@@ -190,6 +190,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , descentIntoMadness
   , diabolicVoices
   , dismalCurse
+  , disquietingDreams
   , dissonantVoices
   , draggedUnder
   , dreamsOfRlyeh
@@ -197,6 +198,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , entombed
   , ephemeralExhibits
   , evilPast
+  , extradimensionalVisions
   , eyesInTheWalls
   , falseLead
   , fateOfAllFools
@@ -206,6 +208,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , frozenInFearAPhantomOfTruth
   , giftOfMadnessMisery
   , giftOfMadnessPity
+  , ghostlyPresence
   , graspingHands
   , huntedByByakhee
   , huntedDown
@@ -226,6 +229,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , maskOfUmordhoth
   , maskedHorrors
   , massHysteria
+  , meddlesomeFamiliar
   , mesmerize
   , mysteriesOfTheLodge
   , mysteriousChanting
@@ -244,6 +248,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , possessionTorturous
   , possessionTraitorous
   , psychopompsSong
+  , pulledByTheStars
   , pushedIntoTheBeyond
   , realmOfMadness
   , realmOfTorment
@@ -1304,6 +1309,31 @@ fateOfAllFools :: CardDef
 fateOfAllFools = (treachery "05108" "Fate of All Fools" InexorableFate 3)
   { cdCardTraits = setFromList [Omen, Spectral]
   , cdKeywords = singleton Keyword.Peril
+  }
+
+meddlesomeFamiliar :: CardDef
+meddlesomeFamiliar = (treachery "05143" "Meddlesome Familiar" TheSecretName 3)
+  { cdCardTraits = singleton Curse
+  }
+
+ghostlyPresence :: CardDef
+ghostlyPresence = (treachery "05144" "Ghostly Presence" TheSecretName 2)
+  { cdCardTraits = singleton Omen
+  }
+
+extradimensionalVisions :: CardDef
+extradimensionalVisions = (treachery "05145" "Extradimensional Visions" TheSecretName 2)
+  { cdCardTraits = singleton Hex
+  }
+
+pulledByTheStars :: CardDef
+pulledByTheStars = (treachery "05146" "Pulled by the Stars" TheSecretName 2)
+  { cdCardTraits = singleton Hex
+  }
+
+disquietingDreams :: CardDef
+disquietingDreams = (treachery "05147" "Disquieting Dreams" TheSecretName 2)
+  { cdCardTraits = singleton Terror
   }
 
 theHarbinger :: CardDef

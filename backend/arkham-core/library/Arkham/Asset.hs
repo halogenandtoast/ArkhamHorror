@@ -515,6 +515,8 @@ allAssets = mapFrom
   , SomeAssetCard hallowedMirror
   --- seeker [bbt]
   , SomeAssetCard occultLexicon
+  --- rogue [bbt]
+  , SomeAssetCard doubleDouble4
   --- mystic [bbt]
   , SomeAssetCard wither4
   , SomeAssetCard sixthSense4

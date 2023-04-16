@@ -136,10 +136,13 @@ data Card
   | EncounterCard EncounterCard
   | VengeanceCard Card
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Eq Card where
   a == b = toCardId a == toCardId b
+
+instance Hashable Card where
+  hashWithSalt n c = hashWithSalt n (toCardId c)
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =

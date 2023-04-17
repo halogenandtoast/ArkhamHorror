@@ -61,7 +61,7 @@ instance RunMessage DimStreetsTheArchway where
           (InvestigatorTarget iid)
           SkillIntellect
           3
-        , ReplaceLocation (toId attrs) otherDimStreets
+        , ReplaceLocation (toId attrs) otherDimStreets DefaultReplace
         ]
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n

@@ -59,6 +59,6 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
         (x : xs) -> sample (x :| xs)
       pushAll
         $ healHorrorMessages
-        <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa]
+        <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa DefaultReplace]
       pure l
     _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs

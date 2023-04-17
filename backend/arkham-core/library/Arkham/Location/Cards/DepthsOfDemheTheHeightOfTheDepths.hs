@@ -49,6 +49,6 @@ instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
         (x : xs) -> sample (x :| xs)
       pushAll
         $ healHorrorMessages
-        <> [ReplaceLocation (toId attrs) otherDepthsOfDemhe]
+        <> [ReplaceLocation (toId attrs) otherDepthsOfDemhe DefaultReplace]
       pure l
     _ -> DepthsOfDemheTheHeightOfTheDepths <$> runMessage msg attrs

@@ -55,6 +55,6 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       pushAll $
         healMessages
         <> [ chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies ]
-        <> [ReplaceLocation (toId attrs) otherBleakPlain]
+        <> [ReplaceLocation (toId attrs) otherBleakPlain DefaultReplace]
       pure l
     _ -> BleakPlainsStarsOfAldebaran <$> runMessage msg attrs

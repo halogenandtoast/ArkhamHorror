@@ -12,6 +12,8 @@ const baseUrl = inject('baseUrl')
 
 const deckImage = computed(() => {
   switch(props.deck[0]) {
+    case 'UnknownPlacesDeck':
+      return `${baseUrl}/img/arkham/cards/05134b.jpg`;
     case 'ExhibitDeck':
       return `${baseUrl}/img/arkham/cards/02132b.jpg`;
     case 'CatacombsDeck':

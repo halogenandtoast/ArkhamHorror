@@ -3518,18 +3518,34 @@ runGameMessage msg g = case msg of
       push (PlacedLocation (toName location) (toCardCode card) lid)
       pure $ g & entitiesL . locationsL . at lid ?~ location
     else pure g
-  ReplaceLocation lid card -> do
+  ReplaceLocation lid card replaceStrategy -> do
+    -- if replaceStrategy is swap we also want to copy over revealed, all tokens
     location <- getLocation lid
     let
       oldAttrs = toAttrs location
       location' =
         flip overAttrs (lookupLocation (toCardCode card) lid (toCardId card))
-          $ \attrs -> attrs
+          $ \attrs -> case replaceStrategy of
+            DefaultReplace -> attrs
               { locationInvestigators = locationInvestigators oldAttrs
               , locationEnemies = locationEnemies oldAttrs
               , locationEvents = locationEvents oldAttrs
               , locationAssets = locationAssets oldAttrs
               , locationTreacheries = locationTreacheries oldAttrs
+              }
+            Swap -> attrs
+              { locationInvestigators = locationInvestigators oldAttrs
+              , locationEnemies = locationEnemies oldAttrs
+              , locationEvents = locationEvents oldAttrs
+              , locationAssets = locationAssets oldAttrs
+              , locationTreacheries = locationTreacheries oldAttrs
+              , locationClues = locationClues oldAttrs
+              , locationDoom = locationDoom oldAttrs
+              , locationHorror = locationHorror oldAttrs
+              , locationResources = locationResources oldAttrs
+              , locationRevealed = locationRevealed oldAttrs
+              , locationCardsUnderneath = locationCardsUnderneath oldAttrs
+              , locationWithoutClues = locationWithoutClues oldAttrs
               }
     -- todo: should we just run this in place?
     iid <- getLeadInvestigatorId

@@ -60,7 +60,7 @@ instance RunMessage DimStreetsTheKingsParade where
           (InvestigatorTarget iid)
           SkillCombat
           2
-        , ReplaceLocation (toId attrs) otherDimStreets
+        , ReplaceLocation (toId attrs) otherDimStreets DefaultReplace
         ]
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

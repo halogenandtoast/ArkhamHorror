@@ -131,6 +131,8 @@ instance RunMessage TheSecretName where
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
           , placeMoldyHalls
           , placeWalterGilmansRoom
           ]

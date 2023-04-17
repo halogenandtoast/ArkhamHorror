@@ -13,3 +13,7 @@ pattern AbilityEvade <- 101 where
 pattern AbilityEngage :: Int
 pattern AbilityEngage <- 102 where
   AbilityEngage = 102
+
+pattern ActAdvancement :: Int
+pattern ActAdvancement <- 999 where
+  ActAdvancement = 999

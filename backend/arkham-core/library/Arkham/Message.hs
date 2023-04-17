@@ -134,6 +134,10 @@ instance IsMessage EnemyAttackDetails where
   toMessage = InitiateEnemyAttack
   {-# INLINE toMessage #-}
 
+data ReplaceStrategy = DefaultReplace | Swap
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL
@@ -165,7 +169,7 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgendaDeck Int Source
   | AdvanceCurrentAgenda
-  | ReplaceLocation LocationId Card
+  | ReplaceLocation LocationId Card ReplaceStrategy
   | ReplacedLocation LocationId LocationId
   | ReplaceAgenda AgendaId Card
   | RevertAgenda AgendaId

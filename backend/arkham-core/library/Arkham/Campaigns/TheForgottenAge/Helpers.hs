@@ -128,7 +128,7 @@ explore iid source cardMatcher exploreRule matchCount = do
                   $ cdLocationRevealedSymbol (toCardDef x)
               mLocationToReplace <- selectOne $ LocationWithSymbol lSymbol
               case mLocationToReplace of
-                Just lid -> pure (lid, ReplaceLocation lid x)
+                Just lid -> pure (lid, ReplaceLocation lid x DefaultReplace)
                 Nothing -> error "no location found"
 
           afterPutIntoPlayWindow <- checkWindows

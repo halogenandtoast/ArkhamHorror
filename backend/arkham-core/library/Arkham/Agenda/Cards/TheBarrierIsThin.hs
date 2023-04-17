@@ -74,7 +74,7 @@ instance RunMessage TheBarrierIsThin where
           [ TargetLabel
               (CardIdTarget $ toCardId replacement)
               [ RemoveCardFromScenarioDeck ExplorationDeck replacement
-              , ReplaceLocation lid replacement
+              , ReplaceLocation lid replacement DefaultReplace
               ]
           | replacement <- replacements
           ]

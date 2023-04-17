@@ -72,6 +72,6 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
         (x : xs) -> sample (x :| xs)
       pushAll
         $ [ chooseOrRunOne iid choices | notNull choices ]
-        <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa]
+        <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa DefaultReplace]
       pure l
     _ -> RuinsOfCarcosaAMomentsRest <$> runMessage msg attrs

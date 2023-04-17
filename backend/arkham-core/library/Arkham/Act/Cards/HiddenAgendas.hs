@@ -64,13 +64,13 @@ instance RunMessage HiddenAgendas where
         <> map
              (\eid -> Move $ move (toSource attrs) eid victorianHalls)
              enemyIds
-        <> [ ReplaceLocation entryHall entryHallSpectral
-           , ReplaceLocation victorianHalls victorianHallsSpectral
-           , ReplaceLocation balcony balconySpectral
-           , ReplaceLocation office officeSpectral
-           , ReplaceLocation billiardsRoom billiardsRoomSpectral
-           , ReplaceLocation masterBedroom masterBedroomSpectral
-           , ReplaceLocation trophyRoom trophyRoomSpectral
+        <> [ ReplaceLocation entryHall entryHallSpectral DefaultReplace
+           , ReplaceLocation victorianHalls victorianHallsSpectral DefaultReplace
+           , ReplaceLocation balcony balconySpectral DefaultReplace
+           , ReplaceLocation office officeSpectral DefaultReplace
+           , ReplaceLocation billiardsRoom billiardsRoomSpectral DefaultReplace
+           , ReplaceLocation masterBedroom masterBedroomSpectral DefaultReplace
+           , ReplaceLocation trophyRoom trophyRoomSpectral DefaultReplace
            , NextAdvanceActStep (toId a) 0
            , NextAdvanceActStep (toId a) 1
            , SpawnEnemyAt theSpectralWatcher entryHall

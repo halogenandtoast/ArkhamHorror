@@ -77,6 +77,7 @@ data instance Field Location :: Type -> Type where
   LocationInvestigateSkill :: Field Location SkillType
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationCardId :: Field Location CardId
+  LocationLabel :: Field Location Text
   -- virtual
   LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card

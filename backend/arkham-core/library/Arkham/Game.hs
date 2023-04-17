@@ -2143,6 +2143,7 @@ instance Projection Location where
     case f of
       LocationInFrontOf -> pure locationInFrontOf
       LocationInvestigateSkill -> pure locationInvestigateSkill
+      LocationLabel -> pure locationLabel
       LocationClues -> pure locationClues
       LocationResources -> pure locationResources
       LocationHorror -> pure locationHorror

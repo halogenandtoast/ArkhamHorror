@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
 
 newtype CityOfElderThings = CityOfElderThings LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,5 +23,7 @@ instance HasAbilities CityOfElderThings where
     -- withBaseAbilities attrs []
 
 instance RunMessage CityOfElderThings where
-  runMessage msg (CityOfElderThings attrs) =
-    CityOfElderThings <$> runMessage msg attrs
+  runMessage msg (CityOfElderThings attrs) = case msg of
+    RevealLocation _ lid | lid == toId attrs -> do
+      CityOfElderThings <$> runMessage msg (attrs & labelL .~ "cityOfElderThings")
+    _ -> CityOfElderThings <$> runMessage msg attrs

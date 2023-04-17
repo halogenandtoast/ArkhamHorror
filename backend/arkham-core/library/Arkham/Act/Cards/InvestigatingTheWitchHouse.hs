@@ -61,6 +61,7 @@ instance RunMessage InvestigatingTheWitchHouse where
             | iid <- iids
             ]
         , ShuffleCardsIntoDeck Deck.EncounterDeck strangeGeometries
+        , advanceActDeck attrs
         ]
       pure a
     _ -> InvestigatingTheWitchHouse <$> runMessage msg attrs

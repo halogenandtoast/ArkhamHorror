@@ -50,6 +50,25 @@ instance HasTokenValue TheSecretName where
     ElderThing -> pure $ TokenValue ElderThing NoModifier
     otherFace -> getTokenValue iid otherFace attrs
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Tablet
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage TheSecretName where
   runMessage msg s@(TheSecretName attrs) = case msg of
     PreScenarioSetup -> do
@@ -89,6 +108,9 @@ instance RunMessage TheSecretName where
         <> [ story iids intro4 | enemiesOfTheLodge ]
         <> [ story iids intro5 | learnedNothing ]
         <> [ story iids intro6 | neverSeenOrHeardFromAgain ]
+      pure s
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ push (SetTokens standaloneTokens)
       pure s
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding

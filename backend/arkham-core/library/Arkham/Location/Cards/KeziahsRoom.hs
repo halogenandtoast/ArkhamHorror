@@ -41,7 +41,7 @@ instance RunMessage KeziahsRoom where
       pure $ KeziahsRoom $ attrs `with` Metadata False
     DrewFromScenarioDeck iid _ target [card] | isTarget attrs target -> do
       labels <- selectAgg (:[]) LocationLabel $ LocationWithUnrevealedTitle "Unknown Places" <> NotLocation RevealedLocation
-      let nextLabel = fromJustNote "too many locations" $ find (`notElem` labels) $ map (\n -> "unknownPlaces" <> tshow n) ([1..8] :: [Int])
+      let nextLabel = fromJustNote "too many locations" $ find (`notElem` labels) $ map (\n -> "unknownPlaces" <> tshow n) ([1..7] :: [Int])
       (lid, placement) <- placeLocation card
       pushAll [placement, SetLocationLabel lid nextLabel, chooseOne iid [Label "Do not move" [], Label "Move to location" [MoveTo $ move (toSource attrs) (toTarget iid) lid]]]
       pure l

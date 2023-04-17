@@ -41,7 +41,7 @@ theSecretName difficulty = scenario
   , ".              walterGilmansRoom .             cityOfElderThings        physicsClassroom siteOfTheSacrifice     .              strangeGeometry1"
   , "decrepitDoor1  moldyHalls        decrepitDoor2 moldyHallsEarlierTonight keziahsRoom      witchHouseRuins        .              ."
   , ".              decrepitDoor3     .             salemGaol1692            twilightAbyss    courtOfTheGreatOldOnes .              strangeGeometry2"
-  , ".              .                 .             unknownPlaces8           unknownPlaces5   unknownPlaces6         unknownPlaces7 ."
+  , ".              .                 .             .                        unknownPlaces5   unknownPlaces6         unknownPlaces7 ."
   ]
 
 instance HasTokenValue TheSecretName where

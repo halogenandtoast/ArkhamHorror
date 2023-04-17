@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
 
 newtype MoldyHallsEarlierTonight = MoldyHallsEarlierTonight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,5 +23,7 @@ instance HasAbilities MoldyHallsEarlierTonight where
     -- withBaseAbilities attrs []
 
 instance RunMessage MoldyHallsEarlierTonight where
-  runMessage msg (MoldyHallsEarlierTonight attrs) =
-    MoldyHallsEarlierTonight <$> runMessage msg attrs
+  runMessage msg (MoldyHallsEarlierTonight attrs) = case msg of
+    RevealLocation _ lid | lid == toId attrs -> do
+      MoldyHallsEarlierTonight <$> runMessage msg (attrs & labelL .~ "moldyHallsEarlierTonight")
+    _ -> MoldyHallsEarlierTonight <$> runMessage msg attrs

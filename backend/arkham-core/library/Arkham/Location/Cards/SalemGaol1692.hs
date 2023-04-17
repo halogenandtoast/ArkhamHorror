@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
 
 newtype SalemGaol1692 = SalemGaol1692 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,4 +22,7 @@ instance HasAbilities SalemGaol1692 where
     -- withBaseAbilities attrs []
 
 instance RunMessage SalemGaol1692 where
-  runMessage msg (SalemGaol1692 attrs) = SalemGaol1692 <$> runMessage msg attrs
+  runMessage msg (SalemGaol1692 attrs) = case msg of
+    RevealLocation _ lid | lid == toId attrs -> do
+      SalemGaol1692 <$> runMessage msg (attrs & labelL .~ "salemGaol1692")
+    _ -> SalemGaol1692 <$> runMessage msg attrs

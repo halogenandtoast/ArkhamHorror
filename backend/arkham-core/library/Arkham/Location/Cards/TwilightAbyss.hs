@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
 
 newtype TwilightAbyss = TwilightAbyss LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,4 +22,7 @@ instance HasAbilities TwilightAbyss where
     -- withBaseAbilities attrs []
 
 instance RunMessage TwilightAbyss where
-  runMessage msg (TwilightAbyss attrs) = TwilightAbyss <$> runMessage msg attrs
+  runMessage msg (TwilightAbyss attrs) = case msg of
+    RevealLocation _ lid | lid == toId attrs -> do
+      TwilightAbyss <$> runMessage msg (attrs & labelL .~ "twilightAbyss")
+    _ -> TwilightAbyss <$> runMessage msg attrs

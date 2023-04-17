@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Message
 
 newtype PhysicsClassroom = PhysicsClassroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,5 +23,7 @@ instance HasAbilities PhysicsClassroom where
     -- withBaseAbilities attrs []
 
 instance RunMessage PhysicsClassroom where
-  runMessage msg (PhysicsClassroom attrs) =
-    PhysicsClassroom <$> runMessage msg attrs
+  runMessage msg (PhysicsClassroom attrs) = case msg of
+    RevealLocation _ lid | lid == toId attrs -> do
+      PhysicsClassroom <$> runMessage msg (attrs & labelL .~ "physicsClassroom")
+    _ -> PhysicsClassroom <$> runMessage msg attrs

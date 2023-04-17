@@ -257,7 +257,10 @@ instance ToJSON Location where
   toJSON (Location a) = toJSON a
 
 toLocationSymbol :: Location -> LocationSymbol
-toLocationSymbol = locationSymbol . toAttrs
+toLocationSymbol l = if locationRevealed attrs
+  then locationRevealedSymbol attrs
+  else locationSymbol attrs
+  where attrs = toAttrs l
 
 toLocationLabel :: Location -> L.Label
 toLocationLabel = L.Label . locationLabel . toAttrs

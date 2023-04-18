@@ -353,7 +353,8 @@ instance RunMessage EnemyAttrs where
     HuntersMove | not enemyExhausted -> do
       -- TODO: unengaged or not engaged with only prey
       unengaged <- selectNone $ investigatorEngagedWith enemyId
-      when unengaged $ do
+      modifiers' <- getModifiers (EnemyTarget enemyId)
+      when (unengaged && CannotMove `notElem` modifiers') $ do
         keywords <- getModifiedKeywords a
         leadInvestigatorId <- getLeadInvestigatorId
         when (Keyword.Hunter `elem` keywords) $ pushAll

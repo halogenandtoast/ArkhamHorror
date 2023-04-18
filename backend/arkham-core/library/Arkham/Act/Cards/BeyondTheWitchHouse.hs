@@ -47,12 +47,18 @@ instance RunMessage BeyondTheWitchHouse where
         then do
           agendaId <- selectJust AnyAgenda
           agendaDoom <- field AgendaDoom agendaId
-          pure [RemoveAllDoom (toTarget agendaId), PlaceDoom (toTarget nahabId) agendaDoom]
+          pure
+            [ RemoveAllDoom (toTarget agendaId)
+            , PlaceDoom (toTarget nahabId) agendaDoom
+            ]
         else pure [PlaceDoom (toTarget nahabId) 2]
 
       brownJenkin <- findJustCard (`cardMatch` cardIs Enemies.brownJenkin)
       createBrownJenkin <- createEnemyAt_ brownJenkin siteId Nothing
 
-      pushAll $ [sitePlacement, createNahab] <> doomMessages <> [createBrownJenkin, advanceActDeck attrs]
+      pushAll
+        $ [sitePlacement, createNahab]
+        <> doomMessages
+        <> [createBrownJenkin, advanceActDeck attrs]
       pure a
     _ -> BeyondTheWitchHouse <$> runMessage msg attrs

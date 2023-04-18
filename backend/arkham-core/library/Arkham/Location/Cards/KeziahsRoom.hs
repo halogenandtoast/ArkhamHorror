@@ -55,8 +55,7 @@ instance RunMessage KeziahsRoom where
         push $ DrawFromScenarioDeck iid UnknownPlacesDeck (toTarget attrs) 1
         pure $ KeziahsRoom $ attrs `with` Metadata False
     DrewFromScenarioDeck iid _ target [card] | isTarget attrs target -> do
-      labels <-
-        selectAgg (: []) LocationLabel
+      labels <- selectFields LocationLabel
         $ LocationWithUnrevealedTitle "Unknown Places"
         <> NotLocation RevealedLocation
       let

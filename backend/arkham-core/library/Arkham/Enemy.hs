@@ -244,6 +244,9 @@ allEnemies = mapFrom
   , SomeEnemyCard shadowHound
   -- Trapped Spirits
   , SomeEnemyCard wraith
+  -- The Secret Name
+  , SomeEnemyCard brownJenkin
+  , SomeEnemyCard nahab
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

@@ -49,7 +49,7 @@ instance RunMessage TheBarrier where
         [ RevealLocation Nothing parlorId
         , CreateAssetAt assetId litaChantler (AtLocation parlorId)
         , createGhoulPriest
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        , advanceActDeck attrs
         ]
       pure a
     _ -> TheBarrier <$> runMessage msg attrs

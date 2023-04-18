@@ -90,6 +90,17 @@ selectJustField
   -> m typ
 selectJustField fld matcher = field fld =<< selectJust matcher
 
+selectFields
+  :: ( Query a
+     , QueryElement a ~ EntityId attrs
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs typ
+  -> a
+  -> m [typ]
+selectFields = selectAgg (: [])
+
 selectAgg
   :: ( Monoid monoid
      , Query a

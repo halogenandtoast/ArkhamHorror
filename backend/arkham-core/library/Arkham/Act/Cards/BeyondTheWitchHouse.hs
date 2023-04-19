@@ -8,12 +8,11 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Agenda.Types ( Field (AgendaDoom) )
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.Card
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -37,9 +36,7 @@ instance RunMessage BeyondTheWitchHouse where
       siteOfTheSacrifice <- getSetAsideCard Locations.siteOfTheSacrifice
       (siteId, sitePlacement) <- placeLocation siteOfTheSacrifice
 
-      -- find even if out of play so which zones
-      -- EncounterDeck, SetAside, Discard, Victory
-      nahab <- findJustCard (`cardMatch` cardIs Enemies.nahab)
+      nahab <- findUniqueCard Enemies.nahab
       (nahabId, createNahab) <- createEnemyAt nahab siteId Nothing
 
       step <- getCurrentAgendaStep
@@ -53,7 +50,7 @@ instance RunMessage BeyondTheWitchHouse where
             ]
         else pure [PlaceDoom (toTarget nahabId) 2]
 
-      brownJenkin <- findJustCard (`cardMatch` cardIs Enemies.brownJenkin)
+      brownJenkin <- findUniqueCard Enemies.brownJenkin
       createBrownJenkin <- createEnemyAt_ brownJenkin siteId Nothing
 
       pushAll

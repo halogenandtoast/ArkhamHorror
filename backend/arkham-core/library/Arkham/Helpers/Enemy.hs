@@ -180,3 +180,6 @@ getEnemyAccessibleLocations eid = do
         || Modifier.CannotBeEnteredByNonElite
         `notElem` modifiers'
   filterM unblocked connectedLocationIds
+
+getUniqueEnemy :: HasGame m => CardDef -> m EnemyId
+getUniqueEnemy = selectJust . enemyIs

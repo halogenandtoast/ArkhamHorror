@@ -132,6 +132,9 @@ data Criterion
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+enemyExists :: EnemyMatcher -> Criterion
+enemyExists = EnemyCriteria . EnemyExists
+
 instance Semigroup Criterion where
   Never <> _ = Never
   _ <> Never = Never

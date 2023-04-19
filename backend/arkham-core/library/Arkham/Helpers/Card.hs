@@ -102,3 +102,9 @@ getPrintedVictoryPoints = getCardField cdVictoryPoints
 -- To get abilities we convert to some entity in Entities and get all abilities
 getCardAbilities :: InvestigatorId -> Card -> [Ability]
 getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c
+
+findJustCard :: HasGame m => (Card -> Bool) -> m Card
+findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
+
+findUniqueCard :: HasGame m => CardDef -> m Card
+findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))

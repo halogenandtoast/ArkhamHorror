@@ -14,7 +14,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Timing qualified as Timing
@@ -34,18 +33,15 @@ instance HasModifiersFor StoppingTheRitual where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StoppingTheRitual where
-  getAbilities (StoppingTheRitual a) =
+  getAbilities (StoppingTheRitual a) | onSide A a =
     [ mkAbility a 1 $ ForcedAbility $ EnemyDefeated Timing.When Anyone $ enemyIs
       Enemies.nahab
-    , restrictedAbility
-        a
-        2
-        (EnemyCriteria $ EnemyExists $ enemyIs Enemies.nahab <> NotEnemy
-          (EnemyWithDoom (GreaterThan (Static 0)))
-        )
+    , restrictedAbility a 2
+        (enemyExists $ enemyIs Enemies.nahab <> NotEnemy EnemyWithAnyDoom)
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage StoppingTheRitual where
   runMessage msg a@(StoppingTheRitual attrs) = case msg of
@@ -65,5 +61,8 @@ instance RunMessage StoppingTheRitual where
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+      pure a
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      push $ scenarioResolution 2
       pure a
     _ -> StoppingTheRitual <$> runMessage msg attrs

@@ -57,6 +57,9 @@ abilityMetadataL = lens abilityMetadata $ \m x -> m { abilityMetadata = x }
 abilityTooltipL :: Lens' Ability (Maybe Text)
 abilityTooltipL = lens abilityTooltip $ \m x -> m { abilityTooltip = x }
 
+abilityCriteriaL :: Lens' Ability (Maybe Criterion)
+abilityCriteriaL = lens abilityCriteria $ \m x -> m { abilityCriteria = x }
+
 abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity

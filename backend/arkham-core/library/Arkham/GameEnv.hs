@@ -56,9 +56,6 @@ findCard cardPred = do
   g <- getGame
   pure $ find cardPred (toList $ gameCards g)
 
-findJustCard :: HasGame m => (Card -> Bool) -> m Card
-findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
-
 instance Monad m => HasGame (ReaderT Game m) where
   getGame = ask
 

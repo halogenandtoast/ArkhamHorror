@@ -69,6 +69,11 @@ restrictedAbility
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') { abilityCriteria = Just restriction }
 
+withCriteria :: Criterion -> Ability -> Ability
+withCriteria c ab = case abilityCriteria ab of
+  Nothing -> ab { abilityCriteria = Just c }
+  Just c' -> ab { abilityCriteria = Just (c <> c') }
+
 haunted :: Sourceable a => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 

@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Agenda.Runner
   ( module X
+  , advanceAgendaDeck
   ) where
 
 import Arkham.Prelude
@@ -20,6 +21,9 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+
+advanceAgendaDeck :: AgendaAttrs -> Message
+advanceAgendaDeck attrs = AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
 
 instance RunMessage AgendaAttrs
   where

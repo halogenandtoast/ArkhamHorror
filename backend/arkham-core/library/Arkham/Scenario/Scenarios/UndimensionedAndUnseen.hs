@@ -247,6 +247,9 @@ instance RunMessage UndimensionedAndUnseen where
         & (actStackL . at 1 ?~ acts)
         & (agendaStackL . at 1 ?~ agendas)
         )
+    ResolveToken _ Cultist iid -> do
+      push $ DrawAnotherToken iid
+      pure s
     ResolveToken drawnToken Tablet _ -> s <$ push
       (CreateEffect
         "02236"
@@ -271,6 +274,11 @@ instance RunMessage UndimensionedAndUnseen where
                 $ EnemyAttack
                 $ enemyAttack eid iid
             _ -> pure ()
+        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
+        Cultist -> push $ InvestigatorAssignDamage iid (TokenEffectSource Cultist) DamageAny (if isHardExpert attrs then 1 else 0) 1
         _ -> pure ()
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do

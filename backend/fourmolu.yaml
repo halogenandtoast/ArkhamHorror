@@ -12,3 +12,5 @@ in-style: right-align
 respectful: false
 fixities: []
 unicode: never
+column-limit: 80
+single-contraint-parens: never

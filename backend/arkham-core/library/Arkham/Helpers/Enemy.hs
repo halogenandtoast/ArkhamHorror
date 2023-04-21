@@ -183,3 +183,6 @@ getEnemyAccessibleLocations eid = do
 
 getUniqueEnemy :: HasGame m => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs
+
+getEnemyIsInPlay :: HasGame m => CardDef -> m Bool
+getEnemyIsInPlay = selectAny . enemyIs

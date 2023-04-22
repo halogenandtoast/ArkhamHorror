@@ -50,13 +50,14 @@ instance RunMessage MoldyHallsEarlierTonight where
       MoldyHallsEarlierTonight <$> runMessage msg (attrs & labelL .~ "moldyHallsEarlierTonight")
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <-
-        selectWithField InvestigatorDiscard $
+        selectList $
           investigatorAt (toId attrs)
             <> DiscardWith AnyCards
             <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
 
-      iidsWithName <- for iids $ \(iid, discards) -> do
+      iidsWithDetails <- for iids $ \iid -> do
         name <- field InvestigatorName iid
+        discards <- fieldMap InvestigatorDiscard (map toCard) iid
         pure (iid, discards, name)
 
       pushAll
@@ -73,7 +74,7 @@ instance RunMessage MoldyHallsEarlierTonight where
               , Remember $ MeddledWithThePast $ labeled name iid
               ]
           ]
-        | (iid, map toCard -> discards, name) <- iidsWithName
+        | (iid, discards, name) <- iidsWithDetails
         ]
       pure l
     _ -> MoldyHallsEarlierTonight <$> runMessage msg attrs

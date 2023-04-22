@@ -156,8 +156,14 @@ instance RunMessage LocationAttrs where
       pure $ a & treacheriesL %~ deleteSet tid
     RemoveFromGame (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     RemoveFromGame (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
-    Discard _ target | isTarget a target ->
-      a <$ pushAll (resolve (RemoveLocation $ toId a))
+    Discard source target | isTarget a target -> do
+      windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
+      pushAll
+        $ windows'
+        <> [ Discarded (toTarget a) source (toCard a) ]
+        <> [ RemovedFromPlay $ toSource a ]
+        <> resolve (RemoveLocation $ toId a)
+      pure a
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid

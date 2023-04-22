@@ -30,6 +30,7 @@ import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -441,6 +442,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardL %~ (ec :)
+      VengeanceCard _ -> error "vengeance card"
+  Discarded (LocationTarget lid) _ _ -> do
+    card <- convertToCard lid
+    -- only single sided encounter cards should end up in discard
+    case card of
+      PlayerCard _ -> pure a
+      EncounterCard ec -> if cdDoubleSided (toCardDef card)
+        then pure a
+        else pure $ a & discardL %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)

@@ -74,3 +74,6 @@ createWindowModifierEffect eWindow source target modifiers' = CreateWindowModifi
 
 createRoundModifier :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow
+
+roundModifier :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+roundModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectRoundWindow source target [modifier]

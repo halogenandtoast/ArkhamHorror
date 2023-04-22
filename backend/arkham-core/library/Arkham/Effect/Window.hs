@@ -10,6 +10,7 @@ data EffectWindow
   | EffectCostWindow
   | EffectSkillTestWindow
   | EffectRoundWindow
+  | EffectNextActionWindow
   | EffectSetupWindow
   | EffectTurnWindow
   | EffectCardResolutionWindow

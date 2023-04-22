@@ -26,13 +26,12 @@ endlessBridge = location EndlessBridge Cards.endlessBridge 4 (Static 2)
 
 instance HasAbilities EndlessBridge where
   getAbilities (EndlessBridge attrs) =
-    withBaseAbilities attrs
+    withRevealedAbilities attrs
       $ [ mkAbility attrs 1
           $ ForcedAbility
           $ Leaves Timing.After Anyone
           $ LocationWithId
           $ toId attrs
-        | locationRevealed attrs
         ]
 
 instance RunMessage EndlessBridge where

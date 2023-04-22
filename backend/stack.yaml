@@ -1,7 +1,6 @@
 ---
-require-stack-version: ">= 2.3.1"
+require-stack-version: ">= 2.9.3"
 concurrent-tests: false
-
 system-ghc: true
 install-ghc: false
 resolver: nightly-2023-04-19

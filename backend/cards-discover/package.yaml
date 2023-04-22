@@ -1,7 +1,7 @@
 name: cards-discover
 
 dependencies:
-- base >= 4.7 && < 5
+- base
 
 default-extensions:
 - NoImplicitPrelude

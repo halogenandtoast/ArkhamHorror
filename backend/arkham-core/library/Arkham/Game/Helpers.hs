@@ -200,6 +200,7 @@ preventedByInvestigatorModifiers iid ability = do
  where
   prevents = \case
     CannotTakeAction x -> preventsAbility x
+    MustTakeAction x -> not <$> preventsAbility x -- reads a little weird but we want only thing things x would prevent with cannot take action
     _ -> pure False
   preventsAbility = \case
     FirstOneOf as -> case abilityAction ability of

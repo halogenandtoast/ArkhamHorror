@@ -4231,10 +4231,13 @@ runGameMessage msg g = case msg of
       & (roundHistoryL %~ (<> view phaseHistoryL g))
       & (phaseHistoryL %~ mempty)
   EndInvestigation -> do
-    pushAll . (: [EndPhase, After EndPhase]) =<< checkWindows
+    whenWindow <- checkWindows
       [Window Timing.When (Window.PhaseEnds InvestigationPhase)]
-    pure
-      $ g
+    afterWindow <- checkWindows
+      [Window Timing.After (Window.PhaseEnds InvestigationPhase)]
+
+    pushAll [whenWindow, EndPhase, afterWindow, After EndPhase]
+    pure $ g
       & (phaseHistoryL .~ mempty)
       & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
@@ -4679,10 +4682,8 @@ runGameMessage msg g = case msg of
         locationId <- getRandom
         let location = createLocation card locationId
         pushAll
-          $ [ PlacedLocation (toName location) (toCardCode card) locationId
-            , RevealLocation (Just iid) locationId
-            ]
-          <> resolve (Revelation iid (LocationSource locationId))
+          $ PlacedLocation (toName location) (toCardCode card) locationId 
+          : resolve (Revelation iid (LocationSource locationId))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->
         error

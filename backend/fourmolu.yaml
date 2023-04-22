@@ -8,9 +8,17 @@ newlines-between-decls: 1
 haddock-style: multi-line
 haddock-style-module:
 let-style: auto
-in-style: right-align
+in-style: left-align
 respectful: true
 fixities: []
 unicode: never
 column-limit: 100
 single-contraint-parens: never
+fixities:
+  - infixr 9  .
+  - infixr 5  ++
+  - infixl 4  <$
+  - infixl 1  >>, >>=
+  - infixr 1  =<<
+  - infixr 0  $, $!
+  - infixl 4 <*>, <*, *>, <**>

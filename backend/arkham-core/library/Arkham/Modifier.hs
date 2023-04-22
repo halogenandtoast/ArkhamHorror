@@ -136,6 +136,7 @@ data ModifierType
   | MaxCluesDiscovered Int
   | CannotDiscoverCluesAt LocationMatcher
   | CannotTakeAction ActionTarget
+  | MustTakeAction ActionTarget
   | CannotTakeControlOfClues
   | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
   | CannotTriggerFastAbilities

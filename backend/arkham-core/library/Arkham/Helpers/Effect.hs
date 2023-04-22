@@ -1,6 +1,9 @@
-module Arkham.Helpers.Effect where
+module Arkham.Helpers.Effect (module Arkham.Helpers.Effect, module X) where
 
 import Arkham.Prelude
+
+import Arkham.Effect.Window as X
+import Arkham.EffectMetadata as X
 
 import Arkham.Card
 import Arkham.Effect.Types (Field(..))

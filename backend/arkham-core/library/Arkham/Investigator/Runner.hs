@@ -2925,6 +2925,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
         playableCards <- getPlayableCards a UnpaidCost windows
         drawing <- drawCardsF iid a 1
+
+        let
+          canDo action = not <$> anyM (prevents action) modifiers
+          prevents action = \case
+            CannotTakeAction x -> preventsAction action x
+            MustTakeAction x -> not <$> preventsAction action x -- reads a little weird but we want only thing things x would prevent with cannot take action
+            _ -> pure False
+          preventsAction action = \case
+            FirstOneOf as | action `elem` as ->
+              fieldP InvestigatorActionsTaken (\taken -> all (`notElem` taken) as) iid
+
+            FirstOneOf{} -> pure False
+            IsAction action' -> pure $ action == action'
+            EnemyAction {} -> pure False
+
+        canDraw <- canDo Action.Draw
+        canTakeResource <- canDo Action.Resource
+        canPlay <- canDo Action.Play
+
         push
           $ AskPlayer
           $ chooseOne iid
@@ -2932,20 +2951,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ ComponentLabel
                  (InvestigatorComponent iid ResourceToken)
                  [TakeResources iid 1 (toSource a) usesAction]
-             | canAffordTakeResources && CannotGainResources `notElem` modifiers
+             | canAffordTakeResources && CannotGainResources `notElem` modifiers && canTakeResource
              ]
           <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
-             | canAffordDrawCards && none
+             | canAffordDrawCards && canDraw && none
                (`elem` modifiers)
-               [ CannotTakeAction (IsAction Action.Draw)
-               , CannotDrawCards
+               [ CannotDrawCards
                , CannotManipulateDeck
                ]
              ]
           <> [ TargetLabel
                  (CardIdTarget $ toCardId c)
                  [InitiatePlayCard iid c Nothing windows usesAction]
-             | c <- playableCards
+             | canPlay, c <- playableCards
              ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
           <> map ((\f -> f windows []) . AbilityLabel iid) actions

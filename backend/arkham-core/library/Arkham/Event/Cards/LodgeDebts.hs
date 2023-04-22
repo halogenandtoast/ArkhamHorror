@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Ability
-import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Classes
 import Arkham.Event.Runner

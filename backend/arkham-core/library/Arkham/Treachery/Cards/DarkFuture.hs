@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message

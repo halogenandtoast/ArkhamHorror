@@ -13,7 +13,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Location.Types ( Field (..) )

@@ -10,8 +10,6 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message hiding (InvestigatorEliminated)

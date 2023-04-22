@@ -7,8 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher hiding ( DiscoverClues )
 import Arkham.Matcher qualified as Matcher

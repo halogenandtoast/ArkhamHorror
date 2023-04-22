@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher

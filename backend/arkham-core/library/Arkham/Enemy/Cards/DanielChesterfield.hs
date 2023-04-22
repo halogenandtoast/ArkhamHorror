@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.History
 import Arkham.Id

@@ -10,8 +10,6 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Id
 import Arkham.Json
 import Arkham.Matcher hiding (DuringTurn)

@@ -7,8 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding ( treacheryInThreatAreaOf )

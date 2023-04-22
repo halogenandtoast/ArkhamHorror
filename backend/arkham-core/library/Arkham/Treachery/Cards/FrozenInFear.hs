@@ -6,7 +6,6 @@ import Arkham.Ability
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier

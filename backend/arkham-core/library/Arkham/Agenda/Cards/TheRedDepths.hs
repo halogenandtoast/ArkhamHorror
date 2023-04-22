@@ -11,7 +11,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.GameValue

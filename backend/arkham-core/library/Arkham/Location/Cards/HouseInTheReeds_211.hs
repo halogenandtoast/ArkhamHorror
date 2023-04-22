@@ -14,7 +14,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Zone
 
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
   deriving anyclass IsLocation

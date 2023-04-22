@@ -12,8 +12,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Treachery.Runner
 
 newtype The13thVision = The13thVision TreacheryAttrs

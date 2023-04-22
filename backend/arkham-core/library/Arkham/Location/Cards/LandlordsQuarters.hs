@@ -13,7 +13,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing
-import Arkham.Zone
 
 newtype LandlordsQuarters = LandlordsQuarters LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

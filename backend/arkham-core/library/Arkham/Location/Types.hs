@@ -15,8 +15,6 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Direction
 import Arkham.Field
 import Arkham.GameValue

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher

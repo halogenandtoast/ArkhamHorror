@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability hiding (Haunted, haunted)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Treachery.Runner

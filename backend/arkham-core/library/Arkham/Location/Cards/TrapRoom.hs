@@ -15,7 +15,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Zone
 
 newtype TrapRoom = TrapRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

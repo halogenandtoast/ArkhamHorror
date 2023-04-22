@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card.CardType
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Matcher hiding (treacheryInHandOf)
 import Arkham.Message
 import Arkham.Modifier

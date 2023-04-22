@@ -12,7 +12,6 @@ import Arkham.Act.Runner
 import Arkham.Act.Helpers
 import Arkham.Classes
 import Arkham.CampaignLogKey
-import Arkham.Criteria
 import Arkham.Resolution
 import Arkham.GameValue
 import Arkham.Matcher hiding (EnemyEvaded)

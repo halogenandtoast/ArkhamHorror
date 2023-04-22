@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action hiding (Ability)
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message

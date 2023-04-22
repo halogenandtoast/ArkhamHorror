@@ -18,7 +18,6 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Arkham.Zone
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

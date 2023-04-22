@@ -9,7 +9,7 @@ haddock-style: multi-line
 haddock-style-module:
 let-style: auto
 in-style: right-align
-respectful: false
+respectful: true
 fixities: []
 unicode: never
 column-limit: 80

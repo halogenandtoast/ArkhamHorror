@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Trait

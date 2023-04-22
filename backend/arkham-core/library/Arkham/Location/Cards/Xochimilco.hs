@@ -7,14 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype Xochimilco = Xochimilco LocationAttrs
   deriving anyclass IsLocation

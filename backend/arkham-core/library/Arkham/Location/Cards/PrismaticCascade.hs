@@ -14,7 +14,6 @@ import Arkham.Label ( mkLabel )
 import Arkham.Location.Cards qualified as Cards ( prismaticCascade )
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( DiscoverClues )
-import Arkham.Message hiding ( DiscoverClues )
 import Arkham.Name
 import Arkham.Timing qualified as Timing
 import Control.Monad.Extra ( findM )

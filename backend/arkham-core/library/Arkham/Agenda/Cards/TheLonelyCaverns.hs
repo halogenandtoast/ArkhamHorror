@@ -12,8 +12,6 @@ import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Investigator

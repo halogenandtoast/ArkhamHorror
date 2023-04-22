@@ -8,8 +8,6 @@ module Arkham.Investigator.Cards.FatherMateo
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.EffectMetadata

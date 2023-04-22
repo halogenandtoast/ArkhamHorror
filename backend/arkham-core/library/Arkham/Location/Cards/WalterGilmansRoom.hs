@@ -1,13 +1,15 @@
-module Arkham.Location.Cards.WalterGilmansRoom
-  ( walterGilmansRoom
-  , WalterGilmansRoom(..)
-  ) where
+module Arkham.Location.Cards.WalterGilmansRoom (
+  walterGilmansRoom,
+  WalterGilmansRoom (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.GameValue
+import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
+import Arkham.Matcher
 
 newtype WalterGilmansRoom = WalterGilmansRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,12 +17,33 @@ newtype WalterGilmansRoom = WalterGilmansRoom LocationAttrs
 
 walterGilmansRoom :: LocationCard WalterGilmansRoom
 walterGilmansRoom =
-  location WalterGilmansRoom Cards.walterGilmansRoom 4 (PerPlayer 1)
+  locationWith
+    WalterGilmansRoom
+    Cards.walterGilmansRoom
+    4
+    (PerPlayer 1)
+    ( costToEnterUnrevealedL
+        .~ Costs
+          [ActionCost 1, GroupClueCost (PerPlayer 1) (locationIs Locations.moldyHalls)]
+    )
 
 instance HasAbilities WalterGilmansRoom where
-  getAbilities (WalterGilmansRoom attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (WalterGilmansRoom a) =
+    withRevealedAbilities
+      a
+      [ restrictedAbility a 1 Here $ ActionAbility Nothing $ ActionCost 1
+      , haunted "Discard the top 2 cards of the encounter deck." a 2
+      ]
+
+-- withBaseAbilities attrs []
 
 instance RunMessage WalterGilmansRoom where
-  runMessage msg (WalterGilmansRoom attrs) =
-    WalterGilmansRoom <$> runMessage msg attrs
+  runMessage msg l@(WalterGilmansRoom attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      drawing <- drawCards iid attrs 3
+      pushAll [drawing, InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
+      pure l
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      push $ DiscardTopOfEncounterDeck iid 2 (toSource attrs) Nothing
+      pure l
+    _ -> WalterGilmansRoom <$> runMessage msg attrs

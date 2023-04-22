@@ -11,7 +11,6 @@ import Arkham.Helpers.Ability
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Message
 import Arkham.Projection
 import Arkham.RequestedTokenStrategy
 import Arkham.Token

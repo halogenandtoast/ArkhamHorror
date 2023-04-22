@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( EnemyFight )
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection

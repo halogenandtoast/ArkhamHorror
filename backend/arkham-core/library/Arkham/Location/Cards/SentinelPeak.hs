@@ -6,12 +6,10 @@ module Arkham.Location.Cards.SentinelPeak
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( sentinelPeak )
 import Arkham.Location.Runner
 import Arkham.Matcher ( LocationMatcher (..) )
-import Arkham.Message
 import Arkham.Trait
 
 newtype SentinelPeak = SentinelPeak LocationAttrs

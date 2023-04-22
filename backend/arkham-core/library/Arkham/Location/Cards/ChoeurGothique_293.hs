@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Agenda.Sequence ( AgendaSide (C) )
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
@@ -17,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype ChoeurGothique_293 = ChoeurGothique_293 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

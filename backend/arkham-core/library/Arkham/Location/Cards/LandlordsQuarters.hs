@@ -4,7 +4,6 @@ module Arkham.Location.Cards.LandlordsQuarters (
 ) where
 
 import Arkham.Card
-import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Ability
@@ -12,7 +11,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Zone

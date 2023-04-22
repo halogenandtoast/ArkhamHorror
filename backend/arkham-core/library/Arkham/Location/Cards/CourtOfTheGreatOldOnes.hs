@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Message
+import Arkham.Message qualified as Msg
 
 newtype CourtOfTheGreatOldOnes = CourtOfTheGreatOldOnes LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,6 +24,6 @@ instance HasAbilities CourtOfTheGreatOldOnes where
 
 instance RunMessage CourtOfTheGreatOldOnes where
   runMessage msg (CourtOfTheGreatOldOnes attrs) = case msg of
-    RevealLocation _ lid | lid == toId attrs -> do
+    Msg.RevealLocation _ lid | lid == toId attrs -> do
       CourtOfTheGreatOldOnes <$> runMessage msg (attrs & labelL .~ "courtOfTheGreatOldOnes")
     _ -> CourtOfTheGreatOldOnes <$> runMessage msg attrs

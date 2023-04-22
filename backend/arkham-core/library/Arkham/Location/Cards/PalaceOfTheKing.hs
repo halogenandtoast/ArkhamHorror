@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyDamage )
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Helpers

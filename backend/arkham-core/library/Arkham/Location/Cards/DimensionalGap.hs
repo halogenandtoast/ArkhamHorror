@@ -13,7 +13,6 @@ import Arkham.Location.Cards qualified as Cards ( dimensionalGap )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype DimensionalGap = DimensionalGap LocationAttrs

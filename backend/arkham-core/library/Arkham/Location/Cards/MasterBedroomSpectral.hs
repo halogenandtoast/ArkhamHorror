@@ -10,7 +10,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Message
 
 newtype MasterBedroomSpectral = MasterBedroomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

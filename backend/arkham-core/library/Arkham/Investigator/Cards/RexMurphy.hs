@@ -6,8 +6,6 @@ module Arkham.Investigator.Cards.RexMurphy
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner

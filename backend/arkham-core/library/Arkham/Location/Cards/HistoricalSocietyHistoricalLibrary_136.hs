@@ -7,14 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( RevealLocation )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyHistoricalLibrary_136 = HistoricalSocietyHistoricalLibrary_136 LocationAttrs
@@ -64,5 +62,5 @@ instance RunMessage HistoricalSocietyHistoricalLibrary_136 where
       | isSource attrs source && locationRevealed attrs -> l
       <$ push (InvestigatorDiscoverClues iid (toId attrs) 1 Nothing)
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      l <$ push (RevealLocation Nothing $ toId attrs)
+      l <$ push (Msg.RevealLocation Nothing $ toId attrs)
     _ -> HistoricalSocietyHistoricalLibrary_136 <$> runMessage msg attrs

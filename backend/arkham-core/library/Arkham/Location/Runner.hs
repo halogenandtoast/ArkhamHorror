@@ -8,17 +8,17 @@ import Arkham.Prelude
 
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
+import Arkham.GameValue as X
 import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Target as X
-import Arkham.Ability as X
+import Arkham.Ability as X hiding (PaidCost)
+import Arkham.Message as X hiding (RevealLocation, EnemyDamage, EnemyDefeated, EnemyEvaded, MoveAction, DiscoverClues)
 
 import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Direction
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Exception
@@ -28,7 +28,7 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Helpers
 import Arkham.Matcher
   ( InvestigatorMatcher (..), LocationMatcher (..), locationWithEnemy )
-import Arkham.Message
+import Arkham.Message (Message(RevealLocation, MoveAction, DiscoverClues))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
@@ -46,6 +46,9 @@ pattern UseResign iid source <- UseCardAbility iid source 99 _ _
 
 pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source 100 _ _
+
+withRevealedAbilities :: LocationAttrs -> [Ability] -> [Ability]
+withRevealedAbilities attrs other = withBaseAbilities attrs $ guard (locationRevealed attrs) *> other
 
 cluesToDiscover :: HasGame m => InvestigatorId -> Int -> m Int
 cluesToDiscover investigatorId startValue = do

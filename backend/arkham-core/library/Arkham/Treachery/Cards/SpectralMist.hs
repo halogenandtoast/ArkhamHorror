@@ -7,8 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher

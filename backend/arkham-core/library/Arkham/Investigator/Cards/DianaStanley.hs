@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types ( Field (..) )
 import Arkham.Helpers.Modifiers

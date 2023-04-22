@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Attack
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Id
 import Arkham.Matcher hiding ( NonAttackDamageEffect )

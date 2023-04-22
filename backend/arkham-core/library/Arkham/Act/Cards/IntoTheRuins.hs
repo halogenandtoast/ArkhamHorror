@@ -12,7 +12,6 @@ import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers.Ability

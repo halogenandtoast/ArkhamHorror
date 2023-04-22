@@ -13,7 +13,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.SkillType
 import Arkham.Source
@@ -51,7 +51,7 @@ instance RunMessage DimStreetsMappingTheStreets where
       pure . DimStreetsMappingTheStreets $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.mappingTheStreets -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
-      n <- getPlayerCountValue (PerPlayer 1)
+      n <- perPlayer 1
       pushAll
         [ beginSkillTest
           iid
@@ -59,7 +59,7 @@ instance RunMessage DimStreetsMappingTheStreets where
           (InvestigatorTarget iid)
           SkillIntellect
           3
-        , EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
+        , Msg.EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
         ]
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n

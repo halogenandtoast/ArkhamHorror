@@ -6,15 +6,12 @@ module Arkham.Location.Cards.Yuggoth
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype Yuggoth = Yuggoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

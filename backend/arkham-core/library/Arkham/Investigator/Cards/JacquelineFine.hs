@@ -11,8 +11,6 @@ import Arkham.ChaosBagStepState
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Ability
-import Arkham.Criteria
-import Arkham.Cost
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing

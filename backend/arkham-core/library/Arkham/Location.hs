@@ -13,7 +13,6 @@ import Arkham.Id
 import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Location.Types as X ( Location )
-import Arkham.Message
 
 createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)

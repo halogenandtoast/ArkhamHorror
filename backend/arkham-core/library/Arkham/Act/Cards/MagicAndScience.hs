@@ -12,7 +12,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Ability

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Message
+import Arkham.Message qualified as Msg
 
 newtype WitchHouseRuins = WitchHouseRuins LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,6 +23,6 @@ instance HasAbilities WitchHouseRuins where
 
 instance RunMessage WitchHouseRuins where
   runMessage msg (WitchHouseRuins attrs) = case msg of
-    RevealLocation _ lid | lid == toId attrs -> do
+    Msg.RevealLocation _ lid | lid == toId attrs -> do
       WitchHouseRuins <$> runMessage msg (attrs & labelL .~ "witchHouseRuins")
     _ -> WitchHouseRuins <$> runMessage msg attrs

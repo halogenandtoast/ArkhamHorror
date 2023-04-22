@@ -6,14 +6,11 @@ module Arkham.Location.Cards.TrophyRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype TrophyRoom = TrophyRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

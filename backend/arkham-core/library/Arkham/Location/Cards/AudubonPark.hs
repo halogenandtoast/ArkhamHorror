@@ -4,14 +4,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( audubonPark )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyEvaded )
 import Arkham.Timing qualified as Timing
 
 newtype AudubonPark = AudubonPark LocationAttrs

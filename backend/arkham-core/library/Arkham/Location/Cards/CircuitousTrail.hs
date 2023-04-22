@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types

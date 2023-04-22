@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Cards ( bedroom )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype Bedroom = Bedroom LocationAttrs

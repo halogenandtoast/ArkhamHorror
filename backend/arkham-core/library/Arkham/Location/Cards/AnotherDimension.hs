@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( anotherDimension )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Timing qualified as Timing
 import Arkham.Window

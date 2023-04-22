@@ -427,3 +427,5 @@ additionalActionCovers source maction = \case
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True
 
+getCanDrawCards :: HasGame m => InvestigatorId -> m Bool
+getCanDrawCards = selectAny  . InvestigatorCanDrawCards . InvestigatorWithId

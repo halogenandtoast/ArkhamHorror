@@ -25,7 +25,6 @@ import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.CommitRestriction
-import Arkham.Cost
 import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.DamageEffect

@@ -7,15 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( MoveAction )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -42,5 +40,5 @@ instance RunMessage StreetsOfVenice where
       locations <- selectList $ AccessibleFrom $ LocationWithId $ toId attrs
       case locations of
         [] -> error "No connections?"
-        (x : _) -> l <$ push (MoveAction iid x Free False)
+        (x : _) -> l <$ push (Msg.MoveAction iid x Free False)
     _ -> StreetsOfVenice <$> runMessage msg attrs

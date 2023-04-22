@@ -10,8 +10,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Ability
-import Arkham.Criteria
-import Arkham.Cost
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher

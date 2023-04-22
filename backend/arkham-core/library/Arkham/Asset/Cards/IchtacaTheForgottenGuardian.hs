@@ -11,8 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card.CardType
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Damage
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator

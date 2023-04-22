@@ -6,15 +6,12 @@ module Arkham.Location.Cards.TemplesOfTenochtitlan_177
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype TemplesOfTenochtitlan_177 = TemplesOfTenochtitlan_177 LocationAttrs

@@ -7,8 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Attack
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.GameValue
@@ -16,7 +14,6 @@ import Arkham.Helpers.Enemy
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype SiteOfTheSacrifice = SiteOfTheSacrifice LocationAttrs

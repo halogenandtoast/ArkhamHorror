@@ -8,13 +8,10 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Message
 
 newtype Montmartre209 = Montmartre209 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

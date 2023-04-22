@@ -9,7 +9,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( cellar )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype Cellar = Cellar LocationAttrs

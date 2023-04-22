@@ -13,7 +13,6 @@ import Arkham.Location.Cards qualified as Cards ( exhibitHallNatureExhibit )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs

@@ -7,14 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( dunwichVillage_243 )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs

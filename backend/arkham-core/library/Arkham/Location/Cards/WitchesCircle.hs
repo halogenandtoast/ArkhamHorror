@@ -6,7 +6,6 @@ module Arkham.Location.Cards.WitchesCircle
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Ability
@@ -14,7 +13,6 @@ import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Witch) )

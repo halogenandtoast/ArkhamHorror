@@ -11,7 +11,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( burnedRuins_205 )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype BurnedRuins_205 = BurnedRuins_205 LocationAttrs

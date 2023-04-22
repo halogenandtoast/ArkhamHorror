@@ -9,7 +9,6 @@ import Arkham.Location.Cards qualified as Cards ( deepBelowYourHouse )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 

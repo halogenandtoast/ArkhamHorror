@@ -13,7 +13,6 @@ import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Deck
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types

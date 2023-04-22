@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Enemy.Types ( Field (EnemyHealthDamage) )
 import {-# SOURCE #-} Arkham.GameEnv

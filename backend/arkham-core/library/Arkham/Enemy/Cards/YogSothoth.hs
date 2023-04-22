@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.EffectMetadata
 import Arkham.Enemy.Runner
 import Arkham.Matcher

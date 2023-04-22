@@ -13,7 +13,6 @@ import Arkham.Action
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

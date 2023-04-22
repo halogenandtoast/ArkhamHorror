@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier

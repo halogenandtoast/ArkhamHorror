@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.LostInTheWilds
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Criteria
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

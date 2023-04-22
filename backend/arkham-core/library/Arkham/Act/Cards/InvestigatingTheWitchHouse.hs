@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Constants
-import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers.Query

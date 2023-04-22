@@ -9,7 +9,6 @@ import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue

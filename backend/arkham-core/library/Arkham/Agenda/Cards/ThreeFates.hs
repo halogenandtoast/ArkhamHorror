@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Message
 import Arkham.Scenarios.ThreadsOfFate.Helpers

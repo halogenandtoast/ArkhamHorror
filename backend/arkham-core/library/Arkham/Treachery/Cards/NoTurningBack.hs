@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message

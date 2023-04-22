@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Treachery.Runner

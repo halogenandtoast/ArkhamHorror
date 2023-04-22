@@ -13,7 +13,6 @@ import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Message
 

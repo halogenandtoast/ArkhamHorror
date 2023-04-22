@@ -28,7 +28,6 @@ import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Zone
 import Data.Text qualified as T
 import Data.Typeable
 

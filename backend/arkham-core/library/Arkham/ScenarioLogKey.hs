@@ -55,6 +55,7 @@ data ScenarioLogKey
   -- ^ The City of Archives
   | CollectedAStrangeLiquid
   -- ^ The Depths of Yoth
+  | MeddledWithThePast (Labeled InvestigatorId)
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
 
@@ -67,6 +68,7 @@ instance ToGameLoggerFormat ScenarioLogKey where
     IchtacasPrey (Labeled name eid) -> "{enemy:\"" <> display name <> "\":" <> tshow eid <> "} is Ichtaca's Prey"
     IchtacasDestination (Labeled name lid) -> "{location:\"" <> display name <> "\":" <> tshow lid <> "} is Ichtaca's Destination"
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"
+    MeddledWithThePast (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} meddled with the past"
     other -> pack . go $ show other
     where
       go :: String -> String

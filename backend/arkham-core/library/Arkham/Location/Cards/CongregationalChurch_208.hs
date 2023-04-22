@@ -14,7 +14,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Zone
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

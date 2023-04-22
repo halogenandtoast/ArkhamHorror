@@ -11,7 +11,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message

@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Event.Runner
 import Arkham.Investigator.Types ( Field (..) )

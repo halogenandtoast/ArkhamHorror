@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Action hiding (Ability)
-import Arkham.Criteria.Override
 import Arkham.Classes.Entity.Source
 import Control.Lens (set)
 

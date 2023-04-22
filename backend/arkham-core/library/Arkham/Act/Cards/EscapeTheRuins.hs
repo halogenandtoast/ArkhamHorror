@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Enemy.Types ( Field (EnemyTraits) )
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers

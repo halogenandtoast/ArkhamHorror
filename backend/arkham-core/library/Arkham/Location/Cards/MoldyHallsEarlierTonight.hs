@@ -30,16 +30,17 @@ instance HasAbilities MoldyHallsEarlierTonight where
   getAbilities (MoldyHallsEarlierTonight a) =
     withRevealedAbilities
       a
-      [ restrictedAbility
-          a
-          1
-          ( Here
-              <> InvestigatorExists
-                ( DiscardWith AnyCards
-                    <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
-                    <> InvestigatorAt (LocationWithId $ toId a)
-                )
-          )
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility
+            a
+            1
+            ( Here
+                <> InvestigatorExists
+                  ( DiscardWith AnyCards
+                      <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
+                      <> InvestigatorAt (LocationWithId $ toId a)
+                  )
+            )
           $ ActionAbility Nothing
           $ ActionCost 1
       ]

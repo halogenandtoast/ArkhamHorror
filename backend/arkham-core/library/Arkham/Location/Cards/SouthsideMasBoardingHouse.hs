@@ -7,14 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( southsideMasBoardingHouse )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card.CardType
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards

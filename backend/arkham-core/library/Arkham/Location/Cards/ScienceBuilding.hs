@@ -4,13 +4,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( scienceBuilding )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 

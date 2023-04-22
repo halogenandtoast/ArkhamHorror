@@ -10,7 +10,7 @@ import Arkham.ActiveCost.Base as X
 
 import Arkham.EffectMetadata
 import Arkham.Effect.Window
-import Arkham.Ability
+import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types
@@ -20,7 +20,6 @@ import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.Classes
-import Arkham.Cost hiding ( PaidCost )
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Discard

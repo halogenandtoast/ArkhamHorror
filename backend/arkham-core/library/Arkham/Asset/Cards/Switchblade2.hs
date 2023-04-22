@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.SkillType
 
 newtype Switchblade2 = Switchblade2 AssetAttrs

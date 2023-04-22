@@ -6,12 +6,10 @@ module Arkham.Asset.Cards.LibraryDocent1
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria hiding ( DuringTurn )
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Investigator.Types ( Field (..) )

@@ -353,7 +353,7 @@
       "instance HasAbilities {dot} where",
       "  getAbilities ({dot} attrs) =",
       "    getAbilities attrs",
-      "    -- withBaseAbilities attrs []",
+      "    -- withRevealedAbilities attrs []",
       "",
       "instance RunMessage {dot} where",
       "  runMessage msg ({dot} attrs) =",

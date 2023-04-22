@@ -6,15 +6,12 @@ module Arkham.Location.Cards.Valusia
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( DiscoverClues )
-import Arkham.Message
 import Arkham.Token
 
 newtype Valusia = Valusia LocationAttrs

@@ -11,8 +11,6 @@ import Arkham.Action
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing

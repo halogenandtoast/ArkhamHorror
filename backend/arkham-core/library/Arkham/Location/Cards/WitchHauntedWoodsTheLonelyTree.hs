@@ -6,8 +6,6 @@ module Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Discard
 import Arkham.Draw.Types
 import Arkham.Game.Helpers
@@ -16,7 +14,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree LocationAttrs

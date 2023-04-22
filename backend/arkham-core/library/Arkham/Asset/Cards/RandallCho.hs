@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Card.CardType
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

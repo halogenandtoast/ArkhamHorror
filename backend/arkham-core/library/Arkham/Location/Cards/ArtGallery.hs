@@ -8,13 +8,11 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( artGallery )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype ArtGallery = ArtGallery LocationAttrs

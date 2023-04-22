@@ -7,8 +7,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.RequestedTokenStrategy

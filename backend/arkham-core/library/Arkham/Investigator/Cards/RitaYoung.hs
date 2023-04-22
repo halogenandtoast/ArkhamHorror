@@ -7,8 +7,6 @@ module Arkham.Investigator.Cards.RitaYoung
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types

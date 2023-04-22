@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Placement
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs

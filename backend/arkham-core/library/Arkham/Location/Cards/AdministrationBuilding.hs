@@ -4,13 +4,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
-import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( administrationBuilding )
+import Arkham.Location.Cards qualified as Cards (administrationBuilding)
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
+import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
 
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
@@ -23,21 +21,21 @@ administrationBuilding =
 
 instance HasAbilities AdministrationBuilding where
   getAbilities (AdministrationBuilding x) =
-    withBaseAbilities x $ if locationRevealed x
-      then
-        [ restrictedAbility x 1 Here
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId x
-        , restrictedAbility x 2 Here $ ForcedAbility $ TurnEnds Timing.When You
-        ]
-      else []
+    withRevealedAbilities x $
+      [ restrictedAbility x 1 Here $
+          ForcedAbility $
+            Matcher.RevealLocation Timing.After You $
+              LocationWithId $
+                toId x
+      , restrictedAbility x 2 Here $ ForcedAbility $ TurnEnds Timing.When You
+      ]
 
 instance RunMessage AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      l <$ push (PlaceLocationMatching $ CardWithTitle "Faculty Offices")
-    UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      l <$ push (DiscardTopOfDeck iid 1 (toAbilitySource attrs 2) Nothing)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ PlaceLocationMatching $ CardWithTitle "Faculty Offices"
+      pure l
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      push $ DiscardTopOfDeck iid 1 (toAbilitySource attrs 2) Nothing
+      pure l
     _ -> AdministrationBuilding <$> runMessage msg attrs

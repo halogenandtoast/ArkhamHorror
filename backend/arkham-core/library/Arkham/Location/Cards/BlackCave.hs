@@ -6,7 +6,6 @@ module Arkham.Location.Cards.BlackCave
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Criteria
 import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Ability
@@ -14,7 +13,6 @@ import Arkham.Investigator.Types
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

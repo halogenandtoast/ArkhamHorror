@@ -12,7 +12,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Source
 import Arkham.Story.Cards qualified as Story
@@ -45,7 +45,7 @@ instance RunMessage DarkSpires where
         , Label
           "Realizing what you must do, you step forward and push her."
           [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-          , EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
+          , Msg.EnemyDamage hastur $ storyDamage (InvestigatorSource iid) n
           ]
         ]
       pure l

@@ -15,7 +15,6 @@ import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
-import Arkham.Zone
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
     deriving anyclass IsEnemy

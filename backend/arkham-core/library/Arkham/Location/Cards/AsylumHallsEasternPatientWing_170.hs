@@ -7,14 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Trait
 
 newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 LocationAttrs
@@ -46,9 +44,9 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
 instance RunMessage AsylumHallsEasternPatientWing_170 where
   runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      enemies <- selectList (EnemyAt YourLocation <> EnemyWithTrait Lunatic)
+      enemies <- selectList $ EnemyAt YourLocation <> EnemyWithTrait Lunatic
       push $ chooseOne
         iid
-        [ targetLabel eid [EnemyEvaded iid eid] | eid <- enemies ]
+        [ targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- enemies ]
       pure l
     _ -> AsylumHallsEasternPatientWing_170 <$> runMessage msg attrs

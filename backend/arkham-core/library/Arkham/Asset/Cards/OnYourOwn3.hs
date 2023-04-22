@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( PlayCard )
 import Arkham.Card
 import Arkham.ClassSymbol
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Matcher

@@ -8,15 +8,12 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
   ( facultyOfficesTheNightIsStillYoung )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

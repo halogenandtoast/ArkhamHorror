@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action (Action(Fight))
 import Arkham.Asset.Runner
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.SkillType
 
 newtype Knife = Knife AssetAttrs

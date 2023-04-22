@@ -7,14 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
   ( miskatonicUniversityMiskatonicMuseum )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Message
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

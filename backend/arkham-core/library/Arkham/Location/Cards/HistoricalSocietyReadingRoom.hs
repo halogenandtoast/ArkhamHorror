@@ -8,14 +8,12 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( RevealLocation )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -65,7 +63,7 @@ instance RunMessage HistoricalSocietyReadingRoom where
         )
     UseCardAbility _ source 1 _ _
       | isSource attrs source && not (locationRevealed attrs) -> l
-      <$ push (RevealLocation Nothing $ toId attrs)
+      <$ push (Msg.RevealLocation Nothing $ toId attrs)
     Successful (Action.Investigate, _) iid (AbilitySource source 1) _ _
       | isSource attrs source -> do
         enemies <- selectListMap EnemyTarget $ EnemyWithDoom $ AtLeast $ Static

@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype DarkHollow = DarkHollow LocationAttrs

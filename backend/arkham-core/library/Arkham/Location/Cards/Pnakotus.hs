@@ -6,15 +6,13 @@ module Arkham.Location.Cards.Pnakotus
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher hiding ( DiscoverClues )
-import Arkham.Message
+import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Token
 
@@ -45,6 +43,6 @@ instance RunMessage Pnakotus where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clues <- field LocationClues (toId l)
       drawing <- newCardDraw iid (toSource attrs) clues
-      pushAll [DiscoverClues iid (toId l) clues Nothing, DrawCards drawing]
+      pushAll [Msg.DiscoverClues iid (toId l) clues Nothing, DrawCards drawing]
       pure l
     _ -> Pnakotus <$> runMessage msg attrs

@@ -5,12 +5,10 @@ module Arkham.Asset.Cards.JoeyTheRatVigil
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria hiding ( DuringTurn )
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Projection

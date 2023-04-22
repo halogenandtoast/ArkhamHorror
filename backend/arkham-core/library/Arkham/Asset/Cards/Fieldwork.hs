@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card.CardCode
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

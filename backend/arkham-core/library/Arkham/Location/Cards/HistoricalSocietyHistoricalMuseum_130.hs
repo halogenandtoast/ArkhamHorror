@@ -13,7 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( RevealLocation )
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -54,5 +54,5 @@ instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where
 instance RunMessage HistoricalSocietyHistoricalMuseum_130 where
   runMessage msg l@(HistoricalSocietyHistoricalMuseum_130 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      l <$ push (RevealLocation Nothing $ toId attrs)
+      l <$ push (Msg.RevealLocation Nothing $ toId attrs)
     _ -> HistoricalSocietyHistoricalMuseum_130 <$> runMessage msg attrs

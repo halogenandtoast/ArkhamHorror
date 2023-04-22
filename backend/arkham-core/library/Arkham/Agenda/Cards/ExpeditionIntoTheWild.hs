@@ -11,8 +11,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.GameValue

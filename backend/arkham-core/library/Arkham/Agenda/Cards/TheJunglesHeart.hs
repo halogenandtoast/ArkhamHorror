@@ -13,8 +13,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location

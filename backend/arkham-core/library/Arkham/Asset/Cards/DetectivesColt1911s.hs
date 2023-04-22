@@ -10,8 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Types (Field(..))

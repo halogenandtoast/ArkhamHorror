@@ -11,8 +11,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Ability
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Helpers.Modifiers

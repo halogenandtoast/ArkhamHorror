@@ -7,14 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( engineCar_176 )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

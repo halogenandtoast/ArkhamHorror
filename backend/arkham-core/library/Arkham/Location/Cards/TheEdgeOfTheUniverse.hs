@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue

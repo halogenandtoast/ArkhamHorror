@@ -6,15 +6,12 @@ module Arkham.Location.Cards.YithianOrrery
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.ScenarioLogKey
 
 newtype YithianOrrery = YithianOrrery LocationAttrs

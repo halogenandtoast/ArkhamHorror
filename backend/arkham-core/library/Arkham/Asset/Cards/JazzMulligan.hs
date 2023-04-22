@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Placement

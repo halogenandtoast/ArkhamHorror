@@ -8,10 +8,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Cost
-import Arkham.Cost.FieldCost
-import Arkham.Criteria
 import Arkham.Location.Types ( Field (..) )
+import Arkham.Cost.FieldCost
 import Arkham.Matcher
 import Arkham.SkillType
 

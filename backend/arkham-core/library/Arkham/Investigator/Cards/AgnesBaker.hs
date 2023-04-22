@@ -6,8 +6,6 @@ module Arkham.Investigator.Cards.AgnesBaker
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.GameValue
 import Arkham.Investigator.Cards qualified as Cards

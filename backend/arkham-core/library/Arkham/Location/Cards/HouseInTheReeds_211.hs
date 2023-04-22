@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( houseInTheReeds_211 )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Zone

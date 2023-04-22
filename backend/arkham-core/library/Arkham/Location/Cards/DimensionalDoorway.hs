@@ -7,13 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( dimensionalDoorway )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( EndTurn )
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

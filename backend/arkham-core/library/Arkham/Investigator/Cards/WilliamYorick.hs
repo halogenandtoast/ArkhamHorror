@@ -4,8 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Cost
-import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards

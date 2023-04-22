@@ -9,12 +9,13 @@ import Arkham.Ability.Limit as X
 import Arkham.Ability.Type as X hiding ( abilityType )
 import Arkham.Ability.Types as X
 import Arkham.Ability.Used as X
+import Arkham.Cost as X
+import Arkham.Criteria as X
 
-import Arkham.Cost
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Action hiding (Ability)
-import Arkham.Criteria (Criterion(InYourHand, Criteria, AnyCriterion))
 import Arkham.Criteria.Override
 import Arkham.Classes.Entity.Source
 import Control.Lens (set)
@@ -198,9 +199,9 @@ applyCostModifier cost _ = cost
 defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
   FastAbility _ -> FastPlayerWindow
-  ActionAbility{} -> DuringTurn You
-  ActionAbilityWithBefore{} -> DuringTurn You
-  ActionAbilityWithSkill{} -> DuringTurn You
+  ActionAbility{} -> Matcher.DuringTurn You
+  ActionAbilityWithBefore{} -> Matcher.DuringTurn You
+  ActionAbilityWithSkill{} -> Matcher.DuringTurn You
   ForcedAbility window -> window
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window

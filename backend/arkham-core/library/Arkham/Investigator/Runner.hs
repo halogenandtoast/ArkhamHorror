@@ -53,6 +53,7 @@ import Arkham.Matcher
   , InvestigatorMatcher (..)
   , LocationMatcher (..)
   , assetIs
+  , assetControlledBy
   , pattern InvestigatorCanDisengage
   , treacheryInHandOf
   )
@@ -500,7 +501,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
-      (assetMatcher <> DiscardableAsset <> AssetControlledBy You)
+      (assetMatcher <> DiscardableAsset <> assetControlledBy iid)
     push $ chooseOrRunOne iid $ map
       (\aid -> targetLabel aid [Discard source $ AssetTarget aid])
       discardableAssetIds

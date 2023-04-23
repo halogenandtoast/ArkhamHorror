@@ -97,7 +97,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdDeckRestrictions = []
     }
 
-allLocationCards :: HashMap CardCode CardDef
+allLocationCards :: Map CardCode CardDef
 allLocationCards = mapFromList $ map
   (toCardCode &&& id)
   [ aPocketInTime
@@ -468,7 +468,7 @@ allLocationCards = mapFromList $ map
   , zocalo
   ]
 
-allSpecialLocationCards :: HashMap CardCode CardDef
+allSpecialLocationCards :: Map CardCode CardDef
 allSpecialLocationCards =
   mapFromList $ map (toCardCode &&& id) [betweenWorlds]
 

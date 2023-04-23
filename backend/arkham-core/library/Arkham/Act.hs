@@ -26,7 +26,7 @@ withActCardCode cCode f = case lookup cCode allActs of
   Nothing -> error $ "Unknown act: " <> show cCode
   Just (SomeActCard a) -> f a
 
-allActs :: HashMap CardCode SomeActCard
+allActs :: Map CardCode SomeActCard
 allActs = mapFrom
   someActCardCode
   [ -- Night of the Zealot

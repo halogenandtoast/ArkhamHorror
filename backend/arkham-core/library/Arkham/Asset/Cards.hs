@@ -64,7 +64,7 @@ baseAsset
   -> CardCode
   -> Name
   -> Int
-  -> HashSet ClassSymbol
+  -> Set ClassSymbol
   -> CardDef
 baseAsset mEncounterSet cardCode name cost classSymbols = CardDef
   { cdCardCode = cardCode
@@ -114,7 +114,7 @@ baseAsset mEncounterSet cardCode name cost classSymbols = CardDef
   , cdDeckRestrictions = []
   }
 
-allPlayerAssetCards :: HashMap CardCode CardDef
+allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards = mapFromList $ concatMap
   toCardCodePairs
   [ abbessAllegriaDiBiase
@@ -509,7 +509,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , zoeysCross
   ]
 
-allEncounterAssetCards :: HashMap CardCode CardDef
+allEncounterAssetCards :: Map CardCode CardDef
 allEncounterAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ adamLynch
@@ -530,7 +530,7 @@ allEncounterAssetCards = mapFromList $ map
   , danielChesterfield
   ]
 
-allSpecialPlayerAssetCards :: HashMap CardCode CardDef
+allSpecialPlayerAssetCards :: Map CardCode CardDef
 allSpecialPlayerAssetCards =
   mapFromList $ map (toCardCode &&& id) [courage, straitjacket, intrepid]
 

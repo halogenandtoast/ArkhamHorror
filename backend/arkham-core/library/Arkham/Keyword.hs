@@ -1,9 +1,11 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Keyword where
 
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Matcher.Types
 import Arkham.CampaignLogKey
+import Data.Aeson.TH
 
 data Keyword
   = Alert
@@ -20,8 +22,9 @@ data Keyword
   | Permanent
   | Researched CampaignLogKey
   | Seal TokenMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
+
+$(deriveJSON defaultOptions ''Keyword)
 
 class HasKeywords a where
-  toKeywords :: a -> HashSet Keyword
+  toKeywords :: a -> Set Keyword

@@ -53,11 +53,9 @@ instance RunMessage EatLead2 where
               ]
             pure . EatLead2 $ attrs `with` Metadata (Just aid)
           _ -> error "Invalid source"
-    ResolveAmounts iid choices target | isTarget attrs target -> do
+    ResolveAmounts iid (getChoiceAmount "Ammo" -> ammo) target | isTarget attrs target -> do
       let
         aid = fromJustNote "asset must be set" (asset metadata)
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        ammo = findWithDefault 0 "Ammo" choicesMap
       when (ammo > 0) $ do
         ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         pushAll

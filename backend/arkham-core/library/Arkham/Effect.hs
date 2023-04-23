@@ -178,7 +178,7 @@ instance FromJSON Effect where
       Just (SomeEffect (_ :: EffectArgs -> a)) ->
         Effect <$> parseJSON @a (Object o)
 
-allEffects :: HashMap CardCode SomeEffect
+allEffects :: Map CardCode SomeEffect
 allEffects = mapFromList
   [ ("01010", SomeEffect onTheLamEffect)
   , ("01036", SomeEffect mindOverMatterEffect)

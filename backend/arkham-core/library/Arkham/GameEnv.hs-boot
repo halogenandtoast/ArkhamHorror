@@ -30,7 +30,7 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue Message GameT
 
-getAllModifiers :: HasGame m => m (HashMap Target [Modifier])
+getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
 getPhase :: HasGame m => m Phase
 getWindowDepth :: HasGame m => m Int

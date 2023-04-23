@@ -99,8 +99,7 @@ data InvestigatorMatcher
   | HealableInvestigator Source DamageType InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup InvestigatorMatcher where
   InvestigatorMatches xs <> InvestigatorMatches ys =
@@ -113,8 +112,7 @@ data PreyMatcher
   = Prey InvestigatorMatcher
   | OnlyPrey InvestigatorMatcher
   | BearerOf EnemyId
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data AssetMatcher
   = AssetWithTitle Text
@@ -165,8 +163,7 @@ data AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
@@ -225,8 +222,7 @@ data EnemyMatcher
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
@@ -257,8 +253,7 @@ data EventMatcher
   | AnyEvent
   | NotEvent EventMatcher
   | EventWithPlacement Placement
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup EventMatcher where
   EventMatches xs <> EventMatches ys = EventMatches (xs <> ys)
@@ -336,8 +331,7 @@ data LocationMatcher
   | IsIchtacasDestination
   | LocationIsInFrontOf InvestigatorMatcher
   -- ^ Scenario specific criteria
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 class IsLocationMatcher a where
   toLocationMatcher :: a -> LocationMatcher
@@ -383,8 +377,7 @@ data SkillMatcher
   | SkillMatches [SkillMatcher]
   | YourSkill
   | AnySkill
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup SkillMatcher where
   AnySkill <> x = x
@@ -414,8 +407,7 @@ data TreacheryMatcher
   | TreacheryMatches [TreacheryMatcher]
   | TreacheryOneOf [TreacheryMatcher]
   | NotTreachery TreacheryMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup TreacheryMatcher where
   AnyTreachery <> x = x
@@ -447,8 +439,7 @@ data ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
   | CommittableCard InvestigatorId ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup ExtendedCardMatcher where
   ExtendedCardMatches xs <> ExtendedCardMatches ys =
@@ -485,8 +476,7 @@ data CardMatcher
   | CardFillsSlot SlotType
   | DiscardableCard
   | CardOwnedBy InvestigatorId
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup CardMatcher where
   AnyCard <> a = a
@@ -502,8 +492,7 @@ instance Monoid CardMatcher where
 data DiscardedPlayerCardMatcher = DiscardedCardMatcher
   InvestigatorMatcher
   CardMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
@@ -615,16 +604,13 @@ data WindowMatcher
   | LostResources Timing Who SourceMatcher
   | LostActions Timing Who SourceMatcher
   | WouldTriggerTokenRevealEffectOnCard Who CardMatcher [TokenFace]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data DefeatedByMatcher
   = ByHorror
@@ -632,8 +618,7 @@ data DefeatedByMatcher
   | ByOther
   | ByAny
   | ByAnyOf [DefeatedByMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data SkillTestMatcher
   = WhileInvestigating LocationMatcher
@@ -651,8 +636,7 @@ data SkillTestMatcher
   | SkillTestMatches [SkillTestMatcher]
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data SourceMatcher
   = SourceWithTrait Trait
@@ -666,8 +650,7 @@ data SourceMatcher
   | SourceMatches [SourceMatcher]
   | NotSource SourceMatcher
   | SourceIs Source
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup SourceMatcher where
   AnySource <> x = x
@@ -683,8 +666,7 @@ data TargetMatcher
   | AnyTarget
   | TargetMatches [TargetMatcher]
   | ScenarioCardTarget
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup TargetMatcher where
   AnyTarget <> x = x
@@ -698,8 +680,7 @@ data TargetListMatcher
   = HasTarget TargetMatcher
   | ExcludesTarget TargetMatcher
   | AnyTargetList
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup SkillTestMatcher where
   AnySkillTest <> x = x
@@ -714,8 +695,7 @@ data SkillTestResultMatcher
   | SuccessResult ValueMatcher
   | AnyResult
   | ResultOneOf [SkillTestResultMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data ValueMatcher
   = LessThan GameValue
@@ -724,15 +704,13 @@ data ValueMatcher
   | GreaterThanOrEqualTo GameValue
   | EqualTo GameValue
   | AnyValue
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data SkillTestValueMatcher
   = SkillTestGameValue ValueMatcher
   | GreaterThanBaseValue
   | AnySkillTestValue
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data TokenMatcher
   =  WithNegativeModifier
@@ -743,8 +721,7 @@ data TokenMatcher
   | TokenMatches [TokenMatcher]
   | IncludeSealed TokenMatcher
   | WouldReduceYourSkillValueToZero
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup TokenMatcher where
   AnyToken <> x = x
@@ -758,22 +735,18 @@ instance Monoid TokenMatcher where
   mempty = AnyToken
 
 data PhaseMatcher = AnyPhase | PhaseIs Phase
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data WindowMythosStepMatcher
   = WhenAllDrawEncounterCard
   | AfterCheckDoomThreshold
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter | ResourceCounter
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher
@@ -790,8 +763,7 @@ data AbilityMatcher
   | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup AbilityMatcher where
   AnyAbility <> x = x
@@ -805,16 +777,14 @@ instance Monoid AbilityMatcher where
   mempty = AnyAbility
 
 data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards | DifferentLengthIsAtLeast Int CardMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data DeckMatcher
   = EncounterDeck
   | DeckOf InvestigatorMatcher
   | AnyDeck
   | DeckIs DeckSignifier
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data AgendaMatcher
   = AgendaWithId AgendaId
@@ -826,8 +796,7 @@ data AgendaMatcher
   | AgendaWithDeckId Int
   | NotAgenda AgendaMatcher
   | AgendaMatches [AgendaMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 instance Semigroup AgendaMatcher where
   AnyAgenda <> x = x
@@ -845,45 +814,33 @@ data ActMatcher
   | ActWithDeckId Int
   | NotAct ActMatcher
   | ActOneOf [ActMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-newtype RemainingActMatcher = RemainingActMatcher { unRemainingActMatcher :: ActMatcher }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-  deriving newtype (Hashable)
+  deriving stock (Show, Eq)
 
 data DamageEffectMatcher
   = AttackDamageEffect
   | NonAttackDamageEffect
   | AnyDamageEffect
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data EnemyAttackMatcher
   = AnyEnemyAttack
   | AttackOfOpportunityAttack
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data ScenarioMatcher = TheScenario
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data CampaignMatcher = TheCampaign
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data EffectMatcher = AnyEffect
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data SkillTypeMatcher
   = AnySkillType
   | NotSkillType SkillType
   | IsSkillType SkillType
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data RemoveDoomMatchers = RemoveDoomMatchers
   { removeDoomLocations :: LocationMatcher
@@ -896,5 +853,7 @@ data RemoveDoomMatchers = RemoveDoomMatchers
   , removeDoomEvents :: EventMatcher
   , removeDoomSkills :: SkillMatcher
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq)
+
+newtype RemainingActMatcher = RemainingActMatcher { unRemainingActMatcher :: ActMatcher }
+  deriving stock (Show, Eq)

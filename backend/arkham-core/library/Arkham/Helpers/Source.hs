@@ -13,7 +13,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Source
 import Arkham.Trait ( Trait, toTraits )
 
-sourceTraits :: (HasCallStack, HasGame m) => Source -> m (HashSet Trait)
+sourceTraits :: (HasCallStack, HasGame m) => Source -> m (Set Trait)
 sourceTraits = \case
   AbilitySource s _ -> sourceTraits s
   ActDeckSource -> pure mempty

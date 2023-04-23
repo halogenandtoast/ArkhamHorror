@@ -49,8 +49,7 @@ instance RunMessage TowersOfPnakotus where
       pure l
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        cardAmount = findWithDefault 0 "Cards" choicesMap
+        cardAmount = getChoiceAmount "Cards" choices
       drawing <- drawCards iid attrs (cardAmount + 1)
       pushAll
         $ replicate cardAmount (toMessage $ chooseAndDiscardCard iid $ toAbilitySource attrs 1)

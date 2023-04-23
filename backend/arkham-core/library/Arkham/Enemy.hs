@@ -45,7 +45,7 @@ withEnemyCardCode cCode f = case lookup cCode allEnemies of
   Nothing -> error $ "Unknown enemy: " <> show cCode
   Just (SomeEnemyCard a) -> f a
 
-allEnemies :: HashMap CardCode SomeEnemyCard
+allEnemies :: Map CardCode SomeEnemyCard
 allEnemies = mapFrom
   someEnemyCardCode
   [ -- Night of the Zealot

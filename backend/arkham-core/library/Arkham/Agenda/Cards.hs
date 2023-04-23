@@ -58,7 +58,7 @@ agenda cardCode name stage encounterSet = CardDef
   , cdDeckRestrictions = []
   }
 
-allAgendaCards :: HashMap CardCode CardDef
+allAgendaCards :: Map CardCode CardDef
 allAgendaCards = mapFromList $ map
   (toCardCode &&& id)
   [ aCreatureOfTheBayou

@@ -11,7 +11,7 @@ import Arkham.EncounterCard
 import Arkham.Investigator.Cards
 import Arkham.PlayerCard
 import Arkham.Scenario
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
 getApiV1ArkhamCardsR :: Handler [CardDef]
@@ -28,7 +28,7 @@ getApiV1ArkhamCardsR = do
         <> allEncounterInvestigatorCards
       else
         allInvestigatorCards
-          <> HashMap.filter (isNothing . cdEncounterSet) allPlayerCards
+          <> Map.filter (isNothing . cdEncounterSet) allPlayerCards
     safeBCodes = ["03047b", "03084b"]
     safeDCodes = ["03084d"]
 
@@ -47,4 +47,4 @@ getApiV1ArkhamCardsR = do
         )
     $ toList
     $ cards
-    `HashMap.difference` allSpecialPlayerAssetCards
+    `Map.difference` allSpecialPlayerAssetCards

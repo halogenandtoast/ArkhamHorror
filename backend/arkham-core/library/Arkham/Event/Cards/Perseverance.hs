@@ -50,9 +50,8 @@ instance RunMessage Perseverance where
       pure e
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        damageAmount = findWithDefault 0 "Damage" choicesMap
-        horrorAmount = findWithDefault 0 "Horror" choicesMap
+        damageAmount = getChoiceAmount "Damage" choices
+        horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll $ CancelAssignedDamage
         (InvestigatorTarget iid)

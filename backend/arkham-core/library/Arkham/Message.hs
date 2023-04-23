@@ -120,7 +120,7 @@ data AbilityRef = AbilityRef Source Int
 
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
- let choicesMap = mapFromList @(HashMap Text Int) choices
+ let choicesMap = mapFromList @(Map Text Int) choices
  in findWithDefault 0 key choicesMap
 
 class IsMessage msg where
@@ -216,7 +216,7 @@ data Message
   | -- Asks
     AskPlayer Message
   | Ask InvestigatorId (Question Message)
-  | AskMap (HashMap InvestigatorId (Question Message))
+  | AskMap (Map InvestigatorId (Question Message))
   | After Message -- TODO: REMOVE
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId
@@ -270,7 +270,7 @@ data Message
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
-  | ChooseRandomLocation Target (HashSet LocationId)
+  | ChooseRandomLocation Target (Set LocationId)
   | ChosenRandomLocation Target LocationId
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId Card
@@ -599,7 +599,7 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] CardMatcher FoundCardsStrategy
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (HashMap Zone [Card])
+  | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)

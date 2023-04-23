@@ -379,7 +379,7 @@ instance RunMessage EnemyAttrs where
             -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
             --   unionWith (<>) connectionMap $ singletonMap loc [lid']
             -- applyConnectionMapModifier connectionMap _ = connectionMap
-            -- extraConnectionsMap :: HashMap LocationId [LocationId] =
+            -- extraConnectionsMap :: Map LocationId [LocationId] =
             --   foldl' applyConnectionMapModifier mempty modifiers'
 
           mLocation <- field EnemyLocation eid

@@ -37,9 +37,9 @@ data GameParams = GameParams
   deriving stock (Eq, Show)
 
 data Game = Game
-  { gamePhaseHistory :: HashMap InvestigatorId History
-  , gameTurnHistory :: HashMap InvestigatorId History
-  , gameRoundHistory :: HashMap InvestigatorId History
+  { gamePhaseHistory :: Map InvestigatorId History
+  , gameTurnHistory :: Map InvestigatorId History
+  , gameRoundHistory :: Map InvestigatorId History
   , gameInitialSeed :: Int
   , gameSeed :: Int
   , gameParams :: GameParams
@@ -50,11 +50,11 @@ data Game = Game
     gameMode :: GameMode
   , -- Entities
     gameEntities :: Entities
-  , gameOutOfPlayEntities :: HashMap OutOfPlayZone Entities
-  , gameModifiers :: HashMap Target [Modifier]
+  , gameOutOfPlayEntities :: Map OutOfPlayZone Entities
+  , gameModifiers :: Map Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
-  , gameInHandEntities :: HashMap InvestigatorId Entities
-  , gameInDiscardEntities :: HashMap InvestigatorId Entities
+  , gameInHandEntities :: Map InvestigatorId Entities
+  , gameInDiscardEntities :: Map InvestigatorId Entities
   , gameInSearchEntities :: Entities
   , -- Player Details
     -- used for determining if game should start
@@ -68,7 +68,7 @@ data Game = Game
     gamePhase :: Phase
   , gameSkillTest :: Maybe SkillTest
   , gameFocusedCards :: [Card]
-  , gameFoundCards :: HashMap Zone [Card]
+  , gameFoundCards :: Map Zone [Card]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
   , gameResolvingCard :: Maybe Card
@@ -80,14 +80,14 @@ data Game = Game
   , gameEnemyMoving :: Maybe EnemyId
   , gameEnemyEvading :: Maybe EnemyId
   , -- Active questions
-    gameQuestion :: HashMap InvestigatorId (Question Message)
+    gameQuestion :: Map InvestigatorId (Question Message)
   , -- handling time warp
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]
   , gameInAction :: Bool
-  , gameCards :: HashMap CardId Card
+  , gameCards :: Map CardId Card
   , -- handling costs
-    gameActiveCost :: HashMap ActiveCostId ActiveCost
+    gameActiveCost :: Map ActiveCostId ActiveCost
   }
   deriving stock (Eq, Show)
 

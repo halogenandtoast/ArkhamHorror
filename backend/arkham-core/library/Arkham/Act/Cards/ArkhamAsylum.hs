@@ -16,7 +16,7 @@ import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 
-newtype Metadata = Metadata { chosenSkills :: HashSet SkillType }
+newtype Metadata = Metadata { chosenSkills :: Set SkillType }
   deriving stock Generic
   deriving anyclass (ToJSON, FromJSON)
   deriving newtype (Show, Eq)

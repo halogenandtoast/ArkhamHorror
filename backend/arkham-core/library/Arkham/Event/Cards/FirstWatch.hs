@@ -41,7 +41,7 @@ instance RunMessage FirstWatch where
         | eid == eventId
         -> do
           investigatorIds <-
-            setFromList @(HashSet InvestigatorId) <$> getInvestigatorIds
+            setFromList @(Set InvestigatorId) <$> getInvestigatorIds
           let
             assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
             remainingInvestigatorIds =

@@ -46,7 +46,7 @@ toSkillLabel (SkillIcon sType) = case sType of
 instance RunMessage GrislyTotem where
   runMessage msg a@(GrislyTotem attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      icons <- setFromList @(HashSet SkillIcon) <$> iconsForCard card
+      icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
       push $ chooseOrRunOne
         iid
         [ Label

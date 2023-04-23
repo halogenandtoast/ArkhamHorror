@@ -19,7 +19,7 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
 import Control.Monad.Random ( mkStdGen )
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding ( isNothing )
@@ -65,10 +65,10 @@ toDeckErrors :: ArkhamDeck -> [DeckError]
 toDeckErrors deck = flip mapMaybe cardCodes $ \cardCode -> maybe
   (Just $ UnimplementedCard cardCode)
   (const Nothing)
-  (HashMap.lookup cardCode allPlayerCards)
+  (Map.lookup cardCode allPlayerCards)
  where
   decklist = arkhamDeckList deck
-  cardCodes = HashMap.keys $ slots decklist
+  cardCodes = Map.keys $ slots decklist
 
 postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do

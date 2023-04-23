@@ -144,7 +144,7 @@ getCanSpendClues attrs = do
   match _ = False
 
 removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+  :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: IsCard a => [SlotType] -> a -> InvestigatorAttrs -> Bool
@@ -354,7 +354,7 @@ modifiedStatsOf maction i = do
     }
 
 getAvailableSkillsFor
-  :: HasGame m => SkillType -> InvestigatorId -> m (HashSet SkillType)
+  :: HasGame m => SkillType -> InvestigatorId -> m (Set SkillType)
 getAvailableSkillsFor skillType iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   pure $ foldr applyModifier (singleton skillType) modifiers

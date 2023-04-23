@@ -64,7 +64,7 @@ skill cardCode name icons classSymbol = CardDef
   , cdDeckRestrictions = []
   }
 
-allPlayerSkillCards :: HashMap CardCode CardDef
+allPlayerSkillCards :: Map CardCode CardDef
 allPlayerSkillCards = mapFromList $ concatMap
   toCardCodePairs
   [ ableBodied

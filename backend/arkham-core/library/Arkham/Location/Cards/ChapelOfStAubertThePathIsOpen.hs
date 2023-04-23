@@ -59,8 +59,7 @@ instance RunMessage ChapelOfStAubertThePathIsOpen where
       pure l
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        horrorAmount = findWithDefault 0 "Horror" choicesMap
+        horrorAmount = getChoiceAmount "Horror" choices
       when (horrorAmount > 0) $ push $ InvestigatorAssignDamage
         iid
         (toSource attrs)

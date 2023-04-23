@@ -16,7 +16,7 @@ import Arkham.Trait ( Trait (Shattered) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
-newtype Metadata = Metadata { damagedAssets :: HashSet AssetId }
+newtype Metadata = Metadata { damagedAssets :: Set AssetId }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

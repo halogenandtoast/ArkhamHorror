@@ -27,7 +27,7 @@ data CardDraw = CardDraw
   , cardDrawAmount :: Int
   , cardDrawState :: CardDrawState
   , cardDrawAction :: Bool
-  , cardDrawRules :: HashSet CardDrawRules
+  , cardDrawRules :: Set CardDrawRules
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

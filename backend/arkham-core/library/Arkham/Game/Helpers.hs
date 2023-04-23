@@ -70,7 +70,7 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Monad.Reader (local)
-import Data.HashSet qualified as HashSet
+import Data.Set qualified as Set
 import Data.List.Extra (nubOrdOn)
 
 replaceThisCard :: Card -> Source -> Source
@@ -125,7 +125,7 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
   allowsPlayFromDiscard 0 card (CanPlayTopOfDiscard (mcardType, traits)) =
     maybe True (== cdCardType (toCardDef card)) mcardType
       && ( null traits
-            || ( setFromList traits `HashSet.isSubsetOf` toTraits (toCardDef card)
+            || ( setFromList traits `Set.isSubsetOf` toTraits (toCardDef card)
                )
          )
   allowsPlayFromDiscard _ _ _ = False
@@ -1404,12 +1404,12 @@ passesCriteria iid mcard source windows' = \case
         ActionAbility (Just Action.Resign) _ -> True
         _ -> False
   Criteria.Remembered logKey -> do
-    elem logKey <$> scenarioFieldMap ScenarioRemembered HashSet.toList
+    elem logKey <$> scenarioFieldMap ScenarioRemembered Set.toList
   Criteria.RememberedAtLeast value logKeys -> do
     n <-
       length
         . filter (`elem` logKeys)
-        <$> scenarioFieldMap ScenarioRemembered HashSet.toList
+        <$> scenarioFieldMap ScenarioRemembered Set.toList
     gameValueMatches n (Matcher.AtLeast value)
   Criteria.AtLeastNCriteriaMet n criteria -> do
     m <- countM (passesCriteria iid mcard source windows') criteria
@@ -2572,7 +2572,7 @@ skillTestValueMatches iid n maction skillTestType = \case
       resources <- field InvestigatorResources iid
       pure $ n > resources
 
-targetTraits :: (HasCallStack, HasGame m) => Target -> m (HashSet Trait)
+targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
 targetTraits = \case
   ActDeckTarget -> pure mempty
   ActTarget _ -> pure mempty

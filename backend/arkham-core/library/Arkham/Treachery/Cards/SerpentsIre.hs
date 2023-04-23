@@ -41,7 +41,7 @@ instance RunMessage SerpentsIre where
         (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-
         toList
-        . setFromList @(HashSet EnemyId)
+        . setFromList @(Set EnemyId)
         <$> filterM
               (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== fightValue)))
               serpents

@@ -59,7 +59,7 @@ investigator cardCode name classSymbol traits = CardDef
   , cdDeckRestrictions = []
   }
 
-allInvestigatorCards :: HashMap CardCode CardDef
+allInvestigatorCards :: Map CardCode CardDef
 allInvestigatorCards = mapFromList $ concatMap
   toCardCodePairs
   [ rolandBanks
@@ -99,7 +99,7 @@ allInvestigatorCards = mapFromList $ concatMap
   , daisyWalkerParallel
   ]
 
-allEncounterInvestigatorCards :: HashMap CardCode CardDef
+allEncounterInvestigatorCards :: Map CardCode CardDef
 allEncounterInvestigatorCards = mapFromList $ concatMap
   toCardCodePairs
   [ bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite ]

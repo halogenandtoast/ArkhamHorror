@@ -62,13 +62,13 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]
   InvestigatorDeck :: Field Investigator (Deck PlayerCard)
-  InvestigatorDecks :: Field Investigator (HashMap InvestigatorDeckKey [Card])
+  InvestigatorDecks :: Field Investigator (Map InvestigatorDeckKey [Card])
   InvestigatorDiscard :: Field Investigator [PlayerCard]
   InvestigatorClass :: Field Investigator ClassSymbol
   InvestigatorActionsTaken :: Field Investigator [Action]
-  InvestigatorSlots :: Field Investigator (HashMap SlotType [Slot])
+  InvestigatorSlots :: Field Investigator (Map SlotType [Slot])
   InvestigatorUsedAbilities :: Field Investigator [UsedAbility]
-  InvestigatorTraits :: Field Investigator (HashSet Trait)
+  InvestigatorTraits :: Field Investigator (Set Trait)
   InvestigatorAbilities :: Field Investigator [Ability]
   InvestigatorCommittedCards :: Field Investigator [Card]
   InvestigatorDefeated :: Field Investigator Bool
@@ -104,27 +104,27 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorActionsTaken :: [Action]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
-  , investigatorEngagedEnemies :: HashSet EnemyId
-  , investigatorAssets :: HashSet AssetId
-  , investigatorEvents :: HashSet EventId
+  , investigatorEngagedEnemies :: Set EnemyId
+  , investigatorAssets :: Set AssetId
+  , investigatorEvents :: Set EventId
   , investigatorDeck :: Deck PlayerCard
-  , investigatorDecks :: HashMap InvestigatorDeckKey [Card]
+  , investigatorDecks :: Map InvestigatorDeckKey [Card]
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
-  , investigatorTraits :: HashSet Trait
-  , investigatorTreacheries :: HashSet TreacheryId
+  , investigatorTraits :: Set Trait
+  , investigatorTreacheries :: Set TreacheryId
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorKilled :: Bool
   , investigatorDrivenInsane :: Bool
-  , investigatorSlots :: HashMap SlotType [Slot]
+  , investigatorSlots :: Map SlotType [Slot]
   , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
   , investigatorStartsWith :: [CardDef]
   , investigatorStartsWithInHand :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
-  , investigatorFoundCards :: HashMap Zone [Card]
+  , investigatorFoundCards :: Map Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorAdditionalActions :: [AdditionalAction]
   -- handling liquid courage

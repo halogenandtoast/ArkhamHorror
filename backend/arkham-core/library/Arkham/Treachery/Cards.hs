@@ -90,10 +90,10 @@ treachery cardCode name encounterSet encounterSetQuantity = baseTreachery
   (Just (encounterSet, encounterSetQuantity))
   Nothing
 
-allTreacheryCards :: HashMap CardCode CardDef
+allTreacheryCards :: Map CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
-allPlayerTreacheryCards :: HashMap CardCode CardDef
+allPlayerTreacheryCards :: Map CardCode CardDef
 allPlayerTreacheryCards = mapFromList $ concatMap
   toCardCodePairs
   [ abandonedAndAlone
@@ -145,7 +145,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , yaztaroth
   ]
 
-allEncounterTreacheryCards :: HashMap CardCode CardDef
+allEncounterTreacheryCards :: Map CardCode CardDef
 allEncounterTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
   [ aTearInTime

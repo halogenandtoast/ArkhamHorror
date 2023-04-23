@@ -25,7 +25,7 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
 data instance Field Skill :: Type -> Type where
-  SkillTraits :: Field Skill (HashSet Trait)
+  SkillTraits :: Field Skill (Set Trait)
   SkillCard :: Field Skill Card
   SkillOwner :: Field Skill InvestigatorId
 
@@ -47,7 +47,7 @@ additionalCostL = lens skillAdditionalCost $ \m x -> m { skillAdditionalCost = x
 afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
 afterPlayL = lens skillAfterPlay $ \m x -> m { skillAfterPlay = x }
 
-allSkillCards :: HashMap CardCode CardDef
+allSkillCards :: Map CardCode CardDef
 allSkillCards = allPlayerSkillCards
 
 instance HasCardCode SkillAttrs where

@@ -58,7 +58,7 @@ act cardCode name stage encounterSet = CardDef
   , cdDeckRestrictions = []
   }
 
-allActCards :: HashMap CardCode CardDef
+allActCards :: Map CardCode CardDef
 allActCards = mapFromList $ map
   (toCardCode &&& id)
   [ aCircleUnbroken

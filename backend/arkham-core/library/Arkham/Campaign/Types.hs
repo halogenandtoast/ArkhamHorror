@@ -27,22 +27,22 @@ class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, HasModifiersFor a, RunMes
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
-  CampaignStoryCards :: Field Campaign (HashMap InvestigatorId [PlayerCard])
+  CampaignStoryCards :: Field Campaign (Map InvestigatorId [PlayerCard])
   CampaignCampaignLog :: Field Campaign CampaignLog
-  CampaignDecks :: Field Campaign (HashMap InvestigatorId (Deck PlayerCard))
+  CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
-  , campaignDecks :: HashMap InvestigatorId (Deck PlayerCard)
-  , campaignStoryCards :: HashMap InvestigatorId [PlayerCard]
+  , campaignDecks :: Map InvestigatorId (Deck PlayerCard)
+  , campaignStoryCards :: Map InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [TokenFace]
   , campaignLog :: CampaignLog
   , campaignStep :: Maybe CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
-  , campaignResolutions :: HashMap ScenarioId Resolution
-  , campaignModifiers :: HashMap InvestigatorId [Modifier]
+  , campaignResolutions :: Map ScenarioId Resolution
+  , campaignModifiers :: Map InvestigatorId [Modifier]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -58,10 +58,10 @@ completedStepsL =
 chaosBagL :: Lens' CampaignAttrs [TokenFace]
 chaosBagL = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
 
-storyCardsL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
+storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [PlayerCard])
 storyCardsL = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
 
-decksL :: Lens' CampaignAttrs (HashMap InvestigatorId (Deck PlayerCard))
+decksL :: Lens' CampaignAttrs (Map InvestigatorId (Deck PlayerCard))
 decksL = lens campaignDecks $ \m x -> m { campaignDecks = x }
 
 logL :: Lens' CampaignAttrs CampaignLog
@@ -70,14 +70,14 @@ logL = lens campaignLog $ \m x -> m { campaignLog = x }
 stepL :: Lens' CampaignAttrs (Maybe CampaignStep)
 stepL = lens campaignStep $ \m x -> m { campaignStep = x }
 
-resolutionsL :: Lens' CampaignAttrs (HashMap ScenarioId Resolution)
+resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m { campaignResolutions = x }
 
 completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps
 completeStep Nothing steps = steps
 
-modifiersL :: Lens' CampaignAttrs (HashMap InvestigatorId [Modifier])
+modifiersL :: Lens' CampaignAttrs (Map InvestigatorId [Modifier])
 modifiersL = lens campaignModifiers $ \m x -> m { campaignModifiers = x }
 
 instance Entity CampaignAttrs where

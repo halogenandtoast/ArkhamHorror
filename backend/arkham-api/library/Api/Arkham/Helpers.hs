@@ -17,7 +17,7 @@ import Control.Monad.Random ( MonadRandom (..), StdGen, mkStdGen )
 import Data.Aeson.Key ( fromText )
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.ByteString.Lazy qualified as BSL
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.Map.Strict qualified as Map
 import Json
 import Text.Parsec ( char, digit, many1, sepBy, parse, ParsecT )
@@ -122,7 +122,7 @@ newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
 
 loadDecklistCards :: (CardGen m) => ArkhamDBDecklist -> m [PlayerCard]
 loadDecklistCards decklist = do
-  results <- forM (HashMap.toList $ slots decklist) $ \(cardCode, count') ->
+  results <- forM (Map.toList $ slots decklist) $ \(cardCode, count') ->
     replicateM count' (applyCustomizations decklist <$> genPlayerCard (lookupPlayerCardDef cardCode))
   pure $ fold results
 

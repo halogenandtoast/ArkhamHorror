@@ -40,15 +40,15 @@ class
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
 data instance Field (DiscardedEntity Treachery) :: Type -> Type where
-  DiscardedTreacheryKeywords :: Field (DiscardedEntity Treachery) (HashSet Keyword)
+  DiscardedTreacheryKeywords :: Field (DiscardedEntity Treachery) (Set Keyword)
 
 data instance Field Treachery :: Type -> Type where
   TreacheryClues :: Field Treachery Int
   TreacheryResources :: Field Treachery Int
   TreacheryDoom :: Field Treachery Int
   TreacheryAttachedTarget :: Field Treachery (Maybe Target)
-  TreacheryTraits :: Field Treachery (HashSet Trait)
-  TreacheryKeywords :: Field Treachery (HashSet Keyword)
+  TreacheryTraits :: Field Treachery (Set Trait)
+  TreacheryKeywords :: Field Treachery (Set Keyword)
   TreacheryAbilities :: Field Treachery [Ability]
   TreacheryCardDef :: Field Treachery CardDef
   TreacheryCard :: Field Treachery Card

@@ -117,7 +117,7 @@ data Cost
   | HandDiscardCost Int CardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
-  | SkillIconCost Int (HashSet SkillIcon)
+  | SkillIconCost Int (Set SkillIcon)
   | DiscardCombinedCost Int
   | ShuffleDiscardCost Int CardMatcher
   | HorrorCost Source Target Int

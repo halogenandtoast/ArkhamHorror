@@ -52,7 +52,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.IntMap.Strict qualified as IntMap
 
 instance HasTokenValue ScenarioAttrs where
@@ -291,12 +291,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     send $ "Remember \"" <> format logKey <> "\""
     pure $ a & logL %~ insertSet logKey
   ScenarioCountIncrementBy logKey n ->
-    pure $ a & countsL %~ HashMap.alter (Just . maybe n (+ n)) logKey
+    pure $ a & countsL %~ Map.alter (Just . maybe n (+ n)) logKey
   ScenarioCountDecrementBy logKey n ->
     pure
       $ a
       & countsL
-      %~ HashMap.alter (Just . max 0 . maybe 0 (subtract n)) logKey
+      %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveToken _drawnToken token iid -> do
     TokenValue _ tokenModifier <- getTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
@@ -564,7 +564,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       pure $ a & (encounterDeckL .~ Deck encounterDeck)
   Search iid source EncounterDeckTarget cardSources _traits foundStrategy -> do
     let
-      foundCards :: HashMap Zone [Card] = foldl'
+      foundCards :: Map Zone [Card] = foldl'
         (\hmap (cardSource, _) -> case cardSource of
           Zone.FromDeck -> insertWith
             (<>)

@@ -31,7 +31,7 @@ revealedTokensL :: Lens' SkillTest [Token]
 revealedTokensL =
   lens skillTestRevealedTokens $ \m x -> m {skillTestRevealedTokens = x}
 
-committedCardsL :: Lens' SkillTest (HashMap InvestigatorId [Card])
+committedCardsL :: Lens' SkillTest (Map InvestigatorId [Card])
 committedCardsL =
   lens skillTestCommittedCards $ \m x -> m {skillTestCommittedCards = x}
 

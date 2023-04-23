@@ -112,14 +112,14 @@ scenarioCard cCode name ecSet = CardDef
   , cdDeckRestrictions = []
   }
 
-allScenarioCards :: HashMap CardCode CardDef
+allScenarioCards :: Map CardCode CardDef
 allScenarioCards =
   mapFromList $ flip map (mapToList allScenarios) $ \(c, SomeScenario s) -> do
     let ecSet = fromJustNote "you forgot to add the encounter set" $ lookup c scenarioEncounterSets
         name = scenarioName $ toAttrs $ Scenario (s Easy)
     (c, scenarioCard c name ecSet)
 
-allScenarios :: HashMap CardCode SomeScenario
+allScenarios :: Map CardCode SomeScenario
 allScenarios = mapFromList
   [ ("01104", SomeScenario theGathering)
   , ("01120", SomeScenario theMidnightMasks)
@@ -160,7 +160,7 @@ allScenarios = mapFromList
   , ("82001", SomeScenario carnevaleOfHorrors)
   ]
 
-scenarioEncounterSets :: HashMap CardCode EncounterSet
+scenarioEncounterSets :: Map CardCode EncounterSet
 scenarioEncounterSets = mapFromList
   [ ("01104", EncounterSet.TheGathering)
   , ("01120", EncounterSet.TheMidnightMasks)

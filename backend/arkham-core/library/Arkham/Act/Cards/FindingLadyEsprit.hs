@@ -21,7 +21,7 @@ import Arkham.Placement
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries
-import Data.HashSet qualified as HashSet
+import Data.Set qualified as Set
 import Data.Maybe ( fromJust )
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
@@ -46,7 +46,7 @@ instance RunMessage FindingLadyEsprit where
       let
         traits =
           toList
-            $ HashSet.unions (map toTraits setAsideLocations)
+            $ Set.unions (map toTraits setAsideLocations)
             `intersect` setFromList
                           [NewOrleans, Riverside, Wilderness, Unhallowed]
         locationsFor t = filter (member t . toTraits) setAsideLocations

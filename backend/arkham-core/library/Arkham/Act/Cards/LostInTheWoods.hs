@@ -24,7 +24,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs
   deriving anyclass IsAct
@@ -73,7 +73,7 @@ instance RunMessage LostInTheWoods where
       relentlessDarkYoung <- getSetAsideCard Enemies.relentlessDarkYoung
 
       let
-        placementMap = HashMap.fromList $ zip iids placements
+        placementMap = Map.fromList $ zip iids placements
         enemyPairings = if length iids == 4
           then
             (lead, relentlessDarkYoung) : zip (deleteFirst lead iids) goatSpawn

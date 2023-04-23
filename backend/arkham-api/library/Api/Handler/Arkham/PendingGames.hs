@@ -12,7 +12,7 @@ import Arkham.Id
 import Arkham.Investigator
 import Control.Monad.Random ( mkStdGen )
 import Data.Aeson
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Entity.Arkham.Step
 import Safe ( fromJustNote )
@@ -30,7 +30,7 @@ putApiV1ArkhamPendingGameR gameId = do
   deck <- runDB $ get404 deckId
   when (arkhamDeckUserId deck /= userId) notFound
   (iid, decklist) <- liftIO $ loadDecklist deck
-  when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
+  when (iid `Map.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
 
   runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)

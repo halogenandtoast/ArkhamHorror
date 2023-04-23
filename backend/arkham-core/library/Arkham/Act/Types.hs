@@ -36,7 +36,7 @@ data ActAttrs = ActAttrs
   , actSequence :: AS.ActSequence
   , actAdvanceCost :: Maybe Cost
   , actClues :: Int
-  , actTreacheries :: HashSet TreacheryId
+  , actTreacheries :: Set TreacheryId
   , actDeckId :: Int
   }
   deriving stock (Show, Eq, Generic)
@@ -47,7 +47,7 @@ sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 cluesL :: Lens' ActAttrs Int
 cluesL = lens actClues $ \m x -> m { actClues = x }
 
-treacheriesL :: Lens' ActAttrs (HashSet TreacheryId)
+treacheriesL :: Lens' ActAttrs (Set TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
 actWith

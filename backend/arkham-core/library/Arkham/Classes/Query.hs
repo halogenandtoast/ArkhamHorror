@@ -7,10 +7,10 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Target
-import Data.HashSet qualified as HashSet
+import Data.Set qualified as Set
 
 selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
-selectCount = fmap HashSet.size . select
+selectCount = fmap Set.size . select
 
 selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectAny = fmap notNull . selectListMap id
@@ -161,4 +161,4 @@ isMatch
 isMatch a m = member a <$> select m
 
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a where
-  select :: (HasCallStack, HasGame m) => a -> m (HashSet (QueryElement a))
+  select :: (HasCallStack, HasGame m) => a -> m (Set (QueryElement a))

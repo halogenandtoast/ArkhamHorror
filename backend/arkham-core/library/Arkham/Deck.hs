@@ -15,3 +15,18 @@ data DeckSignifier
   | InvestigatorDeckByKey InvestigatorId InvestigatorDeckKey
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+class IsDeck a where
+  toDeck :: a -> DeckSignifier
+
+instance IsDeck InvestigatorId where
+  toDeck = InvestigatorDeck
+  {-# INLINE toDeck #-}
+
+instance IsDeck ScenarioDeckKey where
+  toDeck = ScenarioDeckByKey
+  {-# INLINE toDeck #-}
+
+instance IsDeck DeckSignifier where
+  toDeck = id
+  {-# INLINE toDeck #-}

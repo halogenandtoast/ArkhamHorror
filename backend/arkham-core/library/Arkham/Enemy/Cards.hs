@@ -81,7 +81,7 @@ enemy :: CardCode -> Name -> EncounterSet -> Int -> CardDef
 enemy cardCode name encounterSet encounterSetQuantity =
   baseEnemy cardCode name (Just (encounterSet, encounterSetQuantity)) Nothing
 
-allPlayerEnemyCards :: HashMap CardCode CardDef
+allPlayerEnemyCards :: Map CardCode CardDef
 allPlayerEnemyCards = mapFromList $ concatMap
   toCardCodePairs
   [ mobEnforcer
@@ -95,7 +95,7 @@ allPlayerEnemyCards = mapFromList $ concatMap
   , tommyMalloy
   ]
 
-allEncounterEnemyCards :: HashMap CardCode CardDef
+allEncounterEnemyCards :: Map CardCode CardDef
 allEncounterEnemyCards = mapFromList $ concatMap
   toCardCodePairs
   [ acolyte
@@ -244,7 +244,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , youngPsychopath
   ]
 
-allSpecialEnemyCards :: HashMap CardCode CardDef
+allSpecialEnemyCards :: Map CardCode CardDef
 allSpecialEnemyCards =
   mapFromList $ map (toCardCode &&& id) [flyingPolyp]
 

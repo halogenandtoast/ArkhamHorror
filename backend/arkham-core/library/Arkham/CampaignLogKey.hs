@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.CampaignLogKey where
 
 import Arkham.Prelude hiding (toLower)
@@ -5,24 +6,9 @@ import Arkham.Classes.GameLogger
 import Arkham.Card.CardCode
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Control.Monad.Fail
+import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
 import Data.Typeable
-
-data Recorded a = Recorded a | CrossedOut a
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
-
-recordedCardCodes :: [SomeRecorded] -> [CardCode]
-recordedCardCodes [] = []
-recordedCardCodes (SomeRecorded RecordableCardCode (Recorded a) : as) = a : recordedCardCodes as
-recordedCardCodes (_ : as) = recordedCardCodes as
-
-unrecorded :: forall a. Recordable a => SomeRecorded -> Maybe a
-unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
-  Just Refl -> case rec of
-    Recorded a -> Just a
-    CrossedOut a -> Just a
-  Nothing -> Nothing
 
 data CampaignLogKey
   = DrivenInsaneInvestigators
@@ -201,8 +187,25 @@ data CampaignLogKey
   | TheHourIsNigh
   | YouHaveTranslatedTheTome
   -- ^ Player Cards
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+  deriving stock (Eq, Show, Ord)
+
+$(deriveJSON defaultOptions ''CampaignLogKey)
+
+data Recorded a = Recorded a | CrossedOut a
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON)
+
+recordedCardCodes :: [SomeRecorded] -> [CardCode]
+recordedCardCodes [] = []
+recordedCardCodes (SomeRecorded RecordableCardCode (Recorded a) : as) = a : recordedCardCodes as
+recordedCardCodes (_ : as) = recordedCardCodes as
+
+unrecorded :: forall a. Recordable a => SomeRecorded -> Maybe a
+unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
+  Just Refl -> case rec of
+    Recorded a -> Just a
+    CrossedOut a -> Just a
+  Nothing -> Nothing
 
 instance ToGameLoggerFormat CampaignLogKey where
   format = pack . go . show

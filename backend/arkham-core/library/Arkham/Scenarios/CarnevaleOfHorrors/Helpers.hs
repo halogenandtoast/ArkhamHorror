@@ -51,7 +51,7 @@ getClockwiseLocations end = do
   buildList (Just current) clockwiseMap =
     current : buildList (lookup current clockwiseMap) clockwiseMap
 
-getClockwiseMap :: HasGame m => m (HashMap LocationId LocationId)
+getClockwiseMap :: HasGame m => m (Map LocationId LocationId)
 getClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
@@ -62,7 +62,7 @@ getClockwiseMap = do
           )
           lids
 
-getCounterClockwiseMap :: HasGame m => m (HashMap LocationId LocationId)
+getCounterClockwiseMap :: HasGame m => m (Map LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList

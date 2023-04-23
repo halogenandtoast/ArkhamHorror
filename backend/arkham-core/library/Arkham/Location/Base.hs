@@ -24,17 +24,17 @@ data LocationAttrs = LocationAttrs
   , locationResources :: Int
   , locationShroud :: Int
   , locationRevealed :: Bool
-  , locationInvestigators :: HashSet InvestigatorId
-  , locationEnemies :: HashSet EnemyId
+  , locationInvestigators :: Set InvestigatorId
+  , locationEnemies :: Set EnemyId
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedMatchers :: [LocationMatcher]
   , locationRevealedConnectedMatchers :: [LocationMatcher]
-  , locationTreacheries :: HashSet TreacheryId
-  , locationEvents :: HashSet EventId
-  , locationAssets :: HashSet AssetId
-  , locationDirections :: HashMap Direction LocationId
-  , locationConnectsTo :: HashSet Direction
+  , locationTreacheries :: Set TreacheryId
+  , locationEvents :: Set EventId
+  , locationAssets :: Set AssetId
+  , locationDirections :: Map Direction LocationId
+  , locationConnectsTo :: Set Direction
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
   , locationCanBeFlipped :: Bool

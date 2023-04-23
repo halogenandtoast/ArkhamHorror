@@ -73,7 +73,7 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
 
 data instance Field (DiscardedEntity Asset) :: Type -> Type where
-  DiscardedAssetTraits :: Field (DiscardedEntity Asset) (HashSet Trait)
+  DiscardedAssetTraits :: Field (DiscardedEntity Asset) (Set Trait)
 
 data instance Field (InHandEntity Asset) :: Type -> Type where
   InHandAssetCardId :: Field (InHandEntity Asset) CardId
@@ -101,8 +101,8 @@ data instance Field Asset :: Type -> Type where
   AssetPlacement :: Field Asset Placement
   AssetCardsUnderneath :: Field Asset [Card]
   -- virtual
-  AssetClasses :: Field Asset (HashSet ClassSymbol)
-  AssetTraits :: Field Asset (HashSet Trait)
+  AssetClasses :: Field Asset (Set ClassSymbol)
+  AssetTraits :: Field Asset (Set Trait)
   AssetCardDef :: Field Asset CardDef
   AssetCard :: Field Asset Card
   AssetAbilities :: Field Asset [Ability]
@@ -168,7 +168,7 @@ data AssetAttrs = AssetAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-allAssetCards :: HashMap CardCode CardDef
+allAssetCards :: Map CardCode CardDef
 allAssetCards =
   allPlayerAssetCards <> allEncounterAssetCards <> allSpecialPlayerAssetCards
 

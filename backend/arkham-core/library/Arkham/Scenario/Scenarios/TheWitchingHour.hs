@@ -31,8 +31,8 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWitchingHour.Story
 import Arkham.Target
 import Arkham.Token
-import Data.HashMap.Monoidal qualified as MonoidalHashMap
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Monoidal qualified as MonoidalMap
+import Data.Map.Strict qualified as Map
 
 newtype TheWitchingHour = TheWitchingHour ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -122,12 +122,12 @@ instance RunMessage TheWitchingHour where
         woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
         locationMap = foldMap
           (\(investigator, location) ->
-            MonoidalHashMap.singleton investigator (location :| [])
+            MonoidalMap.singleton investigator (location :| [])
           )
           woodsWithInvestigators
-      startingLocations <- HashMap.fromList <$> traverse
+      startingLocations <- Map.fromList <$> traverse
         (\(k, v) -> (k, ) <$> sample v)
-        (MonoidalHashMap.toList locationMap)
+        (MonoidalMap.toList locationMap)
 
       locationPlacements <-
         concatForM woodsWithInvestigators $ \(investigator, location) -> do

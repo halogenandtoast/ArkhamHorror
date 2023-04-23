@@ -17,11 +17,11 @@ instance ToJSON ModifierData where
 
 data LocationMetadata = LocationMetadata
   { lmConnectedLocations :: [LocationId]
-  , lmInvestigators :: HashSet InvestigatorId
-  , lmEnemies :: HashSet EnemyId
-  , lmTreacheries :: HashSet TreacheryId
-  , lmAssets :: HashSet AssetId
-  , lmEvents :: HashSet EventId
+  , lmInvestigators :: Set InvestigatorId
+  , lmEnemies :: Set EnemyId
+  , lmTreacheries :: Set TreacheryId
+  , lmAssets :: Set AssetId
+  , lmEvents :: Set EventId
   }
   deriving stock (Show, Eq, Generic)
 
@@ -37,9 +37,9 @@ instance ToJSON ConnectionData where
   toEncoding = genericToEncoding $ aesonOptions $ Just "cd"
 
 data EnemyMetadata = EnemyMetadata
-  { emEngagedInvestigators :: HashSet InvestigatorId
-  , emTreacheries :: HashSet TreacheryId
-  , emAssets :: HashSet AssetId
+  { emEngagedInvestigators :: Set InvestigatorId
+  , emTreacheries :: Set TreacheryId
+  , emAssets :: Set AssetId
   , emModifiers :: [Modifier]
   }
   deriving stock (Show, Eq, Generic)
@@ -49,8 +49,8 @@ instance ToJSON EnemyMetadata where
   toEncoding = genericToEncoding $ aesonOptions $ Just "em"
 
 data AssetMetadata = AssetMetadata
-  { amEvents :: HashSet EventId
-  , amAssets :: HashSet AssetId
+  { amEvents :: Set EventId
+  , amAssets :: Set AssetId
   , amModifiers :: [Modifier]
   }
   deriving stock (Show, Eq, Generic)

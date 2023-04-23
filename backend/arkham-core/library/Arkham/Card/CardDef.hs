@@ -50,11 +50,11 @@ data CardDef = CardDef
   , cdLevel :: Int
   , cdCardType :: CardType
   , cdCardSubType :: Maybe CardSubType
-  , cdClassSymbols :: HashSet ClassSymbol
+  , cdClassSymbols :: Set ClassSymbol
   , cdSkills :: [SkillIcon]
-  , cdCardTraits :: HashSet Trait
-  , cdRevealedCardTraits :: HashSet Trait
-  , cdKeywords :: HashSet Keyword
+  , cdCardTraits :: Set Trait
+  , cdRevealedCardTraits :: Set Trait
+  , cdKeywords :: Set Keyword
   , cdFastWindow :: Maybe WindowMatcher
   , cdActions :: [Action]
   , cdRevelation :: Bool
@@ -111,10 +111,10 @@ instance Named CardDef where
 subTypeL :: Lens' CardDef (Maybe CardSubType)
 subTypeL = lens cdCardSubType $ \m x -> m { cdCardSubType = x }
 
-keywordsL :: Lens' CardDef (HashSet Keyword)
+keywordsL :: Lens' CardDef (Set Keyword)
 keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
 
-cardTraitsL :: Lens' CardDef (HashSet Trait)
+cardTraitsL :: Lens' CardDef (Set Trait)
 cardTraitsL = lens cdCardTraits $ \m x -> m { cdCardTraits = x }
 
 instance ToJSON CardDef where

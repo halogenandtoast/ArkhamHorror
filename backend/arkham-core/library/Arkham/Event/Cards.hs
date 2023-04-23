@@ -76,7 +76,7 @@ event cardCode name cost classSymbol = CardDef
   , cdDeckRestrictions = []
   }
 
-allPlayerEventCards :: HashMap CardCode CardDef
+allPlayerEventCards :: Map CardCode CardDef
 allPlayerEventCards = mapFromList $ concatMap
   toCardCodePairs
   [ aChanceEncounter

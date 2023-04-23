@@ -41,9 +41,8 @@ instance RunMessage Sacrifice1 where
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        drawAmount = findWithDefault 0 "Cards" choicesMap
-        resourcesAmount = findWithDefault 0 "Resources" choicesMap
+        drawAmount = getChoiceAmount "Cards" choices
+        resourcesAmount = getChoiceAmount "Resources" choices
       drawing <- drawCards iid attrs drawAmount
       pushAll
         $ [ drawing | drawAmount > 0 ]

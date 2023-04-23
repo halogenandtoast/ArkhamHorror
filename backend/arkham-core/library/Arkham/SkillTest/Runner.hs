@@ -32,7 +32,7 @@ import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Lens ( each )
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
@@ -304,7 +304,7 @@ instance RunMessage SkillTest where
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
       pure s
     CheckAllAdditionalCommitCosts -> do
-      pushAll $ HashMap.foldMapWithKey (\i cs -> [CheckAdditionalCommitCosts i cs]) skillTestCommittedCards
+      pushAll $ Map.foldMapWithKey (\i cs -> [CheckAdditionalCommitCosts i cs]) skillTestCommittedCards
       pure s
     CheckAdditionalCommitCosts iid cards -> do
       modifiers' <- getModifiers iid

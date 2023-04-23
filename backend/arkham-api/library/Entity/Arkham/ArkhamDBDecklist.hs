@@ -14,7 +14,7 @@ fmapLeft f (Left a) = Left (f a)
 fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
 data ArkhamDBDecklist = ArkhamDBDecklist
-  { slots :: HashMap CardCode Int
+  { slots :: Map CardCode Int
   , investigator_code :: InvestigatorId
   , investigator_name :: Text
   , meta :: Maybe Text

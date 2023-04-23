@@ -161,7 +161,7 @@ getDepthLock = gameDepthLock <$> getGame
 getAllAbilities :: HasGame m => m [Ability]
 getAllAbilities = getAbilities <$> getGame
 
-getAllModifiers :: HasGame m => m (HashMap Target [Modifier])
+getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame
 
 getActiveAbilities :: HasGame m => m [Ability]

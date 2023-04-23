@@ -35,7 +35,7 @@ instance RunMessage LostInTime where
           push $ chooseOne
             iid
             [ targetLabel aid
-              $ ShuffleIntoDeck (InvestigatorDeck iid) (toTarget aid)
+              $ shuffleIntoDeck iid aid
               : [ InvestigatorDamage iid (toSource attrs) dmg hrr
                 | dmg > 0 || hrr > 0
                 ]

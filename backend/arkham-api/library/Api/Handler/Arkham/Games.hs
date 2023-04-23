@@ -31,7 +31,7 @@ import Control.Monad.Random ( mkStdGen )
 import Control.Monad.Random.Class ( getRandom )
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
@@ -268,11 +268,11 @@ data QuestionResponse = QuestionResponse
   deriving stock Generic
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
-  { parAmounts :: HashMap InvestigatorId Int }
+  { parAmounts :: Map InvestigatorId Int }
   deriving stock Generic
 
 newtype AmountsResponse = AmountsResponse
-  { arAmounts :: HashMap Text Int }
+  { arAmounts :: Map Text Int }
   deriving stock Generic
 
 instance FromJSON QuestionResponse where
@@ -418,38 +418,38 @@ answerInvestigator = \case
 
 handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
-  AmountsAnswer response -> case HashMap.lookup investigatorId gameQuestion of
+  AmountsAnswer response -> case Map.lookup investigatorId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
       [ ResolveAmounts
           investigatorId
-          (HashMap.toList $ arAmounts response)
+          (Map.toList $ arAmounts response)
           target
       ]
     Just (QuestionLabel _ (ChooseAmounts _ _ _ target)) ->
       [ ResolveAmounts
           investigatorId
-          (HashMap.toList $ arAmounts response)
+          (Map.toList $ arAmounts response)
           target
       ]
     _ -> error "Wrong question type"
   PaymentAmountsAnswer response ->
-    case HashMap.lookup investigatorId gameQuestion of
+    case Map.lookup investigatorId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) ->
         let
-          costMap = HashMap.fromList
+          costMap = Map.fromList
             $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
         in
           concatMap
               (\(iid, n) ->
-                replicate n (HashMap.findWithDefault Noop iid costMap)
+                replicate n (Map.findWithDefault Noop iid costMap)
               )
-            $ HashMap.toList (parAmounts response)
+            $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
   Answer response ->
     let
       q = fromJustNote
         "Invalid question type"
-        (HashMap.lookup investigatorId gameQuestion)
+        (Map.lookup investigatorId gameQuestion)
     in go id q response
  where
   go

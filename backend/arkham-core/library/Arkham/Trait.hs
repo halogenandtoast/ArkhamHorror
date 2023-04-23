@@ -192,4 +192,4 @@ data Trait
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 class HasTraits a where
-  toTraits :: a -> HashSet Trait
+  toTraits :: a -> Set Trait

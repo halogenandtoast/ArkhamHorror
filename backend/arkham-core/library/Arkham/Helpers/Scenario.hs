@@ -18,7 +18,7 @@ import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Token
 import Control.Monad.Writer hiding (filterM)
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.List.NonEmpty qualified as NE
 
 scenarioField :: (HasCallStack, HasGame m) => Field Scenario a -> m a
@@ -65,7 +65,7 @@ isHardExpert ScenarioAttrs { scenarioDifficulty } =
 
 getScenarioDeck :: HasGame m => ScenarioDeckKey -> m [Card]
 getScenarioDeck k =
-  scenarioFieldMap ScenarioDecks (HashMap.findWithDefault [] k)
+  scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
 
 withStandalone
   :: HasGame m => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a

@@ -12,6 +12,6 @@ instance Monoid Entities
 instance Eq Entities
 instance Show Entities
 instance HasAbilities Entities
-type EntityMap a = HashMap (EntityId a) a
+type EntityMap a = Map (EntityId a) a
 
 addCardEntityWith :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities

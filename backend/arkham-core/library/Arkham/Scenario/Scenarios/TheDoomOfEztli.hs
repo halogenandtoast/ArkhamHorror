@@ -131,8 +131,8 @@ investigatorDefeat attrs = do
                   defeatedInvestigatorIds
               <> [ GameOver
                  | null
-                   (setFromList @(HashSet InvestigatorId) investigatorIds
-                   `difference` setFromList @(HashSet InvestigatorId)
+                   (setFromList @(Set InvestigatorId) investigatorIds
+                   `difference` setFromList @(Set InvestigatorId)
                                   defeatedInvestigatorIds
                    )
                  ]

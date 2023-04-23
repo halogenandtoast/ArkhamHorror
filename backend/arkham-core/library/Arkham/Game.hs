@@ -142,11 +142,11 @@ import Data.Aeson ( Result (..) )
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Align hiding ( nil )
-import Data.HashMap.Monoidal ( getMonoidalHashMap )
-import Data.HashMap.Monoidal qualified as MonoidalHashMap
-import Data.HashMap.Strict ( size )
-import Data.HashMap.Strict qualified as HashMap
-import Data.HashSet qualified as HashSet
+import Data.Map.Monoidal ( getMonoidalMap )
+import Data.Map.Monoidal qualified as MonoidalMap
+import Data.Map.Strict ( size )
+import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
 import Data.Sequence qualified as Seq
@@ -324,7 +324,7 @@ addInvestigator i d = do
 toExternalGame
   :: MonadRandom m
   => Game
-  -> HashMap InvestigatorId (Question Message)
+  -> Map InvestigatorId (Question Message)
   -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
@@ -681,7 +681,7 @@ getInvestigatorsMatching matcher = do
           =<< getInvestigatorIds
 
       let
-        mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+        mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
         minDistance :: Int =
           fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
         investigatorDistance :: Int = unDistance $ findWithDefault
@@ -703,7 +703,7 @@ getInvestigatorsMatching matcher = do
           =<< getInvestigatorIds
 
       let
-        mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+        mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
         minDistance :: Int =
           fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
         investigatorDistance :: Int = unDistance $ findWithDefault
@@ -1293,7 +1293,7 @@ getLocationsMatching lmatcher = do
           (markDistances start (pure . (`elem` candidates)) mempty)
           (LPState (pure start) (singleton start) mempty)
       let
-        matches' = HashMap.findWithDefault
+        matches' = Map.findWithDefault
           []
           distance
           (foldr (unionWith (<>) . distanceAggregates) mempty distances)
@@ -1339,14 +1339,14 @@ getLocationsMatching lmatcher = do
       filterM missingTrait ls
     LocationMatchAll [] -> pure []
     LocationMatchAll (x : xs) -> do
-      matches' :: HashSet LocationId <-
+      matches' :: Set LocationId <-
         foldl' intersection
         <$> (setFromList . map toId <$> getLocationsMatching x)
         <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
       pure $ filter ((`member` matches') . toId) ls
     LocationMatchAny [] -> pure []
     LocationMatchAny (x : xs) -> do
-      matches' :: HashSet LocationId <-
+      matches' :: Set LocationId <-
         foldl' union
         <$> (setFromList . map toId <$> getLocationsMatching x)
         <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
@@ -1417,7 +1417,7 @@ getLocationsMatching lmatcher = do
               )
               connectedLocationIds
             pure
-              $ setFromList @(HashSet LocationId)
+              $ setFromList @(Set LocationId)
               . maybe [] (coerce . map fst)
               . headMay
               . groupOn snd
@@ -2271,7 +2271,7 @@ instance Projection (DiscardedEntity Asset) where
       . lookup aid
       . entitiesAssets
       . mconcat
-      . HashMap.elems
+      . Map.elems
       . gameInDiscardEntities
       <$> getGame
     let attrs = toAttrs a
@@ -2716,7 +2716,7 @@ getShortestPath
   :: HasGame m
   => LocationId
   -> (LocationId -> m Bool)
-  -> HashMap LocationId [LocationId]
+  -> Map LocationId [LocationId]
   -> m [LocationId]
 getShortestPath !initialLocation !target !extraConnectionsMap = do
   let
@@ -2735,8 +2735,8 @@ getShortestPath !initialLocation !target !extraConnectionsMap = do
 
 data LPState = LPState
   { _lpSearchQueue :: Seq LocationId
-  , _lpVisistedLocations :: HashSet LocationId
-  , _lpParents :: HashMap LocationId LocationId
+  , _lpVisistedLocations :: Set LocationId
+  , _lpParents :: Map LocationId LocationId
   }
 
 getLongestPath
@@ -2757,8 +2757,8 @@ markDistances
   :: HasGame m
   => LocationId
   -> (LocationId -> m Bool)
-  -> HashMap LocationId [LocationId]
-  -> StateT LPState m (HashMap Int [LocationId])
+  -> Map LocationId [LocationId]
+  -> StateT LPState m (Map Int [LocationId])
 markDistances initialLocation target extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
@@ -2800,13 +2800,13 @@ markDistances initialLocation target extraConnectionsMap = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
+distanceSingletons :: Map Int [LocationId] -> Map LocationId Int
 distanceSingletons hmap = foldr
   (\(n, lids) hmap' -> unions (hmap' : map (`singletonMap` n) lids))
   mempty
   (mapToList hmap)
 
-distanceAggregates :: HashMap LocationId Int -> HashMap Int [LocationId]
+distanceAggregates :: Map LocationId Int -> Map Int [LocationId]
 distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
   where convert = uncurry singletonMap . second pure . swap
 
@@ -2899,7 +2899,7 @@ instance Projection (InHandEntity Event) where
       . lookup eid
       . entitiesEvents
       . mconcat
-      . HashMap.elems
+      . Map.elems
       . gameInHandEntities
       <$> getGame
     let attrs = toAttrs e
@@ -2914,7 +2914,7 @@ instance Projection (InHandEntity Asset) where
       . lookup aid
       . entitiesAssets
       . mconcat
-      . HashMap.elems
+      . Map.elems
       . gameInHandEntities
       <$> getGame
     let attrs = toAttrs a
@@ -3491,7 +3491,7 @@ runGameMessage msg g = case msg of
             ((== cardId) . toCardId)
             (concat . toList $ g ^. foundCardsL)
           foundCards =
-            HashMap.map (filter ((/= cardId) . toCardId)) (g ^. foundCardsL)
+            Map.map (filter ((/= cardId) . toCardId)) (g ^. foundCardsL)
         push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
         pure $ g & (foundCardsL .~ foundCards)
   GameOver -> do
@@ -3680,7 +3680,7 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure
       $ g
-      & (entitiesL . skillsL %~ HashMap.filterWithKey
+      & (entitiesL . skillsL %~ Map.filterWithKey
           (\k _ -> k `notElem` skillsToRemove)
         )
       & (skillTestL .~ Nothing)
@@ -4098,7 +4098,7 @@ runGameMessage msg g = case msg of
         fromJustNote "must exist"
           $ find ((== cardId) . toCardId)
           $ (g ^. focusedCardsL)
-          <> (concat . HashMap.elems . investigatorFoundCards $ toAttrs
+          <> (concat . Map.elems . investigatorFoundCards $ toAttrs
                investigator'
              )
     case card of
@@ -4110,9 +4110,9 @@ runGameMessage msg g = case msg of
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
   Discard _ (ActTarget aid) ->
-    pure $ g & entitiesL . actsL %~ HashMap.filterWithKey (\k _ -> k /= aid)
+    pure $ g & entitiesL . actsL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discard _ (AgendaTarget aid) ->
-    pure $ g & entitiesL . agendasL %~ HashMap.filterWithKey (\k _ -> k /= aid)
+    pure $ g & entitiesL . agendasL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discarded (EnemyTarget eid) _ _ -> do
     enemy <- getEnemy eid
     card <- field EnemyCard eid
@@ -4347,7 +4347,7 @@ runGameMessage msg g = case msg of
         availableSkills <- getAvailableSkillsFor
           skillType
           (skillTestInvestigator skillTest)
-        pure $ if HashSet.size availableSkills < 2
+        pure $ if Set.size availableSkills < 2
           then defaultCase
           else
             [ chooseOne
@@ -4635,7 +4635,7 @@ runGameMessage msg g = case msg of
         g
           & (resolvingCardL ?~ EncounterCard card)
           & (focusedCardsL %~ filter ((/= Just card) . preview _EncounterCard))
-          & (foundCardsL %~ HashMap.map
+          & (foundCardsL %~ Map.map
               (filter ((/= Just card) . preview _EncounterCard))
             )
     case toCardType card of
@@ -4890,10 +4890,10 @@ preloadEntities g = do
               defaultEntities
               handEffectCards
            in pure $ insertMap (toId investigator') handEntities entities
-    foundOfElems = concat . HashMap.elems . investigatorFoundCards . toAttrs
+    foundOfElems = concat . Map.elems . investigatorFoundCards . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
-        $ (concat . HashMap.elems $ gameFoundCards g)
+        $ (concat . Map.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getActiveInvestigatorId
   let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
@@ -4914,7 +4914,7 @@ preloadModifiers g = case gameMode g of
     let
       modifierFilter =
         if gameInSetup g then modifierActiveDuringSetup else const True
-    allModifiers <- getMonoidalHashMap <$> foldMapM
+    allModifiers <- getMonoidalMap <$> foldMapM
       (`toTargetModifiers` (entities
                            <> inHandEntities
                            <> maybeToList
@@ -4935,7 +4935,7 @@ preloadModifiers g = case gameMode g of
       <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
       )
     pure
-      $ g { gameModifiers = HashMap.map (filter modifierFilter) allModifiers }
+      $ g { gameModifiers = Map.map (filter modifierFilter) allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =
@@ -4945,7 +4945,7 @@ preloadModifiers g = case gameMode g of
     (allChaosBagTokens . scenarioChaosBag . toAttrs)
     (modeScenario $ gameMode g)
   toTargetModifiers target =
-    foldMapM (fmap (MonoidalHashMap.singleton target) . getModifiersFor target)
+    foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)
 
 handleTraitRestrictedModifiers :: MonadUnliftIO m => Game -> m Game
 handleTraitRestrictedModifiers g = do
@@ -4972,7 +4972,7 @@ handleBlanked g = do
         _ -> pure ()
   pure $ g { gameModifiers = modifiers' }
 
-applyBlank :: Monad m => Source -> StateT (HashMap Target [Modifier]) m ()
+applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()
 applyBlank s = do
   current <- get
   for_ (mapToList current) $ \(target, targetModifiers) -> do

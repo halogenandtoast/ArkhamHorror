@@ -44,8 +44,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        n = findWithDefault 0 "Number of cards to discard" choicesMap
+        n = getChoiceAmount "Number of cards to discard" choices
       cards <-
         selectList
         $ InHandOf (InvestigatorWithId iid)

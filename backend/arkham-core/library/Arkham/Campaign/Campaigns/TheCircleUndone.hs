@@ -22,7 +22,7 @@ import Arkham.Token
 import Arkham.Trait (Trait(SilverTwilight))
 
 newtype Metadata = Metadata
-  { prologueInvestigators :: HashMap InvestigatorId InvestigatorId
+  { prologueInvestigators :: Map InvestigatorId InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

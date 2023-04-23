@@ -40,8 +40,8 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
 import Data.Char qualified as C
 import Data.Coerce as X ( coerce )
-import Data.HashMap.Strict qualified as HashMap
-import Data.HashSet qualified as HashSet
+import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.Kind as X ( Type )
 import Data.List as X ( nub, (\\) )
 import Data.List qualified as L
@@ -78,8 +78,8 @@ suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 
-mapSet :: Hashable b => (a -> b) -> HashSet a -> HashSet b
-mapSet = HashSet.map
+mapSet :: Ord b => (a -> b) -> Set a -> Set b
+mapSet = Set.map
 
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
@@ -210,7 +210,7 @@ with = With
 withBase :: a `With` b -> a
 withBase (a `With` _) = a
 
-findKey :: Hashable k => (v -> Bool) -> HashMap k v -> Maybe k
+findKey :: Ord k => (v -> Bool) -> Map k v -> Maybe k
 findKey p = fmap fst . find (p . snd) . mapToList
 
 -- getMax will return a very low number
@@ -228,9 +228,9 @@ foldMapM f = foldlM
   )
   mempty
 
-frequencies :: Hashable a => [a] -> HashMap a Int
-frequencies as = HashMap.map getSum $ foldr (unionWith (<>)) mempty $ map
-  (`HashMap.singleton` (Sum 1))
+frequencies :: Ord a => [a] -> Map a Int
+frequencies as = Map.map getSum $ foldr (unionWith (<>)) mempty $ map
+  (`Map.singleton` (Sum 1))
   as
 
 breakM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])

@@ -67,8 +67,7 @@ instance RunMessage AbbeyTowerThePathIsOpen where
       pure l
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let
-        choicesMap = mapFromList @(HashMap Text Int) choices
-        discardAmount = findWithDefault 0 "Cards" choicesMap
+        discardAmount = getChoiceAmount "Cards" choices
       when (discardAmount > 0) $ pushAll $ replicate
         discardAmount
         (toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1))

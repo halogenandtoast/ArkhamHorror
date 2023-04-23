@@ -33,7 +33,7 @@ withTreacheryCardCode cCode f = case lookup cCode allTreacheries of
   Nothing -> error $ "Unknown treachery: " <> show cCode
   Just (SomeTreacheryCard a) -> f a
 
-allTreacheries :: HashMap CardCode SomeTreacheryCard
+allTreacheries :: Map CardCode SomeTreacheryCard
 allTreacheries = mapFrom
   someTreacheryCardCode
   [ -- Night of the Zealot

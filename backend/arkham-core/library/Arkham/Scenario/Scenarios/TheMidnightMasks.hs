@@ -52,7 +52,7 @@ instance HasTokenValue TheMidnightMasks where
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
     otherFace -> getTokenValue iid otherFace attrs
 
-allCultists :: HashSet CardCode
+allCultists :: Set CardCode
 allCultists =
   setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
 

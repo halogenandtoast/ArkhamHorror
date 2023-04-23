@@ -65,7 +65,7 @@ import Control.Lens as X ( set, (^?!) )
 import Control.Monad.Fail as X
 import Control.Monad.State as X ( get )
 import Control.Monad.State hiding ( replicateM )
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Data.Maybe as X ( fromJust )
 import Data.These
 import Data.UUID.V4 as X
@@ -449,7 +449,7 @@ newGame investigator = do
     , gameSkillTest = Nothing
     , gameSkillTestResults = Nothing
     , gameEntities = defaultEntities
-      { entitiesInvestigators = HashMap.singleton investigatorId investigator
+      { entitiesInvestigators = Map.singleton investigatorId investigator
       }
     , gameModifiers = mempty
     , gameEncounterDiscardEntities = defaultEntities

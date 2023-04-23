@@ -31,8 +31,8 @@ import Control.Newtype ( ala )
 import Data.Monoid ( Endo (..) )
 
 data Metadata = Metadata
-  { supplyPoints :: HashMap InvestigatorId Int
-  , yithians :: HashSet InvestigatorId
+  { supplyPoints :: Map InvestigatorId Int
+  , yithians :: Set InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

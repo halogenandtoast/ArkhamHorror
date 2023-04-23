@@ -40,7 +40,7 @@ withLocationCardCode cCode f = case lookup cCode allLocations of
   Nothing -> error "invalid locations"
   Just (SomeLocationCard a) -> f a
 
-allLocations :: HashMap CardCode SomeLocationCard
+allLocations :: Map CardCode SomeLocationCard
 allLocations = mapFrom
   someLocationCardCode
   [ -- Night of the Zealot

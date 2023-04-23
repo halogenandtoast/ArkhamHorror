@@ -25,11 +25,11 @@ data EnemyAttrs = EnemyAttrs
   , enemyHealth :: GameValue
   , enemyEvade :: Maybe Int
   , enemyDamage :: Int
-  , enemyAssignedDamage :: HashMap Source DamageAssignment
+  , enemyAssignedDamage :: Map Source DamageAssignment
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
   , enemyPrey :: PreyMatcher
-  , enemyModifiers :: HashMap Source [Modifier]
+  , enemyModifiers :: Map Source [Modifier]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   , enemyClues :: Int

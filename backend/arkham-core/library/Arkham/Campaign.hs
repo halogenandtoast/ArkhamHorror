@@ -27,7 +27,7 @@ instance FromJSON Campaign where
 
 data SomeCampaign = forall a . IsCampaign a => SomeCampaign (Difficulty -> a)
 
-allCampaigns :: HashMap CampaignId SomeCampaign
+allCampaigns :: Map CampaignId SomeCampaign
 allCampaigns = mapFromList
   [ ("01", SomeCampaign nightOfTheZealot)
   , ("02", SomeCampaign theDunwichLegacy)

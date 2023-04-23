@@ -32,7 +32,7 @@ withSkillCardCode cCode f = case lookup cCode allSkills of
   Nothing -> error $ "Unknown skill: " <> show cCode
   Just (SomeSkillCard a) -> f a
 
-allSkills :: HashMap CardCode SomeSkillCard
+allSkills :: Map CardCode SomeSkillCard
 allSkills = mapFrom
   someSkillCardCode
   [ SomeSkillCard viciousBlow

@@ -28,7 +28,7 @@ type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
 data instance Field Event :: Type -> Type where
   EventPlacement :: Field Event Placement
-  EventTraits :: Field Event (HashSet Trait)
+  EventTraits :: Field Event (Set Trait)
   EventAbilities :: Field Event [Ability]
   EventOwner :: Field Event InvestigatorId
   EventDoom :: Field Event Int
@@ -62,7 +62,7 @@ data EventAttrs = EventAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-allEventCards :: HashMap CardCode CardDef
+allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
 
 instance HasCardCode EventAttrs where

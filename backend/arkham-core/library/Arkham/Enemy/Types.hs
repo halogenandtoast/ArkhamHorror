@@ -38,7 +38,7 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 type EnemyCard a = CardBuilder EnemyId a
 
 data instance Field Enemy :: Type -> Type where
-  EnemyEngagedInvestigators :: Field Enemy (HashSet InvestigatorId)
+  EnemyEngagedInvestigators :: Field Enemy (Set InvestigatorId)
   EnemyDoom :: Field Enemy Int
   EnemyEvade :: Field Enemy (Maybe Int)
   EnemyFight :: Field Enemy Int
@@ -47,8 +47,8 @@ data instance Field Enemy :: Type -> Type where
   EnemyRemainingHealth :: Field Enemy Int
   EnemyHealthDamage :: Field Enemy Int
   EnemySanityDamage :: Field Enemy Int
-  EnemyTraits :: Field Enemy (HashSet Trait)
-  EnemyKeywords :: Field Enemy (HashSet Keyword)
+  EnemyTraits :: Field Enemy (Set Trait)
+  EnemyKeywords :: Field Enemy (Set Keyword)
   EnemyAbilities :: Field Enemy [Ability]
   EnemyCard :: Field Enemy Card
   EnemyCardCode :: Field Enemy CardCode

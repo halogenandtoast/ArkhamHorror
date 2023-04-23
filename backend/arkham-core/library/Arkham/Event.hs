@@ -32,7 +32,7 @@ withEventCardCode cCode f = case lookup cCode allEvents of
   Nothing -> error $ "Unknown event: " <> show cCode
   Just (SomeEventCard a) -> f a
 
-allEvents :: HashMap CardCode SomeEventCard
+allEvents :: Map CardCode SomeEventCard
 allEvents = mapFrom
   someEventCardCode
   [ -- Night of the Zealot

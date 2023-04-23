@@ -51,7 +51,7 @@ toMeta :: LocationId -> Value
 toMeta lid = toJSON $ DepthsOfYothMeta lid
 
 getInPursuitEnemyWithHighestEvade
-  :: HasGame m => m (HashSet EnemyId)
+  :: HasGame m => m (Set EnemyId)
 getInPursuitEnemyWithHighestEvade = do
   inPursuit <- getInPursuitEnemies
   evadeValue <- getMax0 <$> selectAgg
@@ -62,7 +62,7 @@ getInPursuitEnemyWithHighestEvade = do
     (fieldMap (OutOfPlayEnemyField PursuitZone EnemyEvade) ((== Just evadeValue)))
     (toList inPursuit)
 
-getInPursuitEnemies :: HasGame m => m (HashSet EnemyId)
+getInPursuitEnemies :: HasGame m => m (Set EnemyId)
 getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 
 getPlacePursuitEnemyMessages :: HasGame m => m [Message]

@@ -38,18 +38,18 @@ data instance Field Scenario :: Type -> Type where
   ScenarioDiscard :: Field Scenario [EncounterCard]
   ScenarioEncounterDeck :: Field Scenario (Deck EncounterCard)
   ScenarioDifficulty :: Field Scenario Difficulty
-  ScenarioDecks :: Field Scenario (HashMap ScenarioDeckKey [Card])
+  ScenarioDecks :: Field Scenario (Map ScenarioDeckKey [Card])
   ScenarioVictoryDisplay :: Field Scenario [Card]
-  ScenarioRemembered :: Field Scenario (HashSet ScenarioLogKey)
-  ScenarioCounts :: Field Scenario (HashMap ScenarioCountKey Int)
+  ScenarioRemembered :: Field Scenario (Set ScenarioLogKey)
+  ScenarioCounts :: Field Scenario (Map ScenarioCountKey Int)
   ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
   ScenarioChaosBag :: Field Scenario ChaosBag
   ScenarioSetAsideCards :: Field Scenario [Card]
   ScenarioName :: Field Scenario Name
   ScenarioMeta :: Field Scenario Value
-  ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
-  ScenarioPlayerDecks :: Field Scenario (HashMap InvestigatorId (Deck PlayerCard))
+  ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
+  ScenarioPlayerDecks :: Field Scenario (Map InvestigatorId (Deck PlayerCard))
 
 deriving stock instance Show (Field Scenario typ)
 
@@ -66,9 +66,9 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCompletedAgendaStack :: IntMap [Card]
   , scenarioCompletedActStack :: IntMap [Card]
   , scenarioLocationLayout :: [GridTemplateRow]
-  , scenarioDecks :: HashMap ScenarioDeckKey [Card]
-  , scenarioLog :: HashSet ScenarioLogKey
-  , scenarioCounts :: HashMap ScenarioCountKey Int
+  , scenarioDecks :: Map ScenarioDeckKey [Card]
+  , scenarioLog :: Set ScenarioLogKey
+  , scenarioCounts :: Map ScenarioCountKey Int
   , scenarioStandaloneCampaignLog :: CampaignLog
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
@@ -81,8 +81,8 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioMeta :: Value
   -- for standalone
-  , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
-  , scenarioPlayerDecks :: HashMap InvestigatorId (Deck PlayerCard)
+  , scenarioStoryCards :: Map InvestigatorId [PlayerCard]
+  , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
   deriving stock (Show, Eq, Generic)
 

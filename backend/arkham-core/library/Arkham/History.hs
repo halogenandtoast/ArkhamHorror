@@ -6,7 +6,7 @@ import Arkham.Card.CardCode
 import Arkham.Enemy.Types.Attrs
 import Arkham.Id
 import Arkham.Target
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
 data HistoryType = PhaseHistory | RoundHistory | TurnHistory
 
@@ -15,7 +15,7 @@ data History = History
   , historyDealtDamageTo :: [Target]
   , historyEnemiesDefeated :: [EnemyAttrs]
   , historyMoved :: Bool
-  , historyLocationsSuccessfullyInvestigated :: HashSet LocationId
+  , historyLocationsSuccessfullyInvestigated :: Set LocationId
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
   , historySkillTestsPerformed :: Int
@@ -48,6 +48,6 @@ instance Monoid History where
 insertHistory
   :: InvestigatorId
   -> History
-  -> HashMap InvestigatorId History
-  -> HashMap InvestigatorId History
-insertHistory = HashMap.insertWith (<>)
+  -> Map InvestigatorId History
+  -> Map InvestigatorId History
+insertHistory = Map.insertWith (<>)

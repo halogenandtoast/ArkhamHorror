@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Modifier
   ( Modifier(..)
   , ModifierType(..)
@@ -29,17 +30,7 @@ import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-
-setActiveDuringSetup :: Modifier -> Modifier
-setActiveDuringSetup m = m { modifierActiveDuringSetup = True }
-
-data Modifier = Modifier
-  { modifierSource :: Source
-  , modifierType :: ModifierType
-  , modifierActiveDuringSetup :: Bool
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+import Data.Aeson.TH
 
 data ModifierType
   = ActionCostOf ActionTarget Int
@@ -82,7 +73,7 @@ data ModifierType
   | CanBecomeFastOrReduceCostOf CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | RevealTokensBeforeCommittingCards
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
-  | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
+  | CanOnlyBeAttackedByAbilityOn (Set CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CanPlayTopOfDeck CardMatcher
@@ -242,26 +233,27 @@ data ModifierType
   | MetaModifier Value
   | CanModify ModifierType
   | NoSurge
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+  deriving stock (Show, Eq)
+
+data Modifier = Modifier
+  { modifierSource :: Source
+  , modifierType :: ModifierType
+  , modifierActiveDuringSetup :: Bool
+  }
+  deriving stock (Show, Eq)
 
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
   | EnemyAction Action EnemyMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, Hashable)
+  deriving stock (Show, Eq)
 
-instance ToJSON ModifierType where
-  toJSON = genericToJSON defaultOptions
+setActiveDuringSetup :: Modifier -> Modifier
+setActiveDuringSetup m = m { modifierActiveDuringSetup = True }
 
-instance FromJSON ModifierType where
-  parseJSON = genericParseJSON defaultOptions
-
-instance ToJSON Modifier where
-  toJSON = genericToJSON $ aesonOptions $ Just "modifier"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "modifier"
-
-instance FromJSON Modifier where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "modifier"
-
+$(deriveJSON defaultOptions ''ActionTarget)
+$(do
+    deriveModifierType <- deriveJSON defaultOptions ''ModifierType
+    deriveModifier <- deriveJSON (aesonOptions $ Just "modifier") ''Modifier
+    pure $ deriveModifierType ++ deriveModifier
+  )

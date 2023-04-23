@@ -32,7 +32,7 @@ allBasicWeaknesses :: [CardDef]
 allBasicWeaknesses =
   filter ((== Just BasicWeakness) . cdCardSubType) . toList $ allPlayerCards
 
-allPlayerCards :: HashMap CardCode CardDef
+allPlayerCards :: Map CardCode CardDef
 allPlayerCards =
   allPlayerEnemyCards
     <> allPlayerTreacheryCards

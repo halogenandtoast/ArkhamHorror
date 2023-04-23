@@ -34,7 +34,7 @@ data EffectAttrs = EffectAttrs
   , effectCardCode :: CardCode
   , effectTarget :: Target
   , effectSource :: Source
-  , effectTraits :: HashSet Trait
+  , effectTraits :: Set Trait
   , effectMetadata :: Maybe (EffectMetadata Window Message)
   , effectWindow :: Maybe EffectWindow
   , effectFinished :: Bool

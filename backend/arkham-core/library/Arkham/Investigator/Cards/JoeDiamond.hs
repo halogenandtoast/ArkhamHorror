@@ -23,7 +23,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
 data Metadata = Metadata
   { revealedHunchCard :: Maybe CardId
@@ -49,7 +49,7 @@ joeDiamond = investigator
     }
 
 hunchDeck :: InvestigatorAttrs -> [Card]
-hunchDeck = HashMap.findWithDefault [] HunchDeck . investigatorDecks
+hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 
 instance HasModifiersFor JoeDiamond where
   getModifiersFor (CardIdTarget cid) (JoeDiamond (a `With` Metadata _))

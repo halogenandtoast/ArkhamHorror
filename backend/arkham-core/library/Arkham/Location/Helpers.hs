@@ -27,5 +27,5 @@ drawCardUnderneathAction a =
     { abilityLimit = GroupLimit PerGame 1
     }
 
-adjacentLocations :: HashSet Direction
+adjacentLocations :: Set Direction
 adjacentLocations = setFromList [minBound .. maxBound]

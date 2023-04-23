@@ -64,7 +64,7 @@ withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
 
 data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)
 
-allInvestigators :: HashMap CardCode SomeInvestigatorCard
+allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators = mapFromList $ map
   (toFst someInvestigatorCardCode)
   [ SomeInvestigatorCard rolandBanks

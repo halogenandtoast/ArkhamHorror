@@ -8,7 +8,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Projection
 import Arkham.Card
 import Arkham.Helpers.Scenario
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Scenario.Types (Field(..))
 
@@ -28,6 +28,6 @@ getDeck = \case
   Deck.InvestigatorDiscard iid -> fieldMap InvestigatorDiscard (map PlayerCard) iid
   Deck.EncounterDeck -> scenarioFieldMap ScenarioEncounterDeck (map EncounterCard . unDeck)
   Deck.EncounterDiscard -> scenarioFieldMap ScenarioDiscard (map EncounterCard)
-  Deck.ScenarioDeckByKey k -> scenarioFieldMap ScenarioDecks (HashMap.findWithDefault [] k)
-  Deck.InvestigatorDeckByKey iid k -> fieldMap InvestigatorDecks (HashMap.findWithDefault [] k) iid
+  Deck.ScenarioDeckByKey k -> scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
+  Deck.InvestigatorDeckByKey iid k -> fieldMap InvestigatorDecks (Map.findWithDefault [] k) iid
 

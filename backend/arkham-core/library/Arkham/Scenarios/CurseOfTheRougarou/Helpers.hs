@@ -12,10 +12,10 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait
 
-bayouLocations :: HasGame m => m (HashSet LocationId)
+bayouLocations :: HasGame m => m (Set LocationId)
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: HasGame m => m (HashSet LocationId)
+nonBayouLocations :: HasGame m => m (Set LocationId)
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
 getTheRougarou :: HasGame m => m (Maybe EnemyId)
@@ -36,7 +36,7 @@ locationsWithLabels trait locationSet = do
     , pack (camelCase $ show trait) <> "2"
     ]
 
-locationsByTrait :: HashMap Trait [CardDef]
+locationsByTrait :: Map Trait [CardDef]
 locationsByTrait = mapFromList
   [ ( NewOrleans
     , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]

@@ -14,12 +14,12 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
 completedScenario :: HasGame m => ScenarioId -> m Bool
 completedScenario cCode = elem cCode <$> getCompletedScenarios
 
-getCompletedScenarios :: HasGame m => m (HashSet ScenarioId)
+getCompletedScenarios :: HasGame m => m (Set ScenarioId)
 getCompletedScenarios = do
   mcampaignId <- selectOne TheCampaign
   case mcampaignId of
@@ -35,7 +35,7 @@ getOwner cardDef = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardDef) . toCardDef)) campaignStoryCards
 
-getCampaignStoryCards :: HasGame m => m (HashMap InvestigatorId [PlayerCard])
+getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign
   case mCampaignId of
@@ -44,7 +44,7 @@ getCampaignStoryCards = do
 
 getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m PlayerCard
 getCampaignStoryCard def = do
-  cards <- concat . HashMap.elems <$> getCampaignStoryCards
+  cards <- concat . Map.elems <$> getCampaignStoryCards
   pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards
 
 getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
@@ -56,9 +56,9 @@ campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld
 
 matchingCardsAlreadyInDeck
-  :: HasGame m => CardMatcher -> m (HashMap InvestigatorId (HashSet CardCode))
+  :: HasGame m => CardMatcher -> m (Map InvestigatorId (Set CardCode))
 matchingCardsAlreadyInDeck matcher = do
   decks <- campaignField CampaignDecks
-  pure $ HashMap.map
+  pure $ Map.map
     (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck)
     decks

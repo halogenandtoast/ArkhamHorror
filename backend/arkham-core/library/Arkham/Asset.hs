@@ -29,7 +29,7 @@ withAssetCardCode cCode f = case lookup cCode allAssets of
   Nothing -> error "invalid assets"
   Just (SomeAssetCard a) -> f a
 
-allAssets :: HashMap CardCode SomeAssetCard
+allAssets :: Map CardCode SomeAssetCard
 allAssets = mapFrom
   someAssetCardCode
   [ -- Night of the Zealot

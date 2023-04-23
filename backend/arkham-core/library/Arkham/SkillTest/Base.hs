@@ -33,7 +33,7 @@ data SkillTest = SkillTest
   , skillTestValueModifier :: Int
 
   , skillTestResult :: SkillTestResult
-  , skillTestCommittedCards :: HashMap InvestigatorId [Card]
+  , skillTestCommittedCards :: Map InvestigatorId [Card]
   , skillTestSource :: Source
   , skillTestTarget :: Target
   , skillTestAction :: Maybe Action

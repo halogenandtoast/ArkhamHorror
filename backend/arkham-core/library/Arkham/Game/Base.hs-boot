@@ -18,13 +18,13 @@ instance Show Game
 gameActiveAbilities :: Game -> [Ability]
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest
-gameActiveCost :: Game -> HashMap ActiveCostId ActiveCost
-gameModifiers :: Game -> HashMap Target [Modifier]
+gameActiveCost :: Game -> Map ActiveCostId ActiveCost
+gameModifiers :: Game -> Map Target [Modifier]
 gameWindowDepth :: Game -> Int
 gameDepthLock :: Game -> Int
-gamePhaseHistory :: Game -> HashMap InvestigatorId History
-gameTurnHistory :: Game -> HashMap InvestigatorId History
-gameRoundHistory :: Game -> HashMap InvestigatorId History
+gamePhaseHistory :: Game -> Map InvestigatorId History
+gameTurnHistory :: Game -> Map InvestigatorId History
+gameRoundHistory :: Game -> Map InvestigatorId History
 gameIgnoreCanModifiers :: Game -> Bool
 
 -- Time Warp

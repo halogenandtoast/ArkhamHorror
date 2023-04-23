@@ -40,7 +40,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaCardId :: CardId
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
-  , agendaTreacheries :: HashSet TreacheryId
+  , agendaTreacheries :: Set TreacheryId
   , agendaCardsUnderneath :: [Card]
   , agendaDeckId :: Int
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers

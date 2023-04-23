@@ -126,7 +126,7 @@ data EnemyDamageMismatch = EnemyDamageMismatch
   (Int, Int)
   deriving stock Show
 
-data ClassMismatch = ClassMismatch CardCode Name String (HashSet ClassSymbol)
+data ClassMismatch = ClassMismatch CardCode Name String (Set ClassSymbol)
   deriving stock Show
 
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillIcon] [SkillIcon]
@@ -135,8 +135,8 @@ data SkillsMismatch = SkillsMismatch CardCode Name [SkillIcon] [SkillIcon]
 data TraitsMismatch = TraitsMismatch
   CardCode
   Name
-  (HashSet Trait)
-  (HashSet Trait)
+  (Set Trait)
+  (Set Trait)
   deriving stock Show
 
 data ShroudMismatch = ShroudMismatch CardCode Name Int Int
@@ -204,7 +204,7 @@ normalizeCost _ (Just (-2)) = Just DynamicCost
 normalizeCost _ (Just n) = Just (StaticCost n)
 normalizeCost _ Nothing = Nothing
 
-allCards :: HashMap CardCode CardDef
+allCards :: Map CardCode CardDef
 allCards = allPlayerCards <> allEncounterCards
 
 getSkills :: CardJson -> [SkillIcon]
@@ -218,7 +218,7 @@ getSkills CardJson {..} =
   getSkill _ Nothing = []
   getSkill skillType (Just n) = replicate n skillType
 
-getTraits :: CardJson -> HashSet Trait
+getTraits :: CardJson -> Set Trait
 getTraits CardJson { code } | code == "01000" = mempty
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
@@ -256,7 +256,7 @@ normalizeCardCode "04126" = "04126a"
 normalizeCardCode "50026" = "50026a"
 normalizeCardCode c = c
 
-runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
+runMissing :: Maybe Text -> Map CardCode CardJson -> IO ()
 runMissing mPackCode cards = do
   let
     cardCodes =
@@ -279,7 +279,7 @@ runMissing mPackCode cards = do
         putStrLn $ unCardCode (code card) <> ": " <> name card <> suffix
 
 filterOutIrrelevant
-  :: Maybe Text -> HashMap CardCode CardJson -> HashMap CardCode CardJson
+  :: Maybe Text -> Map CardCode CardJson -> Map CardCode CardJson
 filterOutIrrelevant mPackCode = filterMap
   (\card ->
     (code card /= "01000")
@@ -335,7 +335,7 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , "04140e" -- ^^
     ]
 
-runValidations :: HashMap CardCode CardJson -> IO ()
+runValidations :: Map CardCode CardJson -> IO ()
 runValidations cards = do
   results <- getValidationResults cards
   case results of
@@ -345,7 +345,7 @@ runValidations cards = do
 invariant :: (MonadValidate [SomeException] m, Exception e) => e -> m ()
 invariant = dispute . pure . SomeException
 
-getValidationResults :: HashMap CardCode CardJson -> IO (Either [SomeException] ())
+getValidationResults :: Map CardCode CardJson -> IO (Either [SomeException] ())
 getValidationResults cards = runValidateT $ do
   -- validate card defs
   for_ (filterTest $ mapToList allCards) $ \(ccode', card) -> do
@@ -597,7 +597,7 @@ normalizeSkills "05048" _ = [] -- Valentino Rivas
 normalizeSkills "05049" _ = [] -- Penny White
 normalizeSkills _ skills = skills
 
-normalizeTraits :: CardCode -> HashSet Trait -> HashSet Trait
+normalizeTraits :: CardCode -> Set Trait -> Set Trait
 -- Erratum: Each of the Patient Confinement locations should not have the Arkham Asylum trait.
 normalizeTraits "03178" _ = mempty
 normalizeTraits "03179" _ = mempty

@@ -45,7 +45,7 @@ getModifiedHealth EnemyAttrs {..} = do
   applyPreModifier (Modifier.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
   applyPreModifier _ n = n
 
-emptyLocationMap :: HashMap LocationId [LocationId]
+emptyLocationMap :: Map LocationId [LocationId]
 emptyLocationMap = mempty
 
 isActionTarget :: EnemyAttrs -> Target -> Bool
@@ -124,7 +124,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords :: HasGame m => EnemyAttrs -> m (HashSet Keyword)
+getModifiedKeywords :: HasGame m => EnemyAttrs -> m (Set Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
   pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'

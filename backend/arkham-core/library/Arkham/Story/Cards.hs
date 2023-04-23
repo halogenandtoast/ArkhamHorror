@@ -58,7 +58,7 @@ story cardCode name encounterSet = CardDef
   , cdDeckRestrictions = []
   }
 
-allStoryCards :: HashMap CardCode CardDef
+allStoryCards :: Map CardCode CardDef
 allStoryCards = mapFromList $ map
   (toCardCode &&& id)
   [ sickeningReality_65

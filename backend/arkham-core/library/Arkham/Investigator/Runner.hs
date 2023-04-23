@@ -72,8 +72,8 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens ( each )
 import Control.Monad.Extra ( findM )
-import Data.HashMap.Strict qualified as HashMap
-import Data.HashSet qualified as HashSet
+import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.Monoid
 
 instance RunMessage InvestigatorAttrs where
@@ -145,7 +145,7 @@ getHealthDamageableAssets
   -> Int
   -> [Target]
   -> [Target]
-  -> GameT (HashSet AssetId)
+  -> GameT (Set AssetId)
 getHealthDamageableAssets _ _ 0 _ _ = pure mempty
 getHealthDamageableAssets iid matcher _ damageTargets horrorTargets = do
   allAssets <- selectList (matcher <> AssetCanBeAssignedDamageBy iid)
@@ -169,7 +169,7 @@ getSanityDamageableAssets
   -> Int
   -> [Target]
   -> [Target]
-  -> GameT (HashSet AssetId)
+  -> GameT (Set AssetId)
 getSanityDamageableAssets _ _ 0 _ _ = pure mempty
 getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
   allAssets <- selectList (matcher <> AssetCanBeAssignedHorrorBy iid)
@@ -628,7 +628,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RemoveCardFromHand iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   RemoveCardFromSearch iid cardId | iid == investigatorId ->
-    pure $ a & foundCardsL %~ HashMap.map (filter ((/= cardId) . toCardId))
+    pure $ a & foundCardsL %~ Map.map (filter ((/= cardId) . toCardId))
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (TreacheryTarget tid)
     | iid == investigatorId -> pure $ a & treacheriesL %~ deleteSet tid
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
@@ -739,7 +739,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindowMsg <- checkWindows
       [Window Timing.After (Window.PerformAction iid Action.Fight)]
     let
-      takenActions = setFromList @(HashSet Action) investigatorActionsTaken
+      takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyFightCostModifiers :: Cost -> ModifierType -> Cost
       applyFightCostModifiers costToEnter (ActionCostOf actionTarget n) =
         case actionTarget of
@@ -833,7 +833,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindowMsg <- checkWindows
       [Window Timing.After (Window.PerformAction iid Action.Evade)]
     let
-      takenActions = setFromList @(HashSet Action) investigatorActionsTaken
+      takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
       applyEvadeCostModifiers costToEnter (ActionCostOf actionTarget n) =
         case actionTarget of
@@ -2099,7 +2099,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           . (slotsL %~ maybe id removeFromSlots mAssetId)
       )
       cards
-    pure $ a & update & foundCardsL %~ HashMap.map (filter (`notElem` cards))
+    pure $ a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
   TokenCanceled iid _ token | iid == investigatorId -> do
     whenWindow <- checkWindows [Window Timing.When (Window.CancelToken iid token)]
     afterWindow <- checkWindows [Window Timing.After (Window.CancelToken iid token)]
@@ -2513,7 +2513,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (handL %~ (cards <>))
       & (cardsUnderneathL %~ filter (`notElem` cards))
-      & (assetsL %~ HashSet.filter (`notElem` assetIds))
+      & (assetsL %~ Set.filter (`notElem` assetIds))
       & (slotsL %~ flip (foldr removeFromSlots) assetIds)
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
@@ -2550,7 +2550,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 (concat $ toList investigatorFoundCards)
             >>= toPlayerCard
         foundCards =
-          HashMap.map (filter ((/= cardId) . toCardId)) investigatorFoundCards
+          Map.map (filter ((/= cardId) . toCardId)) investigatorFoundCards
       push $ PutCardOnTopOfDeck iid' (Deck.InvestigatorDeck iid') (toCard card)
       pure $ a & foundCardsL .~ foundCards
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid')
@@ -2618,7 +2618,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid' == investigatorId
     -> do
       let
-        foundCards :: HashMap Zone [Card] = foldl'
+        foundCards :: Map Zone [Card] = foldl'
           (\hmap (cardSource, _) -> case cardSource of
             Zone.FromDeck -> insertWith
               (<>)
@@ -2647,7 +2647,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         deck = filter
           ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . PlayerCard)
           (unDeck investigatorDeck)
-        targetCards = HashMap.map (filter (`cardMatch` cardMatcher)) foundCards
+        targetCards = Map.map (filter (`cardMatch` cardMatcher)) foundCards
       push $ EndSearch iid source target cardSources
       case foundStrategy of
         DrawFound who n -> do

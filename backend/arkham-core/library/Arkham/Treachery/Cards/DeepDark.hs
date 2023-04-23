@@ -14,9 +14,9 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
-newtype Metadata = Metadata { investigatorLocationsClues :: HashMap InvestigatorId (HashSet LocationId) }
+newtype Metadata = Metadata { investigatorLocationsClues :: Map InvestigatorId (Set LocationId) }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -34,7 +34,7 @@ instance HasModifiersFor DeepDark where
     let
       lids =
         setToList
-          $ HashMap.findWithDefault mempty iid
+          $ Map.findWithDefault mempty iid
           $ investigatorLocationsClues metadata
     case lids of
       [] -> pure []
@@ -61,7 +61,7 @@ instance RunMessage DeepDark where
       pure t
     DiscoverClues iid lid _ _ -> do
       let
-        updatedMetadata = HashMap.insertWith
+        updatedMetadata = Map.insertWith
           (<>)
           iid
           (singleton lid)

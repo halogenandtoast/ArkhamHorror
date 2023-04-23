@@ -19,7 +19,7 @@ import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message
 import Arkham.Name
-import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
@@ -45,9 +45,9 @@ instance RunMessage CampaignAttrs where
       pure
         $ a
         & storyCardsL
-        %~ HashMap.map (filter ((/= cardDef) . toCardDef))
+        %~ Map.map (filter ((/= cardDef) . toCardDef))
         & decksL
-        %~ HashMap.map (withDeck (filter ((/= cardDef) . toCardDef)))
+        %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
     RemoveCampaignCardFromDeck iid cardDef ->
       pure
         $ a

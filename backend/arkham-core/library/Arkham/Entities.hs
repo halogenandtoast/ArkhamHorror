@@ -30,7 +30,7 @@ import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 
-type EntityMap a = HashMap (EntityId a) a
+type EntityMap a = Map (EntityId a) a
 
 data Entities = Entities
   { entitiesLocations :: EntityMap Location

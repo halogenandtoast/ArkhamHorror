@@ -31,7 +31,7 @@ withAgendaCardCode cCode f = case lookup cCode allAgendas of
   Nothing -> error $ "Unknown agenda: " <> show cCode
   Just (SomeAgendaCard a) -> f a
 
-allAgendas :: HashMap CardCode SomeAgendaCard
+allAgendas :: Map CardCode SomeAgendaCard
 allAgendas = mapFrom
   someAgendaCardCode
   [ -- Night of the Zealot

@@ -57,21 +57,21 @@ data instance Field Location :: Type -> Type where
   LocationHorror :: Field Location Int
   LocationDoom :: Field Location Int
   LocationShroud :: Field Location Int
-  LocationTraits :: Field Location (HashSet Trait)
-  LocationKeywords :: Field Location (HashSet Keyword)
+  LocationTraits :: Field Location (Set Trait)
+  LocationKeywords :: Field Location (Set Keyword)
   LocationUnrevealedName :: Field Location Name
   LocationName :: Field Location Name
   LocationConnectedMatchers :: Field Location [LocationMatcher]
   LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
   LocationRevealed :: Field Location Bool
-  LocationConnectsTo :: Field Location (HashSet Direction)
+  LocationConnectsTo :: Field Location (Set Direction)
   LocationCardsUnderneath :: Field Location [Card]
-  LocationConnectedLocations :: Field Location (HashSet LocationId)
-  LocationInvestigators :: Field Location (HashSet InvestigatorId)
-  LocationEnemies :: Field Location (HashSet EnemyId)
-  LocationAssets :: Field Location (HashSet AssetId)
-  LocationEvents :: Field Location (HashSet EventId)
-  LocationTreacheries :: Field Location (HashSet TreacheryId)
+  LocationConnectedLocations :: Field Location (Set LocationId)
+  LocationInvestigators :: Field Location (Set InvestigatorId)
+  LocationEnemies :: Field Location (Set EnemyId)
+  LocationAssets :: Field Location (Set AssetId)
+  LocationEvents :: Field Location (Set EventId)
+  LocationTreacheries :: Field Location (Set TreacheryId)
   LocationInvestigateSkill :: Field Location SkillType
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationCardId :: Field Location CardId

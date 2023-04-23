@@ -48,7 +48,7 @@ data Source
   | SkillSource SkillId
   | SkillTestSource InvestigatorId SkillTestType Source (Maybe Action)
   | StorySource CardCode
-  | TestSource (HashSet Trait)
+  | TestSource (Set Trait)
   | TokenEffectSource TokenFace
   | TokenSource Token
   | TreacherySource TreacheryId

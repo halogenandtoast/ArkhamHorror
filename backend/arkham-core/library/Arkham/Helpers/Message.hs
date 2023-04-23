@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
+import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
@@ -151,7 +152,7 @@ pushM mmsg = do
   msg <- mmsg
   push msg
 
-removeMessageType :: (MonadIO m, HasQueue Message m) => MessageType -> m ()
+removeMessageType :: HasQueue Message m => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->
   let
     (before, after) = break ((== Just msgType) . messageType) queue
@@ -160,3 +161,6 @@ removeMessageType msgType = withQueue_ $ \queue ->
 
 addToHand :: IsCard a => InvestigatorId -> a -> Message
 addToHand i (toCard -> c) = AddToHand i [c]
+
+shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message
+shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck target

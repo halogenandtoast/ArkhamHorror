@@ -29,7 +29,7 @@ theRedDepths = agenda (6, A) TheRedDepths Cards.theRedDepths (Static 5)
 
 instance HasAbilities TheRedDepths where
   getAbilities (TheRedDepths a) =
-    [ restrictedAbility a 1 (SetAsideEnemyExists AnyEnemy)
+    [ restrictedAbility a 1 (OutOfPlayEnemyExists PursuitZone AnyEnemy)
         $ ForcedAbility
         $ PlacedCounterOnAgenda
             Timing.After
@@ -72,7 +72,7 @@ instance HasAbilities TheRedDepthsEffect where
     [ restrictedAbility
           (ProxySource (AgendaMatcherSource AnyAgenda) (toSource attrs))
           1
-          (SetAsideEnemyExists AnyEnemy)
+          (OutOfPlayEnemyExists PursuitZone AnyEnemy)
         $ ForcedAbility
         $ PlacedCounterOnAgenda
             Timing.After

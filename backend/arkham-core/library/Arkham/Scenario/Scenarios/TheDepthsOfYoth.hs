@@ -39,6 +39,7 @@ import Arkham.Trait ( Trait (Injury) )
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+import Arkham.Zone
 
 newtype TheDepthsOfYoth = TheDepthsOfYoth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -173,8 +174,8 @@ instance RunMessage TheDepthsOfYoth where
       yig <- genCard Enemies.yig
       harbingerOfValusia <- genCard Enemies.harbingerOfValusia
 
-      createHarbinger <- createEnemyWithPlacement_ harbingerOfValusia Pursuit
-      createYig <- createEnemyWithPlacement_ yig Pursuit
+      createHarbinger <- createEnemyWithPlacement_ harbingerOfValusia (OutOfPlay PursuitZone)
+      createYig <- createEnemyWithPlacement_ yig (OutOfPlay PursuitZone)
 
       pushAll
         $ story investigatorIds intro1

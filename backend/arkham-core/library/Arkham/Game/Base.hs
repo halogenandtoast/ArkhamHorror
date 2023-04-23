@@ -15,7 +15,6 @@ import Arkham.Message
 import {-# SOURCE #-} Arkham.Entities
 import Arkham.Phase
 import Arkham.Scenario.Types ( Scenario )
-import Arkham.Scenario.Zone
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Modifier
@@ -51,13 +50,12 @@ data Game = Game
     gameMode :: GameMode
   , -- Entities
     gameEntities :: Entities
-  , gameScenarioOutOfPlayZoneEntities :: HashMap ScenarioOutOfPlayZone Entities
+  , gameOutOfPlayEntities :: HashMap OutOfPlayZone Entities
   , gameModifiers :: HashMap Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
   , gameInHandEntities :: HashMap InvestigatorId Entities
   , gameInDiscardEntities :: HashMap InvestigatorId Entities
   , gameInSearchEntities :: Entities
-  , gameOutOfPlayEntities :: Entities
   , -- Player Details
     -- used for determining if game should start
     gamePlayerCount :: Int

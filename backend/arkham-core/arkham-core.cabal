@@ -1762,7 +1762,6 @@ library
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Scenario.Types
-      Arkham.Scenario.Zone
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story

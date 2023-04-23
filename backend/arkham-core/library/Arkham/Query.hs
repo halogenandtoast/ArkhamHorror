@@ -12,7 +12,6 @@ type family QueryElement a where
   QueryElement PreyMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
   QueryElement EnemyMatcher = EnemyId
-  QueryElement VoidEnemyMatcher = EnemyId
   QueryElement TreacheryMatcher = TreacheryId
   QueryElement ExtendedCardMatcher = Card
   QueryElement DiscardedPlayerCardMatcher = PlayerCard
@@ -27,4 +26,3 @@ type family QueryElement a where
   QueryElement RemainingActMatcher = CardCode
   QueryElement CardMatcher = Card
   QueryElement TokenMatcher = Token
-  QueryElement (SetAsideMatcher a) = QueryElement a

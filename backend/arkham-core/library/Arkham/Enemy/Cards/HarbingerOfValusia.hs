@@ -57,7 +57,7 @@ instance RunMessage HarbingerOfValusia where
             damage = enemyDamage attrs
             enemy' = overAttrs (damageL .~ damage)
               $ cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
-          push $ SetOutOfPlay (toTarget attrs)
+          push $ SetOutOfPlay SetAsideZone (toTarget attrs)
           pure enemy'
         else do
           push $ PlaceResources (toTarget attrs) 1

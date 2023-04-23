@@ -58,5 +58,5 @@ instance RunMessage HuntingHorror where
         & (damageL .~ 0)
         & (doomL .~ 0)
         & (cluesL .~ 0)
-        & (placementL .~ TheVoid)
+        & (placementL .~ OutOfPlay VoidZone)
     _ -> HuntingHorror <$> runMessage msg attrs

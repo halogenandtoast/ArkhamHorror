@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Id
 import Arkham.Target
+import Arkham.Zone
 
 data Placement
   = AtLocation LocationId
@@ -18,8 +19,7 @@ data Placement
   | AttachedToInvestigator InvestigatorId
   | Unplaced
   | Limbo
-  | TheVoid
-  | Pursuit
+  | OutOfPlay OutOfPlayZone
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -37,14 +37,12 @@ placementToAttached = \case
   AttachedToInvestigator iid -> Just $ InvestigatorTarget iid
   Unplaced -> Nothing
   Limbo -> Nothing
-  TheVoid -> Nothing
-  Pursuit -> Nothing
+  OutOfPlay _ -> Nothing
   StillInHand _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = \case
-  TheVoid -> True
-  Pursuit -> True
+  OutOfPlay _ -> True
   _ -> False
 
 data TreacheryPlacement

@@ -94,7 +94,7 @@ instance RunMessage JourneyToTheNexus where
           pushAll
             $ map (InvestigatorDefeated (toSource attrs)) defeated
             <> map InvestigatorDiscardAllClues defeated
-            <> map (\e -> PlaceEnemy e Pursuit) enemies
+            <> map (\e -> PlaceEnemy e (OutOfPlay PursuitZone)) enemies
             <> map
                  (RemoveAllDoom . LocationTarget)
                  (stepsOfYoth : otherLocations)

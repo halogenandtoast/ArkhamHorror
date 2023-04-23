@@ -39,6 +39,7 @@ import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+import Arkham.Zone
 
 newtype Metadata = Metadata { resolution4Count :: Int }
   deriving stock (Show, Eq, Generic)
@@ -272,7 +273,7 @@ instance RunMessage TheDoomOfEztli where
       defeatMessages <- investigatorDefeat attrs
       gainXp <- map (uncurry GainXP) <$> getXp
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
-      setAsideHarbinger <- selectOne $ SetAsideMatcher $ enemyIs
+      setAsideHarbinger <- selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs
         Enemies.harbingerOfValusia
       harbingerMessages <- case inPlayHarbinger of
         Just harbinger -> do
@@ -281,7 +282,7 @@ instance RunMessage TheDoomOfEztli where
         Nothing -> case setAsideHarbinger of
           Nothing -> pure []
           Just harbinger -> do
-            damage <- field (SetAsideEnemyField EnemyDamage) harbinger
+            damage <- field (OutOfPlayEnemyField SetAsideZone EnemyDamage) harbinger
             pure [RecordCount TheHarbingerIsStillAlive damage]
 
       case n of

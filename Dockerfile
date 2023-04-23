@@ -54,10 +54,6 @@ RUN \
         build-essential && \
   rm -rf /var/lib/apt/lists/*
 
-# install gpg keys
-ARG GPG_KEY=7784930957807690A66EBDBE3786C5262ECB4A3F
-RUN gpg --batch --keyserver keys.openpgp.org --recv-keys $GPG_KEY
-
 ARG TARGETARCH
 
 # install ghcup

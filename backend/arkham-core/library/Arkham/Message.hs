@@ -556,8 +556,8 @@ data Message
   | RemovedLocation LocationId
   | RemoveTraits Target [Trait]
   | SetCardAside Card
-  | SetOutOfPlay Target
-  | DoSetOutOfPlay Target
+  | SetOutOfPlay OutOfPlayZone Target
+  | DoSetOutOfPlay OutOfPlayZone Target
   | RemoveFromPlay Source
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep

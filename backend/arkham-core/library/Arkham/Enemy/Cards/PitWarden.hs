@@ -24,7 +24,7 @@ pitWarden = enemyWith
   (1, 1)
   (spawnAtL ?~ SpawnAtFirst
     [ SpawnLocation (LocationWithEnemy $ enemyIs Enemies.yig)
-    , SpawnPlaced Pursuit
+    , SpawnPlaced (OutOfPlay PursuitZone)
     ]
   )
 

@@ -37,7 +37,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
         [ FindEncounterCard
           leadInvestigatorId
           (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromVictoryDisplay]
+          [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
           (cardIs Enemies.brotherhoodCultist)
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.recoverTheRelic A (toSource attrs)

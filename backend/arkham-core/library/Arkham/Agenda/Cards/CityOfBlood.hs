@@ -14,6 +14,7 @@ import Arkham.GameValue
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Zone
 
 newtype CityOfBlood = CityOfBlood AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -27,7 +28,7 @@ instance RunMessage CityOfBlood where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       mHarbinger <- maybeGetSetAsideEncounterCard Enemies.harbingerOfValusia
       harbingerMsgs <- for (maybeToList mHarbinger) $ \harbinger ->
-        createEnemyWithPlacement_ (EncounterCard harbinger) Pursuit
+        createEnemyWithPlacement_ (EncounterCard harbinger) (OutOfPlay PursuitZone)
       pushAll
         $ harbingerMsgs
         <> [ NextAdvanceAgendaStep (toId attrs) 1

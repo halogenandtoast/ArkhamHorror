@@ -50,7 +50,7 @@ instance RunMessage TheWitchLight where
           , advanceAgendaDeck attrs
           ]
         _ ->
-          [ SetOutOfPlay (toTarget nahab)
+          [ SetOutOfPlay SetAsideZone (toTarget nahab)
           , advanceAgendaDeck attrs
           , PlaceDoomOnAgenda
           , PlaceDoomOnAgenda

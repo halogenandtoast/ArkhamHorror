@@ -32,6 +32,7 @@ import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Token
 import Arkham.Trait
+import Arkham.Zone
 
 type Who = InvestigatorMatcher
 
@@ -223,6 +224,7 @@ data EnemyMatcher
   | EvadingEnemy
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
+  | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -236,21 +238,6 @@ instance Semigroup EnemyMatcher where
 
 instance Monoid EnemyMatcher where
   mempty = AnyEnemy
-
-data VoidEnemyMatcher = AnyVoidEnemy
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-newtype SetAsideMatcher matcher = SetAsideMatcher { unSetAsideMatcher :: matcher }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-  deriving newtype (Hashable)
-
-instance Monoid matcher => Monoid (SetAsideMatcher matcher) where
-  mempty = SetAsideMatcher mempty
-
-instance Semigroup matcher => Semigroup (SetAsideMatcher matcher) where
-  SetAsideMatcher a <> SetAsideMatcher b = SetAsideMatcher (a <> b)
 
 data EventMatcher
   = EventWithTitle Text

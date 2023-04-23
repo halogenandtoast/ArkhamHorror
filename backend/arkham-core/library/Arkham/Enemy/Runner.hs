@@ -1004,7 +1004,7 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (damageL .~ 0)
-        & (placementL .~ TheVoid)
+        & (placementL .~ OutOfPlay VoidZone)
         & (exhaustedL .~ False)
         & (doomL .~ 0)
         & (cluesL .~ 0)

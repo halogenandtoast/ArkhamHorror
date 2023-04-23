@@ -715,15 +715,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         then filter (`cardMatch` matcher) (unDeck scenarioEncounterDeck)
         else []
       matchingVictoryDisplay =
-        if any (`elem` zones) [Zone.FromVictoryDisplay, Zone.FromOutOfPlayAreas]
+        if Zone.FromOutOfPlayArea Zone.VictoryDisplayZone `elem` zones
           then mapMaybe (preview _EncounterCard)
             $ filter (`cardMatch` matcher) scenarioVictoryDisplay
           else []
-    matchingVoidEnemies <- if Zone.FromVoid `elem` zones
-      then selectList Matcher.AnyVoidEnemy
+    matchingVoidEnemies <- if Zone.FromOutOfPlayArea Zone.VoidZone `elem` zones
+      then selectList $ Matcher.OutOfPlayEnemy Zone.VoidZone Matcher.AnyEnemy
       else pure []
 
-    voidEnemiesWithCards <- forToSnd matchingVoidEnemies (field VoidEnemyCard)
+    voidEnemiesWithCards <- forToSnd matchingVoidEnemies (field (OutOfPlayEnemyField Zone.VoidZone EnemyCard))
 
     when
         (notNull matchingDiscards

@@ -1052,8 +1052,7 @@ onSameLocation iid = \case
       (field InvestigatorLocation iid)
   Unplaced -> pure False
   Limbo -> pure False
-  TheVoid -> pure False
-  Pursuit -> pure False
+  OutOfPlay _ -> pure False
   StillInHand _ -> pure False
 
 getSpendableResources :: (HasGame m) => InvestigatorId -> m Int
@@ -1339,8 +1338,8 @@ passesCriteria iid mcard source windows' = \case
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows' enemyCriteria
   Criteria.SetAsideCardExists matcher -> selectAny matcher
-  Criteria.SetAsideEnemyExists matcher ->
-    selectAny $ Matcher.SetAsideMatcher matcher
+  Criteria.OutOfPlayEnemyExists outOfPlayZone matcher ->
+    selectAny $ Matcher.OutOfPlayEnemy outOfPlayZone matcher
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId

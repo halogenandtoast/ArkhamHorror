@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait
+import Arkham.Zone
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
   deriving stock (Show, Eq, Generic)
@@ -110,7 +111,7 @@ data Criterion
   | ScenarioDeckWithCard ScenarioDeckKey
   | Self
   | SetAsideCardExists CardMatcher
-  | SetAsideEnemyExists EnemyMatcher
+  | OutOfPlayEnemyExists OutOfPlayZone EnemyMatcher
   | TreacheryExists TreacheryMatcher
   | Uncontrolled
   | SelfHasModifier ModifierType

@@ -42,7 +42,7 @@ import Arkham.Effect.Types
 import Arkham.Effect.Window (EffectWindow(EffectCardResolutionWindow))
 import Arkham.EffectMetadata
 import Arkham.Enemy
-import Arkham.Enemy.Types ( Enemy, EnemyAttrs (..), Field (..), VoidEnemy )
+import Arkham.Enemy.Types ( Enemy, EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -112,7 +112,6 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding ( scenario )
-import Arkham.Scenario.Zone
 import Arkham.ScenarioLogKey
 import Arkham.Skill
 import Arkham.Skill.Types ( Field (..), Skill, SkillAttrs (..) )
@@ -229,11 +228,10 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         }
       , gameModifiers = mempty
       , gameEncounterDiscardEntities = defaultEntities
-      , gameOutOfPlayEntities = defaultEntities
       , gameInHandEntities = mempty
       , gameInDiscardEntities = mempty
       , gameInSearchEntities = defaultEntities
-      , gameScenarioOutOfPlayZoneEntities = mempty
+      , gameOutOfPlayEntities = mempty
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
       , gameLeadInvestigatorId = initialInvestigatorId
@@ -485,10 +483,10 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "enemies"
       .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
     , "enemiesInVoid"
-      .= toJSON (runReader (traverse withEnemyMetadata (g ^. scenarioOutOfPlayZoneEntitiesL . at VoidZone . non mempty . enemiesL)) g)
+      .= toJSON (runReader (traverse withEnemyMetadata (g ^. outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL)) g)
     , "outOfPlayEnemies" .= toJSON
       (runReader
-        (traverse withEnemyMetadata (entitiesEnemies gameOutOfPlayEntities))
+        (traverse withEnemyMetadata (entitiesEnemies $ findWithDefault mempty SetAsideZone gameOutOfPlayEntities))
         g
       )
     , "assets"
@@ -1748,28 +1746,32 @@ getEnemy eid =
     <$> getGame
   where missingEnemy = "Unknown enemy: " <> show eid
 
-getOutOfPlayEnemy :: HasGame m => EnemyId -> m Enemy
-getOutOfPlayEnemy eid =
+getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
+getOutOfPlayEnemy outOfPlayZone eid =
   fromJustNote missingEnemy
-    . preview (outOfPlayEntitiesL . enemiesL . ix eid)
+    . preview (outOfPlayEntitiesL . ix outOfPlayZone . enemiesL . ix eid)
     <$> getGame
   where missingEnemy = "Unknown out of play enemy: " <> show eid
 
 getVoidEnemy :: HasGame m => EnemyId -> m Enemy
 getVoidEnemy eid =
-  fromJustNote missingEnemy . preview (scenarioOutOfPlayZoneEntitiesL . ix VoidZone . enemiesL . ix eid) <$> getGame
+  fromJustNote missingEnemy . preview (outOfPlayEntitiesL . ix VoidZone . enemiesL . ix eid) <$> getGame
   where missingEnemy = "Unknown out of playenemy: " <> show eid
 
 getEnemyMatching :: HasGame m => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching :: HasGame m => EnemyMatcher -> m [Enemy]
+getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
+  allGameEnemies <- toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
+  filterM (enemyMatcherFilter matcher) allGameEnemies
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter matcher) allGameEnemies
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId . toAttrs
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
@@ -2245,8 +2247,7 @@ instance Projection Asset where
         AttachedToAgenda _ -> pure Nothing
         Unplaced -> pure Nothing
         Limbo -> pure Nothing
-        TheVoid -> pure Nothing
-        Pursuit -> pure Nothing
+        OutOfPlay _ -> pure Nothing
         StillInHand _ -> pure Nothing
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
@@ -2310,15 +2311,8 @@ instance Projection Act where
       ActAbilities -> pure $ getAbilities a
       ActCard -> pure $ lookupCard (unActId aid) actCardId
 
-instance Projection (SetAsideEntity Enemy) where
-  field (SetAsideEnemyField f) = getEnemyField f <=< getOutOfPlayEnemy
-
-instance Projection VoidEnemy where
-  field f eid = do
-    e <- getVoidEnemy eid
-    let EnemyAttrs {..} = toAttrs e
-    case f of
-      VoidEnemyCard -> pure $ lookupCard enemyCardCode enemyCardId
+instance Projection (OutOfPlayEntity Enemy) where
+  field (OutOfPlayEnemyField outOfPlayZone f) = getEnemyField f <=< getOutOfPlayEnemy outOfPlayZone
 
 instance Projection Enemy where
   field f = getEnemyField f <=< getEnemy
@@ -2464,17 +2458,6 @@ instance Query LocationMatcher where
 
 instance Query EnemyMatcher where
   select = fmap (setFromList . map toId) . getEnemiesMatching
-
-instance Query (SetAsideMatcher EnemyMatcher) where
-  select (SetAsideMatcher matcher) = do
-    outOfPlayEnemies <-
-      toList . view (outOfPlayEntitiesL . enemiesL) <$> getGame
-    matches' <- filterM (enemyMatcherFilter matcher) outOfPlayEnemies
-    pure . setFromList $ map toId matches'
-
-instance Query VoidEnemyMatcher where
-  select AnyVoidEnemy =
-    setFromList . map toId . toList . view (scenarioOutOfPlayZoneEntitiesL . at VoidZone . non mempty . enemiesL) <$> getGame
 
 instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching
@@ -3300,13 +3283,13 @@ runGameMessage msg g = case msg of
   ResetGame ->
     pure
       $ g
-      & (entitiesL . locationsL .~ mempty)
-      & (entitiesL . enemiesL .~ mempty)
       & (encounterDiscardEntitiesL .~ defaultEntities)
-      & (scenarioOutOfPlayZoneEntitiesL . each .~ mempty)
-      & (entitiesL . assetsL .~ mempty)
+      & (outOfPlayEntitiesL .~ mempty)
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
+      & (entitiesL . assetsL .~ mempty)
+      & (entitiesL . locationsL .~ mempty)
+      & (entitiesL . enemiesL .~ mempty)
       & (entitiesL . actsL .~ mempty)
       & (entitiesL . agendasL .~ mempty)
       & (entitiesL . treacheriesL .~ mempty)
@@ -3765,12 +3748,12 @@ runGameMessage msg g = case msg of
         else do
           pushAll [RemoveFromPlay (AssetSource assetId), addToHand iid card]
     pure g
-  PlaceEnemy enemyId Pursuit -> do
-    push $ SetOutOfPlay (EnemyTarget enemyId)
+  PlaceEnemy enemyId (OutOfPlay outOfPlayZone) -> do
+    push $ SetOutOfPlay outOfPlayZone (EnemyTarget enemyId)
     pure g
   PlaceEnemy enemyId placement | not (isOutOfPlayPlacement placement) -> do
     mOutOfPlayEnemy <-
-      preview (outOfPlayEntitiesL . enemiesL . ix enemyId) <$> getGame
+      asum . preview (outOfPlayEntitiesL . each . enemiesL . at enemyId) <$> getGame
     case mOutOfPlayEnemy of
       Just enemy -> do
         case placement of
@@ -3778,18 +3761,18 @@ runGameMessage msg g = case msg of
           _ -> pure ()
         pure
           $ g
-          & (outOfPlayEntitiesL . enemiesL %~ deleteMap enemyId)
+          & (outOfPlayEntitiesL . each . enemiesL %~ deleteMap enemyId)
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
       _ -> pure g
-  SetOutOfPlay target@(EnemyTarget enemyId) -> do
-    pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay target]
+  SetOutOfPlay outOfPlayZone target@(EnemyTarget enemyId) -> do
+    pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay outOfPlayZone target]
     pure g
-  DoSetOutOfPlay (EnemyTarget enemyId) -> do
+  DoSetOutOfPlay outOfPlayZone (EnemyTarget enemyId) -> do
     enemy <- getEnemy enemyId
     pure
       $ g
       & (entitiesL . enemiesL %~ deleteMap enemyId)
-      & (outOfPlayEntitiesL . enemiesL . at enemyId ?~ enemy)
+      & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
   RemovedFromPlay (AssetSource assetId) -> do
     asset <- getAsset assetId
     let
@@ -4095,16 +4078,16 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (entitiesL . enemiesL %~ deleteMap eid)
-      & (scenarioOutOfPlayZoneEntitiesL . at VoidZone . non mempty . enemiesL %~ insertMap eid enemy)
+      & (outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL %~ insertMap eid enemy)
   EnemySpawnFromVoid miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
-    case lookup eid (g ^. scenarioOutOfPlayZoneEntitiesL . at VoidZone . non mempty . enemiesL) of
+    case lookup eid (g ^. outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL) of
       Just enemy ->
         pure
           $ g
           & (activeCardL .~ Nothing)
           & (focusedCardsL .~ mempty)
-          & (scenarioOutOfPlayZoneEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
+          & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
           & (entitiesL . enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
 
@@ -4534,7 +4517,7 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
-    pure $ g & activeCardL .~ Nothing & scenarioOutOfPlayZoneEntitiesL . each . enemiesL %~ deleteMap eid
+    pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
   Discarded (InvestigatorTarget iid) source card -> do
     push =<< checkWindows
       ((`Window` Window.Discarded iid source card)

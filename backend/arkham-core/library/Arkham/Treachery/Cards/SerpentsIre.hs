@@ -13,11 +13,11 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.SkillType
 import Arkham.Trait ( Trait (Serpent) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
+import Arkham.Zone
 
 newtype Metadata = Metadata { selectedEnemy :: Maybe EnemyId }
   deriving stock (Show, Eq, Generic)
@@ -34,18 +34,16 @@ serpentsIre =
 instance RunMessage SerpentsIre where
   runMessage msg t@(SerpentsIre (attrs `With` meta)) = case msg of
     Revelation iid source | isSource attrs source -> do
-      inPursuit <- getInPursuitEnemies
       serpents <-
-        selectList $ SetAsideMatcher $ EnemyWithTrait Serpent <> EnemyOneOf
-          (map EnemyWithId $ toList inPursuit)
+        selectList $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
       fightValue <- selectMax
-        (SetAsideEnemyField EnemyFight)
-        (SetAsideMatcher $ EnemyOneOf (map EnemyWithId serpents))
+        (OutOfPlayEnemyField PursuitZone EnemyFight)
+        (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-
         toList
         . setFromList @(HashSet EnemyId)
         <$> filterM
-              (fieldMap (SetAsideEnemyField EnemyFight) ((== fightValue)))
+              (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== fightValue)))
               serpents
       if null choices
         then push $ gainSurge attrs

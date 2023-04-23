@@ -38,7 +38,7 @@ instance RunMessage AtTheStationInShadowedTalons where
         [ FindEncounterCard
           leadInvestigatorId
           (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromVictoryDisplay]
+          [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
           (cardIs Enemies.huntingNightgaunt)
         , NextAdvanceActStep aid 1
         , AdvanceToAct

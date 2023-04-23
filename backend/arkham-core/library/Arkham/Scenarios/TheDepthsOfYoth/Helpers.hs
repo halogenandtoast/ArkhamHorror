@@ -19,6 +19,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+import Arkham.Zone
 import Data.Aeson ( Result (..) )
 
 newtype DepthsOfYothMeta = DepthsOfYothMeta
@@ -42,9 +43,9 @@ getDepthStart = depthLocation <$> getMeta
 getMeta :: HasGame m => m DepthsOfYothMeta
 getMeta = do
   v <- scenarioField ScenarioMeta
-  pure $ case fromJSON v of
+  case fromJSON v of
     Error _ -> error "invalid meta for depths of yoth"
-    Success a -> a
+    Success a -> pure a
 
 toMeta :: LocationId -> Value
 toMeta lid = toJSON $ DepthsOfYothMeta lid
@@ -55,18 +56,14 @@ getInPursuitEnemyWithHighestEvade = do
   inPursuit <- getInPursuitEnemies
   evadeValue <- getMax0 <$> selectAgg
     (Max . fromMaybe 0)
-    (SetAsideEnemyField EnemyEvade)
-    (SetAsideMatcher $ EnemyOneOf $ map EnemyWithId $ toList inPursuit)
+    (OutOfPlayEnemyField PursuitZone EnemyEvade)
+    (OutOfPlayEnemy PursuitZone $ EnemyOneOf $ map EnemyWithId $ toList inPursuit)
   setFromList <$> filterM
-    (fieldMap (SetAsideEnemyField EnemyEvade) ((== Just evadeValue)))
+    (fieldMap (OutOfPlayEnemyField PursuitZone EnemyEvade) ((== Just evadeValue)))
     (toList inPursuit)
 
 getInPursuitEnemies :: HasGame m => m (HashSet EnemyId)
-getInPursuitEnemies = do
-  enemies <- select $ SetAsideMatcher AnyEnemy
-  setFromList <$> filterM
-    (fieldMap (SetAsideEnemyField EnemyPlacement) (== Pursuit))
-    (toList enemies)
+getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 
 getPlacePursuitEnemyMessages :: HasGame m => m [Message]
 getPlacePursuitEnemyMessages = do

@@ -34,7 +34,7 @@ instance RunMessage SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       completedExtracurricularActivity <- completedScenario "02041"
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       peterClover <- genCard Assets.peterClover
       drFrancisMorgan <- genCard Assets.drFrancisMorgan
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
@@ -44,9 +44,9 @@ instance RunMessage SkinGame where
         then
           [ CreateAssetAt assetId peterClover (AtLocation cloverClubBarId)
           , FindEncounterCard
-            leadInvestigatorId
+            lead
             (toTarget attrs)
-            [FromEncounterDeck, FromOutOfPlayAreas]
+            (FromEncounterDeck : allOutOfPlayZones)
             (CardWithType EnemyType <> CardWithTrait Abomination)
           , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
           ]

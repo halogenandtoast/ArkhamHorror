@@ -31,7 +31,7 @@ instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess x) =
     [ mkAbility x 1 $ ForcedAbility $ EnemySpawns Timing.When Anywhere $ enemyIs
         Enemies.huntingHorror
-    ]
+    | onSide A x]
 
 instance RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of

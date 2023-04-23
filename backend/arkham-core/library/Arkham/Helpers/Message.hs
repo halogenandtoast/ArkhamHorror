@@ -72,46 +72,6 @@ dealAdditionalDamage iid amount additionalMessages = do
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured"
 
-createEnemy :: MonadRandom m => Card -> m (EnemyId, Message)
-createEnemy c = do
-  enemyId <- getRandom
-  pure (enemyId, CreateEnemy enemyId c)
-
-createEnemy_ :: MonadRandom m => Card -> m Message
-createEnemy_ = fmap snd . createEnemy
-
-createEnemyWithPlacement :: MonadRandom m => Card -> Placement -> m (EnemyId, Message)
-createEnemyWithPlacement c placement = do
-  enemyId <- getRandom
-  pure (enemyId, CreateEnemyWithPlacement enemyId c placement)
-
-createEnemyWithPlacement_ :: MonadRandom m => Card -> Placement -> m Message
-createEnemyWithPlacement_ c placement = snd <$> createEnemyWithPlacement c placement
-
-createEnemyAt :: MonadRandom m => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
-createEnemyAt c lid mTarget = do
-  enemyId <- getRandom
-  pure (enemyId, CreateEnemyAt enemyId c lid mTarget)
-
-createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
-createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
-
-createEnemyAtLocationMatching :: MonadRandom m => Card -> LocationMatcher -> m (EnemyId, Message)
-createEnemyAtLocationMatching c matcher = do
-  enemyId <- getRandom
-  pure (enemyId, CreateEnemyAtLocationMatching enemyId c matcher)
-
-createEnemyAtLocationMatching_ :: MonadRandom m => Card -> LocationMatcher -> m Message
-createEnemyAtLocationMatching_ c matcher = snd <$> createEnemyAtLocationMatching c matcher
-
-createEnemyEngagedWithPrey :: MonadRandom m => Card -> m (EnemyId, Message)
-createEnemyEngagedWithPrey c = do
-  enemyId <- getRandom
-  pure (enemyId, CreateEnemyEngagedWithPrey enemyId c)
-
-createEnemyEngagedWithPrey_ :: MonadRandom m => Card -> m Message
-createEnemyEngagedWithPrey_ = fmap snd . createEnemyEngagedWithPrey
-
 placeLocation :: MonadRandom m => Card -> m (LocationId, Message)
 placeLocation c = do
   locationId <- getRandom

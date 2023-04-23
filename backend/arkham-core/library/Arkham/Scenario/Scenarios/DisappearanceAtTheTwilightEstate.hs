@@ -18,6 +18,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Deck
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
@@ -109,11 +110,10 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           | pennyId <- maybeToList mPennyWhite
           ]
 
-      createNetherMist <- createEnemyAt_ netherMist officeId Nothing
-      createTheSpectralWatcher <- createEnemyAt_
+      createNetherMist <- createEnemy netherMist (SpawnAtLocation officeId)
+      createTheSpectralWatcher <- createEnemy
         theSpectralWatcher
-        entryHallId
-        Nothing
+        (SpawnAtLocation entryHallId)
 
       pushAll
         $ [ SetEncounterDeck

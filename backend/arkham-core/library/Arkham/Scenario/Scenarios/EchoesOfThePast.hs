@@ -17,9 +17,11 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Spawn
 import Arkham.Enemy.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Enemy
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -166,15 +168,15 @@ instance RunMessage EchoesOfThePast where
         n | n == 3 -> for seekersToSpawn $ \seeker ->
           -- with 3 we can spawn at either 2nd or 3rd floor so we use
           -- location matching
-          createEnemyAtLocationMatching_
-            (EncounterCard seeker)
-            (EmptyLocation <> LocationMatchAny
+          createEnemy
+            seeker
+            (SpawnAtLocationMatching $ EmptyLocation <> LocationMatchAny
               [LocationWithTrait SecondFloor, LocationWithTrait ThirdFloor]
             )
         _ ->
           for (zip thirdFloorPlacements seekersToSpawn)
             $ \((locationId, _), card) ->
-                createEnemyAt_ (EncounterCard card) locationId Nothing
+                createEnemy card (SpawnAtLocation locationId)
 
       sebastienInterviewed <-
         elem (recorded $ toCardCode Assets.sebastienMoreau)

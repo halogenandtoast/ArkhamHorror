@@ -1,4 +1,4 @@
-module Arkham.Helpers.Enemy where
+module Arkham.Helpers.Enemy (module Arkham.Helpers.Enemy, module X) where
 
 import Arkham.Prelude
 
@@ -186,3 +186,13 @@ getUniqueEnemy = selectJust . enemyIs
 
 getEnemyIsInPlay :: HasGame m => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
+
+createEnemy :: (MonadRandom m, IsCard card)  => card -> SpawnMethod -> m EnemySpawn
+createEnemy (toCard -> Card) sMethod = do
+  enemyId <- getRandom
+  pure $ EnemySpawn
+    { spawnCard = card
+    , spawnEnemyId = enemyId
+    , spawnMethod = sMethod
+    , spawnAfter = []
+    }

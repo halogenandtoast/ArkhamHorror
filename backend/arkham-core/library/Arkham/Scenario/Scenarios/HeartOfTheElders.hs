@@ -15,11 +15,13 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Spawn
 import Arkham.Enemy.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Deck
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -225,10 +227,9 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         setAsideCards <- genCards
           (replicate setAsidePoisonedCount Treacheries.poisoned)
 
-        createTheWingedSerpent <- createEnemyAt_
+        createTheWingedSerpent <- createEnemy
           theWingedSerpent
-          mouthOfKnYanTheCavernsMawId
-          Nothing
+          (SpawnAtLocation mouthOfKnYanTheCavernsMawId)
 
         pushAll
           $ introMessages

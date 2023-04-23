@@ -34,6 +34,7 @@ import Arkham.Draw.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
+import Arkham.Enemy.Spawn
 import Arkham.Classes.Entity.Source
 import Arkham.Exception
 import Arkham.Helpers
@@ -278,12 +279,7 @@ data Message
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
-  | CreateEnemy EnemyId Card
-  | CreateEnemyWithPlacement EnemyId Card Placement
-  | CreateEnemyAt EnemyId Card LocationId (Maybe Target)
-  | CreatedEnemyAt EnemyId LocationId Target
-  | CreateEnemyAtLocationMatching EnemyId Card LocationMatcher
-  | CreateEnemyEngagedWithPrey EnemyId Card
+  | CreateEnemy (SpawnEnemy Message)
   -- new payment bs
   | PayForAbility Ability [Window]
   | CreatedCost ActiveCostId

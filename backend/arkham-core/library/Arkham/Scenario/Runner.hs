@@ -25,6 +25,7 @@ import Arkham.Classes.RunMessage
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.EncounterCard.Source
+import Arkham.Enemy.Spawn
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game ()
@@ -456,7 +457,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
   AttachStoryTreacheryTo card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
-  CreateEnemyAt _ card _ _ -> do
+  CreateEnemy (spawnCard -> card) -> do
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))

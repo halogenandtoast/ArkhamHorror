@@ -69,9 +69,9 @@ instance RunMessage ReturnToTheDevourerBelow where
 
         (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
 
-        arkhamWoods <- genCards
-          [ Locations.arkhamWoodsUnhallowedGround
-          , Locations.arkhamWoodsTwistingPaths
+        arkhamWoods <- traverse genCard $
+          Locations.arkhamWoodsUnhallowedGround :|
+          [ Locations.arkhamWoodsTwistingPaths
           , Locations.arkhamWoodsOldHouse
           , Locations.arkhamWoodsCliffside
           , Locations.arkhamWoodsTangledThicket
@@ -82,7 +82,7 @@ instance RunMessage ReturnToTheDevourerBelow where
           , Locations.arkhamWoodsWoodenBridge
           ]
 
-        woodsLocations <- take 4 <$> shuffleM arkhamWoods
+        woodsLocations <- sampleN 4 arkhamWoods
 
         randomSet <-
           sample
@@ -137,15 +137,12 @@ instance RunMessage ReturnToTheDevourerBelow where
           & (actStackL . at 1 ?~ acts)
           & (agendaStackL . at 1 ?~ agendas)
           )
-      CreateEnemyAt _ card lid _ | toCardCode card == "01157" -> do
+      CreateEnemy spawn@(spawnCard -> card) | card `cardMatch` cardIs Enemies.umordhoth -> do
         name <- field LocationName lid
-        if name == "Ritual Site"
-          then do
-            vaultOfEarthlyDemise <- EncounterCard
-              <$> genEncounterCard Treacheries.vaultOfEarthlyDemise
-            push $ AttachStoryTreacheryTo
-              vaultOfEarthlyDemise
-              (CardCodeTarget "00157")
-            pure s
-          else pure s
+        when (name == "Ritual Site") $ do
+          vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
+          push $ AttachStoryTreacheryTo
+            vaultOfEarthlyDemise
+            (CardCodeTarget "01157")
+        pure s
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

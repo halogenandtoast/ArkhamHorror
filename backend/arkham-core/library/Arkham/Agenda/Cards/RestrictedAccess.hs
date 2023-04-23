@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.RestrictedAccess
-  ( RestrictedAccess(..)
-  , restrictedAccess
-  ) where
+module Arkham.Agenda.Cards.RestrictedAccess (
+  RestrictedAccess (..),
+  restrictedAccess,
+) where
 
 import Arkham.Prelude
 
@@ -16,8 +16,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window ( Window (..) )
-import Arkham.Window qualified as Window
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -29,34 +27,40 @@ restrictedAccess =
 
 instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess x) =
-    [ mkAbility x 1 $ ForcedAbility $ EnemySpawns Timing.When Anywhere $ enemyIs
-        Enemies.huntingHorror
-    | onSide A x]
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ EnemySpawns Timing.When Anywhere
+      $ enemyIs Enemies.huntingHorror
+    | onSide A x
+    ]
 
 instance RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns eid _)] _
-      | isSource attrs source -> do
-        mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
-        case mShadowSpawnedId of
-          Just tid -> push $ PlaceResources (TreacheryTarget tid) 1
-          Nothing -> do
-            shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
-            push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
-        pure a
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
+      case mShadowSpawnedId of
+        Just tid -> push $ PlaceResources (toTarget tid) 1
+        Nothing -> do
+          huntingHorror <- selectJust $ enemyIs Enemies.huntingHorror
+          shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
+          push $ AttachStoryTreacheryTo shadowSpawned (toTarget huntingHorror)
+      pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       mHuntingHorrorId <- selectOne $ enemyIs Enemies.huntingHorror
       case mHuntingHorrorId of
-        Just eid -> pushAll
-          [ PlaceDoom (EnemyTarget eid) 1
-          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-          ]
-        Nothing -> push $ FindEncounterCard
-          leadInvestigatorId
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-          (cardIs Enemies.huntingHorror)
+        Just eid ->
+          pushAll
+            [ PlaceDoom (EnemyTarget eid) 1
+            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+            ]
+        Nothing ->
+          push $
+            FindEncounterCard
+              leadInvestigatorId
+              (toTarget attrs)
+              [FromEncounterDeck, FromEncounterDiscard, FromVoid]
+              (cardIs Enemies.huntingHorror)
       pure a
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- selectJust $ LocationWithTitle "Museum Halls"

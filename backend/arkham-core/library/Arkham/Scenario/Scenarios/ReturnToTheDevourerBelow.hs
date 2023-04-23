@@ -8,11 +8,10 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Spawn
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher ( CardMatcher (..) )
+import Arkham.Matcher ( CardMatcher (..), cardIs )
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow
@@ -137,12 +136,11 @@ instance RunMessage ReturnToTheDevourerBelow where
           & (actStackL . at 1 ?~ acts)
           & (agendaStackL . at 1 ?~ agendas)
           )
-      CreateEnemy spawn@(spawnCard -> card) | card `cardMatch` cardIs Enemies.umordhoth -> do
-        name <- field LocationName lid
-        when (name == "Ritual Site") $ do
-          vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
-          push $ AttachStoryTreacheryTo
-            vaultOfEarthlyDemise
-            (CardCodeTarget "01157")
+      CreateEnemy (spawnCard -> card) | card `cardMatch` cardIs Enemies.umordhoth -> do
+        -- TODO: Fix this, we need some way to attach to the card as a set aside card
+        vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
+        push $ AttachStoryTreacheryTo
+          vaultOfEarthlyDemise
+          (CardCodeTarget "01157")
         pure s
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

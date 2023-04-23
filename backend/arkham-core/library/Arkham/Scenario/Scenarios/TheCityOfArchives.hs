@@ -16,6 +16,7 @@ import Arkham.Difficulty
 import Arkham.Discard
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -185,10 +186,9 @@ instance RunMessage TheCityOfArchives where
           , SetLocationLabel locationId ("interviewRoom" <> tshow @Int idx)
           ]
 
-      createYithianObserver <- createEnemyAt_
+      createYithianObserver <- createEnemy
         yithianObserver
-        interviewRoomId
-        Nothing
+        (SpawnEnemyAt interviewRoomId)
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
@@ -255,26 +255,23 @@ instance RunMessage TheCityOfArchives where
             ]
           resignedWithTheCustodian <- orM
             [ resignedWith Assets.theCustodian
-            , selectAny
-              (AssetControlledBy Anyone <> assetIs Assets.theCustodian)
+            , selectAny $ AssetControlledBy Anyone <> assetIs Assets.theCustodian
             ]
 
           let
             totalTasks =
               rememberedTasks + if resignedWithTheCustodian then 1 else 0
             (logEntry, bonusXp) = case totalTasks of
-              n | n == 6 -> (TheProcessWasPerfected, 4)
-              n | n == 5 -> (TheProcessWasSuccessful, 2)
-              n | n == 4 -> (TheProcessBackfired, 1)
-              n | n == 3 -> (TheProcessBackfiredSpectacularly, 0)
+              6 -> (TheProcessWasPerfected, 4)
+              5 -> (TheProcessWasSuccessful, 2)
+              4 -> (TheProcessBackfired, 1)
+              3 -> (TheProcessBackfiredSpectacularly, 0)
               _ -> error "Invalid number of tasks"
 
           gainXp <- map (uncurry GainXP) <$> getXpWithBonus bonusXp
 
           let
-            interludeResult = if resignedWithTheCustodian
-              then Just TheCustodianWasUnderControl
-              else Nothing
+            interludeResult = guard resignedWithTheCustodian $> TheCustodianWasUnderControl
 
           pushAll
             $ story iids resolution1

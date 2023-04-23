@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Id
 import Arkham.Placement
 import Arkham.Matcher
+import Arkham.Target
 
 data SpawnMethod
   = SpawnEngagedWith InvestigatorId
@@ -20,6 +21,7 @@ data SpawnEnemy msg = MkSpawnEnemy
   { spawnCard :: Card
   , spawnEnemyId :: EnemyId
   , spawnMethod :: SpawnMethod
+  , spawnTarget :: Maybe Target
   , spawnAfter :: [msg]
   }
   deriving stock (Show, Eq, Generic)

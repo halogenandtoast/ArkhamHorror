@@ -67,7 +67,7 @@ messageType PerformEnemyAttack{} = Just AttackMessage
 messageType Revelation{} = Just RevelationMessage
 messageType DrawToken{} = Just DrawTokenMessage
 messageType ResolveToken{} = Just ResolveTokenMessage
-messageType EnemySpawn{} = Just EnemySpawnMessage
+messageType CreateEnemy{} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy{} = Just DrawEnemyMessage
 messageType EnemyDefeated{} = Just EnemyDefeatedMessage
 messageType (Discard GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
@@ -363,11 +363,6 @@ data Message
   | EnemyMove EnemyId LocationId
   | EnemyEntered EnemyId LocationId
   | SetBearer Target InvestigatorId
-  | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
-  | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
-  | EnemySpawnEngagedWithPrey EnemyId
-  | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
-  | EnemySpawnedAt LocationId EnemyId
   | EngageEnemy InvestigatorId EnemyId Bool
   | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
@@ -628,8 +623,6 @@ data Message
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData
   | SkillTestUncommitCard InvestigatorId Card
-  | SpawnEnemyAt Card LocationId
-  | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | SpendClues Int [InvestigatorId]
   | SpendResources InvestigatorId Int
   | SpendUses Target UseType Int

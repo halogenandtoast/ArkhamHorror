@@ -280,6 +280,7 @@ data Message
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
   | CreateEnemy (SpawnEnemy Message)
+  | CreatedEnemy EnemyId Target
   -- new payment bs
   | PayForAbility Ability [Window]
   | CreatedCost ActiveCostId
@@ -380,7 +381,6 @@ data Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | FoundEncounterCard InvestigatorId Target EncounterCard
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
-  | FoundEnemyInVoid InvestigatorId Target EnemyId
   | GainActions InvestigatorId Source Int
   | GainAdditionalAction InvestigatorId Source AdditionalAction
   | UseEffectAction InvestigatorId EffectId [Window]

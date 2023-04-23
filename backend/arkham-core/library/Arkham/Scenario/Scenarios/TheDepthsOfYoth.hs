@@ -19,6 +19,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -173,8 +174,8 @@ instance RunMessage TheDepthsOfYoth where
       yig <- genCard Enemies.yig
       harbingerOfValusia <- genCard Enemies.harbingerOfValusia
 
-      createHarbinger <- createEnemyWithPlacement_ harbingerOfValusia Pursuit
-      createYig <- createEnemyWithPlacement_ yig Pursuit
+      createHarbinger <- createEnemy harbingerOfValusia Pursuit
+      createYig <- createEnemy yig Pursuit
 
       pushAll
         $ story investigatorIds intro1
@@ -239,7 +240,7 @@ instance RunMessage TheDepthsOfYoth where
     ResolveAmounts _ (getChoiceAmount "Fury" -> n) ScenarioTarget -> do
       push $ RecordCount YigsFury n
       pure s
-    CreatedEnemyAt harbingerId _ (isTarget attrs -> True) -> do
+    CreatedEnemy harbingerId (isTarget attrs -> True) -> do
       isHarbinger <- harbingerId <=~> enemyIs Enemies.harbingerOfValusia
       when isHarbinger $ do
         startingDamage <- getRecordCount TheHarbingerIsStillAlive

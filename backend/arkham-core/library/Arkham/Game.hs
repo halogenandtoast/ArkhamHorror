@@ -2471,10 +2471,6 @@ instance Query (SetAsideMatcher EnemyMatcher) where
     matches' <- filterM (enemyMatcherFilter matcher) outOfPlayEnemies
     pure . setFromList $ map toId matches'
 
-instance Query VoidEnemyMatcher where
-  select AnyVoidEnemy =
-    setFromList . map toId . toList . view enemiesInVoidL <$> getGame
-
 instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching
 

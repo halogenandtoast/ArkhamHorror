@@ -20,6 +20,7 @@ import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
@@ -238,7 +239,7 @@ instance RunMessage TheLastKing where
         assetId
       iids <- selectList $ InvestigatorAt $ LocationWithId lid
       clues <- field AssetClues assetId
-      enemyCreation <- createEnemyAt_ enemyCard lid Nothing
+      enemyCreation <- createEnemy enemyCard lid
       pushAll
         $ [ InvestigatorAssignDamage
               iid

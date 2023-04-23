@@ -42,8 +42,10 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Zone
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -53,6 +55,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
+import Control.Lens (each)
 import Data.HashMap.Strict qualified as HashMap
 import Data.IntMap.Strict qualified as IntMap
 
@@ -721,7 +724,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             $ filter (`cardMatch` matcher) scenarioVictoryDisplay
           else []
     matchingVoidEnemies <- if Zone.FromVoid `elem` zones
-      then selectList Matcher.AnyVoidEnemy
+      then selectList $ Matcher.EnemyWithPlacement (ScenarioZone VoidZone)
       else pure []
 
     voidEnemiesWithCards <- forToSnd matchingVoidEnemies (field VoidEnemyCard)
@@ -826,15 +829,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             (card : discardedCards)
           ]
         pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
-  SpawnEnemyAt card@(EncounterCard ec) _ -> do
-    pure $ a & discardL %~ filter (/= ec) & setAsideCardsL %~ filter (/= card)
-  SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
-    pure $ a & discardL %~ filter (/= ec)
   InvestigatorDrewEncounterCard _ ec -> do
     pure $ a & discardL %~ filter (/= ec)
-  When (EnemySpawn _ _ enemyId) -> do
-    card <- field EnemyCard enemyId
-    pure $ a & (victoryDisplayL %~ delete card)
   SetEncounterDeck encounterDeck -> pure $ a & encounterDeckL .~ encounterDeck
   RemoveAllCopiesOfCardFromGame _ cCode ->
     pure $ a & setAsideCardsL %~ filter ((/= cCode) . toCardCode)
@@ -925,4 +921,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
   RestartScenario -> do
     pure $ a & (inResolutionL .~ False)
+  ObtainCard card -> do
+    -- TODO: decide if this is how we want to handle this for all things with cards
+    -- seems better than having to handle every message bespokely but then we need to call
+    -- ObtainCard in every situation where a card can move
+    pure $ a
+      & (cardsUnderScenarioReferenceL %~ filter (/= card))
+      & (cardsUnderAgendaDeckL %~ filter (/= card))
+      & (cardsUnderActDeckL %~ filter (/= card))
+      & (cardsNextToActDeckL %~ filter (/= card))
+      & (actStackL . each %~ filter (/= card))
+      & (agendaStackL . each %~ filter (/= card))
+      & (completedAgendaStackL . each %~ filter (/= card))
+      & (completedActStackL . each %~ filter (/= card))
+      & (decksL . each %~ filter (/= card))
+      & (setAsideCardsL %~ filter (/= card))
+      & (victoryDisplayL %~ filter (/= card))
+      & (encounterDeckL %~ filter ((/= card) . EncounterCard))
+      & (discardL %~ filter ((/= card) . EncounterCard))
   _ -> pure a

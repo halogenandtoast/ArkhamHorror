@@ -187,8 +187,8 @@ getUniqueEnemy = selectJust . enemyIs
 getEnemyIsInPlay :: HasGame m => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
 
-createEnemy :: (MonadRandom m, IsCard card)  => card -> SpawnMethod -> m EnemySpawn
-createEnemy (toCard -> Card) sMethod = do
+createEnemy :: (MonadRandom m, IsCard card, IsSpawnMethod spawnMethod)  => card -> spawnMethod -> m EnemySpawn
+createEnemy (toCard -> Card) (toSpawnMethod -> sMethod) = do
   enemyId <- getRandom
   pure $ EnemySpawn
     { spawnCard = card

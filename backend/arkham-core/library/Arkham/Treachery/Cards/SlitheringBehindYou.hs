@@ -31,19 +31,9 @@ instance RunMessage SlitheringBehindYou where
       case mHuntingHorrorId of
         Just eid -> pushAll
           [PlaceDoom (EnemyTarget eid) 1, ShuffleDeck Deck.EncounterDeck]
-        Nothing -> push $ FindEncounterCard
-          iid
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-          (cardIs Enemies.huntingHorror)
-      pure t
-    FoundEncounterCard iid target ec | isTarget attrs target -> do
-      mlid <- field InvestigatorLocation iid
-      for_ mlid
-        $ \lid -> push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
-      pure t
-    FoundEnemyInVoid iid target eid | isTarget attrs target -> do
-      mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid -> push (EnemySpawnFromVoid (Just iid) lid eid)
+        Nothing -> do
+          huntingHorror <- findUniqueCard Enemies.huntingHorror
+          spawnHuntingHorror <- createEnemy huntingHorror iid
+          pushAll [spawnHuntingHorror, ShuffleDeck EncounterDeck]
       pure t
     _ -> SlitheringBehindYou <$> runMessage msg attrs

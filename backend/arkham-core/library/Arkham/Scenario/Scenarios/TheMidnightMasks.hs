@@ -11,6 +11,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
+import Arkham.Helpers.Enemy
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
   (CardMatcher(..), EnemyMatcher(..), ExtendedCardMatcher(..))
@@ -111,8 +112,7 @@ instance RunMessage TheMidnightMasks where
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
 
       spawnAcolyteMessages <-
-        for (zip acolytes [southsideId, downtownId, graveyardId])
-          $ \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
+        zipWithM createEnemy acolytes [southsideId, downtownId, graveyardId])
 
       encounterDeck <- buildEncounterDeckWith
         (<> darkCult)

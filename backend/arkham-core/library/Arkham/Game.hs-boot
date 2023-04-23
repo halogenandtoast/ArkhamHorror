@@ -56,7 +56,6 @@ instance Query SkillMatcher
 instance Query TokenMatcher
 instance Query TreacheryMatcher
 instance Query (SetAsideMatcher EnemyMatcher)
-instance Query VoidEnemyMatcher
 
 instance Projection Act
 instance Projection Agenda

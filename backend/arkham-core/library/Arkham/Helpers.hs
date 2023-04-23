@@ -33,9 +33,15 @@ draw :: forall a. Int -> Deck a -> ([a], Deck a)
 draw = coerce (splitAt @[a])
 
 newtype Deck a = Deck { unDeck :: [a] }
-  deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq, MonoFoldable, SemiSequence, GrowingAppend)
+  deriving newtype (Functor, Foldable, Semigroup, Monoid, ToJSON, FromJSON, Eq, MonoFoldable, SemiSequence, GrowingAppend, MonoPointed, MonoFunctor)
 
 type instance Element (Deck a) = a
+
+instance Traversable Deck where
+  traverse f (Deck xs) = Deck <$> traverse f xs
+
+instance MonoTraversable (Deck a)
+instance IsSequence (Deck a)
 
 instance Show (Deck a) where
   show _ = "<Deck>"

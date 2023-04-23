@@ -56,6 +56,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenario.Zone
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -1052,8 +1053,9 @@ onSameLocation iid = \case
       (field InvestigatorLocation iid)
   Unplaced -> pure False
   Limbo -> pure False
-  TheVoid -> pure False
-  Pursuit -> pure False
+  ScenarioZone sZone -> case sZone of
+    VoidZone -> pure False
+    PursuitZone -> pure False
   StillInHand _ -> pure False
 
 getSpendableResources :: (HasGame m) => InvestigatorId -> m Int
@@ -2895,25 +2897,25 @@ damageEffectMatches a = \case
   Matcher.AttackDamageEffect -> pure $ a == AttackDamageEffect
   Matcher.NonAttackDamageEffect -> pure $ a == NonAttackDamageEffect
 
-spawnAtOneOf :: InvestigatorId -> EnemyId -> [LocationId] -> GameT ()
-spawnAtOneOf iid eid targetLids = do
-  locations' <- select Matcher.Anywhere
-  case setToList (setFromList targetLids `intersection` locations') of
-    [] -> push (Discard GameSource (EnemyTarget eid))
-    [lid] -> do
-      windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
-      pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
-    lids -> do
-      windowPairs <- for lids $ \lid -> do
-        windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
-        pure (windows', lid)
-
-      push $
-        chooseOne
-          iid
-          [ targetLabel lid $ windows' : resolve (EnemySpawn Nothing lid eid)
-          | (windows', lid) <- windowPairs
-          ]
+-- spawnAtOneOf :: InvestigatorId -> EnemyId -> [LocationId] -> GameT ()
+-- spawnAtOneOf iid eid targetLids = do
+--   locations' <- select Matcher.Anywhere
+--   case setToList (setFromList targetLids `intersection` locations') of
+--     [] -> push (Discard GameSource (EnemyTarget eid))
+--     [lid] -> do
+--       windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+--       pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
+--     lids -> do
+--       windowPairs <- for lids $ \lid -> do
+--         windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+--         pure (windows', lid)
+-- 
+--       push $
+--         chooseOne
+--           iid
+--           [ targetLabel lid $ windows' : resolve (EnemySpawn Nothing lid eid)
+--           | (windows', lid) <- windowPairs
+--           ]
 
 sourceCanDamageEnemy :: (HasGame m) => EnemyId -> Source -> m Bool
 sourceCanDamageEnemy eid source = do

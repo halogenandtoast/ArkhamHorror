@@ -17,6 +17,24 @@ data SpawnMethod
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+class IsSpawnMethod a where
+  toSpawnMethod :: a -> SpawnMethod
+
+instance IsSpawnMethod SpawnMethod where
+  toSpawnMethod = id
+
+instance IsSpawnMethod InvestigatorId where
+  toSpawnMethod = SpawnEngagedWith
+
+instance IsSpawnMethod LocationId where
+  toSpawnMethod = SpawnAtLocation
+
+instance IsSpawnMethod Placement where
+  toSpawnMethod = SpawnWithPlacement
+
+instance IsSpawnMethod LocationMatcher where
+  toSpawnMethod = SpawnAtLocationMatching
+
 data SpawnEnemy msg = MkSpawnEnemy
   { spawnCard :: Card
   , spawnEnemyId :: EnemyId

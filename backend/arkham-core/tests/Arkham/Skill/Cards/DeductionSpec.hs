@@ -20,7 +20,7 @@ spec = describe "Deduction" $ do
         investigator
         [ SetTokens [Zero]
         , moveTo investigator location
-        , addToHand investigator (PlayerCard deduction)
+        , addToHand (toId investigator) (PlayerCard deduction)
         , investigate investigator location
         ]
         (entitiesL . locationsL %~ insertEntity location)

@@ -49,7 +49,7 @@ spec = do
       gameTestWithLogger
           logger
           investigator
-          [ addToHand investigator darkMemory
+          [ addToHand (toId investigator) darkMemory
           , chooseEndTurn investigator
           ]
           id

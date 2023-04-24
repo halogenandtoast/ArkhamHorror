@@ -46,8 +46,7 @@ instance HasAbilities LolaHayes where
       $ restrictedAbility attrs 2 Self (FastAbility Free)
     ]
 
-switchRole
-  :: (MonadIO m, HasQueue Message m) => InvestigatorAttrs -> m ()
+switchRole :: HasQueue Message m => InvestigatorAttrs -> m ()
 switchRole attrs = push $ chooseOne
   (toId attrs)
   [ Label (tshow role) [SetRole (toId attrs) role]

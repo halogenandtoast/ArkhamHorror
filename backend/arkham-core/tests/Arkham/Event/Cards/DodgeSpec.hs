@@ -25,7 +25,7 @@ spec = do
       gameTestWithLogger
           logger
           investigator
-          [ addToHand investigator dodge
+          [ addToHand (toId investigator) dodge
           , enemySpawn location enemy
           , moveTo investigator location
           , enemyAttack investigator enemy

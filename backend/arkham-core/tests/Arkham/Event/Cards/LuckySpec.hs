@@ -20,7 +20,7 @@ spec = describe "Lucky!" $ do
         logger
         investigator
         [ SetTokens [MinusOne]
-        , addToHand investigator (PlayerCard lucky)
+        , addToHand (toId investigator) (PlayerCard lucky)
         , beginSkillTest investigator SkillIntellect 2
         ]
         id
@@ -47,7 +47,7 @@ spec = describe "Lucky!" $ do
         logger
         investigator
         [ SetTokens [AutoFail]
-        , addToHand investigator (PlayerCard lucky)
+        , addToHand (toId investigator) (PlayerCard lucky)
         , beginSkillTest investigator SkillIntellect 2
         ]
         id

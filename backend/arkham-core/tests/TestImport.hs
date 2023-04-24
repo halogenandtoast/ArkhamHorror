@@ -442,7 +442,6 @@ newGame investigator = do
     , gameInitialSeed = seed
     , gameMode = That scenario'
     , gamePlayerCount = 1
-    , gameEnemiesInVoid = mempty
     , gameActiveInvestigatorId = investigatorId
     , gameLeadInvestigatorId = investigatorId
     , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
@@ -474,6 +473,7 @@ newGame investigator = do
     , gameActiveCost = mempty
     , gameActiveAbilities = mempty
     , gameInSetup = False
+    , gameIgnoreCanModifiers = False
     , gameEnemyEvading = Nothing
     }
   where investigatorId = toId investigator

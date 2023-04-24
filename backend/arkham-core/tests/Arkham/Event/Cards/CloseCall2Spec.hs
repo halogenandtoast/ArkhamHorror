@@ -19,7 +19,7 @@ spec = describe "Close Call (2)" $ do
     location <- testLocation id
     gameTest
         investigator
-        [ addToHand investigator closeCall2
+        [ addToHand (toId investigator) closeCall2
         , placedLocation location
         , enemySpawn location enemy
         , moveTo investigator location
@@ -50,7 +50,7 @@ spec = describe "Close Call (2)" $ do
         investigator
         [ moveTo investigator location
         , enemySpawn location enemy
-        , addToHand investigator closeCall2
+        , addToHand (toId investigator) closeCall2
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         ( (entitiesL . locationsL %~ insertEntity location)
@@ -71,7 +71,7 @@ spec = describe "Close Call (2)" $ do
         [ SetBearer (toTarget enemy) (toId investigator)
         , moveTo investigator location
         , enemySpawn location enemy
-        , addToHand investigator closeCall2
+        , addToHand (toId investigator) closeCall2
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         ( (entitiesL . locationsL %~ insertEntity location)

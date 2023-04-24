@@ -160,5 +160,5 @@ isMatch
   -> m Bool
 isMatch a m = member a <$> select m
 
-class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a where
+class (Ord (QueryElement a), Eq (QueryElement a)) => Query a where
   select :: (HasCallStack, HasGame m) => a -> m (Set (QueryElement a))

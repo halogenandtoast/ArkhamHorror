@@ -6,70 +6,70 @@ data AbilityMatcher
 
 instance ToJSON AbilityMatcher
 instance FromJSON AbilityMatcher
-instance Hashable AbilityMatcher
 instance Show AbilityMatcher
 instance Eq AbilityMatcher
+instance Ord AbilityMatcher
 
 data AssetMatcher
 
 instance ToJSON AssetMatcher
 instance FromJSON AssetMatcher
-instance Hashable AssetMatcher
 instance Show AssetMatcher
 instance Eq AssetMatcher
+instance Ord AssetMatcher
 
 data LocationMatcher
 
 instance ToJSON LocationMatcher
 instance FromJSON LocationMatcher
-instance Hashable LocationMatcher
 instance Show LocationMatcher
 instance Eq LocationMatcher
+instance Ord LocationMatcher
 
 data CardMatcher
 
 instance ToJSON CardMatcher
 instance FromJSON CardMatcher
-instance Hashable CardMatcher
 instance Show CardMatcher
 instance Eq CardMatcher
+instance Ord CardMatcher
 
 data InvestigatorMatcher
 
 instance ToJSON InvestigatorMatcher
 instance FromJSON InvestigatorMatcher
-instance Hashable InvestigatorMatcher
 instance Show InvestigatorMatcher
 instance Eq InvestigatorMatcher
+instance Ord InvestigatorMatcher
 
 data SourceMatcher
 
 instance ToJSON SourceMatcher
 instance FromJSON SourceMatcher
-instance Hashable SourceMatcher
 instance Show SourceMatcher
 instance Eq SourceMatcher
+instance Ord SourceMatcher
 
 data EnemyMatcher
 
 instance ToJSON EnemyMatcher
 instance FromJSON EnemyMatcher
-instance Hashable EnemyMatcher
 instance Show EnemyMatcher
 instance Eq EnemyMatcher
+instance Ord EnemyMatcher
 
 data TokenMatcher
 
 instance ToJSON TokenMatcher
 instance FromJSON TokenMatcher
-instance Hashable TokenMatcher
 instance Show TokenMatcher
 instance Eq TokenMatcher
+instance Ord TokenMatcher
 
 data PreyMatcher
 
 instance ToJSON PreyMatcher
 instance FromJSON PreyMatcher
-instance Hashable PreyMatcher
 instance Show PreyMatcher
 instance Eq PreyMatcher
+instance Ord PreyMatcher

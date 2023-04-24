@@ -1,9 +1,11 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.CommitRestriction where
 
 import Arkham.Prelude
 
 import Arkham.Matcher
 import Arkham.Action (Action)
+import Data.Aeson.TH
 
 data CommitRestriction
   = MaxOnePerTest
@@ -16,5 +18,6 @@ data CommitRestriction
   | CommittableTreachery
   | OnlyCardCommittedToTest
   | MustBeCommittedToYourTest
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
+
+$(deriveJSON defaultOptions ''CommitRestriction)

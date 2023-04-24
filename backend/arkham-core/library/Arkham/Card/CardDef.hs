@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Card.CardDef where
 
@@ -23,18 +24,28 @@ import Arkham.Name
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Trait
+import Data.Aeson.TH
+
+data DeckRestriction = Signature InvestigatorId
+  deriving stock (Show, Eq, Ord)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data EventChoicesRepeatable = EventChoicesRepeatable | EventChoicesNotRepeatable
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data EventChoice = EventChooseN Int EventChoicesRepeatable
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
+
+data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
+  deriving stock (Show, Eq, Ord)
+
+$(deriveJSON defaultOptions ''DeckRestriction)
+$(deriveJSON defaultOptions ''AttackOfOpportunityModifier)
+$(deriveJSON defaultOptions ''EventChoicesRepeatable)
+$(deriveJSON defaultOptions ''EventChoice)
+$(deriveJSON defaultOptions ''CardLimit)
 
 toCardCodePairs :: CardDef -> [(CardCode, CardDef)]
 toCardCodePairs c = (toCardCode c, c) : map
@@ -88,22 +99,13 @@ data CardDef = CardDef
   , cdCanReplace :: Bool
   , cdDeckRestrictions :: [DeckRestriction]
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
-
-data DeckRestriction = Signature InvestigatorId
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable, ToJSON, FromJSON)
+  deriving stock (Show, Eq, Ord)
 
 isSignature :: CardDef -> Bool
 isSignature = any isSignatureDeckRestriction . cdDeckRestrictions
   where
     isSignatureDeckRestriction = \case
       Signature _ -> True
-
-data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable, FromJSON, ToJSON)
 
 instance Named CardDef where
   toName = cdName
@@ -116,13 +118,6 @@ keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
 
 cardTraitsL :: Lens' CardDef (Set Trait)
 cardTraitsL = lens cdCardTraits $ \m x -> m { cdCardTraits = x }
-
-instance ToJSON CardDef where
-  toJSON = genericToJSON $ aesonOptions $ Just "cd"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "cd"
-
-instance FromJSON CardDef where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "cd"
 
 class GetCardDef m a where
   getCardDef :: a -> m CardDef
@@ -155,3 +150,5 @@ instance HasCardCode CardDef where
   toCardCode = cdCardCode
 
 newtype Unrevealed a = Unrevealed a
+
+$(deriveJSON (aesonOptions $ Just "cd") ''CardDef)

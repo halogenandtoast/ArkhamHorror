@@ -48,7 +48,7 @@ investigatorsNearestToEnemy eid = do
   let
     minDistance :: Int =
       fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-  pure . (Distance minDistance, ) . hashNub . map fst $ filter
+  pure . (Distance minDistance, ) . nub . map fst $ filter
     ((== minDistance) . unDistance . snd)
     mappings
 

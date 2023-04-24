@@ -1,7 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Zone where
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
 import Data.Aeson.Types
 
 data OutOfPlayZone
@@ -9,8 +11,7 @@ data OutOfPlayZone
   | PursuitZone
   | SetAsideZone
   | VictoryDisplayZone
-  deriving stock (Show, Eq, Generic, Enum, Bounded)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Show, Eq, Ord, Enum, Bounded)
 
 data Zone
   = FromHand
@@ -21,15 +22,13 @@ data Zone
   | FromPlay
   | FromOutOfPlay OutOfPlayZone
   | FromCollection
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data ScenarioZone
   = FromEncounterDeck
   | FromEncounterDiscard
   | FromOutOfPlayArea OutOfPlayZone
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 pattern FromVoid :: ScenarioZone
 pattern FromVoid <- FromOutOfPlayArea VoidZone where
@@ -37,6 +36,10 @@ pattern FromVoid <- FromOutOfPlayArea VoidZone where
 
 allOutOfPlayZones :: [ScenarioZone]
 allOutOfPlayZones = map FromOutOfPlayArea [minBound .. maxBound]
+
+$(deriveJSON defaultOptions ''OutOfPlayZone)
+$(deriveJSON defaultOptions ''Zone)
+$(deriveJSON defaultOptions ''ScenarioZone)
 
 instance ToJSONKey Zone where
   toJSONKey = toJSONKeyText textKey
@@ -62,3 +65,6 @@ instance FromJSONKey Zone where
     "FromVictoryDisplay" -> FromOutOfPlay VictoryDisplayZone
     "FromCollection" -> FromCollection
     other -> error ("Unhandled FromJSONKey for zone" <> show other)
+
+instance ToJSONKey OutOfPlayZone
+instance FromJSONKey OutOfPlayZone

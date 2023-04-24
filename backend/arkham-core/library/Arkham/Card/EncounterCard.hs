@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Card.EncounterCard where
 
 import Arkham.Prelude
@@ -8,6 +9,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.Id
 import Arkham.Name
+import Data.Aeson.TH
 
 newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCard :: EncounterCard }
 
@@ -17,8 +19,7 @@ data EncounterCard = MkEncounterCard
   , ecOriginalCardCode :: CardCode
   , ecIsFlipped :: Maybe Bool
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+  deriving stock (Show, Eq, Ord)
 
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode
@@ -35,13 +36,6 @@ instance Named EncounterCard where
 instance HasOriginalCardCode EncounterCard where
   toOriginalCardCode = ecOriginalCardCode
 
-instance ToJSON EncounterCard where
-  toJSON = genericToJSON $ aesonOptions $ Just "ec"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "ec"
-
-instance FromJSON EncounterCard where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
-
 lookupEncounterCard :: CardDef -> CardId -> EncounterCard
 lookupEncounterCard cardDef cardId = MkEncounterCard
   { ecId = cardId
@@ -50,3 +44,5 @@ lookupEncounterCard cardDef cardId = MkEncounterCard
   , ecIsFlipped =
     Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
   }
+
+$(deriveJSON (aesonOptions $ Just "ec") ''EncounterCard)

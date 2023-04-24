@@ -1,11 +1,13 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.ScenarioLogKey where
 
 import Arkham.Prelude hiding (toLower)
 
-import Data.Char (isUpper, toLower)
 import Arkham.Id
 import Arkham.Name
 import Arkham.Classes.GameLogger
+import Data.Aeson.TH
+import Data.Char (isUpper, toLower)
 
 data ScenarioLogKey
   = HadADrink (Labeled InvestigatorId)
@@ -56,12 +58,10 @@ data ScenarioLogKey
   | CollectedAStrangeLiquid
   -- ^ The Depths of Yoth
   | MeddledWithThePast (Labeled InvestigatorId)
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+  deriving stock (Eq, Show, Ord)
 
 data ScenarioCountKey = CurrentDepth | PlaceholderCountKey
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+  deriving stock (Eq, Show, Ord)
 
 instance ToGameLoggerFormat ScenarioLogKey where
   format = \case
@@ -79,3 +79,11 @@ instance ToGameLoggerFormat ScenarioLogKey where
       go' [] = []
       go' (x:xs) | isUpper x = ' ' : toLower x : go' xs
       go' (x:xs) = x : go' xs
+
+$(deriveJSON defaultOptions ''ScenarioLogKey)
+$(deriveJSON defaultOptions ''ScenarioCountKey)
+
+instance ToJSONKey ScenarioLogKey
+instance FromJSONKey ScenarioLogKey
+instance ToJSONKey ScenarioCountKey
+instance FromJSONKey ScenarioCountKey

@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Target (
   module Arkham.Target,
 ) where
@@ -13,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Token
 import Arkham.Trait
+import Data.Aeson.TH
 
 data ForSkillTest = ForSkillTest
 
@@ -55,8 +57,7 @@ data Target
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability
   | BothTarget Target Target
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 class Targetable a where
   toTarget :: a -> Target
@@ -103,3 +104,8 @@ toActionTarget target = target
 toProxyTarget :: Target -> Target
 toProxyTarget (ProxyTarget proxyTarget _) = proxyTarget
 toProxyTarget target = target
+
+$(deriveJSON defaultOptions ''Target)
+
+instance FromJSONKey Target
+instance ToJSONKey Target

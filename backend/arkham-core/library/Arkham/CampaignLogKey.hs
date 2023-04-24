@@ -9,6 +9,7 @@ import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
 import Data.Typeable
+import Data.Text qualified as T
 
 data CampaignLogKey
   = DrivenInsaneInvestigators
@@ -191,9 +192,23 @@ data CampaignLogKey
 
 $(deriveJSON defaultOptions ''CampaignLogKey)
 
+instance ToJSONKey CampaignLogKey
+instance FromJSONKey CampaignLogKey
+
 data Recorded a = Recorded a | CrossedOut a
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Ord, Eq)
+
+instance ToJSON a => ToJSON (Recorded a) where
+  toJSON (Recorded a) = object ["tag" .= String "Recorded", "contents" .= a]
+  toJSON (CrossedOut a) = object ["tag" .= String "CrossedOut", "contents" .= a]
+
+instance FromJSON a => FromJSON (Recorded a) where
+  parseJSON = withObject "Recorded" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "Recorded" -> Recorded <$> o .: "contents"
+      "CrossedOut" -> CrossedOut <$> o .: "contents"
+      _ -> fail $ "Unknown tag: " <> T.unpack tag
 
 recordedCardCodes :: [SomeRecorded] -> [CardCode]
 recordedCardCodes [] = []

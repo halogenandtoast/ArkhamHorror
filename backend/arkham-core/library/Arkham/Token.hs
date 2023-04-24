@@ -1,9 +1,12 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Token where
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
+
 newtype TokenId = TokenId { getTokenId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable, Random)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random)
 
 data TokenModifier
   = PositiveModifier Int
@@ -13,8 +16,7 @@ data TokenModifier
   | AutoFailModifier
   | AutoSuccessModifier
   | NoModifier
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 instance Monoid TokenModifier where
   mempty = NoModifier
@@ -42,8 +44,7 @@ instance Semigroup TokenModifier where
         LT -> NegativeModifier calc
 
 data TokenValue = TokenValue TokenFace TokenModifier
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq)
 
 tokenValue :: TokenValue -> Maybe Int
 tokenValue (TokenValue _ modifier) = tokenModifierToInt modifier
@@ -62,8 +63,7 @@ data Token = Token
   { tokenId :: TokenId
   , tokenFace :: TokenFace
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data TokenFace
   = PlusOne
@@ -82,8 +82,7 @@ data TokenFace
   | ElderThing
   | AutoFail
   | ElderSign
-  deriving stock (Bounded, Enum, Show, Eq, Generic)
-  deriving anyclass (Hashable, ToJSON, FromJSON)
+  deriving stock (Bounded, Enum, Show, Eq, Ord)
 
 isNumberToken :: TokenFace -> Bool
 isNumberToken = \case
@@ -160,3 +159,9 @@ isSymbolToken = \case
   ElderThing -> True
   AutoFail -> True
   ElderSign -> True
+
+$(deriveJSON defaultOptions ''TokenModifier)
+$(deriveJSON defaultOptions ''TokenFace)
+$(deriveJSON defaultOptions ''Token)
+$(deriveJSON defaultOptions ''TokenValue)
+

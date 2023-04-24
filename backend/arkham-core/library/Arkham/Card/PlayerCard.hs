@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Card.PlayerCard where
 
 import Arkham.Prelude
@@ -11,6 +12,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Name
 import Arkham.PlayerCard
+import Data.Aeson.TH
 
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
@@ -19,18 +21,10 @@ data PlayerCard = MkPlayerCard
   , pcOriginalCardCode :: CardCode
   , pcCustomizations :: IntMap Int
   }
-  deriving stock (Show, Generic)
-  deriving anyclass Hashable
+  deriving stock (Show, Ord)
 
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2
-
-instance ToJSON PlayerCard where
-  toJSON = genericToJSON $ aesonOptions $ Just "pc"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "pc"
-
-instance FromJSON PlayerCard where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
 
 instance HasCardCode PlayerCard where
   toCardCode = pcCardCode
@@ -61,3 +55,6 @@ lookupPlayerCard cardDef cardId = MkPlayerCard
   , pcOwner = Nothing
   , pcCustomizations = mempty
   }
+
+$(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)
+

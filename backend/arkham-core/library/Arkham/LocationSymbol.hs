@@ -1,6 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.LocationSymbol where
 
 import Arkham.Prelude
+
+import Data.Aeson.TH
 
 data LocationSymbol
   = Circle
@@ -18,5 +21,6 @@ data LocationSymbol
   | Droplet
   | Trefoil
   | NoSymbol
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Ord, Eq)
+
+$(deriveJSON defaultOptions ''LocationSymbol)

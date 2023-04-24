@@ -62,6 +62,9 @@ deriving stock instance Show (Field Enemy typ)
 instance ToJSON (Field Enemy typ) where
   toJSON = toJSON . show
 
+instance Ord (SomeField Enemy) where
+  compare (SomeField a) (SomeField b) = compare (show a) (show b)
+
 instance FromJSON (SomeField Enemy) where
   parseJSON = withText "Field Enemy" $ \case
     "EnemyEngagedInvestigators" -> pure $ SomeField EnemyEngagedInvestigators
@@ -87,7 +90,7 @@ instance FromJSON (SomeField Enemy) where
 data instance Field (OutOfPlayEntity Enemy) :: Type -> Type where
   OutOfPlayEnemyField :: OutOfPlayZone -> Field Enemy typ -> Field (OutOfPlayEntity Enemy) typ
 
-allEnemyCards :: HashMap CardCode CardDef
+allEnemyCards :: Map CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards
 
 instance IsCard EnemyAttrs where

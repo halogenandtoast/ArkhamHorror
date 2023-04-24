@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Window where
 
 import Arkham.Prelude
@@ -21,17 +22,16 @@ import Arkham.Target ( Target )
 import Arkham.Timing ( Timing )
 import Arkham.Timing qualified as Timing
 import Arkham.Token ( Token )
+import Data.Aeson.TH
 
 data Result b a = Success a | Failure b
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data Window = Window
   { windowTiming :: Timing
   , windowType :: WindowType
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 defaultWindows :: InvestigatorId -> [Window]
 defaultWindows iid =
@@ -175,5 +175,11 @@ data WindowType
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
   -- used to avoid checking a window
   | DoNotCheckWindow
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Ord, Eq)
+
+$(do
+    result <- deriveJSON defaultOptions ''Result
+    windowType <- deriveJSON defaultOptions ''WindowType
+    window <- deriveJSON defaultOptions ''Window
+    pure $ concat [result, windowType, window]
+  )

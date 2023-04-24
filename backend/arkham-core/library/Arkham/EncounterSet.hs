@@ -1,6 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.EncounterSet where
 
 import Arkham.Prelude
+
+import Data.Aeson.TH
 
 data EncounterSet
   = TheGathering
@@ -105,5 +108,6 @@ data EncounterSet
   | CurseOfTheRougarou
   | CarnevaleOfHorrors
   | Test
-  deriving stock (Show, Eq, Generic, Bounded, Enum)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord, Bounded, Enum)
+
+$(deriveJSON defaultOptions ''EncounterSet)

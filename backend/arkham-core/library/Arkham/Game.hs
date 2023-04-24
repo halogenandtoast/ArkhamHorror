@@ -275,7 +275,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: (MonadIO m, MonadReader env m, HasQueue Message m, HasGameRef env)
+  :: (MonadReader env m, HasQueue Message m, HasGameRef env)
   => Investigator
   -> [PlayerCard]
   -> m ()
@@ -2112,7 +2112,7 @@ getTreachery tid =
   where missingTreachery = "Unknown treachery: " <> show tid
 
 getInDiscardEntity
-  :: (id ~ EntityId entity, Hashable id)
+  :: (id ~ EntityId entity, Ord id)
   => Lens' Entities (EntityMap entity)
   -> id
   -> Game
@@ -3035,8 +3035,7 @@ getEvadedEnemy (Window _ (Window.EnemyEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
 
 runMessages
-  :: ( MonadIO m
-     , HasGameRef env
+  :: ( HasGameRef env
      , HasStdGen env
      , HasQueue Message m
      , MonadReader env m

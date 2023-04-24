@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Cost
   ( module Arkham.Cost
   , module X
@@ -21,6 +22,7 @@ import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token ( Token )
+import Data.Aeson.TH
 import Data.Text qualified as T
 
 totalActionCost :: Cost -> Int
@@ -85,8 +87,7 @@ data Payment
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq, Ord)
 
 data Cost
   = ActionCost Int
@@ -134,12 +135,10 @@ data Cost
   | SealTokenCost Token -- internal to track sealed token
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data DynamicUseCostValue = DrawnCardsValue
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 
 displayCostType :: Cost -> Text
@@ -263,11 +262,15 @@ data CostZone
   = FromHandOf InvestigatorMatcher
   | FromPlayAreaOf InvestigatorMatcher
   | CostZones [CostZone]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 instance Semigroup CostZone where
   CostZones xs <> CostZones ys = CostZones (xs <> ys)
   CostZones xs <> y = CostZones (xs <> [y])
   x <> CostZones ys = CostZones (x : ys)
   x <> y = CostZones [x, y]
+
+$(deriveJSON defaultOptions ''CostZone)
+$(deriveJSON defaultOptions ''DynamicUseCostValue)
+$(deriveJSON defaultOptions ''Cost)
+$(deriveJSON defaultOptions ''Payment)

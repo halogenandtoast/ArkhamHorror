@@ -1,9 +1,11 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.DamageEffect where
 
 import Arkham.Prelude
 
 import Arkham.Classes.Entity.Source
 import Arkham.Source
+import Data.Aeson.TH
 
 data DamageAssignment = DamageAssignment
   { damageAssignmentSource :: Source
@@ -12,8 +14,7 @@ data DamageAssignment = DamageAssignment
   , damageAssignmentDirect :: Bool
   , damageAssignmentDelayed :: Bool
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq, Ord)
 
 attack :: Sourceable a => a -> Int -> DamageAssignment
 attack a n = DamageAssignment
@@ -52,5 +53,7 @@ data DamageEffect
   = AttackDamageEffect
   | NonAttackDamageEffect
   | StoryCardDamageEffect
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Eq, Show, Ord)
+
+$(deriveJSON defaultOptions ''DamageEffect)
+$(deriveJSON defaultOptions ''DamageAssignment)

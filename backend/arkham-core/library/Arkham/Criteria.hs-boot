@@ -6,6 +6,6 @@ data Criterion
 
 instance Show Criterion
 instance Eq Criterion
+instance Ord Criterion
 instance ToJSON Criterion
 instance FromJSON Criterion
-instance Hashable Criterion

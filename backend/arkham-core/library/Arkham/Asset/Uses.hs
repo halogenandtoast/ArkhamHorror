@@ -1,6 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Asset.Uses where
 
 import Arkham.Prelude
+
+import Data.Aeson.TH
 
 data UseType
   = Ammo
@@ -13,12 +16,12 @@ data UseType
   | Resource
   | Key
   | Lock
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
+
+$(deriveJSON defaultOptions ''UseType)
 
 data Uses n = NoUses | Uses UseType n | UsesWithLimit UseType n n
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable)
+  deriving stock (Show, Eq, Ord)
 
 use :: Uses Int -> Uses Int
 use = useN 1

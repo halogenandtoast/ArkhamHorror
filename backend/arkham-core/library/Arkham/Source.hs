@@ -1,5 +1,6 @@
 {-# LANGUAGE NoFieldSelectors #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Source (
   Source (..),
 ) where
@@ -16,6 +17,7 @@ import Arkham.Matcher
 import Arkham.SkillTest.Type
 import Arkham.Token
 import Arkham.Trait
+import Data.Aeson.TH
 
 data Source
   = AbilitySource Source Int
@@ -57,5 +59,9 @@ data Source
   | ThisCard
   | CardCostSource CardId
   | BothSource Source Source
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Show, Eq, Ord)
+
+$(deriveJSON defaultOptions ''Source)
+
+instance ToJSONKey Source
+instance FromJSONKey Source

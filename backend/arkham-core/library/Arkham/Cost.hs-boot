@@ -6,6 +6,6 @@ data Cost
 
 instance Show Cost
 instance Eq Cost
-instance Hashable Cost
+instance Ord Cost
 instance ToJSON Cost
 instance FromJSON Cost

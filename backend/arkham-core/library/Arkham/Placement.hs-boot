@@ -8,4 +8,4 @@ instance Show Placement
 instance Eq Placement
 instance ToJSON Placement
 instance FromJSON Placement
-instance Hashable Placement
+instance Ord Placement

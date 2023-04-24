@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Card
   ( module Arkham.Card
   , module X
@@ -24,6 +25,7 @@ import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
 import Arkham.Trait
+import Data.Aeson.TH
 import Data.Text qualified as T
 
 lookupCard
@@ -135,14 +137,10 @@ data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
   | VengeanceCard Card
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Ord)
 
 instance Eq Card where
   a == b = toCardId a == toCardId b
-
-instance Hashable Card where
-  hashWithSalt n c = hashWithSalt n (toCardId c)
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
@@ -232,3 +230,5 @@ instance ToGameLoggerFormat Card where
       <> ":\""
       <> tshow (toCardId c)
       <> "\"}"
+
+$(deriveJSON defaultOptions ''Card)

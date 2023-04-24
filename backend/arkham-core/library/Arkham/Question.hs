@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NoFieldSelectors #-}
 module Arkham.Question where
@@ -14,17 +15,16 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Text
 import Arkham.Window
+import Data.Aeson.TH
 
 data Component
   = InvestigatorComponent { investigatorId :: InvestigatorId , tokenType :: GameTokenType }
   | InvestigatorDeckComponent { investigatorId :: InvestigatorId }
   | AssetComponent { assetId :: AssetId, tokenType :: GameTokenType }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data UI msg
   = Label { label :: Text, messages :: [msg] }
@@ -43,8 +43,7 @@ data UI msg
   | TokenGroupChoice { source :: Source, investigatorId :: InvestigatorId, step :: ChaosBagStep }
   | EffectActionButton { tooltip :: Tooltip, effectId :: EffectId, messages :: [msg] }
   | Done { label :: Text }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq, Ord)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
   { investigatorId :: InvestigatorId
@@ -52,20 +51,17 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   , maxBound :: Int
   , message :: msg
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq)
 
 data AmountChoice = AmountChoice
   { label :: Text
   , minBound :: Int
   , maxBound :: Int
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq)
 
 data AmountTarget = MaxAmountTarget Int | TotalAmountTarget Int
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq)
 
 data Question msg
   = ChooseOne { choices :: [UI msg] }
@@ -86,12 +82,10 @@ data Question msg
   | Read { flavorText :: FlavorText, readChoices :: [UI msg] }
   | PickSupplies { pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg] }
   | DropDown { options :: [(Text, msg)] }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq)
 
 targetLabel :: Targetable target => target -> [msg] -> UI msg
 targetLabel = TargetLabel . toTarget
@@ -101,3 +95,12 @@ mapTargetLabel f = map (\c -> targetLabel c (f c))
 
 mapTargetLabelWith :: Targetable target => (c -> target) -> (c -> [msg]) -> [c] -> [UI msg]
 mapTargetLabelWith g f = map (uncurry targetLabel . (g &&& f))
+
+$(deriveJSON defaultOptions ''GameTokenType)
+$(deriveJSON defaultOptions ''Component)
+$(deriveJSON defaultOptions ''PaymentAmountChoice)
+$(deriveJSON defaultOptions ''ChoosePlayerChoice)
+$(deriveJSON defaultOptions ''AmountChoice)
+$(deriveJSON defaultOptions ''AmountTarget)
+$(deriveJSON defaultOptions ''UI)
+$(deriveJSON defaultOptions ''Question)

@@ -11,10 +11,10 @@ import Data.Typeable
 -- kept around if perhaps haskell 9.4 fixes the recompilation hits.
 
 newtype AssetFieldEq = AssetFieldEq (FieldEq Asset)
-  deriving newtype (ToJSON, FromJSON, Show, Eq, Hashable)
+  deriving newtype (ToJSON, FromJSON, Show, Eq)
 
 data FieldEq a where
-  FieldEq :: (fld ~ Field a typ, Hashable typ, Typeable typ, Show fld, Typeable a, ToJSON typ, ToJSON fld, Show typ) => fld -> typ -> FieldEq a
+  FieldEq :: (fld ~ Field a typ, Eq typ, Typeable typ, Show fld, Typeable a, ToJSON typ, ToJSON fld, Show typ) => fld -> typ -> FieldEq a
 
 deriving stock instance Show (FieldEq a)
 
@@ -49,6 +49,3 @@ instance Typeable a => FromJSON (FieldEq a) where
                 v :: typ <- o .: "value"
                 pure $ FieldEq fld v
       _ -> error "unhandled entity"
-
-instance Hashable (FieldEq a) where
-  hashWithSalt s (FieldEq fld v) = s + (hash fld) + (hash v)

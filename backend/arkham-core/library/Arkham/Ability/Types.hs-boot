@@ -8,4 +8,4 @@ instance Show Ability
 instance Eq Ability
 instance FromJSON Ability
 instance ToJSON Ability
-instance Hashable Ability
+instance Ord Ability

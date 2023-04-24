@@ -32,7 +32,6 @@ import Control.Monad.Random.Class ( getRandom )
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.Map.Strict qualified as Map
-import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
 import Data.Traversable ( for )

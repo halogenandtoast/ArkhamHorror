@@ -9,4 +9,4 @@ instance ToJSON FieldCost
 instance FromJSON FieldCost
 instance Show FieldCost
 instance Eq FieldCost
-instance Hashable FieldCost
+instance Ord FieldCost

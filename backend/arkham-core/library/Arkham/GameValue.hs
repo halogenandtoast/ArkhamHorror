@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.GameValue
   ( GameValue(..)
   , fromGameValue
@@ -6,13 +7,14 @@ module Arkham.GameValue
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
+
 data GameValue
   = Static Int
   | PerPlayer Int
   | StaticWithPerPlayer Int Int
   | ByPlayerCount Int Int Int Int
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 class IsGameValue a where
   toGameValue :: a -> GameValue
@@ -33,3 +35,5 @@ fromGameValue (ByPlayerCount n1 n2 n3 n4) pc = case pc of
   3 -> n3
   4 -> n4
   _ -> error "Unhandled by player count value"
+
+$(deriveJSON defaultOptions ''GameValue)

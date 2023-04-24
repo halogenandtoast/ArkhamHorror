@@ -49,7 +49,6 @@ library:
     - these
     - these-lens
     - transformers
-    - unordered-containers
     - uuid
 
 tests:

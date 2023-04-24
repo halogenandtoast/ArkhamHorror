@@ -1,6 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Phase where
 
 import Arkham.Prelude
+
+import Data.Aeson.TH
 
 data Phase
   = MythosPhase
@@ -9,8 +12,7 @@ data Phase
   | UpkeepPhase
   | ResolutionPhase
   | CampaignPhase
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Eq, Show, Ord)
 
 data MythosPhaseStep
   = MythosPhaseBeginsStep
@@ -18,5 +20,7 @@ data MythosPhaseStep
   | CheckDoomThresholdStep
   | EachInvestigatorDrawsEncounterCardStep
   | MythosPhaseEndsStep
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Eq, Show, Ord)
+
+$(deriveJSON defaultOptions ''Phase)
+$(deriveJSON defaultOptions ''MythosPhaseStep)

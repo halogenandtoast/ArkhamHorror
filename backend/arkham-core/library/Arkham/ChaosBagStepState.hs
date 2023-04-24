@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoFieldSelectors #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 module Arkham.ChaosBagStepState
@@ -11,18 +12,17 @@ import Arkham.Prelude
 import Arkham.Token
 import Arkham.Matcher
 import Arkham.Source
+import Data.Aeson.TH
 
 data ChaosBagStepState
   = Resolved { tokens :: [Token] }
   | Decided { step :: ChaosBagStep }
   | Undecided { step :: ChaosBagStep }
   | Deciding { step :: ChaosBagStep }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq, Ord)
 
 data TokenStrategy = ResolveChoice | CancelChoice | IgnoreChoice
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq, Ord)
 
 data ChaosBagStep
   = Draw
@@ -46,5 +46,11 @@ data ChaosBagStep
     , tokenGroups :: [[Token]]
     , tokenMatcherChoices :: [(TokenMatcher, (Text, ChaosBagStep))]
     }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq, Ord)
+
+$(do
+    tokenStrategy <- deriveJSON defaultOptions ''TokenStrategy
+    chaosBagStep <- deriveJSON defaultOptions ''ChaosBagStep
+    chaosBagStepState <- deriveJSON defaultOptions ''ChaosBagStepState
+    pure $ concat [tokenStrategy, chaosBagStep, chaosBagStepState]
+  )

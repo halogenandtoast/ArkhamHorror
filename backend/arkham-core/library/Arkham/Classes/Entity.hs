@@ -34,7 +34,7 @@ instance Targetable a => Targetable (a `With` b) where
   isTarget (a `With` _) = isTarget a
 
 insertEntity
-  :: (Entity v, EntityId v ~ k, Hashable k) => v -> Map k v -> Map k v
+  :: (Entity v, EntityId v ~ k, Ord k) => v -> Map k v -> Map k v
 insertEntity a = insertMap (toId a) a
 
 instance Targetable Token where

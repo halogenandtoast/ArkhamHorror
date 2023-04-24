@@ -233,20 +233,20 @@ data ModifierType
   | MetaModifier Value
   | CanModify ModifierType
   | NoSurge
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Ord)
 
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType
   , modifierActiveDuringSetup :: Bool
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Ord)
 
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
   | EnemyAction Action EnemyMatcher
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Ord)
 
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m { modifierActiveDuringSetup = True }

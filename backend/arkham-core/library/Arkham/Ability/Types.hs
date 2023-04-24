@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Ability.Types where
 
 import Arkham.Prelude
@@ -11,6 +12,7 @@ import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Data.Aeson.TH
 
 data Ability = Ability
   { abilitySource :: Source
@@ -24,8 +26,7 @@ data Ability = Ability
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
   }
-  deriving stock (Show, Generic)
-  deriving anyclass (Hashable, ToJSONKey, FromJSONKey)
+  deriving stock (Show, Ord)
 
 data AbilityMetadata
   = IntMetadata Int
@@ -34,19 +35,11 @@ data AbilityMetadata
   | EncounterCardMetadata EncounterCard
   | SkillChoiceMetadata SkillType
   | NoAbilityMetadata
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Eq, Show, Ord)
 
 instance Eq Ability where
   a == b =
     (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
-
-instance ToJSON Ability where
-  toJSON = genericToJSON $ aesonOptions $ Just "ability"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "ability"
-
-instance FromJSON Ability where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "ability"
 
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
@@ -64,3 +57,6 @@ abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity
     $ \m x -> m { abilityDoesNotProvokeAttacksOfOpportunity = x }
+
+$(deriveJSON defaultOptions ''AbilityMetadata)
+$(deriveJSON (aesonOptions $ Just "ability") ''Ability)

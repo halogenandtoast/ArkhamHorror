@@ -7,5 +7,5 @@ data Target
 instance ToJSON Target
 instance FromJSON Target
 instance Eq Target
+instance Ord Target
 instance Show Target
-instance Hashable Target

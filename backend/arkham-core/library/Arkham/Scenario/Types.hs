@@ -24,6 +24,7 @@ import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
+import Data.Aeson.TH
 import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasModifiersFor a, RunMessage a, HasTokenValue a, Entity a, EntityId a ~ ScenarioId, EntityAttrs a ~ ScenarioAttrs) => IsScenario a
@@ -84,13 +85,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
-  deriving stock (Show, Eq, Generic)
-
-instance ToJSON ScenarioAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "scenario"
-
-instance FromJSON ScenarioAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
+  deriving stock (Show, Eq)
 
 scenarioWith
   :: (ScenarioAttrs -> a)
@@ -196,3 +191,4 @@ scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   _ -> error "Not able to handle multiple act stacks yet"
 
 makeLensesWith suffixedFields ''ScenarioAttrs
+$(deriveJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)

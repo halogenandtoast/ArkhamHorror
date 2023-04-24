@@ -1,9 +1,11 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Ability.Limit where
 
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
 import Arkham.Trait
+import Data.Aeson.TH
 
 data CanIgnoreAbilityLimit = CanIgnoreAbilityLimit | CanNotIgnoreAbilityLimit
   deriving stock Eq
@@ -14,8 +16,7 @@ data AbilityLimit
   | GroupLimit AbilityLimitType Int
   | PerCopyLimit CardDef AbilityLimitType Int
   | NoLimit
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 abilityLimitType :: AbilityLimit -> Maybe AbilityLimitType
 abilityLimitType (PerInvestigatorLimit t _) = Just t
@@ -41,5 +42,7 @@ data AbilityLimitType
   | PerSearch Trait
   | PerDepthLevel
   | PerCampaign
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
+
+$(deriveJSON defaultOptions ''AbilityLimitType)
+$(deriveJSON defaultOptions ''AbilityLimit)

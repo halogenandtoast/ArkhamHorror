@@ -1,6 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Scenario.Deck where
 
 import Arkham.Prelude
+
+import Data.Aeson.TH
 
 data ScenarioDeckKey
   = CultistDeck -- The Midnight Masks
@@ -11,5 +14,9 @@ data ScenarioDeckKey
   | CatacombsDeck -- The Pallid Mask
   | ExplorationDeck -- The Untamed Wilds
   | UnknownPlacesDeck -- The Secret Name
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)
+  deriving stock (Show, Ord, Eq)
+
+$(deriveJSON defaultOptions ''ScenarioDeckKey)
+
+instance ToJSONKey ScenarioDeckKey
+instance FromJSONKey ScenarioDeckKey

@@ -84,6 +84,7 @@ data instance Field Location :: Type -> Type where
   LocationVengeance :: Field Location (Maybe Int)
 
 deriving stock instance Show (Field Location typ)
+deriving stock instance Ord (Field Location typ)
 
 instance ToJSON (Field Location typ) where
   toJSON = toJSON . show

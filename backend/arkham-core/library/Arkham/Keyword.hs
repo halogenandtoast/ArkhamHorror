@@ -22,9 +22,9 @@ data Keyword
   | Permanent
   | Researched CampaignLogKey
   | Seal TokenMatcher
-  deriving stock (Show, Eq)
-
-$(deriveJSON defaultOptions ''Keyword)
+  deriving stock (Show, Eq, Ord)
 
 class HasKeywords a where
   toKeywords :: a -> Set Keyword
+
+$(deriveJSON defaultOptions ''Keyword)

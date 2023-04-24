@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.SkillTest.Base where
 
 import Arkham.Prelude
@@ -13,13 +14,13 @@ import Arkham.SkillType ( SkillType )
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Data.Aeson.TH
 
 data SkillTestBaseValue
   = SkillBaseValue SkillType
   | HalfResourcesOf InvestigatorId
   | StaticBaseValue Int
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable, ToJSON, FromJSON)
+  deriving stock (Show, Eq, Ord)
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
@@ -40,35 +41,11 @@ data SkillTest = SkillTest
   , skillTestSubscribers :: [Target]
   , skillTestIsRevelation :: Bool
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+  deriving stock (Show, Eq, Ord)
 
 allSkillTestTokens :: SkillTest -> [Token]
 allSkillTestTokens SkillTest {..} =
   skillTestSetAsideTokens <> skillTestRevealedTokens <> skillTestResolvedTokens
-
-instance ToJSON SkillTest where
-  toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
-
-instance FromJSON SkillTest where
-  parseJSON = withObject "SkillTest" $ \o ->
-    SkillTest
-      <$> (o .: "investigator")
-      <*> (o .: "type")
-      <*> (o .: "baseValue")
-      <*> (o .: "difficulty")
-      <*> (o .: "setAsideTokens")
-      <*> (o .: "revealedTokens")
-      <*> (o .: "resolvedTokens")
-      <*> (o .: "valueModifier")
-      <*> (o .: "result")
-      <*> (o .: "committedCards")
-      <*> (o .: "source")
-      <*> (o .: "target")
-      <*> (o .: "action")
-      <*> (o .: "subscribers")
-      <*> (o .:? "isRevelation" .!= False)
 
 instance Targetable SkillTest where
   toTarget _ = SkillTestTarget
@@ -92,8 +69,7 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
   }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Eq, Show, Ord)
 
 initSkillTest
   :: (Sourceable source, Targetable target)
@@ -137,3 +113,8 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestSubscribers = [toTarget iid]
     , skillTestIsRevelation = False
     }
+
+$(deriveJSON defaultOptions ''SkillTestBaseValue)
+$(deriveJSON defaultOptions ''SkillTestResultsData)
+$(deriveJSON (aesonOptions $ Just "skillTest") ''SkillTest)
+

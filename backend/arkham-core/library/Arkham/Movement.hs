@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Movement where
 
 import Arkham.Prelude
@@ -7,6 +8,7 @@ import Arkham.Source
 import Arkham.Matcher
 import Arkham.Target
 import Arkham.Id
+import Data.Aeson.TH
 
 data Movement = Movement
   { moveSource :: Source
@@ -15,19 +17,16 @@ data Movement = Movement
   , moveMeans :: MovementMeans
   , moveCancelable :: Bool
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 data MovementMeans = Direct
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 uncancellableMove :: Movement -> Movement
 uncancellableMove m = m { moveCancelable = False }
 
 data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq)
 
 move :: (Targetable target, Sourceable source) => source -> target -> LocationId -> Movement
 move (toSource -> source) (toTarget -> target) lid = Movement
@@ -54,3 +53,7 @@ destinationToLocationMatcher :: Destination -> LocationMatcher
 destinationToLocationMatcher = \case
   ToLocation lid -> LocationWithId lid
   ToLocationMatching matcher -> matcher
+
+$(deriveJSON defaultOptions ''MovementMeans)
+$(deriveJSON defaultOptions ''Destination)
+$(deriveJSON defaultOptions ''Movement)

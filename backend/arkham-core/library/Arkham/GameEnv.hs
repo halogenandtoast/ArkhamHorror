@@ -102,7 +102,6 @@ runWithEnv
      , HasStdGen env
      , HasGameLogger env
      , MonadReader env m
-     , MonadIO m
      )
   => GameT a -> m a
 runWithEnv body = do

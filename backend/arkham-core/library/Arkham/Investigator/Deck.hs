@@ -1,13 +1,14 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Investigator.Deck where
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
+
 data InvestigatorDeckKey = HunchDeck
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (Hashable, ToJSONKey, FromJSONKey)
+  deriving stock (Show, Ord, Eq)
 
-instance ToJSON InvestigatorDeckKey where
-  toJSON = genericToJSON $ defaultOptions { tagSingleConstructors = True }
+$(deriveJSON (defaultOptions { tagSingleConstructors = True}) ''InvestigatorDeckKey)
 
-instance FromJSON InvestigatorDeckKey where
-  parseJSON = genericParseJSON $ defaultOptions { tagSingleConstructors = True }
+instance ToJSONKey InvestigatorDeckKey
+instance FromJSONKey InvestigatorDeckKey

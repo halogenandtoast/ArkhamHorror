@@ -10,7 +10,7 @@ data Card
 
 instance Show Card
 instance Eq Card
-instance Hashable Card
+instance Ord Card
 instance ToJSON Card
 instance FromJSON Card
 

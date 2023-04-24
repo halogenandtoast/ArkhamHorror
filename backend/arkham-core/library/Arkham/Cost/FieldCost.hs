@@ -31,8 +31,8 @@ data FieldCost where
     , Show fld
     , ToJSON matcher
     , ToJSON fld
-    , Hashable fld
-    , Hashable matcher
+    , Ord fld
+    , Ord matcher
     , FromJSON (SomeField rec)
     , Projection rec
     , Query matcher
@@ -70,5 +70,6 @@ instance FromJSON FieldCost where
               _ -> error "Must be an int"
       _ -> error "Unhandled"
 
-instance Hashable FieldCost where
-  hashWithSalt s (FieldCost x1 x2) = s + (hash x1) + (hash x2)
+-- we do not care about this instance really
+instance Ord FieldCost where
+  compare f1 f2 = compare (show f1) (show f2)

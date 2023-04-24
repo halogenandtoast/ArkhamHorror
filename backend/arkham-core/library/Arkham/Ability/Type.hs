@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NoFieldSelectors #-}
 module Arkham.Ability.Type where
@@ -9,6 +10,7 @@ import Arkham.Cost
 import Arkham.Criteria (Criterion)
 import Arkham.Matcher
 import Arkham.SkillType
+import Data.Aeson.TH
 
 data AbilityType
   = FastAbility { cost :: Cost }
@@ -23,5 +25,6 @@ data AbilityType
   | Objective { abilityType :: AbilityType }
   | Haunted
   | ForcedWhen { criteria :: Criterion, abilityType :: AbilityType }
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Ord, Eq)
+
+$(deriveJSON defaultOptions ''AbilityType)

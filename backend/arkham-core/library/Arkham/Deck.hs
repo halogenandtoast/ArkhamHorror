@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Deck where
 
 import Arkham.Prelude
@@ -5,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Id
 import Arkham.Scenario.Deck
 import Arkham.Investigator.Deck
+import Data.Aeson.TH
 
 data DeckSignifier
   = InvestigatorDeck InvestigatorId
@@ -13,8 +15,7 @@ data DeckSignifier
   | EncounterDiscard
   | ScenarioDeckByKey ScenarioDeckKey
   | InvestigatorDeckByKey InvestigatorId InvestigatorDeckKey
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 class IsDeck a where
   toDeck :: a -> DeckSignifier
@@ -30,3 +31,5 @@ instance IsDeck ScenarioDeckKey where
 instance IsDeck DeckSignifier where
   toDeck = id
   {-# INLINE toDeck #-}
+
+$(deriveJSON defaultOptions ''DeckSignifier)

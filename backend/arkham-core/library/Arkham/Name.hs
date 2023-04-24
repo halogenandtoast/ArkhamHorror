@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Name
   ( module Arkham.Name
   ) where
@@ -7,23 +8,13 @@ import Arkham.Prelude
 import Arkham.Classes.GameLogger
 import Arkham.Json
 import Arkham.Helpers
-
-data Labeled a = Labeled
-  { getLabel :: Name
-  , unLabel :: a
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-labeled :: Named name => name -> a -> Labeled a
-labeled (toName -> name) = Labeled name
+import Data.Aeson.TH
 
 data Name = Name
   { nameTitle :: Text
   , nameSubtitle :: Maybe Text
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 class Named a where
   toName :: a -> Name
@@ -56,15 +47,28 @@ subtitled = mkFullName
 (<:>) :: Text -> Text -> Name
 (<:>) = subtitled
 
-instance ToJSON Name where
-  toJSON = genericToJSON $ aesonOptions $ Just "name"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "name"
-
-instance FromJSON Name where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "name"
-
 nameToLabel :: Named a => a -> Text
 nameToLabel = pack . toLabel . replaceNonLetters . unpack . toTitle
 
 instance ToGameLoggerFormat Name where
   format = display
+
+$(deriveJSON (aesonOptions $ Just "name") ''Name)
+
+data Labeled a = Labeled
+  { getLabel :: Name
+  , unLabel :: a
+  }
+  deriving stock (Show, Eq, Ord)
+
+instance ToJSON a => ToJSON (Labeled a) where
+  toJSON l = object ["getLabel" .= getLabel l, "unLabel" .= unLabel l]
+
+instance FromJSON a => FromJSON (Labeled a) where
+  parseJSON = withObject "Labeled" $ \o -> Labeled
+    <$> o .: "getLabel"
+    <*> o .: "unLabel"
+
+labeled :: Named name => name -> a -> Labeled a
+labeled (toName -> name) = Labeled name
+

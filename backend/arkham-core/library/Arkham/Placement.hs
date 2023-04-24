@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Placement where
 
 import Arkham.Prelude
@@ -5,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Id
 import Arkham.Target
 import Arkham.Zone
+import Data.Aeson.TH
 
 data Placement
   = AtLocation LocationId
@@ -20,8 +22,7 @@ data Placement
   | Unplaced
   | Limbo
   | OutOfPlay OutOfPlayZone
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
@@ -50,5 +51,7 @@ data TreacheryPlacement
   | TreacheryInHandOf InvestigatorId
   | TreacheryNextToAct
   | TreacheryLimbo
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON , FromJSON)
+  deriving stock (Show, Eq)
+
+$(deriveJSON defaultOptions ''Placement)
+$(deriveJSON defaultOptions ''TreacheryPlacement)

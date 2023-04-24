@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Draw.Types where
 
 import Arkham.Prelude
@@ -7,17 +8,16 @@ import Arkham.Classes.Entity
 import Arkham.Deck
 import Arkham.Id
 import Arkham.Source
+import Data.Aeson.TH
 
 data CardDrawRules = ShuffleBackInEachWeakness
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 data CardDrawState
   = UnresolvedCardDraw
   | InProgress [Card]
   | ResolvedCardDraw [Card]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq, Ord)
 
 data CardDraw = CardDraw
   { cardDrawId :: CardDrawId
@@ -29,8 +29,7 @@ data CardDraw = CardDraw
   , cardDrawAction :: Bool
   , cardDrawRules :: Set CardDrawRules
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq, Ord)
 
 drewCard :: Card -> CardDraw -> CardDraw
 drewCard c draw = draw { cardDrawState = updatedState }
@@ -64,3 +63,7 @@ asDrawAction c = c { cardDrawAction = True }
 
 withCardDrawRule :: CardDrawRules -> CardDraw -> CardDraw
 withCardDrawRule r c = c { cardDrawRules = insertSet r (cardDrawRules c) }
+
+$(deriveJSON defaultOptions ''CardDrawRules)
+$(deriveJSON defaultOptions ''CardDrawState)
+$(deriveJSON defaultOptions ''CardDraw)

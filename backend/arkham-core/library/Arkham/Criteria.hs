@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Criteria
   ( module Arkham.Criteria
   , module Arkham.Criteria.Override
@@ -15,10 +16,10 @@ import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait
 import Arkham.Zone
+import Data.Aeson.TH
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 pattern AnyHorrorOnThis :: Criterion
 pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
@@ -130,8 +131,7 @@ data Criterion
   | Never
   | Negate Criterion
   | DuringAction
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 enemyExists :: EnemyMatcher -> Criterion
 enemyExists = EnemyCriteria . EnemyExists
@@ -155,8 +155,7 @@ data EnemyCriterion
   | EnemyExistsAtAttachedLocation EnemyMatcher
   | ThisEnemy EnemyMatcher
   | EnemyMatchesCriteria [EnemyCriterion]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
@@ -166,11 +165,15 @@ instance Semigroup EnemyCriterion where
   x <> y = EnemyMatchesCriteria [x, y]
 
 data UnderZone = UnderActDeck | UnderAgendaDeck | UnderZones [UnderZone]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Show, Eq, Ord)
 
 instance Semigroup UnderZone where
   UnderZones xs <> UnderZones ys = UnderZones $ xs <> ys
   UnderZones xs <> y = UnderZones $ xs <> [y]
   x <> UnderZones ys = UnderZones $ x : ys
   x <> y = UnderZones [x, y]
+
+$(deriveJSON defaultOptions ''DiscardSignifier)
+$(deriveJSON defaultOptions ''UnderZone)
+$(deriveJSON defaultOptions ''EnemyCriterion)
+$(deriveJSON defaultOptions ''Criterion)

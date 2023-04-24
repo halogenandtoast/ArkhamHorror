@@ -2280,6 +2280,5 @@ test-suite spec
     , mtl
     , random
     , these
-    , unordered-containers
     , uuid
   default-language: GHC2021

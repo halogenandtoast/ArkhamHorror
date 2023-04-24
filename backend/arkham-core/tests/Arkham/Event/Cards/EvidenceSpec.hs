@@ -22,7 +22,7 @@ spec = describe
       gameTest
           investigator
           [ SetTokens [Zero]
-          , addToHand investigator (PlayerCard evidence)
+          , addToHand (toId investigator) (PlayerCard evidence)
           , enemySpawn location enemy
           , moveTo investigator location
           ]

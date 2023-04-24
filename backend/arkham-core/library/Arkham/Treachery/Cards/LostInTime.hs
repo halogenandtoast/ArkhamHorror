@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
-import Arkham.Deck
 import Arkham.Discard
 import Arkham.Matcher
 import Arkham.Message hiding ( AssetDamage )

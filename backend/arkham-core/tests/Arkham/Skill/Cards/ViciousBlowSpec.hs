@@ -21,7 +21,7 @@ spec = describe "Vicious Blow" $ do
         [ SetTokens [Zero]
         , enemySpawn location enemy
         , moveTo investigator location
-        , addToHand investigator (PlayerCard viciousBlow)
+        , addToHand (toId investigator) (PlayerCard viciousBlow)
         ]
         ((entitiesL . enemiesL %~ insertEntity enemy)
         . (entitiesL . locationsL %~ insertEntity location)

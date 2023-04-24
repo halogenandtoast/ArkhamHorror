@@ -28,7 +28,7 @@ spec = describe "Oops!" $ do
     gameTest
         investigator
         [ SetTokens [MinusOne]
-        , addToHand investigator (PlayerCard oops)
+        , addToHand (toId investigator) (PlayerCard oops)
         , enemySpawn location enemy
         , enemySpawn location enemy2
         , playAsset investigator rolands38Special
@@ -80,7 +80,7 @@ spec = describe "Oops!" $ do
     gameTest
         investigator
         [ SetTokens [MinusOne]
-        , addToHand investigator (PlayerCard oops)
+        , addToHand (toId investigator) (PlayerCard oops)
         , enemySpawn location enemy
         , enemySpawn location enemy2
         , playAsset investigator fortyOneDerringer
@@ -132,7 +132,7 @@ spec = describe "Oops!" $ do
     gameTest
         investigator
         [ SetTokens [MinusOne]
-        , addToHand investigator (PlayerCard oops)
+        , addToHand (toId investigator) (PlayerCard oops)
         , enemySpawn location enemy
         , enemySpawn location enemy2
         , playAsset investigator shotgun4

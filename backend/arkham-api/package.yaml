@@ -14,7 +14,6 @@ default-extensions:
   - OverloadedStrings
   - RecordWildCards
   - TypeFamilies
-  - StrictData
 
 dependencies:
   - base
@@ -72,7 +71,6 @@ library:
     - time
     - unix
     - unliftio
-    - unordered-containers
     - uri-bytestring
     - uuid
     - wai

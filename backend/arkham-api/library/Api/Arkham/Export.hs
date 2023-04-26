@@ -15,10 +15,10 @@ data ArkhamExport = ArkhamExport
   deriving stock Generic
 
 instance ToJSON ArkhamExport where
-  toJSON = genericToJSON (aesonOptions $ Just "ae")
+  toJSON = genericToJSON $ aesonOptions $ Just "ae"
 
 instance FromJSON ArkhamExport where
-  parseJSON = genericParseJSON (aesonOptions $ Just "ae")
+  parseJSON = genericParseJSON $ aesonOptions $ Just "ae"
 
 data ArkhamGameExportData = ArkhamGameExportData
   { agedName :: Text
@@ -31,10 +31,10 @@ data ArkhamGameExportData = ArkhamGameExportData
   deriving stock Generic
 
 instance ToJSON ArkhamGameExportData where
-  toJSON = genericToJSON (aesonOptions $ Just "aged")
+  toJSON = genericToJSON $ aesonOptions $ Just "aged"
 
 instance FromJSON ArkhamGameExportData where
-  parseJSON = genericParseJSON (aesonOptions $ Just "aged")
+  parseJSON = genericParseJSON $ aesonOptions $ Just "aged"
 
 arkhamGameToExportData :: ArkhamGame -> [ArkhamStep] -> [ArkhamLogEntry] -> ArkhamGameExportData
 arkhamGameToExportData ArkhamGame {..} steps gameLog = ArkhamGameExportData

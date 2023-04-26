@@ -20,7 +20,7 @@ packages:
     hackage: monad-validate-1.2.0.1
 snapshots:
 - completed:
-    sha256: 40a64253dcdb4bf9b79ad1810f364ac0609d799c4a9c14be7c67b546d29f2250
-    size: 608629
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/4/19.yaml
-  original: nightly-2023-04-19
+    sha256: c110d42fae0aff8f393c87e2f52e70c50653554c4a6b942e401f464ea4c08a80
+    size: 609034
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/4/25.yaml
+  original: nightly-2023-04-25

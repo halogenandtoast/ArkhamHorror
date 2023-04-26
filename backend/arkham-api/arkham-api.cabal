@@ -73,7 +73,6 @@ library
       OverloadedStrings
       RecordWildCards
       TypeFamilies
-      StrictData
   build-depends:
       MonadRandom
     , aeson
@@ -113,7 +112,6 @@ library
     , time
     , unix
     , unliftio
-    , unordered-containers
     , uri-bytestring
     , uuid
     , wai
@@ -152,7 +150,6 @@ executable arkham-api
       OverloadedStrings
       RecordWildCards
       TypeFamilies
-      StrictData
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       arkham-api

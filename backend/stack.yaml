@@ -8,6 +8,7 @@ compiler: ghc-9.4.5
 
 ghc-options:
   "$locals":
+    -fwrite-ide-info
     -fhide-source-paths
     -fignore-optim-changes
     -Weverything

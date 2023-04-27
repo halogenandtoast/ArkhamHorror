@@ -2145,6 +2145,8 @@ library
       UndecidableInstances
       ViewPatterns
       StrictData
+  build-tool-depends:
+      cards-discover:cards-discover
   build-depends:
       MonadRandom
     , aeson
@@ -2270,6 +2272,8 @@ test-suite spec
       ViewPatterns
       StrictData
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  build-tool-depends:
+      cards-discover:cards-discover
   build-depends:
       arkham-core
     , base

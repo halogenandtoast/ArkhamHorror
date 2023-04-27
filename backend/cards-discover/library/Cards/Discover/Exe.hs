@@ -1,18 +1,20 @@
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+
 module Cards.Discover.Exe where
 
 import Control.Applicative
+import Control.Monad (filterM, guard)
 import Control.Monad.State
 import Data.Char
-import Data.DList (DList(..))
+import Data.DList (DList (..))
 import Data.DList qualified as DList
 import Data.Foldable (for_)
 import Data.List (groupBy, intercalate, sort, stripPrefix)
 import Data.Maybe
 import Data.String
-import Prelude
 import System.Directory
 import System.FilePath
-import Control.Monad
+import Prelude
 
 newtype Source = Source FilePath
 
@@ -30,9 +32,9 @@ renderLine :: Render -> Render
 renderLine action =
   fromString $ mconcat $ DList.toList $ execState (unRender action) mempty
 
-newtype Render' a = Render { unRender :: State (DList String) a }
-    deriving newtype
-        (Functor, Applicative, Monad)
+newtype Render' a = Render {unRender :: State (DList String) a}
+  deriving newtype
+    (Functor, Applicative, Monad)
 
 type Render = Render' ()
 
@@ -49,12 +51,14 @@ discoverCards (Source src) (Destination dest) cardsDir = do
   let (dir, _) = splitFileName src
   files <- getFilesRecursive $ dir </> cardsDir
   let
-    input = AllModelsFile
-      { amfModuleBase = fromJust $ pathToModule src
-      , amfModuleImports = mapMaybe
-        (pathToModule . ((dir </> cardsDir) </>))
-        files
-      }
+    input =
+      AllModelsFile
+        { amfModuleBase = fromJust $ pathToModule src
+        , amfModuleImports =
+            mapMaybe
+              (pathToModule . ((dir </> cardsDir) </>))
+              files
+        }
     output = renderFile input
 
   writeFile dest output
@@ -64,8 +68,10 @@ getFilesRecursive baseDir = sort <$> go []
  where
   go :: FilePath -> IO [FilePath]
   go dir = do
-    c <- map (dir </>) . filter (`notElem` [".", ".."]) <$> getDirectoryContents
-      (baseDir </> dir)
+    c <-
+      map (dir </>) . filter (`notElem` [".", ".."])
+        <$> getDirectoryContents
+          (baseDir </> dir)
     dirs <- filterM (doesDirectoryExist . (baseDir </>)) c >>= traverse go
     files <- filterM (doesFileExist . (baseDir </>)) c
     pure (files ++ concat dirs)
@@ -107,7 +113,8 @@ mkModulePieces fp = do
     . splitDirectories
     . dropExtension
     $ fp
-  where noDots x = "." /= x && ".." /= x
+ where
+  noDots x = "." /= x && ".." /= x
 
 isLowerFirst :: String -> Bool
 isLowerFirst [] = True
@@ -131,5 +138,5 @@ isValidModuleChar c = isAlphaNum c || c == '_' || c == '\''
 casify :: String -> String
 casify str = intercalate "_" $ groupBy (\a b -> isUpper a && isLower b) str
 
-stripSuffix :: Eq a => [a] -> [a] -> Maybe [a]
+stripSuffix :: (Eq a) => [a] -> [a] -> Maybe [a]
 stripSuffix suffix str = reverse <$> stripPrefix (reverse suffix) (reverse str)

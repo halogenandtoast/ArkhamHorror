@@ -1,0 +1,1061 @@
+2023-04-27T07:21:10.539920Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:21:10.540149Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:21:10.540173Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:21:10.540242Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:21:10.634559Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:21:10.635477Z | Info | Starting server
+2023-04-27T07:21:10.636587Z | Info | Started LSP server in 0.00s
+2023-04-27T07:21:10.964561Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:21:10.964924Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:21:11.072818Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T07:21:11.072933Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:21:11.078610Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:21:16.217330Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-4443b31b0d0342706e2e08f18957a49c22b1a134
+2023-04-27T07:21:16.217564Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:21:22.861579Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:21:22.861579Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:22:03.418142Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:22:03.418252Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:22:07.428633Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:22:07.428749Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:22:09.333804Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:22:09.333910Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:22:10.541076Z | Info | Live bytes: 360.17MB Heap size: 2608.86MB
+2023-04-27T07:23:10.543517Z | Info | Live bytes: 360.17MB Heap size: 2608.86MB
+2023-04-27T07:24:10.546924Z | Info | Live bytes: 360.17MB Heap size: 2608.86MB
+2023-04-27T07:25:10.550373Z | Info | Live bytes: 360.17MB Heap size: 2608.86MB
+2023-04-27T07:25:38.384810Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:25:38.385072Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:25:38.385097Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:25:38.385183Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:25:38.479643Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:25:38.480372Z | Info | Starting server
+2023-04-27T07:25:38.481667Z | Info | Started LSP server in 0.00s
+2023-04-27T07:25:38.835721Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:25:38.836107Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:25:38.944970Z | Info | Cradle path: arkham-core/library/Arkham/Act/Acts.hs
+2023-04-27T07:25:38.945087Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Act/Acts.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:25:38.951683Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:25:45.498845Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-4443b31b0d0342706e2e08f18957a49c22b1a134
+2023-04-27T07:25:45.499100Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:25:46.766861Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:25:46.766976Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:25:52.223011Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:25:52.228778Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:25:52.228874Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:25:54.398255Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:25:54.398376Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:26:38.388120Z | Info | Live bytes: 806.57MB Heap size: 2313.16MB
+2023-04-27T07:27:38.390033Z | Info | Live bytes: 806.57MB Heap size: 2313.16MB
+2023-04-27T07:28:38.392077Z | Info | Live bytes: 806.57MB Heap size: 2313.16MB
+2023-04-27T07:29:16.152216Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:29:16.152460Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:29:16.152484Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:29:16.152565Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:29:16.245966Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:29:16.246815Z | Info | Starting server
+2023-04-27T07:29:16.248072Z | Info | Started LSP server in 0.00s
+2023-04-27T07:29:16.609102Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:29:16.609495Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:29:16.717900Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T07:29:16.718025Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:29:16.725196Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:29:23.265391Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-4443b31b0d0342706e2e08f18957a49c22b1a134
+2023-04-27T07:29:23.265657Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:29:24.563259Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:29:24.563365Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:29:29.949189Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:29:29.955927Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:29:29.956022Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:29:30.577597Z | Warning | eval: InternalError: Exception in plugin PluginId "eval" while processing STextDocumentCodeLens: BadDependency "GetEvalComments"
+2023-04-27T07:29:30.577737Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:30:16.155629Z | Info | Live bytes: 852.78MB Heap size: 2339.37MB
+2023-04-27T07:30:40.156601Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:30:40.156825Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:30:40.156875Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:30:40.156942Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:30:40.246458Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:30:40.247183Z | Info | Starting server
+2023-04-27T07:30:40.248192Z | Info | Started LSP server in 0.00s
+2023-04-27T07:30:40.578224Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:30:40.578590Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:30:40.686341Z | Info | Cradle path: arkham-core/library/Arkham/Act/Acts.hs
+2023-04-27T07:30:40.686502Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Act/Acts.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:30:40.693349Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:30:47.424536Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-4443b31b0d0342706e2e08f18957a49c22b1a134
+2023-04-27T07:30:47.424801Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:31:10.275127Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:31:10.275162Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:31:10.286224Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:31:31.291392Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:31:34.688591Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:31:40.159164Z | Info | Live bytes: 1402.48MB Heap size: 3624.93MB
+2023-04-27T07:32:40.161835Z | Info | Live bytes: 1402.48MB Heap size: 3624.93MB
+2023-04-27T07:33:40.163680Z | Info | Live bytes: 1402.48MB Heap size: 3624.93MB
+2023-04-27T07:34:40.166469Z | Info | Live bytes: 1402.48MB Heap size: 3624.93MB
+2023-04-27T07:35:40.168165Z | Info | Live bytes: 1402.48MB Heap size: 3624.93MB
+2023-04-27T07:36:37.555671Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:38.229197Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:39.163966Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:39.164132Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:39.956687Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:40.170280Z | Info | Live bytes: 1415.24MB Heap size: 3624.93MB
+2023-04-27T07:36:45.470391Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:36:47.599420Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:36:47.605708Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:47.605713Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:47.605731Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:47.605793Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:47.606156Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:47.606899Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:47.607372Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:48.992244Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:36:49.146011Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:36:49.685398Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:49.685403Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:36:50.956219Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:04.536368Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:06.815091Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:06.815232Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:06.815238Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:06.815248Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:06.815318Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:08.513046Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:09.329409Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:09.894043Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:10.998766Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:12.494357Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:13.085741Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:13.394111Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:14.719017Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:14.719053Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:17.207261Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:18.961685Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:19.555245Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:19.555254Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:19.555273Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:19.555278Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:19.555293Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:20.008425Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:20.456056Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:20.546316Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:20.750992Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:21.162135Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:21.226246Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:21.754217Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:21.754218Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:21.754219Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:21.754222Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:23.877215Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:24.672333Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:26.331179Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:26.795736Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:27.403589Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:28.248441Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:28.248465Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:29.243967Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:29.667741Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:30.302291Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:30.302294Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:33.336470Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:34.842756Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:35.963749Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:36.940724Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:37.949865Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:37.949879Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:37.949887Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:37.949911Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:40.171879Z | Info | Live bytes: 1662.70MB Heap size: 3624.93MB
+2023-04-27T07:37:40.936196Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:41.910277Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:42.806038Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:42.814347Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:42.814353Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:43.625010Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:44.338537Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:37:44.836913Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:37:46.114336Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T07:37:46.683674Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:38:01.197753Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:38:40.174103Z | Info | Live bytes: 1730.02MB Heap size: 3624.93MB
+2023-04-27T07:39:40.177208Z | Info | Live bytes: 1730.02MB Heap size: 3624.93MB
+2023-04-27T07:39:45.839193Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:46.457593Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:39:47.426531Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:39:48.258404Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:39:48.557585Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:39:49.176026Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:49.176037Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:50.932256Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:50.932256Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:50.936680Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:52.175962Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:39:54.894136Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T07:39:58.880774Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:40:04.934341Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T07:40:12.967858Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:40:24.823457Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:40:40.179457Z | Info | Live bytes: 1789.55MB Heap size: 3624.93MB
+2023-04-27T07:40:45.498347Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:41:40.181837Z | Info | Live bytes: 1789.55MB Heap size: 3624.93MB
+2023-04-27T07:42:40.185432Z | Info | Live bytes: 1789.55MB Heap size: 3624.93MB
+2023-04-27T07:43:32.020296Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T07:43:33.645038Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T07:43:34.275221Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:43:34.275223Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:43:34.275229Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:43:34.275233Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:43:40.187171Z | Info | Live bytes: 1792.99MB Heap size: 3624.93MB
+2023-04-27T07:44:40.189429Z | Info | Live bytes: 1792.99MB Heap size: 3624.93MB
+2023-04-27T07:45:40.193060Z | Info | Live bytes: 1792.99MB Heap size: 3624.93MB
+2023-04-27T07:46:40.195745Z | Info | Live bytes: 1792.99MB Heap size: 3624.93MB
+2023-04-27T07:47:40.198394Z | Info | Live bytes: 1792.99MB Heap size: 3624.93MB
+2023-04-27T07:48:40.201058Z | Info | Live bytes: 1792.99MB Heap size: 3624.93MB
+2023-04-27T07:49:42.487240Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:49:42.487468Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:49:42.487495Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:49:42.487581Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:49:42.578220Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:49:42.578973Z | Info | Starting server
+2023-04-27T07:49:42.580065Z | Info | Started LSP server in 0.00s
+2023-04-27T07:49:42.908290Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:49:42.908669Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:49:43.031515Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T07:49:43.031640Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:49:43.037570Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:49:50.444941Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-cd622ebdbc0a11bbde3dd33428cc7c4960ea22fc
+2023-04-27T07:49:50.445198Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:50:15.184129Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:50:15.184144Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:50:15.184151Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:50:42.489930Z | Info | Live bytes: 1501.30MB Heap size: 3615.49MB
+2023-04-27T07:51:42.492027Z | Info | Live bytes: 1501.30MB Heap size: 3615.49MB
+2023-04-27T07:52:42.494481Z | Info | Live bytes: 1501.30MB Heap size: 3615.49MB
+2023-04-27T07:52:58.192962Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:52:59.557814Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T07:53:18.820933Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:53:42.496464Z | Info | Live bytes: 1567.34MB Heap size: 3615.49MB
+2023-04-27T07:54:03.998804Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:54:03.999009Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:54:03.999032Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:54:03.999102Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:54:04.085816Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:54:04.086582Z | Info | Starting server
+2023-04-27T07:54:04.087642Z | Info | Started LSP server in 0.00s
+2023-04-27T07:54:04.453597Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:54:04.454014Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:54:04.573200Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T07:54:04.573325Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:54:04.579804Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:54:10.595618Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-ccab27b7b8a02c94d31e1654b505c62d925962b7
+2023-04-27T07:54:10.595868Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:55:32.019371Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T07:55:32.019616Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T07:55:32.019640Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:55:32.019708Z | Info | Logging heap statistics every 60.00s
+2023-04-27T07:55:32.107802Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T07:55:32.108498Z | Info | Starting server
+2023-04-27T07:55:32.109531Z | Info | Started LSP server in 0.00s
+2023-04-27T07:55:32.437628Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T07:55:32.438029Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T07:55:32.546309Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T07:55:32.546437Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T07:55:32.552635Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T07:55:37.699084Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-12f3e71da40523e071477c9b06d47916ed3d2c90
+2023-04-27T07:55:37.699332Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T07:56:02.272084Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:56:02.272084Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:56:24.549839Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:56:32.021149Z | Info | Live bytes: 1312.46MB Heap size: 3508.54MB
+2023-04-27T07:56:33.291001Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:57:32.022590Z | Info | Live bytes: 1312.46MB Heap size: 3508.54MB
+2023-04-27T07:58:08.395993Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T07:58:32.024214Z | Info | Live bytes: 1312.46MB Heap size: 3508.54MB
+2023-04-27T07:59:32.025560Z | Info | Live bytes: 1312.46MB Heap size: 3508.54MB
+2023-04-27T08:00:32.028045Z | Info | Live bytes: 1312.46MB Heap size: 3508.54MB
+2023-04-27T08:00:36.252071Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:38.332686Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:38.332691Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:41.301552Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:41.301565Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:41.301566Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:43.294419Z | Warning | codeRange: bad dependency: GetCodeRange
+2023-04-27T08:00:43.298096Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:48.632790Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:48.632802Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:48.632887Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:48.633279Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:00:49.605493Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T08:00:55.679681Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:01:32.029982Z | Info | Live bytes: 1463.97MB Heap size: 3508.54MB
+2023-04-27T08:02:32.032547Z | Info | Live bytes: 1463.97MB Heap size: 3508.54MB
+2023-04-27T08:03:32.034352Z | Info | Live bytes: 1463.97MB Heap size: 3508.54MB
+2023-04-27T08:03:55.136364Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:04:01.239624Z | Info | Typechecking reverse dependencies for NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs": [ NormalizedFilePath "/Users/halogenandtoast/Code/ArkhamHorror/backend/arkham-core/library/Arkham/Treachery/Treacheries.hs" ]
+2023-04-27T08:04:05.248180Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:04:32.036369Z | Info | Live bytes: 1494.95MB Heap size: 3508.54MB
+2023-04-27T08:05:32.038417Z | Info | Live bytes: 1494.95MB Heap size: 3508.54MB
+2023-04-27T08:05:54.917549Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T08:05:54.917977Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T08:05:54.918003Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T08:05:54.918080Z | Info | Logging heap statistics every 60.00s
+2023-04-27T08:05:55.009013Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T08:05:55.009940Z | Info | Starting server
+2023-04-27T08:05:55.011185Z | Info | Started LSP server in 0.00s
+2023-04-27T08:05:55.343630Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T08:05:55.344025Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T08:05:55.450627Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T08:05:55.450762Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T08:05:55.457242Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T08:06:01.876304Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-37c997c69ca6b9b6319c3bfaf53bbd711f9e2892
+2023-04-27T08:06:01.876568Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T08:06:06.211184Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T08:06:06.211486Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T08:06:06.211530Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T08:06:06.211641Z | Info | Logging heap statistics every 60.00s
+2023-04-27T08:06:06.305438Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T08:06:06.306402Z | Info | Starting server
+2023-04-27T08:06:06.307655Z | Info | Started LSP server in 0.00s
+2023-04-27T08:06:06.659350Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T08:06:06.659761Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T08:06:06.765286Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T08:06:06.765428Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T08:06:06.773094Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T08:06:13.111745Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-37c997c69ca6b9b6319c3bfaf53bbd711f9e2892
+2023-04-27T08:06:13.112000Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T08:06:27.389667Z | Info | haskell-language-server version: 1.10.0.0 (GHC: 9.4.5) (PATH: /Users/halogenandtoast/.ghcup/bin/haskell-language-server-9.4.5~1.10.0.0)
+2023-04-27T08:06:27.389907Z | Info | Directory: /Users/halogenandtoast/Code/ArkhamHorror/backend
+2023-04-27T08:06:27.389937Z | Info | Starting (haskell-language-server) LSP server...
+  GhcideArguments {argsCommand = LSP, argsCwd = Nothing, argsShakeProfiling = Nothing, argsTesting = False, argsExamplePlugin = False, argsDebugOn = False, argsLogFile = Just "hls.log", argsThreads = 0, argsProjectGhcVersion = False}
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T08:06:27.390021Z | Info | Logging heap statistics every 60.00s
+2023-04-27T08:06:27.488803Z | Info | Starting LSP server...
+  If you are seeing this in a terminal, you probably should have run WITHOUT the --lsp option!
+  PluginIds: [ pragmas
+             , qualifyImportedNames
+             , moduleName
+             , splice
+             , alternateNumberFormat
+             , changeTypeSignature
+             , ormolu
+             , gadt
+             , ghcide-completions
+             , cabalfmt
+             , retrie
+             , ghcide-code-actions-type-signatures
+             , ghcide-hover-and-symbols
+             , rename
+             , codeRange
+             , ghcide-code-actions-bindings
+             , stylish-haskell
+             , refineImports
+             , hlint
+             , eval
+             , LSPRecorderCallback
+             , floskell
+             , importLens
+             , ghcide-code-actions-imports-exports
+             , ghcide-extend-import-action
+             , ghcide-code-actions-fill-holes
+             , class
+             , ghcide-type-lenses
+             , fourmolu
+             , explicit-fields
+             , cabal
+             , callHierarchy
+             , ghcide-core
+             , explicit-fixity ]
+2023-04-27T08:06:27.489623Z | Info | Starting server
+2023-04-27T08:06:27.490896Z | Info | Started LSP server in 0.00s
+2023-04-27T08:06:27.871159Z | Warning | Currently, HLS supports GHC 9.4 only partially. See [issue #3190](https://github.com/haskell/haskell-language-server/issues/3190) for more detail.
+2023-04-27T08:06:27.871639Z | Info | Registering IDE configuration: IdeConfiguration {workspaceFolders = fromList [NormalizedUri (-5858801185821612581) "file:///Users/halogenandtoast/Code/ArkhamHorror"], clientSettings = hashed (Just (Object (fromList [("languageServerHaskell",Object (fromList [("maxCompletions",Number 10.0)]))])))}
+2023-04-27T08:06:27.979781Z | Info | Cradle path: arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs
+2023-04-27T08:06:27.979935Z | Warning | No [cradle](https://github.com/mpickering/hie-bios#hie-bios) found for arkham-core/library/Arkham/Treachery/Cards/MeddlesomeFamiliar.hs.
+Proceeding with [implicit cradle](https://hackage.haskell.org/package/implicit-hie).
+You should ignore this message, unless you see a 'Multi Cradle: No prefixes matched' error.
+2023-04-27T08:06:27.986975Z | Info | invoking build tool to determine build flags (this may take some time depending on the cache)
+2023-04-27T08:06:34.732959Z | Info | Interface files cache directory: /Users/halogenandtoast/.cache/ghcide/main-37c997c69ca6b9b6319c3bfaf53bbd711f9e2892
+2023-04-27T08:06:34.733315Z | Info | Making new HscEnv. In-place unit ids: [main]
+2023-04-27T08:07:02.716847Z | Warning | class: InternalError: Unable to typecheck
+2023-04-27T08:07:02.716866Z | Warning | class: InternalError: Unable to typecheck

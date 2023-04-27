@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Investigator.Types ( Field (..) )

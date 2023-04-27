@@ -3,7 +3,6 @@ module Arkham.Treachery.Cards.Amnesia where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Investigator.Types
 import Arkham.Message
 import Arkham.Projection

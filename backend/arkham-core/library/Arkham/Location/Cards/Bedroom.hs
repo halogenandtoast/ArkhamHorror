@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( bedroom )
 import Arkham.Location.Helpers

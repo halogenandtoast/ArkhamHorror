@@ -6,7 +6,6 @@ module Arkham.Event.Cards.DenyExistence5
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message hiding ( Discarded )

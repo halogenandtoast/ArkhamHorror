@@ -12,7 +12,6 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.Discard
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet

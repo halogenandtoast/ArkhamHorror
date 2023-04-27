@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Discard
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )

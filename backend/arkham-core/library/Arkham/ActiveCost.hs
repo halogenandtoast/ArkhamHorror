@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.ActiveCost.Base as X
 
+import Arkham.Helpers.Message.Discard
 import Arkham.EffectMetadata
 import Arkham.Effect.Window
 import Arkham.Ability hiding (PaidCost)
@@ -22,7 +23,6 @@ import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
-import Arkham.Discard
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
 import Arkham.Game.Helpers

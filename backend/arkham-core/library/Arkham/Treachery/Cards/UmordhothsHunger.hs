@@ -3,7 +3,6 @@ module Arkham.Treachery.Cards.UmordhothsHunger where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher

@@ -26,6 +26,9 @@ default-extensions:
 - ViewPatterns
 - StrictData
 
+build-tools:
+- cards-discover
+
 library:
   source-dirs: library
   dependencies:

@@ -3,7 +3,6 @@ module Arkham.Treachery.Cards.ChillFromBelow where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection

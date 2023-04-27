@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.TwistedToHisWill
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.SkillType

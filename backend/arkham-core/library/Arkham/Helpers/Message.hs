@@ -1,6 +1,8 @@
-module Arkham.Helpers.Message where
+module Arkham.Helpers.Message (module Arkham.Helpers.Message, module X) where
 
 import Arkham.Prelude
+
+import Arkham.Helpers.Message.Discard as X
 
 import Arkham.Card
 import Arkham.Classes.Entity

@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.Ants
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType

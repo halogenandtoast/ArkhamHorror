@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding ( EnemyEvaded )

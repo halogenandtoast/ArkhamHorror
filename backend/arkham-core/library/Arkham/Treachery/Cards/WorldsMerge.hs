@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Classes
-import Arkham.Discard
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher

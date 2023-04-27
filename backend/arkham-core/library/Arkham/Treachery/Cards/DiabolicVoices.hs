@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.DiabolicVoices
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher

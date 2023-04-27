@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.CaptiveMind
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )

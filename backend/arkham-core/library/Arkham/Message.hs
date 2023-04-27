@@ -28,12 +28,13 @@ import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
-import {-# SOURCE #-} Arkham.Discard
+import Arkham.Discard
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
+import Arkham.Enemy.Creation
 import Arkham.Classes.Entity.Source
 import Arkham.Exception
 import Arkham.Helpers
@@ -133,6 +134,11 @@ instance IsMessage Message where
 instance IsMessage EnemyAttackDetails where
   toMessage = InitiateEnemyAttack
   {-# INLINE toMessage #-}
+
+instance IsMessage (HandDiscard Message) where
+  toMessage = DiscardFromHand
+  {-# INLINE toMessage #-}
+
 
 data ReplaceStrategy = DefaultReplace | Swap
   deriving stock (Show, Eq, Generic)
@@ -259,7 +265,7 @@ data Message
   | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
   | RunWindow InvestigatorId [Window]
   | ChooseAndDiscardAsset InvestigatorId Source AssetMatcher
-  | DiscardFromHand HandDiscard
+  | DiscardFromHand (HandDiscard Message)
   | DoneDiscarding InvestigatorId
   | DiscardCard InvestigatorId Source CardId
   | ChooseEndTurn InvestigatorId
@@ -278,6 +284,10 @@ data Message
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
+
+  | CreateEnemy2 (EnemyCreation Message)
+  | CreatedEnemy2 (EnemyCreation Message) Target
+
   | CreateEnemy EnemyId Card
   | CreateEnemyWithPlacement EnemyId Card Placement
   | CreateEnemyAt EnemyId Card LocationId (Maybe Target)

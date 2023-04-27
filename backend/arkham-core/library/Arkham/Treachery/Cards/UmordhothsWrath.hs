@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.UmordhothsWrath
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection

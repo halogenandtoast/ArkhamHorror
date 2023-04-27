@@ -22,6 +22,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards
 import Arkham.Investigator.Deck
 import Arkham.Json
+import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Slot
@@ -134,7 +135,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorDrawnCards :: [PlayerCard] -- temporarily track drawn cards mid shuffle
   , investigatorIsYithian :: Bool
   -- internal tracking
-  , investigatorDiscarding :: Maybe HandDiscard
+  , investigatorDiscarding :: Maybe (HandDiscard Message)
   }
   deriving stock (Show, Eq, Generic)
 

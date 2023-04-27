@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
-import Arkham.Discard
 import Arkham.Matcher
 import Arkham.SkillType
 

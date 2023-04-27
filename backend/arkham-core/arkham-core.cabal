@@ -997,6 +997,7 @@ library
       Arkham.Enemy.Cards.YogSothoth
       Arkham.Enemy.Cards.YoungDeepOne
       Arkham.Enemy.Cards.YoungPsychopath
+      Arkham.Enemy.Creation
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner
@@ -1263,6 +1264,7 @@ library
       Arkham.Helpers.Location
       Arkham.Helpers.Log
       Arkham.Helpers.Message
+      Arkham.Helpers.Message.Discard
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Projection
       Arkham.Helpers.Query

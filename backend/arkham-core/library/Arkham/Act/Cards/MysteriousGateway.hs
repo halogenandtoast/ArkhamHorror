@@ -7,7 +7,6 @@ import Arkham.Act.Types
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Discard
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

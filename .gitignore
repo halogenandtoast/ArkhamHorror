@@ -29,3 +29,6 @@ yarn-error.log*
 .tmp
 logfile
 *.prof
+*.eventlog
+*.eventlog.html
+*.hp

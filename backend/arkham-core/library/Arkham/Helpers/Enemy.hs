@@ -6,7 +6,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
-import Arkham.Enemy.Creation
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import {-# SOURCE #-} Arkham.GameEnv

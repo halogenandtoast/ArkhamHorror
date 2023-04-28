@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Message
-  ( module Arkham.Message
-  , module X
-  ) where
+
+module Arkham.Message (
+  module Arkham.Message,
+  module X,
+) where
 
 import Arkham.Prelude
 
@@ -13,34 +14,34 @@ import Arkham.Text as X
 
 import Arkham.Ability.Types
 import Arkham.Act.Sequence
-import Arkham.Action hiding ( Explore )
+import Arkham.Action hiding (Explore)
 import Arkham.Action.Additional
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
 import Arkham.Attack
 import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
+import Arkham.Classes.Entity.Source
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
-import Arkham.Discard
 import Arkham.Direction
+import Arkham.Discard
 import Arkham.Draw.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
-import Arkham.Classes.Entity.Source
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
-import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
+import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated)
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
@@ -58,43 +59,45 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window ( Window, WindowType )
+import Arkham.Window (Window, WindowType)
 import Control.Exception
 import Data.Aeson.TH
 
 messageType :: Message -> Maybe MessageType
-messageType PerformEnemyAttack{} = Just AttackMessage
-messageType Revelation{} = Just RevelationMessage
-messageType DrawToken{} = Just DrawTokenMessage
-messageType ResolveToken{} = Just ResolveTokenMessage
-messageType EnemySpawn{} = Just EnemySpawnMessage
-messageType InvestigatorDrawEnemy{} = Just DrawEnemyMessage
-messageType EnemyDefeated{} = Just EnemyDefeatedMessage
+messageType PerformEnemyAttack {} = Just AttackMessage
+messageType Revelation {} = Just RevelationMessage
+messageType DrawToken {} = Just DrawTokenMessage
+messageType ResolveToken {} = Just ResolveTokenMessage
+messageType EnemySpawn {} = Just EnemySpawnMessage
+messageType InvestigatorDrawEnemy {} = Just DrawEnemyMessage
+messageType EnemyDefeated {} = Just EnemyDefeatedMessage
 messageType (Discard GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
-messageType RevealToken{} = Just RevealTokenMessage
-messageType InvestigatorDamage{} = Just DamageMessage
-messageType InvestigatorDoAssignDamage{} = Just DamageMessage
-messageType InvestigatorDrewEncounterCard{} = Just DrawEncounterCardMessage
-messageType InvestigatorDefeated{} = Just InvestigatorDefeatedMessage
-messageType RunWindow{} = Just RunWindowMessage
-messageType Explore{} = Just ExploreMessage
+messageType RevealToken {} = Just RevealTokenMessage
+messageType InvestigatorDamage {} = Just DamageMessage
+messageType InvestigatorDoAssignDamage {} = Just DamageMessage
+messageType InvestigatorDrewEncounterCard {} = Just DrawEncounterCardMessage
+messageType InvestigatorDefeated {} = Just InvestigatorDefeatedMessage
+messageType RunWindow {} = Just RunWindowMessage
+messageType Explore {} = Just ExploreMessage
 messageType (Do msg) = messageType msg
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
-isBlanked Blanked{} = True
+isBlanked Blanked {} = True
 isBlanked _ = False
 
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
 story :: [InvestigatorId] -> FlavorText -> Message
-story iids flavor = AskMap
-  (mapFromList [ (iid, Read flavor [Label "Continue" []]) | iid <- iids ])
+story iids flavor =
+  AskMap
+    (mapFromList [(iid, Read flavor [Label "Continue" []]) | iid <- iids])
 
 storyWithChooseOne :: InvestigatorId -> [InvestigatorId] -> FlavorText -> [UI Message] -> Message
-storyWithChooseOne lead iids flavor choices = AskMap
-  (mapFromList [ (iid, Read flavor $ if iid == lead then choices else []) | iid <- iids ])
+storyWithChooseOne lead iids flavor choices =
+  AskMap
+    (mapFromList [(iid, Read flavor $ if iid == lead then choices else []) | iid <- iids])
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
@@ -108,7 +111,8 @@ pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)
 
 createCardEffect
-  :: (Sourceable source, Targetable target) => CardDef
+  :: (Sourceable source, Targetable target)
+  => CardDef
   -> (Maybe (EffectMetadata Window Message))
   -> source
   -> target
@@ -121,8 +125,8 @@ data AbilityRef = AbilityRef Source Int
 
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
- let choicesMap = mapFromList @(Map Text Int) choices
- in findWithDefault 0 key choicesMap
+  let choicesMap = mapFromList @(Map Text Int) choices
+  in  findWithDefault 0 key choicesMap
 
 class IsMessage msg where
   toMessage :: msg -> Message
@@ -138,7 +142,6 @@ instance IsMessage EnemyAttackDetails where
 instance IsMessage (HandDiscard Message) where
   toMessage = DiscardFromHand
   {-# INLINE toMessage #-}
-
 
 data ReplaceStrategy = DefaultReplace | Swap
   deriving stock (Show, Eq, Generic)
@@ -284,24 +287,20 @@ data Message
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
-
-  | CreateEnemy2 (EnemyCreation Message)
+  | CreateEnemy (EnemyCreation Message)
   | CreatedEnemy2 (EnemyCreation Message) Target
-
-  | CreateEnemy EnemyId Card
-  | CreateEnemyWithPlacement EnemyId Card Placement
   | CreateEnemyAt EnemyId Card LocationId (Maybe Target)
   | CreatedEnemyAt EnemyId LocationId Target
   | CreateEnemyAtLocationMatching EnemyId Card LocationMatcher
   | CreateEnemyEngagedWithPrey EnemyId Card
-  -- new payment bs
-  | PayForAbility Ability [Window]
+  | -- new payment bs
+    PayForAbility Ability [Window]
   | CreatedCost ActiveCostId
   | PayCost ActiveCostId InvestigatorId Bool Cost
   | PayCostFinished ActiveCostId
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
-  -- end  new payment bs
-  | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
+  | -- end  new payment bs
+    CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
@@ -429,8 +428,8 @@ data Message
   | InitiatePlayCardAsChoose InvestigatorId Card [Card] [Message] ChosenCardStrategy [Window] Bool
   | InitiatePlayCardAs InvestigatorId Card Card [Message] ChosenCardStrategy [Window] Bool
   | InitiatePlayCard InvestigatorId Card (Maybe Target) [Window] Bool
-  -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
-  | CheckAdditionalActionCosts InvestigatorId Target Action [Message]
+  | -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
+    CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | CheckAllAdditionalCommitCosts
   | CheckAdditionalCommitCosts InvestigatorId [Card]
   | -- Maybe Target is handler for success
@@ -449,7 +448,15 @@ data Message
   | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int (Maybe Action)
   | -- | meant to be used internally by investigators                  ^ damage ^ horror
-    InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy AssetMatcher Int Int [Target] [Target]
+    InvestigatorDoAssignDamage
+      InvestigatorId
+      Source
+      DamageStrategy
+      AssetMatcher
+      Int
+      Int
+      [Target]
+      [Target]
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDoDrawEncounterCard InvestigatorId
   | InvestigatorDrawEnemy InvestigatorId EnemyId
@@ -689,7 +696,7 @@ data Message
   | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target
   | ResetMetadata Target
-  | DoNotCountUseTowardsAbilityLimit InvestigatorId Ability  
+  | DoNotCountUseTowardsAbilityLimit InvestigatorId Ability
   | When Message
   | WhenWillEnterLocation InvestigatorId LocationId
   | EnterLocation InvestigatorId LocationId
@@ -791,10 +798,17 @@ chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
 chooseOrRunN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseAmounts
-  :: Targetable target => InvestigatorId -> Text -> AmountTarget -> [(Text, (Int, Int))] -> target -> Message
-chooseAmounts iid label total choiceMap (toTarget -> target) = Ask
-  iid
-  (ChooseAmounts label total amountChoices target)
+  :: (Targetable target)
+  => InvestigatorId
+  -> Text
+  -> AmountTarget
+  -> [(Text, (Int, Int))]
+  -> target
+  -> Message
+chooseAmounts iid label total choiceMap (toTarget -> target) =
+  Ask
+    iid
+    (ChooseAmounts label total amountChoices target)
  where
   amountChoices = map toAmountChoice choiceMap
   toAmountChoice (l, (m, n)) = AmountChoice l m n

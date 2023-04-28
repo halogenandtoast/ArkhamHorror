@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Card
-  ( module Arkham.Card
-  , module X
-  ) where
+
+module Arkham.Card (
+  module Arkham.Card,
+  module X,
+) where
 
 import Arkham.Prelude
 
@@ -10,9 +11,9 @@ import Arkham.Card.CardCode as X
 import Arkham.Card.CardDef as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Class as X
-import Arkham.Card.EncounterCard as X (EncounterCard(..))
+import Arkham.Card.EncounterCard as X (EncounterCard (..))
 import Arkham.Card.Id as X
-import Arkham.Card.PlayerCard as X (PlayerCard(..))
+import Arkham.Card.PlayerCard as X (PlayerCard (..))
 
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -48,10 +49,11 @@ data CardBuilder ident a = CardBuilder
   }
 
 instance Functor (CardBuilder ident) where
-  fmap f CardBuilder {..} = CardBuilder
-    { cbCardCode = cbCardCode
-    , cbCardBuilder = \cId -> f . cbCardBuilder cId
-    }
+  fmap f CardBuilder {..} =
+    CardBuilder
+      { cbCardCode = cbCardCode
+      , cbCardBuilder = \cId -> f . cbCardBuilder cId
+      }
 
 instance IsCard Card where
   toCardId = \case
@@ -64,16 +66,16 @@ instance IsCard Card where
     VengeanceCard c -> toCardOwner c
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
-  toCard :: HasCallStack => a -> Card
+  toCard :: (HasCallStack) => a -> Card
   toCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
-    PlayerCard pc -> PlayerCard $ pc { pcOwner = toCardOwner a }
+    PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a}
     ec -> ec
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
 
-class MonadRandom m => CardGen m where
-  genEncounterCard :: HasCardDef a => a -> m EncounterCard
-  genPlayerCard :: HasCardDef a => a -> m PlayerCard
+class (MonadRandom m) => CardGen m where
+  genEncounterCard :: (HasCardDef a) => a -> m EncounterCard
+  genPlayerCard :: (HasCardDef a) => a -> m PlayerCard
 
 instance CardGen IO where
   genEncounterCard a =
@@ -82,10 +84,12 @@ instance CardGen IO where
     lookupPlayerCard (toCardDef a) . unsafeMakeCardId <$> getRandom
 
 genCard :: (HasCardDef a, CardGen m) => a -> m Card
-genCard a = if cdCardType def `elem` encounterCardTypes
-  then EncounterCard <$> genEncounterCard def
-  else PlayerCard <$> genPlayerCard def
-  where def = toCardDef a
+genCard a =
+  if cdCardType def `elem` encounterCardTypes
+    then EncounterCard <$> genEncounterCard def
+    else PlayerCard <$> genPlayerCard def
+ where
+  def = toCardDef a
 
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
@@ -93,8 +97,8 @@ genCards = traverse genCard
 isCard :: (HasCardCode a, HasCardCode b) => a -> b -> Bool
 isCard (toCardCode -> a) (toCardCode -> b) = a == b
 
-cardMatch :: IsCard a => a -> CardMatcher -> Bool
-cardMatch a = \case
+cardMatch :: (IsCard a, IsCardMatcher cardMatcher) => a -> cardMatcher -> Bool
+cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
@@ -144,7 +148,7 @@ instance Eq Card where
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
-  EncounterCard $ ec { ecIsFlipped = not <$> ecIsFlipped ec }
+  EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
 flipCard (PlayerCard pc) = PlayerCard pc
 flipCard (VengeanceCard c) = VengeanceCard c
 
@@ -215,10 +219,10 @@ cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = isJust $ cdCardSubType (toCardDef pc)
 cardIsWeakness (VengeanceCard _) = False
 
-filterCardType :: HasCardDef a => CardType -> [a] -> [a]
+filterCardType :: (HasCardDef a) => CardType -> [a] -> [a]
 filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)
 
-filterLocations :: HasCardDef a => [a] -> [a]
+filterLocations :: (HasCardDef a) => [a] -> [a]
 filterLocations = filterCardType LocationType
 
 instance ToGameLoggerFormat Card where

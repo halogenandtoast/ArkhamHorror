@@ -1,9 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Scenario.Types
-  ( module Arkham.Scenario.Types
-  , module X
-  , Field(..)
-  ) where
+
+module Arkham.Scenario.Types (
+  module Arkham.Scenario.Types,
+  module X,
+  Field (..),
+) where
 
 import Arkham.Prelude
 
@@ -27,9 +28,22 @@ import Arkham.Target
 import Data.Aeson.TH
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasModifiersFor a, RunMessage a, HasTokenValue a, Entity a, EntityId a ~ ScenarioId, EntityAttrs a ~ ScenarioAttrs) => IsScenario a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasModifiersFor a
+  , RunMessage a
+  , HasTokenValue a
+  , Entity a
+  , EntityId a ~ ScenarioId
+  , EntityAttrs a ~ ScenarioAttrs
+  ) =>
+  IsScenario a
 
-newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
+newtype GridTemplateRow = GridTemplateRow {unGridTemplateRow :: Text}
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
 data instance Field Scenario :: Type -> Type where
@@ -57,6 +71,7 @@ deriving stock instance Show (Field Scenario typ)
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
   , scenarioId :: ScenarioId
+  , scenarioReference :: CardCode
   , scenarioDifficulty :: Difficulty
   , scenarioCardsUnderScenarioReference :: [Card]
   , scenarioCardsUnderAgendaDeck :: [Card]
@@ -81,8 +96,8 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioResignedCardCodes :: [CardCode]
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioMeta :: Value
-  -- for standalone
-  , scenarioStoryCards :: Map InvestigatorId [PlayerCard]
+  , -- for standalone
+    scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
   deriving stock (Show, Eq)
@@ -105,36 +120,39 @@ scenario
   -> Difficulty
   -> [GridTemplateRow]
   -> a
-scenario f cardCode name difficulty layout = f $ ScenarioAttrs
-  { scenarioId = ScenarioId cardCode
-  , scenarioName = name
-  , scenarioDifficulty = difficulty
-  , scenarioCompletedAgendaStack = mempty
-  , scenarioCompletedActStack = mempty
-  , scenarioAgendaStack = mempty
-  , scenarioActStack = mempty
-  , scenarioCardsUnderAgendaDeck = mempty
-  , scenarioCardsUnderActDeck = mempty
-  , scenarioCardsNextToActDeck = mempty
-  , scenarioLocationLayout = layout
-  , scenarioDecks = mempty
-  , scenarioLog = mempty
-  , scenarioCounts = mempty
-  , scenarioSetAsideCards = mempty
-  , scenarioStandaloneCampaignLog = mkCampaignLog
-  , scenarioCardsUnderScenarioReference = mempty
-  , scenarioInResolution = False
-  , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
-  , scenarioVictoryDisplay = mempty
-  , scenarioChaosBag = emptyChaosBag
-  , scenarioEncounterDeck = mempty
-  , scenarioDiscard = mempty
-  , scenarioResignedCardCodes = mempty
-  , scenarioDecksLayout = ["agenda1 act1"]
-  , scenarioMeta = Null
-  , scenarioStoryCards = mempty
-  , scenarioPlayerDecks = mempty
-  }
+scenario f cardCode name difficulty layout =
+  f $
+    ScenarioAttrs
+      { scenarioId = ScenarioId cardCode
+      , scenarioReference = cardCode
+      , scenarioName = name
+      , scenarioDifficulty = difficulty
+      , scenarioCompletedAgendaStack = mempty
+      , scenarioCompletedActStack = mempty
+      , scenarioAgendaStack = mempty
+      , scenarioActStack = mempty
+      , scenarioCardsUnderAgendaDeck = mempty
+      , scenarioCardsUnderActDeck = mempty
+      , scenarioCardsNextToActDeck = mempty
+      , scenarioLocationLayout = layout
+      , scenarioDecks = mempty
+      , scenarioLog = mempty
+      , scenarioCounts = mempty
+      , scenarioSetAsideCards = mempty
+      , scenarioStandaloneCampaignLog = mkCampaignLog
+      , scenarioCardsUnderScenarioReference = mempty
+      , scenarioInResolution = False
+      , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
+      , scenarioVictoryDisplay = mempty
+      , scenarioChaosBag = emptyChaosBag
+      , scenarioEncounterDeck = mempty
+      , scenarioDiscard = mempty
+      , scenarioResignedCardCodes = mempty
+      , scenarioDecksLayout = ["agenda1 act1"]
+      , scenarioMeta = Null
+      , scenarioStoryCards = mempty
+      , scenarioPlayerDecks = mempty
+      }
 
 instance Entity ScenarioAttrs where
   type EntityId ScenarioAttrs = ScenarioId
@@ -156,7 +174,7 @@ instance Sourceable ScenarioAttrs where
   isSource _ ScenarioSource = True
   isSource _ _ = False
 
-data Scenario = forall a. IsScenario a => Scenario a
+data Scenario = forall a. (IsScenario a) => Scenario a
 
 instance Targetable Scenario where
   toTarget _ = ScenarioTarget

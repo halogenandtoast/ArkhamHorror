@@ -4831,33 +4831,6 @@ runGameMessage msg g = case msg of
           ]
             <> enemyCreationAfter enemyCreation
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
-  CreateEnemyAtLocationMatching enemyId cardCode locationMatcher -> do
-    matches' <- selectList locationMatcher
-    when (null matches') (error "No matching locations")
-    lead <- getLead
-    push $
-      chooseOrRunOne
-        lead
-        [ targetLabel lid [CreateEnemyAt enemyId cardCode lid Nothing]
-        | lid <- matches'
-        ]
-    pure g
-  CreateEnemyAt enemyId card lid mtarget -> do
-    let enemy = createEnemy card enemyId
-    pushAll $
-      [ Will (EnemySpawn Nothing lid enemyId)
-      , When (EnemySpawn Nothing lid enemyId)
-      , EnemySpawn Nothing lid enemyId
-      ]
-        <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget]
-    pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
-  CreateEnemyEngagedWithPrey enemyId card -> do
-    let enemy = createEnemy card enemyId
-    pushAll
-      [ Will (EnemySpawnEngagedWithPrey enemyId)
-      , EnemySpawnEngagedWithPrey enemyId
-      ]
-    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
   Discarded (InvestigatorTarget iid) source card -> do

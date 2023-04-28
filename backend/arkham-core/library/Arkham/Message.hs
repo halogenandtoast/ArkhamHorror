@@ -289,10 +289,7 @@ data Message
   | ObtainCard Card
   | CreateEnemy (EnemyCreation Message)
   | CreatedEnemy2 (EnemyCreation Message) Target
-  | CreateEnemyAt EnemyId Card LocationId (Maybe Target)
   | CreatedEnemyAt EnemyId LocationId Target
-  | CreateEnemyAtLocationMatching EnemyId Card LocationMatcher
-  | CreateEnemyEngagedWithPrey EnemyId Card
   | -- new payment bs
     PayForAbility Ability [Window]
   | CreatedCost ActiveCostId

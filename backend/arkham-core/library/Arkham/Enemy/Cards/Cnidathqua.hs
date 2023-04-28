@@ -39,8 +39,7 @@ instance HasAbilities Cnidathqua where
   getAbilities (Cnidathqua attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (PlayerLimit PerTestOrAbility 1)
-          $ mkAbility attrs 1
+      [ mkAbility attrs 1
           $ ForcedAbility
           $ SkillTestResult
             Timing.After

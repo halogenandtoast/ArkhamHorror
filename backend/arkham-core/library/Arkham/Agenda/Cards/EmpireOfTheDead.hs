@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.EmpireOfTheDead
-  ( EmpireOfTheDead(..)
-  , empireOfTheDead
-  ) where
+module Arkham.Agenda.Cards.EmpireOfTheDead (
+  EmpireOfTheDead (..),
+  empireOfTheDead,
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,10 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation
 import Arkham.GameValue
 import Arkham.Message
+import Arkham.Placement
 
 newtype EmpireOfTheDead = EmpireOfTheDead AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -26,10 +28,10 @@ instance RunMessage EmpireOfTheDead where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       lead <- getLead
       specterOfDeath <- genCard Enemies.specterOfDeath
-      (specterOfDeathId, createSpecterOfDeath) <- createEnemy specterOfDeath
+      createSpecterOfDeath <- createEnemy specterOfDeath Unplaced
       pushAll
-        [ createSpecterOfDeath
-        , InvestigatorDrawEnemy lead specterOfDeathId
+        [ toMessage createSpecterOfDeath
+        , InvestigatorDrawEnemy lead (enemyCreationEnemyId createSpecterOfDeath)
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
       pure a

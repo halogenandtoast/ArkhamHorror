@@ -2037,6 +2037,7 @@ enemyMatcherFilter = \case
   EnemyWithModifier modifier ->
     \enemy -> elem modifier <$> getModifiers (toTarget enemy)
   EnemyWithEvade -> fieldP EnemyEvade isJust . toId
+  EnemyWithPlacement p -> fieldP EnemyPlacement (== p) . toId
   UnengagedEnemy -> selectNone . InvestigatorEngagedWith . EnemyWithId . toId
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
   IsIchtacasPrey -> \enemy -> do
@@ -2417,6 +2418,7 @@ instance Projection Asset where
         AttachedToAct _ -> pure Nothing
         AttachedToAgenda _ -> pure Nothing
         Unplaced -> pure Nothing
+        Global -> pure Nothing
         Limbo -> pure Nothing
         OutOfPlay _ -> pure Nothing
         StillInHand _ -> pure Nothing
@@ -4817,7 +4819,7 @@ runGameMessage msg g = case msg of
             pushAll $
               windows'
                 <> [ chooseOrRunOne
-                      lead
+                      (fromMaybe lead $ enemyCreationInvestigator enemyCreation)
                       [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
                       | lid <- lids
                       ]

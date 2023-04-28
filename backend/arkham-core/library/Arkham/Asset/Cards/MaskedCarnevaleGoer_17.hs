@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MaskedCarnevaleGoer_17
-  ( maskedCarnevaleGoer_17
-  , MaskedCarnevaleGoer_17(..)
-  ) where
+module Arkham.Asset.Cards.MaskedCarnevaleGoer_17 (
+  maskedCarnevaleGoer_17,
+  MaskedCarnevaleGoer_17 (..),
+) where
 
 import Arkham.Prelude
 
@@ -33,35 +33,38 @@ instance HasAbilities MaskedCarnevaleGoer_17 where
     ]
 
 locationOf :: AssetAttrs -> LocationId
-locationOf AssetAttrs { assetPlacement } = case assetPlacement of
+locationOf AssetAttrs {assetPlacement} = case assetPlacement of
   AtLocation lid -> lid
   _ -> error "impossible"
 
 instance RunMessage MaskedCarnevaleGoer_17 where
   runMessage msg a@(MaskedCarnevaleGoer_17 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ Flip iid (toSource iid) (toTarget attrs)
+      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
       pure a
-    Flip _ _ (isTarget attrs -> True) -> do
+    Flip _ source (isTarget attrs -> True) -> do
       let
         lid = locationOf attrs
         donLagorio = lookupCard Enemies.donLagorio (toCardId attrs)
       investigators <- selectList $ investigatorAt $ locationOf attrs
       lead <- getLead
       (enemyId, createDonLagorio) <- createEnemyAt donLagorio lid Nothing
-      pushAll
+      pushAll $
         [ createDonLagorio
         , Flipped
-          (toSource attrs)
-          donLagorio
-        , chooseOrRunOneAtATime
-          lead
-          [ targetLabel
-              investigator
-              [EnemyAttack $ enemyAttack enemyId investigator]
-          | investigator <- investigators
-          ]
+            (toSource attrs)
+            donLagorio
         ]
+          <> [ chooseOrRunOneAtATime
+              lead
+              [ targetLabel
+                investigator
+                [EnemyAttack $ enemyAttack enemyId investigator]
+              | investigator <- investigators
+              ]
+             | isAbilitySource attrs 1 source
+             , notNull investigators
+             ]
       pure a
     LookAtRevealed _ _ (isTarget a -> True) -> do
       let donLagorio = lookupCard Enemies.donLagorio (toCardId attrs)

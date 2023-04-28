@@ -25,3 +25,6 @@ arkham-horror-backend.cabal
 /tags
 data/
 errors.err
+*.eventlog
+*.eventlog.html
+*.hp

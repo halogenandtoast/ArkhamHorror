@@ -71,7 +71,6 @@ library:
     - time
     - unix
     - unliftio
-    - unordered-containers
     - uri-bytestring
     - uuid
     - wai

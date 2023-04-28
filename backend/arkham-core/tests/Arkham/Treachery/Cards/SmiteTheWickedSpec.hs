@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.SmiteTheWickedSpec
-  ( spec
-  ) where
+module Arkham.Treachery.Cards.SmiteTheWickedSpec (
+  spec,
+) where
 
 import TestImport.Lifted
 
-import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -22,24 +22,23 @@ spec = describe "Smite the Wicked" $ do
     (location1, location2) <- testConnectedLocations id id
     drawing <- drawCards (toId investigator) investigator 1
     gameTest
-        investigator
-        [ placedLocation location1
-        , placedLocation location2
-        , SetEncounterDeck (Deck [treachery, enemy])
-        , loadDeck investigator [smiteTheWicked]
-        , moveTo investigator location1
-        , drawing
-        ]
-        ((entitiesL . locationsL %~ insertEntity location1)
-        . (entitiesL . locationsL %~ insertEntity location2)
-        )
+      investigator
+      [ placedLocation location1
+      , placedLocation location2
+      , SetEncounterDeck (Deck [treachery, enemy])
+      , loadDeck investigator [smiteTheWicked]
+      , moveTo investigator location1
+      , drawing
+      ]
+      ( (entitiesL . locationsL %~ insertEntity location1)
+          . (entitiesL . locationsL %~ insertEntity location2)
+      )
       $ do
-          runMessages
-          chooseOnlyOption "place enemy"
-          enemyId <- selectJust AnyEnemy
-          fieldP EnemyLocation (== Just (toId location2)) enemyId
-            `shouldReturn` True
-          selectAny (TreacheryOnEnemy (EnemyWithId enemyId)) `shouldReturn` True
+        runMessages
+        enemyId <- selectJust AnyEnemy
+        fieldP EnemyLocation (== Just (toId location2)) enemyId
+          `shouldReturn` True
+        selectAny (TreacheryOnEnemy (EnemyWithId enemyId)) `shouldReturn` True
 
   it "causes 1 mental trauma if enemy not defeated" $ do
     investigator <- testJenny id
@@ -48,19 +47,18 @@ spec = describe "Smite the Wicked" $ do
     location <- testLocation id
     drawing <- drawCards (toId investigator) investigator 1
     gameTest
-        investigator
-        [ SetEncounterDeck (Deck [enemy])
-        , loadDeck investigator [smiteTheWicked]
-        , moveTo investigator location
-        , drawing
-        , EndOfGame Nothing
-        ]
-        (entitiesL . locationsL %~ insertEntity location)
+      investigator
+      [ SetEncounterDeck (Deck [enemy])
+      , loadDeck investigator [smiteTheWicked]
+      , moveTo investigator location
+      , drawing
+      , EndOfGame Nothing
+      ]
+      (entitiesL . locationsL %~ insertEntity location)
       $ do
-          runMessages
-          chooseOnlyOption "place enemy"
-          chooseOnlyOption "trigger smite the wicked"
-          fieldAssert InvestigatorMentalTrauma (== 1) investigator
+        runMessages
+        chooseOnlyOption "trigger smite the wicked"
+        fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
   it "won't cause trauma if enemy is defeated" $ do
     investigator <- testJenny id
@@ -69,29 +67,28 @@ spec = describe "Smite the Wicked" $ do
     location <- testLocation id
     drawing <- drawCards (toId investigator) investigator 1
     gameTest
-        investigator
-        [ placedLocation location
-        , SetEncounterDeck (Deck [enemy])
-        , loadDeck investigator [smiteTheWicked]
-        , moveTo investigator location
-        , drawing
-        ]
-        (entitiesL . locationsL %~ insertEntity location)
+      investigator
+      [ placedLocation location
+      , SetEncounterDeck (Deck [enemy])
+      , loadDeck investigator [smiteTheWicked]
+      , moveTo investigator location
+      , drawing
+      ]
+      (entitiesL . locationsL %~ insertEntity location)
       $ do
-          runMessages
-          chooseOnlyOption "place enemy"
-          enemyId <- selectJust AnyEnemy
-          pushAll
-            [ Msg.EnemyDefeated
+        runMessages
+        enemyId <- selectJust AnyEnemy
+        pushAll
+          [ Msg.EnemyDefeated
               enemyId
               (toCardCode enemy)
               (toSource investigator)
               []
-            , EndOfGame Nothing
-            ]
-          runMessages
-          fieldAssert InvestigatorMentalTrauma (== 0) investigator
-          fieldAssert InvestigatorDiscard (elem smiteTheWicked) investigator
+          , EndOfGame Nothing
+          ]
+        runMessages
+        fieldAssert InvestigatorMentalTrauma (== 0) investigator
+        fieldAssert InvestigatorDiscard (elem smiteTheWicked) investigator
 
   it "will cause trauma if player is eliminated" $ do
     investigator <- testJenny id
@@ -100,17 +97,16 @@ spec = describe "Smite the Wicked" $ do
     location <- testLocation id
     drawing <- drawCards (toId investigator) investigator 1
     gameTest
-        investigator
-        [ placedLocation location
-        , SetEncounterDeck (Deck [enemy])
-        , loadDeck investigator [smiteTheWicked]
-        , moveTo investigator location
-        , drawing
-        , Resign (toId investigator)
-        ]
-        (entitiesL . locationsL %~ insertEntity location)
+      investigator
+      [ placedLocation location
+      , SetEncounterDeck (Deck [enemy])
+      , loadDeck investigator [smiteTheWicked]
+      , moveTo investigator location
+      , drawing
+      , Resign (toId investigator)
+      ]
+      (entitiesL . locationsL %~ insertEntity location)
       $ do
-          runMessages
-          chooseOnlyOption "place enemy"
-          chooseOnlyOption "trigger smite the wicked"
-          fieldAssert InvestigatorMentalTrauma (== 1) investigator
+        runMessages
+        chooseOnlyOption "trigger smite the wicked"
+        fieldAssert InvestigatorMentalTrauma (== 1) investigator

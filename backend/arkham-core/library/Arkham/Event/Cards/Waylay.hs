@@ -1,14 +1,15 @@
-module Arkham.Event.Cards.Waylay
-  ( waylay
-  , Waylay(..)
-  ) where
+module Arkham.Event.Cards.Waylay (
+  waylay,
+  Waylay (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Enemy
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -24,17 +25,17 @@ instance RunMessage Waylay where
   runMessage msg e@(Waylay attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectWithField EnemyEvade
-        $ NonEliteEnemy
-        <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-        <> ExhaustedEnemy
+        selectWithField EnemyEvade $
+          NonEliteEnemy
+            <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+            <> ExhaustedEnemy
       let
         enemiesWithEvade =
-          flip mapMaybe enemies $ \(enemy, mEvade) -> (enemy, ) <$> mEvade
+          flip mapMaybe enemies $ \(enemy, mEvade) -> (enemy,) <$> mEvade
       pushAll
         [ chooseOne
-          iid
-          [ targetLabel
+            iid
+            [ targetLabel
               enemy
               [ beginSkillTest
                   iid
@@ -43,10 +44,12 @@ instance RunMessage Waylay where
                   SkillAgility
                   evadeValue
               ]
-          | (enemy, evadeValue) <- enemiesWithEvade
-          ]
+            | (enemy, evadeValue) <- enemiesWithEvade
+            ]
         ]
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
-      -> e <$ push (DefeatEnemy eid iid $ toSource attrs)
+    PassedSkillTest iid _ (isSource attrs -> True) (SkillTestInitiatorTarget (EnemyTarget eid)) _ _ ->
+      do
+        pushAllM $ defeatEnemy eid iid attrs
+        pure e
     _ -> Waylay <$> runMessage msg attrs

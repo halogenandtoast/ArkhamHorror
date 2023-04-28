@@ -1,22 +1,22 @@
-module Arkham.Ability
-  ( module X
-  , module Arkham.Ability
-  ) where
+module Arkham.Ability (
+  module X,
+  module Arkham.Ability,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability.Limit as X
-import Arkham.Ability.Type as X hiding ( abilityType )
+import Arkham.Ability.Type as X hiding (abilityType)
 import Arkham.Ability.Types as X
 import Arkham.Ability.Used as X
 import Arkham.Cost as X
 import Arkham.Criteria as X
 
+import Arkham.Action hiding (Ability)
+import Arkham.Classes.Entity.Source
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
-import Arkham.Action hiding (Ability)
-import Arkham.Classes.Entity.Source
 import Control.Lens (set)
 
 inHandAbility :: Ability -> Bool
@@ -39,19 +39,19 @@ abilityIs a = (== abilityAction a) . Just
 
 abilityIsActionAbility :: Ability -> Bool
 abilityIsActionAbility a = case abilityType a of
-  ActionAbility{} -> True
-  ActionAbilityWithSkill{} -> True
-  ActionAbilityWithBefore{} -> True
+  ActionAbility {} -> True
+  ActionAbilityWithSkill {} -> True
+  ActionAbilityWithBefore {} -> True
   _ -> False
 
 abilityIsFastAbility :: Ability -> Bool
 abilityIsFastAbility a = case abilityType a of
-  FastAbility{} -> True
+  FastAbility {} -> True
   _ -> False
 
 abilityIsReactionAbility :: Ability -> Bool
 abilityIsReactionAbility a = case abilityType a of
-  ReactionAbility{} -> True
+  ReactionAbility {} -> True
   _ -> False
 
 doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
@@ -65,62 +65,63 @@ withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 
 restrictedAbility
-  :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
+  :: (Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
-  (mkAbility entity idx type') { abilityCriteria = Just restriction }
+  (mkAbility entity idx type') {abilityCriteria = Just restriction}
 
 withCriteria :: Criterion -> Ability -> Ability
 withCriteria c ab = case abilityCriteria ab of
-  Nothing -> ab { abilityCriteria = Just c }
-  Just c' -> ab { abilityCriteria = Just (c <> c') }
+  Nothing -> ab {abilityCriteria = Just c}
+  Just c' -> ab {abilityCriteria = Just (c <> c')}
 
-haunted :: Sourceable a => Text -> a -> Int -> Ability
+haunted :: (Sourceable a) => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 
 reaction
-  :: Sourceable a => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
+  :: (Sourceable a) => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
 reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
 
 uncancellable :: Ability -> Ability
-uncancellable ab = ab { abilityCanBeCancelled = False }
+uncancellable ab = ab {abilityCanBeCancelled = False}
 
-abilityEffect :: Sourceable a => a -> Cost -> Ability
+abilityEffect :: (Sourceable a) => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
-mkAbility :: Sourceable a => a -> Int -> AbilityType -> Ability
-mkAbility entity idx type' = Ability
-  { abilitySource = toSource entity
-  , abilityIndex = idx
-  , abilityType = type'
-  , abilityLimit = defaultAbilityLimit type'
-  , abilityWindow = defaultAbilityWindow type'
-  , abilityMetadata = Nothing
-  , abilityCriteria = Nothing
-  , abilityDoesNotProvokeAttacksOfOpportunity = False
-  , abilityTooltip = Nothing
-  , abilityCanBeCancelled = True
-  }
+mkAbility :: (Sourceable a) => a -> Int -> AbilityType -> Ability
+mkAbility entity idx type' =
+  Ability
+    { abilitySource = toSource entity
+    , abilityIndex = idx
+    , abilityType = type'
+    , abilityLimit = defaultAbilityLimit type'
+    , abilityWindow = defaultAbilityWindow type'
+    , abilityMetadata = Nothing
+    , abilityCriteria = Nothing
+    , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityTooltip = Nothing
+    , abilityCanBeCancelled = True
+    }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
-applyAbilityModifiers a@Ability { abilityType } modifiers =
-  a { abilityType = applyAbilityTypeModifiers abilityType modifiers }
+applyAbilityModifiers a@Ability {abilityType} modifiers =
+  a {abilityType = applyAbilityTypeModifiers abilityType modifiers}
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
 overrideAbilityCriteria (CriteriaOverride override) ab =
-  ab { abilityCriteria = Just override }
+  ab {abilityCriteria = Just override}
 
 isSilentForcedAbility :: Ability -> Bool
-isSilentForcedAbility Ability { abilityType } =
+isSilentForcedAbility Ability {abilityType} =
   isSilentForcedAbilityType abilityType
 
 isReactionAbility :: Ability -> Bool
-isReactionAbility Ability { abilityType } = isReactionAbilityType abilityType
+isReactionAbility Ability {abilityType} = isReactionAbilityType abilityType
 
 isFastAbility :: Ability -> Bool
-isFastAbility Ability { abilityType } = isFastAbilityType abilityType
+isFastAbility Ability {abilityType} = isFastAbilityType abilityType
 
 isActionAbility :: Ability -> Bool
-isActionAbility Ability { abilityType } =
+isActionAbility Ability {abilityType} =
   isJust $ abilityTypeAction abilityType
 
 isTriggeredAbility :: Ability -> Bool
@@ -130,7 +131,7 @@ isTriggeredAbility =
 abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case
   FastAbility _ -> Nothing
-  ReactionAbility{} -> Nothing
+  ReactionAbility {} -> Nothing
   ActionAbility mAction _ -> mAction
   ActionAbilityWithSkill mAction _ _ -> mAction
   ActionAbilityWithBefore mAction _ _ -> mAction
@@ -167,8 +168,8 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbilityWithSkill mAction skill cost ->
     ActionAbilityWithSkill mAction skill $ applyCostModifiers cost modifiers
   ActionAbilityWithBefore mAction mBeforeAction cost ->
-    ActionAbilityWithBefore mAction mBeforeAction
-      $ applyCostModifiers cost modifiers
+    ActionAbilityWithBefore mAction mBeforeAction $
+      applyCostModifiers cost modifiers
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
@@ -198,9 +199,9 @@ applyCostModifier cost _ = cost
 defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
   FastAbility _ -> FastPlayerWindow
-  ActionAbility{} -> Matcher.DuringTurn You
-  ActionAbilityWithBefore{} -> Matcher.DuringTurn You
-  ActionAbilityWithSkill{} -> Matcher.DuringTurn You
+  ActionAbility {} -> Matcher.DuringTurn You
+  ActionAbilityWithBefore {} -> Matcher.DuringTurn You
+  ActionAbilityWithSkill {} -> Matcher.DuringTurn You
   ForcedAbility window -> window
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
@@ -212,47 +213,47 @@ defaultAbilityWindow = \case
 
 isFastAbilityType :: AbilityType -> Bool
 isFastAbilityType = \case
-  FastAbility{} -> True
-  ForcedAbility{} -> False
-  SilentForcedAbility{} -> False
-  ForcedAbilityWithCost{} -> False
+  FastAbility {} -> True
+  ForcedAbility {} -> False
+  SilentForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
   Objective aType -> isFastAbilityType aType
-  ReactionAbility{} -> False
-  ActionAbility{} -> False
-  ActionAbilityWithSkill{} -> False
-  ActionAbilityWithBefore{} -> False
-  AbilityEffect{} -> False
-  Haunted{} -> False
+  ReactionAbility {} -> False
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+  Haunted {} -> False
   ForcedWhen _ aType -> isFastAbilityType aType
 
 isReactionAbilityType :: AbilityType -> Bool
 isReactionAbilityType = \case
-  SilentForcedAbility{} -> False
-  ForcedAbility{} -> False
-  ForcedAbilityWithCost{} -> False
+  SilentForcedAbility {} -> False
+  ForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
   Objective aType -> isReactionAbilityType aType
-  FastAbility{} -> False
-  ReactionAbility{} -> True
-  ActionAbility{} -> False
-  ActionAbilityWithSkill{} -> False
-  ActionAbilityWithBefore{} -> False
-  AbilityEffect{} -> False
-  Haunted{} -> False
+  FastAbility {} -> False
+  ReactionAbility {} -> True
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+  Haunted {} -> False
   ForcedWhen _ aType -> isReactionAbilityType aType
 
 isSilentForcedAbilityType :: AbilityType -> Bool
 isSilentForcedAbilityType = \case
-  SilentForcedAbility{} -> True
-  ForcedAbility{} -> False
-  ForcedAbilityWithCost{} -> False
+  SilentForcedAbility {} -> True
+  ForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
   Objective aType -> isSilentForcedAbilityType aType
-  FastAbility{} -> False
-  ReactionAbility{} -> False
-  ActionAbility{} -> False
-  ActionAbilityWithSkill{} -> False
-  ActionAbilityWithBefore{} -> False
-  AbilityEffect{} -> False
-  Haunted{} -> False
+  FastAbility {} -> False
+  ReactionAbility {} -> False
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+  Haunted {} -> False
   ForcedWhen _ aType -> isSilentForcedAbilityType aType
 
 isPerWindowLimit :: AbilityLimit -> Bool
@@ -265,14 +266,16 @@ isPerWindowLimit = \case
 
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
-  ForcedAbility _ -> GroupLimit PerWindow 1
+  ForcedAbility window' -> case window' of
+    SkillTestResult {} -> PlayerLimit PerTestOrAbility 1
+    _ -> GroupLimit PerWindow 1
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
   FastAbility _ -> NoLimit
   ActionAbility _ _ -> NoLimit
-  ActionAbilityWithBefore{} -> NoLimit
-  ActionAbilityWithSkill{} -> NoLimit
+  ActionAbilityWithBefore {} -> NoLimit
+  ActionAbilityWithSkill {} -> NoLimit
   AbilityEffect _ -> NoLimit
   Objective aType -> defaultAbilityLimit aType
   Haunted -> NoLimit

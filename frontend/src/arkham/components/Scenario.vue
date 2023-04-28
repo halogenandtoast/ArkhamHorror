@@ -278,6 +278,8 @@ const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
 const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) => enemy.placement?.tag === "Pursuit"))
 
+const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.placement.tag === "Global" && enemy.asSelfLocation === null))
+
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
@@ -366,6 +368,15 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
         <Enemy
           v-for="enemy in pursuit"
+          :key="enemy.id"
+          :enemy="enemy"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="choose"
+        />
+
+        <Enemy
+          v-for="enemy in globalEnemies"
           :key="enemy.id"
           :enemy="enemy"
           :game="game"

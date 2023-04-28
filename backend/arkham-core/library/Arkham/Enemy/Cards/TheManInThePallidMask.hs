@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.TheManInThePallidMask
-  ( theManInThePallidMask
-  , TheManInThePallidMask(..)
-  ) where
+module Arkham.Enemy.Cards.TheManInThePallidMask (
+  theManInThePallidMask,
+  TheManInThePallidMask (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,35 +22,38 @@ newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theManInThePallidMask :: EnemyCard TheManInThePallidMask
-theManInThePallidMask = enemyWith
-  TheManInThePallidMask
-  Cards.theManInThePallidMask
-  (4, Static 3, 4)
-  (0, 1)
-  (spawnAtL ?~ SpawnLocation (FarthestLocationFromAll Anywhere))
+theManInThePallidMask =
+  enemyWith
+    TheManInThePallidMask
+    Cards.theManInThePallidMask
+    (4, Static 3, 4)
+    (0, 1)
+    (spawnAtL ?~ SpawnLocation (FarthestLocationFromAll Anywhere))
 
 instance HasAbilities TheManInThePallidMask where
-  getAbilities (TheManInThePallidMask a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 OnSameLocation
-      $ ActionAbility (Just Action.Investigate)
-      $ ActionCost 1
-    ]
+  getAbilities (TheManInThePallidMask a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 OnSameLocation $
+          ActionAbility (Just Action.Investigate) $
+            ActionCost 1
+      ]
 
 instance RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       lid <- getJustLocation iid
-      e <$ pushAll
-        [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)
-        , Investigate
-          iid
-          lid
-          source
-          (Just $ toTarget attrs)
-          SkillIntellect
-          False
-        ]
+      e
+        <$ pushAll
+          [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)
+          , Investigate
+              iid
+              lid
+              source
+              (Just $ toTarget attrs)
+              SkillIntellect
+              False
+          ]
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       do
         enemyLocation <- field EnemyLocation (toId attrs)
@@ -61,7 +64,7 @@ instance RunMessage TheManInThePallidMask where
           Just lid ->
             notMember lid <$> select (locationIs Locations.tombOfShadows)
           _ -> pure True
-        when canBeDefeated
-          $ push (DefeatEnemy (toId attrs) iid (toSource attrs))
+        when canBeDefeated $ do
+          pushAllM $ defeatEnemy (toId attrs) iid attrs
         pure e
     _ -> TheManInThePallidMask <$> runMessage msg attrs

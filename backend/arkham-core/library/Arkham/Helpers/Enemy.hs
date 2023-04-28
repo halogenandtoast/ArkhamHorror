@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
+import Arkham.Classes.Entity.Source
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
@@ -20,7 +21,7 @@ import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message (
-  Message (EnemySpawnAtLocationMatching, PlaceEnemy),
+  Message (DefeatEnemy, EnemySpawnAtLocationMatching, PlaceEnemy),
   resolve,
  )
 import Arkham.Modifier qualified as Modifier
@@ -29,7 +30,9 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 spawned :: EnemyAttrs -> Bool
@@ -202,3 +205,13 @@ getUniqueEnemyMaybe = selectOne . enemyIs
 
 getEnemyIsInPlay :: (HasGame m) => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
+
+defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m [Message]
+defeatEnemy enemyId investigatorId (toSource -> source) = do
+  whenMsg <-
+    checkWindows
+      [Window Timing.When (Window.EnemyWouldBeDefeated enemyId)]
+  afterMsg <-
+    checkWindows
+      [Window Timing.After (Window.EnemyWouldBeDefeated enemyId)]
+  pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]

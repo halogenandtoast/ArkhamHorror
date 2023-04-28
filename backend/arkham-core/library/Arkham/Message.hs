@@ -370,7 +370,7 @@ data Message
   | EnemyCheckEngagement EnemyId
   | EnemyDamage EnemyId DamageAssignment
   | EnemyDamaged EnemyId DamageAssignment -- INTERNAL ONLY
-  | DefeatEnemy EnemyId InvestigatorId Source
+  | DefeatEnemy EnemyId InvestigatorId Source -- use `defeatEnemy`
   | EnemyDefeated EnemyId CardCode Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId

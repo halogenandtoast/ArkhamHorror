@@ -3942,6 +3942,18 @@ runGameMessage msg g = case msg of
         other -> other
       foundCards = gameFoundCards g
     for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
+      DiscardRest -> do
+        push $
+          chooseOneAtATime iid $
+            map
+              ( \case
+                  EncounterCard c ->
+                    TargetLabel
+                      (CardIdTarget $ toCardId c)
+                      [AddToEncounterDiscard c]
+                  _ -> error "not possible"
+              )
+              (findWithDefault [] Zone.FromDeck foundCards)
       PutBackInAnyOrder -> do
         when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
         push $

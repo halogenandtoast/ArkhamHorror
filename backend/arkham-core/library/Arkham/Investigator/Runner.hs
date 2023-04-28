@@ -2579,6 +2579,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           Zone.FromBottomOfDeck _ -> Zone.FromDeck
           other -> other
       for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
+        DiscardRest -> do
+          push $
+            chooseOneAtATime iid $
+              map
+                ( \case
+                    PlayerCard c ->
+                      TargetLabel
+                        (CardIdTarget $ toCardId c)
+                        [AddToDiscard iid c]
+                    EncounterCard c ->
+                      TargetLabel
+                        (CardIdTarget $ toCardId c)
+                        [AddToEncounterDiscard c]
+                    VengeanceCard _ -> error "not possible"
+                )
+              (findWithDefault [] Zone.FromDeck investigatorFoundCards)
         PutBackInAnyOrder -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
           push $ chooseOneAtATime iid $ mapTargetLabelWith

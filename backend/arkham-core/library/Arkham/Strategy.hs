@@ -22,6 +22,7 @@ data ZoneReturnStrategy
   = PutBackInAnyOrder
   | ShuffleBackIn
   | PutBack
+  | DiscardRest
   deriving stock (Show, Eq, Ord)
 
 data FoundCardsStrategy

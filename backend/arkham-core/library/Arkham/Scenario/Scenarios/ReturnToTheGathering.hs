@@ -17,22 +17,24 @@ import Arkham.Scenario.Scenarios.TheGathering
 import Arkham.Scenarios.TheGathering.Story
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
-  deriving stock Generic
+  deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
-returnToTheGathering difficulty = scenario
-  (ReturnToTheGathering . TheGathering)
-  "50011"
-  "Return To The Gathering"
-  difficulty
-  [ ".     .         farAboveYourHouse  ."
-  , ".     bedroom   attic              ."
-  , "study guestHall holeInTheWall      parlor"
-  , ".     bathroom  cellar             ."
-  , ".     .         deepBelowYourHouse ."
-  ]
+returnToTheGathering difficulty =
+  scenarioWith
+    (ReturnToTheGathering . TheGathering)
+    "50011"
+    "Return To The Gathering"
+    difficulty
+    [ ".     .         farAboveYourHouse  ."
+    , ".     bedroom   attic              ."
+    , "study guestHall holeInTheWall      parlor"
+    , ".     bathroom  cellar             ."
+    , ".     .         deepBelowYourHouse ."
+    ]
+    (referenceL .~ "01104")
 
 instance HasTokenValue ReturnToTheGathering where
   getTokenValue iid tokenFace (ReturnToTheGathering theGathering') =
@@ -44,58 +46,64 @@ instance RunMessage ReturnToTheGathering where
       Setup -> do
         investigatorIds <- allInvestigatorIds
 
-        encounterDeck <- buildEncounterDeckExcluding
-          [Enemies.ghoulPriest]
-          [ EncounterSet.ReturnToTheGathering
-          , EncounterSet.TheGathering
-          , EncounterSet.Rats
-          , EncounterSet.GhoulsOfUmordhoth
-          , EncounterSet.StrikingFear
-          , EncounterSet.AncientEvils
-          , EncounterSet.ChillingCold
-          ]
-
-        (studyId, placeStudy) <- placeLocationCard
-          Locations.studyAberrantGateway
-        placeRest <- traverse
-          placeLocationCard_
-          [Locations.guestHall, Locations.bedroom, Locations.bathroom]
-
-        pushAll
-          $ [ SetEncounterDeck encounterDeck
-            , SetAgendaDeck
-            , SetActDeck
-            , placeStudy
+        encounterDeck <-
+          buildEncounterDeckExcluding
+            [Enemies.ghoulPriest]
+            [ EncounterSet.ReturnToTheGathering
+            , EncounterSet.TheGathering
+            , EncounterSet.Rats
+            , EncounterSet.GhoulsOfUmordhoth
+            , EncounterSet.StrikingFear
+            , EncounterSet.AncientEvils
+            , EncounterSet.ChillingCold
             ]
-          <> placeRest
-          <> [ RevealLocation Nothing studyId
-             , MoveAllTo (toSource attrs) studyId
-             , story investigatorIds theGatheringIntro
-             ]
+
+        (studyId, placeStudy) <-
+          placeLocationCard
+            Locations.studyAberrantGateway
+        placeRest <-
+          traverse
+            placeLocationCard_
+            [Locations.guestHall, Locations.bedroom, Locations.bathroom]
+
+        pushAll $
+          [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeStudy
+          ]
+            <> placeRest
+            <> [ RevealLocation Nothing studyId
+               , MoveAllTo (toSource attrs) studyId
+               , story investigatorIds theGatheringIntro
+               ]
 
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]
         cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]
 
-        setAsideCards <- genCards
-          [ Enemies.ghoulPriest
-          , Assets.litaChantler
-          , attic
-          , cellar
-          , Locations.holeInTheWall
-          , Locations.deepBelowYourHouse
-          , Locations.farAboveYourHouse
-          , Locations.parlor
-          ]
+        setAsideCards <-
+          genCards
+            [ Enemies.ghoulPriest
+            , Assets.litaChantler
+            , attic
+            , cellar
+            , Locations.holeInTheWall
+            , Locations.deepBelowYourHouse
+            , Locations.farAboveYourHouse
+            , Locations.parlor
+            ]
 
         agendas <- genCards theGatheringAgendaDeck
-        acts <- genCards
-          [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
+        acts <-
+          genCards
+            [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
 
-        ReturnToTheGathering . TheGathering <$> runMessage
-          msg
-          (attrs
-          & (setAsideCardsL .~ setAsideCards)
-          & (actStackL . at 1 ?~ acts)
-          & (agendaStackL . at 1 ?~ agendas)
-          )
+        ReturnToTheGathering . TheGathering
+          <$> runMessage
+            msg
+            ( attrs
+                & (setAsideCardsL .~ setAsideCards)
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

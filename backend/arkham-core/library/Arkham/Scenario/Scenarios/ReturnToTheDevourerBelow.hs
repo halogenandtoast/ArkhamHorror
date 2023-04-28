@@ -29,9 +29,9 @@ newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =
-  scenario
+  scenarioWith
     (ReturnToTheDevourerBelow . TheDevourerBelow)
-    "01142"
+    "50032"
     "The Devourer Below"
     difficulty
     [ "woods1     .     woods2"
@@ -40,6 +40,7 @@ returnToTheDevourerBelow difficulty =
     , "woods3 ritualSite woods4"
     , "   .   ritualSite   .  "
     ]
+    (referenceL .~ "01142")
 
 instance HasTokenValue ReturnToTheDevourerBelow where
   getTokenValue iid tokenFace (ReturnToTheDevourerBelow theDevourerBelow') =
@@ -147,13 +148,11 @@ instance RunMessage ReturnToTheDevourerBelow where
             )
       CreateEnemy creation@(enemyCreationMethod -> SpawnAtLocation lid) | toCardCode (enemyCreationCard creation) == "01157" -> do
         name <- field LocationName lid
-        if name == "Ritual Site"
-          then do
-            vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
-            push $
-              AttachStoryTreacheryTo
-                vaultOfEarthlyDemise
-                (CardCodeTarget "00157")
-            pure s
-          else pure s
+        when (name == "Ritual Site") $ do
+          vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
+          push $
+            AttachStoryTreacheryTo
+              vaultOfEarthlyDemise
+              (toTarget $ enemyCreationEnemyId creation)
+        pure s
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

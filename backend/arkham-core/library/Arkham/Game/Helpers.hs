@@ -70,8 +70,8 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Monad.Reader (local)
-import Data.Set qualified as Set
 import Data.List.Extra (nubOrdOn)
+import Data.Set qualified as Set
 
 replaceThisCard :: Card -> Source -> Source
 replaceThisCard c = \case
@@ -1051,6 +1051,7 @@ onSameLocation iid = \case
       (field InvestigatorLocation iid')
       (field InvestigatorLocation iid)
   Unplaced -> pure False
+  Global -> pure True
   Limbo -> pure False
   OutOfPlay _ -> pure False
   StillInHand _ -> pure False
@@ -1211,11 +1212,15 @@ passesCriteria iid mcard source windows' = \case
     AssetSource aid -> do
       placement <- field AssetPlacement aid
       onSameLocation iid placement
-    EnemySource eid ->
-      liftA2
-        (==)
-        (selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid)
-        (field InvestigatorLocation iid)
+    EnemySource eid -> do
+      placement <- field EnemyPlacement eid
+      case placement of
+        Global -> pure True
+        _ ->
+          liftA2
+            (==)
+            (selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid)
+            (field InvestigatorLocation iid)
     TreacherySource tid ->
       field TreacheryAttachedTarget tid >>= \case
         Just (LocationTarget lid) ->
@@ -1457,7 +1462,7 @@ passesEnemyCriteria _iid source windows' criterion =
         getAttackingEnemy = \case
           Window _ (Window.EnemyAttacks details) -> Just $ attackEnemy details
           _ -> Nothing
-       in
+      in
         case mapMaybe getAttackingEnemy windows' of
           [] -> error "can not be called without enemy source"
           xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)

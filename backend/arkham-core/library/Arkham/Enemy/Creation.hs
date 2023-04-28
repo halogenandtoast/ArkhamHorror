@@ -41,6 +41,7 @@ data EnemyCreation msg = MkEnemyCreation
   , enemyCreationMethod :: EnemyCreationMethod
   , enemyCreationTarget :: Maybe Target
   , enemyCreationAfter :: [msg]
+  , enemyCreationInvestigator :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

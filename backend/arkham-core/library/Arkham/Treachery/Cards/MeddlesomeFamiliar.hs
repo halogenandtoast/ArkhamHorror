@@ -32,13 +32,13 @@ instance RunMessage MeddlesomeFamiliar where
           if brownJenkinInPlay then Enemies.swarmOfRats else Enemies.brownJenkin
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.brownJenkin -> do
-      spawnBrownJenkin <- createEnemy2 card (locationWithInvestigator iid)
-      pushAll [CreateEnemy spawnBrownJenkin, InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+      spawnBrownJenkin <- toMessage <$> createEnemy card (locationWithInvestigator iid)
+      pushAll [spawnBrownJenkin, InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.swarmOfRats -> do
-      spawnSwarmOfRats <- createEnemy2 card (locationWithInvestigator iid)
+      spawnSwarmOfRats <- createEnemy card (locationWithInvestigator iid)
       push $
-        CreateEnemy $
+        toMessage $
           spawnSwarmOfRats
             { enemyCreationAfter = [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
             }

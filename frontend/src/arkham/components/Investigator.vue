@@ -236,7 +236,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       />
       <template v-if="debug">
         <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
-        <button @click="debugChoose({tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
+        <button @click="debugChoose({tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
       <PoolItem
         type="sanity"
@@ -246,7 +246,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       />
       <template v-if="debug">
         <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
-        <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
+        <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
       <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
       <span v-if="player.additionalActions.length > 0">

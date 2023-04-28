@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MaskedCarnevaleGoer_18
-  ( maskedCarnevaleGoer_18
-  , MaskedCarnevaleGoer_18(..)
-  ) where
+module Arkham.Asset.Cards.MaskedCarnevaleGoer_18 (
+  maskedCarnevaleGoer_18,
+  MaskedCarnevaleGoer_18 (..),
+) where
 
 import Arkham.Prelude
 
@@ -33,43 +33,48 @@ instance HasAbilities MaskedCarnevaleGoer_18 where
     ]
 
 locationOf :: AssetAttrs -> LocationId
-locationOf AssetAttrs { assetPlacement } = case assetPlacement of
+locationOf AssetAttrs {assetPlacement} = case assetPlacement of
   AtLocation lid -> lid
   _ -> error "impossible"
 
 instance RunMessage MaskedCarnevaleGoer_18 where
   runMessage msg a@(MaskedCarnevaleGoer_18 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ Flip iid (toSource iid) (toTarget attrs)
+      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
       pure a
-    Flip _ _ (isTarget attrs -> True) -> do
+    Flip _ source (isTarget attrs -> True) -> do
       let
         lid = locationOf attrs
         elisabettaMagro = lookupCard Enemies.elisabettaMagro (toCardId attrs)
       investigators <- selectList $ investigatorAt $ locationOf attrs
       lead <- getLead
-      (enemyId, createElisabettaMagro) <- createEnemyAt
-        elisabettaMagro
-        lid
-        Nothing
-      pushAll
+      (enemyId, createElisabettaMagro) <-
+        createEnemyAt
+          elisabettaMagro
+          lid
+          Nothing
+      pushAll $
         [ createElisabettaMagro
         , Flipped (toSource attrs) elisabettaMagro
-        , chooseOrRunOneAtATime
-          lead
-          [ targetLabel
-              investigator
-              [EnemyAttack $ enemyAttack enemyId investigator]
-          | investigator <- investigators
-          ]
         ]
+          <> [ chooseOrRunOneAtATime
+              lead
+              [ targetLabel
+                investigator
+                [EnemyAttack $ enemyAttack enemyId investigator]
+              | investigator <- investigators
+              ]
+             | isAbilitySource attrs 1 source
+             , notNull investigators
+             ]
       pure a
     LookAtRevealed iid source target | isTarget a target -> do
       let elisabettaMagro = lookupCard Enemies.elisabettaMagro (toCardId attrs)
       lead <- getLead
-      a <$ pushAll
-        [ FocusCards [elisabettaMagro]
-        , chooseOne lead [Label "Continue" [UnfocusCards]]
-        , Flip iid source target
-        ]
+      a
+        <$ pushAll
+          [ FocusCards [elisabettaMagro]
+          , chooseOne lead [Label "Continue" [UnfocusCards]]
+          , Flip iid source target
+          ]
     _ -> MaskedCarnevaleGoer_18 <$> runMessage msg attrs

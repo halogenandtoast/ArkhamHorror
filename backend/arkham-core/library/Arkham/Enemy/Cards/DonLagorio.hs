@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.DonLagorio
-  ( donLagorio
-  , DonLagorio(..)
-  ) where
+module Arkham.Enemy.Cards.DonLagorio (
+  donLagorio,
+  DonLagorio (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 
 newtype DonLagorio = DonLagorio EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 donLagorio :: EnemyCard DonLagorio
@@ -26,8 +26,12 @@ instance HasModifiersFor DonLagorio where
     case enemyLocation of
       Nothing -> pure []
       Just loc -> do
-        counterClockwiseLocationId <- getCounterClockwiseLocation loc
-        pure $ toModifiers attrs [HunterConnectedTo counterClockwiseLocationId]
+        mCounterClockwiseLocationId <- getCounterClockwiseLocation loc
+        pure $ toModifiers attrs $ case mCounterClockwiseLocationId of
+          Nothing -> []
+          Just counterClockwiseLocationId ->
+            [ HunterConnectedTo counterClockwiseLocationId
+            ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DonLagorio where

@@ -225,6 +225,7 @@ data EnemyMatcher
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
+  | EnemyWithPlacement Placement
   deriving stock (Show, Eq, Ord)
 
 instance Semigroup EnemyMatcher where

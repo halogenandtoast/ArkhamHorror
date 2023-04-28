@@ -35,11 +35,10 @@ instance HasAbilities FloodedSquare where
           attrs
           1
           ( Here
-              <> EnemyCriteria
-                ( EnemyExists $
-                    NonEliteEnemy
-                      <> EnemyAt
-                        (LocationInDirection RightOf $ LocationWithId $ toId attrs)
+              <> enemyExists
+                ( NonEliteEnemy
+                    <> EnemyAt
+                      (LocationInDirection RightOf $ LocationWithId $ toId attrs)
                 )
           )
           $ ActionAbility Nothing
@@ -49,11 +48,12 @@ instance HasAbilities FloodedSquare where
 instance RunMessage FloodedSquare where
   runMessage msg l@(FloodedSquare attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
-      nonEliteEnemies <- selectList $ NonEliteEnemy <> enemyAt counterClockwiseLocation
-      push $
-        chooseOne
-          iid
-          [targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- nonEliteEnemies]
+      mCounterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
+      for_ mCounterClockwiseLocation $ \counterClockwiseLocation -> do
+        nonEliteEnemies <- selectList $ NonEliteEnemy <> enemyAt counterClockwiseLocation
+        push $
+          chooseOne
+            iid
+            [targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- nonEliteEnemies]
       pure l
     _ -> FloodedSquare <$> runMessage msg attrs

@@ -143,6 +143,10 @@ instance IsMessage (HandDiscard Message) where
   toMessage = DiscardFromHand
   {-# INLINE toMessage #-}
 
+instance IsMessage (EnemyCreation Message) where
+  toMessage = CreateEnemy
+  {-# INLINE toMessage #-}
+
 data ReplaceStrategy = DefaultReplace | Swap
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MaskedCarnevaleGoer_20
-  ( maskedCarnevaleGoer_20
-  , MaskedCarnevaleGoer_20(..)
-  ) where
+module Arkham.Asset.Cards.MaskedCarnevaleGoer_20 (
+  maskedCarnevaleGoer_20,
+  MaskedCarnevaleGoer_20 (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,40 +25,43 @@ maskedCarnevaleGoer_20 =
 
 instance HasAbilities MaskedCarnevaleGoer_20 where
   getAbilities (MaskedCarnevaleGoer_20 x) =
-    [ restrictedAbility x 1 OnSameLocation
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> ClueCost 1
+    [ restrictedAbility x 1 OnSameLocation $
+        ActionAbility Nothing $
+          ActionCost 1
+            <> ClueCost 1
     ]
 
 locationOf :: AssetAttrs -> LocationId
-locationOf AssetAttrs { assetPlacement } = case assetPlacement of
+locationOf AssetAttrs {assetPlacement} = case assetPlacement of
   AtLocation lid -> lid
   _ -> error "impossible"
 
 instance RunMessage MaskedCarnevaleGoer_20 where
   runMessage msg a@(MaskedCarnevaleGoer_20 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ Flip iid (toSource iid) (toTarget attrs)
+      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
       pure a
-    Flip _ _ (isTarget a -> True) -> do
+    Flip _ source (isTarget a -> True) -> do
       let
         lid = locationOf attrs
         savioCorvi = lookupCard Enemies.savioCorvi (toCardId attrs)
       investigators <- selectList $ investigatorAt $ locationOf attrs
       lead <- getLead
       (enemyId, createSavioCorvi) <- createEnemyAt savioCorvi lid Nothing
-      pushAll
+      pushAll $
         [ createSavioCorvi
         , Flipped (toSource attrs) savioCorvi
-        , chooseOrRunOneAtATime
-          lead
-          [ targetLabel
-              investigator
-              [EnemyAttack $ enemyAttack enemyId investigator]
-          | investigator <- investigators
-          ]
         ]
+          <> [ chooseOrRunOneAtATime
+              lead
+              [ targetLabel
+                investigator
+                [EnemyAttack $ enemyAttack enemyId investigator]
+              | investigator <- investigators
+              ]
+             | isAbilitySource attrs 1 source
+             , notNull investigators
+             ]
       pure a
     LookAtRevealed _ _ (isTarget a -> True) -> do
       let savioCorvi = lookupCard Enemies.savioCorvi (toCardId attrs)

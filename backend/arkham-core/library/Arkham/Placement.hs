@@ -22,6 +22,7 @@ data Placement
   | AttachedToInvestigator InvestigatorId
   | Unplaced
   | Limbo
+  | Global
   | OutOfPlay OutOfPlayZone
   deriving stock (Show, Eq, Ord)
 
@@ -38,6 +39,7 @@ placementToAttached = \case
   AttachedToAgenda aid -> Just $ AgendaTarget aid
   AttachedToInvestigator iid -> Just $ InvestigatorTarget iid
   Unplaced -> Nothing
+  Global -> Nothing
   Limbo -> Nothing
   OutOfPlay _ -> Nothing
   StillInHand _ -> Nothing

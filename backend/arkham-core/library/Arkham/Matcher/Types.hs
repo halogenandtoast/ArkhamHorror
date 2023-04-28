@@ -94,6 +94,7 @@ data InvestigatorMatcher
   | TopCardOfDeckIs CardMatcher
   | YetToTakeTurn
   | NotInvestigator InvestigatorMatcher
+  | InvestigatorThatMovedDuringTurn
   | InvestigatorWithSupply Supply
   | InvestigatorCanDiscoverCluesAtOneOf LocationMatcher -- NOTE: Use matcher above
   | DeckIsEmpty

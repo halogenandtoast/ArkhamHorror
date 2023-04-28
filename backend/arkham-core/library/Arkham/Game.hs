@@ -853,6 +853,9 @@ getInvestigatorsMatching matcher = do
       field InvestigatorRemainingSanity
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
+    InvestigatorThatMovedDuringTurn -> \i -> do
+      history <- getHistory TurnHistory (toId i)
+      pure $ historyMoved history
     NotInvestigator x -> fmap not . go x
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs

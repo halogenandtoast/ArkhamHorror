@@ -155,15 +155,15 @@ gainSurge a = GainSurge (toSource a) (toTarget a)
 toDiscard :: (Sourceable source, Targetable target) => source -> target -> Message
 toDiscard source target = Discard (toSource source) (toTarget target)
 
-pushAllM :: GameT [Message] -> GameT ()
+pushAllM :: (IsMessage msg) => GameT [msg] -> GameT ()
 pushAllM mmsgs = do
   msgs <- mmsgs
-  pushAll msgs
+  pushAll $ map toMessage msgs
 
-pushM :: GameT Message -> GameT ()
+pushM :: (IsMessage msg) => GameT msg -> GameT ()
 pushM mmsg = do
   msg <- mmsg
-  push msg
+  push $ toMessage msg
 
 removeMessageType :: (HasQueue Message m) => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->

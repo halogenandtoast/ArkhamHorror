@@ -30,6 +30,7 @@ export interface ScenarioDeck {
 export interface Scenario {
   name: ScenarioName;
   id: string;
+  reference: string;
   difficulty: string;
   locationLayout: string[] | null;
   decksLayout: string[];
@@ -53,6 +54,7 @@ export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
 export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string,
+  reference: JsonDecoder.string,
   difficulty: JsonDecoder.string,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
   decksLayout: JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]'),

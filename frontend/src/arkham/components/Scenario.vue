@@ -191,12 +191,12 @@ onBeforeUnmount(() => window.cancelAnimationFrame(requestId.value))
 onMounted(() => requestId.value = window.requestAnimationFrame(drawHandler))
 
 const scenarioGuide = computed(() => {
-  const { id, difficulty } = props.scenario;
+  const { reference, difficulty } = props.scenario;
   const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
     ? 'b'
     : '';
 
-  return `${baseUrl}/img/arkham/cards/${id.replace('c', '')}${difficultySuffix}.jpg`;
+  return `${baseUrl}/img/arkham/cards/${reference.replace('c', '')}${difficultySuffix}.jpg`;
 })
 
 const scenarioDecks = computed(() => {

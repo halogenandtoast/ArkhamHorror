@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Card.CardDef where
 
 import Arkham.Prelude
 
-import Arkham.Action ( Action )
+import Arkham.Action (Action)
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -17,7 +18,7 @@ import Arkham.EncounterSet
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
-import Arkham.Keyword ( HasKeywords (..), Keyword )
+import Arkham.Keyword (HasKeywords (..), Keyword)
 import Arkham.LocationSymbol
 import Arkham.Matcher
 import Arkham.Name
@@ -48,9 +49,11 @@ $(deriveJSON defaultOptions ''EventChoice)
 $(deriveJSON defaultOptions ''CardLimit)
 
 toCardCodePairs :: CardDef -> [(CardCode, CardDef)]
-toCardCodePairs c = (toCardCode c, c) : map
-  (\cardCode -> (cardCode, c { cdArt = unCardCode cardCode }))
-  (cdAlternateCardCodes c)
+toCardCodePairs c =
+  (toCardCode c, c)
+    : map
+      (\cardCode -> (cardCode, c {cdArt = unCardCode cardCode}))
+      (cdAlternateCardCodes c)
 
 data CardDef = CardDef
   { cdCardCode :: CardCode
@@ -101,23 +104,26 @@ data CardDef = CardDef
   }
   deriving stock (Show, Eq, Ord)
 
+instance IsCardMatcher CardDef where
+  toCardMatcher = cardIs
+
 isSignature :: CardDef -> Bool
 isSignature = any isSignatureDeckRestriction . cdDeckRestrictions
-  where
-    isSignatureDeckRestriction = \case
-      Signature _ -> True
+ where
+  isSignatureDeckRestriction = \case
+    Signature _ -> True
 
 instance Named CardDef where
   toName = cdName
 
 subTypeL :: Lens' CardDef (Maybe CardSubType)
-subTypeL = lens cdCardSubType $ \m x -> m { cdCardSubType = x }
+subTypeL = lens cdCardSubType $ \m x -> m {cdCardSubType = x}
 
 keywordsL :: Lens' CardDef (Set Keyword)
-keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
+keywordsL = lens cdKeywords $ \m x -> m {cdKeywords = x}
 
 cardTraitsL :: Lens' CardDef (Set Trait)
-cardTraitsL = lens cdCardTraits $ \m x -> m { cdCardTraits = x }
+cardTraitsL = lens cdCardTraits $ \m x -> m {cdCardTraits = x}
 
 class GetCardDef m a where
   getCardDef :: a -> m CardDef
@@ -125,7 +131,7 @@ class GetCardDef m a where
 class HasCardDef a where
   toCardDef :: a -> CardDef
 
-hasRevelation :: HasCardDef a => a -> Bool
+hasRevelation :: (HasCardDef a) => a -> Bool
 hasRevelation = cdRevelation . toCardDef
 
 class HasOriginalCardCode a where
@@ -134,13 +140,13 @@ class HasOriginalCardCode a where
 class HasCardType a where
   toCardType :: a -> CardType
 
-instance HasCardDef a => HasCardType a where
+instance (HasCardDef a) => HasCardType a where
   toCardType = cdCardType . toCardDef
 
-instance {-# OVERLAPPABLE #-} HasCardDef a => HasTraits a where
+instance {-# OVERLAPPABLE #-} (HasCardDef a) => HasTraits a where
   toTraits = cdCardTraits . toCardDef
 
-instance HasCardDef a => HasKeywords a where
+instance (HasCardDef a) => HasKeywords a where
   toKeywords = cdKeywords . toCardDef
 
 instance HasCardDef CardDef where

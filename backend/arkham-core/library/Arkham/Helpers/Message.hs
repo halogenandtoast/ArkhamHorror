@@ -9,6 +9,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Deck
 import Arkham.Draw.Types
+import Arkham.Enemy.Creation
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
@@ -20,7 +21,8 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..), WindowType )
+import Arkham.Window (Window (..), WindowType)
+import Arkham.Zone
 
 drawCards
   :: (MonadRandom m, Sourceable source)
@@ -42,7 +44,7 @@ drawCardsAction i source n = do
   drawing <- newCardDraw i source n
   pure $ DrawCards $ asDrawAction drawing
 
-resolveWithWindow :: HasGame m => Message -> WindowType -> m [Message]
+resolveWithWindow :: (HasGame m) => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do
   whenWindow <- checkWindows [Window Timing.When window']
   atIfWindow <- checkWindows [Window Timing.AtIf window']
@@ -61,8 +63,8 @@ dealAdditionalDamage iid amount additionalMessages = do
         newMsg = case damageMsg of
           InvestigatorDamage _ source' n horror ->
             InvestigatorDamage iid source' (n + amount) horror
-          InvestigatorDoAssignDamage _ source' strategy matcher n horror [] []
-            -> InvestigatorDoAssignDamage
+          InvestigatorDoAssignDamage _ source' strategy matcher n horror [] [] ->
+            InvestigatorDoAssignDamage
               iid
               source'
               strategy
@@ -75,52 +77,66 @@ dealAdditionalDamage iid amount additionalMessages = do
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured"
 
-createEnemy :: MonadRandom m => Card -> m (EnemyId, Message)
-createEnemy c = do
+createEnemy2
+  :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
+  => card
+  -> creationMethod
+  -> m (EnemyCreation Message)
+createEnemy2 (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
   enemyId <- getRandom
-  pure (enemyId, CreateEnemy enemyId c)
+  pure $
+    MkEnemyCreation
+      { enemyCreationCard = card
+      , enemyCreationEnemyId = enemyId
+      , enemyCreationMethod = cMethod
+      , enemyCreationAfter = []
+      , enemyCreationTarget = Nothing
+      }
 
-createEnemy_ :: MonadRandom m => Card -> m Message
+createEnemy :: (MonadRandom m) => Card -> m (EnemyId, Message)
+createEnemy c = createEnemyWithPlacement c Unplaced
+
+createEnemy_ :: (MonadRandom m) => Card -> m Message
 createEnemy_ = fmap snd . createEnemy
 
-createEnemyWithPlacement :: MonadRandom m => Card -> Placement -> m (EnemyId, Message)
+createEnemyWithPlacement :: (MonadRandom m) => Card -> Placement -> m (EnemyId, Message)
 createEnemyWithPlacement c placement = do
-  enemyId <- getRandom
-  pure (enemyId, CreateEnemyWithPlacement enemyId c placement)
+  creation <- createEnemy2 c placement
+  pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyWithPlacement_ :: MonadRandom m => Card -> Placement -> m Message
+createEnemyWithPlacement_ :: (MonadRandom m) => Card -> Placement -> m Message
 createEnemyWithPlacement_ c placement = snd <$> createEnemyWithPlacement c placement
 
-createEnemyAt :: MonadRandom m => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
+createEnemyAt :: (MonadRandom m) => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
 createEnemyAt c lid mTarget = do
   enemyId <- getRandom
   pure (enemyId, CreateEnemyAt enemyId c lid mTarget)
 
-createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
+createEnemyAt_ :: (MonadRandom m) => Card -> LocationId -> Maybe Target -> m Message
 createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 
-createEnemyAtLocationMatching :: MonadRandom m => Card -> LocationMatcher -> m (EnemyId, Message)
+createEnemyAtLocationMatching :: (MonadRandom m) => Card -> LocationMatcher -> m (EnemyId, Message)
 createEnemyAtLocationMatching c matcher = do
   enemyId <- getRandom
   pure (enemyId, CreateEnemyAtLocationMatching enemyId c matcher)
 
-createEnemyAtLocationMatching_ :: MonadRandom m => Card -> LocationMatcher -> m Message
+createEnemyAtLocationMatching_ :: (MonadRandom m) => Card -> LocationMatcher -> m Message
 createEnemyAtLocationMatching_ c matcher = snd <$> createEnemyAtLocationMatching c matcher
 
-createEnemyEngagedWithPrey :: MonadRandom m => Card -> m (EnemyId, Message)
+createEnemyEngagedWithPrey :: (MonadRandom m) => Card -> m (EnemyId, Message)
 createEnemyEngagedWithPrey c = do
   enemyId <- getRandom
   pure (enemyId, CreateEnemyEngagedWithPrey enemyId c)
 
-createEnemyEngagedWithPrey_ :: MonadRandom m => Card -> m Message
+createEnemyEngagedWithPrey_ :: (MonadRandom m) => Card -> m Message
 createEnemyEngagedWithPrey_ = fmap snd . createEnemyEngagedWithPrey
 
-placeLocation :: MonadRandom m => Card -> m (LocationId, Message)
+placeLocation :: (MonadRandom m) => Card -> m (LocationId, Message)
 placeLocation c = do
   locationId <- getRandom
   pure (locationId, PlaceLocation locationId c)
 
-placeLocation_ :: MonadRandom m => Card -> m Message
+placeLocation_ :: (MonadRandom m) => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
 placeSetAsideLocation :: CardDef -> GameT (LocationId, Message)
@@ -154,15 +170,26 @@ pushM mmsg = do
   msg <- mmsg
   push msg
 
-removeMessageType :: HasQueue Message m => MessageType -> m ()
+removeMessageType :: (HasQueue Message m) => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->
   let
     (before, after) = break ((== Just msgType) . messageType) queue
     remaining = drop 1 after
-  in before <> remaining
+  in
+    before <> remaining
 
-addToHand :: IsCard a => InvestigatorId -> a -> Message
+addToHand :: (IsCard a) => InvestigatorId -> a -> Message
 addToHand i (toCard -> c) = AddToHand i [c]
 
 shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message
 shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck target
+
+findEncounterCard
+  :: (Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> [ScenarioZone]
+  -> cardMatcher
+  -> Message
+findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
+  FindEncounterCard iid target zones cardMatcher

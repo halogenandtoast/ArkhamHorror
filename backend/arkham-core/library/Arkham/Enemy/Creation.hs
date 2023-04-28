@@ -4,8 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Id
-import Arkham.Placement
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Target
 
 data EnemyCreationMethod
@@ -36,11 +36,11 @@ instance IsEnemyCreationMethod LocationMatcher where
   toEnemyCreationMethod = SpawnAtLocationMatching
 
 data EnemyCreation msg = MkEnemyCreation
-  { spawnCard :: Card
-  , spawnEnemyId :: EnemyId
-  , spawnMethod :: EnemyCreationMethod
-  , spawnTarget :: Maybe Target
-  , spawnAfter :: [msg]
+  { enemyCreationCard :: Card
+  , enemyCreationEnemyId :: EnemyId
+  , enemyCreationMethod :: EnemyCreationMethod
+  , enemyCreationTarget :: Maybe Target
+  , enemyCreationAfter :: [msg]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

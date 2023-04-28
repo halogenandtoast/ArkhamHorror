@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Matcher.Types where
 
 import Arkham.Prelude
 
-import Arkham.Act.Sequence ( ActSide )
-import Arkham.Action ( Action )
+import Arkham.Act.Sequence (ActSide)
+import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
@@ -20,7 +21,7 @@ import Arkham.Deck
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Keyword ( Keyword )
+import Arkham.Keyword (Keyword)
 import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
@@ -304,8 +305,8 @@ data LocationMatcher
   | LocationNotInPlay
   | FarthestLocationFromLocation LocationId LocationMatcher
   | NearestLocationToLocation LocationId LocationMatcher
-    --                           ^ start
-  | FarthestLocationFromYou LocationMatcher
+  | --                           ^ start
+    FarthestLocationFromYou LocationMatcher
   | FarthestLocationFromAll LocationMatcher
   | NearestLocationToYou LocationMatcher
   | LocationWithTrait Trait
@@ -325,14 +326,14 @@ data LocationMatcher
   | ClosestPathLocation LocationId LocationId
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
-  | LocationWithLowerShroudThan LocationMatcher
-  -- ^ start destination / end destination
+  | -- | start destination / end destination
+    LocationWithLowerShroudThan LocationMatcher
   | BlockedLocation
-  | ThisLocation
-  -- ^ only useful for windows
+  | -- | only useful for windows
+    ThisLocation
   | IsIchtacasDestination
-  | LocationIsInFrontOf InvestigatorMatcher
-  -- ^ Scenario specific criteria
+  | -- | Scenario specific criteria
+    LocationIsInFrontOf InvestigatorMatcher
   deriving stock (Show, Eq, Ord)
 
 class IsLocationMatcher a where
@@ -352,7 +353,7 @@ instance Semigroup LocationMatcher where
   x <> LocationMatchAll xs = LocationMatchAll (x : xs)
   x <> y = LocationMatchAll [x, y]
 
-newtype AnyLocationMatcher = AnyLocationMatcher { getAnyLocationMatcher :: LocationMatcher }
+newtype AnyLocationMatcher = AnyLocationMatcher {getAnyLocationMatcher :: LocationMatcher}
 
 instance Semigroup AnyLocationMatcher where
   AnyLocationMatcher l <> AnyLocationMatcher r =
@@ -491,9 +492,17 @@ instance Semigroup CardMatcher where
 instance Monoid CardMatcher where
   mempty = AnyCard
 
-data DiscardedPlayerCardMatcher = DiscardedCardMatcher
-  InvestigatorMatcher
-  CardMatcher
+class IsCardMatcher a where
+  toCardMatcher :: a -> CardMatcher
+
+instance IsCardMatcher CardMatcher where
+  toCardMatcher = id
+  {-# INLINE toCardMatcher #-}
+
+data DiscardedPlayerCardMatcher
+  = DiscardedCardMatcher
+      InvestigatorMatcher
+      CardMatcher
   deriving stock (Show, Eq, Ord)
 
 data WindowMatcher
@@ -573,10 +582,10 @@ data WindowMatcher
   | Enters Timing Who Where
   | Leaves Timing Who Where
   | Moves Timing Who SourceMatcher Where Where
-  --                 ^ from ^ to
-  | MoveAction Timing Who Where Where
-  --                      ^ from ^ to
-  | OrWindowMatcher [WindowMatcher]
+  | --                 ^ from ^ to
+    MoveAction Timing Who Where Where
+  | --                      ^ from ^ to
+    OrWindowMatcher [WindowMatcher]
   | DealtDamage Timing SourceMatcher Who
   | DealtHorror Timing SourceMatcher Who
   | AssignedHorror Timing Who TargetListMatcher
@@ -715,7 +724,7 @@ data SkillTestValueMatcher
   deriving stock (Show, Eq, Ord)
 
 data TokenMatcher
-  =  WithNegativeModifier
+  = WithNegativeModifier
   | TokenFaceIs TokenFace
   | TokenFaceIsNot TokenFace
   | TokenMatchesAny [TokenMatcher]
@@ -778,7 +787,11 @@ instance Semigroup AbilityMatcher where
 instance Monoid AbilityMatcher where
   mempty = AnyAbility
 
-data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards | DifferentLengthIsAtLeast Int CardMatcher
+data CardListMatcher
+  = LengthIs ValueMatcher
+  | HasCard CardMatcher
+  | AnyCards
+  | DifferentLengthIsAtLeast Int CardMatcher
   deriving stock (Show, Eq, Ord)
 
 data DeckMatcher
@@ -857,10 +870,10 @@ data RemoveDoomMatchers = RemoveDoomMatchers
   }
   deriving stock (Show, Eq, Ord)
 
-newtype RemainingActMatcher = RemainingActMatcher { unRemainingActMatcher :: ActMatcher }
+newtype RemainingActMatcher = RemainingActMatcher {unRemainingActMatcher :: ActMatcher}
   deriving stock (Show, Eq, Ord)
 
-$(do
+$( do
     ability <- deriveJSON defaultOptions ''AbilityMatcher
     act <- deriveJSON defaultOptions ''ActMatcher
     action <- deriveJSON defaultOptions ''ActionMatcher
@@ -896,41 +909,42 @@ $(do
     value <- deriveJSON defaultOptions ''ValueMatcher
     window <- deriveJSON defaultOptions ''WindowMatcher
     windowMythosStep <- deriveJSON defaultOptions ''WindowMythosStepMatcher
-    pure $ concat
-      [ ability
-      , act
-      , action
-      , agenda
-      , asset
-      , card
-      , cardList
-      , counter
-      , damageEffect
-      , deck
-      , defeatedBy
-      , enemy
-      , enemyAttack
-      , event
-      , explore
-      , extendedCard
-      , investigator
-      , location
-      , phase
-      , phaseStep
-      , prey
-      , removeDoom
-      , skill
-      , skillTest
-      , skillTestResult
-      , skillTestValue
-      , skillType
-      , source
-      , target
-      , targetList
-      , token
-      , treachery
-      , value
-      , window
-      , windowMythosStep
-      ]
-  )
+    pure $
+      concat
+        [ ability
+        , act
+        , action
+        , agenda
+        , asset
+        , card
+        , cardList
+        , counter
+        , damageEffect
+        , deck
+        , defeatedBy
+        , enemy
+        , enemyAttack
+        , event
+        , explore
+        , extendedCard
+        , investigator
+        , location
+        , phase
+        , phaseStep
+        , prey
+        , removeDoom
+        , skill
+        , skillTest
+        , skillTestResult
+        , skillTestValue
+        , skillType
+        , source
+        , target
+        , targetList
+        , token
+        , treachery
+        , value
+        , window
+        , windowMythosStep
+        ]
+ )

@@ -8,6 +8,8 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation
+import Arkham.Helpers.Enemy
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
@@ -21,39 +23,24 @@ newtype MeddlesomeFamiliar = MeddlesomeFamiliar TreacheryAttrs
 meddlesomeFamiliar :: TreacheryCard MeddlesomeFamiliar
 meddlesomeFamiliar = treachery MeddlesomeFamiliar Cards.meddlesomeFamiliar
 
--- Revelation - If Brown Jenkin is not in play, search the encounter deck and
--- discard pile for him, spawn him at your location, and take 1 damage.
--- Otherwise, search the encounter deck and discard pile for a Swarm of Rats,
--- spawn it engaged with you, then take 1 damage
-
 instance RunMessage MeddlesomeFamiliar where
   runMessage msg t@(MeddlesomeFamiliar attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      mBrownJenken <- selectOne $ enemyIs Enemies.brownJenkin
-      case mBrownJenken of
-        Just _ ->
-          push $
-            FindEncounterCard
-              iid
-              (toTarget attrs)
-              [FromEncounterDeck, FromEncounterDiscard]
-              (cardIs Enemies.swarmOfRats)
-        Nothing -> do
-          pushAll
-            [ FindEncounterCard
-                iid
-                (toTarget attrs)
-                [FromEncounterDeck, FromEncounterDiscard]
-                (cardIs Enemies.brownJenkin)
-            , InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0
-            ]
+      brownJenkinInPlay <- getEnemyIsInPlay Enemies.brownJenkin
+      push $
+        findEncounterCard iid attrs [FromEncounterDeck, FromEncounterDiscard] $
+          if brownJenkinInPlay then Enemies.swarmOfRats else Enemies.brownJenkin
       pure t
-    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` cardIs Enemies.brownJenkin -> do
-      spawnBrownJenkin <- createEnemyAtLocationMatching_ card (locationWithInvestigator iid)
-      push spawnBrownJenkin
+    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.brownJenkin -> do
+      spawnBrownJenkin <- createEnemy2 card (locationWithInvestigator iid)
+      pushAll [CreateEnemy spawnBrownJenkin, InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
       pure t
-    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` cardIs Enemies.swarmOfRats -> do
-      spawnSwarmOfRats <- createEnemyWithPlacement_ card (InThreatArea iid)
-      push spawnSwarmOfRats
+    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.swarmOfRats -> do
+      spawnSwarmOfRats <- createEnemy2 card iid
+      push $
+        CreateEnemy $
+          spawnSwarmOfRats
+            { enemyCreationAfter = [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+            }
       pure t
     _ -> MeddlesomeFamiliar <$> runMessage msg attrs

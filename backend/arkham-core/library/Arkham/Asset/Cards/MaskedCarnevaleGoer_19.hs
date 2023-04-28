@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MaskedCarnevaleGoer_19
-  ( maskedCarnevaleGoer_19
-  , MaskedCarnevaleGoer_19(..)
-  ) where
+module Arkham.Asset.Cards.MaskedCarnevaleGoer_19 (
+  maskedCarnevaleGoer_19,
+  MaskedCarnevaleGoer_19 (..),
+) where
 
 import Arkham.Prelude
 
@@ -33,33 +33,36 @@ instance HasAbilities MaskedCarnevaleGoer_19 where
     ]
 
 locationOf :: AssetAttrs -> LocationId
-locationOf AssetAttrs { assetPlacement } = case assetPlacement of
+locationOf AssetAttrs {assetPlacement} = case assetPlacement of
   AtLocation lid -> lid
   _ -> error "impossible"
 
 instance RunMessage MaskedCarnevaleGoer_19 where
   runMessage msg a@(MaskedCarnevaleGoer_19 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ Flip iid (toSource iid) (toTarget attrs)
+      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
       pure a
-    Flip _ _ (isTarget a -> True) -> do
+    Flip _ source (isTarget a -> True) -> do
       let
         lid = locationOf attrs
         salvatoreNeri = lookupCard Enemies.salvatoreNeri (toCardId attrs)
       investigators <- selectList $ investigatorAt $ locationOf attrs
       lead <- getLead
       (enemyId, createSalvatoreNeri) <- createEnemyAt salvatoreNeri lid Nothing
-      pushAll
+      pushAll $
         [ createSalvatoreNeri
         , Flipped (toSource attrs) salvatoreNeri
-        , chooseOrRunOneAtATime
-          lead
-          [ targetLabel
-              investigator
-              [EnemyAttack $ enemyAttack enemyId investigator]
-          | investigator <- investigators
-          ]
         ]
+          <> [ chooseOrRunOneAtATime
+              lead
+              [ targetLabel
+                investigator
+                [EnemyAttack $ enemyAttack enemyId investigator]
+              | investigator <- investigators
+              ]
+             | isAbilitySource attrs 1 source
+             , notNull investigators
+             ]
       pure a
     LookAtRevealed _ _ (isTarget a -> True) -> do
       let salvatoreNeri = lookupCard Enemies.salvatoreNeri (toCardId attrs)

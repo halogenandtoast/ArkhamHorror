@@ -1,21 +1,22 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Enemy.Types
-  ( module Arkham.Enemy.Types
-  , module X
-  , Field(..)
-  ) where
+
+module Arkham.Enemy.Types (
+  module Arkham.Enemy.Types,
+  module X,
+  Field (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.Constants
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Constants
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
 import Arkham.GameValue
@@ -33,7 +34,20 @@ import Arkham.Token
 import Arkham.Trait
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EnemyId, EntityAttrs a ~ EnemyAttrs) => IsEnemy a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ EnemyId
+  , EntityAttrs a ~ EnemyAttrs
+  ) =>
+  IsEnemy a
 
 type EnemyCard a = CardBuilder EnemyId a
 
@@ -96,7 +110,7 @@ allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemy
 instance IsCard EnemyAttrs where
   toCardId = enemyCardId
   toCard e = case lookupCard (enemyOriginalCardCode e) (toCardId e) of
-    PlayerCard pc -> PlayerCard $ pc { pcOwner = enemyBearer e }
+    PlayerCard pc -> PlayerCard $ pc {pcOwner = enemyBearer e}
     ec -> ec
   toCardOwner = enemyBearer
 
@@ -123,33 +137,35 @@ enemyWith
 enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \cardId eid -> f . g $ EnemyAttrs
-      { enemyId = eid
-      , enemyCardId = cardId
-      , enemyCardCode = toCardCode cardDef
-      , enemyOriginalCardCode = toCardCode cardDef
-      , enemyPlacement = Unplaced
-      , enemyFight = fight
-      , enemyHealth = health
-      , enemyEvade = Just evade
-      , enemyDamage = 0
-      , enemyAssignedDamage = mempty
-      , enemyHealthDamage = healthDamage
-      , enemySanityDamage = sanityDamage
-      , enemyPrey = Prey Anyone
-      , enemyModifiers = mempty
-      , enemyExhausted = False
-      , enemyDoom = 0
-      , enemyClues = 0
-      , enemyResources = 0
-      , enemySpawnAt = Nothing
-      , enemySurgeIfUnableToSpawn = False
-      , enemyAsSelfLocation = Nothing
-      , enemyMovedFromHunterKeyword = False
-      , enemyDamageStrategy = DamageAny
-      , enemyBearer = Nothing
-      , enemySealedTokens = []
-      }
+    , cbCardBuilder = \cardId eid ->
+        f . g $
+          EnemyAttrs
+            { enemyId = eid
+            , enemyCardId = cardId
+            , enemyCardCode = toCardCode cardDef
+            , enemyOriginalCardCode = toCardCode cardDef
+            , enemyPlacement = Unplaced
+            , enemyFight = fight
+            , enemyHealth = health
+            , enemyEvade = Just evade
+            , enemyDamage = 0
+            , enemyAssignedDamage = mempty
+            , enemyHealthDamage = healthDamage
+            , enemySanityDamage = sanityDamage
+            , enemyPrey = Prey Anyone
+            , enemyModifiers = mempty
+            , enemyExhausted = False
+            , enemyDoom = 0
+            , enemyClues = 0
+            , enemyResources = 0
+            , enemySpawnAt = Nothing
+            , enemySurgeIfUnableToSpawn = False
+            , enemyAsSelfLocation = Nothing
+            , enemyMovedFromHunterKeyword = False
+            , enemyDamageStrategy = DamageAny
+            , enemyBearer = Nothing
+            , enemySealedTokens = []
+            }
     }
 
 instance HasAbilities EnemyAttrs where
@@ -157,27 +173,28 @@ instance HasAbilities EnemyAttrs where
     [ restrictedAbility
         e
         AbilityAttack
-        (OnSameLocation
-        <> AnyCriterion
-             [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
-             , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
-             ]
-        <> (EnemyCriteria $ ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+        ( OnSameLocation
+            <> AnyCriterion
+              [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
+              , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
+              ]
+            <> (EnemyCriteria $ ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
         )
-      $ ActionAbility (Just Action.Fight) (ActionCost 1)
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility
         e
         AbilityEvade
         (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
-      $ ActionAbility (Just Action.Evade) (ActionCost 1)
+        $ ActionAbility (Just Action.Evade) (ActionCost 1)
     , restrictedAbility
         e
         AbilityEngage
-        (OnSameLocation
-        <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
-        <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
+        ( OnSameLocation
+            <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+            <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
+            <> Negate (EnemyCriteria $ ThisEnemy $ EnemyWithPlacement Global)
         )
-      $ ActionAbility (Just Action.Engage) (ActionCost 1)
+        $ ActionAbility (Just Action.Engage) (ActionCost 1)
     ]
 
 instance Entity EnemyAttrs where
@@ -192,7 +209,7 @@ instance Named EnemyAttrs where
 
 instance Targetable EnemyAttrs where
   toTarget = EnemyTarget . toId
-  isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
+  isTarget EnemyAttrs {enemyId} (EnemyTarget eid) = enemyId == eid
   isTarget attrs (CardCodeTarget cardCode) = toCardCode attrs == cardCode
   isTarget attrs (CardIdTarget cardId) = toCardId attrs == cardId
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
@@ -200,11 +217,11 @@ instance Targetable EnemyAttrs where
 
 instance Sourceable EnemyAttrs where
   toSource = EnemySource . toId
-  isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
+  isSource EnemyAttrs {enemyId} (EnemySource eid) = enemyId == eid
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource _ _ = False
 
-data Enemy = forall a . IsEnemy a => Enemy a
+data Enemy = forall a. (IsEnemy a) => Enemy a
 
 type instance IdOf EnemyId = Enemy
 
@@ -240,9 +257,9 @@ instance Sourceable Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-data SomeEnemyCard = forall a . IsEnemy a => SomeEnemyCard (EnemyCard a)
+data SomeEnemyCard = forall a. (IsEnemy a) => SomeEnemyCard (EnemyCard a)
 
-liftSomeEnemyCard :: (forall a . EnemyCard a -> b) -> SomeEnemyCard -> b
+liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
 liftSomeEnemyCard f (SomeEnemyCard a) = f a
 
 someEnemyCardCode :: SomeEnemyCard -> CardCode

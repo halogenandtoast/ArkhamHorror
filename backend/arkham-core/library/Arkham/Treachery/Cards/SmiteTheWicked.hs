@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Creation
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
@@ -20,10 +21,12 @@ smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
 instance HasAbilities SmiteTheWicked where
   getAbilities (SmiteTheWicked a) =
-    [ mkAbility a 1 $ ForcedAbility $ OrWindowMatcher
-        [ GameEnds Timing.When
-        , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-        ]
+    [ mkAbility a 1 $
+      ForcedAbility $
+        OrWindowMatcher
+          [ GameEnds Timing.When
+          , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+          ]
     | iid <- maybeToList (treacheryOwner a)
     ]
 
@@ -35,16 +38,10 @@ instance RunMessage SmiteTheWicked where
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       for_ mcard $ \card -> do
         let ownerId = fromJustNote "has to be set" treacheryOwner
-        farthestLocations <- selectList $ FarthestLocationFromYou Anywhere
-        (enemyId, enemyCreation) <- createEnemy (EncounterCard card)
+        enemyCreation <- createEnemy (EncounterCard card) (FarthestLocationFromYou Anywhere)
         pushAll
-          [ enemyCreation
-          , AttachTreachery treacheryId (EnemyTarget enemyId)
-          , chooseOne
-            ownerId
-            [ targetLabel lid [EnemySpawn Nothing lid enemyId]
-            | lid <- farthestLocations
-            ]
+          [ toMessage $ enemyCreation {enemyCreationInvestigator = Just ownerId}
+          , AttachTreachery treacheryId (toTarget $ enemyCreationEnemyId enemyCreation)
           ]
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do

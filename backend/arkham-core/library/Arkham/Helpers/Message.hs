@@ -77,12 +77,12 @@ dealAdditionalDamage iid amount additionalMessages = do
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured"
 
-createEnemy2
+createEnemy
   :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
   => card
   -> creationMethod
   -> m (EnemyCreation Message)
-createEnemy2 (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
+createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
   enemyId <- getRandom
   pure $
     MkEnemyCreation
@@ -91,17 +91,12 @@ createEnemy2 (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
       , enemyCreationMethod = cMethod
       , enemyCreationAfter = []
       , enemyCreationTarget = Nothing
+      , enemyCreationInvestigator = Nothing
       }
-
-createEnemy :: (MonadRandom m) => Card -> m (EnemyId, Message)
-createEnemy c = createEnemyWithPlacement c Unplaced
-
-createEnemy_ :: (MonadRandom m) => Card -> m Message
-createEnemy_ = fmap snd . createEnemy
 
 createEnemyWithPlacement :: (MonadRandom m) => Card -> Placement -> m (EnemyId, Message)
 createEnemyWithPlacement c placement = do
-  creation <- createEnemy2 c placement
+  creation <- createEnemy c placement
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
 createEnemyWithPlacement_ :: (MonadRandom m) => Card -> Placement -> m Message
@@ -109,7 +104,7 @@ createEnemyWithPlacement_ c placement = snd <$> createEnemyWithPlacement c place
 
 createEnemyAt :: (MonadRandom m) => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
 createEnemyAt c lid mTarget = do
-  creation <- createEnemy2 c lid
+  creation <- createEnemy c lid
   pure (enemyCreationEnemyId creation, CreateEnemy $ creation {enemyCreationTarget = mTarget})
 
 createEnemyAt_ :: (MonadRandom m) => Card -> LocationId -> Maybe Target -> m Message
@@ -117,7 +112,7 @@ createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 
 createEnemyAtLocationMatching :: (MonadRandom m) => Card -> LocationMatcher -> m (EnemyId, Message)
 createEnemyAtLocationMatching c matcher = do
-  creation <- createEnemy2 c matcher
+  creation <- createEnemy c matcher
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
 createEnemyAtLocationMatching_ :: (MonadRandom m) => Card -> LocationMatcher -> m Message
@@ -125,7 +120,7 @@ createEnemyAtLocationMatching_ c matcher = snd <$> createEnemyAtLocationMatching
 
 createEnemyEngagedWithPrey :: (MonadRandom m) => Card -> m (EnemyId, Message)
 createEnemyEngagedWithPrey c = do
-  creation <- createEnemy2 c SpawnEngagedWithPrey
+  creation <- createEnemy c SpawnEngagedWithPrey
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
 createEnemyEngagedWithPrey_ :: (MonadRandom m) => Card -> m Message

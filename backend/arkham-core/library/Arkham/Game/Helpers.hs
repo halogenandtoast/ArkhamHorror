@@ -539,6 +539,7 @@ getCanAffordCost iid source mAction windows' = \case
   ExileCost _ -> pure True -- TODO: Make better
   RemoveCost _ -> pure True -- TODO: Make better
   HorrorCost {} -> pure True -- TODO: Make better
+  HorrorCostX {} -> pure True -- TODO: Make better
   DamageCost {} -> pure True -- TODO: Make better
   DirectDamageCost {} -> pure True -- TODO: Make better
   InvestigatorDamageCost {} -> pure True -- TODO: Make better

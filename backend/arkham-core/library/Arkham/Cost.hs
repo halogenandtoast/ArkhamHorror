@@ -122,6 +122,7 @@ data Cost
   | DiscardCombinedCost Int
   | ShuffleDiscardCost Int CardMatcher
   | HorrorCost Source Target Int
+  | HorrorCostX Source
   | Free
   | ResourceCost Int
   | FieldResourceCost FieldCost
@@ -191,6 +192,7 @@ displayCostType = \case
   ReturnAssetToHandCost{} -> "Return asset to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
   HorrorCost _ _ n -> tshow n <> " Horror"
+  HorrorCostX _ -> "Take X Horror"
   Free -> "Free"
   ResourceCost n -> pluralize n "Resource"
   UseCost _ uType n -> case uType of

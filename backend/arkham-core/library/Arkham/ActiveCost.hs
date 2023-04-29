@@ -428,6 +428,19 @@ instance RunMessage ActiveCost where
             pushAll [AssetDamage aid source 0 x, CheckDefeated source]
             withPayment $ HorrorPayment x
           _ -> error "can't target for horror cost"
+        HorrorCostX source' -> do
+          let
+            getPlayedCard [] = error "can not find played card in windows"
+            getPlayedCard (x : xs) = case x of
+              Window _ (Window.PlayCard _ card') -> card'
+              _ -> getPlayedCard xs
+            card = getPlayedCard (activeCostWindows c)
+          availableResources <- getSpendableResources iid
+          requiredResources <- getModifiedCardCost iid card
+          let minimumHorror = max 1 (requiredResources - availableResources)
+          sanity <- field InvestigatorRemainingSanity iid
+          push $ Ask iid $ ChoosePaymentAmounts "Pay X Horror" Nothing [PaymentAmountChoice iid minimumHorror sanity $ PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)]
+          pure c
         DamageCost _ target x -> case target of
           InvestigatorTarget iid' | iid' == iid -> do
             push (InvestigatorAssignDamage iid source DamageAny x 0)

@@ -429,6 +429,7 @@ instance RunMessage ActiveCost where
             withPayment $ HorrorPayment x
           _ -> error "can't target for horror cost"
         HorrorCostX source' -> do
+          -- see: The Black Book as that is the only card that uses this
           let
             getPlayedCard [] = error "can not find played card in windows"
             getPlayedCard (x : xs) = case x of

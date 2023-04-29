@@ -42,6 +42,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Modifier (ModifierType (DoNotRemoveDoom))
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
@@ -928,7 +929,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     enemies <-
       selectListMap
         EnemyTarget
-        (removeDoomEnemies <> Matcher.EnemyWithAnyDoom)
+        (removeDoomEnemies <> Matcher.EnemyWithAnyDoom <> Matcher.EnemyWithoutModifier DoNotRemoveDoom)
     assets <-
       selectListMap
         AssetTarget

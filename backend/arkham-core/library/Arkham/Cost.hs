@@ -122,7 +122,7 @@ data Cost
   | DiscardCombinedCost Int
   | ShuffleDiscardCost Int CardMatcher
   | HorrorCost Source Target Int
-  | HorrorCostX Source
+  | HorrorCostX Source -- for The Black Book
   | Free
   | ResourceCost Int
   | FieldResourceCost FieldCost

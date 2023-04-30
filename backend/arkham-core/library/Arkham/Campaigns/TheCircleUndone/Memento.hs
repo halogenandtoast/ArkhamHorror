@@ -6,8 +6,8 @@ data Memento
   = MesmerizingFlute
   | RitualComponents
   | ScrapOfTownShadow
-  | GilmansJournal
-  | KeziahsFormulae
+  | Gilman'sJournal
+  | Keziah'sFormulae
   | WornCrucifix
   | WispOfSpectralMist
   deriving stock (Show, Eq, Generic)

@@ -254,7 +254,7 @@ instance RunMessage TheSecretName where
       pure . TheSecretName $ attrs `with` meta { brownJenkinDefeated = True }
     EnemyDefeated _ "05149" _ _ -> do
       pure . TheSecretName $ attrs `with` meta { nahabDefeated = True }
-    ScenarioResolution res -> do
+    ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
       step <- getCurrentActStep
       lead <- getLead
@@ -270,7 +270,7 @@ instance RunMessage TheSecretName where
               ]
             | iid <- iids
             ]
-      case res of
+      case resolution of
         NoResolution -> pushAll [story iids noResolution, scenarioResolution 1]
         Resolution 1 -> do
           gainXp <- toGainXp $ getXpWithBonus (brownJenkinBonus + nahabBonus)  
@@ -280,6 +280,7 @@ instance RunMessage TheSecretName where
             <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
             <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
             <> [addTheBlackBook | step >= 2 ]
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
           gainXp <- toGainXp $ getXpWithBonus 2
           pushAll
@@ -290,7 +291,8 @@ instance RunMessage TheSecretName where
                   , Keziah'sFormulae
                   , WornCrucifix
                   ]
-                , addTheBlackBook
+               , addTheBlackBook
+               , EndOfGame Nothing
                ]
         _ -> error "invalid resolution"
       pure s

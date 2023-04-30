@@ -7,16 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding ( PlayCard )
+import Arkham.Asset.Runner hiding (PlayCard)
 import Arkham.Card
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype TheBlackBook = TheBlackBook AssetAttrs
@@ -30,11 +28,13 @@ instance HasModifiersFor TheBlackBook where
   getModifiersFor (InvestigatorTarget iid) (TheBlackBook a)
     | controlledBy a iid = do
         sanity <- field InvestigatorRemainingSanity iid
-        pure $ toModifiers a
-          [ SkillModifier SkillWillpower 1
-          , SkillModifier SkillIntellect 1
-          , CanReduceCostOf AnyCard sanity
-          ]
+        pure $
+          toModifiers
+            a
+            [ SkillModifier SkillWillpower 1
+            , SkillModifier SkillIntellect 1
+            , CanReduceCostOf AnyCard sanity
+            ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBlackBook where
@@ -59,14 +59,10 @@ windowToCard (_ : xs) = windowToCard xs
 instance RunMessage TheBlackBook where
   runMessage msg a@(TheBlackBook attrs) = case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (windowToCard -> card) (toHorror -> n) -> do
-      push $ CreateWindowModifierEffect
-        (EffectCardCostWindow $ toCardId card)
-        (EffectModifiers $ toModifiers
+      push $
+        createCostModifiers
           attrs
-          [ ReduceCostOf (CardWithId $ toCardId card) n
-          ]
-        )
-        (toSource attrs)
-        (toTarget $ toCardId card)
+          card
+          [ReduceCostOf (CardWithId $ toCardId card) n]
       pure a
     _ -> TheBlackBook <$> runMessage msg attrs

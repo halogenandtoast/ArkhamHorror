@@ -1,10 +1,11 @@
-module Arkham.Helpers.Modifiers
-  ( module Arkham.Helpers.Modifiers
-  , module X
-  ) where
+module Arkham.Helpers.Modifiers (
+  module Arkham.Helpers.Modifiers,
+  module X,
+) where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
@@ -19,7 +20,7 @@ getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
 getModifiers (toTarget -> target) = do
   ignoreCanModifiers <- getIgnoreCanModifiers
   let
-    notCanModifier CanModify{} = False
+    notCanModifier CanModify {} = False
     notCanModifier _ = True
     filterF = if ignoreCanModifiers then notCanModifier else const True
   filter filterF . map modifierType <$> getModifiers' target
@@ -36,14 +37,14 @@ withoutModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
-toModifier :: Sourceable a => a -> ModifierType -> Modifier
+toModifier :: (Sourceable a) => a -> ModifierType -> Modifier
 toModifier a mType = Modifier (toSource a) mType False
 
-toModifiers :: Sourceable a => a -> [ModifierType] -> [Modifier]
+toModifiers :: (Sourceable a) => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
-toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
-toModifiersWith a f xs= map (f . toModifier a) xs
+toModifiersWith :: (Sourceable a) => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
+toModifiersWith a f xs = map (f . toModifier a) xs
 
 skillTestModifier
   :: (Sourceable source, Targetable target)
@@ -60,20 +61,43 @@ skillTestModifiers
   -> target
   -> [ModifierType]
   -> Message
-skillTestModifiers source target modifiers = CreateWindowModifierEffect
-  EffectSkillTestWindow
-  (EffectModifiers $ toModifiers source modifiers)
-  (toSource source)
-  (toTarget target)
+skillTestModifiers source target modifiers =
+  CreateWindowModifierEffect
+    EffectSkillTestWindow
+    (EffectModifiers $ toModifiers source modifiers)
+    (toSource source)
+    (toTarget target)
 
-effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
-effectModifiers source = EffectModifiers . toModifiers source 
+effectModifiers :: (Sourceable a) => a -> [ModifierType] -> EffectMetadata Window Message
+effectModifiers source = EffectModifiers . toModifiers source
 
-createWindowModifierEffect :: (Sourceable source, Targetable target) => EffectWindow -> source -> target -> [ModifierType] -> Message
-createWindowModifierEffect eWindow source target modifiers' = CreateWindowModifierEffect eWindow (effectModifiers source modifiers') (toSource source) (toTarget target)
+createWindowModifierEffect
+  :: (Sourceable source, Targetable target)
+  => EffectWindow
+  -> source
+  -> target
+  -> [ModifierType]
+  -> Message
+createWindowModifierEffect eWindow source target modifiers' =
+  CreateWindowModifierEffect
+    eWindow
+    (effectModifiers source modifiers')
+    (toSource source)
+    (toTarget target)
 
-createRoundModifier :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+createCostModifiers
+  :: (Sourceable source, IsCard card) => source -> card -> [ModifierType] -> Message
+createCostModifiers source (toCard -> card) modifiers' =
+  createWindowModifierEffect
+    (EffectCardCostWindow $ toCardId card)
+    source
+    (toCardId card)
+    modifiers'
+
+createRoundModifier
+  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow
 
-roundModifier :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+roundModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 roundModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectRoundWindow source target [modifier]

@@ -11,6 +11,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Target
@@ -93,6 +94,9 @@ createCostModifiers source (toCard -> card) modifiers' =
     source
     (toCardId card)
     modifiers'
+
+reduceCostOf :: (Sourceable source, IsCard card) => source -> card -> Int -> Message
+reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]
 
 createRoundModifier
   :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message

@@ -371,7 +371,7 @@ data Message
   | EnemyDamage EnemyId DamageAssignment
   | EnemyDamaged EnemyId DamageAssignment -- INTERNAL ONLY
   | DefeatEnemy EnemyId InvestigatorId Source -- use `defeatEnemy`
-  | EnemyDefeated EnemyId CardCode Source [Trait]
+  | EnemyDefeated EnemyId CardId Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyMove EnemyId LocationId

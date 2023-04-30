@@ -12,7 +12,7 @@ import Arkham.Card
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType
+import Arkham.SkillType ()
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -31,8 +31,8 @@ instance HasModifiersFor TheBlackBook where
         pure $
           toModifiers
             a
-            [ SkillModifier SkillWillpower 1
-            , SkillModifier SkillIntellect 1
+            [ SkillModifier #willpower 1
+            , SkillModifier #intellect 1
             , CanReduceCostOf AnyCard sanity
             ]
   getModifiersFor _ _ = pure []
@@ -58,11 +58,7 @@ windowToCard (_ : xs) = windowToCard xs
 
 instance RunMessage TheBlackBook where
   runMessage msg a@(TheBlackBook attrs) = case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (windowToCard -> card) (toHorror -> n) -> do
-      push $
-        createCostModifiers
-          attrs
-          card
-          [ReduceCostOf (CardWithId $ toCardId card) n]
+    UseCardAbility _ (isSource attrs -> True) 1 (windowToCard -> card) (toHorror -> n) -> do
+      push $ reduceCostOf attrs card n
       pure a
     _ -> TheBlackBook <$> runMessage msg attrs

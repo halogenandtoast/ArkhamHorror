@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.CoupDeGrace
-  ( coupDeGrace
-  , CoupDeGrace(..)
-  ) where
+module Arkham.Event.Cards.CoupDeGrace (
+  coupDeGrace,
+  CoupDeGrace (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Matcher hiding ( EnemyDefeated, NonAttackDamageEffect )
+import Arkham.Matcher hiding (EnemyDefeated, NonAttackDamageEffect)
 import Arkham.Message
 
 newtype CoupDeGrace = CoupDeGrace EventAttrs
@@ -25,18 +25,18 @@ instance RunMessage CoupDeGrace where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       isTurn <- iid <=~> TurnInvestigator
       enemies <-
-        selectList
-        $ EnemyAt (locationWithInvestigator iid)
-        <> EnemyCanBeDamagedBySource (toSource attrs)
-      pushAll
-        $ chooseOrRunOne
-            iid
-            [ targetLabel
-                enemy
-                [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
-            | enemy <- enemies
-            ]
-        : [ ChooseEndTurn iid | isTurn ]
+        selectList $
+          EnemyAt (locationWithInvestigator iid)
+            <> EnemyCanBeDamagedBySource (toSource attrs)
+      pushAll $
+        chooseOrRunOne
+          iid
+          [ targetLabel
+            enemy
+            [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
+          | enemy <- enemies
+          ]
+          : [ChooseEndTurn iid | isTurn]
       pure e
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       drawing <- drawCards (eventController attrs) attrs 1

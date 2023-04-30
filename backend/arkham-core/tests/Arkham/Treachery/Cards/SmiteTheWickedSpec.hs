@@ -81,7 +81,7 @@ spec = describe "Smite the Wicked" $ do
         pushAll
           [ Msg.EnemyDefeated
               enemyId
-              (toCardCode enemy)
+              (toCardId enemy)
               (toSource investigator)
               []
           , EndOfGame Nothing

@@ -877,7 +877,7 @@ instance RunMessage EnemyAttrs where
                   , afterMsg
                   , EnemyDefeated
                       eid
-                      (toCardCode a)
+                      (toCardId a)
                       source
                       (setToList $ toTraits a)
                   ]
@@ -902,7 +902,7 @@ instance RunMessage EnemyAttrs where
         push $
           EnemyDefeated
             eid
-            (toCardCode a)
+            (toCardId a)
             source
             (setToList $ toTraits a)
       pure a

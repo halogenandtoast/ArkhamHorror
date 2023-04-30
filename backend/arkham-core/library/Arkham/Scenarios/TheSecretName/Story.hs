@@ -183,3 +183,43 @@ intro6 =  FlavorText
     \ you’re not so sure. Perhaps there is something to this old ghost story, after\
     \ all."
   ]
+
+noResolution :: FlavorText
+noResolution = FlavorText
+  (Just "No Resolution")
+  [ "Flashes of vision spark your memory as you are dragged along the dirty wooden\
+    \ floor. A foul ceremony—the house—Nahab—a rhythmic chant— the spiraling black\
+    \ vortex—a dark revelry—the Primal Chaos—a child’s cries—a writhing tunnel\
+    \ inside your chest."
+  ]
+
+resolution1 :: FlavorText
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "You awaken in the muddy lawn at the base of some crooked wooden steps, the\
+    \ front door of the Witch House looming above you. Every fiber of your being is\
+    \ filled with regret. You know you have failed to prevent something awful, though\
+    \ you are not sure exactly what. The evidence of your eyes and ears suggests what\
+    \ you saw inside the Witch House was not concurrent with here and now.\
+    \ Regardless, you’ve learned several things about Keziah Mason, the witch who\
+    \ once inhabited this old and forsaken house. With your spirit diminished and\
+    \ your body aching, this information will have to suffice. You dare not venture\
+    \ back into this infernal house."
+  ]
+
+resolution2 :: FlavorText
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "When you come to, you are lying on the wooden floor of Walter Gilman’s room.\
+    \ The trappings of Keziah’s foul practices are nowhere to be found, nor is the\
+    \ fanged, bearded rat – Keziah’s “ familiar,” as you now understand. Just as you\
+    \ are about to rise to your feet, you spot something glinting in a corner of the\
+    \ room. Crawling underneath Gilman’s bed, you reach out and grab the trinket. It\
+    \ is a worn nickel crucifix, similar to the ones you saw in the loomfixer’s room.\
+    \ You shove it into your pocket before leaving the troubling room and its strange\
+    \ angles behind. You’ve learned as much as you care to uncover about Keziah\
+    \ Mason, the witch who once inhabited this old and forsaken house. As you step\
+    \ out into the chilly November air, you turn and take one last look at the\
+    \ decrepit Witch House. You fear that though you may never enter this place\
+    \ again, in your thoughts and your dreams, you will never truly leave it behind."
+  ]

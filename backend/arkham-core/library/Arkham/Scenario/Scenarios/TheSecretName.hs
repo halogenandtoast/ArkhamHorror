@@ -20,7 +20,7 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding ( EnemyDefeated, RevealLocation )
+import Arkham.Matcher hiding (EnemyDefeated, RevealLocation)
 import Arkham.Message
 import Arkham.Prelude
 import Arkham.Resolution
@@ -29,10 +29,10 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheSecretName.Story
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait ( Trait (Extradimensional) )
+import Arkham.Trait (Trait (Extradimensional))
 import Arkham.Treachery.Cards qualified as Treacheries
 
-data Metadata = Metadata { brownJenkinDefeated :: Bool, nahabDefeated :: Bool }
+data Metadata = Metadata {brownJenkinDefeated :: Bool, nahabDefeated :: Bool}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -227,7 +227,7 @@ instance RunMessage TheSecretName where
     ResolveToken _ Cultist iid -> do
       push $ DrawAnotherToken iid
       pure s
-    ResolveToken _ ElderThing _ | isHardExpert attrs-> do
+    ResolveToken _ ElderThing _ | isHardExpert attrs -> do
       push HuntersMove
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
@@ -250,10 +250,15 @@ instance RunMessage TheSecretName where
         ElderThing | isEasyStandard attrs -> push HuntersMove
         _ -> pure ()
       pure s
-    EnemyDefeated _ "05148" _ _ -> do
-      pure . TheSecretName $ attrs `with` meta { brownJenkinDefeated = True }
-    EnemyDefeated _ "05149" _ _ -> do
-      pure . TheSecretName $ attrs `with` meta { nahabDefeated = True }
+    EnemyDefeated _ cardId _ _ -> do
+      isBrownJenkin <- selectAny $ cardIs Enemies.brownJenkin <> CardWithId cardId
+      isNahab <- selectAny $ cardIs Enemies.nahab <> CardWithId cardId
+      pure . TheSecretName $
+        attrs
+          `with` meta
+            { brownJenkinDefeated = brownJenkinDefeated meta || isBrownJenkin
+            , nahabDefeated = nahabDefeated meta || isNahab
+            }
     ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
       step <- getCurrentActStep
@@ -261,39 +266,41 @@ instance RunMessage TheSecretName where
       let
         brownJenkinBonus = if brownJenkinDefeated meta then 1 else 0
         nahabBonus = if nahabDefeated meta then 1 else 0
-        addTheBlackBook = chooseOne lead
-          $ Label "Do not add The Black Book" []
-          : [ targetLabel
-              iid
-              [ AddCampaignCardToDeck iid Assets.theBlackBook
-              , AddToken Skull
-              ]
-            | iid <- iids
-            ]
+        addTheBlackBook =
+          chooseOne lead $
+            Label "Do not add The Black Book" []
+              : [ targetLabel
+                  iid
+                  [ AddCampaignCardToDeck iid Assets.theBlackBook
+                  , AddToken Skull
+                  ]
+                | iid <- iids
+                ]
       case resolution of
         NoResolution -> pushAll [story iids noResolution, scenarioResolution 1]
         Resolution 1 -> do
-          gainXp <- toGainXp $ getXpWithBonus (brownJenkinBonus + nahabBonus)  
-          pushAll
-            $ story iids resolution1
-            : gainXp
-            <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
-            <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
-            <> [addTheBlackBook | step >= 2 ]
-            <> [EndOfGame Nothing]
+          gainXp <- toGainXp $ getXpWithBonus (brownJenkinBonus + nahabBonus)
+          pushAll $
+            story iids resolution1
+              : gainXp
+                <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
+                <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
+                <> [addTheBlackBook | step >= 2]
+                <> [EndOfGame Nothing]
         Resolution 2 -> do
           gainXp <- toGainXp $ getXpWithBonus 2
-          pushAll
-            $ story iids resolution2
-            : gainXp
-            <> [ recordSetInsert MementosDiscovered
-                  [ Gilman'sJournal
-                  , Keziah'sFormulae
-                  , WornCrucifix
-                  ]
-               , addTheBlackBook
-               , EndOfGame Nothing
-               ]
+          pushAll $
+            story iids resolution2
+              : gainXp
+                <> [ recordSetInsert
+                      MementosDiscovered
+                      [ Gilman'sJournal
+                      , Keziah'sFormulae
+                      , WornCrucifix
+                      ]
+                   , addTheBlackBook
+                   , EndOfGame Nothing
+                   ]
         _ -> error "invalid resolution"
       pure s
     _ -> TheSecretName . (`with` meta) <$> runMessage msg attrs

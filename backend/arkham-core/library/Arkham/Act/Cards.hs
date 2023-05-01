@@ -1,6 +1,6 @@
 module Arkham.Act.Cards where
 
-import Arkham.Prelude hiding ( fold )
+import Arkham.Prelude hiding (fold)
 
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
@@ -10,188 +10,193 @@ import Arkham.EncounterSet
 import Arkham.Name
 
 act :: CardCode -> Name -> Int -> EncounterSet -> CardDef
-act cardCode name stage encounterSet = CardDef
-  { cdCardCode = cardCode
-  , cdName = name
-  , cdRevealedName = Nothing
-  , cdCost = Nothing
-  , cdAdditionalCost = Nothing
-  , cdLevel = 0
-  , cdCardType = ActType
-  , cdCardSubType = Nothing
-  , cdClassSymbols = mempty
-  , cdSkills = mempty
-  , cdCardTraits = mempty
-  , cdRevealedCardTraits = mempty
-  , cdKeywords = mempty
-  , cdFastWindow = Nothing
-  , cdActions = []
-  , cdRevelation = False
-  , cdVictoryPoints = Nothing
-  , cdVengeancePoints = Nothing
-  , cdCriteria = mempty
-  , cdOverrideActionPlayableIfCriteriaMet = False
-  , cdCommitRestrictions = mempty
-  , cdAttackOfOpportunityModifiers = mempty
-  , cdPermanent = False
-  , cdEncounterSet = Just encounterSet
-  , cdEncounterSetQuantity = Nothing
-  , cdUnique = False
-  , cdDoubleSided = True
-  , cdLimits = []
-  , cdExceptional = False
-  , cdUses = NoUses
-  , cdPlayableFromDiscard = False
-  , cdStage = Just stage
-  , cdSlots = []
-  , cdCardInHandEffects = False
-  , cdCardInDiscardEffects = False
-  , cdCardInSearchEffects = False
-  , cdAlternateCardCodes = []
-  , cdArt = unCardCode cardCode
-  , cdLocationSymbol = Nothing
-  , cdLocationRevealedSymbol = Nothing
-  , cdLocationConnections = []
-  , cdLocationRevealedConnections = []
-  , cdPurchaseMentalTrauma = Nothing
-  , cdCanReplace = True
-  , cdDeckRestrictions = []
-  }
+act cardCode name stage encounterSet =
+  CardDef
+    { cdCardCode = cardCode
+    , cdName = name
+    , cdRevealedName = Nothing
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = ActType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = mempty
+    , cdSkills = mempty
+    , cdCardTraits = mempty
+    , cdRevealedCardTraits = mempty
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = False
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Just encounterSet
+    , cdEncounterSetQuantity = Nothing
+    , cdUnique = False
+    , cdDoubleSided = True
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Just stage
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = unCardCode cardCode
+    , cdLocationSymbol = Nothing
+    , cdLocationRevealedSymbol = Nothing
+    , cdLocationConnections = []
+    , cdLocationRevealedConnections = []
+    , cdPurchaseMentalTrauma = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
 
 allActCards :: Map CardCode CardDef
-allActCards = mapFromList $ map
-  (toCardCode &&& id)
-  [ aCircleUnbroken
-  , afterHours
-  , alejandrosPlight
-  , alejandrosPrison
-  , allIn
-  , arkhamAsylum
-  , ascendingTheHillV1
-  , ascendingTheHillV2
-  , ascendingTheHillV3
-  , atTheExhibitTheBrotherhoodsPlot
-  , atTheExhibitTheRelicsLocation
-  , atTheStationInShadowedTalons
-  , atTheStationTrainTracks
-  , awakening
-  , beginnersLuck
-  , beyondTheWitchHouse
-  , breakingAndEntering
-  , campusSafety
-  , cavernOfTheForgottenAge
-  , closeTheRift
-  , crossingTheThreshold
-  , curtainCall
-  , descentIntoDark
-  , discoveringTheTruth
-  , disruptingTheRitual
-  , escapeTheCage
-  , escapeTheRuins
-  , exploringPnakotus
-  , exploringTheRainforest
-  , findTheRelic
-  , findingANewWay
-  , findingAWayInside
-  , findingLadyEsprit
-  , fold
-  , friendsInHighPlacesHenryDeveau
-  , friendsInHighPlacesHenrysInformation
-  , getTheEngineRunning
-  , getToTheBoats
-  , harlanIsInDanger
-  , harlansCurseHarlanEarnstone
-  , harlansCurseSafekeeping
-  , hiddenAgendas
-  , huntingTheRougarou
-  , huntressOfTheEztli
-  , intoTheBeyond
-  , intoTheDarkness
-  , intoTheRuins
-  , intoTheRuinsOnceAgain
-  , investigatingTheWitchHouse
-  , inLostCarcosa
-  , investigatingTheTrail
-  , journeyToTheNexus
-  , leadingTheWay
-  , lostInTheWoods
-  , magicAndScience
-  , mendTheShatter
-  , missingPersons
-  , mistakesOfThePast
-  , momentOfDoom
-  , mysteriousGateway
-  , nightAtTheMuseum
-  , noAsylum
-  , openingTheMaw
-  , openThePathAbove
-  , openThePathBelow
-  , outOfThisWorld
-  , paradiseLost
-  , pastAndPresent
-  , pathsIntoTwilight
-  , planningTheEscape
-  , pursuingShadows
-  , raceForAnswers
-  , recoverTheRelic
-  , repossession
-  , restrictedAccess
-  , ricesWhereabouts
-  , row
-  , run
-  , saracenicScript
-  , searchForAlejandro
-  , searchForTheBrotherhood
-  , searchForThePattern
-  , searchForTheRuins
-  , searchForTheStrangerV1
-  , searchForTheStrangerV2
-  , searchForTheStrangerV3
-  , searchingForAnswers
-  , searchingForTheTome
-  , skinGame
-  , stalkedByShadows
-  , stoppingTheRitual
-  , strangeOccurences
-  , strangeRelicsMariaDeSilva
-  , strangeRelicsMariasInformation
-  , theBarrier
-  , theBrotherhoodIsRevealed
-  , theCarnevaleConspiracy
-  , theCaveOfDarknessEmbroiledInBattle
-  , theCaveOfDarknessTunnelsInTheDark
-  , theChamberOfStillRemains
-  , theChamberOfTheBeast
-  , theDisappearance
-  , theGateOpens
-  , theGuardedRuins
-  , theGuardiansInquiry
-  , theKingInTatters
-  , theOath
-  , theParisianConspiracyV1
-  , theParisianConspiracyV2
-  , thePathIsBarred
-  , thePathToTheHill
-  , theReallyBadOnesV1
-  , theReallyBadOnesV2
-  , theRelicIsMissing
-  , theReturnTrip
-  , theSpectralRealm
-  , theStrangerACityAflame
-  , theStrangerThePathIsMine
-  , theStrangerTheShoresOfHali
-  , theWayOut
-  , theYithianRelic
-  , theyMustBeDestroyed
-  , throughTheCatacombs
-  , timelock
-  , trapped
-  , trialOfTheHuntress
-  , uncoveringTheConspiracy
-  , whatHaveYouDone
-  , witchHauntings
-  , worldsBeyond
-  ]
+allActCards =
+  mapFromList $
+    map
+      (toCardCode &&& id)
+      [ aCircleUnbroken
+      , afterHours
+      , alejandrosPlight
+      , alejandrosPrison
+      , allIn
+      , arkhamAsylum
+      , ascendingTheHillV1
+      , ascendingTheHillV2
+      , ascendingTheHillV3
+      , atTheExhibitTheBrotherhoodsPlot
+      , atTheExhibitTheRelicsLocation
+      , atTheStationInShadowedTalons
+      , atTheStationTrainTracks
+      , awakening
+      , beginnersLuck
+      , beyondTheWitchHouse
+      , breakingAndEntering
+      , campusSafety
+      , cavernOfTheForgottenAge
+      , closeTheRift
+      , crossingTheThreshold
+      , curtainCall
+      , descentIntoDark
+      , discoveringTheTruth
+      , disruptingTheRitual
+      , escapeTheCage
+      , escapeTheRuins
+      , exploringPnakotus
+      , exploringTheRainforest
+      , findTheRelic
+      , findingANewWay
+      , findingAWayInside
+      , findingLadyEsprit
+      , fold
+      , friendsInHighPlacesHenryDeveau
+      , friendsInHighPlacesHenrysInformation
+      , getTheEngineRunning
+      , getToTheBoats
+      , harlanIsInDanger
+      , harlansCurseHarlanEarnstone
+      , harlansCurseSafekeeping
+      , hiddenAgendas
+      , huntingTheRougarou
+      , huntressOfTheEztli
+      , intoTheBeyond
+      , intoTheDarkness
+      , intoTheRuins
+      , intoTheRuinsOnceAgain
+      , investigatingTheWitchHouse
+      , inLostCarcosa
+      , inPursuitOfTheDead
+      , inPursuitOfTheLiving
+      , investigatingTheTrail
+      , journeyToTheNexus
+      , leadingTheWay
+      , lostInTheWoods
+      , magicAndScience
+      , mendTheShatter
+      , missingPersons
+      , mistakesOfThePast
+      , momentOfDoom
+      , mysteriousGateway
+      , nightAtTheMuseum
+      , noAsylum
+      , openingTheMaw
+      , openThePathAbove
+      , openThePathBelow
+      , outOfThisWorld
+      , paradiseLost
+      , pastAndPresent
+      , pathsIntoTwilight
+      , planningTheEscape
+      , pursuingShadows
+      , raceForAnswers
+      , recoverTheRelic
+      , repossession
+      , restrictedAccess
+      , ricesWhereabouts
+      , row
+      , run
+      , saracenicScript
+      , searchForAlejandro
+      , searchForTheBrotherhood
+      , searchForThePattern
+      , searchForTheRuins
+      , searchForTheStrangerV1
+      , searchForTheStrangerV2
+      , searchForTheStrangerV3
+      , searchingForAnswers
+      , searchingForTheTome
+      , skinGame
+      , stalkedByShadows
+      , stoppingTheRitual
+      , strangeOccurences
+      , strangeRelicsMariaDeSilva
+      , strangeRelicsMariasInformation
+      , theBarrier
+      , theBrotherhoodIsRevealed
+      , theCarnevaleConspiracy
+      , theCaveOfDarknessEmbroiledInBattle
+      , theCaveOfDarknessTunnelsInTheDark
+      , theChamberOfStillRemains
+      , theChamberOfTheBeast
+      , theDisappearance
+      , theGateOpens
+      , theGuardedRuins
+      , theGuardiansInquiry
+      , theKingInTatters
+      , theOath
+      , theParisianConspiracyV1
+      , theParisianConspiracyV2
+      , thePathIsBarred
+      , thePathToTheHill
+      , theReallyBadOnesV1
+      , theReallyBadOnesV2
+      , theRelicIsMissing
+      , theReturnTrip
+      , theSpectralRealm
+      , theStrangerACityAflame
+      , theStrangerThePathIsMine
+      , theStrangerTheShoresOfHali
+      , theWayOut
+      , theYithianRelic
+      , theyMustBeDestroyed
+      , throughTheCatacombs
+      , timelock
+      , trapped
+      , trialOfTheHuntress
+      , uncoveringTheConspiracy
+      , whatHaveYouDone
+      , witchHauntings
+      , worldsBeyond
+      ]
 
 trapped :: CardDef
 trapped = act "01108" "Trapped" 1 TheGathering
@@ -408,7 +413,7 @@ theGuardedRuins = act "04049" "The Guarded Ruins" 3 TheUntamedWilds
 -- vengeance does not exist unless in victory pile, but this simplifies the logic
 intoTheRuins :: CardDef
 intoTheRuins =
-  (act "04057" "Into the Ruins" 1 TheDoomOfEztli) { cdVengeancePoints = Just 1 }
+  (act "04057" "Into the Ruins" 1 TheDoomOfEztli) {cdVengeancePoints = Just 1}
 
 magicAndScience :: CardDef
 magicAndScience = act "04058" "Magic and Science" 2 TheDoomOfEztli
@@ -540,10 +545,10 @@ timelock :: CardDef
 timelock = act "04323" "Timelock" 4 ShatteredAeons
 
 intoTheRuinsOnceAgain :: CardDef
-intoTheRuinsOnceAgain = (act "04345" "Into the Ruins Once Again" 1 TurnBackTime) { cdVengeancePoints = Just 2 }
+intoTheRuinsOnceAgain = (act "04345" "Into the Ruins Once Again" 1 TurnBackTime) {cdVengeancePoints = Just 2}
 
 theChamberOfStillRemains :: CardDef
-theChamberOfStillRemains = (act "04346" "The Chamber of Still Remains" 2 TurnBackTime) { cdVengeancePoints = Just 2 }
+theChamberOfStillRemains = (act "04346" "The Chamber of Still Remains" 2 TurnBackTime) {cdVengeancePoints = Just 2}
 
 momentOfDoom :: CardDef
 momentOfDoom = act "04347" "Moment of Doom" 3 TurnBackTime
@@ -580,6 +585,12 @@ beyondTheWitchHouse = act "05126" "Beyond the Witch House" 2 TheSecretName
 
 stoppingTheRitual :: CardDef
 stoppingTheRitual = act "05127" "Stopping the Ritual" 3 TheSecretName
+
+inPursuitOfTheDead :: CardDef
+inPursuitOfTheDead = act "05164" "In Pursuit of the Dead" 1 TheWagesOfSin
+
+inPursuitOfTheLiving :: CardDef
+inPursuitOfTheLiving = act "05165" "In Pursuit of the Living" 2 TheWagesOfSin
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

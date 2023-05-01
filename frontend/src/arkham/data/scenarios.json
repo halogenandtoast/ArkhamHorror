@@ -29,5 +29,6 @@
   { "id": "05043", "name": "Disappearance at the Twilight Estate", "campaign": "05", "beta": true },
   { "id": "05050", "name": "The Witching Hour", "campaign": "05", "beta": true },
   { "id": "05065", "name": "At Death's Doorstep", "campaign": "05", "beta": true },
-  { "id": "05120", "name": "The Secret Name", "campaign": "05", "beta": true }
+  { "id": "05120", "name": "The Secret Name", "campaign": "05", "beta": true },
+  { "id": "05161", "name": "The Wages of Sin", "campaign": "05", "beta": true }
 ]

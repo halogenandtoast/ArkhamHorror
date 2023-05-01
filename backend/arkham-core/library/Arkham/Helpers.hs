@@ -1,9 +1,9 @@
 module Arkham.Helpers where
 
-import Arkham.Prelude hiding ( toLower, toUpper, unpack )
+import Arkham.Prelude hiding (toLower, toUpper, unpack)
 
-import Data.Char ( isLetter, toLower, toUpper )
-import Data.Foldable ( foldrM )
+import Data.Char (isLetter, toLower, toUpper)
+import Data.Foldable (foldrM)
 
 toLabel :: String -> String
 toLabel [] = []
@@ -15,12 +15,13 @@ toLabel (x : xs) = toLower x : go xs
 
 replaceNonLetters :: String -> String
 replaceNonLetters [] = []
-replaceNonLetters (x : xs) = if not (isLetter x)
-  then case x of
-    '\'' -> replaceNonLetters xs
-    '.' -> replaceNonLetters xs
-    _ -> ' ' : replaceNonLetters xs
-  else x : replaceNonLetters xs
+replaceNonLetters (x : xs) =
+  if not (isLetter x)
+    then case x of
+      '\'' -> replaceNonLetters xs
+      '.' -> replaceNonLetters xs
+      _ -> ' ' : replaceNonLetters xs
+    else x : replaceNonLetters xs
 
 foldTokens :: (Foldable t, Monad m) => b -> t a -> (b -> a -> m b) -> m b
 foldTokens s tokens f = foldrM (flip f) s tokens
@@ -32,15 +33,27 @@ drawCard (x : xs) = (Just x, xs)
 draw :: forall a. Int -> Deck a -> ([a], Deck a)
 draw = coerce (splitAt @[a])
 
-newtype Deck a = Deck { unDeck :: [a] }
-  deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq, MonoFoldable, SemiSequence, GrowingAppend)
+newtype Deck a = Deck {unDeck :: [a]}
+  deriving newtype
+    ( Functor
+    , Applicative
+    , Monad
+    , Semigroup
+    , Monoid
+    , ToJSON
+    , FromJSON
+    , Eq
+    , MonoFoldable
+    , SemiSequence
+    , GrowingAppend
+    )
 
 type instance Element (Deck a) = a
 
 instance Show (Deck a) where
   show _ = "<Deck>"
 
-newtype Bag a = Bag { unBag :: [a] }
+newtype Bag a = Bag {unBag :: [a]}
   deriving newtype (Semigroup, Monoid, ToJSON, FromJSON)
 
 instance Show (Bag a) where

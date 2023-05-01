@@ -90,7 +90,7 @@ standaloneTokens =
 instance RunMessage TheSecretName where
   runMessage msg s@(TheSecretName (attrs `With` meta)) = case msg of
     PreScenarioSetup -> do
-      iids <- getInvestigatorIds
+      iids <- allInvestigatorIds
       lead <- getLead
       anyMystic <- selectAny $ InvestigatorWithClass Mystic
       membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge

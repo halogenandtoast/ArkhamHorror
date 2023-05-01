@@ -63,6 +63,8 @@ library
       Arkham.Act.Cards.HuntingTheRougarou
       Arkham.Act.Cards.HuntressOfTheEztli
       Arkham.Act.Cards.InLostCarcosa
+      Arkham.Act.Cards.InPursuitOfTheDead
+      Arkham.Act.Cards.InPursuitOfTheLiving
       Arkham.Act.Cards.IntoTheBeyond
       Arkham.Act.Cards.IntoTheDarkness
       Arkham.Act.Cards.IntoTheRuins
@@ -173,6 +175,7 @@ library
       Arkham.Agenda.Cards.CityOfBlood
       Arkham.Agenda.Cards.CityOfTheGreatRace
       Arkham.Agenda.Cards.DeadOfNight
+      Arkham.Agenda.Cards.DeathsApproach
       Arkham.Agenda.Cards.DrawnIn
       Arkham.Agenda.Cards.EmpireOfTheDead
       Arkham.Agenda.Cards.EmpireOfTheUndead
@@ -234,6 +237,7 @@ library
       Arkham.Agenda.Cards.TheFamiliar
       Arkham.Agenda.Cards.TheFestivitiesBegin
       Arkham.Agenda.Cards.TheFirstNight
+      Arkham.Agenda.Cards.TheHangedManXII
       Arkham.Agenda.Cards.TheHermitIX
       Arkham.Agenda.Cards.TheJunglesHeart
       Arkham.Agenda.Cards.TheLonelyCaverns
@@ -615,6 +619,7 @@ library
       Arkham.Asset.Cards.SongOfTheDead2
       Arkham.Asset.Cards.SophieInLovingMemory
       Arkham.Asset.Cards.SophieItWasAllMyFault
+      Arkham.Asset.Cards.SpectralWeb
       Arkham.Asset.Cards.SpiritAthame1
       Arkham.Asset.Cards.SpiritSpeaker
       Arkham.Asset.Cards.SpringfieldM19034
@@ -904,6 +909,12 @@ library
       Arkham.Enemy.Cards.HasturTheKingInYellow
       Arkham.Enemy.Cards.HasturTheTatteredKing
       Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper
+      Arkham.Enemy.Cards.Heretic_A
+      Arkham.Enemy.Cards.Heretic_C
+      Arkham.Enemy.Cards.Heretic_E
+      Arkham.Enemy.Cards.Heretic_G
+      Arkham.Enemy.Cards.Heretic_I
+      Arkham.Enemy.Cards.Heretic_K
       Arkham.Enemy.Cards.HermanCollins
       Arkham.Enemy.Cards.Hoods
       Arkham.Enemy.Cards.HuntingHorror
@@ -921,6 +932,7 @@ library
       Arkham.Enemy.Cards.LodgeNeophyte
       Arkham.Enemy.Cards.LupineThrall
       Arkham.Enemy.Cards.MadPatient
+      Arkham.Enemy.Cards.MalevolantSpirit
       Arkham.Enemy.Cards.Maniac
       Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn
       Arkham.Enemy.Cards.MarshGug
@@ -983,6 +995,7 @@ library
       Arkham.Enemy.Cards.TidalTerror
       Arkham.Enemy.Cards.TommyMalloy
       Arkham.Enemy.Cards.Umordhoth
+      Arkham.Enemy.Cards.VengefulWitch
       Arkham.Enemy.Cards.VictoriaDevereux
       Arkham.Enemy.Cards.Whippoorwill
       Arkham.Enemy.Cards.WingedOne
@@ -1330,6 +1343,8 @@ library
       Arkham.Location
       Arkham.Location.Base
       Arkham.Location.Cards
+      Arkham.Location.Cards.AbandonedChapel
+      Arkham.Location.Cards.AbandonedChapelSpectral
       Arkham.Location.Cards.AbandonedSite
       Arkham.Location.Cards.AbbeyChurch
       Arkham.Location.Cards.AbbeyTowerSpiresForbidden
@@ -1405,6 +1420,14 @@ library
       Arkham.Location.Cards.CavernsOfYoth
       Arkham.Location.Cards.Cellar
       Arkham.Location.Cards.ChamberOfTime
+      Arkham.Location.Cards.ChapelAttic_175
+      Arkham.Location.Cards.ChapelAttic_176
+      Arkham.Location.Cards.ChapelAtticSpectral_175
+      Arkham.Location.Cards.ChapelAtticSpectral_176
+      Arkham.Location.Cards.ChapelCrypt_173
+      Arkham.Location.Cards.ChapelCrypt_174
+      Arkham.Location.Cards.ChapelCryptSpectral_173
+      Arkham.Location.Cards.ChapelCryptSpectral_174
       Arkham.Location.Cards.ChapelOfStAubertThePathIsOpen
       Arkham.Location.Cards.ChapelOfStAubertWatersForbidden
       Arkham.Location.Cards.ChapultepecHill_178
@@ -1505,6 +1528,14 @@ library
       Arkham.Location.Cards.HallsOfPnakotusNorthernCorridors
       Arkham.Location.Cards.HallsOfPnakotusWesternCorridors
       Arkham.Location.Cards.Hallway
+      Arkham.Location.Cards.HangmansBrook
+      Arkham.Location.Cards.HangmansBrookSpectral
+      Arkham.Location.Cards.HauntedFields
+      Arkham.Location.Cards.HauntedFieldsSpectral
+      Arkham.Location.Cards.HereticsGraves_171
+      Arkham.Location.Cards.HereticsGraves_172
+      Arkham.Location.Cards.HereticsGravesSpectral_171
+      Arkham.Location.Cards.HereticsGravesSpectral_172
       Arkham.Location.Cards.HiddenLibrary
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_136
@@ -1654,6 +1685,10 @@ library
       Arkham.Location.Cards.TenAcreMeadow_247
       Arkham.Location.Cards.Theatre
       Arkham.Location.Cards.TheEdgeOfTheUniverse
+      Arkham.Location.Cards.TheGallows_169
+      Arkham.Location.Cards.TheGallows_170
+      Arkham.Location.Cards.TheGallowsSpectral_169
+      Arkham.Location.Cards.TheGallowsSpectral_170
       Arkham.Location.Cards.TheGateToHell
       Arkham.Location.Cards.TheGuardian
       Arkham.Location.Cards.TheHiddenChamber
@@ -1758,6 +1793,7 @@ library
       Arkham.Scenario.Scenarios.TheSecretName
       Arkham.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Scenario.Scenarios.TheUntamedWilds
+      Arkham.Scenario.Scenarios.TheWagesOfSin
       Arkham.Scenario.Scenarios.TheWitchingHour
       Arkham.Scenario.Scenarios.ThreadsOfFate
       Arkham.Scenario.Scenarios.TurnBackTime
@@ -1803,6 +1839,7 @@ library
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.TheWagesOfSin.Story
       Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ThreadsOfFate.Story
@@ -1917,6 +1954,7 @@ library
       Arkham.Treachery.Cards.ATearInTime
       Arkham.Treachery.Cards.AttractingAttention
       Arkham.Treachery.Cards.Atychiphobia
+      Arkham.Treachery.Cards.BaneOfTheLiving
       Arkham.Treachery.Cards.Bathophobia
       Arkham.Treachery.Cards.BeastOfTheBayou
       Arkham.Treachery.Cards.Bedeviled
@@ -1925,6 +1963,7 @@ library
       Arkham.Treachery.Cards.BlackStarsRise
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BrokenRails
+      Arkham.Treachery.Cards.BurdensOfThePast
       Arkham.Treachery.Cards.CalledByTheMists
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CaptiveMind
@@ -1980,6 +2019,7 @@ library
       Arkham.Treachery.Cards.GiftOfMadnessMisery
       Arkham.Treachery.Cards.GiftOfMadnessPity
       Arkham.Treachery.Cards.GraspingHands
+      Arkham.Treachery.Cards.GraveLight
       Arkham.Treachery.Cards.Haunted
       Arkham.Treachery.Cards.HospitalDebts
       Arkham.Treachery.Cards.HuntedByByakhee
@@ -2015,6 +2055,7 @@ library
       Arkham.Treachery.Cards.ObscuringFog
       Arkham.Treachery.Cards.Obsessive
       Arkham.Treachery.Cards.OfferOfPower
+      Arkham.Treachery.Cards.OminousPortents
       Arkham.Treachery.Cards.OnTheProwl
       Arkham.Treachery.Cards.OnWingsOfDarkness
       Arkham.Treachery.Cards.OozeAndFilth
@@ -2032,6 +2073,7 @@ library
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.Psychosis
       Arkham.Treachery.Cards.PulledByTheStars
+      Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.PushedIntoTheBeyond
       Arkham.Treachery.Cards.RationalThought
       Arkham.Treachery.Cards.RealmOfMadness

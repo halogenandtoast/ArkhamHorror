@@ -8,7 +8,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
-import Arkham.EncounterSet hiding ( Byakhee, Dunwich, Poison )
+import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
@@ -20,61 +20,63 @@ baseTreachery
   -> Maybe (EncounterSet, Int)
   -> Maybe CardSubType
   -> CardDef
-baseTreachery cardCode name mEncounterSet isWeakness = CardDef
-  { cdCardCode = cardCode
-  , cdName = name
-  , cdRevealedName = Nothing
-  , cdCost = Nothing
-  , cdAdditionalCost = Nothing
-  , cdLevel = 0
-  , cdCardType = if isJust isWeakness
-    then PlayerTreacheryType
-    else TreacheryType
-  , cdCardSubType = isWeakness
-  , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
-  , cdSkills = mempty
-  , cdCardTraits = mempty
-  , cdRevealedCardTraits = mempty
-  , cdKeywords = mempty
-  , cdFastWindow = Nothing
-  , cdActions = []
-  , cdRevelation = True
-  , cdVictoryPoints = Nothing
-  , cdVengeancePoints = Nothing
-  , cdCriteria = mempty
-  , cdOverrideActionPlayableIfCriteriaMet = False
-  , cdCommitRestrictions = mempty
-  , cdAttackOfOpportunityModifiers = mempty
-  , cdPermanent = False
-  , cdEncounterSet = fst <$> mEncounterSet
-  , cdEncounterSetQuantity = snd <$> mEncounterSet
-  , cdUnique = False
-  , cdDoubleSided = False
-  , cdLimits = []
-  , cdExceptional = False
-  , cdUses = NoUses
-  , cdPlayableFromDiscard = False
-  , cdStage = Nothing
-  , cdSlots = []
-  , cdCardInHandEffects = False
-  , cdCardInDiscardEffects = False
-  , cdCardInSearchEffects = False
-  , cdAlternateCardCodes = []
-  , cdArt = unCardCode cardCode
-  , cdLocationSymbol = Nothing
-  , cdLocationRevealedSymbol = Nothing
-  , cdLocationConnections = []
-  , cdLocationRevealedConnections = []
-  , cdPurchaseMentalTrauma = Nothing
-  , cdCanReplace = True
-  , cdDeckRestrictions = []
-  }
+baseTreachery cardCode name mEncounterSet isWeakness =
+  CardDef
+    { cdCardCode = cardCode
+    , cdName = name
+    , cdRevealedName = Nothing
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType =
+        if isJust isWeakness
+          then PlayerTreacheryType
+          else TreacheryType
+    , cdCardSubType = isWeakness
+    , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
+    , cdSkills = mempty
+    , cdCardTraits = mempty
+    , cdRevealedCardTraits = mempty
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = True
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = fst <$> mEncounterSet
+    , cdEncounterSetQuantity = snd <$> mEncounterSet
+    , cdUnique = False
+    , cdDoubleSided = False
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Nothing
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = unCardCode cardCode
+    , cdLocationSymbol = Nothing
+    , cdLocationRevealedSymbol = Nothing
+    , cdLocationConnections = []
+    , cdLocationRevealedConnections = []
+    , cdPurchaseMentalTrauma = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
 
 surge :: CardDef -> CardDef
-surge def = def { cdKeywords = insertSet Keyword.Surge (cdKeywords def) }
+surge def = def {cdKeywords = insertSet Keyword.Surge (cdKeywords def)}
 
 peril :: CardDef -> CardDef
-peril def = def { cdKeywords = insertSet Keyword.Peril (cdKeywords def) }
+peril def = def {cdKeywords = insertSet Keyword.Peril (cdKeywords def)}
 
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseTreachery cardCode name Nothing (Just Weakness)
@@ -84,247 +86,258 @@ basicWeakness cardCode name =
   baseTreachery cardCode name Nothing (Just BasicWeakness)
 
 treachery :: CardCode -> Name -> EncounterSet -> Int -> CardDef
-treachery cardCode name encounterSet encounterSetQuantity = baseTreachery
-  cardCode
-  name
-  (Just (encounterSet, encounterSetQuantity))
-  Nothing
+treachery cardCode name encounterSet encounterSetQuantity =
+  baseTreachery
+    cardCode
+    name
+    (Just (encounterSet, encounterSetQuantity))
+    Nothing
 
 allTreacheryCards :: Map CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
 allPlayerTreacheryCards :: Map CardCode CardDef
-allPlayerTreacheryCards = mapFromList $ concatMap
-  toCardCodePairs
-  [ abandonedAndAlone
-  , accursedFate
-  , acrossSpaceAndTime
-  , amnesia
-  , angeredSpirits
-  , atychiphobia
-  , boughtInBlood
-  , callOfTheUnknown
-  , calledByTheMists
-  , caughtRedHanded
-  , chronophobia
-  , coverUp
-  , crisisOfIdentity
-  , curseOfTheRougarou
-  , darkFuture
-  , doomed
-  , drawingTheSign
-  , finalRhapsody
-  , haunted
-  , hospitalDebts
-  , hypochondria
-  , indebted
-  , internalInjury
-  , lostSoul
-  , nihilism
-  , obsessive
-  , outOfBodyExperience
-  , overzealous
-  , paranoia
-  , poisoned
-  , psychosis
-  , rationalThought
-  , rexsCurse
-  , searchingForIzzie
-  , selfDestructive
-  , shellShock
-  , smiteTheWicked
-  , starsOfHyades
-  , terribleSecret
-  , the13thVision
-  , theBellTolls
-  , theHarbinger
-  , thePriceOfFailure
-  , thriceDamnedCuriosity
-  , voiceOfTheMessenger
-  , wrackedByNightmares
-  , yaztaroth
-  ]
+allPlayerTreacheryCards =
+  mapFromList $
+    concatMap
+      toCardCodePairs
+      [ abandonedAndAlone
+      , accursedFate
+      , acrossSpaceAndTime
+      , amnesia
+      , angeredSpirits
+      , atychiphobia
+      , boughtInBlood
+      , callOfTheUnknown
+      , calledByTheMists
+      , caughtRedHanded
+      , chronophobia
+      , coverUp
+      , crisisOfIdentity
+      , curseOfTheRougarou
+      , darkFuture
+      , doomed
+      , drawingTheSign
+      , finalRhapsody
+      , haunted
+      , hospitalDebts
+      , hypochondria
+      , indebted
+      , internalInjury
+      , lostSoul
+      , nihilism
+      , obsessive
+      , outOfBodyExperience
+      , overzealous
+      , paranoia
+      , poisoned
+      , psychosis
+      , rationalThought
+      , rexsCurse
+      , searchingForIzzie
+      , selfDestructive
+      , shellShock
+      , smiteTheWicked
+      , starsOfHyades
+      , terribleSecret
+      , the13thVision
+      , theBellTolls
+      , theHarbinger
+      , thePriceOfFailure
+      , thriceDamnedCuriosity
+      , voiceOfTheMessenger
+      , wrackedByNightmares
+      , yaztaroth
+      ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
-allEncounterTreacheryCards = mapFromList $ map
-  (toCardCode &&& id)
-  [ aTearInTime
-  , abduction
-  , acridMiasma
-  , alteredBeast
-  , ancestralFear
-  , ancientEvils
-  , ants
-  , arcaneBarrier
-  , arousingSuspicions
-  , arrowsFromTheTrees
-  , attractingAttention
-  , bathophobia
-  , beastOfTheBayou
-  , bedeviled
-  , betweenWorlds
-  , beyondTheVeil
-  , blackStarsRise
-  , brokenRails
-  , captiveMind
-  , centuriesOfSecrets
-  , chaosInTheWater
-  , childrenOfValusia
-  , chillFromBelow
-  , clawsOfSteam
-  , collapsingReality
-  , conspiracyOfBlood
-  , corrosion
-  , crashingFloods
-  , creepingDarkness
-  , creepingPoison
-  , cruelInterrogations
-  , cryptChill
-  , curseOfYig
-  , cursedLuck
-  , cursedSwamp
-  , daemonicPiping
-  , danceOfTheYellowKing
-  , deadlyFate
-  , deepDark
-  , descentIntoMadness
-  , diabolicVoices
-  , dismalCurse
-  , disquietingDreams
-  , dissonantVoices
-  , draggedUnder
-  , dreamsOfRlyeh
-  , eagerForDeath
-  , entombed
-  , ephemeralExhibits
-  , evilPast
-  , extradimensionalVisions
-  , eyesInTheWalls
-  , falseLead
-  , fateOfAllFools
-  , finalMistake
-  , fineDining
-  , frozenInFear
-  , frozenInFearAPhantomOfTruth
-  , giftOfMadnessMisery
-  , giftOfMadnessPity
-  , ghostlyPresence
-  , graspingHands
-  , huntedByByakhee
-  , huntedDown
-  , huntingShadow
-  , illOmen
-  , insatiableBloodlust
-  , kidnapped
-  , ledAstray
-  , lightlessShadow
-  , lightOfAforgomon
-  , lockedDoor
-  , lostHumanity
-  , lostInTheWilds
-  , lostInTime
-  , lostInVenice
-  , lowOnSupplies
-  , markedByTheSign
-  , maskOfUmordhoth
-  , maskedHorrors
-  , massHysteria
-  , meddlesomeFamiliar
-  , mesmerize
-  , mysteriesOfTheLodge
-  , mysteriousChanting
-  , noTurningBack
-  , nobodysHome
-  , obscuringFog
-  , offerOfPower
-  , onTheProwl
-  , onWingsOfDarkness
-  , oozeAndFilth
-  , overgrowth
-  , passageIntoTheVeil
-  , pitfall
-  , poisonousSpores
-  , possessionMurderous
-  , possessionTorturous
-  , possessionTraitorous
-  , psychopompsSong
-  , pulledByTheStars
-  , pushedIntoTheBeyond
-  , realmOfMadness
-  , realmOfTorment
-  , ripplesOnTheSurface
-  , ritesHowled
-  , rottingRemains
-  , rottingRemainsBloodOnTheAltar
-  , ruinAndDestruction
-  , serpentsCall
-  , serpentsIre
-  , shadowSpawned
-  , shadowed
-  , shapesInTheMist
-  , shatteredAges
-  , slitheringBehindYou
-  , snakeBite
-  , snakescourge
-  , somethingInTheDrinks
-  , sordidAndSilent
-  , spacesBetween
-  , spectralMist
-  , spiresOfCarcosa
-  , spiritsTorment
-  , stalkedInTheDark
-  , straitjacket
-  , strangeSigns
-  , terrorInTheNight
-  , terrorFromBeyond
-  , theCreaturesTracks
-  , theCultsSearch
-  , theFinalAct
-  , theKingsEdict
-  , thePaleMaskBeckons
-  , thePitBelow
-  , theSecretMustBeKept
-  , theShadowBehindYou
-  , theYellowSign
-  , theZealotsSeal
-  , timelineDestabilization
-  , torturousChords
-  , toughCrowd
-  , toweringBeasts
-  , trappedSpirits
-  , twinSuns
-  , twistOfFate
-  , twistedToHisWill
-  , umordhothsHunger
-  , umordhothsWrath
-  , unhallowedCountry
-  , vastExpanse
-  , vaultOfEarthlyDemise
-  , visionsOfFuturesPast
-  , voiceOfTheJungle
-  , vortexOfTime
-  , wallsClosingIn
-  , watchersGaze
-  , watchersGrasp
-  , whispersInTheDark
-  , whispersInYourHeadAnxiety
-  , whispersInYourHeadDismay
-  , whispersInYourHeadDoubt
-  , whispersInYourHeadDread
-  , windowToAnotherTime
-  , wordsOfPower
-  , worldsMerge
-  , wormhole
-  , wracked
-  , wrackedByTime
-  , yithianPresence
-  ]
+allEncounterTreacheryCards =
+  mapFromList $
+    map
+      (toCardCode &&& id)
+      [ aTearInTime
+      , abduction
+      , acridMiasma
+      , alteredBeast
+      , ancestralFear
+      , ancientEvils
+      , ants
+      , arcaneBarrier
+      , arousingSuspicions
+      , arrowsFromTheTrees
+      , attractingAttention
+      , baneOfTheLiving
+      , bathophobia
+      , beastOfTheBayou
+      , bedeviled
+      , betweenWorlds
+      , beyondTheVeil
+      , blackStarsRise
+      , brokenRails
+      , burdensOfThePast
+      , captiveMind
+      , centuriesOfSecrets
+      , chaosInTheWater
+      , childrenOfValusia
+      , chillFromBelow
+      , clawsOfSteam
+      , collapsingReality
+      , conspiracyOfBlood
+      , corrosion
+      , crashingFloods
+      , creepingDarkness
+      , creepingPoison
+      , cruelInterrogations
+      , cryptChill
+      , curseOfYig
+      , cursedLuck
+      , cursedSwamp
+      , daemonicPiping
+      , danceOfTheYellowKing
+      , deadlyFate
+      , deepDark
+      , descentIntoMadness
+      , diabolicVoices
+      , dismalCurse
+      , disquietingDreams
+      , dissonantVoices
+      , draggedUnder
+      , dreamsOfRlyeh
+      , eagerForDeath
+      , entombed
+      , ephemeralExhibits
+      , evilPast
+      , extradimensionalVisions
+      , eyesInTheWalls
+      , falseLead
+      , fateOfAllFools
+      , finalMistake
+      , fineDining
+      , frozenInFear
+      , frozenInFearAPhantomOfTruth
+      , giftOfMadnessMisery
+      , giftOfMadnessPity
+      , ghostlyPresence
+      , graspingHands
+      , graveLight
+      , huntedByByakhee
+      , huntedDown
+      , huntingShadow
+      , illOmen
+      , insatiableBloodlust
+      , kidnapped
+      , ledAstray
+      , lightlessShadow
+      , lightOfAforgomon
+      , lockedDoor
+      , lostHumanity
+      , lostInTheWilds
+      , lostInTime
+      , lostInVenice
+      , lowOnSupplies
+      , markedByTheSign
+      , maskOfUmordhoth
+      , maskedHorrors
+      , massHysteria
+      , meddlesomeFamiliar
+      , mesmerize
+      , mysteriesOfTheLodge
+      , mysteriousChanting
+      , noTurningBack
+      , nobodysHome
+      , obscuringFog
+      , offerOfPower
+      , ominousPortents
+      , onTheProwl
+      , onWingsOfDarkness
+      , oozeAndFilth
+      , overgrowth
+      , passageIntoTheVeil
+      , pitfall
+      , poisonousSpores
+      , possessionMurderous
+      , possessionTorturous
+      , possessionTraitorous
+      , psychopompsSong
+      , pulledByTheStars
+      , punishment
+      , pushedIntoTheBeyond
+      , realmOfMadness
+      , realmOfTorment
+      , ripplesOnTheSurface
+      , ritesHowled
+      , rottingRemains
+      , rottingRemainsBloodOnTheAltar
+      , ruinAndDestruction
+      , serpentsCall
+      , serpentsIre
+      , shadowSpawned
+      , shadowed
+      , shapesInTheMist
+      , shatteredAges
+      , slitheringBehindYou
+      , snakeBite
+      , snakescourge
+      , somethingInTheDrinks
+      , sordidAndSilent
+      , spacesBetween
+      , spectralMist
+      , spiresOfCarcosa
+      , spiritsTorment
+      , stalkedInTheDark
+      , straitjacket
+      , strangeSigns
+      , terrorInTheNight
+      , terrorFromBeyond
+      , theCreaturesTracks
+      , theCultsSearch
+      , theFinalAct
+      , theKingsEdict
+      , thePaleMaskBeckons
+      , thePitBelow
+      , theSecretMustBeKept
+      , theShadowBehindYou
+      , theYellowSign
+      , theZealotsSeal
+      , timelineDestabilization
+      , torturousChords
+      , toughCrowd
+      , toweringBeasts
+      , trappedSpirits
+      , twinSuns
+      , twistOfFate
+      , twistedToHisWill
+      , umordhothsHunger
+      , umordhothsWrath
+      , unhallowedCountry
+      , vastExpanse
+      , vaultOfEarthlyDemise
+      , visionsOfFuturesPast
+      , voiceOfTheJungle
+      , vortexOfTime
+      , wallsClosingIn
+      , watchersGaze
+      , watchersGrasp
+      , whispersInTheDark
+      , whispersInYourHeadAnxiety
+      , whispersInYourHeadDismay
+      , whispersInYourHeadDoubt
+      , whispersInYourHeadDread
+      , windowToAnotherTime
+      , wordsOfPower
+      , worldsMerge
+      , wormhole
+      , wracked
+      , wrackedByTime
+      , yithianPresence
+      ]
 
 coverUp :: CardDef
-coverUp = (weakness "01007" "Cover Up")
-  { cdCardTraits = setFromList [Task]
-  , cdAlternateCardCodes = ["01507"]
-  }
+coverUp =
+  (weakness "01007" "Cover Up")
+    { cdCardTraits = setFromList [Task]
+    , cdAlternateCardCodes = ["01507"]
+    }
 
 hospitalDebts :: CardDef
 hospitalDebts =
@@ -334,153 +347,175 @@ hospitalDebts =
     }
 
 abandonedAndAlone :: CardDef
-abandonedAndAlone = (weakness "01015" "Abandoned and Alone")
-  { cdCardTraits = setFromList [Madness]
-  , cdAlternateCardCodes = ["01515"]
-  }
+abandonedAndAlone =
+  (weakness "01015" "Abandoned and Alone")
+    { cdCardTraits = setFromList [Madness]
+    , cdAlternateCardCodes = ["01515"]
+    }
 
 amnesia :: CardDef
-amnesia = (basicWeakness "01096" "Amnesia")
-  { cdCardTraits = setFromList [Madness]
-  , cdAlternateCardCodes = ["01596"]
-  }
+amnesia =
+  (basicWeakness "01096" "Amnesia")
+    { cdCardTraits = setFromList [Madness]
+    , cdAlternateCardCodes = ["01596"]
+    }
 
 paranoia :: CardDef
-paranoia = (basicWeakness "01097" "Paranoia")
-  { cdCardTraits = setFromList [Madness]
-  , cdAlternateCardCodes = ["01597"]
-  }
+paranoia =
+  (basicWeakness "01097" "Paranoia")
+    { cdCardTraits = setFromList [Madness]
+    , cdAlternateCardCodes = ["01597"]
+    }
 
 haunted :: CardDef
-haunted = (basicWeakness "01098" "Haunted")
-  { cdCardTraits = setFromList [Curse]
-  , cdAlternateCardCodes = ["01598"]
-  }
+haunted =
+  (basicWeakness "01098" "Haunted")
+    { cdCardTraits = setFromList [Curse]
+    , cdAlternateCardCodes = ["01598"]
+    }
 
 psychosis :: CardDef
-psychosis = (basicWeakness "01099" "Psychosis")
-  { cdCardTraits = setFromList [Madness]
-  , cdAlternateCardCodes = ["01599"]
-  }
+psychosis =
+  (basicWeakness "01099" "Psychosis")
+    { cdCardTraits = setFromList [Madness]
+    , cdAlternateCardCodes = ["01599"]
+    }
 
 hypochondria :: CardDef
-hypochondria = (basicWeakness "01100" "Hypochondria")
-  { cdCardTraits = setFromList [Madness]
-  , cdAlternateCardCodes = ["01600"]
-  }
+hypochondria =
+  (basicWeakness "01100" "Hypochondria")
+    { cdCardTraits = setFromList [Madness]
+    , cdAlternateCardCodes = ["01600"]
+    }
 
 huntingShadow :: CardDef
-huntingShadow = (treachery "01135" "Hunting Shadow" TheMidnightMasks 3)
-  { cdCardTraits = setFromList [Curse]
-  , cdKeywords = setFromList [Keyword.Peril]
-  }
+huntingShadow =
+  (treachery "01135" "Hunting Shadow" TheMidnightMasks 3)
+    { cdCardTraits = setFromList [Curse]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
 
 falseLead :: CardDef
 falseLead = treachery "01136" "False Lead" TheMidnightMasks 2
 
 umordhothsWrath :: CardDef
-umordhothsWrath = (treachery "01158" "Umôrdhoth's Wrath" TheDevourerBelow 2)
-  { cdCardTraits = setFromList [Curse]
-  }
+umordhothsWrath =
+  (treachery "01158" "Umôrdhoth's Wrath" TheDevourerBelow 2)
+    { cdCardTraits = setFromList [Curse]
+    }
 
 graspingHands :: CardDef
-graspingHands = (treachery "01162" "Grasping Hands" Ghouls 3)
-  { cdCardTraits = setFromList [Hazard]
-  }
+graspingHands =
+  (treachery "01162" "Grasping Hands" Ghouls 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 rottingRemains :: CardDef
-rottingRemains = (treachery "01163" "Rotting Remains" StrikingFear 3)
-  { cdCardTraits = setFromList [Terror]
-  }
+rottingRemains =
+  (treachery "01163" "Rotting Remains" StrikingFear 3)
+    { cdCardTraits = setFromList [Terror]
+    }
 
 frozenInFear :: CardDef
-frozenInFear = (treachery "01164" "Frozen in Fear" StrikingFear 2)
-  { cdCardTraits = setFromList [Terror]
-  }
+frozenInFear =
+  (treachery "01164" "Frozen in Fear" StrikingFear 2)
+    { cdCardTraits = setFromList [Terror]
+    }
 
 dissonantVoices :: CardDef
-dissonantVoices = (treachery "01165" "Dissonant Voices" StrikingFear 2)
-  { cdCardTraits = setFromList [Terror]
-  }
+dissonantVoices =
+  (treachery "01165" "Dissonant Voices" StrikingFear 2)
+    { cdCardTraits = setFromList [Terror]
+    }
 
 ancientEvils :: CardDef
-ancientEvils = (treachery "01166" "Ancient Evils" AncientEvils 3)
-  { cdCardTraits = setFromList [Omen]
-  }
+ancientEvils =
+  (treachery "01166" "Ancient Evils" AncientEvils 3)
+    { cdCardTraits = setFromList [Omen]
+    }
 
 cryptChill :: CardDef
-cryptChill = (treachery "01167" "Crypt Chill" ChillingCold 2)
-  { cdCardTraits = setFromList [Hazard]
-  }
+cryptChill =
+  (treachery "01167" "Crypt Chill" ChillingCold 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 obscuringFog :: CardDef
-obscuringFog = (treachery "01168" "Obscuring Fog" ChillingCold 2)
-  { cdCardTraits = setFromList [Hazard]
-  }
+obscuringFog =
+  (treachery "01168" "Obscuring Fog" ChillingCold 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 mysteriousChanting :: CardDef
-mysteriousChanting = (treachery "01171" "Mysterious Chanting" DarkCult 2)
-  { cdCardTraits = setFromList [Hex]
-  }
+mysteriousChanting =
+  (treachery "01171" "Mysterious Chanting" DarkCult 2)
+    { cdCardTraits = setFromList [Hex]
+    }
 
 onWingsOfDarkness :: CardDef
 onWingsOfDarkness = treachery "01173" "On Wings of Darkness" Nightgaunts 2
 
 lockedDoor :: CardDef
-lockedDoor = (treachery "01174" "Locked Door" LockedDoors 2)
-  { cdCardTraits = setFromList [Obstacle]
-  }
+lockedDoor =
+  (treachery "01174" "Locked Door" LockedDoors 2)
+    { cdCardTraits = setFromList [Obstacle]
+    }
 
 theYellowSign :: CardDef
-theYellowSign = (treachery "01176" "The Yellow Sign" AgentsOfHastur 2)
-  { cdCardTraits = setFromList [Omen]
-  }
+theYellowSign =
+  (treachery "01176" "The Yellow Sign" AgentsOfHastur 2)
+    { cdCardTraits = setFromList [Omen]
+    }
 
 offerOfPower :: CardDef
-offerOfPower = (treachery "01178" "Offer of Power" AgentsOfYogSothoth 2)
-  { cdCardTraits = setFromList [Pact]
-  , cdKeywords = setFromList [Keyword.Peril]
-  }
+offerOfPower =
+  (treachery "01178" "Offer of Power" AgentsOfYogSothoth 2)
+    { cdCardTraits = setFromList [Pact]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
 
 dreamsOfRlyeh :: CardDef
-dreamsOfRlyeh = (treachery "01182" "Dreams of R'lyeh" AgentsOfCthulhu 2)
-  { cdCardTraits = setFromList [Omen]
-  }
+dreamsOfRlyeh =
+  (treachery "01182" "Dreams of R'lyeh" AgentsOfCthulhu 2)
+    { cdCardTraits = setFromList [Omen]
+    }
 
 smiteTheWicked :: CardDef
 smiteTheWicked =
-  (weakness "02007" "Smite the Wicked") { cdCardTraits = setFromList [Task] }
+  (weakness "02007" "Smite the Wicked") {cdCardTraits = setFromList [Task]}
 
 rexsCurse :: CardDef
 rexsCurse =
-  (weakness "02009" "Rex's Curse") { cdCardTraits = setFromList [Curse] }
+  (weakness "02009" "Rex's Curse") {cdCardTraits = setFromList [Curse]}
 
 searchingForIzzie :: CardDef
 searchingForIzzie =
-  (weakness "02011" "Searching for Izzie") { cdCardTraits = setFromList [Task] }
+  (weakness "02011" "Searching for Izzie") {cdCardTraits = setFromList [Task]}
 
 finalRhapsody :: CardDef
 finalRhapsody =
-  (weakness "02013" "Final Rhapsody") { cdCardTraits = setFromList [Endtimes] }
+  (weakness "02013" "Final Rhapsody") {cdCardTraits = setFromList [Endtimes]}
 
 wrackedByNightmares :: CardDef
-wrackedByNightmares = (weakness "02015" "Wracked by Nightmares")
-  { cdCardTraits = setFromList [Madness]
-  }
+wrackedByNightmares =
+  (weakness "02015" "Wracked by Nightmares")
+    { cdCardTraits = setFromList [Madness]
+    }
 
 indebted :: CardDef
-indebted = (basicWeakness "02037" "Indebted")
-  { cdCardTraits = singleton Flaw
-  , cdPermanent = True
-  }
+indebted =
+  (basicWeakness "02037" "Indebted")
+    { cdCardTraits = singleton Flaw
+    , cdPermanent = True
+    }
 
 internalInjury :: CardDef
 internalInjury =
-  (basicWeakness "02038" "Internal Injury") { cdCardTraits = singleton Injury }
+  (basicWeakness "02038" "Internal Injury") {cdCardTraits = singleton Injury}
 
 chronophobia :: CardDef
 chronophobia =
-  (basicWeakness "02039" "Chronophobia") { cdCardTraits = singleton Madness }
+  (basicWeakness "02039" "Chronophobia") {cdCardTraits = singleton Madness}
 
 somethingInTheDrinks :: CardDef
 somethingInTheDrinks =
@@ -494,21 +529,24 @@ arousingSuspicions =
   treachery "02082" "Arousing Suspicions" TheHouseAlwaysWins 2
 
 visionsOfFuturesPast :: CardDef
-visionsOfFuturesPast = (treachery "02083" "Visions of Futures Past" Sorcery 3)
-  { cdCardTraits = setFromList [Hex]
-  }
+visionsOfFuturesPast =
+  (treachery "02083" "Visions of Futures Past" Sorcery 3)
+    { cdCardTraits = setFromList [Hex]
+    }
 
 beyondTheVeil :: CardDef
-beyondTheVeil = (treachery "02084" "Beyond the Veil" Sorcery 3)
-  { cdCardTraits = setFromList [Hex]
-  , cdKeywords = setFromList [Keyword.Surge]
-  }
+beyondTheVeil =
+  (treachery "02084" "Beyond the Veil" Sorcery 3)
+    { cdCardTraits = setFromList [Hex]
+    , cdKeywords = setFromList [Keyword.Surge]
+    }
 
 lightOfAforgomon :: CardDef
-lightOfAforgomon = (treachery "02085" "Light of Aforgomon" BishopsThralls 2)
-  { cdCardTraits = setFromList [Pact, Power]
-  , cdKeywords = setFromList [Keyword.Peril]
-  }
+lightOfAforgomon =
+  (treachery "02085" "Light of Aforgomon" BishopsThralls 2)
+    { cdCardTraits = setFromList [Pact, Power]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
 
 unhallowedCountry :: CardDef
 unhallowedCountry =
@@ -517,56 +555,66 @@ unhallowedCountry =
     }
 
 sordidAndSilent :: CardDef
-sordidAndSilent = (treachery "02089" "Sordid and Silent" EncounterSet.Dunwich 2
-                  )
-  { cdCardTraits = setFromList [Terror]
-  }
+sordidAndSilent =
+  ( treachery "02089" "Sordid and Silent" EncounterSet.Dunwich 2
+  )
+    { cdCardTraits = setFromList [Terror]
+    }
 
 eagerForDeath :: CardDef
-eagerForDeath = (treachery "02091" "Eager for Death" Whippoorwills 2)
-  { cdCardTraits = setFromList [Omen]
-  }
+eagerForDeath =
+  (treachery "02091" "Eager for Death" Whippoorwills 2)
+    { cdCardTraits = setFromList [Omen]
+    }
 
 cursedLuck :: CardDef
-cursedLuck = (treachery "02092" "Cursed Luck" BadLuck 3)
-  { cdCardTraits = setFromList [Omen]
-  }
+cursedLuck =
+  (treachery "02092" "Cursed Luck" BadLuck 3)
+    { cdCardTraits = setFromList [Omen]
+    }
 
 twistOfFate :: CardDef
-twistOfFate = (treachery "02093" "Twist of Fate" BadLuck 3)
-  { cdCardTraits = setFromList [Omen]
-  }
+twistOfFate =
+  (treachery "02093" "Twist of Fate" BadLuck 3)
+    { cdCardTraits = setFromList [Omen]
+    }
 
 alteredBeast :: CardDef
-alteredBeast = (treachery "02096" "Altered Beast" BeastThralls 2)
-  { cdCardTraits = setFromList [Power]
-  }
+alteredBeast =
+  (treachery "02096" "Altered Beast" BeastThralls 2)
+    { cdCardTraits = setFromList [Power]
+    }
 
 huntedDown :: CardDef
-huntedDown = (treachery "02099" "Hunted Down" NaomisCrew 2)
-  { cdCardTraits = setFromList [Tactic]
-  }
+huntedDown =
+  (treachery "02099" "Hunted Down" NaomisCrew 2)
+    { cdCardTraits = setFromList [Tactic]
+    }
 
 pushedIntoTheBeyond :: CardDef
-pushedIntoTheBeyond = (treachery "02100" "Pushed into the Beyond" TheBeyond 2)
-  { cdCardTraits = setFromList [Hex]
-  }
+pushedIntoTheBeyond =
+  (treachery "02100" "Pushed into the Beyond" TheBeyond 2)
+    { cdCardTraits = setFromList [Hex]
+    }
 
 terrorFromBeyond :: CardDef
-terrorFromBeyond = (treachery "02101" "Terror from Beyond" TheBeyond 2)
-  { cdCardTraits = setFromList [Hex, Terror]
-  , cdKeywords = setFromList [Keyword.Peril]
-  }
+terrorFromBeyond =
+  (treachery "02101" "Terror from Beyond" TheBeyond 2)
+    { cdCardTraits = setFromList [Hex, Terror]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
 
 arcaneBarrier :: CardDef
-arcaneBarrier = (treachery "02102" "Arcane Barrier" TheBeyond 2)
-  { cdCardTraits = setFromList [Hex, Obstacle]
-  }
+arcaneBarrier =
+  (treachery "02102" "Arcane Barrier" TheBeyond 2)
+    { cdCardTraits = setFromList [Hex, Obstacle]
+    }
 
 shadowSpawned :: CardDef
-shadowSpawned = (treachery "02142" "Shadow-spawned" TheMiskatonicMuseum 1)
-  { cdCardTraits = singleton Power
-  }
+shadowSpawned =
+  (treachery "02142" "Shadow-spawned" TheMiskatonicMuseum 1)
+    { cdCardTraits = singleton Power
+    }
 
 stalkedInTheDark :: CardDef
 stalkedInTheDark =
@@ -591,35 +639,40 @@ slitheringBehindYou =
   treachery "02146" "Slithering Behind You" TheMiskatonicMuseum 2
 
 acrossSpaceAndTime :: CardDef
-acrossSpaceAndTime = (weakness "02178" "Across Space and Time")
-  { cdCardTraits = setFromList [Madness]
-  , cdEncounterSet = Just TheEssexCountyExpress
-  , cdEncounterSetQuantity = Just 4
-  }
+acrossSpaceAndTime =
+  (weakness "02178" "Across Space and Time")
+    { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just TheEssexCountyExpress
+    , cdEncounterSetQuantity = Just 4
+    }
 
 clawsOfSteam :: CardDef
-clawsOfSteam = (treachery "02180" "Claws of Steam" TheEssexCountyExpress 3)
-  { cdCardTraits = singleton Power
-  }
+clawsOfSteam =
+  (treachery "02180" "Claws of Steam" TheEssexCountyExpress 3)
+    { cdCardTraits = singleton Power
+    }
 
 brokenRails :: CardDef
-brokenRails = (treachery "02181" "Broken Rails" TheEssexCountyExpress 3)
-  { cdCardTraits = singleton Hazard
-  }
+brokenRails =
+  (treachery "02181" "Broken Rails" TheEssexCountyExpress 3)
+    { cdCardTraits = singleton Hazard
+    }
 
 kidnapped :: CardDef
 kidnapped = treachery "02220" "Kidnapped!" BloodOnTheAltar 3
 
 psychopompsSong :: CardDef
-psychopompsSong = (treachery "02221" "Psychopomp's Song" BloodOnTheAltar 2)
-  { cdCardTraits = singleton Omen
-  , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril]
-  }
+psychopompsSong =
+  (treachery "02221" "Psychopomp's Song" BloodOnTheAltar 2)
+    { cdCardTraits = singleton Omen
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril]
+    }
 
 strangeSigns :: CardDef
-strangeSigns = (treachery "02222" "Strange Signs" BloodOnTheAltar 2)
-  { cdCardTraits = singleton Omen
-  }
+strangeSigns =
+  (treachery "02222" "Strange Signs" BloodOnTheAltar 2)
+    { cdCardTraits = singleton Omen
+    }
 
 rottingRemainsBloodOnTheAltar :: CardDef
 rottingRemainsBloodOnTheAltar =
@@ -628,9 +681,10 @@ rottingRemainsBloodOnTheAltar =
     }
 
 toweringBeasts :: CardDef
-toweringBeasts = (treachery "02256" "Towering Beasts" UndimensionedAndUnseen 4)
-  { cdKeywords = singleton Keyword.Peril
-  }
+toweringBeasts =
+  (treachery "02256" "Towering Beasts" UndimensionedAndUnseen 4)
+    { cdKeywords = singleton Keyword.Peril
+    }
 
 ruinAndDestruction :: CardDef
 ruinAndDestruction =
@@ -652,19 +706,22 @@ theCreaturesTracks =
     }
 
 ritesHowled :: CardDef
-ritesHowled = (treachery "02296" "Rites Howled" WhereDoomAwaits 3)
-  { cdCardTraits = singleton Hex
-  }
+ritesHowled =
+  (treachery "02296" "Rites Howled" WhereDoomAwaits 3)
+    { cdCardTraits = singleton Hex
+    }
 
 spacesBetween :: CardDef
-spacesBetween = (treachery "02297" "Spaces Between" WhereDoomAwaits 3)
-  { cdCardTraits = setFromList [Hex, Hazard]
-  }
+spacesBetween =
+  (treachery "02297" "Spaces Between" WhereDoomAwaits 3)
+    { cdCardTraits = setFromList [Hex, Hazard]
+    }
 
 vortexOfTime :: CardDef
-vortexOfTime = (treachery "02298" "Vortex of Time" WhereDoomAwaits 3)
-  { cdCardTraits = setFromList [Hex, Hazard]
-  }
+vortexOfTime =
+  (treachery "02298" "Vortex of Time" WhereDoomAwaits 3)
+    { cdCardTraits = setFromList [Hex, Hazard]
+    }
 
 collapsingReality :: CardDef
 collapsingReality =
@@ -673,50 +730,55 @@ collapsingReality =
     }
 
 wormhole :: CardDef
-wormhole = (treachery "02332" "Wormhole" LostInTimeAndSpace 2)
-  { cdCardTraits = setFromList [Hazard]
-  }
+wormhole =
+  (treachery "02332" "Wormhole" LostInTimeAndSpace 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 vastExpanse :: CardDef
-vastExpanse = (treachery "02333" "Vast Expanse" LostInTimeAndSpace 3)
-  { cdCardTraits = setFromList [Terror]
-  }
+vastExpanse =
+  (treachery "02333" "Vast Expanse" LostInTimeAndSpace 3)
+    { cdCardTraits = setFromList [Terror]
+    }
 
 shellShock :: CardDef
 shellShock =
-  (weakness "03008" "Shell Shock") { cdCardTraits = setFromList [Flaw] }
+  (weakness "03008" "Shell Shock") {cdCardTraits = setFromList [Flaw]}
 
 starsOfHyades :: CardDef
 starsOfHyades =
-  (weakness "03013" "Stars of Hyades") { cdCardTraits = setFromList [Curse] }
+  (weakness "03013" "Stars of Hyades") {cdCardTraits = setFromList [Curse]}
 
 angeredSpirits :: CardDef
 angeredSpirits =
-  (weakness "03015" "Angered Spirits") { cdCardTraits = singleton Task }
+  (weakness "03015" "Angered Spirits") {cdCardTraits = singleton Task}
 
 crisisOfIdentity :: CardDef
 crisisOfIdentity =
-  (weakness "03019" "Crisis of Identity") { cdCardTraits = singleton Madness }
+  (weakness "03019" "Crisis of Identity") {cdCardTraits = singleton Madness}
 
 overzealous :: CardDef
 overzealous =
-  (basicWeakness "03040" "Overzealous") { cdCardTraits = singleton Flaw }
+  (basicWeakness "03040" "Overzealous") {cdCardTraits = singleton Flaw}
 
 drawingTheSign :: CardDef
-drawingTheSign = (basicWeakness "03041" "Drawing the Sign")
-  { cdCardTraits = setFromList [Pact, Madness]
-  }
+drawingTheSign =
+  (basicWeakness "03041" "Drawing the Sign")
+    { cdCardTraits = setFromList [Pact, Madness]
+    }
 
 fineDining :: CardDef
-fineDining = (treachery "03082" "Fine Dining" TheLastKing 2)
-  { cdCardTraits = singleton Terror
-  , cdKeywords = singleton Keyword.Peril
-  }
+fineDining =
+  (treachery "03082" "Fine Dining" TheLastKing 2)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 toughCrowd :: CardDef
-toughCrowd = (treachery "03083" "Tough Crowd" TheLastKing 2)
-  { cdCardTraits = singleton Hazard
-  }
+toughCrowd =
+  (treachery "03083" "Tough Crowd" TheLastKing 2)
+    { cdCardTraits = singleton Hazard
+    }
 
 whispersInYourHeadDismay :: CardDef
 whispersInYourHeadDismay =
@@ -751,36 +813,42 @@ whispersInYourHeadDoubt =
     }
 
 descentIntoMadness :: CardDef
-descentIntoMadness = (treachery "03085" "Descent into Madness" Delusions 2)
-  { cdCardTraits = singleton Terror
-  , cdKeywords = singleton Keyword.Surge
-  }
+descentIntoMadness =
+  (treachery "03085" "Descent into Madness" Delusions 2)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = singleton Keyword.Surge
+    }
 
 huntedByByakhee :: CardDef
-huntedByByakhee = (treachery "03087" "Hunted by Byakhee" EncounterSet.Byakhee 2
-                  )
-  { cdCardTraits = singleton Pact
-  }
+huntedByByakhee =
+  ( treachery "03087" "Hunted by Byakhee" EncounterSet.Byakhee 2
+  )
+    { cdCardTraits = singleton Pact
+    }
 
 blackStarsRise :: CardDef
-blackStarsRise = (treachery "03090" "Black Stars Rise" EvilPortents 2)
-  { cdCardTraits = singleton Omen
-  }
+blackStarsRise =
+  (treachery "03090" "Black Stars Rise" EvilPortents 2)
+    { cdCardTraits = singleton Omen
+    }
 
 spiresOfCarcosa :: CardDef
-spiresOfCarcosa = (treachery "03091" "Spires of Carcosa" EvilPortents 2)
-  { cdCardTraits = singleton Omen
-  }
+spiresOfCarcosa =
+  (treachery "03091" "Spires of Carcosa" EvilPortents 2)
+    { cdCardTraits = singleton Omen
+    }
 
 twistedToHisWill :: CardDef
-twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
-  { cdCardTraits = singleton Pact
-  }
+twistedToHisWill =
+  (treachery "03092" "Twisted to His Will" EvilPortents 2)
+    { cdCardTraits = singleton Pact
+    }
 
 spiritsTorment :: CardDef
-spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
-  { cdCardTraits = setFromList [Curse, Geist]
-  }
+spiritsTorment =
+  (treachery "03094" "Spirit's Torment" Hauntings 2)
+    { cdCardTraits = setFromList [Curse, Geist]
+    }
 
 danceOfTheYellowKing :: CardDef
 danceOfTheYellowKing =
@@ -789,46 +857,54 @@ danceOfTheYellowKing =
     }
 
 theKingsEdict :: CardDef
-theKingsEdict = (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
-  { cdCardTraits = singleton Pact
-  }
+theKingsEdict =
+  (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
+    { cdCardTraits = singleton Pact
+    }
 
 oozeAndFilth :: CardDef
-oozeAndFilth = (treachery "03101" "Ooze and Filth" DecayAndFilth 2)
-  { cdCardTraits = singleton Hazard
-  }
+oozeAndFilth =
+  (treachery "03101" "Ooze and Filth" DecayAndFilth 2)
+    { cdCardTraits = singleton Hazard
+    }
 
 corrosion :: CardDef
-corrosion = (treachery "03102" "Corrosion" DecayAndFilth 2)
-  { cdCardTraits = singleton Hazard
-  }
+corrosion =
+  (treachery "03102" "Corrosion" DecayAndFilth 2)
+    { cdCardTraits = singleton Hazard
+    }
 
 markedByTheSign :: CardDef
-markedByTheSign = (treachery "03104" "Marked by the Sign" TheStranger 2)
-  { cdCardTraits = singleton Pact
-  , cdKeywords = singleton Keyword.Peril
-  }
+markedByTheSign =
+  (treachery "03104" "Marked by the Sign" TheStranger 2)
+    { cdCardTraits = singleton Pact
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 thePaleMaskBeckons :: CardDef
-thePaleMaskBeckons = (treachery "03105" "The Pale Mask Beckons" TheStranger 1)
-  { cdCardTraits = setFromList [Omen, Pact]
-  }
+thePaleMaskBeckons =
+  (treachery "03105" "The Pale Mask Beckons" TheStranger 1)
+    { cdCardTraits = setFromList [Omen, Pact]
+    }
 
 ledAstray :: CardDef
-ledAstray = (treachery "03145" "Led Astray" EchoesOfThePast 3)
-  { cdCardTraits = singleton Scheme
-  , cdKeywords = singleton Keyword.Peril
-  }
+ledAstray =
+  (treachery "03145" "Led Astray" EchoesOfThePast 3)
+    { cdCardTraits = singleton Scheme
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 theCultsSearch :: CardDef
-theCultsSearch = (treachery "03146" "The Cult's Search" EchoesOfThePast 2)
-  { cdCardTraits = singleton Scheme
-  }
+theCultsSearch =
+  (treachery "03146" "The Cult's Search" EchoesOfThePast 2)
+    { cdCardTraits = singleton Scheme
+    }
 
 straitjacket :: CardDef
-straitjacket = (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
-  { cdCardTraits = setFromList [Item, Clothing]
-  }
+straitjacket =
+  (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
+    { cdCardTraits = setFromList [Item, Clothing]
+    }
 
 giftOfMadnessPity :: CardDef
 giftOfMadnessPity =
@@ -847,24 +923,28 @@ giftOfMadnessMisery =
     }
 
 wallsClosingIn :: CardDef
-wallsClosingIn = (treachery "03188" "Walls Closing In" TheUnspeakableOath 3)
-  { cdCardTraits = singleton Terror
-  }
+wallsClosingIn =
+  (treachery "03188" "Walls Closing In" TheUnspeakableOath 3)
+    { cdCardTraits = singleton Terror
+    }
 
 twinSuns :: CardDef
-twinSuns = (treachery "03223" "Twin Suns" APhantomOfTruth 2)
-  { cdCardTraits = singleton Omen
-  }
+twinSuns =
+  (treachery "03223" "Twin Suns" APhantomOfTruth 2)
+    { cdCardTraits = singleton Omen
+    }
 
 deadlyFate :: CardDef
-deadlyFate = (treachery "03224" "Deadly Fate" APhantomOfTruth 3)
-  { cdCardTraits = singleton Omen
-  }
+deadlyFate =
+  (treachery "03224" "Deadly Fate" APhantomOfTruth 3)
+    { cdCardTraits = singleton Omen
+    }
 
 torturousChords :: CardDef
-torturousChords = (treachery "03225" "Torturous Chords" APhantomOfTruth 3)
-  { cdCardTraits = setFromList [Hex, Terror]
-  }
+torturousChords =
+  (treachery "03225" "Torturous Chords" APhantomOfTruth 3)
+    { cdCardTraits = setFromList [Hex, Terror]
+    }
 
 frozenInFearAPhantomOfTruth :: CardDef
 frozenInFearAPhantomOfTruth =
@@ -873,53 +953,62 @@ frozenInFearAPhantomOfTruth =
     }
 
 lostSoul :: CardDef
-lostSoul = (weakness "03227" "Lost Soul")
-  { cdCardTraits = setFromList [Madness, Pact]
-  , cdEncounterSet = Just APhantomOfTruth
-  , cdEncounterSetQuantity = Just 4
-  }
+lostSoul =
+  (weakness "03227" "Lost Soul")
+    { cdCardTraits = setFromList [Madness, Pact]
+    , cdEncounterSet = Just APhantomOfTruth
+    , cdEncounterSetQuantity = Just 4
+    }
 
 eyesInTheWalls :: CardDef
-eyesInTheWalls = (treachery "03260" "Eyes in the Walls" ThePallidMask 3)
-  { cdCardTraits = singleton Terror
-  }
+eyesInTheWalls =
+  (treachery "03260" "Eyes in the Walls" ThePallidMask 3)
+    { cdCardTraits = singleton Terror
+    }
 
 theShadowBehindYou :: CardDef
-theShadowBehindYou = (treachery "03261" "The Shadow Behind You" ThePallidMask 3
-                     )
-  { cdCardTraits = singleton Terror
-  }
+theShadowBehindYou =
+  ( treachery "03261" "The Shadow Behind You" ThePallidMask 3
+  )
+    { cdCardTraits = singleton Terror
+    }
 
 thePitBelow :: CardDef
-thePitBelow = (treachery "03262" "The Pit Below" ThePallidMask 3)
-  { cdCardTraits = singleton Hazard
-  }
+thePitBelow =
+  (treachery "03262" "The Pit Below" ThePallidMask 3)
+    { cdCardTraits = singleton Hazard
+    }
 
 crashingFloods :: CardDef
-crashingFloods = (treachery "03302" "Crashing Floods" BlackStarsRise 3)
-  { cdCardTraits = singleton Omen
-  }
+crashingFloods =
+  (treachery "03302" "Crashing Floods" BlackStarsRise 3)
+    { cdCardTraits = singleton Omen
+    }
 
 worldsMerge :: CardDef
-worldsMerge = (treachery "03303" "Worlds Merge" BlackStarsRise 3)
-  { cdCardTraits = singleton Omen
-  }
+worldsMerge =
+  (treachery "03303" "Worlds Merge" BlackStarsRise 3)
+    { cdCardTraits = singleton Omen
+    }
 
 dismalCurse :: CardDef
-dismalCurse = (treachery "03337" "Dismal Curse" DimCarcosa 3)
-  { cdCardTraits = setFromList [Curse, Terror]
-  }
+dismalCurse =
+  (treachery "03337" "Dismal Curse" DimCarcosa 3)
+    { cdCardTraits = setFromList [Curse, Terror]
+    }
 
 realmOfMadness :: CardDef
-realmOfMadness = (treachery "03338" "Realm of Madness" DimCarcosa 2)
-  { cdCardTraits = singleton Terror
-  }
+realmOfMadness =
+  (treachery "03338" "Realm of Madness" DimCarcosa 2)
+    { cdCardTraits = singleton Terror
+    }
 
 theFinalAct :: CardDef
-theFinalAct = (treachery "03339" "The Final Act" DimCarcosa 1)
-  { cdCardTraits = singleton Terror
-  , cdKeywords = setFromList [Keyword.Surge]
-  }
+theFinalAct =
+  (treachery "03339" "The Final Act" DimCarcosa 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Surge]
+    }
 
 possessionTraitorous :: CardDef
 possessionTraitorous =
@@ -931,81 +1020,90 @@ possessionTraitorous =
     }
 
 possessionTorturous :: CardDef
-possessionTorturous = (treachery "03341" ("Possession" <:> "Torturous") DimCarcosa 1)
-  { cdCardTraits = setFromList [Hex, Terror]
-  , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-  , cdCardInHandEffects = True
-  }
+possessionTorturous =
+  (treachery "03341" ("Possession" <:> "Torturous") DimCarcosa 1)
+    { cdCardTraits = setFromList [Hex, Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
+    }
 
 possessionMurderous :: CardDef
-possessionMurderous = (treachery "03342" ("Possession" <:> "Murderous") DimCarcosa 1)
-  { cdCardTraits = setFromList [Hex, Terror]
-  , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-  , cdCardInHandEffects = True
-  }
+possessionMurderous =
+  (treachery "03342" ("Possession" <:> "Murderous") DimCarcosa 1)
+    { cdCardTraits = setFromList [Hex, Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
+    }
 
 boughtInBlood :: CardDef
 boughtInBlood =
-  (weakness "04007" "Bought in Blood") { cdCardTraits = singleton Flaw }
+  (weakness "04007" "Bought in Blood") {cdCardTraits = singleton Flaw}
 
 callOfTheUnknown :: CardDef
 callOfTheUnknown =
-  (weakness "04009" "Call of the Unknown") { cdCardTraits = singleton Task }
+  (weakness "04009" "Call of the Unknown") {cdCardTraits = singleton Task}
 
 caughtRedHanded :: CardDef
 caughtRedHanded =
-  (weakness "04012" "Caught Red-Handed") { cdCardTraits = singleton Blunder }
+  (weakness "04012" "Caught Red-Handed") {cdCardTraits = singleton Blunder}
 
 voiceOfTheMessenger :: CardDef
-voiceOfTheMessenger = (weakness "04016" "Voice of the Messenger")
-  { cdCardTraits = setFromList [Curse, Pact]
-  }
+voiceOfTheMessenger =
+  (weakness "04016" "Voice of the Messenger")
+    { cdCardTraits = setFromList [Curse, Pact]
+    }
 
 thePriceOfFailure :: CardDef
 thePriceOfFailure =
-  (weakness "04039" "The Price of Failure") { cdCardTraits = singleton Pact }
+  (weakness "04039" "The Price of Failure") {cdCardTraits = singleton Pact}
 
 doomed :: CardDef
-doomed = (basicWeakness "04040" "Doomed") { cdCardTraits = singleton Curse }
+doomed = (basicWeakness "04040" "Doomed") {cdCardTraits = singleton Curse}
 
 accursedFate :: CardDef
 accursedFate =
-  (weakness "04041" "Accursed Fate") { cdCardTraits = singleton Curse }
+  (weakness "04041" "Accursed Fate") {cdCardTraits = singleton Curse}
 
 theBellTolls :: CardDef
 theBellTolls =
-  (weakness "04042" "The Bell Tolls") { cdCardTraits = singleton Curse }
+  (weakness "04042" "The Bell Tolls") {cdCardTraits = singleton Curse}
 
 overgrowth :: CardDef
-overgrowth = (treachery "04076" "Overgrowth" Rainforest 2)
-  { cdCardTraits = singleton Obstacle
-  }
+overgrowth =
+  (treachery "04076" "Overgrowth" Rainforest 2)
+    { cdCardTraits = singleton Obstacle
+    }
 
 voiceOfTheJungle :: CardDef
-voiceOfTheJungle = (treachery "04077" "Voice of the Jungle" Rainforest 2)
-  { cdCardTraits = singleton Power
-  }
+voiceOfTheJungle =
+  (treachery "04077" "Voice of the Jungle" Rainforest 2)
+    { cdCardTraits = singleton Power
+    }
 
 snakeBite :: CardDef
-snakeBite = (treachery "04080" "Snake Bite" Serpents 3)
-  { cdCardTraits = setFromList [Hazard, Poison]
-  }
+snakeBite =
+  (treachery "04080" "Snake Bite" Serpents 3)
+    { cdCardTraits = setFromList [Hazard, Poison]
+    }
 
 lostInTheWilds :: CardDef
-lostInTheWilds = (treachery "04081" "Lost in the Wilds" Expedition 3)
-  { cdCardTraits = singleton Blunder
-  }
+lostInTheWilds =
+  (treachery "04081" "Lost in the Wilds" Expedition 3)
+    { cdCardTraits = singleton Blunder
+    }
 
 lowOnSupplies :: CardDef
-lowOnSupplies = (treachery "04082" "Low on Supplies" Expedition 2)
-  { cdCardTraits = singleton Blunder
-  , cdKeywords = singleton Keyword.Peril
-  }
+lowOnSupplies =
+  (treachery "04082" "Low on Supplies" Expedition 2)
+    { cdCardTraits = singleton Blunder
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 curseOfYig :: CardDef
-curseOfYig = (treachery "04085" "Curse of Yig" AgentsOfYig 2)
-  { cdCardTraits = singleton Curse
-  }
+curseOfYig =
+  (treachery "04085" "Curse of Yig" AgentsOfYig 2)
+    { cdCardTraits = singleton Curse
+    }
 
 arrowsFromTheTrees :: CardDef
 arrowsFromTheTrees =
@@ -1179,177 +1277,245 @@ captiveMind =
     }
 
 outOfBodyExperience :: CardDef
-outOfBodyExperience = (weakness "04264" "Out of Body Experience")
-  { cdCardTraits = setFromList [Madness, Paradox]
-  , cdEncounterSet = Just TheCityOfArchives
-  , cdEncounterSetQuantity = Just 4
-  }
+outOfBodyExperience =
+  (weakness "04264" "Out of Body Experience")
+    { cdCardTraits = setFromList [Madness, Paradox]
+    , cdEncounterSet = Just TheCityOfArchives
+    , cdEncounterSetQuantity = Just 4
+    }
 
 childrenOfValusia :: CardDef
-childrenOfValusia = (treachery "04299" "Children of Valusia" TheDepthsOfYoth 3)
-  { cdCardTraits = singleton Scheme
-  }
+childrenOfValusia =
+  (treachery "04299" "Children of Valusia" TheDepthsOfYoth 3)
+    { cdCardTraits = singleton Scheme
+    }
 
 lightlessShadow :: CardDef
-lightlessShadow = (treachery "04300" "Lightless Shadow" TheDepthsOfYoth 3)
-  { cdCardTraits = singleton Terror
-  }
+lightlessShadow =
+  (treachery "04300" "Lightless Shadow" TheDepthsOfYoth 3)
+    { cdCardTraits = singleton Terror
+    }
 
 bathophobia :: CardDef
-bathophobia = (treachery "04301" "Bathophobia" TheDepthsOfYoth 3)
-  { cdCardTraits = singleton Terror
-  }
+bathophobia =
+  (treachery "04301" "Bathophobia" TheDepthsOfYoth 3)
+    { cdCardTraits = singleton Terror
+    }
 
 serpentsIre :: CardDef
-serpentsIre = (treachery "04302" "Serpent's Ire" TheDepthsOfYoth 2)
-  { cdCardTraits = singleton Scheme
-  }
+serpentsIre =
+  (treachery "04302" "Serpent's Ire" TheDepthsOfYoth 2)
+    { cdCardTraits = singleton Scheme
+    }
 
 shatteredAges :: CardDef
-shatteredAges = (treachery "04339" "Shattered Ages" ShatteredAeons 2)
-  { cdCardTraits = singleton Hex
-  }
+shatteredAges =
+  (treachery "04339" "Shattered Ages" ShatteredAeons 2)
+    { cdCardTraits = singleton Hex
+    }
 
 betweenWorlds :: CardDef
-betweenWorlds = (treachery "04340" "Between Worlds" ShatteredAeons 2)
-  { cdCardTraits = singleton Hex
-  }
+betweenWorlds =
+  (treachery "04340" "Between Worlds" ShatteredAeons 2)
+    { cdCardTraits = singleton Hex
+    }
 
 wrackedByTime :: CardDef
-wrackedByTime = (treachery "04341" "Wracked by Time" ShatteredAeons 3)
-  { cdCardTraits = singleton Hex
-  }
+wrackedByTime =
+  (treachery "04341" "Wracked by Time" ShatteredAeons 3)
+    { cdCardTraits = singleton Hex
+    }
 
 creepingDarkness :: CardDef
-creepingDarkness = (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
-  { cdCardTraits = singleton Hazard
-  }
+creepingDarkness =
+  (treachery "04342" "Creeping Darkness" ShatteredAeons 2)
+    { cdCardTraits = singleton Hazard
+    }
 
 rationalThought :: CardDef
-rationalThought = (weakness "05008" "Rational Thought")
-  { cdCardTraits = singleton Flaw
-  }
+rationalThought =
+  (weakness "05008" "Rational Thought")
+    { cdCardTraits = singleton Flaw
+    }
 
 terribleSecret :: CardDef
-terribleSecret = (weakness "05015" "Terrible Secret")
-  { cdCardTraits = singleton Madness
-  }
+terribleSecret =
+  (weakness "05015" "Terrible Secret")
+    { cdCardTraits = singleton Madness
+    }
 
 the13thVision :: CardDef
-the13thVision = (basicWeakness "05041" "The 13th Vision")
-  { cdCardTraits = singleton Omen
-  }
+the13thVision =
+  (basicWeakness "05041" "The 13th Vision")
+    { cdCardTraits = singleton Omen
+    }
 
 watchersGrasp :: CardDef
-watchersGrasp = (treachery "05087" "Watcher's Grasp" TheWatcher 2)
-  { cdCardTraits = setFromList [Power, Spectral]
-  }
+watchersGrasp =
+  (treachery "05087" "Watcher's Grasp" TheWatcher 2)
+    { cdCardTraits = setFromList [Power, Spectral]
+    }
 
 daemonicPiping :: CardDef
-daemonicPiping = surge $ (treachery "05089" "Daemonic Piping" AgentsOfAzathoth 3)
-  { cdCardTraits = setFromList [Power, Terror]
-  }
+daemonicPiping =
+  surge $
+    (treachery "05089" "Daemonic Piping" AgentsOfAzathoth 3)
+      { cdCardTraits = setFromList [Power, Terror]
+      }
 
 diabolicVoices :: CardDef
-diabolicVoices = (treachery "05092" "Diabolic Voices" Witchcraft 3)
-  { cdCardTraits = singleton Curse
-  }
+diabolicVoices =
+  (treachery "05092" "Diabolic Voices" Witchcraft 3)
+    { cdCardTraits = singleton Curse
+    }
 
 wracked :: CardDef
-wracked = (treachery "05093" "Wracked" Witchcraft 2)
-  { cdCardTraits = singleton Hex
-  }
+wracked =
+  (treachery "05093" "Wracked" Witchcraft 2)
+    { cdCardTraits = singleton Hex
+    }
 
 bedeviled :: CardDef
-bedeviled = (treachery "05094" "Bedeviled" Witchcraft 2)
-  { cdCardTraits = singleton Hex
-  }
+bedeviled =
+  (treachery "05094" "Bedeviled" Witchcraft 2)
+    { cdCardTraits = singleton Hex
+    }
 
 mysteriesOfTheLodge :: CardDef
-mysteriesOfTheLodge = (treachery "05097" "Mysteries of the Lodge" SilverTwilightLodge 2)
-  { cdCardTraits = singleton Scheme
-  }
+mysteriesOfTheLodge =
+  (treachery "05097" "Mysteries of the Lodge" SilverTwilightLodge 2)
+    { cdCardTraits = singleton Scheme
+    }
 
 evilPast :: CardDef
-evilPast = (treachery "05098" "Evil Past" CityOfSins 2)
-  { cdCardTraits = singleton Curse
-  }
+evilPast =
+  (treachery "05098" "Evil Past" CityOfSins 2)
+    { cdCardTraits = singleton Curse
+    }
 
 centuriesOfSecrets :: CardDef
-centuriesOfSecrets = (treachery "05099" "Centuries of Secrets" CityOfSins 3)
-  { cdCardTraits = singleton Curse
-  }
+centuriesOfSecrets =
+  (treachery "05099" "Centuries of Secrets" CityOfSins 3)
+    { cdCardTraits = singleton Curse
+    }
 
 whispersInTheDark :: CardDef
-whispersInTheDark = (treachery "05102" "Whispers in the Dark" SpectralPredators 2)
-  { cdCardTraits = setFromList [Omen, Spectral]
-  }
+whispersInTheDark =
+  (treachery "05102" "Whispers in the Dark" SpectralPredators 2)
+    { cdCardTraits = setFromList [Omen, Spectral]
+    }
 
 trappedSpirits :: CardDef
-trappedSpirits = (treachery "05104" "Trapped Spirits" TrappedSpirits 2)
-  { cdCardTraits = setFromList [Terror, Spectral]
-  }
+trappedSpirits =
+  (treachery "05104" "Trapped Spirits" TrappedSpirits 2)
+    { cdCardTraits = setFromList [Terror, Spectral]
+    }
 
 realmOfTorment :: CardDef
-realmOfTorment = (treachery "05105" "Realm of Torment" RealmOfDeath 2)
-  { cdCardTraits = setFromList [Terror, Spectral]
-  }
+realmOfTorment =
+  (treachery "05105" "Realm of Torment" RealmOfDeath 2)
+    { cdCardTraits = setFromList [Terror, Spectral]
+    }
 
 shapesInTheMist :: CardDef
-shapesInTheMist = surge $ (treachery "05106" "Shapes in the Mist" RealmOfDeath 2)
-  { cdCardTraits = setFromList [Terror, Spectral]
-  }
+shapesInTheMist =
+  surge $
+    (treachery "05106" "Shapes in the Mist" RealmOfDeath 2)
+      { cdCardTraits = setFromList [Terror, Spectral]
+      }
 
 terrorInTheNight :: CardDef
-terrorInTheNight = (treachery "05107" "Terror in the Night" InexorableFate 3)
-  { cdCardTraits = setFromList [Terror, Spectral]
-  }
+terrorInTheNight =
+  (treachery "05107" "Terror in the Night" InexorableFate 3)
+    { cdCardTraits = setFromList [Terror, Spectral]
+    }
 
 fateOfAllFools :: CardDef
-fateOfAllFools = (treachery "05108" "Fate of All Fools" InexorableFate 3)
-  { cdCardTraits = setFromList [Omen, Spectral]
-  , cdKeywords = singleton Keyword.Peril
-  }
+fateOfAllFools =
+  (treachery "05108" "Fate of All Fools" InexorableFate 3)
+    { cdCardTraits = setFromList [Omen, Spectral]
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 meddlesomeFamiliar :: CardDef
-meddlesomeFamiliar = (treachery "05143" "Meddlesome Familiar" TheSecretName 3)
-  { cdCardTraits = singleton Curse
-  }
+meddlesomeFamiliar =
+  (treachery "05143" "Meddlesome Familiar" TheSecretName 3)
+    { cdCardTraits = singleton Curse
+    }
 
 ghostlyPresence :: CardDef
-ghostlyPresence = (treachery "05144" "Ghostly Presence" TheSecretName 2)
-  { cdCardTraits = singleton Omen
-  }
+ghostlyPresence =
+  (treachery "05144" "Ghostly Presence" TheSecretName 2)
+    { cdCardTraits = singleton Omen
+    }
 
 extradimensionalVisions :: CardDef
-extradimensionalVisions = (treachery "05145" "Extradimensional Visions" TheSecretName 2)
-  { cdCardTraits = singleton Hex
-  }
+extradimensionalVisions =
+  (treachery "05145" "Extradimensional Visions" TheSecretName 2)
+    { cdCardTraits = singleton Hex
+    }
 
 pulledByTheStars :: CardDef
-pulledByTheStars = (treachery "05146" "Pulled by the Stars" TheSecretName 2)
-  { cdCardTraits = singleton Hex
-  }
+pulledByTheStars =
+  (treachery "05146" "Pulled by the Stars" TheSecretName 2)
+    { cdCardTraits = singleton Hex
+    }
 
 disquietingDreams :: CardDef
-disquietingDreams = (treachery "05147" "Disquieting Dreams" TheSecretName 2)
-  { cdCardTraits = singleton Terror
-  }
+disquietingDreams =
+  (treachery "05147" "Disquieting Dreams" TheSecretName 2)
+    { cdCardTraits = singleton Terror
+    }
+
+punishment :: CardDef
+punishment =
+  (treachery "05181" "Punishment" TheWagesOfSin 2)
+    { cdCardTraits = singleton Hex
+    }
+
+burdensOfThePast :: CardDef
+burdensOfThePast =
+  (treachery "05182" "Burdens of the Past" TheWagesOfSin 2)
+    { cdCardTraits = setFromList [Curse, Spectral]
+    }
+
+ominousPortents :: CardDef
+ominousPortents =
+  (treachery "05183" "Ominous Portents" TheWagesOfSin 2)
+    { cdCardTraits = singleton Omen
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+graveLight :: CardDef
+graveLight =
+  (treachery "05184" "Grave-Light" TheWagesOfSin 2)
+    { cdCardTraits = singleton Curse
+    }
+
+baneOfTheLiving :: CardDef
+baneOfTheLiving =
+  (treachery "05185" "Bane of the Living" TheWagesOfSin 2)
+    { cdCardTraits = setFromList [Curse, Spectral]
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 theHarbinger :: CardDef
-theHarbinger = (weakness "08006" "The Harbinger")
-  { cdCardTraits = setFromList [Omen, Endtimes]
-  }
+theHarbinger =
+  (weakness "08006" "The Harbinger")
+    { cdCardTraits = setFromList [Omen, Endtimes]
+    }
 
 theZealotsSeal :: CardDef
-theZealotsSeal = (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)
-  { cdCardTraits = setFromList [Hex]
-  }
+theZealotsSeal =
+  (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)
+    { cdCardTraits = setFromList [Hex]
+    }
 
 maskedHorrors :: CardDef
-maskedHorrors = (treachery "50031" "Masked Horrors" ReturnToTheMidnightMasks 2)
-  { cdCardTraits = setFromList [Power, Scheme]
-  }
+maskedHorrors =
+  (treachery "50031" "Masked Horrors" ReturnToTheMidnightMasks 2)
+    { cdCardTraits = setFromList [Power, Scheme]
+    }
 
 vaultOfEarthlyDemise :: CardDef
 vaultOfEarthlyDemise =
@@ -1364,80 +1530,94 @@ umordhothsHunger =
     }
 
 chillFromBelow :: CardDef
-chillFromBelow = (treachery "50040" "Chill from Below" GhoulsOfUmordhoth 3)
-  { cdCardTraits = setFromList [Hazard]
-  }
+chillFromBelow =
+  (treachery "50040" "Chill from Below" GhoulsOfUmordhoth 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 maskOfUmordhoth :: CardDef
-maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
-  { cdCardTraits = setFromList [Item, Mask]
-  }
+maskOfUmordhoth =
+  (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
+    { cdCardTraits = setFromList [Item, Mask]
+    }
 
 selfDestructive :: CardDef
 selfDestructive =
-  (basicWeakness "60104" "Self-Destructive") { cdCardTraits = singleton Flaw }
+  (basicWeakness "60104" "Self-Destructive") {cdCardTraits = singleton Flaw}
 
 thriceDamnedCuriosity :: CardDef
-thriceDamnedCuriosity = (weakness "60203" "Thrice-Damned Curiosity")
-  { cdCardTraits = singleton Flaw
-  }
+thriceDamnedCuriosity =
+  (weakness "60203" "Thrice-Damned Curiosity")
+    { cdCardTraits = singleton Flaw
+    }
 
 obsessive :: CardDef
-obsessive = (basicWeakness "60204" "Obsessive")
-  { cdCardTraits = singleton Flaw
-  }
+obsessive =
+  (basicWeakness "60204" "Obsessive")
+    { cdCardTraits = singleton Flaw
+    }
 
 darkFuture :: CardDef
-darkFuture = (weakness "60403" "Dark Future")
-  { cdCardTraits = setFromList [Omen, Endtimes]
-  }
+darkFuture =
+  (weakness "60403" "Dark Future")
+    { cdCardTraits = setFromList [Omen, Endtimes]
+    }
 
 nihilism :: CardDef
-nihilism = (basicWeakness "60404" "Nihilism")
-  { cdCardTraits = singleton Madness
-  }
+nihilism =
+  (basicWeakness "60404" "Nihilism")
+    { cdCardTraits = singleton Madness
+    }
 
 calledByTheMists :: CardDef
-calledByTheMists = (weakness "60503" "Called by the Mists")
-  { cdCardTraits = setFromList [Curse]
-  }
+calledByTheMists =
+  (weakness "60503" "Called by the Mists")
+    { cdCardTraits = setFromList [Curse]
+    }
 
 atychiphobia :: CardDef
-atychiphobia = (basicWeakness "60504" "Atychiphobia")
-  { cdCardTraits = setFromList [Madness]
-  }
+atychiphobia =
+  (basicWeakness "60504" "Atychiphobia")
+    { cdCardTraits = setFromList [Madness]
+    }
 
 cursedSwamp :: CardDef
-cursedSwamp = (treachery "81024" "Cursed Swamp" TheBayou 3)
-  { cdCardTraits = setFromList [Hazard]
-  }
+cursedSwamp =
+  (treachery "81024" "Cursed Swamp" TheBayou 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 spectralMist :: CardDef
-spectralMist = (treachery "81025" "Spectral Mist" TheBayou 3)
-  { cdCardTraits = setFromList [Hazard]
-  }
+spectralMist =
+  (treachery "81025" "Spectral Mist" TheBayou 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 draggedUnder :: CardDef
-draggedUnder = (treachery "81026" "Dragged Under" TheBayou 4)
-  { cdCardTraits = setFromList [Hazard]
-  }
+draggedUnder =
+  (treachery "81026" "Dragged Under" TheBayou 4)
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 ripplesOnTheSurface :: CardDef
-ripplesOnTheSurface = (treachery "81027" "Ripples on the Surface" TheBayou 3)
-  { cdCardTraits = setFromList [Terror]
-  }
+ripplesOnTheSurface =
+  (treachery "81027" "Ripples on the Surface" TheBayou 3)
+    { cdCardTraits = setFromList [Terror]
+    }
 
 curseOfTheRougarou :: CardDef
-curseOfTheRougarou = (weakness "81029" "Curse of the Rougarou")
-  { cdCardTraits = setFromList [Curse]
-  , cdEncounterSet = Just CurseOfTheRougarou
-  , cdEncounterSetQuantity = Just 1
-  }
+curseOfTheRougarou =
+  (weakness "81029" "Curse of the Rougarou")
+    { cdCardTraits = setFromList [Curse]
+    , cdEncounterSet = Just CurseOfTheRougarou
+    , cdEncounterSetQuantity = Just 1
+    }
 
 onTheProwl :: CardDef
-onTheProwl = (treachery "81034" "On the Prowl" CurseOfTheRougarou 5)
-  { cdKeywords = setFromList [Keyword.Surge]
-  }
+onTheProwl =
+  (treachery "81034" "On the Prowl" CurseOfTheRougarou 5)
+    { cdKeywords = setFromList [Keyword.Surge]
+    }
 
 beastOfTheBayou :: CardDef
 beastOfTheBayou = treachery "81035" "Beast of the Bayou" CurseOfTheRougarou 2
@@ -1447,44 +1627,52 @@ insatiableBloodlust =
   treachery "81036" "Insatiable Bloodlust" CurseOfTheRougarou 3
 
 massHysteria :: CardDef
-massHysteria = (treachery "82031" "Mass Hysteria" CarnevaleOfHorrors 3)
-  { cdCardTraits = singleton Hazard
-  , cdKeywords = singleton Keyword.Peril
-  }
+massHysteria =
+  (treachery "82031" "Mass Hysteria" CarnevaleOfHorrors 3)
+    { cdCardTraits = singleton Hazard
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 lostInVenice :: CardDef
-lostInVenice = (treachery "82032" "Lost in Venice" CarnevaleOfHorrors 3)
-  { cdCardTraits = singleton Blunder
-  , cdKeywords = singleton Keyword.Peril
-  }
+lostInVenice =
+  (treachery "82032" "Lost in Venice" CarnevaleOfHorrors 3)
+    { cdCardTraits = singleton Blunder
+    , cdKeywords = singleton Keyword.Peril
+    }
 
 watchersGaze :: CardDef
-watchersGaze = (treachery "82033" "Watchers' Gaze" CarnevaleOfHorrors 3)
-  { cdCardTraits = singleton Terror
-  }
+watchersGaze =
+  (treachery "82033" "Watchers' Gaze" CarnevaleOfHorrors 3)
+    { cdCardTraits = singleton Terror
+    }
 
 chaosInTheWater :: CardDef
-chaosInTheWater = (treachery "82034" "Chaos in the Water" CarnevaleOfHorrors 3)
-  { cdCardTraits = singleton Hazard
-  }
+chaosInTheWater =
+  (treachery "82034" "Chaos in the Water" CarnevaleOfHorrors 3)
+    { cdCardTraits = singleton Hazard
+    }
 
 mesmerize :: CardDef
-mesmerize = (treachery "82035" "Mesmerize" CarnevaleOfHorrors 2)
-  { cdCardTraits = singleton Hex
-  }
+mesmerize =
+  (treachery "82035" "Mesmerize" CarnevaleOfHorrors 2)
+    { cdCardTraits = singleton Hex
+    }
 
 abduction :: CardDef
-abduction = (treachery "82036" "Abduction" CarnevaleOfHorrors 2)
-  { cdCardTraits = singleton Scheme
-  }
+abduction =
+  (treachery "82036" "Abduction" CarnevaleOfHorrors 2)
+    { cdCardTraits = singleton Scheme
+    }
 
 acridMiasma :: CardDef
-acridMiasma = (treachery "82037" "Acrid Miasma" CarnevaleOfHorrors 2)
-  { cdCardTraits = singleton Hazard
-  }
+acridMiasma =
+  (treachery "82037" "Acrid Miasma" CarnevaleOfHorrors 2)
+    { cdCardTraits = singleton Hazard
+    }
 
 yaztaroth :: CardDef
-yaztaroth = (weakness "98018" "Yaztaroth")
-  { cdCardTraits = setFromList [Curse, Pact]
-  , cdUnique = True
-  }
+yaztaroth =
+  (weakness "98018" "Yaztaroth")
+    { cdCardTraits = setFromList [Curse, Pact]
+    , cdUnique = True
+    }

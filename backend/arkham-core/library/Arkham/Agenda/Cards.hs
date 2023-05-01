@@ -10,161 +10,166 @@ import Arkham.EncounterSet
 import Arkham.Name
 
 agenda :: CardCode -> Name -> Int -> EncounterSet -> CardDef
-agenda cardCode name stage encounterSet = CardDef
-  { cdCardCode = cardCode
-  , cdName = name
-  , cdRevealedName = Nothing
-  , cdCost = Nothing
-  , cdAdditionalCost = Nothing
-  , cdLevel = 0
-  , cdCardType = AgendaType
-  , cdCardSubType = Nothing
-  , cdClassSymbols = mempty
-  , cdSkills = mempty
-  , cdCardTraits = mempty
-  , cdRevealedCardTraits = mempty
-  , cdKeywords = mempty
-  , cdFastWindow = Nothing
-  , cdActions = []
-  , cdRevelation = False
-  , cdVictoryPoints = Nothing
-  , cdVengeancePoints = Nothing
-  , cdCriteria = mempty
-  , cdOverrideActionPlayableIfCriteriaMet = False
-  , cdCommitRestrictions = mempty
-  , cdAttackOfOpportunityModifiers = mempty
-  , cdPermanent = False
-  , cdEncounterSet = Just encounterSet
-  , cdEncounterSetQuantity = Nothing
-  , cdUnique = False
-  , cdDoubleSided = True
-  , cdLimits = []
-  , cdExceptional = False
-  , cdUses = NoUses
-  , cdPlayableFromDiscard = False
-  , cdStage = Just stage
-  , cdSlots = []
-  , cdCardInHandEffects = False
-  , cdCardInDiscardEffects = False
-  , cdCardInSearchEffects = False
-  , cdAlternateCardCodes = []
-  , cdArt = unCardCode cardCode
-  , cdLocationSymbol = Nothing
-  , cdLocationRevealedSymbol = Nothing
-  , cdLocationConnections = []
-  , cdLocationRevealedConnections = []
-  , cdPurchaseMentalTrauma = Nothing
-  , cdCanReplace = True
-  , cdDeckRestrictions = []
-  }
+agenda cardCode name stage encounterSet =
+  CardDef
+    { cdCardCode = cardCode
+    , cdName = name
+    , cdRevealedName = Nothing
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = AgendaType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = mempty
+    , cdSkills = mempty
+    , cdCardTraits = mempty
+    , cdRevealedCardTraits = mempty
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = False
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Just encounterSet
+    , cdEncounterSetQuantity = Nothing
+    , cdUnique = False
+    , cdDoubleSided = True
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Just stage
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = unCardCode cardCode
+    , cdLocationSymbol = Nothing
+    , cdLocationRevealedSymbol = Nothing
+    , cdLocationConnections = []
+    , cdLocationRevealedConnections = []
+    , cdPurchaseMentalTrauma = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
 
 allAgendaCards :: Map CardCode CardDef
-allAgendaCards = mapFromList $ map
-  (toCardCode &&& id)
-  [ aCreatureOfTheBayou
-  , aTearInReality
-  , allIsOne
-  , beckoningForPower
-  , behindTheCurtain
-  , bidingItsTime
-  , breakingThrough
-  , callingForthTheOldOnes
-  , chaosAtTheCarnevale
-  , chaosInTheCloverClub
-  , cityOfBlood
-  , cityOfTheGreatRace
-  , deadOfNight
-  , drawnIn
-  , empireOfTheDead
-  , empireOfTheUndead
-  , encore
-  , endlessCaverns
-  , expeditionIntoTheWild
-  , eyesInTheDark
-  , fashionablyLate
-  , feedTheBeast
-  , furyThatShakesTheEarth
-  , hiddenEntanglements
-  , hisDomain
-  , horrificDescent
-  , horrorsUnleashed
-  , humanityFading
-  , intruders
-  , inEveryShadow
-  , judgementXX
-  , justiceXI
-  , letTheStormRageTheFloodBelow
-  , letTheStormRageTheVortexAbove
-  , lockedInside
-  , lostMemories
-  , madnessCoils
-  , madnessDies
-  , madnessDrowns
-  , markedForSacrifice
-  , outOfTime
-  , overTheThreshold
-  , pastPresentAndFuture
-  , pendulousThreads
-  , predatorOrPrey
-  , quietHalls
-  , rampagingCreatures
-  , ransackingTheManor
-  , restrictedAccess
-  , returnToPredatorOrPrey
-  , riseOfTheGhouls
-  , rollingBackwards
-  , secretsBetterLeftHidden
-  , settingSun
-  , shadowsDeepen
-  , snappedThreads
-  , somethingStirs
-  , strangeDisappearances
-  , swallowedSky
-  , temperanceXIV
-  , theArkhamWoods
-  , theBarrierIsThin
-  , theBeastUnleashed
-  , theBoundaryBroken
-  , theCityFloods
-  , theCloverClub
-  , theCurseSpreads
-  , theDescentBegins
-  , theEndOfAllThings
-  , theEntityAboveTheFloodBelow
-  , theEntityAboveTheVortexAbove
-  , theFamiliar
-  , theFestivitiesBegin
-  , theFirstNight
-  , theHermitIX
-  , theJunglesHeart
-  , theLonelyCaverns
-  , theMawWidens
-  , theNightHowls
-  , theOldOnesHunger
-  , theRedDepths
-  , theRitualBegins
-  , theRitualBeginsBlackStarsRise
-  , theRougarouFeeds
-  , theSecondNight
-  , theShadowOfTheEclipse
-  , theTempleWarden
-  , theTerrifyingTruth
-  , theThirdAct
-  , theThirdNight
-  , theTideRises
-  , theTruthIsHidden
-  , theWitchLight
-  , theyreGettingOut
-  , threadsOfTime
-  , threeFates
-  , timeCollapsing
-  , timeIsRunningShort
-  , torturousDescent
-  , undergroundMuscle
-  , vengeance
-  , vengeanceAwaits
-  , whatsGoingOn
-  ]
+allAgendaCards =
+  mapFromList $
+    map
+      (toCardCode &&& id)
+      [ aCreatureOfTheBayou
+      , aTearInReality
+      , allIsOne
+      , beckoningForPower
+      , behindTheCurtain
+      , bidingItsTime
+      , breakingThrough
+      , callingForthTheOldOnes
+      , chaosAtTheCarnevale
+      , chaosInTheCloverClub
+      , cityOfBlood
+      , cityOfTheGreatRace
+      , deadOfNight
+      , deathsApproach
+      , drawnIn
+      , empireOfTheDead
+      , empireOfTheUndead
+      , encore
+      , endlessCaverns
+      , expeditionIntoTheWild
+      , eyesInTheDark
+      , fashionablyLate
+      , feedTheBeast
+      , furyThatShakesTheEarth
+      , hiddenEntanglements
+      , hisDomain
+      , horrificDescent
+      , horrorsUnleashed
+      , humanityFading
+      , intruders
+      , inEveryShadow
+      , judgementXX
+      , justiceXI
+      , letTheStormRageTheFloodBelow
+      , letTheStormRageTheVortexAbove
+      , lockedInside
+      , lostMemories
+      , madnessCoils
+      , madnessDies
+      , madnessDrowns
+      , markedForSacrifice
+      , outOfTime
+      , overTheThreshold
+      , pastPresentAndFuture
+      , pendulousThreads
+      , predatorOrPrey
+      , quietHalls
+      , rampagingCreatures
+      , ransackingTheManor
+      , restrictedAccess
+      , returnToPredatorOrPrey
+      , riseOfTheGhouls
+      , rollingBackwards
+      , secretsBetterLeftHidden
+      , settingSun
+      , shadowsDeepen
+      , snappedThreads
+      , somethingStirs
+      , strangeDisappearances
+      , swallowedSky
+      , temperanceXIV
+      , theArkhamWoods
+      , theBarrierIsThin
+      , theBeastUnleashed
+      , theBoundaryBroken
+      , theCityFloods
+      , theCloverClub
+      , theCurseSpreads
+      , theDescentBegins
+      , theEndOfAllThings
+      , theEntityAboveTheFloodBelow
+      , theEntityAboveTheVortexAbove
+      , theFamiliar
+      , theFestivitiesBegin
+      , theFirstNight
+      , theHangedManXII
+      , theHermitIX
+      , theJunglesHeart
+      , theLonelyCaverns
+      , theMawWidens
+      , theNightHowls
+      , theOldOnesHunger
+      , theRedDepths
+      , theRitualBegins
+      , theRitualBeginsBlackStarsRise
+      , theRougarouFeeds
+      , theSecondNight
+      , theShadowOfTheEclipse
+      , theTempleWarden
+      , theTerrifyingTruth
+      , theThirdAct
+      , theThirdNight
+      , theTideRises
+      , theTruthIsHidden
+      , theWitchLight
+      , theyreGettingOut
+      , threadsOfTime
+      , threeFates
+      , timeCollapsing
+      , timeIsRunningShort
+      , torturousDescent
+      , undergroundMuscle
+      , vengeance
+      , vengeanceAwaits
+      , whatsGoingOn
+      ]
 
 whatsGoingOn :: CardDef
 whatsGoingOn = agenda "01105" "What's Going On?!" 1 TheGathering
@@ -426,7 +431,7 @@ vengeance :: CardDef
 vengeance = agenda "04284" "VENGEANCE" 7 TheDepthsOfYoth
 
 threadsOfTime :: CardDef
-threadsOfTime = (agenda "04315" "Threads of Time" 1 ShatteredAeons) { cdVengeancePoints = Just 1 }
+threadsOfTime = (agenda "04315" "Threads of Time" 1 ShatteredAeons) {cdVengeancePoints = Just 1}
 
 pendulousThreads :: CardDef
 pendulousThreads = agenda "04316" "Pendulous Threads" 2 ShatteredAeons
@@ -460,6 +465,12 @@ theWitchLight = agenda "05123" "The Witch Light" 3 TheSecretName
 
 markedForSacrifice :: CardDef
 markedForSacrifice = agenda "05124" "Marked for Sacrifice" 4 TheSecretName
+
+theHangedManXII :: CardDef
+theHangedManXII = agenda "05162" "THE HANGED MAN • XII" 1 TheWagesOfSin
+
+deathsApproach :: CardDef
+deathsApproach = agenda "05163" "Death's Approach" 2 TheWagesOfSin
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Scenario.Deck where
 
 import Arkham.Prelude
@@ -14,6 +15,7 @@ data ScenarioDeckKey
   | CatacombsDeck -- The Pallid Mask
   | ExplorationDeck -- The Untamed Wilds
   | UnknownPlacesDeck -- The Secret Name
+  | SpectralEncounterDeck -- The Wages of Sin
   deriving stock (Show, Ord, Eq)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

@@ -16,6 +16,7 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Json
@@ -93,6 +94,8 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioChaosBag :: ChaosBag
   , scenarioEncounterDeck :: Deck EncounterCard
   , scenarioDiscard :: [EncounterCard]
+  , scenarioEncounterDecks :: Map ScenarioEncounterDeckKey (Deck EncounterCard, [EncounterCard])
+  , scenarioActiveEncounterDeck :: ScenarioEncounterDeckKey
   , scenarioResignedCardCodes :: [CardCode]
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioMeta :: Value
@@ -101,6 +104,22 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
   deriving stock (Show, Eq)
+
+newtype ScenarioBehaviors = ScenarioBehaviors
+  { scenarioHandleDiscard
+      :: forall m
+       . (HasGame m, MonadIO m)
+      => EncounterCard
+      -> ScenarioAttrs
+      -> m ScenarioAttrs
+  }
+
+defaultScenarioBehaviors :: ScenarioBehaviors
+defaultScenarioBehaviors =
+  ScenarioBehaviors
+    { scenarioHandleDiscard = \c attrs -> do
+        pure $ attrs {scenarioDiscard = c : scenarioDiscard attrs}
+    }
 
 scenarioWith
   :: (ScenarioAttrs -> a)
@@ -146,6 +165,8 @@ scenario f cardCode name difficulty layout =
       , scenarioVictoryDisplay = mempty
       , scenarioChaosBag = emptyChaosBag
       , scenarioEncounterDeck = mempty
+      , scenarioEncounterDecks = mempty
+      , scenarioActiveEncounterDeck = RegularEncounterDeck
       , scenarioDiscard = mempty
       , scenarioResignedCardCodes = mempty
       , scenarioDecksLayout = ["agenda1 act1"]
@@ -174,7 +195,8 @@ instance Sourceable ScenarioAttrs where
   isSource _ ScenarioSource = True
   isSource _ _ = False
 
-data Scenario = forall a. (IsScenario a) => Scenario a
+data Scenario where
+  Scenario :: (IsScenario a) => a -> Scenario
 
 instance Targetable Scenario where
   toTarget _ = ScenarioTarget

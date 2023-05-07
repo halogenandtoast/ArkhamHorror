@@ -1,11 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Deck where
 
 import Arkham.Prelude
 
 import Arkham.Id
-import Arkham.Scenario.Deck
 import Arkham.Investigator.Deck
+import Arkham.Scenario.Deck
 import Data.Aeson.TH
 
 data DeckSignifier

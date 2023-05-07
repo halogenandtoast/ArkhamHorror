@@ -7,13 +7,16 @@ import { MessageType } from '@/arkham/types/Message';
 export interface Props {
   game: Game
   investigatorId: string
+  spectral?: number
 }
+
+const isSpectral = computed(() => props.spectral !== undefined && props.spectral !== null)
 
 const props = defineProps<Props>()
 const baseUrl = inject('baseUrl')
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const deckAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.target.tag === "EncounterDeckTarget"))
+const deckAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.target.tag === "EncounterDeckTarget" || (isSpectral.value && c.target.tag === "ScenarioDeckTarget"))))
 
 const investigatorPortrait = computed(() => {
   const choice = choices.value[deckAction.value]
@@ -31,6 +34,13 @@ const investigatorPortrait = computed(() => {
   return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
 })
 
+const deckLabel = computed(() => {
+  if (isSpectral.value) {
+    return "Spectral"
+  }
+  return null
+})
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 </script>
@@ -44,7 +54,8 @@ const debugChoose = inject('debugChoose')
         :class="{ 'can-interact': deckAction !== -1 }"
         @click="$emit('choose', deckAction)"
       />
-      <span class="deck-size">{{game.encounterDeckSize}}</span>
+      <span class="deck-size">{{props.spectral || game.encounterDeckSize}}</span>
+      <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
     </div>
     <img
       v-if="investigatorPortrait"
@@ -100,5 +111,16 @@ const debugChoose = inject('debugChoose')
   top: 10%;
   transform: translateX(-50%);
   pointer-events: none;
+}
+
+.deck-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 0 2px;
+  transform: translateX(-50%) translateY(50%);
+  background: rgba(255,255,255,0.8);
 }
 </style>

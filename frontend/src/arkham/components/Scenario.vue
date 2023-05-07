@@ -273,6 +273,16 @@ const topOfEncounterDiscard = computed(() => {
   return null;
 })
 
+const topOfSpectralDiscard = computed(() => {
+  if (props.scenario.spectralDiscard[0]) {
+    const { cardCode } = props.scenario.spectralDiscard[0];
+
+    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  }
+
+  return null;
+})
+
 const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
@@ -324,20 +334,43 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
           v-for="[,scenarioDeck] in scenarioDecks"
         />
         <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" :investigatorId="investigatorId" />
-        <div v-if="topOfEncounterDiscard" class="discard">
-          <img
-            :src="topOfEncounterDiscard"
-            class="card"
+        <div class="scenario-encounter-decks">
+
+          <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">
+            <img
+              :src="topOfEncounterDiscard"
+              class="card"
+            />
+
+
+            <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+          </div>
+
+          <EncounterDeck
+            :game="game"
+            :investigatorId="investigatorId"
+            @choose="choose"
+            style="grid-area: encounterDeck"
           />
 
-          <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
-        </div>
+          <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard"
+            >
+            <img
+              :src="topOfSpectralDiscard"
+              class="card"
+            />
+          </div>
 
-        <EncounterDeck
-          :game="game"
-          :investigatorId="investigatorId"
-          @choose="choose"
-        />
+
+          <EncounterDeck
+            v-if="scenario.spectralEncounterDeck"
+            :spectral="scenario.spectralEncounterDeck"
+            :game="game"
+            :investigatorId="investigatorId"
+            @choose="choose"
+            style="grid-area: spectralDeck"
+          />
+        </div>
 
         <div class="scenario-decks" :style="scenarioDeckStyles">
           <Agenda
@@ -768,5 +801,10 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
 .scenario-decks {
   gap: 2px;
+}
+
+.scenario-encounter-decks {
+  display: grid;
+  grid-template: "encounterDiscard encounterDeck" "spectralDiscard spectralDeck";
 }
 </style>

@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (
+  runScenarioAttrs,
   module X,
 ) where
 
@@ -55,6 +56,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
+import Control.Lens (LensLike', non, _1, _2)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
@@ -73,6 +75,19 @@ instance HasTokenValue ScenarioAttrs where
     MinusSeven -> pure $ TokenValue MinusSeven (NegativeModifier 7)
     MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
     otherFace -> pure $ TokenValue otherFace NoModifier
+
+data EncounterDeckHandler = EncounterDeckHandler
+  { deckLens
+      :: forall m
+       . (HasGame m)
+      => InvestigatorId
+      -> m (LensLike' Identity ScenarioAttrs (Deck EncounterCard))
+  , discardLens
+      :: forall m
+       . (HasGame m)
+      => EncounterCard
+      -> m (LensLike' Identity ScenarioAttrs [EncounterCard])
+  }
 
 instance RunMessage ScenarioAttrs where
   runMessage msg a =
@@ -257,10 +272,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             pure $
               filter
                 ( \c ->
-                    ( fromMaybe
-                        False
-                        (liftA2 (>) (cdStage $ toCardDef c) (cdStage agendaDef))
-                    )
+                    fromMaybe
+                      False
+                      (liftA2 (>) (cdStage $ toCardDef c) (cdStage agendaDef))
                       || (toCardCode c `cardCodeExactEq` toCardCode agendaDef)
                 )
                 ys
@@ -423,9 +437,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
         & (encounterDeckL .~ encounterDeck)
   AddToEncounterDiscard ec -> do
+    let handler = getEncounterDeckHandler a
     pure $
       a
-        & (discardL %~ (ec :))
+        & discardLens handler %~ (ec :)
         & (encounterDeckL %~ withDeck (filter (/= ec)))
         & (victoryDisplayL %~ filter (/= EncounterCard ec))
         & (setAsideCardsL %~ filter (/= EncounterCard ec))
@@ -451,20 +466,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     card <- field EnemyCard eid
     pure $ a & (victoryDisplayL %~ (card :))
   Discarded (EnemyTarget eid) _ _ -> do
+    let handler = getEncounterDeckHandler a
     card <- field EnemyCard eid
     case card of
       PlayerCard _ -> pure a
-      EncounterCard ec -> pure $ a & discardL %~ (ec :)
+      EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   Discarded (LocationTarget lid) _ _ -> do
     card <- convertToCard lid
+    let handler = getEncounterDeckHandler a
     -- only single sided encounter cards should end up in discard
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec ->
         if cdDoubleSided (toCardDef card)
           then pure a
-          else pure $ a & discardL %~ (ec :)
+          else pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
@@ -565,10 +582,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     let (cards, deck) = draw n scenarioEncounterDeck
     pure $ a & encounterDeckL .~ withDeck (<> cards) deck
   Discard _ (TreacheryTarget tid) -> do
+    let handler = getEncounterDeckHandler a
     card <- field TreacheryCard tid
     case card of
       PlayerCard _ -> pure a
-      EncounterCard ec -> pure $ a & discardL %~ (ec :)
+      EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   InvestigatorDoDrawEncounterCard iid -> case unDeck scenarioEncounterDeck of
     [] -> do
@@ -665,9 +683,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push (FoundCards foundCards)
 
     pure $ a & (encounterDeckL .~ Deck encounterDeck)
-  Discarded (AssetTarget _) _ (EncounterCard ec) ->
+  Discarded (AssetTarget _) _ (EncounterCard ec) -> do
+    let handler = getEncounterDeckHandler a
     -- TODO: determine why this was only specified for Asset
-    pure $ a & discardL %~ (ec :)
+    pure $ a & discardLens handler %~ (ec :)
   ResignWith (AssetTarget aid) -> do
     cardCode <- field AssetCardCode aid
     pure $ a & resignedCardCodesL %~ (cardCode :)
@@ -847,8 +866,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               *> [windows', ShuffleEncounterDiscardBackIn]
            )
     pure a
-  DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards ->
-    case unDeck scenarioEncounterDeck of
+  DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards -> do
+    let handler = getEncounterDeckHandler a
+    case unDeck (handlerDeck handler) of
       [] -> do
         push $
           DiscardTopOfEncounterDeckWithDiscardedCards
@@ -868,7 +888,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               mtarget
               (card : discardedCards)
           ]
-        pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
+        pure $ a & deckLens handler .~ Deck cards & discardLens handler %~ (card :)
   SpawnEnemyAt card@(EncounterCard ec) _ -> do
     pure $ a & discardL %~ filter (/= ec) & setAsideCardsL %~ filter (/= card)
   SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
@@ -898,7 +918,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & decksL . at deckKey ?~ deck'
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
     deck' <-
-      shuffleM $ cards <> fromMaybe [] (filter (`notElem` cards) <$> view (decksL . at deckKey) a)
+      shuffleM $ cards <> maybe [] (filter (`notElem` cards)) (view (decksL . at deckKey) a)
     pure $
       a
         & decksL . at deckKey ?~ deck'

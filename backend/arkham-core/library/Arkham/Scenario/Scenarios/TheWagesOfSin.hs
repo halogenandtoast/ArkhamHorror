@@ -17,12 +17,16 @@ import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWagesOfSin.Story
+import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Spectral), toTraits)
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
 
 newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -31,7 +35,7 @@ newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
 theWagesOfSin :: Difficulty -> TheWagesOfSin
 theWagesOfSin difficulty =
   scenario
-    TheWagesOfSin
+    (TheWagesOfSin . (`with` Metadata mempty mempty))
     "05161"
     "The Wages of Sin"
     difficulty
@@ -78,31 +82,12 @@ instance RunMessage TheWagesOfSin where
       whenM getIsStandalone $ push (SetTokens standaloneTokens)
       pure s
     Setup -> do
+      -- The locations are all "single-sided" because we need to handle the
+      -- spectral state separately and therefor have no "unrevealed". So we
+      -- need to exclude them here
       gatheredCards <-
-        buildEncounterDeckExcluding
-          [ Locations.abandonedChapel
-          , Locations.abandonedChapelSpectral
-          , Locations.hauntedFields
-          , Locations.hauntedFieldsSpectral
-          , Locations.hangmansBrook
-          , Locations.hangmansBrookSpectral
-          , Locations.chapelAttic_175
-          , Locations.chapelAttic_176
-          , Locations.chapelAtticSpectral_175
-          , Locations.chapelAtticSpectral_176
-          , Locations.theGallows_169
-          , Locations.theGallows_170
-          , Locations.theGallowsSpectral_169
-          , Locations.theGallowsSpectral_170
-          , Locations.hereticsGraves_171
-          , Locations.hereticsGraves_172
-          , Locations.hereticsGravesSpectral_171
-          , Locations.hereticsGravesSpectral_172
-          , Locations.chapelCrypt_173
-          , Locations.chapelCrypt_174
-          , Locations.chapelCryptSpectral_173
-          , Locations.chapelCryptSpectral_174
-          ]
+        buildEncounterDeckExcludingMatching
+          (CardWithType LocationType)
           [ EncounterSet.TheWagesOfSin
           , EncounterSet.AnettesCoven
           , EncounterSet.CityOfSins
@@ -156,20 +141,64 @@ instance RunMessage TheWagesOfSin where
           ]
 
       pushAll $
-        [SetEncounterDeck $ Deck encounterDeck]
+        [ SetEncounterDeck $ Deck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        ]
           <> placements
           <> [placeHangmansBrook, MoveAllTo (toSource attrs) hangmansBrookId]
 
       agendas <- genCards [Agendas.theHangedManXII, Agendas.deathsApproach]
       acts <- genCards [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
 
-      TheWagesOfSin
+      TheWagesOfSin . (`with` Metadata (Deck spectralEncounterDeck) mempty)
         <$> runMessage
           msg
           ( attrs
-              & (decksL . at SpectralEncounterDeck ?~ map EncounterCard spectralEncounterDeck)
               & (setAsideCardsL .~ setAsideCards)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
           )
-    _ -> TheWagesOfSin <$> runMessage msg attrs
+    InvestigatorDoDrawEncounterCard iid -> do
+      atSpectralLocation <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Spectral
+      if atSpectralLocation
+        then case unDeck (spectralEncounterDeck meta) of
+          [] -> do
+            when (notNull $ spectralDiscard meta) $ do
+              pushAll
+                [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
+            pure s
+          -- This case should not happen but this safeguards against it
+          (card : spectralDeck) -> do
+            when (null spectralDeck) $ do
+              windows' <-
+                checkWindows
+                  [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+              pushAll [windows', ShuffleEncounterDiscardBackIn]
+            pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
+            pure . TheWagesOfSin $ attrs `with` (meta {spectralEncounterDeck = Deck spectralDeck})
+        else TheWagesOfSin . (`with` meta) <$> runMessage msg attrs
+    _ -> do
+      -- This is how we can let behaviors control the data for the scenario since
+      -- ScenarioAttrs can't tell much about our data. The main mechanism for
+      -- circumventing this is to use an IORef, but it does mean you need to get
+      -- both your updated IORef value as well as the updated attrs
+      let
+        wagesOfSinBehaviors =
+          ScenarioBehaviors
+            { discardLens = \c ->
+                pure $
+                  if Spectral `elem` toTraits c
+                    then encounterDecksL . at SpectralEncounterDeck . non (Deck [], []) . _2
+                    else discardL
+            , deckLens = \iid -> do
+                atSpectralLocation <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Spectral
+                pure $
+                  if atSpectralLocation
+                    then encounterDecksL . at SpectralEncounterDeck . non (Deck [], []) . _1
+                    else encounterDeckL
+            }
+
+      result <- runScenarioAttrs msg wagesOfSinBehaviors attrs
+      meta' <- readIORef metaRef
+      pure $ TheWagesOfSin $ result `with` meta'

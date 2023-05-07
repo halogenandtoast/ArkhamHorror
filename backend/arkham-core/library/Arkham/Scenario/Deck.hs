@@ -15,10 +15,19 @@ data ScenarioDeckKey
   | CatacombsDeck -- The Pallid Mask
   | ExplorationDeck -- The Untamed Wilds
   | UnknownPlacesDeck -- The Secret Name
-  | SpectralEncounterDeck -- The Wages of Sin
   deriving stock (Show, Ord, Eq)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)
 
 instance ToJSONKey ScenarioDeckKey
 instance FromJSONKey ScenarioDeckKey
+
+data ScenarioEncounterDeckKey
+  = RegularEncounterDeck
+  | SpectralEncounterDeck -- The Wages of Sin
+  deriving stock (Show, Ord, Eq)
+
+$(deriveJSON defaultOptions ''ScenarioEncounterDeckKey)
+
+instance ToJSONKey ScenarioEncounterDeckKey
+instance FromJSONKey ScenarioEncounterDeckKey

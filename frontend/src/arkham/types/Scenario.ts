@@ -44,6 +44,8 @@ export interface Scenario {
   victoryDisplay: Card[];
   standaloneCampaignLog: LogContents | null;
   counts: Record<string, number>; // eslint-disable-line
+  spectralEncounterDeck?: number;
+  spectralDiscard?: EncounterCardContents[]
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -72,5 +74,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
       acc[k] = v
       return acc
     }, {})
-  })
+  }),
+  spectralEncounterDeck: JsonDecoder.optional(JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]').map(res => res.length)),
+  spectralDiscard: JsonDecoder.optional(JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]')),
 }, 'Scenario');

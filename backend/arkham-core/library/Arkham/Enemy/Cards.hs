@@ -184,7 +184,7 @@ allEncounterEnemyCards =
       , lodgeNeophyte
       , lupineThrall
       , madPatient
-      , malevolantSpirit
+      , malevolentSpirit
       , maniac
       , mariaDeSilvaKnowsMoreThanSheLetsOn
       , marshGug
@@ -1346,9 +1346,9 @@ vengefulWitch =
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
     }
 
-malevolantSpirit :: CardDef
-malevolantSpirit =
-  (enemy "05180" "Malevolant Spirit" TheWagesOfSin 2)
+malevolentSpirit :: CardDef
+malevolentSpirit =
+  (enemy "05180" "Malevolent Spirit" TheWagesOfSin 2)
     { cdCardTraits = setFromList [Monster, Geist, Spectral]
     }
 

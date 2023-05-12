@@ -44,8 +44,7 @@ export interface Scenario {
   victoryDisplay: Card[];
   standaloneCampaignLog: LogContents | null;
   counts: Record<string, number>; // eslint-disable-line
-  spectralEncounterDeck?: number;
-  spectralDiscard?: EncounterCardContents[]
+  encounterDecks: Record<string, [EncounterCardContents[], EncounterCardContents[]]>;
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -75,6 +74,19 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
       return acc
     }, {})
   }),
-  spectralEncounterDeck: JsonDecoder.optional(JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]').map(res => res.length)),
-  spectralDiscard: JsonDecoder.optional(JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]')),
+  encounterDecks: JsonDecoder.array<[string, [EncounterCardContents[], EncounterCardContents[]]]>(
+    JsonDecoder.tuple([
+      JsonDecoder.string,
+      JsonDecoder.tuple([
+        JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
+        JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]')
+      ], '[[EncounterCardContents[], EncounterCardContents[]]'),
+    ], '[string, [EncounterCardContents[], EncounterCardContents[]]'),
+    '[string, [EncounterCardContents[], EncounterCardContents[]]][]').map<Record<string, [EncounterCardContents[], EncounterCardContents[]]>>(res => {
+      return res.reduce<Record<string, [EncounterCardContents[], EncounterCardContents[]]>>((acc, [k, v]) => {
+        acc[k] = v
+        return acc
+      }, {})
+    }),
+
 }, 'Scenario');

@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Modifier
-  ( Modifier(..)
-  , ModifierType(..)
-  , ActionTarget(..)
-  , setActiveDuringSetup
-  ) where
+
+module Arkham.Modifier (
+  Modifier (..),
+  ModifierType (..),
+  ActionTarget (..),
+  setActiveDuringSetup,
+) where
 
 import Arkham.Prelude
 
@@ -15,8 +16,8 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ClassSymbol
-import Arkham.Criteria.Override
 import {-# SOURCE #-} Arkham.Cost
+import Arkham.Criteria.Override
 import {-# SOURCE #-} Arkham.Enemy.Types
 import Arkham.Field
 import Arkham.Id
@@ -24,6 +25,7 @@ import Arkham.Json
 import Arkham.Keyword
 import {-# SOURCE #-} Arkham.Matcher.Types
 import Arkham.Phase
+import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
@@ -40,7 +42,7 @@ data ModifierType
   | TraitRestrictedModifier Trait ModifierType
   | ActionCostModifier Int
   | ActionCostSetToModifier Int
-  | ActionSkillModifier { action :: Action, skillType :: SkillType, value ::  Int }
+  | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}
   | ActionsAreFree
   | AddKeyword Keyword
   | AddTrait Trait
@@ -60,7 +62,7 @@ data ModifierType
   | AsIfInHand Card
   | AsIfUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
-  | BaseSkillOf { skillType :: SkillType, value :: Int }
+  | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BecomesFast
   | Blank
   | Blocked
@@ -197,7 +199,7 @@ data ModifierType
   | SetDifficulty Int
   | ShroudModifier Int
   | SetShroud Int
-  | SkillModifier { skillType :: SkillType, value ::  Int }
+  | SkillModifier {skillType :: SkillType, value :: Int}
   | AddSkillValue SkillType
   | SkillCannotBeIncreased SkillType
   | SkipMythosPhaseStep MythosPhaseStep
@@ -233,6 +235,7 @@ data ModifierType
   | MetaModifier Value
   | CanModify ModifierType
   | NoSurge
+  | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   deriving stock (Show, Eq, Ord)
 
 data Modifier = Modifier
@@ -249,11 +252,11 @@ data ActionTarget
   deriving stock (Show, Eq, Ord)
 
 setActiveDuringSetup :: Modifier -> Modifier
-setActiveDuringSetup m = m { modifierActiveDuringSetup = True }
+setActiveDuringSetup m = m {modifierActiveDuringSetup = True}
 
 $(deriveJSON defaultOptions ''ActionTarget)
-$(do
+$( do
     deriveModifierType <- deriveJSON defaultOptions ''ModifierType
     deriveModifier <- deriveJSON (aesonOptions $ Just "modifier") ''Modifier
     pure $ deriveModifierType ++ deriveModifier
-  )
+ )

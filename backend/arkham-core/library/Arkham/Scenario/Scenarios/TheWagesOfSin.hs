@@ -148,10 +148,8 @@ instance RunMessage TheWagesOfSin where
           , Locations.abandonedChapel
           ]
 
-      removeThis <- genEncounterCard Enemies.malevolentSpirit
-
       pushAll $
-        [ SetEncounterDeck $ Deck (removeThis : encounterDeck)
+        [ SetEncounterDeck $ Deck encounterDeck
         , SetAgendaDeck
         , SetActDeck
         ]

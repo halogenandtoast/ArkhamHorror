@@ -273,9 +273,13 @@ const topOfEncounterDiscard = computed(() => {
   return null;
 })
 
+const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
+
+const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
+
 const topOfSpectralDiscard = computed(() => {
-  if (props.scenario.spectralDiscard[0]) {
-    const { cardCode } = props.scenario.spectralDiscard[0];
+  if (spectralDiscard.value && spectralDiscard.value[0]) {
+    const { cardCode } = spectralDiscard.value[0];
 
     return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
   }
@@ -363,8 +367,8 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 
 
           <EncounterDeck
-            v-if="scenario.spectralEncounterDeck"
-            :spectral="scenario.spectralEncounterDeck"
+            v-if="spectralEncounterDeck"
+            :spectral="spectralEncounterDeck.length"
             :game="game"
             :investigatorId="investigatorId"
             @choose="choose"

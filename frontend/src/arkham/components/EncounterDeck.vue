@@ -22,9 +22,10 @@ const usingSpectral = computed(() => {
 })
 
 const deckAction = computed(() => {
-  if (usingSpectral.value && !isSpectral.value) {
+  if (usingSpectral.value ? !isSpectral.value : isSpectral.value) {
     return -1;
   }
+
   return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.target.tag === "EncounterDeckTarget" || (isSpectral.value && c.target.tag === "ScenarioDeckTarget")))
 })
 

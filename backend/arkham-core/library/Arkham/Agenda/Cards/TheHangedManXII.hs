@@ -8,9 +8,13 @@ import Arkham.Prelude
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Deck
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenario.Deck
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheHangedManXII = TheHangedManXII AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -25,9 +29,20 @@ instance RunMessage TheHangedManXII where
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         lids <- selectList Anywhere
         lead <- getLead
+        spectralWatcher <- getSetAsideCard Enemies.theSpectralWatcher
+        hangmansBrook <- getJustLocationIdByName "Hangman's Brook"
+        createSpectralWatcher <-
+          createEnemyAt_
+            spectralWatcher
+            hangmansBrook
+            Nothing
+        watchersGrasps <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
         -- flip each location to it's spectral side
         pushAll $
           [Flip lead (toSource attrs) (toTarget lid) | lid <- lids]
-            <> [advanceAgendaDeck attrs]
+            <> [ createSpectralWatcher
+               , ShuffleCardsIntoDeck (EncounterDeckByKey SpectralEncounterDeck) watchersGrasps
+               , advanceAgendaDeck attrs
+               ]
         pure a
       _ -> TheHangedManXII <$> runMessage msg attrs

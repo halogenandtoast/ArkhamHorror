@@ -90,6 +90,10 @@ toEncounterDeckModifier :: ModifierType -> Maybe ScenarioEncounterDeckKey
 toEncounterDeckModifier (UseEncounterDeck k) = Just k
 toEncounterDeckModifier _ = Nothing
 
+encounterDeckLensFromKey :: ScenarioEncounterDeckKey -> Lens' ScenarioAttrs (Deck EncounterCard)
+encounterDeckLensFromKey RegularEncounterDeck = encounterDeckL
+encounterDeckLensFromKey k = encounterDecksL . at k . non (Deck [], []) . _1
+
 getEncounterDeckHandler :: (HasGame m, Targetable a) => a -> m EncounterDeckHandler
 getEncounterDeckHandler a = do
   modifiers' <- getModifiers a
@@ -97,12 +101,12 @@ getEncounterDeckHandler a = do
   pure $ case key of
     RegularEncounterDeck ->
       EncounterDeckHandler
-        { deckLens = encounterDeckL
+        { deckLens = encounterDeckLensFromKey RegularEncounterDeck
         , discardLens = discardL
         }
     other ->
       EncounterDeckHandler
-        { deckLens = encounterDecksL . at other . non (Deck [], []) . _1
+        { deckLens = encounterDeckLensFromKey other
         , discardLens = encounterDecksL . at other . non (Deck [], []) . _2
         }
 
@@ -520,14 +524,19 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & cardsUnderActDeckL %~ (card :)
   PlaceNextTo ActDeckTarget cards -> do
     pure $ a & cardsNextToActDeckL <>~ cards
-  ShuffleCardsIntoDeck Deck.EncounterDeck [] -> do
-    pure a
   ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
+    push $ ShuffleCardsIntoDeck (Deck.EncounterDeckByKey RegularEncounterDeck) cards
+    pure a
+  ShuffleCardsIntoDeck (Deck.EncounterDeckByKey _) [] -> do
+    pure a
+  ShuffleCardsIntoDeck (Deck.EncounterDeckByKey deckKey) cards -> do
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
       filterCards = filter (`notElem` cards)
     deck' <-
-      withDeckM (shuffleM . (<> encounterCards) . filter (`notElem` encounterCards)) scenarioEncounterDeck
+      withDeckM
+        (shuffleM . (<> encounterCards) . filter (`notElem` encounterCards))
+        (a ^. encounterDeckLensFromKey deckKey)
     pure $
       a
         & (cardsUnderAgendaDeckL %~ filterCards)
@@ -536,7 +545,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         & (cardsUnderScenarioReferenceL %~ filterCards)
         & (setAsideCardsL %~ filterCards)
         & (victoryDisplayL %~ filterCards)
-        & (encounterDeckL .~ deck')
+        & (encounterDeckLensFromKey deckKey .~ deck')
   RequestSetAsideCard target cardCode -> do
     let
       (before, rest) = break ((== cardCode) . toCardCode) scenarioSetAsideCards

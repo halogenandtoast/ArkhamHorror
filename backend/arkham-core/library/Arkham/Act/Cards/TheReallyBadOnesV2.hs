@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheReallyBadOnesV2
-  ( TheReallyBadOnesV2(..)
-  , theReallyBadOnesV2
-  ) where
+module Arkham.Act.Cards.TheReallyBadOnesV2 (
+  TheReallyBadOnesV2 (..),
+  theReallyBadOnesV2,
+) where
 
 import Arkham.Prelude
 
@@ -16,8 +16,8 @@ import Arkham.Name
 import Arkham.Trait
 
 newtype TheReallyBadOnesV2 = TheReallyBadOnesV2 ActAttrs
-  deriving anyclass (IsAct, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theReallyBadOnesV2 :: ActCard TheReallyBadOnesV2
 theReallyBadOnesV2 =
@@ -35,13 +35,15 @@ instance HasModifiersFor TheReallyBadOnesV2 where
 instance RunMessage TheReallyBadOnesV2 where
   runMessage msg a@(TheReallyBadOnesV2 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      danielsCell <- getJustLocationIdByName
-        ("Patient Confinement" <:> "Daniel's Cell")
+      danielsCell <-
+        getJustLocationIdByName
+          ("Patient Confinement" <:> "Daniel's Cell")
       danielChesterfield <- getSetAsideCard Enemies.danielChesterfield
-      createDanielChesterfield <- createEnemyAt_
-        danielChesterfield
-        danielsCell
-        Nothing
+      createDanielChesterfield <-
+        createEnemyAt_
+          danielChesterfield
+          danielsCell
+          Nothing
       pushAll
         [ createDanielChesterfield
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

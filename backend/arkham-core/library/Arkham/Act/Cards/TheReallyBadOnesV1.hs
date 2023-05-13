@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheReallyBadOnesV1
-  ( TheReallyBadOnesV1(..)
-  , theReallyBadOnesV1
-  ) where
+module Arkham.Act.Cards.TheReallyBadOnesV1 (
+  TheReallyBadOnesV1 (..),
+  theReallyBadOnesV1,
+) where
 
 import Arkham.Prelude
 
@@ -15,12 +15,12 @@ import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Types ( Field (..) )
+import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait
 
 newtype TheReallyBadOnesV1 = TheReallyBadOnesV1 ActAttrs
-  deriving anyclass (IsAct, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theReallyBadOnesV1 :: ActCard TheReallyBadOnesV1
 theReallyBadOnesV1 =
@@ -39,24 +39,29 @@ instance RunMessage TheReallyBadOnesV1 where
   runMessage msg a@(TheReallyBadOnesV1 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigators <- selectList $ InvestigatorAt $ locationIs
-        Locations.patientConfinementDanielsCell
-      danielChesterfield <- PlayerCard
-        <$> genPlayerCard Assets.danielChesterfield
-      enemiesUnderAct <- filter ((== EnemyType) . toCardType)
-        <$> scenarioField ScenarioCardsUnderActDeck
+      investigators <-
+        selectList $
+          InvestigatorAt $
+            locationIs
+              Locations.patientConfinementDanielsCell
+      danielChesterfield <-
+        PlayerCard
+          <$> genPlayerCard Assets.danielChesterfield
+      enemiesUnderAct <-
+        filter ((== EnemyType) . toCardType)
+          <$> scenarioField ScenarioCardsUnderActDeck
       pushAll
-        (chooseOne
+        ( chooseOne
             leadInvestigatorId
             [ targetLabel
-                iid
-                [TakeControlOfSetAsideAsset iid danielChesterfield]
+              iid
+              [TakeControlOfSetAsideAsset iid danielChesterfield]
             | iid <- investigators
             ]
-        : [ ShuffleCardsIntoDeck Deck.EncounterDeck enemiesUnderAct
-          , ShuffleEncounterDiscardBackIn
-          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-          ]
+            : [ ShuffleCardsIntoDeck Deck.EncounterDeck enemiesUnderAct
+              , ShuffleEncounterDiscardBackIn
+              , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+              ]
         )
       pure a
     _ -> TheReallyBadOnesV1 <$> runMessage msg attrs

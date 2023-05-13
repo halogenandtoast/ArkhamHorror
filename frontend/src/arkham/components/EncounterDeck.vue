@@ -22,7 +22,7 @@ const usingSpectral = computed(() => {
 })
 
 const deckAction = computed(() => {
-  if (usingSpectral.value ? !isSpectral.value : isSpectral.value) {
+  if (usingSpectral.value != isSpectral.value) {
     return -1;
   }
 

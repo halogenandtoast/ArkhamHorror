@@ -1,9 +1,10 @@
 {-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module GHCI
-  ( module GHCI
-  , module X
-  ) where
+
+module GHCI (
+  module GHCI,
+  module X,
+) where
 
 import Import.NoFoundation as X hiding (selectList)
 
@@ -13,9 +14,9 @@ import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Message
 import Control.Monad.Logger
-import Control.Monad.Random ( mkStdGen )
-import Data.String.Conversions ( cs )
+import Control.Monad.Random (mkStdGen)
 import Data.Maybe (fromJust)
+import Data.String.Conversions (cs)
 import Data.Time
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
@@ -46,7 +47,7 @@ runGameMessage gameUUID msg = do
     gameId =
       maybe (error "invalid uuid") ArkhamGameKey $ UUID.fromString gameUUID
   ArkhamGame {..} <- dbGhci $ get404 gameId
-  let Game { gameSeed } = arkhamGameCurrentData
+  let Game {gameSeed} = arkhamGameCurrentData
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue [msg]
   genRef <- newIORef (mkStdGen gameSeed)
@@ -56,13 +57,14 @@ runGameMessage gameUUID msg = do
   ge <- readIORef gameRef
   now <- liftIO getCurrentTime
   void $ dbGhci $ do
-    replace gameId $ ArkhamGame
-      arkhamGameName
-      ge
-      arkhamGameStep
-      arkhamGameMultiplayerVariant
-      arkhamGameCreatedAt
-      now
+    replace gameId $
+      ArkhamGame
+        arkhamGameName
+        ge
+        arkhamGameStep
+        arkhamGameMultiplayerVariant
+        arkhamGameCreatedAt
+        now
 
 gameDB :: Game -> ReaderT Game IO a -> IO a
-gameDB g = flip runReaderT g
+gameDB = flip runReaderT

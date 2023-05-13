@@ -1,8 +1,8 @@
-module Arkham.Matcher
-  ( module Arkham.Matcher
-  , module Arkham.Matcher.Patterns
-  , module Arkham.Matcher.Types
-  ) where
+module Arkham.Matcher (
+  module Arkham.Matcher,
+  module Arkham.Matcher.Patterns,
+  module Arkham.Matcher.Types,
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Matcher.Types
 
 -- ** Investigator Helpers **
 
-investigatorIs :: HasCardCode a => a -> InvestigatorMatcher
+investigatorIs :: (HasCardCode a) => a -> InvestigatorMatcher
 investigatorIs = InvestigatorIs . toCardCode
 
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
@@ -47,7 +47,7 @@ preyWith (BearerOf m1) _ = BearerOf m1 -- I do not think we should combine here
 
 -- ** Asset Helpers **
 
-assetIs :: HasCardCode a => a -> AssetMatcher
+assetIs :: (HasCardCode a) => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
 
 assetControlledBy :: InvestigatorId -> AssetMatcher
@@ -58,7 +58,7 @@ assetAt = AssetAt . LocationWithId
 
 -- ** Enemy Helpers **
 
-enemyIs :: HasCardCode a => a -> EnemyMatcher
+enemyIs :: (HasCardCode a) => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
 
 enemyAt :: LocationId -> EnemyMatcher
@@ -69,7 +69,7 @@ enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
 
 -- ** Location Helpers **
 
-locationIs :: HasCardCode a => a -> LocationMatcher
+locationIs :: (HasCardCode a) => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
 
@@ -94,7 +94,7 @@ locationWithTreachery :: TreacheryId -> LocationMatcher
 locationWithTreachery = LocationWithTreachery . TreacheryWithId
 {-# INLINE locationWithTreachery #-}
 
-locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
+locationWithoutTreachery :: (HasCardCode a) => a -> LocationMatcher
 locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
@@ -102,9 +102,13 @@ accessibleFrom :: LocationId -> LocationMatcher
 accessibleFrom = AccessibleFrom . LocationWithId
 {-# INLINE accessibleFrom #-}
 
+locationNotOneOf :: (IsLocationMatcher a) => [a] -> LocationMatcher
+locationNotOneOf = LocationNotOneOf . map toLocationMatcher
+{-# INLINE locationNotOneOf #-}
+
 -- ** Treachery Helpers **
 
-treacheryIs :: HasCardCode a => a -> TreacheryMatcher
+treacheryIs :: (HasCardCode a) => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
 treacheryAt :: LocationId -> TreacheryMatcher
@@ -130,7 +134,7 @@ skillControlledBy = SkillControlledBy . InvestigatorWithId
 
 -- ** Card Helpers **
 
-cardIs :: HasCardCode a => a -> CardMatcher
+cardIs :: (HasCardCode a) => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
 
 -- ** Replacements
@@ -167,8 +171,8 @@ resolveAssetMatcher iid (Just lid) = go
     NotAsset assetMatcher -> NotAsset (go assetMatcher)
     AssetWithFewestClues assetMatcher -> AssetWithFewestClues (go assetMatcher)
     ClosestAsset lid' assetMatcher -> ClosestAsset lid' (go assetMatcher)
-    AssetWithDifferentTitleFromAtLeastOneCardInHand investigatorMatcher cardMatcher assetMatcher
-      -> AssetWithDifferentTitleFromAtLeastOneCardInHand
+    AssetWithDifferentTitleFromAtLeastOneCardInHand investigatorMatcher cardMatcher assetMatcher ->
+      AssetWithDifferentTitleFromAtLeastOneCardInHand
         (replaceYouMatcher iid investigatorMatcher)
         cardMatcher
         (go assetMatcher)
@@ -183,23 +187,23 @@ replaceYourLocation iid (Just lid) = go
  where
   go matcher = case matcher of
     LocationIsInFrontOf {} -> matcher
-    HauntedLocation{} -> matcher
-    IsIchtacasDestination{} -> matcher
-    LocationWithoutClues{} -> matcher
-    LocationWithTitle{} -> matcher
-    LocationWithFullTitle{} -> matcher
-    LocationWithUnrevealedTitle{} -> matcher
-    LocationWithId{} -> matcher
-    LocationWithLabel{} -> matcher
-    LocationWithSymbol{} -> matcher
+    HauntedLocation {} -> matcher
+    IsIchtacasDestination {} -> matcher
+    LocationWithoutClues {} -> matcher
+    LocationWithTitle {} -> matcher
+    LocationWithFullTitle {} -> matcher
+    LocationWithUnrevealedTitle {} -> matcher
+    LocationWithId {} -> matcher
+    LocationWithLabel {} -> matcher
+    LocationWithSymbol {} -> matcher
     LocationLeavingPlay -> matcher
-    LocationWithCardId{} -> matcher
-    LocationWithDoom{} -> matcher
-    LocationWithDefeatedEnemyThisRound{} -> matcher
+    LocationWithCardId {} -> matcher
+    LocationWithDoom {} -> matcher
+    LocationWithDefeatedEnemyThisRound {} -> matcher
     YourLocation -> LocationWithId lid
     SameLocation -> LocationWithId lid
     NotYourLocation -> NotLocation (LocationWithId lid)
-    LocationIs{} -> matcher
+    LocationIs {} -> matcher
     Anywhere -> matcher
     Nowhere -> matcher
     EmptyLocation -> matcher
@@ -210,13 +214,13 @@ replaceYourLocation iid (Just lid) = go
     AccessibleTo m -> AccessibleTo (go m)
     ConnectedLocation -> ConnectedFrom (LocationWithId lid)
     LocationWithDistanceFrom int m -> LocationWithDistanceFrom int (go m)
-    LocationWithResources{} -> matcher
-    LocationWithClues{} -> matcher
-    LocationWithHorror{} -> matcher
+    LocationWithResources {} -> matcher
+    LocationWithClues {} -> matcher
+    LocationWithHorror {} -> matcher
     LocationWithMostClues m -> LocationWithMostClues (go m)
-    LocationWithEnemy{} -> matcher
-    LocationWithAsset{} -> matcher
-    SingleSidedLocation{} -> matcher
+    LocationWithEnemy {} -> matcher
+    LocationWithAsset {} -> matcher
+    SingleSidedLocation {} -> matcher
     LocationWithInvestigator m ->
       LocationWithInvestigator (replaceYouMatcher iid m)
     HighestShroud m ->
@@ -232,32 +236,33 @@ replaceYourLocation iid (Just lid) = go
     FarthestLocationFromAll m -> FarthestLocationFromAll (go m)
     NearestLocationToYou m -> NearestLocationToYou (go m) -- TODO: FIX to FromLocation
     LocationWithLowerShroudThan m -> LocationWithLowerShroudThan (go m)
-    LocationWithTrait{} -> matcher
-    LocationWithoutTrait{} -> matcher
+    LocationWithTrait {} -> matcher
+    LocationWithoutTrait {} -> matcher
     LocationInDirection dir m -> LocationInDirection dir (go m)
-    LocationWithTreachery{} -> matcher
-    LocationWithoutTreachery{} -> matcher
-    LocationWithoutModifier{} -> matcher
-    LocationWithModifier{} -> matcher
+    LocationWithTreachery {} -> matcher
+    LocationWithoutTreachery {} -> matcher
+    LocationWithoutModifier {} -> matcher
+    LocationWithModifier {} -> matcher
     LocationMatchAll ms -> LocationMatchAll $ map go ms
     LocationMatchAny ms -> LocationMatchAny $ map go ms
     FirstLocation ms -> FirstLocation $ map go ms
     NotLocation m -> NotLocation (go m)
     LocationCanBeFlipped -> matcher
-    ClosestPathLocation{} -> matcher
+    ClosestPathLocation {} -> matcher
     BlockedLocation -> matcher
     ThisLocation -> matcher
-    LocationWithDiscoverableCluesBy{} -> matcher
+    LocationWithDiscoverableCluesBy {} -> matcher
 
 defaultRemoveDoomMatchers :: RemoveDoomMatchers
-defaultRemoveDoomMatchers = RemoveDoomMatchers
-  { removeDoomLocations = Anywhere
-  , removeDoomInvestigators = Anyone
-  , removeDoomEnemies = AnyEnemy
-  , removeDoomAssets = AnyAsset
-  , removeDoomActs = AnyAct
-  , removeDoomAgendas = AnyAgenda
-  , removeDoomTreacheries = AnyTreachery
-  , removeDoomEvents = AnyEvent
-  , removeDoomSkills = AnySkill
-  }
+defaultRemoveDoomMatchers =
+  RemoveDoomMatchers
+    { removeDoomLocations = Anywhere
+    , removeDoomInvestigators = Anyone
+    , removeDoomEnemies = AnyEnemy
+    , removeDoomAssets = AnyAsset
+    , removeDoomActs = AnyAct
+    , removeDoomAgendas = AnyAgenda
+    , removeDoomTreacheries = AnyTreachery
+    , removeDoomEvents = AnyEvent
+    , removeDoomSkills = AnySkill
+    }

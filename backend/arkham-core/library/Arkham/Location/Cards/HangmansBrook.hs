@@ -6,8 +6,10 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
@@ -20,10 +22,14 @@ hangmansBrook :: LocationCard HangmansBrook
 hangmansBrook = location HangmansBrook Cards.hangmansBrook 4 (PerPlayer 1)
 
 instance HasAbilities HangmansBrook where
-  getAbilities (HangmansBrook attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+  getAbilities (HangmansBrook a) =
+    withBaseAbilities
+      a
+      [ withTooltip
+        "\"Who's bright idea was this, anyway?\""
+        (locationResignAction a)
+      | locationRevealed a
+      ]
 
 instance RunMessage HangmansBrook where
   runMessage msg l@(HangmansBrook attrs) = case msg of

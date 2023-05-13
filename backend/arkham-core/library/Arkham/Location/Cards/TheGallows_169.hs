@@ -6,8 +6,10 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 
 newtype TheGallows_169 = TheGallows_169 LocationAttrs
@@ -24,5 +26,9 @@ instance HasAbilities TheGallows_169 where
 -- withRevealedAbilities attrs []
 
 instance RunMessage TheGallows_169 where
-  runMessage msg (TheGallows_169 attrs) =
-    TheGallows_169 <$> runMessage msg attrs
+  runMessage msg l@(TheGallows_169 attrs) = case msg of
+    Flip _ _ target | isTarget attrs target -> do
+      spectral <- genCard Locations.theGallowsSpectral_169
+      push $ ReplaceLocation (toId attrs) spectral Swap
+      pure l
+    _ -> TheGallows_169 <$> runMessage msg attrs

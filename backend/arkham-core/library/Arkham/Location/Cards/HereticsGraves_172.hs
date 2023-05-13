@@ -6,8 +6,10 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 
 newtype HereticsGraves_172 = HereticsGraves_172 LocationAttrs
@@ -24,5 +26,9 @@ instance HasAbilities HereticsGraves_172 where
 -- withRevealedAbilities attrs []
 
 instance RunMessage HereticsGraves_172 where
-  runMessage msg (HereticsGraves_172 attrs) =
-    HereticsGraves_172 <$> runMessage msg attrs
+  runMessage msg l@(HereticsGraves_172 attrs) = case msg of
+    Flip _ _ target | isTarget attrs target -> do
+      spectral <- genCard Locations.hereticsGravesSpectral_172
+      push $ ReplaceLocation (toId attrs) spectral Swap
+      pure l
+    _ -> HereticsGraves_172 <$> runMessage msg attrs

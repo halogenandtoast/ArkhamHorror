@@ -58,6 +58,8 @@ data instance Field Scenario :: Type -> Type where
   ScenarioVictoryDisplay :: Field Scenario [Card]
   ScenarioRemembered :: Field Scenario (Set ScenarioLogKey)
   ScenarioCounts :: Field Scenario (Map ScenarioCountKey Int)
+  ScenarioEncounterDecks
+    :: Field Scenario (Map ScenarioEncounterDeckKey (Deck EncounterCard, [EncounterCard]))
   ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
   ScenarioChaosBag :: Field Scenario ChaosBag

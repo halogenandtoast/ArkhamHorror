@@ -16,7 +16,17 @@ const props = defineProps<Props>()
 const baseUrl = inject('baseUrl')
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const deckAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.target.tag === "EncounterDeckTarget" || (isSpectral.value && c.target.tag === "ScenarioDeckTarget"))))
+const usingSpectral = computed(() => {
+  const { modifiers } = props.game.investigators[props.investigatorId]
+  return modifiers.some((m) => m.type.tag === "UseEncounterDeck" && m.type.contents === "SpectralEncounterDeck")
+})
+
+const deckAction = computed(() => {
+  if (usingSpectral.value && !isSpectral.value) {
+    return -1;
+  }
+  return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.target.tag === "EncounterDeckTarget" || (isSpectral.value && c.target.tag === "ScenarioDeckTarget")))
+})
 
 const investigatorPortrait = computed(() => {
   const choice = choices.value[deckAction.value]

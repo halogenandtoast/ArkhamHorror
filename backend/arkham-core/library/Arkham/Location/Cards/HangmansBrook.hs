@@ -1,13 +1,15 @@
-module Arkham.Location.Cards.HangmansBrook
-  ( hangmansBrook
-  , HangmansBrook(..)
-  )
+module Arkham.Location.Cards.HangmansBrook (
+  hangmansBrook,
+  HangmansBrook (..),
+)
 where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 
 newtype HangmansBrook = HangmansBrook LocationAttrs
@@ -20,8 +22,13 @@ hangmansBrook = location HangmansBrook Cards.hangmansBrook 4 (PerPlayer 1)
 instance HasAbilities HangmansBrook where
   getAbilities (HangmansBrook attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage HangmansBrook where
-  runMessage msg (HangmansBrook attrs) =
-    HangmansBrook <$> runMessage msg attrs
+  runMessage msg l@(HangmansBrook attrs) = case msg of
+    Flip _ _ target | isTarget attrs target -> do
+      spectral <- genCard Locations.hangmansBrookSpectral
+      push $ ReplaceLocation (toId attrs) spectral Swap
+      pure l
+    _ -> HangmansBrook <$> runMessage msg attrs

@@ -1839,6 +1839,7 @@ library
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.TheWagesOfSin.Helpers
       Arkham.Scenarios.TheWagesOfSin.Story
       Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers

@@ -3137,6 +3137,7 @@ instance Projection Scenario where
       ScenarioCardsUnderAgendaDeck -> pure scenarioCardsUnderAgendaDeck
       ScenarioDiscard -> pure scenarioDiscard
       ScenarioEncounterDeck -> pure scenarioEncounterDeck
+      ScenarioEncounterDecks -> pure scenarioEncounterDecks
       ScenarioDifficulty -> pure scenarioDifficulty
       ScenarioDecks -> pure scenarioDecks
       ScenarioVictoryDisplay -> pure scenarioVictoryDisplay

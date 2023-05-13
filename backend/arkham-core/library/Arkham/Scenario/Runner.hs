@@ -610,21 +610,23 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
-  InvestigatorDoDrawEncounterCard iid -> case unDeck scenarioEncounterDeck of
-    [] -> do
-      when (notNull scenarioDiscard) $ do
-        pushAll
-          [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
-      pure a
-    -- This case should not happen but this safeguards against it
-    (card : encounterDeck) -> do
-      when (null encounterDeck) $ do
-        windows' <-
-          checkWindows
-            [Window Timing.When Window.EncounterDeckRunsOutOfCards]
-        pushAll [windows', ShuffleEncounterDiscardBackIn]
-      pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
-      pure $ a & (encounterDeckL .~ Deck encounterDeck)
+  InvestigatorDoDrawEncounterCard iid -> do
+    handler <- getEncounterDeckHandler iid
+    case unDeck (a ^. deckLens handler) of
+      [] -> do
+        when (notNull (a ^. discardLens handler)) $ do
+          pushAll
+            [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
+        pure a
+      -- This case should not happen but this safeguards against it
+      (card : encounterDeck) -> do
+        when (null encounterDeck) $ do
+          windows' <-
+            checkWindows
+              [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+          pushAll [windows', ShuffleEncounterDiscardBackIn]
+        pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
+        pure $ a & (deckLens handler .~ Deck encounterDeck)
   Search iid source EncounterDeckTarget cardSources _traits foundStrategy -> do
     let
       foundCards :: Map Zone [Card] =

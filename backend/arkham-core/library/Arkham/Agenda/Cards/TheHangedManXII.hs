@@ -7,14 +7,19 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
+import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
+import Control.Lens (non, _2)
 
 newtype TheHangedManXII = TheHangedManXII AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -37,11 +42,15 @@ instance RunMessage TheHangedManXII where
             hangmansBrook
             Nothing
         watchersGrasps <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
+        spectralDiscards <- getSpectralDiscards
+
         -- flip each location to it's spectral side
         pushAll $
           [Flip lead (toSource attrs) (toTarget lid) | lid <- lids]
             <> [ createSpectralWatcher
-               , ShuffleCardsIntoDeck (EncounterDeckByKey SpectralEncounterDeck) watchersGrasps
+               , ShuffleCardsIntoDeck
+                  (EncounterDeckByKey SpectralEncounterDeck)
+                  (watchersGrasps <> map EncounterCard spectralDiscards)
                , advanceAgendaDeck attrs
                ]
         pure a

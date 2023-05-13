@@ -16,6 +16,7 @@ data DeckSignifier
   | EncounterDiscard
   | ScenarioDeckByKey ScenarioDeckKey
   | InvestigatorDeckByKey InvestigatorId InvestigatorDeckKey
+  | EncounterDeckByKey ScenarioEncounterDeckKey
   deriving stock (Show, Eq, Ord)
 
 class IsDeck a where

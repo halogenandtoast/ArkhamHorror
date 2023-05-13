@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.ThroughTheCatacombs
-  ( ThroughTheCatacombs(..)
-  , throughTheCatacombs
-  ) where
+module Arkham.Act.Cards.ThroughTheCatacombs (
+  ThroughTheCatacombs (..),
+  throughTheCatacombs,
+) where
 
 import Arkham.Prelude
 
@@ -18,8 +18,8 @@ import Arkham.Message
 import Arkham.Scenarios.ThePallidMask.Helpers
 
 newtype ThroughTheCatacombs = ThroughTheCatacombs ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 throughTheCatacombs :: ActCard ThroughTheCatacombs
 throughTheCatacombs =
@@ -34,19 +34,21 @@ instance RunMessage ThroughTheCatacombs where
       spawnIshimaruHarukoMessages <- do
         spawnIshimaruHaruko <- not <$> slain Enemies.ishimaruHaruko
         card <- genCard Enemies.ishimaruHaruko
-        createIshimaruHaruko <- createEnemyAtLocationMatching_
-          card
-          (LocationWithId startingLocation)
-        pure [ createIshimaruHaruko | spawnIshimaruHaruko ]
+        createIshimaruHaruko <-
+          createEnemyAtLocationMatching_
+            card
+            (LocationWithId startingLocation)
+        pure [createIshimaruHaruko | spawnIshimaruHaruko]
 
-      createTheManInThePallidMask <- createEnemyAt_
-        theManInThePallidMask
-        tombOfShadows
-        Nothing
+      createTheManInThePallidMask <-
+        createEnemyAt_
+          theManInThePallidMask
+          tombOfShadows
+          Nothing
 
-      pushAll
-        $ createTheManInThePallidMask
-        : spawnIshimaruHarukoMessages
-        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll $
+        createTheManInThePallidMask
+          : spawnIshimaruHarukoMessages
+            <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> ThroughTheCatacombs <$> runMessage msg attrs

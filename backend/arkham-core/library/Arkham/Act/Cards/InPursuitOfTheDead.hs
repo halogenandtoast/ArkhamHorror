@@ -64,7 +64,7 @@ instance RunMessage InPursuitOfTheDead where
             [createHeretic1, createHeretic2, createHeretic3, createHeretic4]
               <> [PlaceClues (toTarget lid) twoPerPlayer | lid <- hereticLocations]
               <> [PlaceClues (toTarget lid) onePerPlayer | lid <- otherLocations]
-              <> [TakeControlOfSetAsideAsset iid assetId | (iid, assetId) <- zip investigators spectralWebs]
+              <> zipWith TakeControlOfSetAsideAsset investigators spectralWebs
               <> [advanceActDeck attrs]
         _ -> error "Invalid number of heretics"
       pure a

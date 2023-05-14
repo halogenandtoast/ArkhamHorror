@@ -11,28 +11,43 @@ import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Classes
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait (Trait (Spectral))
 
-newtype InPursuitOfTheLiving = InPursuitOfTheLiving ActAttrs
+newtype Metadata = Metadata {usedLocationIds :: [LocationId]}
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype InPursuitOfTheLiving = InPursuitOfTheLiving (ActAttrs `With` Metadata)
   deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inPursuitOfTheLiving :: ActCard InPursuitOfTheLiving
-inPursuitOfTheLiving = act (2, A) InPursuitOfTheLiving Cards.inPursuitOfTheLiving Nothing
+inPursuitOfTheLiving = act (2, A) (InPursuitOfTheLiving . (`with` Metadata [])) Cards.inPursuitOfTheLiving Nothing
 
 instance HasModifiersFor InPursuitOfTheLiving where
-  getModifiersFor (InvestigatorTarget iid) (InPursuitOfTheLiving a) =
+  getModifiersFor (InvestigatorTarget _) (InPursuitOfTheLiving (a `With` _)) =
     pure $ toModifiers a [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
   getModifiersFor _ _ = pure []
 
+-- Group limit once per round at each location.
+-- We handle this by using the usedLocationIds metadata
 instance HasAbilities InPursuitOfTheLiving where
-  getAbilities (InPursuitOfTheLiving a)
+  getAbilities (InPursuitOfTheLiving (a `With` meta))
     | onSide A a =
         [ restrictedAbility
+            a
+            1
+            ( OnLocation $
+                LocationWithoutModifier CannotBeFlipped <> locationNotOneOf (usedLocationIds meta)
+            )
+            $ FastAbility Free
+        , restrictedAbility
             a
             2
             (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ CardWithTitle "Unfinished Business")
@@ -42,11 +57,15 @@ instance HasAbilities InPursuitOfTheLiving where
   getAbilities _ = []
 
 instance RunMessage InPursuitOfTheLiving where
-  runMessage msg a@(InPursuitOfTheLiving attrs) = case msg of
+  runMessage msg a@(InPursuitOfTheLiving (attrs `With` meta)) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
       pushAll [recordSetInsert MementosDiscovered [CornHuskDoll], scenarioResolution 1]
       pure a
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      lid <- getJustLocation iid
+      push $ Flip iid (toSource attrs) (toTarget lid)
+      pure . InPursuitOfTheLiving $ attrs `with` Metadata (lid : usedLocationIds meta)
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
       pure a
-    _ -> InPursuitOfTheLiving <$> runMessage msg attrs
+    _ -> InPursuitOfTheLiving . (`with` meta) <$> runMessage msg attrs

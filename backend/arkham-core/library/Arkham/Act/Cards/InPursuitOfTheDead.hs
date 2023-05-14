@@ -14,17 +14,19 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-
--- Normally text like "Locations cannot be flipped" would be handled by
--- HasModifiers, however we are letting the specific cards (Agenda, Fast
--- Abilities, etc.) handle that themselves. If another Scenario does something
--- similar we should encode as a ModifierType
+import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their spectral side"
+--
+instance HasModifiersFor InPursuitOfTheDead where
+  getModifiersFor (LocationTarget lid) (InPursuitOfTheDead attrs) = do
+    notSpectral <- lid <=~> NotLocation (LocationWithTrait Spectral)
+    pure $ toModifiers attrs [CannotBeFlipped | notSpectral]
+  getModifiersFor _ _ = pure []
 
 inPursuitOfTheDead :: ActCard InPursuitOfTheDead
 inPursuitOfTheDead =

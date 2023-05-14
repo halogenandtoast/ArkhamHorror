@@ -10,5 +10,6 @@ data Memento
   | Keziah'sFormulae
   | WornCrucifix
   | WispOfSpectralMist
+  | CornHuskDoll
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

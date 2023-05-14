@@ -874,10 +874,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     let (cards, encounterDeck) = draw n scenarioEncounterDeck
     push (RequestedEncounterCards target cards)
     pure $ a & encounterDeckL .~ encounterDeck
-  DiscardTopOfEncounterDeck iid n source mtarget ->
-    a
-      <$ push
-        (DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget [])
+  DiscardTopOfEncounterDeck iid n source mtarget -> do
+    push $
+      DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget []
+    pure a
   DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards -> do
     windows' <-
       checkWindows

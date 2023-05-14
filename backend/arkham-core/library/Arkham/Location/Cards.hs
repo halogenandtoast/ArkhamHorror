@@ -4091,7 +4091,7 @@ hauntedFields =
         "Haunted Fields"
         mempty
         Circle
-        [Squiggle, Plus, Diamond, Square]
+        [Squiggle, Plus, Triangle, Square]
         TheWagesOfSin
 
 hauntedFieldsSpectral :: CardDef
@@ -4182,7 +4182,7 @@ hereticsGraves_171 =
       "Heretics' Graves"
       mempty
       Square
-      [Diamond, Circle]
+      [Triangle, Circle]
       TheWagesOfSin
 
 hereticsGravesSpectral_171 :: CardDef
@@ -4193,7 +4193,7 @@ hereticsGravesSpectral_171 =
       "Heretics' Graves"
       [Spectral]
       Square
-      [Diamond, Circle]
+      [Triangle, Circle]
       TheWagesOfSin
 
 hereticsGraves_172 :: CardDef
@@ -4204,7 +4204,7 @@ hereticsGraves_172 =
       "Heretics' Graves"
       mempty
       Square
-      [Diamond, Circle]
+      [Triangle, Circle]
       TheWagesOfSin
 
 hereticsGravesSpectral_172 :: CardDef
@@ -4215,7 +4215,7 @@ hereticsGravesSpectral_172 =
       "Heretics' Graves"
       [Spectral]
       Square
-      [Diamond, Circle]
+      [Triangle, Circle]
       TheWagesOfSin
 
 chapelCrypt_173 :: CardDef

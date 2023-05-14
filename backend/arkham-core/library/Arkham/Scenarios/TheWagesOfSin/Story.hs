@@ -28,7 +28,7 @@ intro =
       \ Residents of Uptown claim to have seen human shapes in the thick fog emanating\
       \ from Hangman’s Brook...” It couldn’t be a coincidence, could it?"
     , "Then the realization dawns on you—if it is witches you seek, the only place you\
-      \ can be certain to find them is six feet underground, in the place Æ where\
+      \ can be certain to find them is six feet underground, in the place where\
       \ professed witches were executed all those years ago. Searching for specters in\
       \ a graveyard may not be your safest bet, but you’re not sure one can stay safe\
       \ in this city anymore."

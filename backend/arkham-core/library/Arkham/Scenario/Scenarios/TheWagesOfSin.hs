@@ -95,7 +95,7 @@ instance RunMessage TheWagesOfSin where
       -- need to exclude them here
       gatheredCards <-
         buildEncounterDeckExcludingMatching
-          (CardWithType LocationType)
+          (CardWithOneOf [CardWithType LocationType, CardWithTitle "Heretic"])
           [ EncounterSet.TheWagesOfSin
           , EncounterSet.AnettesCoven
           , EncounterSet.CityOfSins

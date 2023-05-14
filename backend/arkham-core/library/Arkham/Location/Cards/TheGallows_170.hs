@@ -28,7 +28,7 @@ instance HasAbilities TheGallows_170 where
 instance RunMessage TheGallows_170 where
   runMessage msg l@(TheGallows_170 attrs) = case msg of
     Flip _ _ target | isTarget attrs target -> do
-      spectral <- genCard Locations.hauntedFieldsSpectral
+      spectral <- genCard Locations.theGallowsSpectral_170
       push $ ReplaceLocation (toId attrs) spectral Swap
       pure l
     _ -> TheGallows_170 <$> runMessage msg attrs

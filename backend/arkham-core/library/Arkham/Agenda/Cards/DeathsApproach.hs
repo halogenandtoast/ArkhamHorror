@@ -9,7 +9,9 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Trait (Trait (Spectral))
 
 -- Normally text like "Locations cannot be flipped" would be handled by
 -- HasModifiers, however we are letting the specific cards (Agenda, Fast
@@ -17,10 +19,16 @@ import Arkham.Message
 -- similar we should encode as a ModifierType
 
 newtype DeathsApproach = DeathsApproach AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their non-spectral side"
+--
+instance HasModifiersFor DeathsApproach where
+  getModifiersFor (LocationTarget lid) (DeathsApproach attrs) = do
+    isSpectral <- lid <=~> LocationWithTrait Spectral
+    pure $ toModifiers attrs [CannotBeFlipped | isSpectral]
+  getModifiersFor _ _ = pure []
 
 deathsApproach :: AgendaCard DeathsApproach
 deathsApproach = agenda (2, A) DeathsApproach Cards.deathsApproach (Static 7)

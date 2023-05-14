@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Criteria
-  ( module Arkham.Criteria
-  , module Arkham.Criteria.Override
-  ) where
+
+module Arkham.Criteria (
+  module Arkham.Criteria,
+  module Arkham.Criteria.Override,
+) where
 
 import Arkham.Prelude
 
@@ -22,20 +23,24 @@ data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
   deriving stock (Show, Eq, Ord)
 
 pattern AnyHorrorOnThis :: Criterion
-pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
-  AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
+pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0))
+  where
+    AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
 
 pattern AnyDamageOnThis :: Criterion
-pattern AnyDamageOnThis <- DamageOnThis (GreaterThan (Static 0)) where
-  AnyDamageOnThis = DamageOnThis (GreaterThan (Static 0))
+pattern AnyDamageOnThis <- DamageOnThis (GreaterThan (Static 0))
+  where
+    AnyDamageOnThis = DamageOnThis (GreaterThan (Static 0))
 
 pattern NoCluesOnThis :: Criterion
-pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0)) where
-  NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
+pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0))
+  where
+    NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
 
 pattern CanGainResources :: Criterion
-pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources) where
-  CanGainResources = Negate (SelfHasModifier CannotGainResources)
+pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources)
+  where
+    CanGainResources = Negate (SelfHasModifier CannotGainResources)
 
 pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
 pattern CanDiscoverCluesAt locationMatcher =
@@ -43,26 +48,31 @@ pattern CanDiscoverCluesAt locationMatcher =
 
 pattern CanTakeControlOfClues :: Criterion
 pattern CanTakeControlOfClues <-
-  Negate (SelfHasModifier CannotTakeControlOfClues) where
-  CanTakeControlOfClues = Negate (SelfHasModifier CannotTakeControlOfClues)
+  Negate (SelfHasModifier CannotTakeControlOfClues)
+  where
+    CanTakeControlOfClues = Negate (SelfHasModifier CannotTakeControlOfClues)
 
 pattern CanDrawCards :: Criterion
-pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards) where
-  CanDrawCards =
-    Criteria [Negate (SelfHasModifier CannotDrawCards), CanManipulateDeck]
+pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards)
+  where
+    CanDrawCards =
+      Criteria [Negate (SelfHasModifier CannotDrawCards), CanManipulateDeck]
 
 pattern CanSearchDeck :: Criterion
-pattern CanSearchDeck <- CanManipulateDeck where
-  CanSearchDeck = CanManipulateDeck
+pattern CanSearchDeck <- CanManipulateDeck
+  where
+    CanSearchDeck = CanManipulateDeck
 
 pattern CanShuffleDeck :: Criterion
-pattern CanShuffleDeck <- CanManipulateDeck where
-  CanShuffleDeck = CanManipulateDeck
+pattern CanShuffleDeck <- CanManipulateDeck
+  where
+    CanShuffleDeck = CanManipulateDeck
 
 pattern CanManipulateDeck :: Criterion
 pattern CanManipulateDeck <-
-  Negate (SelfHasModifier CannotManipulateDeck) where
-  CanManipulateDeck = Negate (SelfHasModifier CannotManipulateDeck)
+  Negate (SelfHasModifier CannotManipulateDeck)
+  where
+    CanManipulateDeck = Negate (SelfHasModifier CannotManipulateDeck)
 
 data Criterion
   = AssetExists AssetMatcher
@@ -94,6 +104,7 @@ data Criterion
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
   | LocationCount Int LocationMatcher
+  | ExtendedCardCount Int ExtendedCardMatcher
   | AllUndefeatedInvestigatorsResigned
   | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher
@@ -123,8 +134,8 @@ data Criterion
   | ActionCanBeUndone
   | DuringPhase PhaseMatcher
   | TokenCountIs TokenMatcher ValueMatcher
-  -- Special Criterion
-  | AtLeastNCriteriaMet Int [Criterion]
+  | -- Special Criterion
+    AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]
   | AnyCriterion [Criterion]
   | NoRestriction

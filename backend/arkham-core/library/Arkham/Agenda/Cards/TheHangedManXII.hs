@@ -17,6 +17,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Trait (Trait (Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheHangedManXII = TheHangedManXII AgendaAttrs
@@ -30,7 +31,8 @@ instance RunMessage TheHangedManXII where
   runMessage msg a@(TheHangedManXII attrs) =
     case msg of
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        lids <- selectList Anywhere
+        flippableLocations <-
+          selectList $ LocationWithoutModifier CannotBeFlipped <> NotLocation (LocationWithTrait Spectral)
         lead <- getLead
         spectralWatcher <- getSetAsideCard Enemies.theSpectralWatcher
         hangmansBrook <- getJustLocationIdByName "Hangman's Brook"
@@ -42,11 +44,8 @@ instance RunMessage TheHangedManXII where
         watchersGrasps <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
         spectralDiscards <- getSpectralDiscards
 
-        -- flip each location to it's spectral side if it is Act 2
-        step <- getCurrentActStep
-
         pushAll $
-          [Flip lead (toSource attrs) (toTarget lid) | step == 2, lid <- lids]
+          [Flip lead (toSource attrs) (toTarget location) | location <- flippableLocations]
             <> [ createSpectralWatcher
                , ShuffleCardsIntoDeck
                   (EncounterDeckByKey SpectralEncounterDeck)

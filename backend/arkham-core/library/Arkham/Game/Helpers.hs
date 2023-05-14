@@ -1383,6 +1383,8 @@ passesCriteria iid mcard source windows' = \case
   Criteria.LocationCount n matcher -> do
     mlid <- field InvestigatorLocation iid
     (== n) <$> selectCount (Matcher.replaceYourLocation iid mlid matcher)
+  Criteria.ExtendedCardCount n matcher ->
+    (== n) <$> selectCount matcher
   Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
     mlid <- field InvestigatorLocation iid
     targets <- select (Matcher.replaceYourLocation iid mlid targetMatcher)

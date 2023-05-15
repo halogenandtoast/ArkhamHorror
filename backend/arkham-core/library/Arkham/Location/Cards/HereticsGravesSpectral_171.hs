@@ -7,7 +7,6 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
@@ -18,7 +17,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.SkillType
-import Control.Monad.Trans.Maybe
 
 newtype HereticsGravesSpectral_171 = HereticsGravesSpectral_171 LocationAttrs
   deriving anyclass (IsLocation)
@@ -29,13 +27,9 @@ hereticsGravesSpectral_171 = location HereticsGravesSpectral_171 Cards.hereticsG
 
 instance HasModifiersFor HereticsGravesSpectral_171 where
   getModifiersFor (InvestigatorTarget iid) (HereticsGravesSpectral_171 a) = do
-    mModifiers <- runMaybeT $ do
-      guardM $ isTarget a <$> MaybeT getSkillTestTarget
-      guardM $ (== Action.Investigate) <$> MaybeT getSkillTestAction
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      willpower <- lift $ getSkillValue SkillWillpower iid
-      pure $ AnySkillValue willpower
-    pure $ toModifiers a $ maybeToList mModifiers
+    investigating <- isInvestigating iid (toId a)
+    willpower <- getSkillValue SkillWillpower iid
+    pure $ toModifiers a [AnySkillValue willpower | investigating]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HereticsGravesSpectral_171 where

@@ -6,7 +6,6 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -16,7 +15,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Projection
-import Control.Monad.Trans.Maybe
 
 newtype ChapelAtticSpectral_176 = ChapelAtticSpectral_176 LocationAttrs
   deriving anyclass (IsLocation)
@@ -27,13 +25,9 @@ chapelAtticSpectral_176 = location ChapelAtticSpectral_176 Cards.chapelAtticSpec
 
 instance HasModifiersFor ChapelAtticSpectral_176 where
   getModifiersFor (InvestigatorTarget iid) (ChapelAtticSpectral_176 a) = do
-    mModifiers <- runMaybeT $ do
-      guardM $ isTarget a <$> MaybeT getSkillTestTarget
-      guardM $ (== Action.Investigate) <$> MaybeT getSkillTestAction
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      cardCount <- lift $ fieldMap InvestigatorHand length iid
-      pure $ AnySkillValue cardCount
-    pure $ toModifiers a $ maybeToList mModifiers
+    investigating <- isInvestigating iid (toId a)
+    cardCount <- fieldMap InvestigatorHand length iid
+    pure $ toModifiers a [AnySkillValue cardCount | investigating]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapelAtticSpectral_176 where

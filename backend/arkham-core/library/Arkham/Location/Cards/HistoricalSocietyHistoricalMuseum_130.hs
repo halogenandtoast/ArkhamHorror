@@ -6,7 +6,6 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_130 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
@@ -16,7 +15,6 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Control.Monad.Trans.Maybe
 
 newtype HistoricalSocietyHistoricalMuseum_130 = HistoricalSocietyHistoricalMuseum_130 LocationAttrs
   deriving anyclass (IsLocation)
@@ -33,12 +31,8 @@ historicalSocietyHistoricalMuseum_130 =
 
 instance HasModifiersFor HistoricalSocietyHistoricalMuseum_130 where
   getModifiersFor (InvestigatorTarget iid) (HistoricalSocietyHistoricalMuseum_130 a) = do
-    mModifiers <- runMaybeT $ do
-      guardM $ isTarget a <$> MaybeT getSkillTestTarget
-      guardM $ (== Action.Investigate) <$> MaybeT getSkillTestAction
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      pure $ SkillCannotBeIncreased SkillIntellect
-    pure $ toModifiers a $ maybeToList mModifiers
+    investigating <- isInvestigating iid (toId a)
+    pure $ toModifiers a [SkillCannotBeIncreased SkillIntellect | investigating]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where

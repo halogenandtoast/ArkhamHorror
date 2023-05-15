@@ -1,6 +1,8 @@
 module Arkham.Card.CardDef where
 
+import Arkham.Prelude
+
 data CardDef
 
 class HasCardDef a where
-  toCardDef :: a -> CardDef
+  toCardDef :: (HasCallStack) => a -> CardDef

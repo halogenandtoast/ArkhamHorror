@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Agenda.Types where
 
 import Arkham.Prelude
@@ -22,7 +23,20 @@ import Arkham.Source
 import Arkham.Target
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AgendaId, EntityAttrs a ~ AgendaAttrs) => IsAgenda a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ AgendaId
+  , EntityAttrs a ~ AgendaAttrs
+  ) =>
+  IsAgenda a
 
 type AgendaCard a = CardBuilder (Int, AgendaId) a
 
@@ -66,12 +80,12 @@ instance Named AgendaAttrs where
 
 instance Targetable AgendaAttrs where
   toTarget = AgendaTarget . toId
-  isTarget AgendaAttrs { agendaId } (AgendaTarget aid) = agendaId == aid
+  isTarget AgendaAttrs {agendaId} (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
 
 instance Sourceable AgendaAttrs where
   toSource = AgendaSource . toId
-  isSource AgendaAttrs { agendaId } (AgendaSource aid) = agendaId == aid
+  isSource AgendaAttrs {agendaId} (AgendaSource aid) = agendaId == aid
   isSource _ _ = False
 
 onSide :: AgendaSide -> AgendaAttrs -> Bool
@@ -93,21 +107,24 @@ agendaWith
   -> GameValue
   -> (AgendaAttrs -> AgendaAttrs)
   -> CardBuilder (Int, AgendaId) a
-agendaWith (n, side) f cardDef threshold g = CardBuilder
-  { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \cardId (deckId, aid) -> f . g $ AgendaAttrs
-    { agendaDoom = 0
-    , agendaDoomThreshold = Just threshold
-    , agendaId = aid
-    , agendaCardId = cardId
-    , agendaSequence = AS.Sequence n side
-    , agendaFlipped = False
-    , agendaTreacheries = mempty
-    , agendaCardsUnderneath = mempty
-    , agendaDeckId = deckId
-    , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
+agendaWith (n, side) f cardDef threshold g =
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \cardId (deckId, aid) ->
+        f . g $
+          AgendaAttrs
+            { agendaDoom = 0
+            , agendaDoomThreshold = Just threshold
+            , agendaId = aid
+            , agendaCardId = cardId
+            , agendaSequence = AS.Sequence n side
+            , agendaFlipped = False
+            , agendaTreacheries = mempty
+            , agendaCardsUnderneath = mempty
+            , agendaDeckId = deckId
+            , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
+            }
     }
-  }
 
 instance HasCardDef AgendaAttrs where
   toCardDef e = case lookup (unAgendaId $ agendaId e) allAgendaCards of
@@ -115,7 +132,7 @@ instance HasCardDef AgendaAttrs where
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
-data Agenda = forall a . IsAgenda a => Agenda a
+data Agenda = forall a. (IsAgenda a) => Agenda a
 
 instance Eq Agenda where
   (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of
@@ -159,12 +176,13 @@ instance HasCardCode Agenda where
   toCardCode = unAgendaId . toId
 
 instance IsCard Agenda where
+  toCard = defaultToCard
   toCardId = agendaCardId . toAttrs
   toCardOwner = const Nothing
 
-data SomeAgendaCard = forall a . IsAgenda a => SomeAgendaCard (AgendaCard a)
+data SomeAgendaCard = forall a. (IsAgenda a) => SomeAgendaCard (AgendaCard a)
 
-liftSomeAgendaCard :: (forall a . AgendaCard a -> b) -> SomeAgendaCard -> b
+liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
 liftSomeAgendaCard f (SomeAgendaCard a) = f a
 
 someAgendaCardCode :: SomeAgendaCard -> CardCode

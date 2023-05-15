@@ -129,7 +129,7 @@ class GetCardDef m a where
   getCardDef :: a -> m CardDef
 
 class HasCardDef a where
-  toCardDef :: a -> CardDef
+  toCardDef :: (HasCallStack) => a -> CardDef
 
 hasRevelation :: (HasCardDef a) => a -> Bool
 hasRevelation = cdRevelation . toCardDef

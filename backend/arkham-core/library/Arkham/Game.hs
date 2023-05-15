@@ -4406,8 +4406,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . agendasL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discarded (EnemyTarget eid) _ _ -> do
     enemy <- getEnemy eid
-    card <- field EnemyCard eid
-    case card of
+    case toCard (toAttrs enemy) of
       PlayerCard pc -> do
         case enemyBearer (toAttrs enemy) of
           Nothing -> push (RemoveFromGame $ EnemyTarget eid)

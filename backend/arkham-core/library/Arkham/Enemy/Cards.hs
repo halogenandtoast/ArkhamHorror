@@ -259,7 +259,7 @@ allEncounterEnemyCards =
 
 allSpecialEnemyCards :: Map CardCode CardDef
 allSpecialEnemyCards =
-  mapFromList $ map (toCardCode &&& id) [flyingPolyp]
+  mapFromList $ map (toCardCode &&& id) [flyingPolyp, reanimatedDead]
 
 mobEnforcer :: CardDef
 mobEnforcer =
@@ -1573,5 +1573,11 @@ writhingAppendage =
 flyingPolyp :: CardDef
 flyingPolyp =
   (enemy "xpolyp" "Flying Polyp" ShatteredAeons 0)
+    { cdCardTraits = singleton Monster
+    }
+
+reanimatedDead :: CardDef
+reanimatedDead =
+  (enemy "xreanimated" "Reanimated Dead" TheWagesOfSin 0)
     { cdCardTraits = singleton Monster
     }

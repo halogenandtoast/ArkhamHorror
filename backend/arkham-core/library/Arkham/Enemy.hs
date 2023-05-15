@@ -259,6 +259,7 @@ allEnemies =
     , SomeEnemyCard heretic_K
     , SomeEnemyCard vengefulWitch
     , SomeEnemyCard malevolentSpirit
+    , SomeEnemyCard reanimatedDead
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

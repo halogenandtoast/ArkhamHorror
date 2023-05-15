@@ -185,6 +185,10 @@ const label = function(body) {
         <DropDown @choose="choose" :options="question.options" />
       </div>
 
+      <div class="question-label" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
+        <DropDown @choose="choose" :options="question.question.options" />
+      </div>
+
 
       <div v-if="showChoices" class="choices">
         <template v-for="(choice, index) in choices" :key="index">

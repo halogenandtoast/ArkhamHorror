@@ -1,13 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Cost
-  ( module Arkham.Cost
-  , module X
-  ) where
+
+module Arkham.Cost (
+  module Arkham.Cost,
+  module X,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Zone as X
 import Arkham.Cost.Status as X
+import Arkham.Zone as X
 
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -21,7 +22,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Arkham.Token ( Token )
+import Arkham.Token (Token)
 import Data.Aeson.TH
 import Data.Text qualified as T
 
@@ -96,6 +97,7 @@ data Cost
   | ClueCost Int
   | PerPlayerClueCost Int
   | GroupClueCost GameValue LocationMatcher
+  | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
   | DiscardAssetCost AssetMatcher
@@ -141,7 +143,6 @@ data Cost
 data DynamicUseCostValue = DrawnCardsValue
   deriving stock (Show, Eq, Ord)
 
-
 displayCostType :: Cost -> Text
 displayCostType = \case
   ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
@@ -170,6 +171,8 @@ displayCostType = \case
         <> ", or "
         <> tshow d
         <> " Clues for 1, 2, 3, or 4 players"
+  GroupClueCostRange (sVal, eVal) _ ->
+    tshow sVal <> "-" <> pluralize eVal "Clue" <> " as a Group"
   PlaceClueOnLocationCost n ->
     "Place " <> pluralize n "Clue" <> " on your location"
   ExhaustCost _ -> "Exhaust"
@@ -188,8 +191,8 @@ displayCostType = \case
   EnemyDoomCost n _ -> "Place " <> pluralize n "Doom" <> " on a matching enemy"
   ExileCost _ -> "Exile"
   HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
-  ReturnMatchingAssetToHandCost{} -> "Return matching asset to hand"
-  ReturnAssetToHandCost{} -> "Return asset to hand"
+  ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
+  ReturnAssetToHandCost {} -> "Return asset to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
   HorrorCost _ _ n -> tshow n <> " Horror"
   HorrorCostX _ -> "Take X Horror"
@@ -234,7 +237,7 @@ displayCostType = \case
   ReleaseTokenCost _ -> "Release a chaos token sealed here"
   ReleaseTokensCost 1 -> "Release a chaos token sealed here"
   ReleaseTokensCost _ -> "Release chaos tokens sealed here"
-  FieldResourceCost{} -> "X"
+  FieldResourceCost {} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n

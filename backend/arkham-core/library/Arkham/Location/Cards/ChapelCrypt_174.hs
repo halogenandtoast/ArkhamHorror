@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Hex))
 
 newtype ChapelCrypt_174 = ChapelCrypt_174 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 chapelCrypt_174 :: LocationCard ChapelCrypt_174
 chapelCrypt_174 = location ChapelCrypt_174 Cards.chapelCrypt_174 6 (Static 0)
@@ -28,12 +28,6 @@ instance HasModifiersFor ChapelCrypt_174 where
       selectNone $ investigatorAt (toId attrs) <> HasMatchingTreachery (TreacheryWithTrait Hex)
     pure $ toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
   getModifiersFor _ _ = pure []
-
-instance HasAbilities ChapelCrypt_174 where
-  getAbilities (ChapelCrypt_174 attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
 
 instance RunMessage ChapelCrypt_174 where
   runMessage msg l@(ChapelCrypt_174 attrs) = case msg of

@@ -510,6 +510,10 @@ getCanAffordCost iid source mAction windows' = \case
     iids <- selectList $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- getSpendableClueCount iids
     pure $ totalSpendableClues >= cost
+  GroupClueCostRange (cost, _) locationMatcher -> do
+    iids <- selectList $ Matcher.InvestigatorAt locationMatcher
+    totalSpendableClues <- getSpendableClueCount iids
+    pure $ totalSpendableClues >= cost
   IncreaseCostOfThis cardId n -> do
     card <- getCard cardId
     cost <- getModifiedCardCost iid card

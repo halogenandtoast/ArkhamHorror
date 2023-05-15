@@ -114,16 +114,16 @@ instance RunMessage LocationAttrs where
       (SkillTestInitiatorTarget (ProxyTarget target investigationTarget))
       _
       n
-      | isTarget a target ->
-          do
-            push $
-              Successful
-                (Action.Investigate, toTarget a)
-                iid
-                source
-                investigationTarget
-                n
-            pure a
+        | isTarget a target ->
+            do
+              push $
+                Successful
+                  (Action.Investigate, toTarget a)
+                  iid
+                  source
+                  investigationTarget
+                  n
+              pure a
     Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (LocationTarget lid)
@@ -241,8 +241,14 @@ instance RunMessage LocationAttrs where
     SetLocationAsIf iid lid | lid /= locationId -> do
       pure $ a & investigatorsL %~ deleteSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    RemovePlayerCardFromGame _ card -> do
+      pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
+    AddToDiscard _ pc -> do
+      pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
+    AddToEncounterDiscard ec -> do
+      pure $ a & cardsUnderneathL %~ filter (/= EncounterCard ec)
     DefeatedAddToVictory (EnemyTarget eid) ->
       pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Treachery.Types where
 
 import Arkham.Prelude
@@ -34,8 +35,8 @@ class
   , Entity a
   , EntityId a ~ TreacheryId
   , EntityAttrs a ~ TreacheryAttrs
-  )
-  => IsTreachery a
+  ) =>
+  IsTreachery a
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
@@ -117,17 +118,18 @@ instance Named TreacheryAttrs where
 
 instance Targetable TreacheryAttrs where
   toTarget = TreacheryTarget . toId
-  isTarget TreacheryAttrs { treacheryId } (TreacheryTarget tid) =
+  isTarget TreacheryAttrs {treacheryId} (TreacheryTarget tid) =
     treacheryId == tid
   isTarget _ _ = False
 
 instance Sourceable TreacheryAttrs where
   toSource = TreacherySource . toId
-  isSource TreacheryAttrs { treacheryId } (TreacherySource tid) =
+  isSource TreacheryAttrs {treacheryId} (TreacherySource tid) =
     treacheryId == tid
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
+  toCard = defaultToCard
   toCardId = treacheryCardId
   toCardOwner = treacheryOwner
 
@@ -162,17 +164,17 @@ withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ ->
-    error
-      $ show (cdName $ toCardDef attrs)
-      <> " must be attached to an investigator"
+    error $
+      show (cdName $ toCardDef attrs)
+        <> " must be attached to an investigator"
 
 withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryOwner attrs f = case treacheryOwner attrs of
   Just iid -> f iid
   _ ->
-    error
-      $ show (cdName $ toCardDef attrs)
-      <> " must be owned by an investigator"
+    error $
+      show (cdName $ toCardDef attrs)
+        <> " must be owned by an investigator"
 
 treachery
   :: (TreacheryAttrs -> a)
@@ -185,25 +187,29 @@ treacheryWith
   -> CardDef
   -> (TreacheryAttrs -> TreacheryAttrs)
   -> CardBuilder (InvestigatorId, TreacheryId) a
-treacheryWith f cardDef g = CardBuilder
-  { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \cardId (iid, tid) -> f . g $ TreacheryAttrs
-    { treacheryId = tid
-    , treacheryCardId = cardId
-    , treacheryCardCode = toCardCode cardDef
-    , treacheryPlacement = TreacheryLimbo
-    , treacheryOwner = if isJust (cdCardSubType cardDef)
-      then Just iid
-      else Nothing
-    , treacheryDrawnBy = iid
-    , treacheryDoom = 0
-    , treacheryClues = 0
-    , treacheryHorror = 0
-    , treacheryResources = 0
-    , treacheryCanBeCommitted = False
-    , treacheryDrawnFrom = Nothing
+treacheryWith f cardDef g =
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \cardId (iid, tid) ->
+        f . g $
+          TreacheryAttrs
+            { treacheryId = tid
+            , treacheryCardId = cardId
+            , treacheryCardCode = toCardCode cardDef
+            , treacheryPlacement = TreacheryLimbo
+            , treacheryOwner =
+                if isJust (cdCardSubType cardDef)
+                  then Just iid
+                  else Nothing
+            , treacheryDrawnBy = iid
+            , treacheryDoom = 0
+            , treacheryClues = 0
+            , treacheryHorror = 0
+            , treacheryResources = 0
+            , treacheryCanBeCommitted = False
+            , treacheryDrawnFrom = Nothing
+            }
     }
-  }
 
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
@@ -211,7 +217,7 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
-data Treachery = forall a . IsTreachery a => Treachery a
+data Treachery = forall a. (IsTreachery a) => Treachery a
 
 instance Eq Treachery where
   Treachery (a :: a) == Treachery (b :: b) = case eqT @a @b of
@@ -252,14 +258,18 @@ instance Sourceable Treachery where
   isSource = isSource . toAttrs
 
 instance IsCard Treachery where
+  toCard = toCard . toAttrs
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
 
-data SomeTreacheryCard = forall a . IsTreachery a => SomeTreacheryCard
-  (TreacheryCard a)
+data SomeTreacheryCard
+  = forall a.
+    (IsTreachery a) =>
+    SomeTreacheryCard
+      (TreacheryCard a)
 
 liftSomeTreacheryCard
-  :: (forall a . TreacheryCard a -> b) -> SomeTreacheryCard -> b
+  :: (forall a. TreacheryCard a -> b) -> SomeTreacheryCard -> b
 liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
 
 someTreacheryCardCode :: SomeTreacheryCard -> CardCode

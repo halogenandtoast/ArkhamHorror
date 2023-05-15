@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Location.Types
-  ( module Arkham.Location.Types
-  , module X
-  , Field(..)
-  ) where
+
+module Arkham.Location.Types (
+  module Arkham.Location.Types,
+  module X,
+  Field (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,12 +25,12 @@ import Arkham.Label qualified as L
 import Arkham.Location.Base as X
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
-import Arkham.Matcher ( LocationMatcher (..) )
+import Arkham.Matcher (LocationMatcher (..))
 import Arkham.Name
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait ( Trait )
+import Arkham.Trait (Trait)
 import Data.Text qualified as T
 import Data.Typeable
 
@@ -45,9 +46,11 @@ class
   , Entity a
   , EntityId a ~ LocationId
   , EntityAttrs a ~ LocationAttrs
-  ) => IsLocation a where
-    toLocation :: a -> Location
-    toLocation = Location
+  ) =>
+  IsLocation a
+  where
+  toLocation :: a -> Location
+  toLocation = Location
 
 type LocationCard a = CardBuilder LocationId a
 
@@ -130,7 +133,7 @@ instance Entity LocationAttrs where
 
 instance Targetable LocationAttrs where
   toTarget = LocationTarget . toId
-  isTarget LocationAttrs { locationId } (LocationTarget lid) =
+  isTarget LocationAttrs {locationId} (LocationTarget lid) =
     locationId == lid
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget attrs (BothTarget t1 t2) = isTarget attrs t1 || isTarget attrs t2
@@ -138,10 +141,9 @@ instance Targetable LocationAttrs where
 
 instance Sourceable LocationAttrs where
   toSource = LocationSource . toId
-  isSource LocationAttrs { locationId } (LocationSource lid) =
+  isSource LocationAttrs {locationId} (LocationSource lid) =
     locationId == lid
   isSource _ _ = False
-
 
 instance HasCardCode LocationAttrs where
   toCardCode = locationCardCode
@@ -173,76 +175,88 @@ locationWith
   -> GameValue
   -> (LocationAttrs -> LocationAttrs)
   -> CardBuilder LocationId a
-locationWith f def shroud' revealClues g = CardBuilder
-  { cbCardCode = cdCardCode def
-  , cbCardBuilder = \cardId lid -> f . g $ LocationAttrs
-    { locationId = lid
-    , locationCardCode = toCardCode def
-    , locationCardId = cardId
-    , locationLabel = nameToLabel (cdName def)
-    , locationRevealClues = revealClues
-    , locationClues = 0
-    , locationHorror = 0
-    , locationDoom = 0
-    , locationResources = 0
-    , locationShroud = shroud'
-    , locationRevealed = not (cdDoubleSided def)
-    , locationInvestigators = mempty
-    , locationEnemies = mempty
-    , locationSymbol = fromJustNote
-      "missing location symbol"
-      (cdLocationSymbol def)
-    , locationRevealedSymbol = fromJustNote
-      "missing revealed location symbol"
-      (cdLocationRevealedSymbol def)
-    , locationConnectedMatchers = map
-      LocationWithSymbol
-      (cdLocationConnections def)
-    , locationRevealedConnectedMatchers = map
-      LocationWithSymbol
-      (cdLocationRevealedConnections def)
-    , locationTreacheries = mempty
-    , locationEvents = mempty
-    , locationAssets = mempty
-    , locationDirections = mempty
-    , locationConnectsTo = mempty
-    , locationCardsUnderneath = mempty
-    , locationCostToEnterUnrevealed = ActionCost 1
-    , locationInvestigateSkill = SkillIntellect
-    , locationCanBeFlipped = False
-    , locationInFrontOf = Nothing
-    , locationWithoutClues = False
+locationWith f def shroud' revealClues g =
+  CardBuilder
+    { cbCardCode = cdCardCode def
+    , cbCardBuilder = \cardId lid ->
+        f . g $
+          LocationAttrs
+            { locationId = lid
+            , locationCardCode = toCardCode def
+            , locationCardId = cardId
+            , locationLabel = nameToLabel (cdName def)
+            , locationRevealClues = revealClues
+            , locationClues = 0
+            , locationHorror = 0
+            , locationDoom = 0
+            , locationResources = 0
+            , locationShroud = shroud'
+            , locationRevealed = not (cdDoubleSided def)
+            , locationInvestigators = mempty
+            , locationEnemies = mempty
+            , locationSymbol =
+                fromJustNote
+                  "missing location symbol"
+                  (cdLocationSymbol def)
+            , locationRevealedSymbol =
+                fromJustNote
+                  "missing revealed location symbol"
+                  (cdLocationRevealedSymbol def)
+            , locationConnectedMatchers =
+                map
+                  LocationWithSymbol
+                  (cdLocationConnections def)
+            , locationRevealedConnectedMatchers =
+                map
+                  LocationWithSymbol
+                  (cdLocationRevealedConnections def)
+            , locationTreacheries = mempty
+            , locationEvents = mempty
+            , locationAssets = mempty
+            , locationDirections = mempty
+            , locationConnectsTo = mempty
+            , locationCardsUnderneath = mempty
+            , locationCostToEnterUnrevealed = ActionCost 1
+            , locationInvestigateSkill = SkillIntellect
+            , locationCanBeFlipped = False
+            , locationInFrontOf = Nothing
+            , locationWithoutClues = False
+            }
     }
-  }
 
 locationResignAction :: LocationAttrs -> Ability
-locationResignAction attrs = toLocationAbility
-  attrs
-  (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
+locationResignAction attrs =
+  toLocationAbility
+    attrs
+    (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
-toLocationAbility attrs ability = ability
-  { abilityCriteria = Just
-    (fromMaybe mempty (abilityCriteria ability)
-    <> OnLocation (LocationWithId $ toId attrs)
-    )
-  }
+toLocationAbility attrs ability =
+  ability
+    { abilityCriteria =
+        Just
+          ( fromMaybe mempty (abilityCriteria ability)
+              <> OnLocation (LocationWithId $ toId attrs)
+          )
+    }
 
 locationAbility :: Ability -> Ability
 locationAbility ability = case abilitySource ability of
-  LocationSource lid -> ability
-    { abilityCriteria = Just
-      (fromMaybe mempty (abilityCriteria ability)
-      <> OnLocation (LocationWithId lid)
-      )
-    }
+  LocationSource lid ->
+    ability
+      { abilityCriteria =
+          Just
+            ( fromMaybe mempty (abilityCriteria ability)
+                <> OnLocation (LocationWithId lid)
+            )
+      }
   _ -> ability
 
 on :: InvestigatorId -> LocationAttrs -> Bool
-on iid LocationAttrs { locationInvestigators } =
+on iid LocationAttrs {locationInvestigators} =
   iid `member` locationInvestigators
 
-data Location = forall a . IsLocation a => Location a
+data Location = forall a. (IsLocation a) => Location a
 
 instance Eq Location where
   Location (a :: a) == Location (b :: b) = case eqT @a @b of
@@ -256,10 +270,12 @@ instance ToJSON Location where
   toJSON (Location a) = toJSON a
 
 toLocationSymbol :: Location -> LocationSymbol
-toLocationSymbol l = if locationRevealed attrs
-  then locationRevealedSymbol attrs
-  else locationSymbol attrs
-  where attrs = toAttrs l
+toLocationSymbol l =
+  if locationRevealed attrs
+    then locationRevealedSymbol attrs
+    else locationSymbol attrs
+ where
+  attrs = toAttrs l
 
 toLocationLabel :: Location -> L.Label
 toLocationLabel = L.Label . locationLabel . toAttrs
@@ -300,31 +316,36 @@ isEmptyLocation =
 
 noInvestigatorsAtLocation :: Location -> Bool
 noInvestigatorsAtLocation l = null investigators'
-  where investigators' = locationInvestigators $ toAttrs l
+ where
+  investigators' = locationInvestigators $ toAttrs l
 
 noEnemiesAtLocation :: Location -> Bool
 noEnemiesAtLocation l = null enemies'
-  where enemies' = locationEnemies $ toAttrs l
+ where
+  enemies' = locationEnemies $ toAttrs l
 
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs
 
 data SomeLocationCard where
-  SomeLocationCard :: IsLocation a => LocationCard a -> SomeLocationCard
+  SomeLocationCard :: (IsLocation a) => LocationCard a -> SomeLocationCard
 
 someLocationCardCode :: SomeLocationCard -> CardCode
 someLocationCardCode (SomeLocationCard a) = cbCardCode a
 
 instance Named LocationAttrs where
-  toName l = if locationRevealed l
-    then fromMaybe baseName (cdRevealedName $ toCardDef l)
-    else baseName
-    where baseName = toName (toCardDef l)
+  toName l =
+    if locationRevealed l
+      then fromMaybe baseName (cdRevealedName $ toCardDef l)
+      else baseName
+   where
+    baseName = toName (toCardDef l)
 
 instance Named (Unrevealed LocationAttrs) where
   toName (Unrevealed l) = toName (toCardDef l)
 
 instance IsCard LocationAttrs where
+  toCard = defaultToCard
   toCardId = locationCardId
   toCardOwner = const Nothing
 
@@ -334,7 +355,8 @@ symbolLabel
   :: (Entity a, EntityAttrs a ~ LocationAttrs)
   => CardBuilder LocationId a
   -> CardBuilder LocationId a
-symbolLabel = fmap
-  (overAttrs
-    (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs))
-  )
+symbolLabel =
+  fmap
+    ( overAttrs
+        (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs))
+    )

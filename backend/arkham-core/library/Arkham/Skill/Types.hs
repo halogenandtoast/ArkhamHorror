@@ -2,25 +2,38 @@ module Arkham.Skill.Types where
 
 import Arkham.Prelude
 
-import Arkham.Json
-import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
+import Arkham.Id
+import Arkham.Json
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Id
-import Arkham.Strategy
+import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Source
+import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ SkillId, EntityAttrs a ~ SkillAttrs) => IsSkill a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ SkillId
+  , EntityAttrs a ~ SkillAttrs
+  ) =>
+  IsSkill a
 
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
@@ -42,10 +55,10 @@ data SkillAttrs = SkillAttrs
   deriving stock (Show, Eq, Generic)
 
 additionalCostL :: Lens' SkillAttrs (Maybe Cost)
-additionalCostL = lens skillAdditionalCost $ \m x -> m { skillAdditionalCost = x }
+additionalCostL = lens skillAdditionalCost $ \m x -> m {skillAdditionalCost = x}
 
 afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
-afterPlayL = lens skillAfterPlay $ \m x -> m { skillAfterPlay = x }
+afterPlayL = lens skillAfterPlay $ \m x -> m {skillAfterPlay = x}
 
 allSkillCards :: Map CardCode CardDef
 allSkillCards = allPlayerSkillCards
@@ -59,6 +72,7 @@ instance HasCardDef SkillAttrs where
     Nothing -> error $ "missing card def for skill " <> show (skillCardCode a)
 
 instance IsCard SkillAttrs where
+  toCard = defaultToCard
   toCardId = skillCardId
   toCardOwner = Just . skillOwner
 
@@ -81,35 +95,41 @@ instance Named SkillAttrs where
 
 instance Targetable SkillAttrs where
   toTarget = SkillTarget . skillId
-  isTarget SkillAttrs { skillId } (SkillTarget sid) = skillId == sid
+  isTarget SkillAttrs {skillId} (SkillTarget sid) = skillId == sid
   isTarget _ _ = False
 
 instance Sourceable SkillAttrs where
   toSource = SkillSource . skillId
-  isSource SkillAttrs { skillId } (SkillSource sid) = skillId == sid
+  isSource SkillAttrs {skillId} (SkillSource sid) = skillId == sid
   isSource _ _ = False
 
 skillWith
-  :: (SkillAttrs -> a) -> CardDef -> (SkillAttrs -> SkillAttrs) -> CardBuilder (InvestigatorId, SkillId) a
+  :: (SkillAttrs -> a)
+  -> CardDef
+  -> (SkillAttrs -> SkillAttrs)
+  -> CardBuilder (InvestigatorId, SkillId) a
 skillWith f cardDef g = skill (f . g) cardDef
 
 skill
   :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
-skill f cardDef = CardBuilder
-  { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \cardId (iid, sid) -> f $ SkillAttrs
-    { skillCardCode = toCardCode cardDef
-    , skillCardId = cardId
-    , skillId = sid
-    , skillOwner = iid
-    , skillAdditionalCost = Nothing
-    , skillAdditionalPayment = Nothing
-    , skillAfterPlay = DiscardThis
-    , skillPlacement = Unplaced
+skill f cardDef =
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \cardId (iid, sid) ->
+        f $
+          SkillAttrs
+            { skillCardCode = toCardCode cardDef
+            , skillCardId = cardId
+            , skillId = sid
+            , skillOwner = iid
+            , skillAdditionalCost = Nothing
+            , skillAdditionalPayment = Nothing
+            , skillAfterPlay = DiscardThis
+            , skillPlacement = Unplaced
+            }
     }
-  }
 
-data Skill = forall a. IsSkill a => Skill a
+data Skill = forall a. (IsSkill a) => Skill a
 
 instance Eq Skill where
   Skill (a :: a) == Skill (b :: b) = case eqT @a @b of
@@ -153,10 +173,11 @@ instance Sourceable Skill where
   isSource = isSource . toAttrs
 
 instance IsCard Skill where
+  toCard = toCard . toAttrs
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
 
-data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
+data SomeSkillCard = forall a. (IsSkill a) => SomeSkillCard (SkillCard a)
 
 liftSomeSkillCard :: (forall a. SkillCard a -> b) -> SomeSkillCard -> b
 liftSomeSkillCard f (SomeSkillCard a) = f a

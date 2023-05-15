@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Card.PlayerCard where
 
 import Arkham.Prelude
@@ -8,6 +9,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
+import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
@@ -36,7 +38,7 @@ instance HasCost PlayerCard where
     Nothing -> 0
 
 instance HasCardDef PlayerCard where
-  toCardDef c = case lookup (pcCardCode c) allPlayerCards of
+  toCardDef c = case lookup (pcCardCode c) (allPlayerCards <> allSpecialEnemyCards) of
     Just def -> def
     Nothing ->
       error $ "missing card def for player card " <> show (pcCardCode c)
@@ -48,13 +50,13 @@ instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode
 
 lookupPlayerCard :: CardDef -> CardId -> PlayerCard
-lookupPlayerCard cardDef cardId = MkPlayerCard
-  { pcId = cardId
-  , pcCardCode = toCardCode cardDef
-  , pcOriginalCardCode = toCardCode cardDef
-  , pcOwner = Nothing
-  , pcCustomizations = mempty
-  }
+lookupPlayerCard cardDef cardId =
+  MkPlayerCard
+    { pcId = cardId
+    , pcCardCode = toCardCode cardDef
+    , pcOriginalCardCode = toCardCode cardDef
+    , pcOwner = Nothing
+    , pcCustomizations = mempty
+    }
 
 $(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)
-

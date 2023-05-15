@@ -1,28 +1,42 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Event.Types where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards
-import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
-import Arkham.Classes.HasAbilities
-import Arkham.Classes.RunMessage.Internal
-import Arkham.Json
 import Arkham.Card
+import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage.Internal
+import Arkham.Event.Cards
 import Arkham.Id
-import Arkham.Name
+import Arkham.Json
 import Arkham.Message
+import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token ( Token )
+import Arkham.Token (Token)
 import Arkham.Trait
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EventId, EntityAttrs a ~ EventAttrs) => IsEvent a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ EventId
+  , EntityAttrs a ~ EventAttrs
+  ) =>
+  IsEvent a
 
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
@@ -81,14 +95,19 @@ instance FromJSON EventAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
 instance IsCard EventAttrs where
+  toCard = defaultToCard
   toCardId = eventCardId
   toCardOwner = Just . eventOwner
 
-eventWith :: (EventAttrs -> a) -> CardDef -> (EventAttrs -> EventAttrs) -> CardBuilder (InvestigatorId, EventId) a
+eventWith
+  :: (EventAttrs -> a)
+  -> CardDef
+  -> (EventAttrs -> EventAttrs)
+  -> CardBuilder (InvestigatorId, EventId) a
 eventWith f cardDef g = Arkham.Event.Types.event (f . g) cardDef
 
-event ::
-  (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
+event
+  :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
@@ -102,8 +121,8 @@ event f cardDef =
             , eventOwner = iid
             , eventDoom = 0
             , eventExhausted = False
-            -- currently only relevant to time warp
-            , eventBeingPaidFor = False
+            , -- currently only relevant to time warp
+              eventBeingPaidFor = False
             , eventPaymentMessages = []
             , eventSealedTokens = []
             , eventPlacement = Unplaced
@@ -132,7 +151,7 @@ instance Sourceable EventAttrs where
   isSource EventAttrs {eventId} (EventSource eid) = eventId == eid
   isSource _ _ = False
 
-data Event = forall a. IsEvent a => Event a
+data Event = forall a. (IsEvent a) => Event a
 
 instance Eq Event where
   (Event (a :: a)) == (Event (b :: b)) = case eqT @a @b of
@@ -183,7 +202,7 @@ getEventId = eventId . toAttrs
 ownerOfEvent :: Event -> InvestigatorId
 ownerOfEvent = eventOwner . toAttrs
 
-data SomeEventCard = forall a. IsEvent a => SomeEventCard (EventCard a)
+data SomeEventCard = forall a. (IsEvent a) => SomeEventCard (EventCard a)
 
 liftSomeEventCard :: (forall a. EventCard a -> b) -> SomeEventCard -> b
 liftSomeEventCard f (SomeEventCard a) = f a

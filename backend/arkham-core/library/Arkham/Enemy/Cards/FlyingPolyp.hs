@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.FlyingPolyp
-  ( flyingPolyp
-  , FlyingPolyp(..)
-  ) where
+module Arkham.Enemy.Cards.FlyingPolyp (
+  flyingPolyp,
+  FlyingPolyp (..),
+) where
 
 import Arkham.Prelude
 

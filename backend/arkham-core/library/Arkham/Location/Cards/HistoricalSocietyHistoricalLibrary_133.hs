@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133
-  ( historicalSocietyHistoricalLibrary_133
-  , HistoricalSocietyHistoricalLibrary_133(..)
-  ) where
+module Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133 (
+  historicalSocietyHistoricalLibrary_133,
+  HistoricalSocietyHistoricalLibrary_133 (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher hiding ( RevealLocation )
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
 import Arkham.Timing qualified as Timing
 
@@ -21,46 +21,52 @@ newtype HistoricalSocietyHistoricalLibrary_133 = HistoricalSocietyHistoricalLibr
 
 historicalSocietyHistoricalLibrary_133
   :: LocationCard HistoricalSocietyHistoricalLibrary_133
-historicalSocietyHistoricalLibrary_133 = location
-  HistoricalSocietyHistoricalLibrary_133
-  Cards.historicalSocietyHistoricalLibrary_133
-  3
-  (PerPlayer 2)
+historicalSocietyHistoricalLibrary_133 =
+  location
+    HistoricalSocietyHistoricalLibrary_133
+    Cards.historicalSocietyHistoricalLibrary_133
+    3
+    (PerPlayer 2)
 
 instance HasAbilities HistoricalSocietyHistoricalLibrary_133 where
   getAbilities (HistoricalSocietyHistoricalLibrary_133 attrs) =
-    withBaseAbilities attrs $ if locationRevealed attrs
-      then
-        [ restrictedAbility
-            attrs
-            1
-            (Here <> CluesOnThis (AtLeast $ Static 1) <> CanDiscoverCluesAt
-              (LocationWithId $ toId attrs)
-            )
-            (ReactionAbility
-              (SkillTestResult
-                Timing.After
-                You
-                (WhileInvestigating $ LocationWithId $ toId attrs)
-                (SuccessResult AnyValue)
-              )
-              (HorrorCost (toSource attrs) YouTarget 2)
-            )
-          & abilityLimitL
-          .~ PlayerLimit PerRound 1
-        ]
-      else
-        [ mkAbility attrs 1 $ ForcedAbility $ EnemySpawns
-            Timing.When
-            (LocationWithId $ toId attrs)
-            AnyEnemy
-        ]
+    withBaseAbilities attrs $
+      if locationRevealed attrs
+        then
+          [ limitedAbility (PlayerLimit PerRound 1)
+              $ restrictedAbility
+                attrs
+                1
+                ( Here
+                    <> CluesOnThis (AtLeast $ Static 1)
+                    <> CanDiscoverCluesAt
+                      (LocationWithId $ toId attrs)
+                )
+              $ ReactionAbility
+                ( SkillTestResult
+                    Timing.After
+                    You
+                    (WhileInvestigating $ LocationWithId $ toId attrs)
+                    (SuccessResult AnyValue)
+                )
+                (HorrorCost (toSource attrs) YouTarget 2)
+          ]
+        else
+          [ mkAbility attrs 1 $
+              ForcedAbility $
+                EnemySpawns
+                  Timing.When
+                  (LocationWithId $ toId attrs)
+                  AnyEnemy
+          ]
 
 instance RunMessage HistoricalSocietyHistoricalLibrary_133 where
   runMessage msg l@(HistoricalSocietyHistoricalLibrary_133 attrs) = case msg of
     UseCardAbility iid source 1 _ _
-      | isSource attrs source && locationRevealed attrs -> l
-      <$ push (InvestigatorDiscoverClues iid (toId attrs) 1 Nothing)
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      l <$ push (Msg.RevealLocation Nothing $ toId attrs)
+      | isSource attrs source && locationRevealed attrs ->
+          l
+            <$ push (InvestigatorDiscoverClues iid (toId attrs) 1 Nothing)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          l <$ push (Msg.RevealLocation Nothing $ toId attrs)
     _ -> HistoricalSocietyHistoricalLibrary_133 <$> runMessage msg attrs

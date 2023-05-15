@@ -20,6 +20,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
+import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
@@ -32,7 +33,7 @@ import Data.Text qualified as T
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
 lookupCard (toCardCode -> cardCode) cardId =
-  case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
+  case (lookup cardCode allEncounterCards, lookup cardCode (allPlayerCards <> allSpecialEnemyCards)) of
     (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
     (Just def, _) -> EncounterCard $ lookupEncounterCard def cardId
     -- we prefer encounter cards over player cards to handle cases like straitjacket
@@ -56,6 +57,7 @@ instance Functor (CardBuilder ident) where
       }
 
 instance IsCard Card where
+  toCard = id
   toCardId = \case
     PlayerCard pc -> toCardId pc
     EncounterCard ec -> toCardId ec
@@ -65,11 +67,16 @@ instance IsCard Card where
     EncounterCard ec -> toCardOwner ec
     VengeanceCard c -> toCardOwner c
 
+-- WARNING: toCard has a default, but we should only use this if the original
+-- card is not recoverable
+--
+defaultToCard :: (HasCallStack, HasCardDef a, IsCard a) => a -> Card
+defaultToCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
+  PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a}
+  ec -> ec
+
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: (HasCallStack) => a -> Card
-  toCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
-    PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a}
-    ec -> ec
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
 
@@ -130,10 +137,12 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardOwnedBy iid -> toCardOwner a == Just iid
 
 instance IsCard PlayerCard where
+  toCard = PlayerCard
   toCardId = pcId
   toCardOwner = pcOwner
 
 instance IsCard EncounterCard where
+  toCard = EncounterCard
   toCardId = ecId
   toCardOwner = const Nothing
 

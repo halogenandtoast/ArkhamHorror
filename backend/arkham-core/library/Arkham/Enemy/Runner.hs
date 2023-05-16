@@ -340,7 +340,8 @@ instance RunMessage EnemyAttrs where
               canEngage <- flip allM investigatorModifiers $ \case
                 CannotBeEngagedBy matcher -> notElem eid <$> select matcher
                 _ -> pure True
-              pure $ canEngage && EnemyCannotEngage iid `notElem` modifiers'
+              pure $
+                canEngage && EnemyCannotEngage iid `notElem` modifiers' && CannotBeEngaged `notElem` modifiers'
       investigatorIds' <-
         filterM modifiedFilter
           =<< getInvestigatorsAtSameLocation a

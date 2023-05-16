@@ -101,6 +101,7 @@ data ModifierType
   | CannotDiscoverClues
   | CannotDrawCards
   | CannotEngage InvestigatorId
+  | CannotBeEngaged
   | CannotBeEngagedBy EnemyMatcher
   | CannotBeAttackedBy EnemyMatcher
   | CannotGainResources

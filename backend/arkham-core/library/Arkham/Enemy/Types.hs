@@ -193,6 +193,7 @@ instance HasAbilities EnemyAttrs where
             <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
             <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
             <> Negate (EnemyCriteria $ ThisEnemy $ EnemyWithPlacement Global)
+            <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeEngaged)
         )
         $ ActionAbility (Just Action.Engage) (ActionCost 1)
     ]

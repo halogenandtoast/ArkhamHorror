@@ -70,7 +70,7 @@ instance IsCard Card where
 -- WARNING: toCard has a default, but we should only use this if the original
 -- card is not recoverable
 --
-defaultToCard :: (HasCallStack, HasCardDef a, IsCard a) => a -> Card
+defaultToCard :: (HasCallStack, IsCard a) => a -> Card
 defaultToCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
   PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a}
   ec -> ec

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MaskedCarnevaleGoer_21
-  ( maskedCarnevaleGoer_21
-  , MaskedCarnevaleGoer_21(..)
-  ) where
+module Arkham.Asset.Cards.MaskedCarnevaleGoer_21 (
+  maskedCarnevaleGoer_21,
+  MaskedCarnevaleGoer_21 (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,7 +26,7 @@ instance HasAbilities MaskedCarnevaleGoer_21 where
         x
         1
         OnSameLocation
-        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
+        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost (Static 1)])
     ]
 
 instance RunMessage MaskedCarnevaleGoer_21 where

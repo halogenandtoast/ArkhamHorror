@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario

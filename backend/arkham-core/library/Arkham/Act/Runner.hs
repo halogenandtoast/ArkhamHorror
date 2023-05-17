@@ -1,22 +1,24 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Act.Runner
-  ( module Arkham.Act.Runner
-  , module X
-  ) where
+
+module Arkham.Act.Runner (
+  module Arkham.Act.Runner,
+  module X,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Act.Types as X
 import Arkham.Act.Sequence as X
+import Arkham.Act.Types as X
 import Arkham.Cost as X
-import Arkham.Helpers.SkillTest as X
+import Arkham.GameValue as X
 import Arkham.Helpers.Message as X
+import Arkham.Helpers.SkillTest as X
 import Arkham.Target as X
 
 import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding ( FastPlayerWindow )
+import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -26,16 +28,16 @@ advanceActDeck :: ActAttrs -> Message
 advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
 
 advanceActSideA
-  :: HasGame m => ActAttrs -> AdvancementMethod -> m [Message]
+  :: (HasGame m) => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
     [ CheckWindow
-      [leadInvestigatorId]
-      [Window Timing.When (ActAdvance $ toId attrs)]
+        [leadInvestigatorId]
+        [Window Timing.When (ActAdvance $ toId attrs)]
     , chooseOne
-      leadInvestigatorId
-      [TargetLabel (ActTarget $ toId attrs) [AdvanceAct (toId attrs) (toSource attrs) advanceMode]]
+        leadInvestigatorId
+        [TargetLabel (ActTarget $ toId attrs) [AdvanceAct (toId attrs) (toSource attrs) advanceMode]]
     ]
 
 instance RunMessage Act where
@@ -52,19 +54,22 @@ instance RunMessage ActAttrs where
     AdvanceAct aid _ advanceMode | aid == actId && onSide E a -> do
       pushAll =<< advanceActSideA a advanceMode
       pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) F)
-    AttachTreachery tid (ActTarget aid) | aid == actId ->
-      pure $ a & treacheriesL %~ insertSet tid
+    AttachTreachery tid (ActTarget aid)
+      | aid == actId ->
+          pure $ a & treacheriesL %~ insertSet tid
     Discard _ (ActTarget aid) | aid == toId a -> do
       pushAll
-        [ Discard GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries ]
+        [Discard GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries]
       pure a
     Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- select UneliminatedInvestigator
-      whenMsg <- checkWindows
-        [Window Timing.When AllUndefeatedInvestigatorsResigned]
-      afterMsg <- checkWindows
-        [Window Timing.When AllUndefeatedInvestigatorsResigned]
+      whenMsg <-
+        checkWindows
+          [Window Timing.When AllUndefeatedInvestigatorsResigned]
+      afterMsg <-
+        checkWindows
+          [Window Timing.When AllUndefeatedInvestigatorsResigned]
       when
         (null investigatorIds)
         (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
@@ -75,5 +80,5 @@ instance RunMessage ActAttrs where
       pure a
     PlaceClues (ActTarget aid) n | aid == actId -> do
       let totalClues = n + actClues
-      pure $ a { actClues = totalClues }
+      pure $ a {actClues = totalClues}
     _ -> pure a

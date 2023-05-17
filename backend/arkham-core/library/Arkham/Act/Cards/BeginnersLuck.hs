@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
-import Arkham.GameValue
 import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

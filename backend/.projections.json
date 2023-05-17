@@ -388,6 +388,34 @@
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },
+  "arkham-core/library/Arkham/Story/Cards/*.hs": {
+    "type": "story",
+    "alternate": "arkham-core/tests/Arkham/Story/Cards/{}Spec.hs",
+    "template": [
+       "module Arkham.Story.Cards.{dot}",
+       "  ( {dot}(..)",
+       "  , {dot|snakecase|camelcase}",
+       "  ) where",
+       "",
+       "import Arkham.Prelude",
+       "",
+       "import Arkham.Story.Cards qualified as Cards",
+       "import Arkham.Story.Runner",
+       "",
+       "newtype {dot} = {dot} StoryAttrs",
+       "  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)",
+       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
+       "",
+       "{dot|snakecase|camelcase} :: StoryCard {dot}",
+       "{dot|snakecase|camelcase} = story {dot} Cards.{dot|snakecase|camelcase}",
+       "",
+       "instance RunMessage {dot} where",
+       "  runMessage msg s@({dot} attrs) = case msg of",
+       "    ResolveStory _ story' | story' == toId attrs -> do",
+       "      pure s",
+       "    _ -> {dot} <$> runMessage msg attrs"
+    ]
+  },
   "arkham-core/library/Arkham/*.hs": {
     "type": "core",
     "alternate": "arkham-core/tests/Arkham/{}Spec.hs",

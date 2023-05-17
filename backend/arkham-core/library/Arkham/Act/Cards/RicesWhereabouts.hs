@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.RicesWhereabouts
-  ( RicesWhereabouts(..)
-  , ricesWhereabouts
-  ) where
+module Arkham.Act.Cards.RicesWhereabouts (
+  RicesWhereabouts (..),
+  ricesWhereabouts,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.Agenda.Types ( Field (..) )
+import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
@@ -18,12 +18,12 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
-import Arkham.Message hiding ( Discarded )
+import Arkham.Message hiding (Discarded)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
-import Data.List.Extra ( firstJust )
+import Data.List.Extra (firstJust)
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -34,16 +34,21 @@ ricesWhereabouts = act (2, A) RicesWhereabouts Cards.ricesWhereabouts Nothing
 
 instance HasAbilities RicesWhereabouts where
   getAbilities (RicesWhereabouts x) =
-    [ mkAbility x 1 $ ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1]
-    , mkAbility x 2 $ ForcedAbility $ Discarded
-      Timing.When
-      You
-      AnySource
-      (cardIs Assets.jazzMulligan)
-    , mkAbility x 3 $ Objective $ ForcedAbility $ TookControlOfAsset
-      Timing.When
-      You
-      (assetIs Assets.jazzMulligan)
+    [ mkAbility x 1 $ ActionAbility Nothing $ Costs [ActionCost 1, ClueCost (Static 1)]
+    , mkAbility x 2 $
+        ForcedAbility $
+          Discarded
+            Timing.When
+            You
+            AnySource
+            (cardIs Assets.jazzMulligan)
+    , mkAbility x 3 $
+        Objective $
+          ForcedAbility $
+            TookControlOfAsset
+              Timing.When
+              You
+              (assetIs Assets.jazzMulligan)
     ]
 
 instance RunMessage RicesWhereabouts where
@@ -51,13 +56,14 @@ instance RunMessage RicesWhereabouts where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
-      a <$ push
-        (DiscardTopOfEncounterDeck
-          iid
-          discardCount
-          (toAbilitySource attrs 1)
-          Nothing
-        )
+      a
+        <$ push
+          ( DiscardTopOfEncounterDeck
+              iid
+              discardCount
+              (toAbilitySource attrs 1)
+              Nothing
+          )
     UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
       let
         mCard = flip firstJust windows' $ \case
@@ -73,25 +79,27 @@ instance RunMessage RicesWhereabouts where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       agendaId <- selectJust AnyAgenda
       step <- fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep) agendaId
-      alchemyLabsInPlay <- isJust
-        <$> selectOne (LocationWithTitle "Alchemy Labs")
+      alchemyLabsInPlay <-
+        isJust
+          <$> selectOne (LocationWithTitle "Alchemy Labs")
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       theExperiment <- getSetAsideCard Enemies.theExperiment
       alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 
-      createTheExperiment <- createEnemyAtLocationMatching_ theExperiment
-        $ LocationWithTitle "Alchemy Labs"
+      createTheExperiment <-
+        createEnemyAtLocationMatching_ theExperiment $
+          LocationWithTitle "Alchemy Labs"
 
-      pushAll
-        $ [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
-          | not alchemyLabsInPlay
-          ]
-        <> [ createTheExperiment | step <= 2 ]
-        <> [ CreateStoryAssetAtLocationMatching
-               alchemicalConcoction
-               (LocationWithTitle "Alchemy Labs")
-           | completedTheHouseAlwaysWins
-           ]
-        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll $
+        [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
+        | not alchemyLabsInPlay
+        ]
+          <> [createTheExperiment | step <= 2]
+          <> [ CreateStoryAssetAtLocationMatching
+              alchemicalConcoction
+              (LocationWithTitle "Alchemy Labs")
+             | completedTheHouseAlwaysWins
+             ]
+          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> RicesWhereabouts <$> runMessage msg attrs

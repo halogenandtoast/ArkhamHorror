@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TrainTracks
-  ( trainTracks
-  , TrainTracks(..)
-  ) where
+module Arkham.Location.Cards.TrainTracks (
+  trainTracks,
+  TrainTracks (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype TrainTracks = TrainTracks LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trainTracks :: LocationCard TrainTracks
@@ -22,22 +22,24 @@ trainTracks = location TrainTracks Cards.trainTracks 3 (PerPlayer 1)
 instance HasModifiersFor TrainTracks where
   getModifiersFor (LocationTarget lid) (TrainTracks a) = do
     isNorthside <- lid <=~> locationIs Cards.northside
-    pure $ toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-      | isNorthside
-      ]
+    pure $
+      toModifiers
+        a
+        [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
+        | isNorthside
+        ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrainTracks where
-  getAbilities (TrainTracks attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (PlayerLimit PerGame 1)
-      $ restrictedAbility attrs 1 Here
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> ClueCost 1
-    ]
+  getAbilities (TrainTracks attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (PlayerLimit PerGame 1) $
+          restrictedAbility attrs 1 Here $
+            ActionAbility Nothing $
+              ActionCost 1
+                <> ClueCost (Static 1)
+      ]
 
 instance RunMessage TrainTracks where
   runMessage msg l@(TrainTracks attrs) = case msg of

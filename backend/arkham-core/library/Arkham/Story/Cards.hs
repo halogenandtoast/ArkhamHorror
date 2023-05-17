@@ -10,83 +10,93 @@ import Arkham.EncounterSet
 import Arkham.Name
 
 story :: CardCode -> Name -> EncounterSet -> CardDef
-story cardCode name encounterSet = CardDef
-  { cdCardCode = cardCode
-  , cdName = name
-  , cdRevealedName = Nothing
-  , cdCost = Nothing
-  , cdAdditionalCost = Nothing
-  , cdLevel = 0
-  , cdCardType = StoryType
-  , cdCardSubType = Nothing
-  , cdClassSymbols = mempty
-  , cdSkills = mempty
-  , cdCardTraits = mempty
-  , cdRevealedCardTraits = mempty
-  , cdKeywords = mempty
-  , cdFastWindow = Nothing
-  , cdActions = []
-  , cdRevelation = False
-  , cdVictoryPoints = Nothing
-  , cdVengeancePoints = Nothing
-  , cdCriteria = mempty
-  , cdOverrideActionPlayableIfCriteriaMet = False
-  , cdCommitRestrictions = mempty
-  , cdAttackOfOpportunityModifiers = mempty
-  , cdPermanent = False
-  , cdEncounterSet = Just encounterSet
-  , cdEncounterSetQuantity = Just 1
-  , cdUnique = False
-  , cdDoubleSided = True
-  , cdLimits = []
-  , cdExceptional = False
-  , cdUses = NoUses
-  , cdPlayableFromDiscard = False
-  , cdStage = Nothing
-  , cdSlots = []
-  , cdCardInHandEffects = False
-  , cdCardInDiscardEffects = False
-  , cdCardInSearchEffects = False
-  , cdAlternateCardCodes = []
-  , cdArt = unCardCode cardCode
-  , cdLocationSymbol = Nothing
-  , cdLocationRevealedSymbol = Nothing
-  , cdLocationConnections = []
-  , cdLocationRevealedConnections = []
-  , cdPurchaseMentalTrauma = Nothing
-  , cdCanReplace = True
-  , cdDeckRestrictions = []
-  }
+story cardCode name encounterSet =
+  CardDef
+    { cdCardCode = cardCode
+    , cdName = name
+    , cdRevealedName = Nothing
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = StoryType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = mempty
+    , cdSkills = mempty
+    , cdCardTraits = mempty
+    , cdRevealedCardTraits = mempty
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = False
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Just encounterSet
+    , cdEncounterSetQuantity = Just 1
+    , cdUnique = False
+    , cdDoubleSided = True
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Nothing
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = unCardCode cardCode
+    , cdLocationSymbol = Nothing
+    , cdLocationRevealedSymbol = Nothing
+    , cdLocationConnections = []
+    , cdLocationRevealedConnections = []
+    , cdPurchaseMentalTrauma = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
 
 allStoryCards :: Map CardCode CardDef
-allStoryCards = mapFromList $ map
-  (toCardCode &&& id)
-  [ sickeningReality_65
-  , sickeningReality_66
-  , sickeningReality_67
-  , sickeningReality_68
-  , sickeningReality_69
-  , engramsOath
-  , langneauPerdu
-  , thePattern
-  , theFirstShow
-  , aboveAndBelow
-  , songsThatTheHyadesShallSing
-  , starsOfAldebaran
-  , bleakDesolation
-  , inhabitantOfCarcosa
-  , aMomentsRest
-  , theCoffin
-  , mappingTheStreets
-  , theKingsParade
-  , theArchway
-  , theHeightOfTheDepths
-  , stepsOfThePalace
-  , theFall
-  , hastursEnd
-  , yigsMercy
-  , josefsPlan
-  ]
+allStoryCards =
+  mapFromList $
+    map
+      (toCardCode &&& id)
+      [ sickeningReality_65
+      , sickeningReality_66
+      , sickeningReality_67
+      , sickeningReality_68
+      , sickeningReality_69
+      , engramsOath
+      , langneauPerdu
+      , thePattern
+      , theFirstShow
+      , aboveAndBelow
+      , songsThatTheHyadesShallSing
+      , starsOfAldebaran
+      , bleakDesolation
+      , inhabitantOfCarcosa
+      , aMomentsRest
+      , theCoffin
+      , mappingTheStreets
+      , theKingsParade
+      , theArchway
+      , theHeightOfTheDepths
+      , stepsOfThePalace
+      , theFall
+      , hastursEnd
+      , yigsMercy
+      , anotherWay
+      , josefsPlan
+      , unfinishedBusiness_B
+      , unfinishedBusiness_D
+      , unfinishedBusiness_F
+      , unfinishedBusiness_H
+      , unfinishedBusiness_J
+      , unfinishedBusiness_L
+      ]
 
 sickeningReality_65 :: CardDef
 sickeningReality_65 = story "03065" "Sickening Reality" TheLastKing
@@ -161,5 +171,26 @@ hastursEnd = story "03331c" "Hastur's End" DimCarcosa
 yigsMercy :: CardDef
 yigsMercy = story "04325b" "Yig's Mercy" ShatteredAeons
 
+anotherWay :: CardDef
+anotherWay = story "04326b" "Another Way" ShatteredAeons
+
 josefsPlan :: CardDef
 josefsPlan = story "05085b" "Josef's Plan" AtDeathsDoorstep
+
+unfinishedBusiness_B :: CardDef
+unfinishedBusiness_B = story "05178b" "Unfinished Business" TheWagesOfSin
+
+unfinishedBusiness_D :: CardDef
+unfinishedBusiness_D = story "05178d" "Unfinished Business" TheWagesOfSin
+
+unfinishedBusiness_F :: CardDef
+unfinishedBusiness_F = story "05178f" "Unfinished Business" TheWagesOfSin
+
+unfinishedBusiness_H :: CardDef
+unfinishedBusiness_H = story "05178h" "Unfinished Business" TheWagesOfSin
+
+unfinishedBusiness_J :: CardDef
+unfinishedBusiness_J = story "05178j" "Unfinished Business" TheWagesOfSin
+
+unfinishedBusiness_L :: CardDef
+unfinishedBusiness_L = story "05178l" "Unfinished Business" TheWagesOfSin

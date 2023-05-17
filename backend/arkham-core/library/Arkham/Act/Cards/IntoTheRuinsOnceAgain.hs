@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location

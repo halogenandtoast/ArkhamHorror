@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa
-  ( ruinsOfCarcosaInhabitantOfCarcosa
-  , RuinsOfCarcosaInhabitantOfCarcosa(..)
-  ) where
+module Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa (
+  ruinsOfCarcosaInhabitantOfCarcosa,
+  RuinsOfCarcosaInhabitantOfCarcosa (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,21 +24,25 @@ newtype RuinsOfCarcosaInhabitantOfCarcosa = RuinsOfCarcosaInhabitantOfCarcosa Lo
 
 ruinsOfCarcosaInhabitantOfCarcosa
   :: LocationCard RuinsOfCarcosaInhabitantOfCarcosa
-ruinsOfCarcosaInhabitantOfCarcosa = locationWith
-  RuinsOfCarcosaInhabitantOfCarcosa
-  Cards.ruinsOfCarcosaInhabitantOfCarcosa
-  2
-  (PerPlayer 1)
-  ((canBeFlippedL .~ True) . (revealedL .~ True))
+ruinsOfCarcosaInhabitantOfCarcosa =
+  locationWith
+    RuinsOfCarcosaInhabitantOfCarcosa
+    Cards.ruinsOfCarcosaInhabitantOfCarcosa
+    2
+    (PerPlayer 1)
+    ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities RuinsOfCarcosaInhabitantOfCarcosa where
-  getAbilities (RuinsOfCarcosaInhabitantOfCarcosa a) = withBaseAbilities
-    a
-    [ mkAbility a 1 $ ForcedAbility $ DiscoveringLastClue
-        Timing.After
-        You
-        (LocationWithId $ toId a)
-    ]
+  getAbilities (RuinsOfCarcosaInhabitantOfCarcosa a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            DiscoveringLastClue
+              Timing.After
+              You
+              (LocationWithId $ toId a)
+      ]
 
 instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
   runMessage msg l@(RuinsOfCarcosaInhabitantOfCarcosa attrs) = case msg of
@@ -48,16 +52,4 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.inhabitantOfCarcosa
       pure . RuinsOfCarcosaInhabitantOfCarcosa $ attrs & canBeFlippedL .~ False
-    ResolveStory _ story' | story' == Story.inhabitantOfCarcosa -> do
-      healHorrorMessages <-
-        map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
-      setAsideRuinsOfCarcosa <- getSetAsideCardsMatching
-        $ CardWithTitle "Ruins of Carcosa"
-      otherRuinsOfCarcosa <- case setAsideRuinsOfCarcosa of
-        [] -> error "missing"
-        (x : xs) -> sample (x :| xs)
-      pushAll
-        $ healHorrorMessages
-        <> [ReplaceLocation (toId attrs) otherRuinsOfCarcosa DefaultReplace]
-      pure l
     _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs

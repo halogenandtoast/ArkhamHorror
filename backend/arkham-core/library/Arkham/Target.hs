@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Target (
   module Arkham.Target,
 ) where
@@ -52,7 +53,7 @@ data Target
   | YouTarget
   | InvestigationTarget InvestigatorId LocationId
   | ProxyTarget Target Target
-  | StoryTarget CardCode
+  | StoryTarget StoryId
   | AgendaMatcherTarget AgendaMatcher
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability

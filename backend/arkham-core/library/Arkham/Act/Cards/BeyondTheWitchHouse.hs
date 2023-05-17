@@ -10,7 +10,6 @@ import Arkham.Act.Runner
 import Arkham.Agenda.Types ( Field (AgendaDoom) )
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
 import Arkham.Helpers.Query

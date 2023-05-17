@@ -1928,7 +1928,43 @@ library
       Arkham.Source
       Arkham.Spawn
       Arkham.Stats
+      Arkham.Story
       Arkham.Story.Cards
+      Arkham.Story.Cards.AboveAndBelow
+      Arkham.Story.Cards.AMomentsRest
+      Arkham.Story.Cards.AnotherWay
+      Arkham.Story.Cards.BleakDesolation
+      Arkham.Story.Cards.EngramsOath
+      Arkham.Story.Cards.HastursEnd
+      Arkham.Story.Cards.InhabitantOfCarcosa
+      Arkham.Story.Cards.JosefsPlan
+      Arkham.Story.Cards.LangneauPerdu
+      Arkham.Story.Cards.MappingTheStreets
+      Arkham.Story.Cards.SickeningReality_65
+      Arkham.Story.Cards.SickeningReality_66
+      Arkham.Story.Cards.SickeningReality_67
+      Arkham.Story.Cards.SickeningReality_68
+      Arkham.Story.Cards.SickeningReality_69
+      Arkham.Story.Cards.SongsThatTheHyadesShallSing
+      Arkham.Story.Cards.StarsOfAldebaran
+      Arkham.Story.Cards.StepsOfThePalace
+      Arkham.Story.Cards.TheArchway
+      Arkham.Story.Cards.TheCoffin
+      Arkham.Story.Cards.TheFall
+      Arkham.Story.Cards.TheFirstShow
+      Arkham.Story.Cards.TheHeightOfTheDepths
+      Arkham.Story.Cards.TheKingsParade
+      Arkham.Story.Cards.ThePattern
+      Arkham.Story.Cards.UnfinishedBusiness_B
+      Arkham.Story.Cards.UnfinishedBusiness_D
+      Arkham.Story.Cards.UnfinishedBusiness_F
+      Arkham.Story.Cards.UnfinishedBusiness_H
+      Arkham.Story.Cards.UnfinishedBusiness_J
+      Arkham.Story.Cards.UnfinishedBusiness_L
+      Arkham.Story.Cards.YigsMercy
+      Arkham.Story.Runner
+      Arkham.Story.Stories
+      Arkham.Story.Types
       Arkham.Strategy
       Arkham.Target
       Arkham.Text

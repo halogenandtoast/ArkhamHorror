@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
-import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Matcher

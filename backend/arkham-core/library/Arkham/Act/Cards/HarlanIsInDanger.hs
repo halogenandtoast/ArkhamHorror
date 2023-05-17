@@ -10,7 +10,6 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement

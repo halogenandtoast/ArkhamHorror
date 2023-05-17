@@ -561,7 +561,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case rest of
       [] -> pure a
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
-  ReadStory _ card -> do
+  ReadStory _ card _ -> do
     pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
   SetActDeckCards n cards -> do
     pure $ a & (actStackL . at n ?~ cards)

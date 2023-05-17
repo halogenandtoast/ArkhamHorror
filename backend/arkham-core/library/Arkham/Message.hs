@@ -37,6 +37,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
+import {-# SOURCE #-} Arkham.Entity.Some
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.History
@@ -155,7 +156,7 @@ data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL
   | -- Story Card Messages
-    ReadStory InvestigatorId Card
+    ReadStory InvestigatorId Card (Maybe SomeEntity)
   | ResolveStory InvestigatorId StoryId
   | ResolvedStory StoryId
   | -- | ResolveStoryStep InvestigatorId StoryId Int

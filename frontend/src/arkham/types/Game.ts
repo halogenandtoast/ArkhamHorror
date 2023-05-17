@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Investigator, investigatorDecoder } from '@/arkham/types/Investigator';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
+import { Story, storyDecoder } from '@/arkham/types/Story';
 import { Location, locationDecoder } from '@/arkham/types/Location';
 import { Message } from '@/arkham/types/Message';
 import { Source } from '@/arkham/types/Source';
@@ -32,6 +33,7 @@ export interface Game {
   assets: Record<string, Asset>;
   events: Record<string, Event>;
   enemies: Record<string, Enemy>;
+  stories: Record<string, Story>;
   outOfPlayEnemies: Record<string, Enemy>;
   enemiesInVoid: Record<string, Enemy>;
   gameState: string;
@@ -131,6 +133,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     events: JsonDecoder.dictionary<Event>(eventDecoder, 'Dict<UUID, Event>'),
     enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
+    stories: JsonDecoder.dictionary<Story>(storyDecoder, 'Dict<UUID, Story>'),
     outOfPlayEnemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     enemiesInVoid: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameState: JsonDecoder.string,

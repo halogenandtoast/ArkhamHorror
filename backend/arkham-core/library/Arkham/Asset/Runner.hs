@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Asset.Runner (
+  someAsset,
   module X,
 ) where
 
@@ -19,6 +20,7 @@ import Arkham.Target as X
 import Arkham.Card
 import Arkham.Damage
 import Arkham.DefeatedBy
+import Arkham.Entity.Some
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Use
 import Arkham.Matcher (AssetMatcher (AnyAsset))
@@ -29,6 +31,9 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
+
+someAsset :: (IsAsset a) => a -> SomeEntity
+someAsset = SomeEntity SAsset . Asset
 
 defeated :: (HasGame m) => AssetAttrs -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId} = do

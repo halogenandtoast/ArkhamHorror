@@ -1,9 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
-
-export interface Placement {
-  tag: string;
-}
+import { Placement, placementDecoder } from '@/arkham/types/Placement';
 
 export interface Enemy {
   id: string;
@@ -21,10 +18,6 @@ export interface Enemy {
   sealedTokens: ChaosToken[];
   placement: Placement;
 }
-
-export const placementDecoder = JsonDecoder.object<Placement>({
-  tag: JsonDecoder.string,
-}, 'Placement')
 
 type DamageAssignment = { damageAssignmentAmount: number }
 

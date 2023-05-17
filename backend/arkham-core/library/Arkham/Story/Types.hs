@@ -7,6 +7,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import {-# SOURCE #-} Arkham.Entity.Some
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
@@ -41,6 +42,7 @@ data StoryAttrs = StoryAttrs
   { storyId :: StoryId
   , storyCardId :: CardId
   , storyPlacement :: Placement
+  , storyOtherSide :: Maybe SomeEntity
   }
   deriving stock (Show, Eq, Generic)
 
@@ -58,6 +60,7 @@ storyWith f cardDef g =
             { storyId = sid
             , storyCardId = cardId
             , storyPlacement = Unplaced
+            , storyOtherSide = Nothing
             }
     }
 

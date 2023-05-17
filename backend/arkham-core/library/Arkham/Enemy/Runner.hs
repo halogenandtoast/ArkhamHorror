@@ -26,6 +26,7 @@ import Arkham.Classes
 import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
+import Arkham.Entity.Some
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
@@ -56,6 +57,9 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
+
+someEnemy :: (IsEnemy a) => a -> SomeEntity
+someEnemy = SomeEntity SEnemy . Enemy
 
 {- | Handle when enemy no longer exists
 When an enemy is defeated we need to remove related messages from choices

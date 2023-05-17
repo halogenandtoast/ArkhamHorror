@@ -1,5 +1,7 @@
 module Arkham.Scenarios.DimCarcosa.Helpers where
 
+import Arkham.Prelude
+
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.GameEnv
@@ -19,4 +21,4 @@ readStory iid lid storyDef = do
     checkWindows
       [Window Timing.After (Window.FlipLocation iid lid)]
   storyCard <- genCard storyDef
-  pushAll [whenWindowMsg, afterWindowMsg, ReadStory iid storyCard]
+  pushAll [whenWindowMsg, afterWindowMsg, ReadStory iid storyCard Nothing]

@@ -11,7 +11,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated, EnemyDamage )
 import Arkham.Projection

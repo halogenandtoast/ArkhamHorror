@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.PatientConfinementDrearyCell
-  ( patientConfinementDrearyCell
-  , PatientConfinementDrearyCell(..)
-  ) where
+module Arkham.Location.Cards.PatientConfinementDrearyCell (
+  patientConfinementDrearyCell,
+  PatientConfinementDrearyCell (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,24 +19,29 @@ newtype PatientConfinementDrearyCell = PatientConfinementDrearyCell LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 patientConfinementDrearyCell :: LocationCard PatientConfinementDrearyCell
-patientConfinementDrearyCell = locationWith
-  PatientConfinementDrearyCell
-  Cards.patientConfinementDrearyCell
-  3
-  (Static 1)
-  (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost 1])
+patientConfinementDrearyCell =
+  locationWith
+    PatientConfinementDrearyCell
+    Cards.patientConfinementDrearyCell
+    3
+    (Static 1)
+    (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost (Static 1)])
 
 instance HasAbilities PatientConfinementDrearyCell where
-  getAbilities (PatientConfinementDrearyCell attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing (ActionCost 1)
-    | locationRevealed attrs
-    ]
+  getAbilities (PatientConfinementDrearyCell attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing (ActionCost 1)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage PatientConfinementDrearyCell where
   runMessage msg l@(PatientConfinementDrearyCell attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (beginSkillTest iid source (toTarget attrs) SkillIntellect 2)
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l
+            <$ push
+              (beginSkillTest iid source (toTarget attrs) SkillIntellect 2)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> l <$ push (Remember KnowTheGuardsPatrols)
     _ -> PatientConfinementDrearyCell <$> runMessage msg attrs

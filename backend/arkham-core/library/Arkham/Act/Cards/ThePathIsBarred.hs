@@ -13,7 +13,6 @@ import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Card
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

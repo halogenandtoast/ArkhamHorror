@@ -1,7 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Asset.Runner
-  ( module X
-  ) where
+
+module Arkham.Asset.Runner (
+  module X,
+) where
 
 import Arkham.Prelude
 
@@ -9,9 +10,10 @@ import Arkham.Asset.Helpers as X
 import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X
+import Arkham.GameValue as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
-import Arkham.Message as X hiding ( AssetDamage )
+import Arkham.Message as X hiding (AssetDamage)
 import Arkham.Target as X
 
 import Arkham.Card
@@ -19,17 +21,17 @@ import Arkham.Damage
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Use
-import Arkham.Matcher ( AssetMatcher (AnyAsset) )
+import Arkham.Matcher (AssetMatcher (AnyAsset))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-defeated :: HasGame m => AssetAttrs -> m (Maybe DefeatedBy)
-defeated AssetAttrs { assetId } = do
+defeated :: (HasGame m) => AssetAttrs -> m (Maybe DefeatedBy)
+defeated AssetAttrs {assetId} = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
   pure $ case (remainingHealth, remainingSanity) of
@@ -48,8 +50,9 @@ instance RunMessage Asset where
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-    SealedToken token card | toCardId card == toCardId a ->
-      pure $ a & sealedTokensL %~ (token :)
+    SealedToken token card
+      | toCardId card == toCardId a ->
+          pure $ a & sealedTokensL %~ (token :)
     UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
     ReadyExhausted -> case assetPlacement of
       InPlayArea iid -> do
@@ -58,35 +61,41 @@ instance RunMessage AssetAttrs where
           then pure a
           else a <$ push (Ready $ toTarget a)
       _ -> a <$ push (Ready $ toTarget a)
-    RemoveAllDoom target | isTarget a target  -> pure $ a & doomL .~ 0
+    RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
-    RemoveResources target n | isTarget a target ->
-      pure $ a & resourcesL %~ max 0 . subtract n
+    RemoveResources target n
+      | isTarget a target ->
+          pure $ a & resourcesL %~ max 0 . subtract n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
-    RemoveDoom target n | isTarget a target ->
-      pure $ a & doomL %~ max 0 . subtract n
+    RemoveDoom target n
+      | isTarget a target ->
+          pure $ a & doomL %~ max 0 . subtract n
     RemoveClues target n | isTarget a target -> do
-      when (assetClues - n <= 0) $ pushAll =<< windows
-        [Window.LastClueRemovedFromAsset (toId a)]
+      when (assetClues - n <= 0) $
+        pushAll
+          =<< windows
+            [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ -> do
       mDefeated <- defeated a
       for_ mDefeated $ \defeatedBy -> do
-        whenWindow <- checkWindows
-          [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
-        afterWindow <- checkWindows
-          [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
-        pushAll
-          $ [whenWindow]
-          <> resolve (AssetDefeated assetId)
-          <> [afterWindow]
+        whenWindow <-
+          checkWindows
+            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+        afterWindow <-
+          checkWindows
+            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+        pushAll $
+          [whenWindow]
+            <> resolve (AssetDefeated assetId)
+            <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard GameSource $ toTarget a)
     Msg.AssetDamage aid _ damage horror | aid == assetId -> do
-      pushAll
-        $ [ PlaceDamage (toTarget a) damage | damage > 0 ]
-        <> [ PlaceHorror (toTarget a) horror | horror > 0 ]
+      pushAll $
+        [PlaceDamage (toTarget a) damage | damage > 0]
+          <> [PlaceHorror (toTarget a) horror | horror > 0]
       pure a
     PlaceDamage target n | isTarget a target -> pure $ a & damageL +~ n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
@@ -123,11 +132,14 @@ instance RunMessage AssetAttrs where
       when shouldDiscard $ push $ Discard GameSource (AssetTarget assetId)
       pure a
     AddUses aid useType' n | aid == assetId -> case assetUses of
-      Uses useType'' m | useType' == useType'' ->
-        pure $ a & usesL .~ Uses useType' (n + m)
-      UsesWithLimit useType'' m  l | useType' == useType'' ->
-        pure $ a & usesL .~ UsesWithLimit useType' (min (n + m) l) l
-      _ -> error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
+      Uses useType'' m
+        | useType' == useType'' ->
+            pure $ a & usesL .~ Uses useType' (n + m)
+      UsesWithLimit useType'' m l
+        | useType' == useType'' ->
+            pure $ a & usesL .~ UsesWithLimit useType' (min (n + m) l) l
+      _ ->
+        error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
     SpendUses target useType' n | isTarget a target -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
         let remainingUses = max 0 (m - n)
@@ -140,23 +152,26 @@ instance RunMessage AssetAttrs where
       LocationTarget lid -> pure $ a & (placementL .~ AttachedToLocation lid)
       EnemyTarget eid -> pure $ a & (placementL .~ AttachedToEnemy eid)
       _ -> error "Cannot attach asset to that type"
-    RemoveFromGame target | a `isTarget` target ->
-      a <$ push (RemoveFromPlay $ toSource a)
+    RemoveFromGame target
+      | a `isTarget` target ->
+          a <$ push (RemoveFromPlay $ toSource a)
     Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll $ windows' <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
       pure a
-    Exile target | a `isTarget` target ->
-      a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
+    Exile target
+      | a `isTarget` target ->
+          a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
     RemoveFromPlay source | isSource a source -> do
-      windowMsg <- checkWindows
-        ((`Window` Window.LeavePlay (toTarget a))
-        <$> [Timing.When, Timing.AtIf, Timing.After]
-        )
-      pushAll
-        $ windowMsg
-        : [ UnsealToken token | token <- assetSealedTokens ]
-        <> [RemovedFromPlay source]
+      windowMsg <-
+        checkWindows
+          ( (`Window` Window.LeavePlay (toTarget a))
+              <$> [Timing.When, Timing.AtIf, Timing.After]
+          )
+      pushAll $
+        windowMsg
+          : [UnsealToken token | token <- assetSealedTokens]
+            <> [RemovedFromPlay source]
       pure a
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
       -- we specifically use the investigator source here because the
@@ -170,30 +185,35 @@ instance RunMessage AssetAttrs where
         applyModifier (UsesWithLimit uType m l) (AdditionalStartingUses n) =
           UsesWithLimit uType (min l (n + m)) l
         applyModifier m _ = m
-      whenEnterMsg <- checkWindows
-        [Window Timing.When (Window.EnterPlay $ toTarget a)]
-      afterEnterMsg <- checkWindows
-        [Window Timing.After (Window.EnterPlay $ toTarget a)]
+      whenEnterMsg <-
+        checkWindows
+          [Window Timing.When (Window.EnterPlay $ toTarget a)]
+      afterEnterMsg <-
+        checkWindows
+          [Window Timing.After (Window.EnterPlay $ toTarget a)]
 
-      pushAll
-        $ [ ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans ]
-        <> [whenEnterMsg, afterEnterMsg]
-      pure
-        $ a
-        & (placementL .~ InPlayArea iid)
-        & (controllerL ?~ iid)
-        & (usesL .~ if assetUses == NoUses
-            then foldl' applyModifier startingUses modifiers
-            else assetUses
-          )
+      pushAll $
+        [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
+          <> [whenEnterMsg, afterEnterMsg]
+      pure $
+        a
+          & (placementL .~ InPlayArea iid)
+          & (controllerL ?~ iid)
+          & ( usesL
+                .~ if assetUses == NoUses
+                  then foldl' applyModifier startingUses modifiers
+                  else assetUses
+            )
     TakeControlOfAsset iid aid | aid == assetId -> do
-      push =<< checkWindows
-        ((`Window` Window.TookControlOfAsset iid aid)
-        <$> [Timing.When, Timing.After]
-        )
+      push
+        =<< checkWindows
+          ( (`Window` Window.TookControlOfAsset iid aid)
+              <$> [Timing.When, Timing.After]
+          )
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
-    ReplacedInvestigatorAsset iid aid | aid == assetId ->
-      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
+    ReplacedInvestigatorAsset iid aid
+      | aid == assetId ->
+          pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]
@@ -215,7 +235,8 @@ instance RunMessage AssetAttrs where
       pure $ a & cardsUnderneathL <>~ cards
     AddToHand _ cards -> do
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
-    PlaceAsset aid placement | aid == assetId ->
-      pure $ a & placementL .~ placement
+    PlaceAsset aid placement
+      | aid == assetId ->
+          pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     _ -> pure a

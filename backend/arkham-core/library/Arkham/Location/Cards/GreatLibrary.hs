@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.GreatLibrary
-  ( greatLibrary
-  , GreatLibrary(..)
-  ) where
+module Arkham.Location.Cards.GreatLibrary (
+  greatLibrary,
+  GreatLibrary (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,33 +24,35 @@ greatLibrary :: LocationCard GreatLibrary
 greatLibrary = location GreatLibrary Cards.greatLibrary 2 (Static 4)
 
 instance HasAbilities GreatLibrary where
-  getAbilities (GreatLibrary attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here
-    $ ActionAbility Nothing
-    $ ActionCost 1
-    <> PerPlayerClueCost 1
-    , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4)
-    $ ForcedAbility
-    $ RoundEnds Timing.When
-    ]
+  getAbilities (GreatLibrary attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $
+          ActionAbility Nothing $
+            ActionCost 1
+              <> ClueCost (PerPlayer 1)
+      , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4) $
+          ForcedAbility $
+            RoundEnds Timing.When
+      ]
 
 instance RunMessage GreatLibrary where
   runMessage msg l@(GreatLibrary attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillIntellect
-        3
+      push $
+        beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillIntellect
+          3
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       current <- field LocationClues (toId attrs)
       push $ PlaceClues (toTarget attrs) (4 - current)
       pure l
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Remember FoundTheProcess
         pure l
     _ -> GreatLibrary <$> runMessage msg attrs

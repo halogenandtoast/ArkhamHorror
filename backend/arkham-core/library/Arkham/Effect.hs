@@ -61,7 +61,6 @@ import Arkham.Enemy.Enemies (
   alejandroVelaEffect,
   boaConstrictorEffect,
   ichtacaScionOfYigEffect,
-  josefMeigerEffect,
  )
 import Arkham.Event.Events (
   actOfDesperationEffect,
@@ -97,6 +96,9 @@ import Arkham.Skill.Skills (
   defianceEffect,
   hatchetManEffect,
   prescientEffect,
+ )
+import Arkham.Story.Stories (
+  josefsPlanEffect,
  )
 import Arkham.Treachery.Treacheries (mysteriesOfTheLodgeEffect)
 
@@ -279,7 +281,7 @@ allEffects =
     , ("05037", SomeEffect actOfDesperationEffect)
     , ("05040", SomeEffect aceOfRods1Effect)
     , ("05049", SomeEffect pennyWhiteEffect)
-    , ("05085", SomeEffect josefMeigerEffect)
+    , ("05085b", SomeEffect josefsPlanEffect)
     , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
     , ("05113", SomeEffect banish1Effect)
     , ("05114", SomeEffect meatCleaver)

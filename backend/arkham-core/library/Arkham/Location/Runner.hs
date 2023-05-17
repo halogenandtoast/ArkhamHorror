@@ -236,6 +236,9 @@ instance RunMessage LocationAttrs where
       push =<< checkWindows [Window Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
+    SetFlippable lid flippable
+      | lid == locationId ->
+          pure $ a & canBeFlippedL .~ flippable
     SetLocationAsIf iid lid | lid == locationId -> do
       pure $ a & investigatorsL %~ insertSet iid
     SetLocationAsIf iid lid | lid /= locationId -> do

@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.Repossession
-  ( Repossession(..)
-  , repossession
-  ) where
+module Arkham.Act.Cards.Repossession (
+  Repossession (..),
+  repossession,
+) where
 
 import Arkham.Prelude
 
@@ -11,8 +11,7 @@ import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Draw.Types
-import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -26,16 +25,19 @@ repossession :: ActCard Repossession
 repossession = act (3, A) Repossession Cards.repossession Nothing
 
 instance HasAbilities Repossession where
-  getAbilities (Repossession a) | onSide A a =
-    [ mkAbility a 1 $ ActionAbility (Just Action.Draw) $ ClueCost 1 <> ActionCost 1
-    , restrictedAbility a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ AtLeast $ Static 10) $ Objective $ ForcedAbility AnyWindow
-    ]
+  getAbilities (Repossession a)
+    | onSide A a =
+        [ mkAbility a 1 $ ActionAbility (Just Action.Draw) $ ClueCost (Static 1) <> ActionCost 1
+        , restrictedAbility a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ AtLeast $ Static 10) $
+            Objective $
+              ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage Repossession where
   runMessage msg a@(Repossession attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      handSize <- field InvestigatorHandSize iid 
+      handSize <- field InvestigatorHandSize iid
       numberOfCardsInHand <- fieldMap InvestigatorHand length iid
       let drawCount = if numberOfCardsInHand > handSize then 3 else 2
       drawing <- newCardDraw iid (toSource attrs) drawCount

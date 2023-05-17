@@ -105,3 +105,7 @@ createRoundModifier = createWindowModifierEffect EffectRoundWindow
 roundModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 roundModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectRoundWindow source target [modifier]
+
+gameModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+gameModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectGameWindow source target [modifier]

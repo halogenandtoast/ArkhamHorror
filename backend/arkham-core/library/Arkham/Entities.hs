@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Entities where
 
 import Arkham.Prelude
@@ -10,9 +11,9 @@ import Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset)
 import Arkham.Card
 import Arkham.Classes.Entity
-import Arkham.Classes.RunMessage
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage
 import Arkham.Effect ()
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy ()
@@ -26,6 +27,8 @@ import Arkham.Json
 import Arkham.Location
 import Arkham.Skill ()
 import Arkham.Skill.Types (Skill)
+import Arkham.Story
+import Arkham.Story.Types (Story)
 import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
@@ -43,6 +46,7 @@ data Entities = Entities
   , entitiesEvents :: EntityMap Event
   , entitiesEffects :: EntityMap Effect
   , entitiesSkills :: EntityMap Skill
+  , entitiesStories :: EntityMap Story
   }
   deriving stock (Eq, Show, Generic)
 
@@ -53,48 +57,53 @@ instance FromJSON Entities where
   parseJSON = genericParseJSON $ aesonOptions $ Just "entities"
 
 defaultEntities :: Entities
-defaultEntities = Entities
-  { entitiesLocations = mempty
-  , entitiesInvestigators = mempty
-  , entitiesEnemies = mempty
-  , entitiesAssets = mempty
-  , entitiesActs = mempty
-  , entitiesAgendas = mempty
-  , entitiesTreacheries = mempty
-  , entitiesEvents = mempty
-  , entitiesEffects = mempty
-  , entitiesSkills = mempty
-  }
+defaultEntities =
+  Entities
+    { entitiesLocations = mempty
+    , entitiesInvestigators = mempty
+    , entitiesEnemies = mempty
+    , entitiesAssets = mempty
+    , entitiesActs = mempty
+    , entitiesAgendas = mempty
+    , entitiesTreacheries = mempty
+    , entitiesEvents = mempty
+    , entitiesEffects = mempty
+    , entitiesSkills = mempty
+    , entitiesStories = mempty
+    }
 
 instance Monoid Entities where
   mempty = defaultEntities
 
 instance Semigroup Entities where
-  a <> b = Entities
-    { entitiesLocations = entitiesLocations a <> entitiesLocations b
-    , entitiesInvestigators = entitiesInvestigators a <> entitiesInvestigators b
-    , entitiesEnemies = entitiesEnemies a <> entitiesEnemies b
-    , entitiesAssets = entitiesAssets a <> entitiesAssets b
-    , entitiesActs = entitiesActs a <> entitiesActs b
-    , entitiesAgendas = entitiesAgendas a <> entitiesAgendas b
-    , entitiesTreacheries = entitiesTreacheries a <> entitiesTreacheries b
-    , entitiesEvents = entitiesEvents a <> entitiesEvents b
-    , entitiesEffects = entitiesEffects a <> entitiesEffects b
-    , entitiesSkills = entitiesSkills a <> entitiesSkills b
-    }
+  a <> b =
+    Entities
+      { entitiesLocations = entitiesLocations a <> entitiesLocations b
+      , entitiesInvestigators = entitiesInvestigators a <> entitiesInvestigators b
+      , entitiesEnemies = entitiesEnemies a <> entitiesEnemies b
+      , entitiesAssets = entitiesAssets a <> entitiesAssets b
+      , entitiesActs = entitiesActs a <> entitiesActs b
+      , entitiesAgendas = entitiesAgendas a <> entitiesAgendas b
+      , entitiesTreacheries = entitiesTreacheries a <> entitiesTreacheries b
+      , entitiesEvents = entitiesEvents a <> entitiesEvents b
+      , entitiesEffects = entitiesEffects a <> entitiesEffects b
+      , entitiesSkills = entitiesSkills a <> entitiesSkills b
+      , entitiesStories = entitiesStories a <> entitiesStories b
+      }
 
 instance HasAbilities Entities where
   getAbilities Entities {..} =
     concatMap getAbilities (toList entitiesLocations)
-    <> concatMap getAbilities (toList entitiesInvestigators)
-    <> concatMap getAbilities (toList entitiesEnemies)
-    <> concatMap getAbilities (toList entitiesAssets)
-    <> concatMap getAbilities (toList entitiesActs)
-    <> concatMap getAbilities (toList entitiesAgendas)
-    <> concatMap getAbilities (toList entitiesTreacheries)
-    <> concatMap getAbilities (toList entitiesEvents)
-    <> concatMap getAbilities (toList entitiesEffects)
-    <> concatMap getAbilities (toList entitiesSkills)
+      <> concatMap getAbilities (toList entitiesInvestigators)
+      <> concatMap getAbilities (toList entitiesEnemies)
+      <> concatMap getAbilities (toList entitiesAssets)
+      <> concatMap getAbilities (toList entitiesActs)
+      <> concatMap getAbilities (toList entitiesAgendas)
+      <> concatMap getAbilities (toList entitiesTreacheries)
+      <> concatMap getAbilities (toList entitiesEvents)
+      <> concatMap getAbilities (toList entitiesEffects)
+      <> concatMap getAbilities (toList entitiesSkills)
+      <> concatMap getAbilities (toList entitiesStories)
 
 data SomeEntity where
   SomeEntity :: (Show e, Targetable e, Entity e, HasModifiersFor e) => e -> SomeEntity
@@ -107,7 +116,7 @@ deriving stock instance Show SomeEntity
 instance HasModifiersFor SomeEntity where
   getModifiersFor target (SomeEntity e) = getModifiersFor target e
 
-overEntities :: Monoid a => (SomeEntity -> a) -> Entities -> a
+overEntities :: (Monoid a) => (SomeEntity -> a) -> Entities -> a
 overEntities f e = runIdentity $ overEntitiesM (Identity . f) e
 
 overEntitiesM :: (Monoid a, Monad m) => (SomeEntity -> m a) -> Entities -> m a
@@ -125,30 +134,35 @@ toSomeEntities Entities {..} =
     <> map SomeEntity (toList entitiesEvents)
     <> map SomeEntity (toList entitiesEffects)
     <> map SomeEntity (toList entitiesSkills)
+    <> map SomeEntity (toList entitiesStories)
 
 makeLensesWith suffixedFields ''Entities
 
 -- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
-addCardEntityWith :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
+addCardEntityWith
+  :: InvestigatorId -> (forall a. (Typeable a) => a -> a) -> Entities -> Card -> Entities
 addCardEntityWith i f e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType ->
       let
         eventId = EventId uuid
         event' = createEvent card i eventId
-       in e & eventsL %~ insertEntity event'
+      in
+        e & eventsL %~ insertEntity event'
     AssetType -> do
       let
         assetId = AssetId uuid
         asset = f $ createAsset card assetId
-       in e & assetsL %~ insertMap (toId asset) asset
+       in
+        e & assetsL %~ insertMap (toId asset) asset
     _ -> error "Unhandled"
   EncounterCard ec -> case toCardType ec of
     TreacheryType -> do
       let
         treacheryId = TreacheryId uuid
         treachery = createTreachery card i treacheryId
-       in e & treacheriesL %~ insertMap (toId treachery) treachery
+       in
+        e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled"
   VengeanceCard _ -> error "vengeance card"
  where
@@ -165,4 +179,5 @@ instance RunMessage Entities where
       >>= traverseOf (effectsL . traverse) (runMessage msg)
       >>= traverseOf (assetsL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
+      >>= traverseOf (storiesL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)

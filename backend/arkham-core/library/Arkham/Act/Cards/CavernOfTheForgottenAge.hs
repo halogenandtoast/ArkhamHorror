@@ -12,7 +12,6 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Game.Helpers
-import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

@@ -495,12 +495,9 @@ getCanAffordCost iid source mAction windows' = \case
               additionalActions
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + additionalActionCount) >= modifiedActionCost
-  ClueCost n -> do
+  ClueCost gameValue -> do
     spendableClues <- getSpendableClueCount [iid]
-    pure $ spendableClues >= n
-  PerPlayerClueCost n -> do
-    spendableClues <- getSpendableClueCount [iid]
-    totalClueCost <- getPlayerCountValue (PerPlayer n)
+    totalClueCost <- getPlayerCountValue gameValue
     pure $ spendableClues >= totalClueCost
   PlaceClueOnLocationCost n -> do
     spendableClues <- getSpendableClueCount [iid]

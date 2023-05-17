@@ -155,9 +155,11 @@ data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL
   | -- Story Card Messages
-    ReadStory InvestigatorId CardDef
-  | ResolveStory InvestigatorId CardDef
-  | ResolveStoryStep InvestigatorId CardDef Int
+    ReadStory InvestigatorId Card
+  | ResolveStory InvestigatorId StoryId
+  | ResolvedStory StoryId
+  | -- | ResolveStoryStep InvestigatorId StoryId Int
+    RemoveStory StoryId
   | -- Handle discard costs
     DiscardedCost Target
   | -- Act Deck Messages
@@ -193,6 +195,7 @@ data Message
   | CheckForRemainingInvestigators
   | AddDirectConnection LocationId LocationId
   | SetConnections LocationId [LocationMatcher]
+  | SetFlippable LocationId Bool
   | AddCampaignCardToDeck InvestigatorId CardDef
   | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
   | AddCardToDeckForCampaign InvestigatorId PlayerCard

@@ -9,7 +9,6 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EncounterCard
-import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message

@@ -1,6 +1,7 @@
-{-# LANGUAGE NoFieldSelectors #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Source (
   Source (..),
 ) where
@@ -44,12 +45,12 @@ data Source
   | EnemyMatcherSource EnemyMatcher
   | LocationSource LocationId
   | PlayerCardSource PlayerCard
-  | ProxySource { source :: Source, originalSource :: Source }
+  | ProxySource {source :: Source, originalSource :: Source}
   | ResourceSource
   | ScenarioSource
   | SkillSource SkillId
   | SkillTestSource InvestigatorId SkillTestType Source (Maybe Action)
-  | StorySource CardCode
+  | StorySource StoryId
   | TestSource (Set Trait)
   | TokenEffectSource TokenFace
   | TokenSource Token

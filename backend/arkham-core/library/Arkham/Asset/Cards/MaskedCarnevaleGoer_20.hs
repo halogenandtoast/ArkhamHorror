@@ -28,7 +28,7 @@ instance HasAbilities MaskedCarnevaleGoer_20 where
     [ restrictedAbility x 1 OnSameLocation $
         ActionAbility Nothing $
           ActionCost 1
-            <> ClueCost 1
+            <> ClueCost (Static 1)
     ]
 
 locationOf :: AssetAttrs -> LocationId

@@ -655,11 +655,8 @@ instance RunMessage ActiveCost where
                       (UseCost assetMatcher uType 1)
                 ]
           pure c
-        ClueCost x -> do
-          push $ InvestigatorSpendClues iid x
-          withPayment $ CluePayment x
-        PerPlayerClueCost x -> do
-          totalClues <- getPlayerCountValue (PerPlayer x)
+        ClueCost gv -> do
+          totalClues <- getPlayerCountValue gv
           push $ InvestigatorSpendClues iid totalClues
           withPayment $ CluePayment totalClues
         PlaceClueOnLocationCost x -> do
@@ -690,7 +687,7 @@ instance RunMessage ActiveCost where
               <$> forToSnd iids (getSpendableClueCount . pure)
           case iidsWithClues of
             [(iid', _)] ->
-              c <$ push (PayCost acId iid' True (ClueCost totalClues))
+              c <$ push (PayCost acId iid' True (ClueCost (Static totalClues)))
             _ -> do
               let
                 paymentOptions =
@@ -700,7 +697,7 @@ instance RunMessage ActiveCost where
                           iid'
                           0
                           clues
-                          (PayCost acId iid' True (ClueCost 1))
+                          (PayCost acId iid' True (ClueCost (Static 1)))
                     )
                     iidsWithClues
               leadInvestigatorId <- getLeadInvestigatorId

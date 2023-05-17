@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.PatientConfinementDanielsCell
-  ( patientConfinementDanielsCell
-  , PatientConfinementDanielsCell(..)
-  ) where
+module Arkham.Location.Cards.PatientConfinementDanielsCell (
+  patientConfinementDanielsCell,
+  PatientConfinementDanielsCell (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,27 +19,32 @@ newtype PatientConfinementDanielsCell = PatientConfinementDanielsCell LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 patientConfinementDanielsCell :: LocationCard PatientConfinementDanielsCell
-patientConfinementDanielsCell = locationWith
-  PatientConfinementDanielsCell
-  Cards.patientConfinementDanielsCell
-  2
-  (Static 1)
-  (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost 1])
+patientConfinementDanielsCell =
+  locationWith
+    PatientConfinementDanielsCell
+    Cards.patientConfinementDanielsCell
+    2
+    (Static 1)
+    (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost (PerPlayer 1)])
 
 instance HasAbilities PatientConfinementDanielsCell where
-  getAbilities (PatientConfinementDanielsCell attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ RevealLocation
-        Timing.After
-        Anyone
-        (LocationWithId $ toId attrs)
-    | locationRevealed attrs
-    ]
+  getAbilities (PatientConfinementDanielsCell attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          RevealLocation
+            Timing.After
+            Anyone
+            (LocationWithId $ toId attrs)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage PatientConfinementDanielsCell where
   runMessage msg l@(PatientConfinementDanielsCell attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       actIds <- selectList AnyAct
-      l <$ pushAll
-        (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
+      l
+        <$ pushAll
+          (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
     _ -> PatientConfinementDanielsCell <$> runMessage msg attrs

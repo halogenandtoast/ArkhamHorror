@@ -130,6 +130,7 @@ import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -2518,7 +2519,14 @@ getEnemyField f e = do
     EnemyHealthDamage -> pure enemyHealthDamage
     EnemySanityDamage -> pure enemySanityDamage
     EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
-    EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
+    EnemyKeywords -> do
+      modifiers' <- getModifiers (toTarget e)
+      let
+        additionalKeywords = foldl' applyModifier [] modifiers'
+        applyModifier ks = \case
+          AddKeyword k -> k : ks
+          _ -> ks
+      pure $ cdKeywords (toCardDef attrs) <> setFromList additionalKeywords
     EnemyAbilities -> pure $ getAbilities e
     EnemyCard -> pure $ case lookupCard enemyOriginalCardCode enemyCardId of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = enemyBearer}
@@ -3772,13 +3780,18 @@ runGameMessage msg g = case msg of
                 }
     -- todo: should we just run this in place?
     iid <- getLeadInvestigatorId
+    enemies <- selectList $ enemyAt lid
     afterPutIntoPlayWindow <-
       checkWindows
         [Window Timing.After (Window.PutLocationIntoPlay iid lid)]
-    pushAll
-      [ PlacedLocation (toName card) (toCardCode card) lid
-      , afterPutIntoPlayWindow
-      ]
+    if replaceStrategy == Swap
+      then pushAll $ map EnemyCheckEngagement enemies
+      else
+        pushAll $
+          [ PlacedLocation (toName card) (toCardCode card) lid
+          , afterPutIntoPlayWindow
+          ]
+            <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveAsset aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   RemoveEvent eid -> do
@@ -3786,7 +3799,11 @@ runGameMessage msg g = case msg of
       Discard _ (EventTarget eid') -> eid == eid'
       _ -> False
     pure $ g & entitiesL . eventsL %~ deleteMap eid
-  RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
+  RemoveEnemy eid -> do
+    popMessageMatching_ $ \case
+      EnemyDefeated eid' _ _ _ -> eid == eid'
+      _ -> False
+    pure $ g & entitiesL . enemiesL %~ deleteMap eid
   RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
   When (RemoveEnemy eid) -> do
     window <-
@@ -4713,6 +4730,18 @@ runGameMessage msg g = case msg of
     assetId <- getRandom
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
+  ReadStory iid card -> do
+    let
+      storyId = StoryId $ toCardCode card
+      story' = createStory card storyId
+    pushAll
+      [ FocusCards [card]
+      , chooseOne iid [targetLabel (toCardId card) [ResolveStory iid storyId, ResolvedStory storyId]]
+      , UnfocusCards
+      ]
+    pure $ g & entitiesL . storiesL . at storyId ?~ story'
+  RemoveStory storyId -> do
+    pure $ g & entitiesL . storiesL %~ deleteMap storyId
   CreateAssetAt assetId card placement -> do
     let asset = createAsset card assetId
     iid <- getActiveInvestigatorId

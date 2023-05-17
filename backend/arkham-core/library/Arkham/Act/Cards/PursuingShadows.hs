@@ -13,7 +13,6 @@ import Arkham.Act.Helpers
 import Arkham.Classes
 import Arkham.CampaignLogKey
 import Arkham.Resolution
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.APhantomOfTruth.Helpers

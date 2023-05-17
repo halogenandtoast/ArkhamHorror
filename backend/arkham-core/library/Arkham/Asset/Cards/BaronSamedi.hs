@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.GameValue
 import Arkham.Keyword ( Keyword (Aloof) )
 import Arkham.Matcher
 import Arkham.Message

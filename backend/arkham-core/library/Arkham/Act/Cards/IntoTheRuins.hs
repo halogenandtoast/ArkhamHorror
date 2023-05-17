@@ -13,7 +13,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location

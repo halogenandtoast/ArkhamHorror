@@ -47,6 +47,6 @@ instance RunMessage SebastienMoreau where
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       theFirstShow <- genCard Story.theFirstShow
-      push $ ReadStory iid theFirstShow
+      push $ ReadStory iid theFirstShow (Just $ someAsset a)
       pure a
     _ -> SebastienMoreau <$> runMessage msg attrs

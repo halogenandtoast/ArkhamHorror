@@ -6,15 +6,10 @@ module Arkham.Location.Cards.DarkSpires (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.DamageEffect
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message qualified as Msg
 import Arkham.Scenarios.DimCarcosa.Helpers
-import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 
 newtype DarkSpires = DarkSpires LocationAttrs
@@ -31,7 +26,7 @@ darkSpires =
     ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage DarkSpires where
-  runMessage msg l@(DarkSpires attrs) = case msg of
+  runMessage msg (DarkSpires attrs) = case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theFall
       pure . DarkSpires $ attrs & canBeFlippedL .~ False

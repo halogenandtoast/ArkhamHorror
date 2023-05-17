@@ -44,6 +44,7 @@ import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..))
 import Arkham.Entities
+import Arkham.Entity.Some
 import Arkham.Event
 import Arkham.Event.Types
 import Arkham.Game.Base as X
@@ -532,6 +533,7 @@ instance (ToJSON gid) => ToJSON (PublicGame gid) where
           .= toJSON (runReader (traverse withModifiers (gameTreacheries g)) g)
       , "events" .= toJSON (runReader (traverse withModifiers (gameEvents g)) g)
       , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
+      , "stories" .= toJSON (entitiesStories gameEntities)
       , "playerCount" .= toJSON gamePlayerCount
       , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
       , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
@@ -4730,7 +4732,7 @@ runGameMessage msg g = case msg of
     assetId <- getRandom
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
-  ReadStory iid card -> do
+  ReadStory iid card _todo -> do
     let
       storyId = StoryId $ toCardCode card
       story' = createStory card storyId
@@ -5316,9 +5318,9 @@ preloadModifiers g = case gameMode g of
               ( entities
                   <> inHandEntities
                   <> maybeToList
-                    (SomeEntity <$> modeScenario (gameMode g))
+                    (SomeEntity SScenario <$> modeScenario (gameMode g))
                   <> maybeToList
-                    (SomeEntity <$> modeCampaign (gameMode g))
+                    (SomeEntity SCampaign <$> modeCampaign (gameMode g))
               )
           )
           ( SkillTestTarget

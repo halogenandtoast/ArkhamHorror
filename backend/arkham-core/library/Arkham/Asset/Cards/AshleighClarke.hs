@@ -40,6 +40,6 @@ instance RunMessage AshleighClarke where
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       aboveAndBelow <- genCard Story.aboveAndBelow
-      push $ ReadStory iid aboveAndBelow
+      push $ ReadStory iid aboveAndBelow (Just $ someAsset a)
       pure a
     _ -> AshleighClarke <$> runMessage msg attrs

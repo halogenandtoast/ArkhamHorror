@@ -60,6 +60,6 @@ instance RunMessage JosefMeiger where
         pure e
     Flip iid _ target | isTarget attrs target -> do
       josefsPlan <- genCard Story.josefsPlan
-      push $ ReadStory iid josefsPlan
+      push $ ReadStory iid josefsPlan (Just $ someEnemy e)
       pure e
     _ -> JosefMeiger <$> runMessage msg attrs

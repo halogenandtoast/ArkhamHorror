@@ -6,15 +6,12 @@ module Arkham.Location.Cards.DepthsOfDemheStepsOfThePalace (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message qualified as Msg
 import Arkham.Scenarios.DimCarcosa.Helpers
-import Arkham.Source
 import Arkham.Story.Cards qualified as Story
 
 newtype DepthsOfDemheStepsOfThePalace = DepthsOfDemheStepsOfThePalace LocationAttrs
@@ -36,7 +33,7 @@ instance HasModifiersFor DepthsOfDemheStepsOfThePalace where
   getModifiersFor _ _ = pure []
 
 instance RunMessage DepthsOfDemheStepsOfThePalace where
-  runMessage msg l@(DepthsOfDemheStepsOfThePalace attrs) = case msg of
+  runMessage msg (DepthsOfDemheStepsOfThePalace attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.stepsOfThePalace
       pure . DepthsOfDemheStepsOfThePalace $ attrs & canBeFlippedL .~ False

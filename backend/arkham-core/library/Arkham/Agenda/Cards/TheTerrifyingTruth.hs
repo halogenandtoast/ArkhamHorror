@@ -45,7 +45,7 @@ instance RunMessage TheTerrifyingTruth where
         [] -> pure $ AdvanceAgenda (toId attrs)
         (x : xs) -> do
           card <- sample $ x :| xs
-          pure $ ReadStory iid card
+          pure $ ReadStory iid card Nothing
       a <$ pushAll [RemoveAllDoomFromPlay defaultRemoveDoomMatchers, result]
     AdvanceAgenda aid
       | aid == toId attrs && onSide B attrs ->

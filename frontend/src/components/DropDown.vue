@@ -6,7 +6,7 @@ interface Props {
 
 const choice = ref(null)
 
-const props = defineProps<Props>()
+defineProps<Props>()
 const emit = defineEmits(['choose'])
 
 const submit = function() {

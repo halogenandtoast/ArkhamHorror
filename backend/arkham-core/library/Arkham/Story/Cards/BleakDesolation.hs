@@ -21,7 +21,7 @@ bleakDesolation = story BleakDesolation Cards.bleakDesolation
 
 instance RunMessage BleakDesolation where
   runMessage msg s@(BleakDesolation attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 2
       push $ Msg.EnemyDamage hastur $ storyDamage iid n

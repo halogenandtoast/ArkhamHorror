@@ -5,22 +5,26 @@
 
 packages:
 - completed:
-    hackage: relude-1.2.0.0@sha256:e47f363d57e5551542cc567b68f375001f850732ebe9c226351c26e7af56f797,11937
+    hackage: happy-1.20.1.1@sha256:a381633c5e8f9e9e5a8e1900930ce13172397b4677fcfcc08cd38eb3f73b61b1,5811
     pantry-tree:
-      sha256: 12a9754897804bd1834bddc36f2800cb453cfec9903ac8be83f4621ac4a26075
-      size: 4286
+      sha256: a5b8a3cd39ffabdf0deb31483eb97cc2c270083738ceeddff75a894a953f6b92
+      size: 8615
   original:
-    hackage: relude-1.2.0.0@sha256:e47f363d57e5551542cc567b68f375001f850732ebe9c226351c26e7af56f797,11937
+    hackage: happy-1.20.1.1
 - completed:
-    hackage: monad-validate-1.2.0.1@sha256:5a100da896f11ca4b7c123da85decbedeb46c37054a097f258ac911e715cb68d,2587
+    name: clientsession
     pantry-tree:
-      sha256: 034ee4de9765e38b763f5d73b236cc112205728e680cefbfe12d2882accc3264
-      size: 611
+      sha256: e8f800c0c0fed1a148257f2d47361d1f08319092e38ab3ab5b11f0d9f74f8c9a
+      size: 699
+    sha256: 92f25a8aefb742124e8d6f9b83023f80a4f89e0a59e5e1516966151bbcc6e9d4
+    size: 11215
+    url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
+    version: 0.9.1.2
   original:
-    hackage: monad-validate-1.2.0.1
+    url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
 snapshots:
 - completed:
-    sha256: c110d42fae0aff8f393c87e2f52e70c50653554c4a6b942e401f464ea4c08a80
-    size: 609034
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/4/25.yaml
-  original: nightly-2023-04-25
+    sha256: d80dc25c6444db594a338c71492b1b5601d7c613dbeaa5f61dcf448b3114df66
+    size: 631260
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/5/17.yaml
+  original: nightly-2023-05-17

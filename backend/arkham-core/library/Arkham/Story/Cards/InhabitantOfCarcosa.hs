@@ -21,7 +21,7 @@ inhabitantOfCarcosa = story InhabitantOfCarcosa Cards.inhabitantOfCarcosa
 
 instance RunMessage InhabitantOfCarcosa where
   runMessage msg s@(InhabitantOfCarcosa attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       healHorrorMessages <-
         map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaInhabitantOfCarcosa

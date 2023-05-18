@@ -18,7 +18,7 @@ langneauPerdu = story LangneauPerdu Cards.langneauPerdu
 
 instance RunMessage LangneauPerdu where
   runMessage msg s@(LangneauPerdu attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       push $ Remember InterviewedJordan
       pure s
     _ -> LangneauPerdu <$> runMessage msg attrs

@@ -44,7 +44,6 @@ import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..))
 import Arkham.Entities
-import Arkham.Entity.Some
 import Arkham.Event
 import Arkham.Event.Types
 import Arkham.Game.Base as X
@@ -132,6 +131,7 @@ import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Story
+import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -151,7 +151,7 @@ import Control.Exception (throw)
 import Control.Lens (each, itraverseOf, itraversed, non, set)
 import Control.Monad.Random (StdGen)
 import Control.Monad.Reader (runReader)
-import Control.Monad.State.Strict hiding (filterM, foldM, state)
+import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -1874,6 +1874,15 @@ getSkill sid = do
  where
   missingSkill = "Unknown skill: " <> show sid
 
+getStory :: (HasCallStack, HasGame m) => StoryId -> m Story
+getStory sid = do
+  g <- getGame
+  pure $
+    fromJustNote missingStory $
+      preview (entitiesL . storiesL . ix sid) g
+ where
+  missingStory = "Unknown story: " <> show sid
+
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
 getEnemy eid =
   fromJustNote missingEnemy
@@ -3155,6 +3164,7 @@ instance Projection Scenario where
       ScenarioCounts -> pure scenarioCounts
       ScenarioStandaloneCampaignLog -> pure scenarioStandaloneCampaignLog
       ScenarioResignedCardCodes -> pure scenarioResignedCardCodes
+      ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
       ScenarioSetAsideCards -> pure scenarioSetAsideCards
       ScenarioName -> pure scenarioName
@@ -3174,6 +3184,16 @@ instance Projection Skill where
       SkillTraits -> pure $ cdCardTraits cdef
       SkillCard -> pure $ lookupCard skillCardCode skillCardId
       SkillOwner -> pure skillOwner
+
+instance Projection Story where
+  field fld sid = do
+    s <- getStory sid
+    let
+      StoryAttrs {..} = toAttrs s
+    case fld of
+      StoryCard -> getCard storyCardId
+      StoryPlacement -> pure storyPlacement
+      StoryOtherSide -> pure storyOtherSide
 
 instance Projection Treachery where
   field fld tid = do
@@ -3229,6 +3249,9 @@ putGame g = do
   ref <- view gameRefL
   g' <- readIORef ref
   atomicWriteIORef ref $ g {gameCards = gameCards g' <> gameCards g}
+
+overGameReader :: (MonadIO m, HasGame m) => Reader Game a -> m a
+overGameReader body = runReader body <$> getGame
 
 overGame
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> Game) -> m ()
@@ -4732,15 +4755,22 @@ runGameMessage msg g = case msg of
     assetId <- getRandom
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
-  ReadStory iid card _todo -> do
+  ReadStory iid card storyMode mtarget -> do
     let
       storyId = StoryId $ toCardCode card
-      story' = createStory card storyId
-    pushAll
-      [ FocusCards [card]
-      , chooseOne iid [targetLabel (toCardId card) [ResolveStory iid storyId, ResolvedStory storyId]]
-      , UnfocusCards
-      ]
+      story' = createStory card mtarget storyId
+    -- if we have a target the ui should visually replace them, otherwise we add to UI by focus
+    case mtarget of
+      Nothing ->
+        pushAll
+          [ FocusCards [card]
+          , chooseOne
+              iid
+              [targetLabel (toCardId card) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]]
+          , UnfocusCards
+          ]
+      Just _ ->
+        pushAll [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
   RemoveStory storyId -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
@@ -5318,9 +5348,9 @@ preloadModifiers g = case gameMode g of
               ( entities
                   <> inHandEntities
                   <> maybeToList
-                    (SomeEntity SScenario <$> modeScenario (gameMode g))
+                    (SomeEntity <$> modeScenario (gameMode g))
                   <> maybeToList
-                    (SomeEntity SCampaign <$> modeCampaign (gameMode g))
+                    (SomeEntity <$> modeCampaign (gameMode g))
               )
           )
           ( SkillTestTarget

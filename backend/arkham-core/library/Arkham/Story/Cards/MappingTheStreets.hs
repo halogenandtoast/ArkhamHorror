@@ -23,7 +23,7 @@ mappingTheStreets = story MappingTheStreets Cards.mappingTheStreets
 
 instance RunMessage MappingTheStreets where
   runMessage msg s@(MappingTheStreets attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
       pushAll

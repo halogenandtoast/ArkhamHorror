@@ -18,7 +18,7 @@ theFirstShow = story TheFirstShow Cards.theFirstShow
 
 instance RunMessage TheFirstShow where
   runMessage msg s@(TheFirstShow attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       push $ Remember InterviewedSebastien
       pure s
     _ -> TheFirstShow <$> runMessage msg attrs

@@ -1018,7 +1018,6 @@ library
       Arkham.Enemy.Types
       Arkham.Enemy.Types.Attrs
       Arkham.Entities
-      Arkham.Entity.Some
       Arkham.Event
       Arkham.Event.Cards
       Arkham.Event.Cards.AceInTheHole3

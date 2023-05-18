@@ -62,6 +62,7 @@ data instance Field Scenario :: Type -> Type where
     :: Field Scenario (Map ScenarioEncounterDeckKey (Deck EncounterCard, [EncounterCard]))
   ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
+  ScenarioResolvedStories :: Field Scenario [StoryId]
   ScenarioChaosBag :: Field Scenario ChaosBag
   ScenarioSetAsideCards :: Field Scenario [Card]
   ScenarioName :: Field Scenario Name
@@ -99,6 +100,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioEncounterDecks :: Map ScenarioEncounterDeckKey (Deck EncounterCard, [EncounterCard])
   , scenarioActiveEncounterDeck :: ScenarioEncounterDeckKey
   , scenarioResignedCardCodes :: [CardCode]
+  , scenarioResolvedStories :: [StoryId]
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioMeta :: Value
   , -- for standalone
@@ -171,6 +173,7 @@ scenario f cardCode name difficulty layout =
       , scenarioActiveEncounterDeck = RegularEncounterDeck
       , scenarioDiscard = mempty
       , scenarioResignedCardCodes = mempty
+      , scenarioResolvedStories = mempty
       , scenarioDecksLayout = ["agenda1 act1"]
       , scenarioMeta = Null
       , scenarioStoryCards = mempty

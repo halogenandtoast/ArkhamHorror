@@ -10,9 +10,8 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal
-import Arkham.Game.Helpers
+import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Keyword (Keyword (Aloof))
@@ -20,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _2)
@@ -69,10 +67,9 @@ hereticAbilities (toAttrs -> a) =
 hereticRunner
   :: ( Sourceable (EntityAttrs b)
      , Targetable (EntityAttrs b)
-     , IsCard (EntityAttrs b)
-     , Entity b
+     , IsEnemy b
      , RunMessage (EntityAttrs b)
-     , HasCardCode storyCard
+     , HasCardDef storyCard
      )
   => storyCard
   -> Message
@@ -80,18 +77,12 @@ hereticRunner
   -> GameT b
 hereticRunner storyCard msg heretic = case msg of
   UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-    push $ LookAtRevealed iid (toSource attrs) (toTarget attrs)
+    card <- genCard storyCard
+    push $ ReadStory iid card DoNotResolveIt (Just $ toTarget $ toAttrs heretic)
     pure heretic
   UseCardAbility _iid (isSource attrs -> True) 2 _ _ -> do
     pure heretic
   Flip _ _ (isTarget attrs -> True) -> do
-    pure heretic
-  LookAtRevealed iid _ (isTarget attrs -> True) -> do
-    let unfinishedBusiness = lookupCard storyCard (toCardId attrs)
-    pushAll
-      [ FocusCards [unfinishedBusiness]
-      , chooseOne iid [Label "Continue" [UnfocusCards]]
-      ]
     pure heretic
   _ -> overAttrsM (runMessage msg) heretic
  where

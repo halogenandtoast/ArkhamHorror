@@ -17,6 +17,6 @@ sickeningReality_69 = story SickeningReality_69 Cards.sickeningReality_69
 
 instance RunMessage SickeningReality_69 where
   runMessage msg s@(SickeningReality_69 attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       pure s
     _ -> SickeningReality_69 <$> runMessage msg attrs

@@ -25,7 +25,7 @@ anotherWay = story AnotherWay Cards.anotherWay
 
 instance RunMessage AnotherWay where
   runMessage msg s@(AnotherWay attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       alejandro <- selectJust $ enemyIs Enemies.alejandroVela
       push $
         chooseOne iid $

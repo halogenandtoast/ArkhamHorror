@@ -5,6 +5,7 @@ import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
+import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -27,6 +28,8 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+
+const stories = computed(() => Object.values(props.game.stories).filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId))
 
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 const baseUrl = inject('baseUrl')
@@ -156,6 +159,15 @@ function beforeLeaveHand(el) {
         :key="asset"
         @choose="$emit('choose', $event)"
         @showCards="doShowCards"
+      />
+
+      <Story
+        v-for="story in stories"
+        :key="story.id"
+        :story="story"
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
       />
 
       <Enemy

@@ -62,6 +62,7 @@ import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -1127,6 +1128,11 @@ passesCriteria iid mcard source windows' = \case
     case source of
       TreacherySource tid ->
         member tid <$> select (Matcher.TreacheryInThreatAreaOf who)
+      StorySource sid -> do
+        placement <- field StoryPlacement sid
+        case placement of
+          InThreatArea iid' -> member iid' <$> select who
+          _ -> pure False
       EventSource eid -> do
         placement <- field EventPlacement eid
         case placement of
@@ -1211,6 +1217,9 @@ passesCriteria iid mcard source windows' = \case
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
+    StorySource sid -> do
+      placement <- field StoryPlacement sid
+      onSameLocation iid placement
     AssetSource aid -> do
       placement <- field AssetPlacement aid
       onSameLocation iid placement

@@ -714,6 +714,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
   Discarded (EnemyTarget eid) _ _ ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
+  PlaceEnemy eid (InThreatArea iid') | iid' == investigatorId -> do
+    pure $ a & engagedEnemiesL %~ insertSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) _ (PlayerCard card)
     | aid `elem` investigatorAssets -> do

@@ -1,9 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Placement {
-  tag: string;
-}
+export type Placement = { tag: "InThreatArea", contents: string } | { tag: string }
 
-export const placementDecoder = JsonDecoder.object<Placement>({
-  tag: JsonDecoder.string,
-}, 'Placement')
+export const placementDecoder = JsonDecoder.oneOf<Placement>([
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.constant("InThreatArea"), contents: JsonDecoder.string }, 'InThreatArea')
+  , JsonDecoder.object<Placement>({ tag: JsonDecoder.string }, 'Placement'),
+], 'Placement')

@@ -27,6 +27,9 @@ getSpectralDiscards :: (HasGame m) => m [EncounterCard]
 getSpectralDiscards =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
 
+-- TODO: before the heretic spawns we don't know if it's going to be at a spectral or non-spectral location
+-- This causes an issue when we flip unfinished business back over but the location is spectral
+-- we might want spawning to be two steps, spawn at location, then engage
 hereticModifiers
   :: ( EntityId (EntityAttrs a) ~ EnemyId
      , Targetable (EntityAttrs a)
@@ -80,7 +83,9 @@ hereticRunner storyCard msg heretic = case msg of
     card <- genCard storyCard
     push $ ReadStory iid card DoNotResolveIt (Just $ toTarget $ toAttrs heretic)
     pure heretic
-  UseCardAbility _iid (isSource attrs -> True) 2 _ _ -> do
+  UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    card <- genCard storyCard
+    push $ ReadStory iid card ResolveIt (Just $ toTarget $ toAttrs heretic)
     pure heretic
   Flip _ _ (isTarget attrs -> True) -> do
     pure heretic

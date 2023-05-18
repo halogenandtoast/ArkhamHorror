@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Story.Types where
 
 import Arkham.Prelude
@@ -144,3 +146,5 @@ liftSomeStoryCard f (SomeStoryCard a) = f a
 
 someStoryCardCode :: SomeStoryCard -> CardCode
 someStoryCardCode = liftSomeStoryCard cbCardCode
+
+makeLensesWith suffixedFields ''StoryAttrs

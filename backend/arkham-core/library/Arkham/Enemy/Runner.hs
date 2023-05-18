@@ -355,10 +355,14 @@ instance RunMessage EnemyAttrs where
 
       leadInvestigatorId <- getLeadInvestigatorId
       unengaged <- selectNone $ investigatorEngagedWith enemyId
+      when (CannotBeEngaged `elem` modifiers') $ case enemyPlacement of
+        InThreatArea iid -> push $ DisengageEnemy iid enemyId
+        _ -> pure ()
       when
         ( Keyword.Aloof
             `notElem` keywords
             && (unengaged || Keyword.Massive `elem` keywords)
+            && CannotBeEngaged `notElem` modifiers'
             && not enemyExhausted
         )
         $ if Keyword.Massive `elem` keywords

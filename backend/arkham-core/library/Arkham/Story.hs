@@ -12,14 +12,15 @@ import Arkham.Card
 import Arkham.Id
 import Arkham.Story.Stories
 import Arkham.Story.Types
+import Arkham.Target
 
-createStory :: (IsCard a) => a -> StoryId -> Story
-createStory a sId = lookupStory sId (toCardId a)
+createStory :: (IsCard a) => a -> Maybe Target -> StoryId -> Story
+createStory a mtarget sId = lookupStory sId mtarget (toCardId a)
 
-lookupStory :: StoryId -> CardId -> Story
+lookupStory :: StoryId -> Maybe Target -> CardId -> Story
 lookupStory storyId = case lookup (unStoryId storyId) allStories of
   Nothing -> error $ "Unknown story: " <> show storyId
-  Just (SomeStoryCard a) -> \cardId -> Story $ cbCardBuilder a cardId storyId
+  Just (SomeStoryCard a) -> \mtarget cardId -> Story $ cbCardBuilder a cardId (mtarget, storyId)
 
 instance FromJSON Story where
   parseJSON = withObject "Story" $ \o -> do

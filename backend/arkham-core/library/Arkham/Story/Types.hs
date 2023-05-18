@@ -7,7 +7,6 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
-import {-# SOURCE #-} Arkham.Entity.Some
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
@@ -33,16 +32,18 @@ class
   ) =>
   IsStory a
 
-type StoryCard a = CardBuilder StoryId a
+type StoryCard a = CardBuilder (Maybe Target, StoryId) a
 
 data instance Field Story :: Type -> Type where
   StoryCard :: Field Story Card
+  StoryPlacement :: Field Story Placement
+  StoryOtherSide :: Field Story (Maybe Target)
 
 data StoryAttrs = StoryAttrs
   { storyId :: StoryId
   , storyCardId :: CardId
   , storyPlacement :: Placement
-  , storyOtherSide :: Maybe SomeEntity
+  , storyOtherSide :: Maybe Target
   }
   deriving stock (Show, Eq, Generic)
 
@@ -50,24 +51,24 @@ storyWith
   :: (StoryAttrs -> a)
   -> CardDef
   -> (StoryAttrs -> StoryAttrs)
-  -> CardBuilder StoryId a
+  -> CardBuilder (Maybe Target, StoryId) a
 storyWith f cardDef g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \cardId sid ->
+    , cbCardBuilder = \cardId (mTarget, sid) ->
         f . g $
           StoryAttrs
             { storyId = sid
             , storyCardId = cardId
             , storyPlacement = Unplaced
-            , storyOtherSide = Nothing
+            , storyOtherSide = mTarget
             }
     }
 
 story
   :: (StoryAttrs -> a)
   -> CardDef
-  -> CardBuilder StoryId a
+  -> CardBuilder (Maybe Target, StoryId) a
 story f cardDef = storyWith f cardDef id
 
 instance HasCardDef StoryAttrs where

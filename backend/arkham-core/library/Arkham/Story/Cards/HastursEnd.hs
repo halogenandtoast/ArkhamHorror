@@ -18,7 +18,7 @@ hastursEnd = story HastursEnd Cards.hastursEnd
 
 instance RunMessage HastursEnd where
   runMessage msg s@(HastursEnd attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       pushAll
         [ Remember KnowTheSecret
         , CheckDefeated (toSource attrs)

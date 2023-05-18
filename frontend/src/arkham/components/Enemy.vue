@@ -8,6 +8,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Token from '@/arkham/components/Token';
+import Story from '@/arkham/components/Story';
 import * as Arkham from '@/arkham/types/Enemy'
 
 export interface Props {
@@ -19,6 +20,11 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { atLocation: false })
 const baseUrl = inject('baseUrl')
+
+const enemyStory = computed(() => {
+  const { stories } = props.game
+  return Object.values(stories).find((s) => s.otherSide?.contents === props.enemy.id)
+})
 
 const image = computed(() => {
   const { cardCode } = props.enemy
@@ -82,18 +88,21 @@ const debugChoose = inject('debugChoose')
 
 <template>
   <div class="enemy">
-    <img :src="image"
-      :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
-      class="card enemy"
-      @click="$emit('choose', cardAction)"
-    />
-    <AbilityButton
-      v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
-      :data-image="image"
-      @click="$emit('choose', ability)"
+    <Story v-if="enemyStory" :story="enemyStory" :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)"/>
+    <template v-else>
+      <img :src="image"
+        :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
+        class="card enemy"
+        @click="$emit('choose', cardAction)"
       />
+      <AbilityButton
+        v-for="ability in abilities"
+        :key="ability"
+        :ability="choices[ability]"
+        :data-image="image"
+        @click="$emit('choose', ability)"
+        />
+    </template>
     <div class="pool">
       <PoolItem type="health" :amount="enemy.damage + enemy.assignedDamage" />
       <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />

@@ -21,7 +21,7 @@ aMomentsRest = story AMomentsRest Cards.aMomentsRest
 
 instance RunMessage AMomentsRest where
   runMessage msg s@(AMomentsRest attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       enemies <-
         selectList $
           EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]

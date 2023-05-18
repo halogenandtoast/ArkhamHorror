@@ -22,7 +22,7 @@ theKingsParade = story TheKingsParade Cards.theKingsParade
 
 instance RunMessage TheKingsParade where
   runMessage msg s@(TheKingsParade attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       setAsideDimStreets <-
         getSetAsideCardsMatching $
           CardWithTitle "Dim Streets"

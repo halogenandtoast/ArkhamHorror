@@ -21,7 +21,7 @@ songsThatTheHyadesShallSing = story SongsThatTheHyadesShallSing Cards.songsThatT
 
 instance RunMessage SongsThatTheHyadesShallSing where
   runMessage msg s@(SongsThatTheHyadesShallSing attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       investigatorIds <- selectList $ investigatorEngagedWith hastur
       n <- perPlayer 1

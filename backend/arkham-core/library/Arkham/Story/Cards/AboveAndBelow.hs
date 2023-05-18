@@ -18,7 +18,7 @@ aboveAndBelow = story AboveAndBelow Cards.aboveAndBelow
 
 instance RunMessage AboveAndBelow where
   runMessage msg s@(AboveAndBelow attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       push $ Remember InterviewedAshleigh
       pure s
     _ -> AboveAndBelow <$> runMessage msg attrs

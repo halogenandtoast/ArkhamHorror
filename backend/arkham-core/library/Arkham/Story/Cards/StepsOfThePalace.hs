@@ -21,7 +21,7 @@ stepsOfThePalace = story StepsOfThePalace Cards.stepsOfThePalace
 
 instance RunMessage StepsOfThePalace where
   runMessage msg s@(StepsOfThePalace attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       investigatorIds <- selectList $ investigatorEngagedWith hastur
       n <- perPlayer 1

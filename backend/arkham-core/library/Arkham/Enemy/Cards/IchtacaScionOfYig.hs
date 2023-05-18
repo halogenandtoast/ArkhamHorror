@@ -64,7 +64,7 @@ instance RunMessage IchtacaScionOfYig where
         pure e
     Flip iid _ target | isTarget attrs target -> do
       yigsMercy <- genCard Story.yigsMercy
-      push $ ReadStory iid yigsMercy (Just $ someEnemy e)
+      push $ ReadStory iid yigsMercy ResolveIt (Just $ toTarget attrs)
       pure e
     _ -> IchtacaScionOfYig <$> runMessage msg attrs
 

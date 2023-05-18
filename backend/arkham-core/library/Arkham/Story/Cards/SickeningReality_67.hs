@@ -23,7 +23,7 @@ sickeningReality_67 = story SickeningReality_67 Cards.sickeningReality_67
 
 instance RunMessage SickeningReality_67 where
   runMessage msg s@(SickeningReality_67 attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       let
         (asset, enemy) =
           (Assets.ishimaruHaruko, Enemies.ishimaruHaruko)

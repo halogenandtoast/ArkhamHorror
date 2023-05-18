@@ -1,7 +1,7 @@
-module Arkham.Story.Cards.UnfinishedBusiness_H
-  ( UnfinishedBusiness_H(..)
-  , unfinishedBusiness_H
-  ) where
+module Arkham.Story.Cards.UnfinishedBusiness_H (
+  UnfinishedBusiness_H (..),
+  unfinishedBusiness_H,
+) where
 
 import Arkham.Prelude
 
@@ -17,6 +17,6 @@ unfinishedBusiness_H = story UnfinishedBusiness_H Cards.unfinishedBusiness_H
 
 instance RunMessage UnfinishedBusiness_H where
   runMessage msg s@(UnfinishedBusiness_H attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       pure s
     _ -> UnfinishedBusiness_H <$> runMessage msg attrs

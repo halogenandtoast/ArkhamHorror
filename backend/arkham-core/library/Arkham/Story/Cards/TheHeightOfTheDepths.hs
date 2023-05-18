@@ -21,7 +21,7 @@ theHeightOfTheDepths = story TheHeightOfTheDepths Cards.theHeightOfTheDepths
 
 instance RunMessage TheHeightOfTheDepths where
   runMessage msg s@(TheHeightOfTheDepths attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       healHorrorMessages <-
         map snd <$> getInvestigatorsWithHealHorror attrs 5 Anyone
       setAsideDepthsOfDemhe <-

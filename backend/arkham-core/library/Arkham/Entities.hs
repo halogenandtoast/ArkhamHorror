@@ -13,12 +13,12 @@ import Arkham.Campaign ()
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage
 import Arkham.Effect ()
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy ()
 import Arkham.Enemy.Types (Enemy)
-import Arkham.Entity.Some
 import Arkham.Event
 import Arkham.Event.Types (Event)
 import Arkham.Id
@@ -30,6 +30,7 @@ import Arkham.Scenario ()
 import Arkham.Skill ()
 import Arkham.Skill.Types (Skill)
 import Arkham.Story
+import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 
@@ -105,6 +106,17 @@ instance HasAbilities Entities where
       <> concatMap getAbilities (toList entitiesSkills)
       <> concatMap getAbilities (toList entitiesStories)
 
+data SomeEntity where
+  SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Show a) => a -> SomeEntity
+
+deriving stock instance Show SomeEntity
+
+instance Targetable SomeEntity where
+  toTarget (SomeEntity e) = toTarget e
+
+instance HasModifiersFor SomeEntity where
+  getModifiersFor target (SomeEntity e) = getModifiersFor target e
+
 overEntities :: (Monoid a) => (SomeEntity -> a) -> Entities -> a
 overEntities f e = runIdentity $ overEntitiesM (Identity . f) e
 
@@ -113,17 +125,17 @@ overEntitiesM f = foldMapM f . toSomeEntities
 
 toSomeEntities :: Entities -> [SomeEntity]
 toSomeEntities Entities {..} =
-  map (SomeEntity SLocation) (toList entitiesLocations)
-    <> map (SomeEntity SInvestigator) (toList entitiesInvestigators)
-    <> map (SomeEntity SEnemy) (toList entitiesEnemies)
-    <> map (SomeEntity SAsset) (toList entitiesAssets)
-    <> map (SomeEntity SAct) (toList entitiesActs)
-    <> map (SomeEntity SAgenda) (toList entitiesAgendas)
-    <> map (SomeEntity STreachery) (toList entitiesTreacheries)
-    <> map (SomeEntity SEvent) (toList entitiesEvents)
-    <> map (SomeEntity SEffect) (toList entitiesEffects)
-    <> map (SomeEntity SSkill) (toList entitiesSkills)
-    <> map (SomeEntity SStory) (toList entitiesStories)
+  map SomeEntity (toList entitiesLocations)
+    <> map SomeEntity (toList entitiesInvestigators)
+    <> map SomeEntity (toList entitiesEnemies)
+    <> map SomeEntity (toList entitiesAssets)
+    <> map SomeEntity (toList entitiesActs)
+    <> map SomeEntity (toList entitiesAgendas)
+    <> map SomeEntity (toList entitiesTreacheries)
+    <> map SomeEntity (toList entitiesEvents)
+    <> map SomeEntity (toList entitiesEffects)
+    <> map SomeEntity (toList entitiesSkills)
+    <> map SomeEntity (toList entitiesStories)
 
 makeLensesWith suffixedFields ''Entities
 

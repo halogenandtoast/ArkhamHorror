@@ -21,7 +21,7 @@ theCoffin = story TheCoffin Cards.theCoffin
 
 instance RunMessage TheCoffin where
   runMessage msg s@(TheCoffin attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
       push $ Msg.EnemyDamage hastur $ storyDamage iid n

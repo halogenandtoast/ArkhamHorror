@@ -49,6 +49,7 @@ import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Source
+import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -464,6 +465,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
     pure $ a & (victoryDisplayL %~ (card :))
+  AddToVictory (StoryTarget eid) -> do
+    card <- field StoryCard eid
+    pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     pure $ a & (victoryDisplayL %~ (card :))
@@ -561,8 +565,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case rest of
       [] -> pure a
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
-  ReadStory _ card _ -> do
+  ReadStory _ card _ _ -> do
     pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
+  ResolveStory _ ResolveIt storyId -> do
+    pure $ a & resolvedStoriesL %~ (storyId :)
   SetActDeckCards n cards -> do
     pure $ a & (actStackL . at n ?~ cards)
   SetActDeck -> do

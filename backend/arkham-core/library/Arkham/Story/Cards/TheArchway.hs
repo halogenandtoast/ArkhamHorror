@@ -22,7 +22,7 @@ theArchway = story TheArchway Cards.theArchway
 
 instance RunMessage TheArchway where
   runMessage msg s@(TheArchway attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       setAsideDimStreets <-
         getSetAsideCardsMatching $
           CardWithTitle "Dim Streets"

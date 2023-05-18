@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
@@ -35,7 +34,7 @@ depthsOfDemheTheHeightOfTheDepths =
     ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
-  runMessage msg l@(DepthsOfDemheTheHeightOfTheDepths attrs) = case msg of
+  runMessage msg (DepthsOfDemheTheHeightOfTheDepths attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.theHeightOfTheDepths
       pure . DepthsOfDemheTheHeightOfTheDepths $ attrs & canBeFlippedL .~ False

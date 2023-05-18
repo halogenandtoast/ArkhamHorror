@@ -24,23 +24,29 @@ data History = History
   deriving anyclass (FromJSON, ToJSON)
 
 instance Semigroup History where
-  h <> g = History
-    { historyTreacheriesDrawn = historyTreacheriesDrawn h
-      <> historyTreacheriesDrawn g
-    , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
-    , historyEnemiesDefeated = historyEnemiesDefeated h
-      <> historyEnemiesDefeated g
-    , historyMoved = historyMoved h || historyMoved g
-    , historyLocationsSuccessfullyInvestigated =
-      historyLocationsSuccessfullyInvestigated h
-        <> historyLocationsSuccessfullyInvestigated g
-    , historySuccessfulExplore = historySuccessfulExplore h
-      || historySuccessfulExplore g
-    , historyActionsCompleted = historyActionsCompleted h
-      + historyActionsCompleted g
-    , historySkillTestsPerformed = historySkillTestsPerformed h
-      + historySkillTestsPerformed g
-    }
+  h <> g =
+    History
+      { historyTreacheriesDrawn =
+          historyTreacheriesDrawn h
+            <> historyTreacheriesDrawn g
+      , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
+      , historyEnemiesDefeated =
+          historyEnemiesDefeated h
+            <> historyEnemiesDefeated g
+      , historyMoved = historyMoved h || historyMoved g
+      , historyLocationsSuccessfullyInvestigated =
+          historyLocationsSuccessfullyInvestigated h
+            <> historyLocationsSuccessfullyInvestigated g
+      , historySuccessfulExplore =
+          historySuccessfulExplore h
+            || historySuccessfulExplore g
+      , historyActionsCompleted =
+          historyActionsCompleted h
+            + historyActionsCompleted g
+      , historySkillTestsPerformed =
+          historySkillTestsPerformed h
+            + historySkillTestsPerformed g
+      }
 
 instance Monoid History where
   mempty = History [] [] [] False mempty False 0 0

@@ -1,15 +1,16 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Game
-  ( module Arkham.Game
-  , module X
-  ) where
+
+module Arkham.Game (
+  module Arkham.Game,
+  module X,
+) where
 
 import Arkham.Ability.Types
 import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
-import Arkham.Card
 import Arkham.Campaign.Types
+import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasDistance
@@ -28,6 +29,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
+import Arkham.Story.Types
 import Arkham.Treachery.Types
 import Control.Monad.Random
 
@@ -72,6 +74,7 @@ instance Projection Location
 instance Projection Scenario
 instance Projection Skill
 instance Projection Treachery
+instance Projection Story
 
 instance HasTokenValue InvestigatorId
 instance HasTokenValue ()
@@ -79,7 +82,7 @@ instance HasTokenValue ()
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
 withCardEntity :: InvestigatorId -> Card -> Game -> Game
-abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
+abilityMatches :: (HasGame m) => Ability -> AbilityMatcher -> m Bool
 
 instance HasDistance Game
 instance HasAbilities Game

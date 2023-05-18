@@ -64,7 +64,7 @@ instance RunMessage AlejandroVela where
         pure e
     Flip iid _ target | isTarget attrs target -> do
       anotherWay <- genCard Story.anotherWay
-      push $ ReadStory iid anotherWay (Just $ someEnemy e)
+      push $ ReadStory iid anotherWay ResolveIt (Just $ toTarget attrs)
       pure e
     _ -> AlejandroVela <$> runMessage msg attrs
 

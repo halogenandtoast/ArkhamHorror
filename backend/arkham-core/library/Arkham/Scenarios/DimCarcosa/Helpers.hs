@@ -21,4 +21,4 @@ readStory iid lid storyDef = do
     checkWindows
       [Window Timing.After (Window.FlipLocation iid lid)]
   storyCard <- genCard storyDef
-  pushAll [whenWindowMsg, afterWindowMsg, ReadStory iid storyCard Nothing]
+  pushAll [whenWindowMsg, afterWindowMsg, ReadStory iid storyCard ResolveIt Nothing]

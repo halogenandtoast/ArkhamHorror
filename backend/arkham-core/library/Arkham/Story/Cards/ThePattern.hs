@@ -18,7 +18,7 @@ thePattern = story ThePattern Cards.thePattern
 
 instance RunMessage ThePattern where
   runMessage msg s@(ThePattern attrs) = case msg of
-    ResolveStory _ story' | story' == toId attrs -> do
+    ResolveStory _ _ story' | story' == toId attrs -> do
       push $ Remember InterviewedHaruko
       pure s
     _ -> ThePattern <$> runMessage msg attrs

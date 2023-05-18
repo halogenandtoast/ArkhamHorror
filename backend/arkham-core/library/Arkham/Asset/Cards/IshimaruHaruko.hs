@@ -52,6 +52,6 @@ instance RunMessage IshimaruHaruko where
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       thePattern <- genCard Story.thePattern
-      push $ ReadStory iid thePattern (Just $ someAsset a)
+      push $ ReadStory iid thePattern ResolveIt (Just $ toTarget attrs)
       pure a
     _ -> IshimaruHaruko <$> runMessage msg attrs

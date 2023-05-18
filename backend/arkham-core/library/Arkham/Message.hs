@@ -37,7 +37,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
-import {-# SOURCE #-} Arkham.Entity.Some
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.History
@@ -152,13 +151,17 @@ data ReplaceStrategy = DefaultReplace | Swap
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data StoryMode = ResolveIt | DoNotResolveIt
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL
   | -- Story Card Messages
-    ReadStory InvestigatorId Card (Maybe SomeEntity)
-  | ResolveStory InvestigatorId StoryId
-  | ResolvedStory StoryId
+    ReadStory InvestigatorId Card StoryMode (Maybe Target)
+  | ResolveStory InvestigatorId StoryMode StoryId
+  | ResolvedStory StoryMode StoryId
   | -- | ResolveStoryStep InvestigatorId StoryId Int
     RemoveStory StoryId
   | -- Handle discard costs

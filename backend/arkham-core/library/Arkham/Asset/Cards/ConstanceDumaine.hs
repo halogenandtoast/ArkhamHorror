@@ -50,6 +50,6 @@ instance RunMessage ConstanceDumaine where
           pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       engramsOath <- genCard Story.engramsOath
-      push $ ReadStory iid engramsOath (Just $ someAsset a)
+      push $ ReadStory iid engramsOath ResolveIt (Just $ toTarget attrs)
       pure a
     _ -> ConstanceDumaine <$> runMessage msg attrs

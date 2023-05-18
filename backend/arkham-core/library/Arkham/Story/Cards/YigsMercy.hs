@@ -27,7 +27,7 @@ yigsMercy = story YigsMercy Cards.yigsMercy
 
 instance RunMessage YigsMercy where
   runMessage msg s@(YigsMercy attrs) = case msg of
-    ResolveStory iid story' | story' == toId attrs -> do
+    ResolveStory iid _ story' | story' == toId attrs -> do
       ichtaca <- selectJust $ enemyIs Enemies.ichtacaScionOfYig
       yigsFury <- getRecordCount YigsFury
       push $

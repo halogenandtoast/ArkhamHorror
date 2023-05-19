@@ -1827,23 +1827,21 @@ windowMatches iid source window' = \case
               (matchWho iid who whoMatcher)
               (locationMatches iid source window' locationId whereMatcher)
       _ -> pure False
-  Matcher.InvestigatorDefeated timingMatcher sourceMatcher defeatedByMatcher whoMatcher ->
+  Matcher.InvestigatorDefeated timingMatcher defeatedByMatcher whoMatcher ->
     case window' of
-      Window t (Window.InvestigatorDefeated source' defeatedBy who)
+      Window t (Window.InvestigatorDefeated defeatedBy who)
         | t == timingMatcher ->
             andM
               [ matchWho iid who whoMatcher
-              , sourceMatches source' sourceMatcher
               , defeatedByMatches defeatedBy defeatedByMatcher
               ]
       _ -> pure False
-  Matcher.InvestigatorWouldBeDefeated timingMatcher sourceMatcher defeatedByMatcher whoMatcher ->
+  Matcher.InvestigatorWouldBeDefeated timingMatcher defeatedByMatcher whoMatcher ->
     case window' of
-      Window t (Window.InvestigatorWouldBeDefeated source' defeatedBy who)
+      Window t (Window.InvestigatorWouldBeDefeated defeatedBy who)
         | t == timingMatcher ->
             andM
               [ matchWho iid who whoMatcher
-              , sourceMatches source' sourceMatcher
               , defeatedByMatches defeatedBy defeatedByMatcher
               ]
       _ -> pure False
@@ -2298,16 +2296,23 @@ windowMatches iid source window' = \case
               , defeatedByMatches defeatedBy defeatedByMatcher
               ]
       _ -> pure False
-  Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
+  Matcher.EnemyDefeated timingMatcher whoMatcher defeatedByMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyDefeated (Just who) enemyId)
+      Window t (Window.EnemyDefeated (Just who) defeatedBy enemyId)
         | timingMatcher == t ->
-            andM [enemyMatches enemyId enemyMatcher, matchWho iid who whoMatcher]
-      Window t (Window.EnemyDefeated Nothing enemyId)
+            andM
+              [ enemyMatches enemyId enemyMatcher
+              , matchWho iid who whoMatcher
+              , defeatedByMatches defeatedBy defeatedByMatcher
+              ]
+      Window t (Window.EnemyDefeated Nothing defeatedBy enemyId)
         | timingMatcher == t && whoMatcher == Matcher.Anyone ->
-            enemyMatches
-              enemyId
-              enemyMatcher
+            andM
+              [ enemyMatches
+                  enemyId
+                  enemyMatcher
+              , defeatedByMatches defeatedBy defeatedByMatcher
+              ]
       _ -> pure False
   Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
     case window' of
@@ -3005,19 +3010,15 @@ getPotentialSlots card iid = do
       slotTypesAndSlots
 
 defeatedByMatches
-  :: (Monad m) => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
+  :: (HasGame m) => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
 defeatedByMatches defeatedBy = \case
   Matcher.ByAnyOf xs -> anyM (defeatedByMatches defeatedBy) xs
-  Matcher.ByHorror ->
-    pure $
-      (defeatedBy == DefeatedByHorror)
-        || (defeatedBy == DefeatedByDamageAndHorror)
-  Matcher.ByDamage ->
-    pure $
-      (defeatedBy == DefeatedByDamage)
-        || (defeatedBy == DefeatedByDamageAndHorror)
-  Matcher.ByOther -> pure $ defeatedBy == DefeatedByOther
+  Matcher.ByHorror -> pure $ wasDefeatedByHorror defeatedBy
+  Matcher.ByDamage -> pure $ wasDefeatedByDamage defeatedBy
+  Matcher.ByOther -> pure $ wasDefeatedByOther defeatedBy
+  Matcher.BySource sourceMatcher -> sourceMatches (defeatedBySource defeatedBy) sourceMatcher
   Matcher.ByAny -> pure True
+  Matcher.DefeatedByMatches xs -> allM (defeatedByMatches defeatedBy) xs
 
 isForcedAbility :: (HasGame m) => InvestigatorId -> Ability -> m Bool
 isForcedAbility iid Ability {abilitySource, abilityType} = isForcedAbilityType iid abilitySource abilityType

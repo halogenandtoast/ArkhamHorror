@@ -31,7 +31,7 @@ instance HasAbilities HereticsGraves_172 where
       a
       [ mkAbility a 1 $
           ForcedAbility $
-            EnemyDefeated Timing.After Anyone $
+            EnemyDefeated Timing.After Anyone ByAny $
               enemyAt (toId a) <> EnemyWithTrait Witch
       , haunted "Heal 1 damage from each Heretic and each Witch enemy in play." a 2
       ]

@@ -1,19 +1,19 @@
-module Arkham.Asset.Cards.GreteWagner
-  ( greteWagner
-  , GreteWagner(..)
-  ) where
+module Arkham.Asset.Cards.GreteWagner (
+  greteWagner,
+  GreteWagner (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding ( EnemyDefeated )
+import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype GreteWagner = GreteWagner AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 greteWagner :: AssetCard GreteWagner
@@ -27,14 +27,16 @@ instance HasModifiersFor GreteWagner where
 instance HasAbilities GreteWagner where
   getAbilities (GreteWagner a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> ClueOnLocation <> InvestigatorExists
-            (You <> InvestigatorCanDiscoverCluesAt YourLocation)
-          )
+        a
+        1
+        ( ControlsThis
+            <> ClueOnLocation
+            <> InvestigatorExists
+              (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+        )
         $ ReactionAbility
-            (EnemyDefeated Timing.After You AnyEnemy)
-            (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
+          (EnemyDefeated Timing.After You ByAny AnyEnemy)
+          (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
     ]
 
 instance RunMessage GreteWagner where

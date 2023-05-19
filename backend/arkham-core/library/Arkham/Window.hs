@@ -1,27 +1,28 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Window where
 
 import Arkham.Prelude
 
 import Arkham.Ability.Types
-import Arkham.Action ( Action )
-import Arkham.Agenda.AdvancementReason ( AgendaAdvancementReason )
+import Arkham.Action (Action)
+import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.Attack
-import Arkham.Card ( Card )
+import Arkham.Card (Card)
 import Arkham.Damage
-import Arkham.DamageEffect ( DamageEffect )
+import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
 import Arkham.DefeatedBy
 import Arkham.Id
-import Arkham.Matcher ( LocationMatcher )
-import Arkham.Phase ( Phase )
+import Arkham.Matcher (LocationMatcher)
+import Arkham.Phase (Phase)
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
-import Arkham.Source ( Source )
-import Arkham.Target ( Target )
-import Arkham.Timing ( Timing )
+import Arkham.Source (Source)
+import Arkham.Target (Target)
+import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
-import Arkham.Token ( Token )
+import Arkham.Token (Token)
 import Data.Aeson.TH
 
 data Result b a = Success a | Failure b
@@ -42,7 +43,7 @@ defaultWindows iid =
 
 hasEliminatedWindow :: [Window] -> Bool
 hasEliminatedWindow = any $ \case
-  Window _ (InvestigatorEliminated{}) -> True
+  Window _ (InvestigatorEliminated {}) -> True
   _ -> False
 
 revealedTokens :: [Window] -> [Token]
@@ -73,7 +74,6 @@ data WindowType
   | DealtHorror Source Target Int
   | DeckHasNoCards InvestigatorId
   | EncounterDeckRunsOutOfCards
-  | Defeated Source
   | Discarded InvestigatorId Source Card
   | DiscoverClues InvestigatorId LocationId Int
   | DiscoveringLastClue InvestigatorId LocationId
@@ -88,7 +88,7 @@ data WindowType
   | EnemyAttacks EnemyAttackDetails
   | EnemyAttacksEvenIfCancelled EnemyAttackDetails
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
-  | EnemyDefeated (Maybe InvestigatorId) EnemyId
+  | EnemyDefeated (Maybe InvestigatorId) DefeatedBy EnemyId
   | EnemyEngaged InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId
@@ -110,8 +110,8 @@ data WindowType
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
   | InitiatedSkillTest SkillTest
-  | InvestigatorDefeated Source DefeatedBy InvestigatorId
-  | InvestigatorWouldBeDefeated Source DefeatedBy InvestigatorId
+  | InvestigatorDefeated DefeatedBy InvestigatorId
+  | InvestigatorWouldBeDefeated DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | LastClueRemovedFromAsset AssetId
   | LeavePlay Target
@@ -177,9 +177,9 @@ data WindowType
   | DoNotCheckWindow
   deriving stock (Show, Ord, Eq)
 
-$(do
+$( do
     result <- deriveJSON defaultOptions ''Result
     windowType <- deriveJSON defaultOptions ''WindowType
     window <- deriveJSON defaultOptions ''Window
     pure $ concat [result, windowType, window]
-  )
+ )

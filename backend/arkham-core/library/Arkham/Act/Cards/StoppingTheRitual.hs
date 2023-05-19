@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.StoppingTheRitual
-  ( StoppingTheRitual(..)
-  , stoppingTheRitual
-  ) where
+module Arkham.Act.Cards.StoppingTheRitual (
+  StoppingTheRitual (..),
+  stoppingTheRitual,
+) where
 
 import Arkham.Prelude
 
@@ -14,11 +14,11 @@ import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyDefeated )
+import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 
 newtype StoppingTheRitual = StoppingTheRitual ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stoppingTheRitual :: ActCard StoppingTheRitual
@@ -28,18 +28,24 @@ stoppingTheRitual =
 instance HasModifiersFor StoppingTheRitual where
   getModifiersFor (EnemyTarget eid) (StoppingTheRitual a) = do
     isNahab <- eid <=~> enemyIs Enemies.nahab
-    pure $ toModifiers a [ CannotMove | isNahab ]
+    pure $ toModifiers a [CannotMove | isNahab]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StoppingTheRitual where
-  getAbilities (StoppingTheRitual a) | onSide A a =
-    [ mkAbility a 1 $ ForcedAbility $ EnemyDefeated Timing.When Anyone $ enemyIs
-      Enemies.nahab
-    , restrictedAbility a 2
-        (enemyExists $ enemyIs Enemies.nahab <> NotEnemy EnemyWithAnyDoom)
-      $ Objective
-      $ ForcedAbility AnyWindow
-    ]
+  getAbilities (StoppingTheRitual a)
+    | onSide A a =
+        [ mkAbility a 1 $
+            ForcedAbility $
+              EnemyDefeated Timing.When Anyone ByAny $
+                enemyIs
+                  Enemies.nahab
+        , restrictedAbility
+            a
+            2
+            (enemyExists $ enemyIs Enemies.nahab <> NotEnemy EnemyWithAnyDoom)
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage StoppingTheRitual where
@@ -52,10 +58,10 @@ instance RunMessage StoppingTheRitual where
         , DisengageEnemyFromAll nahab
         , Exhaust (toTarget nahab)
         , CreateWindowModifierEffect
-          EffectRoundWindow
-          (EffectModifiers $ toModifiers attrs [DoesNotReadyDuringUpkeep])
-          (toSource attrs)
-          (toTarget nahab)
+            EffectRoundWindow
+            (EffectModifiers $ toModifiers attrs [DoesNotReadyDuringUpkeep])
+            (toSource attrs)
+            (toTarget nahab)
         ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do

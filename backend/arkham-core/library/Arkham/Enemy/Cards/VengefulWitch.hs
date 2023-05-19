@@ -10,10 +10,13 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Projection
+import Arkham.Timing qualified as Timing
 
 newtype VengefulWitch = VengefulWitch EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengefulWitch :: EnemyCard VengefulWitch
 vengefulWitch =
@@ -27,6 +30,24 @@ vengefulWitch =
           (LocationMatchAny [LocationWithTitle "The Gallows", LocationWithTitle "Heretics' Graves"])
     )
 
+instance HasAbilities VengefulWitch where
+  getAbilities (VengefulWitch a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (InvestigatorExists $ InvestigatorAt $ locationWithEnemy (toId a)) $
+          ForcedAbility $
+            EnemyDefeated Timing.When Anyone ByAny $
+              EnemyWithId $
+                toId a
+      ]
+
 instance RunMessage VengefulWitch where
-  runMessage msg (VengefulWitch attrs) =
-    VengefulWitch <$> runMessage msg attrs
+  runMessage msg e@(VengefulWitch attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      enemyDamage <- field EnemyHealthDamage (toId attrs)
+      enemyHorror <- field EnemySanityDamage (toId attrs)
+      investigators <- selectList $ InvestigatorAt $ locationWithEnemy (toId attrs)
+      pushAll
+        [InvestigatorDirectDamage iid (toSource attrs) enemyDamage enemyHorror | iid <- investigators]
+      pure e
+    _ -> VengefulWitch <$> runMessage msg attrs

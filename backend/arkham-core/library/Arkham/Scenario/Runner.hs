@@ -960,8 +960,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       checkWindows $
         ( `Window`
             Window.InvestigatorWouldBeDefeated
-              (LocationSource lid)
-              DefeatedByOther
+              (DefeatedByOther $ LocationSource lid)
               iid
         )
           <$> [Timing.When]

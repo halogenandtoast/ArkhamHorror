@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheReturnTrip
-  ( TheReturnTrip(..)
-  , theReturnTrip
-  ) where
+module Arkham.Act.Cards.TheReturnTrip (
+  TheReturnTrip (..),
+  theReturnTrip,
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyDefeated )
+import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
@@ -21,22 +21,24 @@ newtype TheReturnTrip = TheReturnTrip ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theReturnTrip :: ActCard TheReturnTrip
-theReturnTrip = act
-  (3, A)
-  TheReturnTrip
-  Cards.theReturnTrip
-  (Just $ GroupClueCost (PerPlayer 2) $ LocationWithTitle "Templo Mayor")
+theReturnTrip =
+  act
+    (3, A)
+    TheReturnTrip
+    Cards.theReturnTrip
+    (Just $ GroupClueCost (PerPlayer 2) $ LocationWithTitle "Templo Mayor")
 
 instance HasAbilities TheReturnTrip where
-  getAbilities (TheReturnTrip a) = withBaseAbilities
-    a
-    [ mkAbility a 1
-      $ Objective
-      $ ForcedAbility
-      $ EnemyDefeated Timing.When Anyone
-      $ enemyIs Enemies.padmaAmrita
-    | onSide A a
-    ]
+  getAbilities (TheReturnTrip a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+        Objective $
+          ForcedAbility $
+            EnemyDefeated Timing.When Anyone ByAny $
+              enemyIs Enemies.padmaAmrita
+      | onSide A a
+      ]
 
 instance RunMessage TheReturnTrip where
   runMessage msg a@(TheReturnTrip attrs) = case msg of

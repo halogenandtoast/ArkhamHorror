@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.WrithingAppendage
-  ( writhingAppendage
-  , WrithingAppendage(..)
-  ) where
+module Arkham.Enemy.Cards.WrithingAppendage (
+  writhingAppendage,
+  WrithingAppendage (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,8 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
-import Arkham.Message hiding ( EnemyAttacks, EnemyDefeated )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Message hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Message qualified as Msg
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Timing qualified as Timing
@@ -25,19 +25,20 @@ writhingAppendage =
   enemy WrithingAppendage Cards.writhingAppendage (2, Static 2, 4) (1, 0)
 
 instance HasAbilities WrithingAppendage where
-  getAbilities (WrithingAppendage attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1
-    $ ForcedAbility
-    $ EnemyAttacks Timing.After You AnyEnemyAttack
-    $ EnemyWithId
-    $ toId attrs
-    , mkAbility attrs 2
-    $ ForcedAbility
-    $ EnemyDefeated Timing.When Anyone
-    $ EnemyWithId
-    $ toId attrs
-    ]
+  getAbilities (WrithingAppendage attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1 $
+          ForcedAbility $
+            EnemyAttacks Timing.After You AnyEnemyAttack $
+              EnemyWithId $
+                toId attrs
+      , mkAbility attrs 2 $
+          ForcedAbility $
+            EnemyDefeated Timing.When Anyone ByAny $
+              EnemyWithId $
+                toId attrs
+      ]
 
 instance RunMessage WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of

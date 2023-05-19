@@ -1,14 +1,12 @@
-module Arkham.Enemy.Cards.TheSpectralWatcher
-  ( theSpectralWatcher
-  , TheSpectralWatcher(..)
-  ) where
+module Arkham.Enemy.Cards.TheSpectralWatcher (
+  theSpectralWatcher,
+  TheSpectralWatcher (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
@@ -24,14 +22,15 @@ theSpectralWatcher =
   enemy TheSpectralWatcher Cards.theSpectralWatcher (3, Static 5, 3) (1, 1)
 
 instance HasAbilities TheSpectralWatcher where
-  getAbilities (TheSpectralWatcher a) = withBaseAbilities
-    a
-    [ mkAbility a 1
-      $ ForcedAbility
-      $ EnemyDefeated Timing.When Anyone
-      $ EnemyWithId
-      $ toId a
-    ]
+  getAbilities (TheSpectralWatcher a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            EnemyDefeated Timing.When Anyone ByAny $
+              EnemyWithId $
+                toId a
+      ]
 
 instance RunMessage TheSpectralWatcher where
   runMessage msg e@(TheSpectralWatcher attrs) = case msg of
@@ -41,11 +40,7 @@ instance RunMessage TheSpectralWatcher where
         , HealAllDamage (toTarget attrs) (toSource attrs)
         , DisengageEnemyFromAll (toId attrs)
         , Exhaust (toTarget attrs)
-        , CreateWindowModifierEffect
-          EffectRoundWindow
-          (EffectModifiers $ toModifiers attrs [DoesNotReadyDuringUpkeep])
-          (toSource attrs)
-          (toTarget attrs)
+        , roundModifier attrs attrs DoesNotReadyDuringUpkeep
         ]
       pure e
     _ -> TheSpectralWatcher <$> runMessage msg attrs

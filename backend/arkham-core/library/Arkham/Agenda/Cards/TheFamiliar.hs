@@ -37,7 +37,7 @@ instance HasAbilities TheFamiliar where
   getAbilities (TheFamiliar a) =
     [ mkAbility a 1 $
         ReactionAbility
-          ( EnemyDefeated Timing.After You $
+          ( EnemyDefeated Timing.After You ByAny $
               EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
           )
           Free

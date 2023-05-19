@@ -1,14 +1,17 @@
-module Arkham.Asset.Cards.DecoratedSkull
-  ( decoratedSkull
-  , DecoratedSkull(..)
-  ) where
+module Arkham.Asset.Cards.DecoratedSkull (
+  decoratedSkull,
+  DecoratedSkull (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding
-  ( AssetDefeated, EnemyDefeated, InvestigatorDefeated )
+import Arkham.Asset.Runner hiding (
+  AssetDefeated,
+  EnemyDefeated,
+  InvestigatorDefeated,
+ )
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -21,18 +24,19 @@ decoratedSkull = asset DecoratedSkull Cards.decoratedSkull
 
 instance HasAbilities DecoratedSkull where
   getAbilities (DecoratedSkull a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-      (OrWindowMatcher
-        [ EnemyDefeated Timing.After Anyone AnyEnemy
-        , InvestigatorDefeated Timing.After AnySource ByAny Anyone
-        , AssetDefeated Timing.After ByAny AllyAsset
-        ]
-      )
-      Free
-    , restrictedAbility a 2 ControlsThis
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> UseCost (AssetWithId $ toId a) Charge 1
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          ( OrWindowMatcher
+              [ EnemyDefeated Timing.After Anyone ByAny AnyEnemy
+              , InvestigatorDefeated Timing.After ByAny Anyone
+              , AssetDefeated Timing.After ByAny AllyAsset
+              ]
+          )
+          Free
+    , restrictedAbility a 2 ControlsThis $
+        ActionAbility Nothing $
+          ActionCost 1
+            <> UseCost (AssetWithId $ toId a) Charge 1
     ]
 
 instance RunMessage DecoratedSkull where

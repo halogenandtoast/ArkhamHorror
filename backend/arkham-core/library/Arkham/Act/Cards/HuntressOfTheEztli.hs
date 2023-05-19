@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.HuntressOfTheEztli
-  ( HuntressOfTheEztli(..)
-  , huntressOfTheEztli
-  ) where
+module Arkham.Act.Cards.HuntressOfTheEztli (
+  HuntressOfTheEztli (..),
+  huntressOfTheEztli,
+) where
 
 import Arkham.Prelude
 
@@ -16,14 +16,14 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyDefeated )
+import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Trait ( Trait (Ruins) )
+import Arkham.Trait (Trait (Ruins))
 
 newtype HuntressOfTheEztli = HuntressOfTheEztli ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -34,18 +34,25 @@ huntressOfTheEztli =
   act (2, A) HuntressOfTheEztli Cards.huntressOfTheEztli Nothing
 
 instance HasAbilities HuntressOfTheEztli where
-  getAbilities (HuntressOfTheEztli x) | onSide A x =
-    [ mkAbility x 1 $ Objective $ ForcedAbility
-      (EnemyDefeated Timing.After Anyone $ EnemyWithTitle "Ichtaca")
-    , restrictedAbility
-        x
-        2
-        (EnemyCriteria $ EnemyExists $ EnemyWithTitle "Ichtaca" <> EnemyWithClues
-          (AtLeast $ PerPlayer 1)
-        )
-      $ Objective
-      $ ForcedAbility AnyWindow
-    ]
+  getAbilities (HuntressOfTheEztli x)
+    | onSide A x =
+        [ mkAbility x 1 $
+            Objective $
+              ForcedAbility $
+                EnemyDefeated Timing.After Anyone ByAny $
+                  EnemyWithTitle "Ichtaca"
+        , restrictedAbility
+            x
+            2
+            ( EnemyCriteria $
+                EnemyExists $
+                  EnemyWithTitle "Ichtaca"
+                    <> EnemyWithClues
+                      (AtLeast $ PerPlayer 1)
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage HuntressOfTheEztli where
@@ -55,8 +62,9 @@ instance RunMessage HuntressOfTheEztli where
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      ichtacaDefeated <- any (`cardMatch` CardWithTitle "Ichtaca")
-        <$> scenarioField ScenarioVictoryDisplay
+      ichtacaDefeated <-
+        any (`cardMatch` CardWithTitle "Ichtaca")
+          <$> scenarioField ScenarioVictoryDisplay
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
       if ichtacaDefeated
         then do
@@ -64,24 +72,24 @@ instance RunMessage HuntressOfTheEztli where
           investigatorIds <- getInvestigatorIds
           alejandroVela <-
             fromJustNote "Alejandro Vela was not set aside"
-            . listToMaybe
-            <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
+              . listToMaybe
+              <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
           pushAll
             [ Remember YouFoughtWithIchtaca
             , chooseOne
-              leadInvestigatorId
-              [ targetLabel iid [TakeControlOfSetAsideAsset iid alejandroVela]
-              | iid <- investigatorIds
-              ]
+                leadInvestigatorId
+                [ targetLabel iid [TakeControlOfSetAsideAsset iid alejandroVela]
+                | iid <- investigatorIds
+                ]
             , AddToken Tablet
             , ShuffleCardsIntoDeck
-              (Deck.ScenarioDeckByKey ExplorationDeck)
-              ruins
+                (Deck.ScenarioDeckByKey ExplorationDeck)
+                ruins
             , AdvanceToAct
-              (actDeckId attrs)
-              Acts.theGuardedRuins
-              A
-              (toSource attrs)
+                (actDeckId attrs)
+                Acts.theGuardedRuins
+                A
+                (toSource attrs)
             ]
         else do
           itchtaca <- selectJust $ enemyIs Enemies.ichtaca
@@ -90,13 +98,13 @@ instance RunMessage HuntressOfTheEztli where
             , Remember IchtachaIsLeadingTheWay
             , AddToken Cultist
             , ShuffleCardsIntoDeck
-              (Deck.ScenarioDeckByKey ExplorationDeck)
-              ruins
+                (Deck.ScenarioDeckByKey ExplorationDeck)
+                ruins
             , AdvanceToAct
-              (actDeckId attrs)
-              Acts.searchForTheRuins
-              A
-              (toSource attrs)
+                (actDeckId attrs)
+                Acts.searchForTheRuins
+                A
+                (toSource attrs)
             ]
       pure a
     _ -> HuntressOfTheEztli <$> runMessage msg attrs

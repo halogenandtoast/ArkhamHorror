@@ -6,17 +6,11 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Trait (Trait (Spectral))
 
 newtype Heretic_I = Heretic_I EnemyAttrs
   deriving anyclass (IsEnemy)

@@ -508,13 +508,13 @@ data DiscardedPlayerCardMatcher
   deriving stock (Show, Eq, Ord)
 
 data WindowMatcher
-  = EnemyDefeated Timing Who EnemyMatcher
+  = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
   | AddedToVictory Timing CardMatcher
   | PerformAction Timing Who ActionMatcher
   | DrawingStartingHand Timing Who
-  | InvestigatorDefeated Timing SourceMatcher DefeatedByMatcher Who
-  | InvestigatorWouldBeDefeated Timing SourceMatcher DefeatedByMatcher Who
+  | InvestigatorDefeated Timing DefeatedByMatcher Who
+  | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | AmongSearchedCards Who
@@ -630,8 +630,21 @@ data DefeatedByMatcher
   | ByDamage
   | ByOther
   | ByAny
+  | BySource SourceMatcher
   | ByAnyOf [DefeatedByMatcher]
+  | DefeatedByMatches [DefeatedByMatcher]
   deriving stock (Show, Eq, Ord)
+
+instance Monoid DefeatedByMatcher where
+  mempty = ByAny
+
+instance Semigroup DefeatedByMatcher where
+  ByAny <> x = x
+  x <> ByAny = x
+  DefeatedByMatches xs <> DefeatedByMatches ys = DefeatedByMatches (xs <> ys)
+  DefeatedByMatches xs <> y = DefeatedByMatches (xs <> [y])
+  y <> DefeatedByMatches xs = DefeatedByMatches (y : xs)
+  x <> y = DefeatedByMatches [x, y]
 
 data SkillTestMatcher
   = WhileInvestigating LocationMatcher

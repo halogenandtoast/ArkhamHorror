@@ -30,14 +30,14 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-defeated :: (HasGame m) => AssetAttrs -> m (Maybe DefeatedBy)
-defeated AssetAttrs {assetId} = do
+defeated :: (HasGame m) => AssetAttrs -> Source -> m (Maybe DefeatedBy)
+defeated AssetAttrs {assetId} source = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
   pure $ case (remainingHealth, remainingSanity) of
-    (Just a, Just b) | a <= 0 && b <= 0 -> Just DefeatedByDamageAndHorror
-    (Just a, _) | a <= 0 -> Just DefeatedByDamage
-    (_, Just b) | b <= 0 -> Just DefeatedByHorror
+    (Just a, Just b) | a <= 0 && b <= 0 -> Just (DefeatedByDamageAndHorror source)
+    (Just a, _) | a <= 0 -> Just (DefeatedByDamage source)
+    (_, Just b) | b <= 0 -> Just (DefeatedByHorror source)
     _ -> Nothing
 
 instance RunMessage Asset where
@@ -77,8 +77,8 @@ instance RunMessage AssetAttrs where
           =<< windows
             [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & cluesL %~ max 0 . subtract n
-    CheckDefeated _ -> do
-      mDefeated <- defeated a
+    CheckDefeated source -> do
+      mDefeated <- defeated a source
       for_ mDefeated $ \defeatedBy -> do
         whenWindow <-
           checkWindows

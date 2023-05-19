@@ -3061,3 +3061,94 @@ iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
   applyAfterSkillModifiers _ ys = ys
 iconsForCard _ = pure []
+
+sourceMatches
+  :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
+sourceMatches s = \case
+  Matcher.SourceIsCancelable sm -> case s of
+    CardCostSource _ -> pure False
+    other -> do
+      modifiers' <- getModifiers (sourceToTarget other)
+      andM [sourceMatches s sm, pure $ EffectsCannotBeCanceled `notElem` modifiers']
+  Matcher.SourceIs s' -> pure $ s == s'
+  Matcher.NotSource matcher -> not <$> sourceMatches s matcher
+  Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
+  Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
+  Matcher.SourceIsEnemyAttack em -> case s of
+    EnemyAttackSource eid -> member eid <$> select em
+    _ -> pure False
+  Matcher.AnySource -> pure True
+  Matcher.SourceMatches ms -> allM (sourceMatches s) ms
+  Matcher.SourceOwnedBy whoMatcher ->
+    let
+      checkSource = \case
+        AbilitySource source' _ -> checkSource source'
+        AssetSource aid -> do
+          mControllerId <- selectAssetController aid
+          case mControllerId of
+            Just iid' -> member iid' <$> select whoMatcher
+            _ -> pure False
+        EventSource eid -> do
+          mControllerId <- selectEventController eid
+          case mControllerId of
+            Just controllerId -> member controllerId <$> select whoMatcher
+            Nothing -> pure False
+        SkillSource sid -> do
+          mControllerId <- selectSkillController sid
+          case mControllerId of
+            Just controllerId -> member controllerId <$> select whoMatcher
+            Nothing -> pure False
+        InvestigatorSource iid -> member iid <$> select whoMatcher
+        _ -> pure False
+    in
+      checkSource s
+  Matcher.SourceIsType t -> pure $ case t of
+    AssetType -> case s of
+      AssetSource _ -> True
+      _ -> False
+    EventType -> case s of
+      EventSource _ -> True
+      _ -> False
+    SkillType -> case s of
+      SkillSource _ -> True
+      _ -> False
+    PlayerTreacheryType -> case s of
+      TreacherySource _ -> True
+      _ -> False
+    PlayerEnemyType -> case s of
+      EnemySource _ -> True
+      _ -> False
+    TreacheryType -> case s of
+      TreacherySource _ -> True
+      _ -> False
+    EnemyType -> case s of
+      EnemySource _ -> True
+      _ -> False
+    LocationType -> case s of
+      LocationSource _ -> True
+      _ -> False
+    EncounterAssetType -> case s of
+      AssetSource _ -> True
+      _ -> False
+    ActType -> case s of
+      ActSource _ -> True
+      _ -> False
+    AgendaType -> case s of
+      AgendaSource _ -> True
+      _ -> False
+    StoryType -> case s of
+      StorySource _ -> True
+      _ -> False
+    InvestigatorType -> case s of
+      InvestigatorSource _ -> True
+      _ -> False
+    ScenarioType -> case s of
+      ScenarioSource -> True
+      _ -> False
+  Matcher.EncounterCardSource -> pure $ case s of
+    ActSource _ -> True
+    AgendaSource _ -> True
+    EnemySource _ -> True
+    LocationSource _ -> True
+    TreacherySource _ -> True
+    _ -> False

@@ -3626,6 +3626,13 @@ runGameMessage msg g = case msg of
     iid <- toId <$> getActiveInvestigator
     modifiers' <- getModifiers (AbilityTarget iid ability)
     let
+      costF =
+        case find isSetCost modifiers' of
+          Just (SetAbilityCost c) -> const c
+          _ -> id
+      isSetCost = \case
+        SetAbilityCost _ -> True
+        _ -> False
       additionalCosts = flip mapMaybe modifiers' $ \case
         AdditionalCost c -> Just c
         _ -> Nothing
@@ -3633,7 +3640,7 @@ runGameMessage msg g = case msg of
       activeCost =
         ActiveCost
           { activeCostId = acId
-          , activeCostCosts = mconcat (abilityCost ability : additionalCosts)
+          , activeCostCosts = mconcat (costF (abilityCost ability) : additionalCosts)
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'

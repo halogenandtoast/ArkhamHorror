@@ -179,6 +179,11 @@ getCanPerformAbility !iid !source !window !ability = do
       AdditionalCost x -> Just x
       _ -> Nothing
     cost = abilityCost ability
+    criteria = (\c -> foldr setCriteria c abilityModifiers) <$> abilityCriteria ability
+    setCriteria :: ModifierType -> Criterion -> Criterion
+    setCriteria = \case
+      SetAbilityCriteria (CriteriaOverride c) -> const c
+      _ -> id
   andM
     [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
     , meetsActionRestrictions iid window ability
@@ -186,7 +191,7 @@ getCanPerformAbility !iid !source !window !ability = do
     , maybe
         (pure True)
         (passesCriteria iid Nothing (abilitySource ability) [window])
-        (abilityCriteria ability)
+        criteria
     , allM
         (getCanAffordCost iid (abilitySource ability) mAction [window])
         additionalCosts
@@ -293,25 +298,35 @@ getCanAffordAbility iid ability window =
   andM [getCanAffordUse iid ability window, getCanAffordAbilityCost iid ability]
 
 getCanAffordAbilityCost :: (HasGame m) => InvestigatorId -> Ability -> m Bool
-getCanAffordAbilityCost iid Ability {..} = go abilityType
+getCanAffordAbilityCost iid a@Ability {..} = do
+  modifiers <- getModifiers (AbilityTarget iid a)
+  let
+    costF =
+      case find isSetCost modifiers of
+        Just (SetAbilityCost c) -> const c
+        _ -> id
+    isSetCost = \case
+      SetAbilityCost _ -> True
+      _ -> False
+  go costF abilityType
  where
-  go = \case
+  go f = \case
     Haunted -> pure True
     ActionAbility mAction cost ->
-      getCanAffordCost iid abilitySource mAction [] cost
+      getCanAffordCost iid abilitySource mAction [] (f cost)
     ActionAbilityWithSkill mAction _ cost ->
-      getCanAffordCost iid abilitySource mAction [] cost
+      getCanAffordCost iid abilitySource mAction [] (f cost)
     ActionAbilityWithBefore _ mBeforeAction cost ->
-      getCanAffordCost iid abilitySource mBeforeAction [] cost
-    ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost
-    FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
+      getCanAffordCost iid abilitySource mBeforeAction [] (f cost)
+    ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] (f cost)
+    FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] (f cost)
     ForcedAbilityWithCost _ cost ->
-      getCanAffordCost iid abilitySource Nothing [] cost
+      getCanAffordCost iid abilitySource Nothing [] (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     AbilityEffect _ -> pure True
     Objective {} -> pure True
-    ForcedWhen _ aType -> go aType
+    ForcedWhen _ aType -> go f aType
 
 filterDepthSpecificAbilities :: (HasGame m) => [UsedAbility] -> m [UsedAbility]
 filterDepthSpecificAbilities usedAbilities = do

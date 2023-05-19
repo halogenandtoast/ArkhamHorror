@@ -51,6 +51,7 @@ data ModifierType
   | AdditionalActions Int
   | GiveAdditionalAction AdditionalAction
   | AdditionalStartingUses Int
+  | SetAbilityCost Cost
   | AdditionalCost Cost
   | ChangeRevealStrategy RevealStrategy
   | CannotTriggerAbilityMatching AbilityMatcher
@@ -227,6 +228,7 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyEvadeActionCriteria CriteriaOverride
   | CanPlayWithOverride CriteriaOverride
+  | SetAbilityCriteria CriteriaOverride
   | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
   | IgnoreLimit
   | CanIgnoreLimit

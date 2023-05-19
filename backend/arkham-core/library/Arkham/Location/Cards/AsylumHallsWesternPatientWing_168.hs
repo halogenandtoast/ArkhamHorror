@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.AsylumHallsWesternPatientWing_168
-  ( asylumHallsWesternPatientWing_168
-  , AsylumHallsWesternPatientWing_168(..)
-  ) where
+module Arkham.Location.Cards.AsylumHallsWesternPatientWing_168 (
+  asylumHallsWesternPatientWing_168,
+  AsylumHallsWesternPatientWing_168 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,20 +21,22 @@ newtype AsylumHallsWesternPatientWing_168 = AsylumHallsWesternPatientWing_168 Lo
 
 asylumHallsWesternPatientWing_168
   :: LocationCard AsylumHallsWesternPatientWing_168
-asylumHallsWesternPatientWing_168 = location
-  AsylumHallsWesternPatientWing_168
-  Cards.asylumHallsWesternPatientWing_168
-  2
-  (Static 0)
+asylumHallsWesternPatientWing_168 =
+  location
+    AsylumHallsWesternPatientWing_168
+    Cards.asylumHallsWesternPatientWing_168
+    2
+    (Static 0)
 
 instance HasAbilities AsylumHallsWesternPatientWing_168 where
-  getAbilities (AsylumHallsWesternPatientWing_168 attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here
-        $ ReactionAbility
-            (EnemyDefeated Timing.After You $ EnemyWithTrait Lunatic)
+  getAbilities (AsylumHallsWesternPatientWing_168 attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $
+          ReactionAbility
+            (EnemyDefeated Timing.After You ByAny $ EnemyWithTrait Lunatic)
             Free
-    ]
+      ]
 
 instance RunMessage AsylumHallsWesternPatientWing_168 where
   runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = case msg of

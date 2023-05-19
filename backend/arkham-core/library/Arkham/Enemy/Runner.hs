@@ -26,6 +26,7 @@ import Arkham.Classes
 import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
+import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
@@ -912,13 +913,17 @@ instance RunMessage EnemyAttrs where
             (setToList $ toTraits a)
       pure a
     EnemyDefeated eid _ source _ | eid == toId a -> do
+      modifiedHealth <- getModifiedHealth a
+      let
+        defeatedByDamage = a ^. damageL >= modifiedHealth
+        defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       whenMsg <-
         checkWindows
-          [Window Timing.When (Window.EnemyDefeated miid eid)]
+          [Window Timing.When (Window.EnemyDefeated miid defeatedBy eid)]
       afterMsg <-
         checkWindows
-          [Window Timing.After (Window.EnemyDefeated miid eid)]
+          [Window Timing.After (Window.EnemyDefeated miid defeatedBy eid)]
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
       let

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DrFrancisMorgan
-  ( drFrancisMorgan
-  , DrFrancisMorgan(..)
-  ) where
+module Arkham.Asset.Cards.DrFrancisMorgan (
+  drFrancisMorgan,
+  DrFrancisMorgan (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drFrancisMorgan :: AssetCard DrFrancisMorgan
@@ -22,14 +22,15 @@ drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 
 instance HasAbilities DrFrancisMorgan where
   getAbilities (DrFrancisMorgan x) =
-    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
-        (Matcher.EnemyDefeated Timing.After You AnyEnemy)
-        (ExhaustCost $ toTarget x)
+    [ restrictedAbility x 1 ControlsThis $
+        ReactionAbility
+          (Matcher.EnemyDefeated Timing.After You ByAny AnyEnemy)
+          (ExhaustCost $ toTarget x)
     ]
 
 instance HasModifiersFor DrFrancisMorgan where
   getModifiersFor (InvestigatorTarget iid) (DrFrancisMorgan a) =
-    pure [ toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid ]
+    pure [toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DrFrancisMorgan where

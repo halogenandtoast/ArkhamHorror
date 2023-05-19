@@ -31,7 +31,7 @@ instance HasAbilities HereticsGravesSpectral_172 where
       a
       [ mkAbility a 1 $
           ForcedAbility $
-            EnemyDefeated Timing.After Anyone $
+            EnemyDefeated Timing.After Anyone ByAny $
               enemyAt (toId a) <> EnemyWithTrait Witch
       ]
 

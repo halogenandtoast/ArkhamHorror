@@ -1,19 +1,19 @@
-module Arkham.Asset.Cards.GreteWagner3
-  ( greteWagner3
-  , GreteWagner3(..)
-  ) where
+module Arkham.Asset.Cards.GreteWagner3 (
+  greteWagner3,
+  GreteWagner3 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding ( EnemyDefeated )
+import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype GreteWagner3 = GreteWagner3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 greteWagner3 :: AssetCard GreteWagner3
@@ -21,22 +21,26 @@ greteWagner3 = ally GreteWagner3 Cards.greteWagner3 (4, 2)
 
 instance HasModifiersFor GreteWagner3 where
   getModifiersFor (InvestigatorTarget iid) (GreteWagner3 a)
-    | controlledBy a iid = pure $ toModifiers
-      a
-      [SkillModifier SkillCombat 1, SkillModifier SkillIntellect 1]
+    | controlledBy a iid =
+        pure $
+          toModifiers
+            a
+            [SkillModifier SkillCombat 1, SkillModifier SkillIntellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GreteWagner3 where
   getAbilities (GreteWagner3 a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> ClueOnLocation <> InvestigatorExists
-            (You <> InvestigatorCanDiscoverCluesAt YourLocation)
-          )
+        a
+        1
+        ( ControlsThis
+            <> ClueOnLocation
+            <> InvestigatorExists
+              (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+        )
         $ ReactionAbility
-            (EnemyDefeated Timing.After You AnyEnemy)
-            (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
+          (EnemyDefeated Timing.After You ByAny AnyEnemy)
+          (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
     ]
 
 instance RunMessage GreteWagner3 where

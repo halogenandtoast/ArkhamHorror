@@ -40,7 +40,7 @@ instance HasAbilities TheHermitIX where
   getAbilities (TheHermitIX (a `With` _)) =
     [ mkAbility a 1 $
         ReactionAbility
-          ( EnemyDefeated Timing.After You $
+          ( EnemyDefeated Timing.After You ByAny $
               EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
           )
           Free

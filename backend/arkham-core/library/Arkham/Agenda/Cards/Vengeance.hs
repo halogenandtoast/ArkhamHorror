@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.Vengeance
-  ( Vengeance(..)
-  , vengeance
-  ) where
+module Arkham.Agenda.Cards.Vengeance (
+  Vengeance (..),
+  vengeance,
+) where
 
 import Arkham.Prelude
 
@@ -11,22 +11,23 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding ( InvestigatorDefeated )
+import Arkham.Message hiding (InvestigatorDefeated)
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
-import Data.List ( cycle )
+import Data.List (cycle)
 
 newtype Vengeance = Vengeance AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengeance :: AgendaCard Vengeance
-vengeance = agendaWith
-  (7, A)
-  Vengeance
-  Cards.vengeance
-  (Static 0)
-  (doomThresholdL .~ Nothing)
+vengeance =
+  agendaWith
+    (7, A)
+    Vengeance
+    Cards.vengeance
+    (Static 0)
+    (doomThresholdL .~ Nothing)
 
 instance HasAbilities Vengeance where
   getAbilities (Vengeance a) =
@@ -35,8 +36,8 @@ instance HasAbilities Vengeance where
         a
         2
         (Negate $ InvestigatorExists UneliminatedInvestigator)
-      $ ForcedAbility
-      $ InvestigatorDefeated Timing.When AnySource ByAny Anyone
+        $ ForcedAbility
+        $ InvestigatorDefeated Timing.When ByAny Anyone
     ]
 
 instance RunMessage Vengeance where
@@ -47,16 +48,18 @@ instance RunMessage Vengeance where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       doom <- getDoomCount
       iids <- getInvestigatorIds
-      pushAll $ zipWith
-        ($)
-        (replicate
-          doom
-          (\i -> chooseOne
-            i
-            [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard i]]
+      pushAll $
+        zipWith
+          ($)
+          ( replicate
+              doom
+              ( \i ->
+                  chooseOne
+                    i
+                    [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard i]]
+              )
           )
-        )
-        (cycle iids)
+          (cycle iids)
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAgenda (toId attrs)

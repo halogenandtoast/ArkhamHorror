@@ -13,7 +13,6 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
@@ -49,7 +48,7 @@ instance HasAbilities Cnidathqua where
       , mkAbility attrs 2 $
           Objective $
             ForcedAbility $
-              EnemyDefeated Timing.When Anyone $
+              EnemyDefeated Timing.When Anyone ByAny $
                 EnemyWithId $
                   toId attrs
       ]
@@ -68,5 +67,5 @@ instance RunMessage Cnidathqua where
       lid <- getJustLocation iid
       e <$ push (SpawnEnemyAtEngagedWith (EncounterCard card) lid iid)
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      e <$ push (ScenarioResolution $ Resolution 2)
+      e <$ push (scenarioResolution 2)
     _ -> Cnidathqua <$> runMessage msg attrs

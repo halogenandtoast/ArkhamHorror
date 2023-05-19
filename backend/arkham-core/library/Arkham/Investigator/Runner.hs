@@ -463,8 +463,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       checkWindows
         ( ( `Window`
               Window.InvestigatorWouldBeDefeated
-                source
-                DefeatedByOther
+                (DefeatedByOther source)
                 (toId a)
           )
             <$> [Timing.When]
@@ -479,17 +478,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       defeatedByHorror = investigatorSanityDamage >= modifiedSanity
       defeatedByDamage = investigatorHealthDamage >= modifiedHealth
       defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-        (True, True) -> DefeatedByDamageAndHorror
-        (True, False) -> DefeatedByHorror
-        (False, True) -> DefeatedByDamage
-        (False, False) -> DefeatedByOther
+        (True, True) -> DefeatedByDamageAndHorror source
+        (True, False) -> DefeatedByHorror source
+        (False, True) -> DefeatedByDamage source
+        (False, False) -> DefeatedByOther source
       physicalTrauma =
         if investigatorHealthDamage >= modifiedHealth then 1 else 0
       mentalTrauma =
         if investigatorSanityDamage >= modifiedSanity then 1 else 0
     windowMsg <-
       checkWindows
-        ( (`Window` Window.InvestigatorDefeated source defeatedBy iid)
+        ( (`Window` Window.InvestigatorDefeated defeatedBy iid)
             <$> [Timing.After]
         )
     killed <- hasModifier a KilledIfDefeated
@@ -1745,15 +1744,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               + investigatorAssignedHealthDamage
               >= modifiedHealth
           defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-            (True, True) -> DefeatedByDamageAndHorror
-            (True, False) -> DefeatedByHorror
-            (False, True) -> DefeatedByDamage
-            (False, False) -> DefeatedByOther
+            (True, True) -> DefeatedByDamageAndHorror source
+            (True, False) -> DefeatedByHorror source
+            (False, True) -> DefeatedByDamage source
+            (False, False) -> DefeatedByOther source
         windowMsg <-
           checkWindows
             ( ( `Window`
                   Window.InvestigatorWouldBeDefeated
-                    source
                     defeatedBy
                     (toId a)
               )
@@ -1858,13 +1856,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       defeatedByHorror = investigatorSanityDamage >= modifiedSanity
       defeatedByDamage = investigatorHealthDamage >= modifiedHealth
       defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-        (True, True) -> DefeatedByDamageAndHorror
-        (True, False) -> DefeatedByHorror
-        (False, True) -> DefeatedByDamage
-        (False, False) -> DefeatedByOther
+        (True, True) -> DefeatedByDamageAndHorror source
+        (True, False) -> DefeatedByHorror source
+        (False, True) -> DefeatedByDamage source
+        (False, False) -> DefeatedByOther source
     windowMsg <-
       checkWindows
-        ( (`Window` Window.InvestigatorDefeated source defeatedBy iid)
+        ( (`Window` Window.InvestigatorDefeated defeatedBy iid)
             <$> [Timing.When]
         )
     pushAll [windowMsg, InvestigatorIsDefeated source iid]

@@ -4378,12 +4378,6 @@ runGameMessage msg g = case msg of
         push $ EnemyAttacks (EnemyAttack details2 : as)
       _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) $ map toUI as
     pure g
-  When (AssetDefeated aid) -> do
-    defeatedWindow <-
-      checkWindows
-        [Window Timing.When (Window.Defeated (AssetSource aid))]
-    push defeatedWindow
-    pure g
   Flipped (AssetSource aid) card
     | toCardType card /= AssetType ->
         pure $ g & entitiesL . assetsL %~ deleteMap aid

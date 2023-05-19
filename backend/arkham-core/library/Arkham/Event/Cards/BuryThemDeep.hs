@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.BuryThemDeep
-  ( buryThemDeep
-  , BuryThemDeep(..)
-  ) where
+module Arkham.Event.Cards.BuryThemDeep (
+  buryThemDeep,
+  BuryThemDeep (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -22,11 +22,12 @@ buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
 instance RunMessage BuryThemDeep where
   runMessage msg e@(BuryThemDeep attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ enemyId)] _
-      | eid == toId attrs
-      -> do
-        push $ AddToVictory (toTarget attrs)
-        e <$ replaceMessage
-          (Discard (toSource attrs) $ EnemyTarget enemyId)
-          [AddToVictory (EnemyTarget enemyId)]
+    InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ _ enemyId)] _
+      | eid == toId attrs ->
+          do
+            push $ AddToVictory (toTarget attrs)
+            replaceMessage
+              (Discard (toSource attrs) $ toTarget enemyId)
+              [AddToVictory (toTarget enemyId)]
+            pure e
     _ -> BuryThemDeep <$> runMessage msg attrs

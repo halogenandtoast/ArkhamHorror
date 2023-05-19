@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.RolandBanks
-  ( RolandBanks(..)
-  , rolandBanks
-  ) where
+module Arkham.Investigator.Cards.RolandBanks (
+  RolandBanks (..),
+  rolandBanks,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyDefeated )
+import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -20,27 +20,28 @@ newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolandBanks :: InvestigatorCard RolandBanks
-rolandBanks = investigator
-  RolandBanks
-  Cards.rolandBanks
-  Stats
-    { health = 9
-    , sanity = 5
-    , willpower = 3
-    , intellect = 3
-    , combat = 4
-    , agility = 2
-    }
+rolandBanks =
+  investigator
+    RolandBanks
+    Cards.rolandBanks
+    Stats
+      { health = 9
+      , sanity = 5
+      , willpower = 3
+      , intellect = 3
+      , combat = 4
+      , agility = 2
+      }
 
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks a) =
     [ limitedAbility (PlayerLimit PerRound 1)
         $ reaction
-            a
-            1
-            (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-            Free
-        $ EnemyDefeated Timing.After You AnyEnemy
+          a
+          1
+          (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
+          Free
+        $ EnemyDefeated Timing.After You ByAny AnyEnemy
     ]
 
 instance HasTokenValue RolandBanks where

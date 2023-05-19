@@ -14,7 +14,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding ( RevealLocation )
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Resolution
@@ -29,33 +29,37 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Zone
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
-  deriving stock Generic
+  deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
-theMiskatonicMuseum difficulty = scenario
-  TheMiskatonicMuseum
-  "02118"
-  "The Miskatonic Museum"
-  difficulty
-  [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
-  , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
-  , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
-  , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
-  , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-  , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-  ]
+theMiskatonicMuseum difficulty =
+  scenario
+    TheMiskatonicMuseum
+    "02118"
+    "The Miskatonic Museum"
+    difficulty
+    [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
+    , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
+    , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
+    , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
+    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+    ]
 
 instance HasTokenValue TheMiskatonicMuseum where
   getTokenValue iid tokenFace (TheMiskatonicMuseum attrs) = case tokenFace of
     Skull -> do
       huntingHorrorAtYourLocation <-
-        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAt
-          (LocationWithInvestigator $ InvestigatorWithId iid)
-      pure $ if huntingHorrorAtYourLocation
-        then toTokenValue attrs Skull 3 4
-        else toTokenValue attrs Skull 1 2
+        selectAny $
+          enemyIs Enemies.huntingHorror
+            <> EnemyAt
+              (LocationWithInvestigator $ InvestigatorWithId iid)
+      pure $
+        if huntingHorrorAtYourLocation
+          then toTokenValue attrs Skull 3 4
+          else toTokenValue attrs Skull 1 2
     Cultist -> pure $ toTokenValue attrs Cultist 1 3
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
@@ -97,17 +101,20 @@ instance RunMessage TheMiskatonicMuseum where
     Setup -> do
       investigatorIds <- allInvestigatorIds
 
-      armitageKidnapped <- getHasRecordOrStandalone
-        DrHenryArmitageWasKidnapped
-        True
+      armitageKidnapped <-
+        getHasRecordOrStandalone
+          DrHenryArmitageWasKidnapped
+          True
 
-      exhibitHalls <- shuffleM =<< genCards
-        [ Locations.exhibitHallAthabaskanExhibit
-        , Locations.exhibitHallMedusaExhibit
-        , Locations.exhibitHallNatureExhibit
-        , Locations.exhibitHallEgyptianExhibit
-        , Locations.exhibitHallHallOfTheDead
-        ]
+      exhibitHalls <-
+        shuffleM
+          =<< genCards
+            [ Locations.exhibitHallAthabaskanExhibit
+            , Locations.exhibitHallMedusaExhibit
+            , Locations.exhibitHallNatureExhibit
+            , Locations.exhibitHallEgyptianExhibit
+            , Locations.exhibitHallHallOfTheDead
+            ]
 
       let (bottom, top) = splitAt 2 exhibitHalls
 
@@ -117,25 +124,31 @@ instance RunMessage TheMiskatonicMuseum where
 
       let exhibitDeck = top <> bottom'
 
-      encounterDeck <- buildEncounterDeckExcluding
-        [Treacheries.shadowSpawned, Assets.haroldWalsted, Assets.adamLynch]
-        [ EncounterSet.TheMiskatonicMuseum
-        , EncounterSet.BadLuck
-        , EncounterSet.Sorcery
-        , EncounterSet.TheBeyond
-        , EncounterSet.ChillingCold
-        , EncounterSet.LockedDoors
-        ]
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          [Treacheries.shadowSpawned, Assets.haroldWalsted, Assets.adamLynch]
+          [ EncounterSet.TheMiskatonicMuseum
+          , EncounterSet.BadLuck
+          , EncounterSet.Sorcery
+          , EncounterSet.TheBeyond
+          , EncounterSet.ChillingCold
+          , EncounterSet.LockedDoors
+          ]
 
-      (museumEntranceId, placeMuseumEntrance) <- placeLocationCard
-        Locations.museumEntrance
+      (museumEntranceId, placeMuseumEntrance) <-
+        placeLocationCard
+          Locations.museumEntrance
       placeMuseumHalls <- placeLocationCard_ Locations.museumHalls
-      placeSecurityOffice <- placeLocationCard_ =<< sample
-        (Locations.securityOffice_128 :| [Locations.securityOffice_129])
-      placeAdministrationOffice <- placeLocationCard_ =<< sample
-        (Locations.administrationOffice_130
-        :| [Locations.administrationOffice_131]
-        )
+      placeSecurityOffice <-
+        placeLocationCard_
+          =<< sample
+            (Locations.securityOffice_128 :| [Locations.securityOffice_129])
+      placeAdministrationOffice <-
+        placeLocationCard_
+          =<< sample
+            ( Locations.administrationOffice_130
+                :| [Locations.administrationOffice_131]
+            )
 
       pushAll
         [ story investigatorIds intro1
@@ -151,37 +164,42 @@ instance RunMessage TheMiskatonicMuseum where
         , MoveAllTo (toSource attrs) museumEntranceId
         ]
 
-      setAsideCards <- genCards
-        [ Assets.haroldWalsted
-        , Assets.adamLynch
-        , Assets.theNecronomiconOlausWormiusTranslation
-        , Treacheries.shadowSpawned
-        ]
+      setAsideCards <-
+        genCards
+          [ Assets.haroldWalsted
+          , Assets.adamLynch
+          , Assets.theNecronomiconOlausWormiusTranslation
+          , Treacheries.shadowSpawned
+          ]
 
-      agendas <- genCards
-        [Agendas.restrictedAccess, Agendas.shadowsDeepen, Agendas.inEveryShadow]
-      acts <- genCards
-        [ Acts.findingAWayInside
-        , Acts.nightAtTheMuseum
-        , Acts.breakingAndEntering
-        , Acts.searchingForTheTome
-        ]
+      agendas <-
+        genCards
+          [Agendas.restrictedAccess, Agendas.shadowsDeepen, Agendas.inEveryShadow]
+      acts <-
+        genCards
+          [ Acts.findingAWayInside
+          , Acts.nightAtTheMuseum
+          , Acts.breakingAndEntering
+          , Acts.searchingForTheTome
+          ]
 
-      TheMiskatonicMuseum <$> runMessage
-        msg
-        (attrs
-        & (decksL . at ExhibitDeck ?~ exhibitDeck)
-        & (setAsideCardsL .~ setAsideCards)
-        & (actStackL . at 1 ?~ acts)
-        & (agendaStackL . at 1 ?~ agendas)
-        )
+      TheMiskatonicMuseum
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at ExhibitDeck ?~ exhibitDeck)
+              & (setAsideCardsL .~ setAsideCards)
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     PlacedLocation name _ lid -> do
       when (nameTitle name == "Exhibit Hall") $ do
         hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
         push (SetLocationLabel lid $ "hall" <> tshow hallCount)
       pure s
-    ResolveToken _ Tablet iid | isEasyStandard attrs ->
-      s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
+    ResolveToken _ Tablet iid
+      | isEasyStandard attrs ->
+          s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
@@ -190,13 +208,16 @@ instance RunMessage TheMiskatonicMuseum where
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
-        Cultist -> push $ FindEncounterCard
-          iid
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-          (cardIs Enemies.huntingHorror)
-        ElderThing -> push
-          $ ChooseAndDiscardAsset iid (TokenEffectSource ElderThing) AnyAsset
+        Cultist ->
+          push $
+            FindEncounterCard
+              iid
+              (toTarget attrs)
+              [FromEncounterDeck, FromEncounterDiscard, FromVoid]
+              (cardIs Enemies.huntingHorror)
+        ElderThing ->
+          push $
+            ChooseAndDiscardAsset iid (TokenEffectSource ElderThing) AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getJustLocation iid
@@ -207,52 +228,52 @@ instance RunMessage TheMiskatonicMuseum where
     ScenarioResolution NoResolution -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll
-        $ [ story iids noResolution
-          , Record TheInvestigatorsFailedToRecoverTheNecronomicon
-          ]
-        <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame Nothing]
+      pushAll $
+        [ story iids noResolution
+        , Record TheInvestigatorsFailedToRecoverTheNecronomicon
+        ]
+          <> [GainXP iid n | (iid, n) <- xp]
+          <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll
-        $ [ story iids resolution1
-          , Record TheInvestigatorsDestroyedTheNecronomicon
-          ]
-        <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame Nothing]
+      pushAll $
+        [ story iids resolution1
+        , Record TheInvestigatorsDestroyedTheNecronomicon
+        ]
+          <> [GainXP iid n | (iid, n) <- xp]
+          <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       lead <- getLead
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll
-        $ [ story investigatorIds resolution2
-          , Record TheInvestigatorsTookCustodyOfTheNecronomicon
-          , chooseOne
+      pushAll $
+        [ story investigatorIds resolution2
+        , Record TheInvestigatorsTookCustodyOfTheNecronomicon
+        , chooseOne
             lead
             [ Label
-              "Add The Necronomicon (Olaus Wormius Translation) to a deck"
-              [ chooseOne
-                  lead
-                  [ targetLabel
+                "Add The Necronomicon (Olaus Wormius Translation) to a deck"
+                [ chooseOne
+                    lead
+                    [ targetLabel
                       iid
                       [ AddCampaignCardToDeck
                           iid
                           Assets.theNecronomiconOlausWormiusTranslation
                       ]
-                  | iid <- investigatorIds
-                  ]
-              ]
+                    | iid <- investigatorIds
+                    ]
+                ]
             , Label
-              "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
-              []
+                "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
+                []
             ]
-          , AddToken ElderThing
-          ]
-        <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame Nothing]
+        , AddToken ElderThing
+        ]
+          <> [GainXP iid n | (iid, n) <- xp]
+          <> [EndOfGame Nothing]
       pure s
     _ -> TheMiskatonicMuseum <$> runMessage msg attrs

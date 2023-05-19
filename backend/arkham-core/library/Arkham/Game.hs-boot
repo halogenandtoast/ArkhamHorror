@@ -55,6 +55,7 @@ instance Query PreyMatcher
 instance Query RemainingActMatcher
 instance Query ScenarioMatcher
 instance Query SkillMatcher
+instance Query StoryMatcher
 instance Query TokenMatcher
 instance Query TreacheryMatcher
 

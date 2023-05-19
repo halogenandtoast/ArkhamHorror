@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.HarlansCurseSafekeeping
-  ( HarlansCurseSafekeeping(..)
-  , harlansCurseSafekeeping
-  ) where
+module Arkham.Act.Cards.HarlansCurseSafekeeping (
+  HarlansCurseSafekeeping (..),
+  harlansCurseSafekeeping,
+) where
 
 import Arkham.Prelude
 
@@ -31,13 +31,15 @@ harlansCurseSafekeeping =
 instance HasAbilities HarlansCurseSafekeeping where
   getAbilities (HarlansCurseSafekeeping a) =
     [ restrictedAbility
-          a
-          1
-          (AssetExists $ assetIs Assets.harlanEarnstone <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( AssetExists $
+          assetIs Assets.harlanEarnstone
+            <> AssetWithClues
+              (AtLeast $ PerPlayer 1)
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide A a
     ]
 
@@ -51,21 +53,22 @@ instance RunMessage HarlansCurseSafekeeping where
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       curiositieShoppe <- selectJust $ locationIs Locations.curiositieShoppe
       deckCount <- getActDecksInPlayCount
-      acolyteCount <- if deckCount <= 2
-        then getPlayerCountValue (ByPlayerCount 1 1 2 2)
-        else pure 0
+      acolyteCount <-
+        if deckCount <= 2
+          then getPlayerCountValue (ByPlayerCount 1 1 2 2)
+          else pure 0
       assetId <- getRandom
-      pushAll
-        $ CreateAssetAt assetId relicOfAges (AttachedToLocation curiositieShoppe)
-        : replicate
+      pushAll $
+        CreateAssetAt assetId relicOfAges (AttachedToLocation curiositieShoppe)
+          : replicate
             acolyteCount
-            (FindEncounterCard
-              leadInvestigatorId
-              (toTarget attrs)
-              [FromEncounterDeck]
-              (cardIs Enemies.acolyte)
+            ( FindEncounterCard
+                leadInvestigatorId
+                (toTarget attrs)
+                [FromEncounterDeck]
+                (cardIs Enemies.acolyte)
             )
-        <> [AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)]
+            <> [AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       curiositieShoppe <- selectJust $ locationIs Locations.curiositieShoppe

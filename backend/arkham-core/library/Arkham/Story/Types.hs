@@ -92,6 +92,9 @@ instance Entity StoryAttrs where
   toAttrs = id
   overAttrs f = f
 
+instance Named Story where
+  toName = toName . toAttrs
+
 instance Named StoryAttrs where
   toName = toName . toCardDef
 

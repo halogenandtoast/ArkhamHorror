@@ -1,7 +1,7 @@
-module Arkham.Helpers.Card
-  ( module Arkham.Helpers.Card
-  , module Arkham.Helpers.Campaign
-  ) where
+module Arkham.Helpers.Card (
+  module Arkham.Helpers.Card,
+  module Arkham.Helpers.Campaign,
+) where
 
 import Arkham.Prelude
 
@@ -19,7 +19,7 @@ import Arkham.Helpers.Campaign
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Location.Types
-import Arkham.Matcher hiding ( AssetCard, LocationCard )
+import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Projection
 
 isDiscardable :: Card -> Bool
@@ -30,13 +30,13 @@ isDiscardable = not . isWeakness
     EncounterCard _ -> True -- maybe?
     VengeanceCard _ -> False -- should be an error
 
-getCardPayments :: HasGame m => Card -> m (Maybe Payment)
+getCardPayments :: (HasGame m) => Card -> m (Maybe Payment)
 getCardPayments c = do
   costs <- getActiveCosts
   pure $ activeCostPayments <$> find (isCardTarget . activeCostTarget) costs
  where
   isCardTarget = \case
-    ForAbility{} -> False
+    ForAbility {} -> False
     ForCard _ c' -> toCardId c == toCardId c'
     ForCost c' -> toCardId c == toCardId c'
 
@@ -46,7 +46,7 @@ extendedCardMatch (toCard -> c) matcher =
   selectAny (BasicCardMatch (CardWithId (toCardId c)) <> matcher)
 
 class ConvertToCard a where
-  convertToCard :: HasGame m => a -> m Card
+  convertToCard :: (HasGame m) => a -> m Card
 
 instance ConvertToCard EnemyId where
   convertToCard = getEntityCard @Enemy
@@ -67,7 +67,7 @@ class (Projection a, Entity a) => CardEntity a where
   cardField :: Field a Card
 
 getEntityCard
-  :: forall a m . (CardEntity a, HasGame m) => EntityId a -> m Card
+  :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m Card
 getEntityCard = field (cardField @a)
 
 instance CardEntity Enemy where
@@ -102,8 +102,8 @@ getPrintedVictoryPoints = getCardField cdVictoryPoints
 getCardAbilities :: InvestigatorId -> Card -> [Ability]
 getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c
 
-findJustCard :: HasGame m => (Card -> Bool) -> m Card
+findJustCard :: (HasGame m) => (Card -> Bool) -> m Card
 findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
 
-findUniqueCard :: HasGame m => CardDef -> m Card
+findUniqueCard :: (HasGame m) => CardDef -> m Card
 findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))

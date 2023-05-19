@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Intrepid
-  ( intrepid
-  , Intrepid(..)
-  ) where
+module Arkham.Skill.Cards.Intrepid (
+  intrepid,
+  Intrepid (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,12 +24,12 @@ intrepid = skill Intrepid Cards.intrepid
 
 instance RunMessage Intrepid where
   runMessage msg s@(Intrepid attrs) = case msg of
-    PassedSkillTest iid (Just Action.Investigate) _ (isTarget attrs -> True) _ _
-      -> do
+    PassedSkillTest iid (Just Action.Investigate) _ (isTarget attrs -> True) _ _ ->
+      do
         intrepidAssetProxy <- genPlayerCard Assets.intrepid
         let
           intrepidAsset =
-            PlayerCard (intrepidAssetProxy { pcOriginalCardCode = toCardCode attrs })
+            PlayerCard $ intrepidAssetProxy {pcOriginalCardCode = toCardCode attrs}
           assetId = AssetId $ unSkillId $ toId attrs
         pushAll
           [ RemoveSkill $ toId attrs

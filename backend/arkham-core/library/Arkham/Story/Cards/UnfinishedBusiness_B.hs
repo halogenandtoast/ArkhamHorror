@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Creation
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Placement
@@ -64,7 +63,7 @@ instance RunMessage UnfinishedBusiness_B where
       send $ format card <> " is \"banished\""
       push $ AddToVictory (toTarget attrs)
       pure s
-    Flip iid _ (isTarget attrs -> True) -> do
+    Flip _ _ (isTarget attrs -> True) -> do
       heretic <- genCard Enemies.heretic_A
       creation <- createEnemy heretic (storyPlacement attrs)
       pushAll

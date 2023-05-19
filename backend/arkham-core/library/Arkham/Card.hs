@@ -22,6 +22,7 @@ import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
+import Arkham.Keyword (Keyword (Peril))
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
@@ -122,6 +123,9 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardMatches ms -> all (cardMatch a) ms
   CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
   CardWithOneOf ms -> any (cardMatch a) ms
+  CardWithoutKeyword Peril -> case toCard a of
+    EncounterCard ec -> Peril `notMember` cdKeywords (toCardDef a) && not (ecAddedPeril ec)
+    _ -> Peril `notMember` cdKeywords (toCardDef a)
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a
   NonSignature -> not . isSignature $ toCardDef a

@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 
 newtype ChapelCryptSpectral_173 = ChapelCryptSpectral_173 LocationAttrs

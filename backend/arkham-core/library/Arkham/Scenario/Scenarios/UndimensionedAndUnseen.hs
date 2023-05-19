@@ -1,7 +1,7 @@
-module Arkham.Scenario.Scenarios.UndimensionedAndUnseen
-  ( UndimensionedAndUnseen(..)
-  , undimensionedAndUnseen
-  ) where
+module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (
+  UndimensionedAndUnseen (..),
+  undimensionedAndUnseen,
+) where
 
 import Arkham.Prelude
 
@@ -18,12 +18,12 @@ import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Helpers
 import Arkham.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding ( ChosenRandomLocation, RevealLocation )
+import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
@@ -35,26 +35,27 @@ import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding ( Cultist )
-import Arkham.Window ( defaultWindows )
+import Arkham.Trait hiding (Cultist)
+import Arkham.Window (defaultWindows)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
-undimensionedAndUnseen difficulty = scenario
-  UndimensionedAndUnseen
-  "02236"
-  "Undimensioned and Unseen"
-  difficulty
-  [ ". blastedHeath devilsHopYard"
-  , ". blastedHeath devilsHopYard"
-  , "dunwichVillage tenAcreMeadow ."
-  , "dunwichVillage tenAcreMeadow whateleyRuins"
-  , ". coldSpringGlen whateleyRuins"
-  , ". coldSpringGlen ."
-  ]
+undimensionedAndUnseen difficulty =
+  scenario
+    UndimensionedAndUnseen
+    "02236"
+    "Undimensioned and Unseen"
+    difficulty
+    [ ". blastedHeath devilsHopYard"
+    , ". blastedHeath devilsHopYard"
+    , "dunwichVillage tenAcreMeadow ."
+    , "dunwichVillage tenAcreMeadow whateleyRuins"
+    , ". coldSpringGlen whateleyRuins"
+    , ". coldSpringGlen ."
+    ]
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =
@@ -79,10 +80,12 @@ standaloneTokens =
   ]
 
 standaloneCampaignLog :: CampaignLog
-standaloneCampaignLog = mkCampaignLog
-  { campaignLogRecordedSets = mapFromList
-    [(SacrificedToYogSothoth, [recorded @CardCode "02040"])]
-  }
+standaloneCampaignLog =
+  mkCampaignLog
+    { campaignLogRecordedSets =
+        mapFromList
+          [(SacrificedToYogSothoth, [recorded @CardCode "02040"])]
+    }
 
 instance HasTokenValue UndimensionedAndUnseen where
   getTokenValue iid tokenFace (UndimensionedAndUnseen attrs) =
@@ -104,48 +107,61 @@ instance RunMessage UndimensionedAndUnseen where
       pure
         . UndimensionedAndUnseen
         $ attrs
-        & standaloneCampaignLogL
-        .~ standaloneCampaignLog
+          & standaloneCampaignLogL
+            .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead
-      s <$ pushAll
-        [ story investigatorIds intro
-        , chooseOne
-          lead
-          [ Label
-            "You try to calm down the townsfolk in order to learn more."
-            [SetupStep (toTarget attrs) 1]
-          , Label
-            "You try to warn the townsfolk and convince them to evacuate."
-            [SetupStep (toTarget attrs) 2]
+      s
+        <$ pushAll
+          [ story investigatorIds intro
+          , chooseOne
+              lead
+              [ Label
+                  "You try to calm down the townsfolk in order to learn more."
+                  [SetupStep (toTarget attrs) 1]
+              , Label
+                  "You try to warn the townsfolk and convince them to evacuate."
+                  [SetupStep (toTarget attrs) 2]
+              ]
           ]
-        ]
     SetupStep (isTarget attrs -> True) n -> do
       standalone <- getIsStandalone
       investigatorIds <- allInvestigatorIds
-      encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.broodOfYogSothoth, Assets.esotericFormula]
-        [ EncounterSet.UndimensionedAndUnseen
-        , EncounterSet.Whippoorwills
-        , EncounterSet.BeastThralls
-        , EncounterSet.Dunwich
-        , EncounterSet.StrikingFear
-        ]
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          [Enemies.broodOfYogSothoth, Assets.esotericFormula]
+          [ EncounterSet.UndimensionedAndUnseen
+          , EncounterSet.Whippoorwills
+          , EncounterSet.BeastThralls
+          , EncounterSet.Dunwich
+          , EncounterSet.StrikingFear
+          ]
 
-      dunwichVillage <- genCard =<< sample
-        (Locations.dunwichVillage_242 :| [Locations.dunwichVillage_243])
-      coldSpringGlen <- genCard =<< sample
-        (Locations.coldSpringGlen_244 :| [Locations.coldSpringGlen_245])
-      tenAcreMeadow <- genCard =<< sample
-        (Locations.tenAcreMeadow_246 :| [Locations.tenAcreMeadow_247])
+      dunwichVillage <-
+        genCard
+          =<< sample
+            (Locations.dunwichVillage_242 :| [Locations.dunwichVillage_243])
+      coldSpringGlen <-
+        genCard
+          =<< sample
+            (Locations.coldSpringGlen_244 :| [Locations.coldSpringGlen_245])
+      tenAcreMeadow <-
+        genCard
+          =<< sample
+            (Locations.tenAcreMeadow_246 :| [Locations.tenAcreMeadow_247])
       blastedHeath <-
-        genCard =<< sample
-          (Locations.blastedHeath_248 :| [Locations.blastedHeath_249])
-      whateleyRuins <- genCard =<< sample
-        (Locations.whateleyRuins_250 :| [Locations.whateleyRuins_251])
-      devilsHopYard <- genCard =<< sample
-        (Locations.devilsHopYard_252 :| [Locations.devilsHopYard_253])
+        genCard
+          =<< sample
+            (Locations.blastedHeath_248 :| [Locations.blastedHeath_249])
+      whateleyRuins <-
+        genCard
+          =<< sample
+            (Locations.whateleyRuins_250 :| [Locations.whateleyRuins_251])
+      devilsHopYard <-
+        genCard
+          =<< sample
+            (Locations.devilsHopYard_252 :| [Locations.devilsHopYard_253])
 
       (dunwichVillageId, placeDunwichVillage) <- placeLocation dunwichVillage
       (coldSpringGlenId, placeColdSpringGlen) <- placeLocation coldSpringGlen
@@ -154,109 +170,120 @@ instance RunMessage UndimensionedAndUnseen where
       placeWhateleyRuins <- placeLocation_ whateleyRuins
       placeDevilsHopYard <- placeLocation_ devilsHopYard
 
-      sacrificedToYogSothoth <- if standalone
-        then pure 3
-        else length <$> getRecordSet SacrificedToYogSothoth
+      sacrificedToYogSothoth <-
+        if standalone
+          then pure 3
+          else length <$> getRecordSet SacrificedToYogSothoth
 
-      investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
-        investigatorIds
-        (\iid -> do
-          powderOfIbnGhazi <-
-            find ((== "02219") . toCardCode)
-              <$> fieldMap InvestigatorDeck unDeck iid
-          pure $ (iid, ) <$> powderOfIbnGhazi
-        )
+      investigatorsWithPowderOfIbnGhazi <-
+        catMaybes
+          <$> for
+            investigatorIds
+            ( \iid -> do
+                powderOfIbnGhazi <-
+                  find ((== "02219") . toCardCode)
+                    <$> fieldMap InvestigatorDeck unDeck iid
+                pure $ (iid,) <$> powderOfIbnGhazi
+            )
 
       broodOfYogSothoth <- genCard Enemies.broodOfYogSothoth
-      createBroodOfYogSothoth <- createEnemyAt_
-        broodOfYogSothoth
-        coldSpringGlenId
-        Nothing
+      createBroodOfYogSothoth <-
+        createEnemyAt_
+          broodOfYogSothoth
+          coldSpringGlenId
+          Nothing
       (msgs, setAsideCount) <- case sacrificedToYogSothoth of
         2 -> pure ([createBroodOfYogSothoth], 3)
         3 -> pure ([createBroodOfYogSothoth], 2)
-        x -> if x <= 2
-          then do
-            broodOfYogSothoth2 <- genCard Enemies.broodOfYogSothoth
-            createBroodOfYogSothoth2 <- createEnemyAt_
-              broodOfYogSothoth2
-              blastedHeathId
-              Nothing
-            pure ([createBroodOfYogSothoth, createBroodOfYogSothoth2], 3)
-          else pure ([], 2)
+        x ->
+          if x <= 2
+            then do
+              broodOfYogSothoth2 <- genCard Enemies.broodOfYogSothoth
+              createBroodOfYogSothoth2 <-
+                createEnemyAt_
+                  broodOfYogSothoth2
+                  blastedHeathId
+                  Nothing
+              pure ([createBroodOfYogSothoth, createBroodOfYogSothoth2], 3)
+            else pure ([], 2)
 
-      setAsideBroodOfYogSothoth <- replicateM
-        setAsideCount
-        (genCard Enemies.broodOfYogSothoth)
+      setAsideBroodOfYogSothoth <-
+        replicateM
+          setAsideCount
+          (genCard Enemies.broodOfYogSothoth)
 
       setAsideCards <- replicateM 4 (genCard Assets.esotericFormula)
 
-      pushAll
-        $ [ story investigatorIds (if n == 1 then introPart1 else introPart2)
-          , Record
+      pushAll $
+        [ story investigatorIds (if n == 1 then introPart1 else introPart2)
+        , Record
             (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeDunwichVillage
-          , placeColdSpringGlen
-          , placeTenAcreMeadow
-          , placeBlastedHeath
-          , placeWhateleyRuins
-          , placeDevilsHopYard
-          ]
-        <> [ RevealLocation Nothing dunwichVillageId
-           , MoveAllTo (toSource attrs) dunwichVillageId
-           ]
-        <> [ chooseOne
-               iid
-               [ Label
-                 "Play Powder of Ibn-Ghazi"
-                 [ PutCardIntoPlay
-                     iid
-                     (PlayerCard card)
-                     Nothing
-                     (defaultWindows iid)
-                 ]
-               , Label "Do no play Powder of Ibn-Ghazi" []
-               ]
-           | (iid, card) <- investigatorsWithPowderOfIbnGhazi
-           ]
-        <> [ SearchCollectionForRandom
-               iid
-               (toSource attrs)
-               (CardWithType PlayerTreacheryType
-               <> CardWithOneOf (map CardWithTrait [Madness, Injury, Pact])
-               )
-           | not standalone
-           , iid <- investigatorIds
-           ]
-        <> msgs
-
-      agendas <- genCards
-        [ Agendas.rampagingCreatures
-        , Agendas.bidingItsTime
-        , Agendas.horrorsUnleashed
+        , SetEncounterDeck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        , placeDunwichVillage
+        , placeColdSpringGlen
+        , placeTenAcreMeadow
+        , placeBlastedHeath
+        , placeWhateleyRuins
+        , placeDevilsHopYard
         ]
+          <> [ RevealLocation Nothing dunwichVillageId
+             , MoveAllTo (toSource attrs) dunwichVillageId
+             ]
+          <> [ chooseOne
+              iid
+              [ Label
+                  "Play Powder of Ibn-Ghazi"
+                  [ PutCardIntoPlay
+                      iid
+                      (PlayerCard card)
+                      Nothing
+                      (defaultWindows iid)
+                  ]
+              , Label "Do no play Powder of Ibn-Ghazi" []
+              ]
+             | (iid, card) <- investigatorsWithPowderOfIbnGhazi
+             ]
+          <> [ SearchCollectionForRandom
+              iid
+              (toSource attrs)
+              ( CardWithType PlayerTreacheryType
+                  <> CardWithOneOf (map CardWithTrait [Madness, Injury, Pact])
+              )
+             | not standalone
+             , iid <- investigatorIds
+             ]
+          <> msgs
+
+      agendas <-
+        genCards
+          [ Agendas.rampagingCreatures
+          , Agendas.bidingItsTime
+          , Agendas.horrorsUnleashed
+          ]
       acts <- genCards [Acts.saracenicScript, Acts.theyMustBeDestroyed]
 
-      UndimensionedAndUnseen <$> runMessage
-        msg
-        (attrs
-        & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards)
-        & (actStackL . at 1 ?~ acts)
-        & (agendaStackL . at 1 ?~ agendas)
-        )
+      UndimensionedAndUnseen
+        <$> runMessage
+          msg
+          ( attrs
+              & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards)
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     ResolveToken _ Cultist iid -> do
       push $ DrawAnotherToken iid
       pure s
-    ResolveToken drawnToken Tablet _ -> s <$ push
-      (CreateEffect
-        "02236"
-        Nothing
-        (TokenSource drawnToken)
-        (TokenTarget drawnToken)
-      )
+    ResolveToken drawnToken Tablet _ ->
+      s
+        <$ push
+          ( CreateEffect
+              "02236"
+              Nothing
+              (TokenSource drawnToken)
+              (TokenTarget drawnToken)
+          )
     ResolveToken _ ElderThing iid -> do
       msource <- getSkillTestSource
       case msource of
@@ -266,10 +293,10 @@ instance RunMessage UndimensionedAndUnseen where
             Just (EnemyTarget eid) -> do
               enemyCardCode <- field EnemyCardCode eid
               when
-                  (enemyCardCode
-                  == "02255"
-                  && (action `elem` [Action.Evade, Action.Fight])
-                  )
+                ( enemyCardCode
+                    == "02255"
+                    && (action `elem` [Action.Evade, Action.Fight])
+                )
                 $ push
                 $ EnemyAttack
                 $ enemyAttack eid iid
@@ -278,12 +305,20 @@ instance RunMessage UndimensionedAndUnseen where
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       case tokenFace token of
-        Cultist -> push $ InvestigatorAssignDamage iid (TokenEffectSource Cultist) DamageAny (if isHardExpert attrs then 1 else 0) 1
+        Cultist ->
+          push $
+            InvestigatorAssignDamage
+              iid
+              (TokenEffectSource Cultist)
+              DamageAny
+              (if isHardExpert attrs then 1 else 0)
+              1
         _ -> pure ()
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard $ \card -> push
-        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+      for_ mcard $ \card ->
+        push $
+          ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
@@ -292,23 +327,23 @@ instance RunMessage UndimensionedAndUnseen where
       xp <- getXp
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
-        . length
-        <$> getBroodOfYogSothoth
-      pushAll
-        $ [ story investigatorIds resolution1
-          , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
-          ]
-        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
-        <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame Nothing]
+          . length
+          <$> getBroodOfYogSothoth
+      pushAll $
+        [ story investigatorIds resolution1
+        , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+        ]
+          <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
+          <> [GainXP iid n | (iid, n) <- xp]
+          <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll
-        $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
-        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
-        <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame Nothing]
+      pushAll $
+        [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
+          <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
+          <> [GainXP iid n | (iid, n) <- xp]
+          <> [EndOfGame Nothing]
       pure s
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

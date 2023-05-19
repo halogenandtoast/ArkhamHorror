@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheCaveOfDarknessEmbroiledInBattle
-  ( TheCaveOfDarknessEmbroiledInBattle(..)
-  , theCaveOfDarknessEmbroiledInBattle
-  ) where
+module Arkham.Act.Cards.TheCaveOfDarknessEmbroiledInBattle (
+  TheCaveOfDarknessEmbroiledInBattle (..),
+  theCaveOfDarknessEmbroiledInBattle,
+) where
 
 import Arkham.Prelude
 
@@ -26,12 +26,12 @@ newtype TheCaveOfDarknessEmbroiledInBattle = TheCaveOfDarknessEmbroiledInBattle 
 instance HasAbilities TheCaveOfDarknessEmbroiledInBattle where
   getAbilities (TheCaveOfDarknessEmbroiledInBattle attrs) =
     [ restrictedAbility
-          attrs
-          999
-          (LocationExists
-          $ LocationWithTitle "Black Cave"
-          <> LocationWithoutClues
-          )
+        attrs
+        999
+        ( LocationExists $
+            LocationWithTitle "Black Cave"
+              <> LocationWithoutClues
+        )
         $ Objective
         $ FastAbility
         $ GroupClueCost (PerPlayer 2)
@@ -40,29 +40,30 @@ instance HasAbilities TheCaveOfDarknessEmbroiledInBattle where
 
 theCaveOfDarknessEmbroiledInBattle
   :: ActCard TheCaveOfDarknessEmbroiledInBattle
-theCaveOfDarknessEmbroiledInBattle = act
-  (2, E)
-  TheCaveOfDarknessEmbroiledInBattle
-  Cards.theCaveOfDarknessEmbroiledInBattle
-  Nothing
+theCaveOfDarknessEmbroiledInBattle =
+  act
+    (2, E)
+    TheCaveOfDarknessEmbroiledInBattle
+    Cards.theCaveOfDarknessEmbroiledInBattle
+    Nothing
 
 instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
   runMessage msg a@(TheCaveOfDarknessEmbroiledInBattle attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       deckCount <- getActDecksInPlayCount
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
-          ]
-        <> [ DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
-           | deckCount <= 2
-           ]
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.theBrotherhoodIsRevealed
-               E
-               (toSource attrs)
-           ]
+      pushAll $
+        [ ShuffleEncounterDiscardBackIn
+        , DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
+        ]
+          <> [ DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
+             | deckCount <= 2
+             ]
+          <> [ AdvanceToAct
+                (actDeckId attrs)
+                Acts.theBrotherhoodIsRevealed
+                E
+                (toSource attrs)
+             ]
       pure a
     RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
       blackCave <- selectJust $ locationIs Locations.blackCave

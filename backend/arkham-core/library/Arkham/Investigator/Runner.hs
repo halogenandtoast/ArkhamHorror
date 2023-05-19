@@ -42,7 +42,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
-import Arkham.Helpers.SkillTest (getIsPerilous)
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Location.Types (Field (..))

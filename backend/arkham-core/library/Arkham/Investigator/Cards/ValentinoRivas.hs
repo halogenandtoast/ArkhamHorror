@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.ValentinoRivas
-  ( valentinoRivas
-  , ValentinoRivas(..)
-  ) where
+module Arkham.Investigator.Cards.ValentinoRivas (
+  valentinoRivas,
+  ValentinoRivas (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,58 +22,62 @@ import Arkham.Source
 newtype ValentinoRivas = ValentinoRivas (InvestigatorAttrs `With` PrologueMetadata)
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
-  deriving newtype Entity
+  deriving newtype (Entity)
 
 valentinoRivas :: PrologueMetadata -> InvestigatorCard ValentinoRivas
-valentinoRivas meta = investigatorWith
-  (ValentinoRivas . (`with` meta))
-  Cards.valentinoRivas
-  Stats
-    { health = 5
-    , sanity = 7
-    , willpower = 1
-    , intellect = 3
-    , combat = 2
-    , agility = 4
-    }
-  ((startsWithL
-   .~ [Cards.wellConnected]
-   )
-  .(startsWithInHandL
-   .~ [ Cards.fortyOneDerringer
-      , Cards.opportunist
-      , Cards.sureGamble3
-      , Cards.moneyTalks
-      , Cards.moneyTalks
-      , Cards.cunning
-      , Cards.cunning
-      ]
-   )
-  )
+valentinoRivas meta =
+  investigatorWith
+    (ValentinoRivas . (`with` meta))
+    Cards.valentinoRivas
+    Stats
+      { health = 5
+      , sanity = 7
+      , willpower = 1
+      , intellect = 3
+      , combat = 2
+      , agility = 4
+      }
+    ( ( startsWithL
+          .~ [Cards.wellConnected]
+      )
+        . ( startsWithInHandL
+              .~ [ Cards.fortyOneDerringer
+                 , Cards.opportunist
+                 , Cards.sureGamble3
+                 , Cards.moneyTalks
+                 , Cards.moneyTalks
+                 , Cards.cunning
+                 , Cards.cunning
+                 ]
+          )
+    )
 
 instance HasModifiersFor ValentinoRivas where
-  getModifiersFor target (ValentinoRivas (a `With` _)) | isTarget a target =
-    pure $ toModifiersWith
-      a
-      setActiveDuringSetup
-      [ CannotTakeAction (IsAction Action.Draw)
-      , CannotDrawCards
-      , CannotManipulateDeck
-      , StartingResources 5
-      ]
+  getModifiersFor target (ValentinoRivas (a `With` _))
+    | isTarget a target =
+        pure $
+          toModifiersWith
+            a
+            setActiveDuringSetup
+            [ CannotTakeAction (IsAction Action.Draw)
+            , CannotDrawCards
+            , CannotManipulateDeck
+            , StartingResources 5
+            ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas (a `With` _)) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility a 1 (Self <> DuringSkillTest (YourSkillTest AnySkillTest))
-        $ FastAbility $ ResourceCost 2
+    [ limitedAbility (PlayerLimit PerRound 1) $
+        restrictedAbility a 1 (Self <> DuringSkillTest (YourSkillTest AnySkillTest)) $
+          FastAbility $
+            ResourceCost 2
     ]
 
 instance HasTokenValue ValentinoRivas where
   getTokenValue iid ElderSign (ValentinoRivas (attrs `With` _))
     | iid == toId attrs = do
-      pure $ TokenValue ElderSign $ PositiveModifier 1
+        pure $ TokenValue ElderSign $ PositiveModifier 1
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance RunMessage ValentinoRivas where
@@ -93,8 +97,9 @@ instance RunMessage ValentinoRivas where
       pure i
     DiscardCard iid _ cardId | iid == toId attrs -> do
       let
-        card = fromJustNote "must be in hand"
-          $ find ((== cardId) . toCardId) (investigatorHand attrs)
+        card =
+          fromJustNote "must be in hand" $
+            find ((== cardId) . toCardId) (investigatorHand attrs)
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do

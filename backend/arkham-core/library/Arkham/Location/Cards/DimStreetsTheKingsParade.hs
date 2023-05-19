@@ -13,7 +13,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Scenarios.DimCarcosa.Helpers
-import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 import Arkham.Timing qualified as Timing
 

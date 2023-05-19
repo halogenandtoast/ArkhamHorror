@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Asset.Types where
 
 import Arkham.Prelude
@@ -7,11 +8,11 @@ import Arkham.Ability
 import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
-import Arkham.ClassSymbol
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -21,11 +22,11 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token ( Token )
-import Arkham.Trait ( Trait )
+import Arkham.Token (Token)
+import Arkham.Trait (Trait)
 import Data.Typeable
 
-data Asset = forall a . IsAsset a => Asset a
+data Asset = forall a. (IsAsset a) => Asset a
 
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
@@ -51,9 +52,9 @@ instance Entity Asset where
   toAttrs (Asset a) = toAttrs a
   overAttrs f (Asset a) = Asset $ overAttrs f a
 
-data SomeAssetCard = forall a . IsAsset a => SomeAssetCard (AssetCard a)
+data SomeAssetCard = forall a. (IsAsset a) => SomeAssetCard (AssetCard a)
 
-liftAssetCard :: (forall a . AssetCard a -> b) -> SomeAssetCard -> b
+liftAssetCard :: (forall a. AssetCard a -> b) -> SomeAssetCard -> b
 liftAssetCard f (SomeAssetCard a) = f a
 
 someAssetCardCode :: SomeAssetCard -> CardCode
@@ -67,8 +68,20 @@ instance Sourceable Asset where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AssetId, EntityAttrs a ~ AssetAttrs) => IsAsset a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ AssetId
+  , EntityAttrs a ~ AssetAttrs
+  ) =>
+  IsAsset a
 
 type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
 
@@ -189,7 +202,7 @@ instance FromJSON AssetAttrs where
 instance IsCard AssetAttrs where
   toCardId = assetCardId
   toCard a = case lookupCard (assetOriginalCardCode a) (toCardId a) of
-    PlayerCard pc -> PlayerCard $ pc { pcOwner = assetOwner a }
+    PlayerCard pc -> PlayerCard $ pc {pcOwner = assetOwner a}
     ec -> ec
   toCardOwner = assetOwner
 
@@ -204,33 +217,36 @@ assetWith
   -> CardDef
   -> (AssetAttrs -> AssetAttrs)
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
-assetWith f cardDef g = CardBuilder
-  { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \cardId (aid, mOwner) -> f . g $ AssetAttrs
-    { assetId = aid
-    , assetCardId = cardId
-    , assetCardCode = toCardCode cardDef
-    , assetOriginalCardCode = toCardCode cardDef
-    , assetOwner = mOwner
-    , assetController = mOwner
-    , assetPlacement = Unplaced
-    , assetSlots = cdSlots cardDef
-    , assetHealth = Nothing
-    , assetSanity = Nothing
-    , assetUses = NoUses
-    , assetExhausted = False
-    , assetDoom = 0
-    , assetClues = 0
-    , assetDamage = 0
-    , assetHorror = 0
-    , assetResources = 0
-    , assetCanLeavePlayByNormalMeans = True
-    , assetDiscardWhenNoUses = False
-    , assetIsStory = False
-    , assetCardsUnderneath = []
-    , assetSealedTokens = []
+assetWith f cardDef g =
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \cardId (aid, mOwner) ->
+        f . g $
+          AssetAttrs
+            { assetId = aid
+            , assetCardId = cardId
+            , assetCardCode = toCardCode cardDef
+            , assetOriginalCardCode = toCardCode cardDef
+            , assetOwner = mOwner
+            , assetController = mOwner
+            , assetPlacement = Unplaced
+            , assetSlots = cdSlots cardDef
+            , assetHealth = Nothing
+            , assetSanity = Nothing
+            , assetUses = NoUses
+            , assetExhausted = False
+            , assetDoom = 0
+            , assetClues = 0
+            , assetDamage = 0
+            , assetHorror = 0
+            , assetResources = 0
+            , assetCanLeavePlayByNormalMeans = True
+            , assetDiscardWhenNoUses = False
+            , assetIsStory = False
+            , assetCardsUnderneath = []
+            , assetSealedTokens = []
+            }
     }
-  }
 
 instance Entity AssetAttrs where
   type EntityId AssetAttrs = AssetId
@@ -253,7 +269,7 @@ instance Targetable AssetAttrs where
 
 instance Sourceable AssetAttrs where
   toSource = AssetSource . toId
-  isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
+  isSource AssetAttrs {assetId} (AssetSource aid) = assetId == aid
   isSource _ _ = False
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
@@ -268,15 +284,15 @@ attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
   _ -> False
 
 whenControlledBy
-  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
+  :: (Applicative m) => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenControlledBy a iid f = if controlledBy a iid then f else pure []
 
 makeLensesWith suffixedFields ''AssetAttrs
 
-getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
+getOwner :: (HasCallStack) => AssetAttrs -> InvestigatorId
 getOwner = fromJustNote "asset must be owned" . view ownerL
 
-getController :: HasCallStack => AssetAttrs -> InvestigatorId
+getController :: (HasCallStack) => AssetAttrs -> InvestigatorId
 getController = fromJustNote "asset must be controlled" . view controllerL
 
 ally
@@ -292,10 +308,11 @@ allyWith
   -> (Int, Int)
   -> (AssetAttrs -> AssetAttrs)
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
-allyWith f cardDef (health, sanity) g = assetWith
-  f
-  cardDef
-  (g . setSanity . setHealth)
+allyWith f cardDef (health, sanity) g =
+  assetWith
+    f
+    cardDef
+    (g . setSanity . setHealth)
  where
   setHealth = healthL .~ (health <$ guard (health > 0))
   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))

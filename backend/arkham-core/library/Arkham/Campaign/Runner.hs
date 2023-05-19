@@ -1,7 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Campaign.Runner
-  ( module X
-  ) where
+
+module Arkham.Campaign.Runner (
+  module X,
+) where
 
 import Arkham.Prelude
 
@@ -29,55 +30,64 @@ instance RunMessage CampaignAttrs where
       a <$ pushAll [ResetInvestigators, ResetGame, StartScenario sid]
     CampaignStep (Just (UpgradeDeckStep _)) -> do
       investigatorIds <- allInvestigatorIds
-      a <$ pushAll
-        (ResetGame
-        : map chooseUpgradeDeck investigatorIds
-        <> [FinishedUpgradingDecks]
-        )
+      a
+        <$ pushAll
+          ( ResetGame
+              : map chooseUpgradeDeck investigatorIds
+                <> [FinishedUpgradingDecks]
+          )
     SetTokensForScenario -> a <$ push (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardDef -> do
       card <- genPlayerCard cardDef
-      pure $ a & storyCardsL %~ insertWith
-        (<>)
-        iid
-        [card { pcOwner = Just iid }]
+      pure $
+        a
+          & storyCardsL
+            %~ insertWith
+              (<>)
+              iid
+              [card {pcOwner = Just iid}]
     RemoveCampaignCard cardDef -> do
-      pure
-        $ a
-        & storyCardsL
-        %~ Map.map (filter ((/= cardDef) . toCardDef))
-        & decksL
-        %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
+      pure $
+        a
+          & storyCardsL
+            %~ Map.map (filter ((/= cardDef) . toCardDef))
+          & decksL
+            %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
     RemoveCampaignCardFromDeck iid cardDef ->
-      pure
-        $ a
-        & storyCardsL
-        %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
-        & decksL
-        %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
+      pure $
+        a
+          & storyCardsL
+            %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
+          & decksL
+            %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     RemoveAllTokens token -> pure $ a & chaosBagL %~ filter (/= token)
     InitDeck iid deck -> do
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
       let
-        mentalTrauma = getSum $ foldMap
-          (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-          deck'
-      pushAll
-        $ map (AddCampaignCardToDeck iid) randomWeaknesses
-        <> [ SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0 ]
+        mentalTrauma =
+          getSum $
+            foldMap
+              (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+              deck'
+      pushAll $
+        map (AddCampaignCardToDeck iid) randomWeaknesses
+          <> [SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0]
 
       pure $ a & decksL %~ insertMap iid deck'
     UpgradeDeck iid deck -> do
       let
         oldDeck = fromJustNote "No deck?" $ lookup iid campaignDecks
-        deckDiff = foldr
-          (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))
-          (unDeck deck)
-          (unDeck oldDeck)
-        mentalTrauma = getSum $ foldMap
-          (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-          deckDiff
+        deckDiff =
+          foldr
+            (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))
+            (unDeck deck)
+            (unDeck oldDeck)
+        mentalTrauma =
+          getSum $
+            foldMap
+              (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
+              deckDiff
       -- We remove the random weakness if the upgrade deck still has it listed
       -- since this will have been added at the beginning of the campaign
       (deck', _) <- addRandomBasicWeaknessIfNeeded deck
@@ -100,23 +110,23 @@ instance RunMessage CampaignAttrs where
         removeOrderedKey =
           if key `member` view (logL . recordedL) a then filter (/= key) else id
 
-      pure
-        $ a
-        & (logL . recordedL %~ deleteSet key)
-        & (logL . crossedOutL %~ crossedOutModifier)
-        & (logL . recordedSetsL %~ deleteMap key)
-        & (logL . recordedCountsL %~ deleteMap key)
-        & (logL . orderedKeysL %~ removeOrderedKey)
+      pure $
+        a
+          & (logL . recordedL %~ deleteSet key)
+          & (logL . crossedOutL %~ crossedOutModifier)
+          & (logL . recordedSetsL %~ deleteMap key)
+          & (logL . recordedCountsL %~ deleteMap key)
+          & (logL . orderedKeysL %~ removeOrderedKey)
     Record key -> do
       send $ "Record \"" <> format key <> "\""
-      pure
-        $ a
-        & logL
-        . recordedL
-        %~ insertSet key
-        & logL
-        . orderedKeysL
-        %~ (<> [key])
+      pure $
+        a
+          & logL
+            . recordedL
+            %~ insertSet key
+          & logL
+            . orderedKeysL
+            %~ (<> [key])
     RecordSetInsert key recs -> do
       let defs = mapMaybe lookupCardDef $ recordedCardCodes recs
       for_ defs $ \def ->
@@ -129,44 +139,55 @@ instance RunMessage CampaignAttrs where
             set' =
               filter (`notElem` recs) set
                 <> recs
-          in a & logL . recordedSetsL %~ insertMap key set'
+          in
+            a & logL . recordedSetsL %~ insertMap key set'
     CrossOutRecordSetEntries key recs ->
-      pure
-        $ a
-        & logL
-        . recordedSetsL
-        %~ adjustMap
-             (map
-               (\case
-                 someRec@(SomeRecorded k (Recorded c)) | someRec `elem` recs ->
-                   SomeRecorded k (CrossedOut c)
-                 other -> other
-               )
-             )
-             key
+      pure $
+        a
+          & ( logL
+                . recordedSetsL
+                %~ adjustMap
+                  ( map
+                      ( \case
+                          someRec@(SomeRecorded k (Recorded c))
+                            | someRec `elem` recs ->
+                                SomeRecorded k (CrossedOut c)
+                          other -> other
+                      )
+                  )
+                  key
+            )
     RecordCount key int ->
       pure $ a & logL . recordedCountsL %~ insertMap key int
     ScenarioResolution r -> case campaignStep of
       Just (ScenarioStep sid) -> pure $ a & resolutionsL %~ insertMap sid r
       _ -> error "must be called in a scenario"
-    DrivenInsane iid -> pure $ a & logL . recordedSetsL %~ insertWith
-      (<>)
-      DrivenInsaneInvestigators
-      (singleton $ recorded $ unInvestigatorId iid)
-    InvestigatorKilled _ iid -> pure $ a & logL . recordedSetsL %~ insertWith
-      (<>)
-      KilledInvestigators
-      (singleton $ recorded $ unInvestigatorId iid)
+    DrivenInsane iid ->
+      pure $
+        a
+          & logL . recordedSetsL
+            %~ insertWith
+              (<>)
+              DrivenInsaneInvestigators
+              (singleton $ recorded $ unInvestigatorId iid)
+    InvestigatorKilled _ iid ->
+      pure $
+        a
+          & logL . recordedSetsL
+            %~ insertWith
+              (<>)
+              KilledInvestigators
+              (singleton $ recorded $ unInvestigatorId iid)
     CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
-      pure
-        $ a
-        & decksL
-        %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
+      pure $
+        a
+          & decksL
+            %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
     AddCardToDeckForCampaign iid pc -> do
-      pure
-        $ a
-        & decksL
-        %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
+      pure $
+        a
+          & decksL
+            %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
     RemoveCardFromDeckForCampaign iid pc ->
       pure $ a & decksL %~ adjustMap (withDeck (filter (/= pc))) iid
     _ -> pure a

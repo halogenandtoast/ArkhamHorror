@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot
-  ( AtTheExhibitTheBrotherhoodsPlot(..)
-  , atTheExhibitTheBrotherhoodsPlot
-  ) where
+module Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot (
+  AtTheExhibitTheBrotherhoodsPlot (..),
+  atTheExhibitTheBrotherhoodsPlot,
+) where
 
 import Arkham.Prelude
 
@@ -23,11 +23,12 @@ newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 atTheExhibitTheBrotherhoodsPlot :: ActCard AtTheExhibitTheBrotherhoodsPlot
-atTheExhibitTheBrotherhoodsPlot = act
-  (2, A)
-  AtTheExhibitTheBrotherhoodsPlot
-  Cards.atTheExhibitTheBrotherhoodsPlot
-  Nothing
+atTheExhibitTheBrotherhoodsPlot =
+  act
+    (2, A)
+    AtTheExhibitTheBrotherhoodsPlot
+    Cards.atTheExhibitTheBrotherhoodsPlot
+    Nothing
 
 instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
   runMessage msg a@(AtTheExhibitTheBrotherhoodsPlot attrs) = case msg of
@@ -35,10 +36,10 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
         [ FindEncounterCard
-          leadInvestigatorId
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
-          (cardIs Enemies.brotherhoodCultist)
+            leadInvestigatorId
+            (toTarget attrs)
+            [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
+            (cardIs Enemies.brotherhoodCultist)
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.recoverTheRelic A (toSource attrs)
         ]
@@ -46,31 +47,35 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       brotherhoodCultists <- selectList $ enemyIs Enemies.brotherhoodCultist
-      farthestBrotherhoodCultists <- selectList $ FarthestEnemyFromAll $ enemyIs
-        Enemies.brotherhoodCultist
+      farthestBrotherhoodCultists <-
+        selectList $
+          FarthestEnemyFromAll $
+            enemyIs
+              Enemies.brotherhoodCultist
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       assetId <- getRandom
-      pushAll
-        $ map
-            ((`HealAllDamage` toSource attrs) . EnemyTarget)
-            brotherhoodCultists
-        <> [ chooseOrRunOne
-               leadInvestigatorId
-               [ targetLabel cultist
-                 $ CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
-                 : [ PlaceDoom (EnemyTarget cultist) 1 | deckCount <= 2 ]
-               | cultist <- farthestBrotherhoodCultists
-               ]
-           ]
+      pushAll $
+        map
+          ((`HealAllDamage` toSource attrs) . EnemyTarget)
+          brotherhoodCultists
+          <> [ chooseOrRunOne
+                leadInvestigatorId
+                [ targetLabel cultist $
+                  CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
+                    : [PlaceDoom (EnemyTarget cultist) 1 | deckCount <= 2]
+                | cultist <- farthestBrotherhoodCultists
+                ]
+             ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       locations <- selectList $ FarthestLocationFromAll Anywhere
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOrRunOne
-        leadInvestigatorId
-        [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
-        | location <- locations
-        ]
+      push $
+        chooseOrRunOne
+          leadInvestigatorId
+          [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
+          | location <- locations
+          ]
       pure a
     _ -> AtTheExhibitTheBrotherhoodsPlot <$> runMessage msg attrs

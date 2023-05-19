@@ -1,23 +1,25 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Card.EncounterCard where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
-import Arkham.Json
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.Id
+import Arkham.EncounterCard
+import Arkham.Json
 import Arkham.Name
 import Data.Aeson.TH
 
-newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCard :: EncounterCard }
+newtype DiscardedEncounterCard = DiscardedEncounterCard {unDiscardedEncounterCard :: EncounterCard}
 
 data EncounterCard = MkEncounterCard
   { ecId :: CardId
   , ecCardCode :: CardCode
   , ecOriginalCardCode :: CardCode
   , ecIsFlipped :: Maybe Bool
+  , ecAddedPeril :: Bool
   }
   deriving stock (Show, Eq, Ord)
 
@@ -37,12 +39,14 @@ instance HasOriginalCardCode EncounterCard where
   toOriginalCardCode = ecOriginalCardCode
 
 lookupEncounterCard :: CardDef -> CardId -> EncounterCard
-lookupEncounterCard cardDef cardId = MkEncounterCard
-  { ecId = cardId
-  , ecCardCode = toCardCode cardDef
-  , ecOriginalCardCode = toCardCode cardDef
-  , ecIsFlipped =
-    Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
-  }
+lookupEncounterCard cardDef cardId =
+  MkEncounterCard
+    { ecId = cardId
+    , ecCardCode = toCardCode cardDef
+    , ecOriginalCardCode = toCardCode cardDef
+    , ecIsFlipped =
+        Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
+    , ecAddedPeril = False
+    }
 
 $(deriveJSON (aesonOptions $ Just "ec") ''EncounterCard)

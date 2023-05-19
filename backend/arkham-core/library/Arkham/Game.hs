@@ -1104,9 +1104,14 @@ abilityMatches a@Ability {..} = \case
     LocationSource lid' -> member lid' <$> select locationMatcher
     ProxySource (LocationSource lid') _ -> member lid' <$> select locationMatcher
     _ -> pure False
+  AbilityOnStory storyMatcher -> case abilitySource of
+    StorySource sid' -> member sid' <$> select storyMatcher
+    ProxySource (StorySource sid') _ -> member sid' <$> select storyMatcher
+    _ -> pure False
   AbilityIsAction action -> pure $ abilityAction a == Just action
   AbilityIsActionAbility -> pure $ abilityIsActionAbility a
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
+  AbilityIsForcedAbility -> pure $ abilityIsForcedAbility a
   AbilityIsReactionAbility -> pure $ abilityIsReactionAbility a
   AbilityIs source idx -> pure $ abilitySource == source && abilityIndex == idx
   AbilityWindow windowMatcher -> pure $ abilityWindow == windowMatcher
@@ -1159,6 +1164,12 @@ getGameAbilities = do
   agendaAbilities <-
     concatMap getAbilities
       <$> filterM unblanked (toList $ g ^. entitiesL . agendasL)
+  storyAbilities <-
+    concatMap getAbilities
+      <$> filterM unblanked (toList $ g ^. entitiesL . storiesL)
+  skillAbilities <-
+    concatMap getAbilities
+      <$> filterM unblanked (toList $ g ^. entitiesL . skillsL)
   eventAbilities <-
     concatMap getAbilities
       <$> filterM
@@ -1190,6 +1201,8 @@ getGameAbilities = do
       <> agendaAbilities
       <> effectAbilities
       <> investigatorAbilities
+      <> storyAbilities
+      <> skillAbilities
 
 replaceMatcherSources :: (HasGame m) => Ability -> m [Ability]
 replaceMatcherSources ability = case abilitySource ability of
@@ -1882,6 +1895,17 @@ getStory sid = do
       preview (entitiesL . storiesL . ix sid) g
  where
   missingStory = "Unknown story: " <> show sid
+
+getStoriesMatching :: (HasGame m) => StoryMatcher -> m [Story]
+getStoriesMatching matcher = do
+  stories <- toList . view (entitiesL . storiesL) <$> getGame
+  filterMatcher stories matcher
+ where
+  filterMatcher as = \case
+    StoryWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
+    StoryMatchAll ms -> foldM filterMatcher as ms
+    StoryWithPlacement placement ->
+      pure $ filter ((== placement) . storyPlacement . toAttrs) as
 
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
 getEnemy eid =
@@ -3048,6 +3072,9 @@ instance Query AbilityMatcher where
 
 instance Query SkillMatcher where
   select = fmap (setFromList . map toId) . getSkillsMatching
+
+instance Query StoryMatcher where
+  select = fmap (setFromList . map toId) . getStoriesMatching
 
 instance Query TreacheryMatcher where
   select = fmap (setFromList . map toId) . getTreacheriesMatching

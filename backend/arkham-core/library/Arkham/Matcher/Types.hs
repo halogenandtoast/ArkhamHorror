@@ -776,11 +776,13 @@ data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher]
 
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher
+  | AbilityOnStory StoryMatcher
   | AbilityWindow WindowMatcher
   | AbilityIsAction Action
   | AbilityIsActionAbility
   | AbilityIsReactionAbility
   | AbilityIsFastAbility
+  | AbilityIsForcedAbility
   | AbilityMatches [AbilityMatcher]
   | AbilityOneOf [AbilityMatcher]
   | AbilityIs Source Int
@@ -888,6 +890,18 @@ data RemoveDoomMatchers = RemoveDoomMatchers
 newtype RemainingActMatcher = RemainingActMatcher {unRemainingActMatcher :: ActMatcher}
   deriving stock (Show, Eq, Ord)
 
+data StoryMatcher
+  = StoryWithTitle Text
+  | StoryWithPlacement Placement
+  | StoryMatchAll [StoryMatcher]
+  deriving stock (Show, Eq, Ord)
+
+instance Semigroup StoryMatcher where
+  StoryMatchAll xs <> StoryMatchAll ys = StoryMatchAll (xs <> ys)
+  StoryMatchAll xs <> x = StoryMatchAll $ xs <> [x]
+  x <> StoryMatchAll xs = StoryMatchAll (x : xs)
+  x <> y = StoryMatchAll [x, y]
+
 $( do
     ability <- deriveJSON defaultOptions ''AbilityMatcher
     act <- deriveJSON defaultOptions ''ActMatcher
@@ -917,6 +931,7 @@ $( do
     skillTestValue <- deriveJSON defaultOptions ''SkillTestValueMatcher
     skillType <- deriveJSON defaultOptions ''SkillTypeMatcher
     source <- deriveJSON defaultOptions ''SourceMatcher
+    story <- deriveJSON defaultOptions ''StoryMatcher
     target <- deriveJSON defaultOptions ''TargetMatcher
     targetList <- deriveJSON defaultOptions ''TargetListMatcher
     token <- deriveJSON defaultOptions ''TokenMatcher
@@ -954,6 +969,7 @@ $( do
         , skillTestValue
         , skillType
         , source
+        , story
         , target
         , targetList
         , token

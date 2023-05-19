@@ -1,9 +1,10 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.SkillTest.Runner
-  ( module X
-  , skillIconCount
-  , getCurrentSkillValue
-  ) where
+
+module Arkham.SkillTest.Runner (
+  module X,
+  skillIconCount,
+  getCurrentSkillValue,
+) where
 
 import Arkham.Prelude
 
@@ -14,10 +15,10 @@ import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Game.Helpers hiding ( matches )
+import Arkham.Game.Helpers hiding (matches)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -29,12 +30,12 @@ import Arkham.Stats
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
-import Control.Lens ( each )
+import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
-calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+calculateSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers SkillTestTarget
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
@@ -42,9 +43,11 @@ calculateSkillTestResultsData s = do
   iconCount <- if cancelSkills then pure 0 else skillIconCount s
   subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
-  tokenValues <- sum <$> for
-    (skillTestRevealedTokens s <> skillTestResolvedTokens s)
-    (getModifiedTokenValue s)
+  tokenValues <-
+    sum
+      <$> for
+        (skillTestRevealedTokens s <> skillTestResolvedTokens s)
+        (getModifiedTokenValue s)
   let
     addResultModifier n (SkillTestResultValueModifier m) = n + m
     addResultModifier n _ = n
@@ -54,39 +57,43 @@ calculateSkillTestResultsData s = do
       max 0 (currentSkillValue + totaledTokenValues + iconCount - subtractIconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
     isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
-  pure $ SkillTestResultsData
-    currentSkillValue
-    (iconCount - subtractIconCount)
-    totaledTokenValues
-    modifiedSkillTestDifficulty
-    (resultValueModifiers <$ guard (resultValueModifiers /= 0))
-    isSuccess
+  pure $
+    SkillTestResultsData
+      currentSkillValue
+      (iconCount - subtractIconCount)
+      totaledTokenValues
+      modifiedSkillTestDifficulty
+      (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+      isSuccess
 
-autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  tokenValues <- sum <$> for
-    (skillTestRevealedTokens s <> skillTestResolvedTokens s)
-    (getModifiedTokenValue s)
+  tokenValues <-
+    sum
+      <$> for
+        (skillTestRevealedTokens s <> skillTestResolvedTokens s)
+        (getModifiedTokenValue s)
   let
     totaledTokenValues = tokenValues + (skillTestValueModifier s)
-  pure $ SkillTestResultsData
-    0
-    0
-    totaledTokenValues
-    modifiedSkillTestDifficulty
-    Nothing
-    False
+  pure $
+    SkillTestResultsData
+      0
+      0
+      totaledTokenValues
+      modifiedSkillTestDifficulty
+      Nothing
+      False
 
-getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
+getAlternateSkill :: (HasGame m) => SkillTest -> SkillType -> m SkillType
 getAlternateSkill st sType = do
   modifiers' <- getModifiers (skillTestInvestigator st)
   pure $ foldr applyModifier sType modifiers'
  where
-   applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
-   applyModifier _ a = a
+  applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
+  applyModifier _ a = a
 
-getCurrentSkillValue :: HasGame m => SkillTest -> m Int
+getCurrentSkillValue :: (HasGame m) => SkillTest -> m Int
 getCurrentSkillValue st = do
   case skillTestBaseValue st of
     SkillBaseValue sType -> do
@@ -96,17 +103,20 @@ getCurrentSkillValue st = do
     HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
     StaticBaseValue n -> pure n
 
-skillIconCount :: HasGame m => SkillTest -> m Int
+skillIconCount :: (HasGame m) => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
-  totalIcons <- count matches <$> concatMapM
-      iconsForCard
-      (concat $ toList skillTestCommittedCards)
+  totalIcons <-
+    count matches
+      <$> concatMapM
+        iconsForCard
+        (concat $ toList skillTestCommittedCards)
   case skillTestType of
     SkillSkillTest sType -> do
       investigatorModifiers <- getModifiers skillTestInvestigator
-      pure $ if SkillCannotBeIncreased sType `elem` investigatorModifiers
-        then 0
-        else totalIcons
+      pure $
+        if SkillCannotBeIncreased sType `elem` investigatorModifiers
+          then 0
+          else totalIcons
     ResourceSkillTest -> pure totalIcons
  where
   matches WildMinusIcon = False
@@ -115,7 +125,7 @@ skillIconCount SkillTest {..} = do
     SkillSkillTest sType -> s == sType
     ResourceSkillTest -> False
 
-subtractSkillIconCount :: HasGame m => SkillTest -> m Int
+subtractSkillIconCount :: (HasGame m) => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =
   count matches <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
  where
@@ -123,7 +133,7 @@ subtractSkillIconCount SkillTest {..} =
   matches WildIcon = False
   matches (SkillIcon _) = False
 
-getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
+getModifiedSkillTestDifficulty :: (HasGame m) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers SkillTestTarget
   let
@@ -139,44 +149,51 @@ getModifiedSkillTestDifficulty s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedTokenValue :: HasGame m => SkillTest -> Token -> m Int
+getModifiedTokenValue :: (HasGame m) => SkillTest -> Token -> m Int
 getModifiedTokenValue s t = do
   tokenModifiers' <- getModifiers (TokenTarget t)
   modifiedTokenFaces' <- getModifiedTokenFaces [t]
-  getSum <$> foldMapM
-    (\tokenFace -> do
-      baseTokenValue <- getTokenValue (skillTestInvestigator s) tokenFace ()
-      let
-        updatedTokenValue =
-          tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
-      pure . Sum $ fromMaybe 0 updatedTokenValue
-    )
-    modifiedTokenFaces'
+  getSum
+    <$> foldMapM
+      ( \tokenFace -> do
+          baseTokenValue <- getTokenValue (skillTestInvestigator s) tokenFace ()
+          let
+            updatedTokenValue =
+              tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
+          pure . Sum $ fromMaybe 0 updatedTokenValue
+      )
+      modifiedTokenFaces'
  where
   applyModifier IgnoreToken (TokenValue token _) = TokenValue token NoModifier
   applyModifier (ChangeTokenModifier modifier') (TokenValue token _) =
     TokenValue token modifier'
   applyModifier NegativeToPositive (TokenValue token (NegativeModifier n)) =
     TokenValue token (PositiveModifier n)
-  applyModifier NegativeToPositive (TokenValue token (DoubleNegativeModifier n))
-    = TokenValue token (PositiveModifier n)
-  applyModifier DoubleNegativeModifiersOnTokens (TokenValue token (NegativeModifier n))
-    = TokenValue token (DoubleNegativeModifier n)
-  applyModifier (TokenValueModifier m) (TokenValue token (PositiveModifier n))
-    = TokenValue token (PositiveModifier (max 0 (n + m)))
-  applyModifier (TokenValueModifier m) (TokenValue token (NegativeModifier n))
-    = TokenValue token (NegativeModifier (max 0 (n - m)))
+  applyModifier NegativeToPositive (TokenValue token (DoubleNegativeModifier n)) =
+    TokenValue token (PositiveModifier n)
+  applyModifier DoubleNegativeModifiersOnTokens (TokenValue token (NegativeModifier n)) =
+    TokenValue token (DoubleNegativeModifier n)
+  applyModifier (TokenValueModifier m) (TokenValue token (PositiveModifier n)) =
+    TokenValue token (PositiveModifier (max 0 (n + m)))
+  applyModifier (TokenValueModifier m) (TokenValue token (NegativeModifier n)) =
+    TokenValue token (NegativeModifier (max 0 (n - m)))
   applyModifier _ currentTokenValue = currentTokenValue
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     SetSkillTestTarget target -> do
-      pure $ s { skillTestTarget = target }
+      pure $ s {skillTestTarget = target}
     Discard _ target | target == skillTestTarget -> do
-      pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)]
+      pushAll
+        [ SkillTestEnds skillTestInvestigator skillTestSource
+        , Do (SkillTestEnds skillTestInvestigator skillTestSource)
+        ]
       pure s
     RemoveFromGame target | target == skillTestTarget -> do
-      pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)]
+      pushAll
+        [ SkillTestEnds skillTestInvestigator skillTestSource
+        , Do (SkillTestEnds skillTestInvestigator skillTestSource)
+        ]
       pure s
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
@@ -192,25 +209,26 @@ instance RunMessage SkillTest where
               pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
               for_ tokensTreatedAsRevealed $ \tokenFace -> do
                 t <- getRandom
-                pushAll
-                  $ resolve (RevealToken (toSource s) iid (Token t tokenFace))
-        else if SkillTestAutomaticallySucceeds `elem` modifiers'
-          then pushAll [PassSkillTest, UnsetActiveCard]
-          else do
-            let
-              applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
-              applyRevealStategyModifier n _ = n
-              revealStrategy =
-                foldl' applyRevealStategyModifier (Reveal 1) modifiers'
-            pushAll
-              [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
-              , RunSkillTest iid
-              ]
+                pushAll $
+                  resolve (RevealToken (toSource s) iid (Token t tokenFace))
+        else
+          if SkillTestAutomaticallySucceeds `elem` modifiers'
+            then pushAll [PassSkillTest, UnsetActiveCard]
+            else do
+              let
+                applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+                applyRevealStategyModifier n _ = n
+                revealStrategy =
+                  foldl' applyRevealStategyModifier (Reveal 1) modifiers'
+              pushAll
+                [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
+                , RunSkillTest iid
+                ]
       pure s
     DrawAnotherToken iid -> do
       withQueue_ $ filter $ \case
-        Will FailedSkillTest{} -> False
-        Will PassedSkillTest{} -> False
+        Will FailedSkillTest {} -> False
+        Will PassedSkillTest {} -> False
         CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
           False
         CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
@@ -225,19 +243,28 @@ instance RunMessage SkillTest where
         , RunSkillTest iid
         ]
       pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
-    RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces
-      -> do
+    RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces ->
+      do
         skillTestModifiers' <- getModifiers SkillTestTarget
         windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
-        push $ if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'
-          then CommitToSkillTest s (Label "Done Comitting" $ [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestTokens iid])
-          else RevealSkillTestTokens iid
+        push $
+          if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'
+            then
+              CommitToSkillTest
+                s
+                (Label "Done Comitting" $ [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestTokens iid])
+            else RevealSkillTestTokens iid
         for_ tokenFaces $ \tokenFace -> do
           let
             revealMsg = RevealToken (SkillTestSource siid skillType source maction) iid tokenFace
-          pushAll [When revealMsg, CheckWindow [iid] [Window Timing.AtIf (Window.RevealToken iid tokenFace)], revealMsg, After revealMsg]
+          pushAll
+            [ When revealMsg
+            , CheckWindow [iid] [Window Timing.AtIf (Window.RevealToken iid tokenFace)]
+            , revealMsg
+            , After revealMsg
+            ]
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
-    RevealToken SkillTestSource{} iid token -> do
+    RevealToken SkillTestSource {} iid token -> do
       push
         (CheckWindow [iid] [Window Timing.After (Window.RevealToken iid token)])
       pure $ s & revealedTokensL %~ (token :)
@@ -247,16 +274,16 @@ instance RunMessage SkillTest where
         (skillTestRevealedTokens \\ skillTestResolvedTokens)
         \token -> do
           faces <- getModifiedTokenFaces [token]
-          pure [ (token, face) | face <- faces ]
+          pure [(token, face) | face <- faces]
       pushAll
         [ ResolveToken drawnToken tokenFace iid
         | (drawnToken, tokenFace) <- revealedTokenFaces
         ]
-      pure
-        $ s
-        & (subscribersL
-          %~ (nub . (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ]))
-          )
+      pure $
+        s
+          & ( subscribersL
+                %~ (nub . (<> [TokenTarget token' | token' <- skillTestRevealedTokens]))
+            )
     PassSkillTest -> do
       currentSkillValue <- getCurrentSkillValue s
       iconCount <- skillIconCount s
@@ -272,32 +299,32 @@ instance RunMessage SkillTest where
     FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
-      pushAll
-        $ SkillTestResults resultsData
-        : [ Will
-              (FailedSkillTest
-                skillTestInvestigator
-                skillTestAction
-                skillTestSource
-                target
-                skillTestType
-                difficulty
+      pushAll $
+        SkillTestResults resultsData
+          : [ Will
+              ( FailedSkillTest
+                  skillTestInvestigator
+                  skillTestAction
+                  skillTestSource
+                  target
+                  skillTestType
+                  difficulty
               )
-          | target <- skillTestSubscribers
-          ]
-        <> [ Will
-             (FailedSkillTest
-               skillTestInvestigator
-               skillTestAction
-               skillTestSource
-               (SkillTestInitiatorTarget skillTestTarget)
-               skillTestType
-               difficulty
-             )
-           , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
-           , SkillTestEnds skillTestInvestigator skillTestSource
-           , Do (SkillTestEnds skillTestInvestigator skillTestSource)
-           ]
+            | target <- skillTestSubscribers
+            ]
+            <> [ Will
+                  ( FailedSkillTest
+                      skillTestInvestigator
+                      skillTestAction
+                      skillTestSource
+                      (SkillTestInitiatorTarget skillTestTarget)
+                      skillTestType
+                      difficulty
+                  )
+               , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
+               , SkillTestEnds skillTestInvestigator skillTestSource
+               , Do (SkillTestEnds skillTestInvestigator skillTestSource)
+               ]
       pure $ s & resultL .~ FailedBy Automatic difficulty
     StartSkillTest _ -> do
       windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
@@ -310,28 +337,30 @@ instance RunMessage SkillTest where
       modifiers' <- getModifiers iid
       let
         msgs = map (CommitCard iid) cards
-        additionalCosts = mapMaybe
-          (\case
-            CommitCost c -> Just c
-            _ -> Nothing
-          )
-          modifiers'
+        additionalCosts =
+          mapMaybe
+            ( \case
+                CommitCost c -> Just c
+                _ -> Nothing
+            )
+            modifiers'
       if null additionalCosts
         then pushAll msgs
         else do
-          canPay <- getCanAffordCost
-            iid
-            (toSource s)
-            Nothing
-            [Window Timing.When Window.NonFast]
-            (mconcat additionalCosts)
+          canPay <-
+            getCanAffordCost
+              iid
+              (toSource s)
+              Nothing
+              [Window Timing.When Window.NonFast]
+              (mconcat additionalCosts)
           iid' <- getActiveInvestigatorId
-          when canPay
-            $ pushAll
-            $ [SetActiveInvestigator iid | iid /= iid']
-            <> [PayForAbility (abilityEffect s $ mconcat additionalCosts) []]
-            <> [SetActiveInvestigator iid' | iid /= iid']
-            <> msgs
+          when canPay $
+            pushAll $
+              [SetActiveInvestigator iid | iid /= iid']
+                <> [PayForAbility (abilityEffect s $ mconcat additionalCosts) []]
+                <> [SetActiveInvestigator iid' | iid /= iid']
+                <> msgs
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
@@ -353,35 +382,36 @@ instance RunMessage SkillTest where
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
       push $ ResetTokens (toSource s)
-      pure
-        $ s
-        & (setAsideTokensL .~ mempty)
-        & (revealedTokensL .~ mempty)
-        & (resolvedTokensL .~ mempty)
-        & (valueModifierL .~ 0)
+      pure $
+        s
+          & (setAsideTokensL .~ mempty)
+          & (revealedTokensL .~ mempty)
+          & (resolvedTokensL .~ mempty)
+          & (valueModifierL .~ 0)
     Do (SkillTestEnds _ _) -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
       let
-        discards = concatMap
-          (\case
-            (iid, cards) -> flip mapMaybe cards $ \case
-              PlayerCard pc -> (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
-              EncounterCard _ -> Nothing
-              VengeanceCard _ -> Nothing
-          )
-          (s ^. committedCardsL . to mapToList)
+        discards =
+          concatMap
+            ( \case
+                (iid, cards) -> flip mapMaybe cards $ \case
+                  PlayerCard pc -> (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
+                  EncounterCard _ -> Nothing
+                  VengeanceCard _ -> Nothing
+            )
+            (s ^. committedCardsL . to mapToList)
 
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
-      pushAll
-        $ ResetTokens (toSource s)
-        : map (uncurry AddToDiscard) discards
-        <> skillTestEndsWindows
-        <> [ AfterSkillTestEnds
-               skillTestSource
-               skillTestTarget
-               skillTestResult
-           ]
+      pushAll $
+        ResetTokens (toSource s)
+          : map (uncurry AddToDiscard) discards
+            <> skillTestEndsWindows
+            <> [ AfterSkillTestEnds
+                  skillTestSource
+                  skillTestTarget
+                  skillTestResult
+               ]
       pure s
     ReturnToHand _ (CardIdTarget cardId) -> do
       liftIO $ do
@@ -390,13 +420,13 @@ instance RunMessage SkillTest where
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     ReturnToHand _ (CardTarget card) -> do
       pure $ s & committedCardsL . each %~ filter (/= card)
-    SkillTestResults{} -> do
+    SkillTestResults {} -> do
       modifiers' <- getModifiers (toTarget s)
       -- We may be recalculating so we want to remove all windows an buttons to apply
       removeAllMessagesMatching $ \case
-        Will (PassedSkillTest{}) -> True
-        Will (FailedSkillTest{}) -> True
-        Ask _ (ChooseOne [ SkillTestApplyResultsButton ]) -> True
+        Will (PassedSkillTest {}) -> True
+        Will (FailedSkillTest {}) -> True
+        Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
         _ -> False
 
       push (chooseOne skillTestInvestigator [SkillTestApplyResultsButton])
@@ -409,57 +439,62 @@ instance RunMessage SkillTest where
           FailedBy b m -> FailedBy b (max 0 (m + n))
         modifySkillTestResult r _ = r
       case modifiedSkillTestResult of
-        SucceededBy _ n -> pushAll
-          ([ Will
-               (PassedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 target
-                 skillTestType
-                 n
-               )
-           | target <- skillTestSubscribers
-           ]
-          <> [ Will
-                 (PassedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestType
-                   n
-                 )
-             ]
-          )
-        FailedBy _ n -> pushAll
-          ([ Will
-               (FailedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 target
-                 skillTestType
-                 n
-               )
-           | target <- skillTestSubscribers
-           ]
-          <> [ Will
-                 (FailedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestType
-                   n
-                 )
-             ]
-          )
+        SucceededBy _ n ->
+          pushAll
+            ( [ Will
+                ( PassedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    target
+                    skillTestType
+                    n
+                )
+              | target <- skillTestSubscribers
+              ]
+                <> [ Will
+                      ( PassedSkillTest
+                          skillTestInvestigator
+                          skillTestAction
+                          skillTestSource
+                          (SkillTestInitiatorTarget skillTestTarget)
+                          skillTestType
+                          n
+                      )
+                   ]
+            )
+        FailedBy _ n ->
+          pushAll
+            ( [ Will
+                ( FailedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    target
+                    skillTestType
+                    n
+                )
+              | target <- skillTestSubscribers
+              ]
+                <> [ Will
+                      ( FailedSkillTest
+                          skillTestInvestigator
+                          skillTestAction
+                          skillTestSource
+                          (SkillTestInitiatorTarget skillTestTarget)
+                          skillTestType
+                          n
+                      )
+                   ]
+            )
         Unrun -> pure ()
       pure s
     SkillTestApplyResultsAfter -> do
       -- ST.7 -- apply results
-      pushAll [SkillTestEnds skillTestInvestigator skillTestSource, Do (SkillTestEnds skillTestInvestigator skillTestSource)] -- -> ST.8 -- Skill test ends
+      pushAll
+        [ SkillTestEnds skillTestInvestigator skillTestSource
+        , Do (SkillTestEnds skillTestInvestigator skillTestSource) -- -> ST.8 -- Skill test ends
+        ]
       modifiers' <- getModifiers (toTarget s)
       let
         modifiedSkillTestResult =
@@ -470,52 +505,54 @@ instance RunMessage SkillTest where
           FailedBy b m -> FailedBy b (max 0 (m + n))
         modifySkillTestResult r _ = r
       case modifiedSkillTestResult of
-        SucceededBy _ n -> pushAll
-          ([ After
-               (PassedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 target
-                 skillTestType
-                 n
-               )
-           | target <- skillTestSubscribers
-           ]
-          <> [ After
-                 (PassedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestType
-                   n
-                 )
-             ]
-          )
-        FailedBy _ n -> pushAll
-          ([ After
-               (FailedSkillTest
-                 skillTestInvestigator
-                 skillTestAction
-                 skillTestSource
-                 target
-                 skillTestType
-                 n
-               )
-           | target <- skillTestSubscribers
-           ]
-          <> [ After
-                 (FailedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestType
-                   n
-                 )
-             ]
-          )
+        SucceededBy _ n ->
+          pushAll
+            ( [ After
+                ( PassedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    target
+                    skillTestType
+                    n
+                )
+              | target <- skillTestSubscribers
+              ]
+                <> [ After
+                      ( PassedSkillTest
+                          skillTestInvestigator
+                          skillTestAction
+                          skillTestSource
+                          (SkillTestInitiatorTarget skillTestTarget)
+                          skillTestType
+                          n
+                      )
+                   ]
+            )
+        FailedBy _ n ->
+          pushAll
+            ( [ After
+                ( FailedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    target
+                    skillTestType
+                    n
+                )
+              | target <- skillTestSubscribers
+              ]
+                <> [ After
+                      ( FailedSkillTest
+                          skillTestInvestigator
+                          skillTestAction
+                          skillTestSource
+                          (SkillTestInitiatorTarget skillTestTarget)
+                          skillTestType
+                          n
+                      )
+                   ]
+            )
         Unrun -> pure ()
       pure s
     SkillTestApplyResults -> do
@@ -533,101 +570,105 @@ instance RunMessage SkillTest where
         modifySkillTestResult r _ = r
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
-          pushAll
-            $ [ When
-                  (PassedSkillTest
-                    skillTestInvestigator
-                    skillTestAction
-                    skillTestSource
-                    target
-                    skillTestType
-                    n
-                  )
-              | target <- skillTestSubscribers
-              ]
-            <> [ When
-                   (PassedSkillTest
-                     skillTestInvestigator
-                     skillTestAction
-                     skillTestSource
-                     (SkillTestInitiatorTarget skillTestTarget)
-                     skillTestType
-                     n
-                   )
-               ]
-            <> (cycleN
-                 successTimes
-                 ([ PassedSkillTest
-                      skillTestInvestigator
-                      skillTestAction
-                      skillTestSource
-                      target
-                      skillTestType
-                      n
-                  | target <- skillTestSubscribers
-                  ]
-                 <> [ PassedSkillTest
+          pushAll $
+            [ When
+              ( PassedSkillTest
+                  skillTestInvestigator
+                  skillTestAction
+                  skillTestSource
+                  target
+                  skillTestType
+                  n
+              )
+            | target <- skillTestSubscribers
+            ]
+              <> [ When
+                    ( PassedSkillTest
                         skillTestInvestigator
                         skillTestAction
                         skillTestSource
                         (SkillTestInitiatorTarget skillTestTarget)
                         skillTestType
                         n
-                    ]
+                    )
+                 ]
+              <> ( cycleN
+                    successTimes
+                    ( [ PassedSkillTest
+                        skillTestInvestigator
+                        skillTestAction
+                        skillTestSource
+                        target
+                        skillTestType
+                        n
+                      | target <- skillTestSubscribers
+                      ]
+                        <> [ PassedSkillTest
+                              skillTestInvestigator
+                              skillTestAction
+                              skillTestSource
+                              (SkillTestInitiatorTarget skillTestTarget)
+                              skillTestType
+                              n
+                           ]
+                    )
                  )
-               )
         FailedBy _ n -> do
           hauntedAbilities <- case (skillTestTarget, skillTestAction) of
             (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
             _ -> pure []
-          pushAll
-            $ [ When
-                 (FailedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestType
-                   n
-                 )
-             ]
-            <> [ When
-                   (FailedSkillTest
-                     skillTestInvestigator
-                     skillTestAction
-                     skillTestSource
-                     target
-                     skillTestType
-                     n
-                   )
-               | target <- skillTestSubscribers
-               ]
-            <> [ FailedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   target
-                   skillTestType
-                   n
-               | target <- skillTestSubscribers
-               ]
-            <> [ FailedSkillTest
-                   skillTestInvestigator
-                   skillTestAction
-                   skillTestSource
-                   (SkillTestInitiatorTarget skillTestTarget)
-                   skillTestType
-                   n
-               ]
-            <> [chooseOneAtATime skillTestInvestigator [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities] | notNull hauntedAbilities ]
+          pushAll $
+            [ When
+                ( FailedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    (SkillTestInitiatorTarget skillTestTarget)
+                    skillTestType
+                    n
+                )
+            ]
+              <> [ When
+                  ( FailedSkillTest
+                      skillTestInvestigator
+                      skillTestAction
+                      skillTestSource
+                      target
+                      skillTestType
+                      n
+                  )
+                 | target <- skillTestSubscribers
+                 ]
+              <> [ FailedSkillTest
+                  skillTestInvestigator
+                  skillTestAction
+                  skillTestSource
+                  target
+                  skillTestType
+                  n
+                 | target <- skillTestSubscribers
+                 ]
+              <> [ FailedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    (SkillTestInitiatorTarget skillTestTarget)
+                    skillTestType
+                    n
+                 ]
+              <> [ chooseOneAtATime
+                  skillTestInvestigator
+                  [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities]
+                 | notNull hauntedAbilities
+                 ]
         Unrun -> pure ()
       pure s
     RerunSkillTest -> case skillTestResult of
       FailedBy Automatic _ -> pure s
       _ -> do
         withQueue_ $ filter $ \case
-          Will FailedSkillTest{} -> False
-          Will PassedSkillTest{} -> False
+          Will FailedSkillTest {} -> False
+          Will PassedSkillTest {} -> False
           CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
             False
           CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
@@ -644,9 +685,11 @@ instance RunMessage SkillTest where
         -- doubling. However, we need to keep any existing value modifier on
         -- the stack (such as a token no longer visible who effect still
         -- persists)
-        tokenValues <- sum <$> for
-          (skillTestRevealedTokens <> skillTestResolvedTokens)
-          (getModifiedTokenValue s)
+        tokenValues <-
+          sum
+            <$> for
+              (skillTestRevealedTokens <> skillTestResolvedTokens)
+              (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
     RecalculateSkillTestResults -> do
       results <- calculateSkillTestResultsData s
@@ -658,16 +701,19 @@ instance RunMessage SkillTest where
       -- TODO: We should be able to get all of this from the results data, but
       -- there is a discrepancy between totaledTokenValues and the info stored
       -- in the result data, this may be incorrect, need to investigate
-      tokenValues <- sum <$> for
-        (skillTestRevealedTokens <> skillTestResolvedTokens)
-        (getModifiedTokenValue s)
+      tokenValues <-
+        sum
+          <$> for
+            (skillTestRevealedTokens <> skillTestResolvedTokens)
+            (getModifiedTokenValue s)
       let
         modifiedSkillValue' =
           max 0 (skillTestResultsSkillValue results + totaledTokenValues + skillTestResultsIconValue results)
         totaledTokenValues = tokenValues + skillTestValueModifier
-        result = if skillTestResultsSuccess results
-          then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
-          else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
+        result =
+          if skillTestResultsSuccess results
+            then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
+            else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
 
       pure $ s & valueModifierL .~ totaledTokenValues & resultL .~ result
     ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->

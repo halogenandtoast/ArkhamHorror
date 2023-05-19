@@ -21,11 +21,15 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
-import Control.Lens (non, _2)
+import Control.Lens (non, _1, _2)
 
 getSpectralDiscards :: (HasGame m) => m [EncounterCard]
 getSpectralDiscards =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
+
+getSpectralDeck :: (HasGame m) => m (Deck EncounterCard)
+getSpectralDeck =
+  scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _1))
 
 -- TODO: before the heretic spawns we don't know if it's going to be at a spectral or non-spectral location
 -- This causes an issue when we flip unfinished business back over but the location is spectral

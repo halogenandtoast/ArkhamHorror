@@ -1,9 +1,9 @@
 module Arkham.Query where
 
-import Arkham.Id
-import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Card
+import Arkham.Id
+import Arkham.Matcher
 import Arkham.Token
 
 type family QueryElement a where
@@ -17,6 +17,7 @@ type family QueryElement a where
   QueryElement DiscardedPlayerCardMatcher = PlayerCard
   QueryElement AbilityMatcher = Ability
   QueryElement SkillMatcher = SkillId
+  QueryElement StoryMatcher = StoryId
   QueryElement EventMatcher = EventId
   QueryElement EffectMatcher = EffectId
   QueryElement ActMatcher = ActId

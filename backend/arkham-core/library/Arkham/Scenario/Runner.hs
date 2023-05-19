@@ -850,21 +850,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           <> map snd voidEnemiesWithCards
     pure a
   FindAndDrawEncounterCard iid matcher includeDiscard -> do
+    handler <- getEncounterDeckHandler iid
     let
-      matchingDiscards = filter (`cardMatch` matcher) scenarioDiscard
+      matchingDiscards = filter (`cardMatch` matcher) (a ^. discardLens handler)
       matchingDeckCards =
-        filter (`cardMatch` matcher) (unDeck scenarioEncounterDeck)
+        filter (`cardMatch` matcher) (unDeck $ a ^. deckLens handler)
 
     push $
       chooseOne iid $
-        [ TargetLabel
-          (CardIdTarget $ toCardId card)
+        [ targetLabel
+          (toCardId card)
           [FoundAndDrewEncounterCard iid FromDiscard card]
         | includeDiscard
         , card <- matchingDiscards
         ]
-          <> [ TargetLabel
-              (CardIdTarget $ toCardId card)
+          <> [ targetLabel
+              (toCardId card)
               [FoundAndDrewEncounterCard iid FromEncounterDeck card]
              | card <- matchingDeckCards
              ]

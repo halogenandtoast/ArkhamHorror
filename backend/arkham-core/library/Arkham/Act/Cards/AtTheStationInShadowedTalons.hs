@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.AtTheStationInShadowedTalons
-  ( AtTheStationInShadowedTalons(..)
-  , atTheStationInShadowedTalons
-  ) where
+module Arkham.Act.Cards.AtTheStationInShadowedTalons (
+  AtTheStationInShadowedTalons (..),
+  atTheStationInShadowedTalons,
+) where
 
 import Arkham.Prelude
 
@@ -24,10 +24,10 @@ newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
 
 atTheStationInShadowedTalons :: ActCard AtTheStationInShadowedTalons
 atTheStationInShadowedTalons =
-  act (2, C) AtTheStationInShadowedTalons Cards.atTheStationInShadowedTalons
-    $ Just
-    $ GroupClueCost (PerPlayer 2)
-    $ LocationWithTitle "Arkham Police Station"
+  act (2, C) AtTheStationInShadowedTalons Cards.atTheStationInShadowedTalons $
+    Just $
+      GroupClueCost (PerPlayer 2) $
+        LocationWithTitle "Arkham Police Station"
 
 instance RunMessage AtTheStationInShadowedTalons where
   runMessage msg a@(AtTheStationInShadowedTalons attrs) = case msg of
@@ -35,51 +35,55 @@ instance RunMessage AtTheStationInShadowedTalons where
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
         [ FindEncounterCard
-          leadInvestigatorId
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
-          (cardIs Enemies.huntingNightgaunt)
+            leadInvestigatorId
+            (toTarget attrs)
+            [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
+            (cardIs Enemies.huntingNightgaunt)
         , NextAdvanceActStep aid 1
         , AdvanceToAct
-          (actDeckId attrs)
-          Acts.alejandrosPlight
-          C
-          (toSource attrs)
+            (actDeckId attrs)
+            Acts.alejandrosPlight
+            C
+            (toSource attrs)
         ]
       pure a
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       huntingNightgaunts <- selectList $ enemyIs Enemies.huntingNightgaunt
-      farthestHuntingNightGaunts <- selectList $ FarthestEnemyFromAll $ enemyIs
-        Enemies.huntingNightgaunt
+      farthestHuntingNightGaunts <-
+        selectList $
+          FarthestEnemyFromAll $
+            enemyIs
+              Enemies.huntingNightgaunt
       deckCount <- getActDecksInPlayCount
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       assetId <- getRandom
-      pushAll
-        $ map
-            ((`HealAllDamage` toSource attrs) . EnemyTarget)
-            huntingNightgaunts
-        <> [ chooseOrRunOne
-               leadInvestigatorId
-               [ targetLabel huntingNightgaunt
-                 $ CreateAssetAt
-                     assetId
-                     alejandroVela
-                     (AttachedToEnemy huntingNightgaunt)
-                 : [ PlaceDoom (EnemyTarget huntingNightgaunt) 1
-                   | deckCount <= 2
-                   ]
-               | huntingNightgaunt <- farthestHuntingNightGaunts
-               ]
-           ]
+      pushAll $
+        map
+          ((`HealAllDamage` toSource attrs) . EnemyTarget)
+          huntingNightgaunts
+          <> [ chooseOrRunOne
+                leadInvestigatorId
+                [ targetLabel huntingNightgaunt $
+                  CreateAssetAt
+                    assetId
+                    alejandroVela
+                    (AttachedToEnemy huntingNightgaunt)
+                    : [ PlaceDoom (EnemyTarget huntingNightgaunt) 1
+                      | deckCount <= 2
+                      ]
+                | huntingNightgaunt <- farthestHuntingNightGaunts
+                ]
+             ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       locations <- selectList $ FarthestLocationFromAll Anywhere
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOrRunOne
-        leadInvestigatorId
-        [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
-        | location <- locations
-        ]
+      push $
+        chooseOrRunOne
+          leadInvestigatorId
+          [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
+          | location <- locations
+          ]
       pure a
     _ -> AtTheStationInShadowedTalons <$> runMessage msg attrs

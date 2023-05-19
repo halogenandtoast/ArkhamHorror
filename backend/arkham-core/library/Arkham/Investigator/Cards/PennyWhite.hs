@@ -1,8 +1,8 @@
-module Arkham.Investigator.Cards.PennyWhite
-  ( pennyWhite
-  , pennyWhiteEffect
-  , PennyWhite(..)
-  ) where
+module Arkham.Investigator.Cards.PennyWhite (
+  pennyWhite,
+  pennyWhiteEffect,
+  PennyWhite (..),
+) where
 
 import Arkham.Prelude
 
@@ -28,62 +28,66 @@ import Arkham.Timing qualified as Timing
 newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
-  deriving newtype Entity
+  deriving newtype (Entity)
 
 pennyWhite :: PrologueMetadata -> InvestigatorCard PennyWhite
-pennyWhite meta = investigatorWith
-  (PennyWhite . (`with` meta))
-  Cards.pennyWhite
-  Stats
-    { health = 7
-    , sanity = 5
-    , willpower = 4
-    , intellect = 1
-    , combat = 3
-    , agility = 2
-    }
-  ((startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
-  . (startsWithInHandL
-    .~ [ Cards.strayCat
-       , Cards.lucky
-       , Cards.knife
-       , Cards.flashlight
-       , Cards.actOfDesperation
-       , Cards.actOfDesperation
-       , Cards.ableBodied
-       , Cards.ableBodied
-       ]
+pennyWhite meta =
+  investigatorWith
+    (PennyWhite . (`with` meta))
+    Cards.pennyWhite
+    Stats
+      { health = 7
+      , sanity = 5
+      , willpower = 4
+      , intellect = 1
+      , combat = 3
+      , agility = 2
+      }
+    ( (startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
+        . ( startsWithInHandL
+              .~ [ Cards.strayCat
+                 , Cards.lucky
+                 , Cards.knife
+                 , Cards.flashlight
+                 , Cards.actOfDesperation
+                 , Cards.actOfDesperation
+                 , Cards.ableBodied
+                 , Cards.ableBodied
+                 ]
+          )
     )
-  )
 
 instance HasModifiersFor PennyWhite where
-  getModifiersFor target (PennyWhite (a `With` _)) | isTarget a target =
-    pure $ toModifiersWith
-      a
-      setActiveDuringSetup
-      [ CannotTakeAction (IsAction Action.Draw)
-      , CannotDrawCards
-      , CannotManipulateDeck
-      , StartingResources (-3)
-      ]
+  getModifiersFor target (PennyWhite (a `With` _))
+    | isTarget a target =
+        pure $
+          toModifiersWith
+            a
+            setActiveDuringSetup
+            [ CannotTakeAction (IsAction Action.Draw)
+            , CannotDrawCards
+            , CannotManipulateDeck
+            , StartingResources (-3)
+            ]
   getModifiersFor (AssetTarget aid) (PennyWhite (a `With` _)) = do
     isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
-    pure $ toModifiersWith
-      a
-      setActiveDuringSetup
-      [ AdditionalStartingUses (-1) | isFlashlight ]
+    pure $
+      toModifiersWith
+        a
+        setActiveDuringSetup
+        [AdditionalStartingUses (-1) | isFlashlight]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite (a `With` _)) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility a 1 (Self <> ClueOnLocation)
-        $ ReactionAbility
-            (SkillTestResult
-              Timing.After
-              You
-              SkillTestFromRevelation
-              (SuccessResult AnyValue)
+    [ limitedAbility (PlayerLimit PerRound 1) $
+        restrictedAbility a 1 (Self <> ClueOnLocation) $
+          ReactionAbility
+            ( SkillTestResult
+                Timing.After
+                You
+                SkillTestFromRevelation
+                (SuccessResult AnyValue)
             )
             Free
     ]
@@ -91,7 +95,7 @@ instance HasAbilities PennyWhite where
 instance HasTokenValue PennyWhite where
   getTokenValue iid ElderSign (PennyWhite (attrs `With` _))
     | iid == toId attrs = do
-      pure $ TokenValue ElderSign $ PositiveModifier 1
+        pure $ TokenValue ElderSign $ PositiveModifier 1
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance RunMessage PennyWhite where
@@ -102,8 +106,9 @@ instance RunMessage PennyWhite where
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest
       for_ mSkillTest $ \skillTest ->
-        when (skillTestIsRevelation skillTest)
-          $ push $ createCardEffect
+        when (skillTestIsRevelation skillTest) $
+          push $
+            createCardEffect
               Cards.pennyWhite
               Nothing
               (toSource attrs)
@@ -118,8 +123,9 @@ instance RunMessage PennyWhite where
       pure i
     DiscardCard iid _ cardId | iid == toId attrs -> do
       let
-        card = fromJustNote "must be in hand"
-          $ find ((== cardId) . toCardId) (investigatorHand attrs)
+        card =
+          fromJustNote "must be in hand" $
+            find ((== cardId) . toCardId) (investigatorHand attrs)
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do

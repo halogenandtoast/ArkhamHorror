@@ -1,7 +1,7 @@
-module Arkham.Scenario.Scenarios.TheUntamedWilds
-  ( TheUntamedWilds(..)
-  , theUntamedWilds
-  ) where
+module Arkham.Scenario.Scenarios.TheUntamedWilds (
+  TheUntamedWilds (..),
+  theUntamedWilds,
+) where
 
 import Arkham.Prelude
 
@@ -32,7 +32,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
@@ -40,18 +40,19 @@ newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theUntamedWilds :: Difficulty -> TheUntamedWilds
-theUntamedWilds difficulty = scenario
-  TheUntamedWilds
-  "04043"
-  "The Untamed Wilds"
-  difficulty
-  [ ".               .             ruinsOfEztli   .               ."
-  , ".               serpentsHaven ruinsOfEztli   circuitousTrail ."
-  , "templeOfTheFang serpentsHaven riverCanyon    circuitousTrail overgrownRuins"
-  , "templeOfTheFang pathOfThorns  riverCanyon    ropeBridge      overgrownRuins"
-  , ".               pathOfThorns  expeditionCamp ropeBridge      ."
-  , ".               .             expeditionCamp .               ."
-  ]
+theUntamedWilds difficulty =
+  scenario
+    TheUntamedWilds
+    "04043"
+    "The Untamed Wilds"
+    difficulty
+    [ ".               .             ruinsOfEztli   .               ."
+    , ".               serpentsHaven ruinsOfEztli   circuitousTrail ."
+    , "templeOfTheFang serpentsHaven riverCanyon    circuitousTrail overgrownRuins"
+    , "templeOfTheFang pathOfThorns  riverCanyon    ropeBridge      overgrownRuins"
+    , ".               pathOfThorns  expeditionCamp ropeBridge      ."
+    , ".               .             expeditionCamp .               ."
+    ]
 
 instance HasTokenValue TheUntamedWilds where
   getTokenValue iid tokenFace (TheUntamedWilds attrs) = case tokenFace of
@@ -63,11 +64,12 @@ instance HasTokenValue TheUntamedWilds where
       pure $ toTokenValue attrs Cultist (min 5 locationCount) locationCount
     Tablet -> do
       explorationDeckCount <- length <$> getExplorationDeck
-      pure $ toTokenValue
-        attrs
-        Tablet
-        (min 5 explorationDeckCount)
-        (max 3 explorationDeckCount)
+      pure $
+        toTokenValue
+          attrs
+          Tablet
+          (min 5 explorationDeckCount)
+          (max 3 explorationDeckCount)
     ElderThing -> do
       isPoisoned <- getIsPoisoned iid
       if isPoisoned
@@ -79,86 +81,96 @@ instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      (expeditionCampId, placeExpeditionCamp) <- placeLocationCard
-        Locations.expeditionCamp
+      (expeditionCampId, placeExpeditionCamp) <-
+        placeLocationCard
+          Locations.expeditionCamp
 
-      explorationDeck <- shuffleM =<< genCards
-        [ Locations.pathOfThorns
-        , Locations.riverCanyon
-        , Locations.ropeBridge
-        , Locations.serpentsHaven
-        , Locations.circuitousTrail
-        , Treacheries.lostInTheWilds
-        , Treacheries.overgrowth
-        , Treacheries.snakeBite
-        , Treacheries.lowOnSupplies
-        , Treacheries.arrowsFromTheTrees
-        ]
-      agentsOfYig <- map EncounterCard
-        <$> gatherEncounterSet EncounterSet.AgentsOfYig
-      setAsideCards <- (agentsOfYig <>) <$> genCards
-        [ Locations.ruinsOfEztli
-        , Locations.templeOfTheFang
-        , Locations.overgrownRuins
-        , Assets.alejandroVela
-        , Enemies.ichtaca
-        , Treacheries.poisoned
-        , Treacheries.poisoned
-        , Treacheries.poisoned
-        , Treacheries.poisoned
-        ]
-      encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.ichtaca
-        , Locations.pathOfThorns
-        , Locations.riverCanyon
-        , Locations.ropeBridge
-        , Locations.serpentsHaven
-        , Locations.circuitousTrail
-        , Locations.ruinsOfEztli
-        , Locations.templeOfTheFang
-        , Locations.overgrownRuins
-        ]
-        [ EncounterSet.TheUntamedWilds
-        , EncounterSet.Rainforest
-        , EncounterSet.Serpents
-        , EncounterSet.Expedition
-        , EncounterSet.GuardiansOfTime
-        , EncounterSet.Poison
-        , EncounterSet.AncientEvils
-        ]
+      explorationDeck <-
+        shuffleM
+          =<< genCards
+            [ Locations.pathOfThorns
+            , Locations.riverCanyon
+            , Locations.ropeBridge
+            , Locations.serpentsHaven
+            , Locations.circuitousTrail
+            , Treacheries.lostInTheWilds
+            , Treacheries.overgrowth
+            , Treacheries.snakeBite
+            , Treacheries.lowOnSupplies
+            , Treacheries.arrowsFromTheTrees
+            ]
+      agentsOfYig <-
+        map EncounterCard
+          <$> gatherEncounterSet EncounterSet.AgentsOfYig
+      setAsideCards <-
+        (agentsOfYig <>)
+          <$> genCards
+            [ Locations.ruinsOfEztli
+            , Locations.templeOfTheFang
+            , Locations.overgrownRuins
+            , Assets.alejandroVela
+            , Enemies.ichtaca
+            , Treacheries.poisoned
+            , Treacheries.poisoned
+            , Treacheries.poisoned
+            , Treacheries.poisoned
+            ]
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          [ Enemies.ichtaca
+          , Locations.pathOfThorns
+          , Locations.riverCanyon
+          , Locations.ropeBridge
+          , Locations.serpentsHaven
+          , Locations.circuitousTrail
+          , Locations.ruinsOfEztli
+          , Locations.templeOfTheFang
+          , Locations.overgrownRuins
+          ]
+          [ EncounterSet.TheUntamedWilds
+          , EncounterSet.Rainforest
+          , EncounterSet.Serpents
+          , EncounterSet.Expedition
+          , EncounterSet.GuardiansOfTime
+          , EncounterSet.Poison
+          , EncounterSet.AncientEvils
+          ]
       let
-        encounterDeck' = removeEachFromDeck
-          encounterDeck
-          [ Treacheries.lostInTheWilds
-          , Treacheries.overgrowth
-          , Treacheries.snakeBite
-          , Treacheries.lowOnSupplies
-          , Treacheries.arrowsFromTheTrees
-          ]
-      pushAll
-        $ [ story investigatorIds intro
-          , SetEncounterDeck encounterDeck'
-          , SetAgendaDeck
-          , SetActDeck
-          , placeExpeditionCamp
-          , MoveAllTo (toSource attrs) expeditionCampId
-          ]
+        encounterDeck' =
+          removeEachFromDeck
+            encounterDeck
+            [ Treacheries.lostInTheWilds
+            , Treacheries.overgrowth
+            , Treacheries.snakeBite
+            , Treacheries.lowOnSupplies
+            , Treacheries.arrowsFromTheTrees
+            ]
+      pushAll $
+        [ story investigatorIds intro
+        , SetEncounterDeck encounterDeck'
+        , SetAgendaDeck
+        , SetActDeck
+        , placeExpeditionCamp
+        , MoveAllTo (toSource attrs) expeditionCampId
+        ]
 
       agendas <- genCards [Agendas.expeditionIntoTheWild, Agendas.intruders]
-      acts <- genCards
-        [ Acts.exploringTheRainforest
-        , Acts.huntressOfTheEztli
-        , Acts.searchForTheRuins
-        , Acts.theGuardedRuins
-        ]
-      TheUntamedWilds <$> runMessage
-        msg
-        (attrs
-        & (decksL . at ExplorationDeck ?~ explorationDeck)
-        & (setAsideCardsL .~ setAsideCards)
-        & (actStackL . at 1 ?~ acts)
-        & (agendaStackL . at 1 ?~ agendas)
-        )
+      acts <-
+        genCards
+          [ Acts.exploringTheRainforest
+          , Acts.huntressOfTheEztli
+          , Acts.searchForTheRuins
+          , Acts.theGuardedRuins
+          ]
+      TheUntamedWilds
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at ExplorationDeck ?~ explorationDeck)
+              & (setAsideCardsL .~ setAsideCards)
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> case tokenFace token of
       ElderThing | isHardExpert attrs -> do
         isPoisoned <- getIsPoisoned iid
@@ -176,8 +188,9 @@ instance RunMessage TheUntamedWilds where
       pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds
-      actStep <- fieldMap ActSequence (AS.unActStep . AS.actStep)
-        =<< selectJust AnyAct
+      actStep <-
+        fieldMap ActSequence (AS.unActStep . AS.actStep)
+          =<< selectJust AnyAct
       xp <- getXp
       vengeance <- getVengeanceInVictoryDisplay
       leadInvestigatorId <- getLeadInvestigatorId
@@ -185,55 +198,55 @@ instance RunMessage TheUntamedWilds where
         NoResolution -> do
           foughtWithIchtaca <- remembered YouFoughtWithIchtaca
           leadingTheWay <- remembered IchtachaIsLeadingTheWay
-          pushAll
-            $ [ story investigatorIds noResolution
-              , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
-              ]
-            <> [ Record IchtacaObservedYourProgressWithKeenInterest
-               | actStep < 3
-               ]
-            <> [ Record IchtacaIsWaryOfTheInvestigators | foughtWithIchtaca ]
-            <> [ Record AlejandroFollowedTheInvestigatorsIntoTheRuins
-               | actStep < 3 || foughtWithIchtaca
-               ]
-            <> [ addCampaignCardToDeckChoice
-                   leadInvestigatorId
-                   investigatorIds
-                   Assets.alejandroVela
-               ]
-            <> [ Record TheInvestigatorsHaveEarnedIchtacasTrust
-               | leadingTheWay
-               ]
-            <> [ Record AlejandroChoseToRemainAtCamp | leadingTheWay ]
-            <> [RecordCount YigsFury vengeance]
-            <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame Nothing]
+          pushAll $
+            [ story investigatorIds noResolution
+            , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+            ]
+              <> [ Record IchtacaObservedYourProgressWithKeenInterest
+                 | actStep < 3
+                 ]
+              <> [Record IchtacaIsWaryOfTheInvestigators | foughtWithIchtaca]
+              <> [ Record AlejandroFollowedTheInvestigatorsIntoTheRuins
+                 | actStep < 3 || foughtWithIchtaca
+                 ]
+              <> [ addCampaignCardToDeckChoice
+                    leadInvestigatorId
+                    investigatorIds
+                    Assets.alejandroVela
+                 ]
+              <> [ Record TheInvestigatorsHaveEarnedIchtacasTrust
+                 | leadingTheWay
+                 ]
+              <> [Record AlejandroChoseToRemainAtCamp | leadingTheWay]
+              <> [RecordCount YigsFury vengeance]
+              <> [GainXP iid n | (iid, n) <- xp]
+              <> [EndOfGame Nothing]
         Resolution 1 -> do
-          pushAll
-            $ [ story investigatorIds resolution1
-              , Record TheInvestigatorsClearedAPathToTheEztliRuins
-              , Record AlejandroChoseToRemainAtCamp
-              , Record TheInvestigatorsHaveEarnedIchtacasTrust
-              , RecordCount YigsFury vengeance
-              ]
-            <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame Nothing]
+          pushAll $
+            [ story investigatorIds resolution1
+            , Record TheInvestigatorsClearedAPathToTheEztliRuins
+            , Record AlejandroChoseToRemainAtCamp
+            , Record TheInvestigatorsHaveEarnedIchtacasTrust
+            , RecordCount YigsFury vengeance
+            ]
+              <> [GainXP iid n | (iid, n) <- xp]
+              <> [EndOfGame Nothing]
         Resolution 2 -> do
-          pushAll
-            $ [ story investigatorIds resolution2
-              , Record TheInvestigatorsClearedAPathToTheEztliRuins
-              , Record AlejandroFollowedTheInvestigatorsIntoTheRuins
-              ]
-            <> [ addCampaignCardToDeckChoice
-                   leadInvestigatorId
-                   investigatorIds
-                   Assets.alejandroVela
-               ]
-            <> [ Record IchtacaIsWaryOfTheInvestigators
-               , RecordCount YigsFury vengeance
-               ]
-            <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame Nothing]
+          pushAll $
+            [ story investigatorIds resolution2
+            , Record TheInvestigatorsClearedAPathToTheEztliRuins
+            , Record AlejandroFollowedTheInvestigatorsIntoTheRuins
+            ]
+              <> [ addCampaignCardToDeckChoice
+                    leadInvestigatorId
+                    investigatorIds
+                    Assets.alejandroVela
+                 ]
+              <> [ Record IchtacaIsWaryOfTheInvestigators
+                 , RecordCount YigsFury vengeance
+                 ]
+              <> [GainXP iid n | (iid, n) <- xp]
+              <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUntamedWilds <$> runMessage msg attrs

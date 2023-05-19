@@ -49,6 +49,12 @@ abilityIsFastAbility a = case abilityType a of
   FastAbility {} -> True
   _ -> False
 
+abilityIsForcedAbility :: Ability -> Bool
+abilityIsForcedAbility a = case abilityType a of
+  ForcedAbility {} -> True
+  ForcedAbilityWithCost {} -> True
+  _ -> False
+
 abilityIsReactionAbility :: Ability -> Bool
 abilityIsReactionAbility a = case abilityType a of
   ReactionAbility {} -> True

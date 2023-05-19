@@ -1,7 +1,7 @@
-module Arkham.Scenario.Scenarios.TheDepthsOfYoth
-  ( TheDepthsOfYoth(..)
-  , theDepthsOfYoth
-  ) where
+module Arkham.Scenario.Scenarios.TheDepthsOfYoth (
+  TheDepthsOfYoth (..),
+  theDepthsOfYoth,
+) where
 
 import Arkham.Prelude
 
@@ -18,11 +18,11 @@ import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyDamage )
+import Arkham.Message hiding (EnemyDamage)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -35,9 +35,9 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Trait ( Trait (Injury) )
+import Arkham.Trait (Trait (Injury))
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Arkham.Zone
 
@@ -46,18 +46,19 @@ newtype TheDepthsOfYoth = TheDepthsOfYoth ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theDepthsOfYoth :: Difficulty -> TheDepthsOfYoth
-theDepthsOfYoth difficulty = scenario
-  TheDepthsOfYoth
-  "04277"
-  "The Depths of Yoth"
-  difficulty
-  [ ".        diamond . .         droplet  ."
-  , "equals   .       . .         .        heart"
-  , ".        .       . hourglass .        ."
-  , ".        .       t .         .        ."
-  , "triangle .       . .         .        circle"
-  , ".        square  . .         squiggle ."
-  ]
+theDepthsOfYoth difficulty =
+  scenario
+    TheDepthsOfYoth
+    "04277"
+    "The Depths of Yoth"
+    difficulty
+    [ ".        diamond . .         droplet  ."
+    , "equals   .       . .         .        heart"
+    , ".        .       . hourglass .        ."
+    , ".        .       t .         .        ."
+    , "triangle .       . .         .        circle"
+    , ".        square  . .         squiggle ."
+    ]
 
 instance HasTokenValue TheDepthsOfYoth where
   getTokenValue iid tokenFace (TheDepthsOfYoth attrs) = case tokenFace of
@@ -90,7 +91,7 @@ standaloneTokens =
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
-  mkCampaignLog { campaignLogRecorded = setFromList [TheRelicIsMissing] }
+  mkCampaignLog {campaignLogRecorded = setFromList [TheRelicIsMissing]}
 
 instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = case msg of
@@ -102,17 +103,17 @@ instance RunMessage TheDepthsOfYoth where
       push
         $ Ask leadInvestigatorId
         $ QuestionLabel
-            "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
+          "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
         $ ChooseAmounts
-            "Fury"
-            (MaxAmountTarget 9000)
-            [AmountChoice "Fury" 0 9000]
-            (toTarget attrs)
+          "Fury"
+          (MaxAmountTarget 9000)
+          [AmountChoice "Fury" 0 9000]
+          (toTarget attrs)
       pure
         . TheDepthsOfYoth
         $ attrs
-        & standaloneCampaignLogL
-        .~ standaloneCampaignLog
+          & standaloneCampaignLogL
+            .~ standaloneCampaignLog
     Setup -> do
       isStandalone <- getIsStandalone
       investigatorIds <- allInvestigatorIds
@@ -132,19 +133,20 @@ instance RunMessage TheDepthsOfYoth where
           , Locations.brightCanyon
           ]
 
-      encounterDeck <- buildEncounterDeckExcluding
-        (Enemies.yig
-        : Locations.stepsOfYoth
-        : otherLocationCards
-        <> [ Enemies.pitWarden | yigsFury == 0 ]
-        )
-        [ EncounterSet.TheDepthsOfYoth
-        , EncounterSet.AgentsOfYig
-        , EncounterSet.YigsVenom
-        , EncounterSet.Expedition
-        , EncounterSet.ForgottenRuins
-        , EncounterSet.Poison
-        ]
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          ( Enemies.yig
+              : Locations.stepsOfYoth
+              : otherLocationCards
+                <> [Enemies.pitWarden | yigsFury == 0]
+          )
+          [ EncounterSet.TheDepthsOfYoth
+          , EncounterSet.AgentsOfYig
+          , EncounterSet.YigsVenom
+          , EncounterSet.Expedition
+          , EncounterSet.ForgottenRuins
+          , EncounterSet.Poison
+          ]
 
       stepsOfYoth <- genCard Locations.stepsOfYoth
       locations <- shuffleM =<< genCards otherLocationCards
@@ -177,66 +179,66 @@ instance RunMessage TheDepthsOfYoth where
       createHarbinger <- createEnemyWithPlacement_ harbingerOfValusia (OutOfPlay PursuitZone)
       createYig <- createEnemyWithPlacement_ yig (OutOfPlay PursuitZone)
 
-      pushAll
-        $ story investigatorIds intro1
-        : [ story investigatorIds intro2 | isIntro2 ]
-        <> [ AddToken ElderThing | isIntro2 && not isStandalone ]
-        <> [ story investigatorIds intro3
-           | not forgingYourOwnPath && ichtacasFaithIsRestored
-           ]
-        <> [ story investigatorIds intro4 | isIntro2 ]
-        <> [ Record IchtacaIsSetAgainstYou | isIntro2 || isIntro4 ]
-        <> [ RemoveCampaignCard Assets.ichtacaTheForgottenGuardian | isIntro4 ]
-        <> [ story investigatorIds intro5 | isIntro4 && theRelicIsMissing ]
-        <> [ story investigatorIds intro6 | isIntro6 ]
-        <> [ story investigatorIds intro7 | isIntro6 && hasPocketknife ]
-        <> [ story investigatorIds intro8 | isIntro8 ]
-        <> [ CrossOutRecord TheInvestigatorsFoundTheMissingRelic | isIntro8 ]
-        <> [ Record TheRelicIsMissing | isIntro8 ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort | isIntro4 ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
-           | isIntro4
-           ]
-        <> [ SetEncounterDeck encounterDeck
-           , SetAgendaDeck
-           , SetActDeck
-           , placeStartLocation
-           , MoveAllTo (toSource attrs) startLocationId
-           ]
-        <> [ createHarbinger | startsOnAgenda5 ]
-        <> [ createYig | startsOnAgenda6 ]
+      pushAll $
+        story investigatorIds intro1
+          : [story investigatorIds intro2 | isIntro2]
+            <> [AddToken ElderThing | isIntro2 && not isStandalone]
+            <> [ story investigatorIds intro3
+               | not forgingYourOwnPath && ichtacasFaithIsRestored
+               ]
+            <> [story investigatorIds intro4 | isIntro2]
+            <> [Record IchtacaIsSetAgainstYou | isIntro2 || isIntro4]
+            <> [RemoveCampaignCard Assets.ichtacaTheForgottenGuardian | isIntro4]
+            <> [story investigatorIds intro5 | isIntro4 && theRelicIsMissing]
+            <> [story investigatorIds intro6 | isIntro6]
+            <> [story investigatorIds intro7 | isIntro6 && hasPocketknife]
+            <> [story investigatorIds intro8 | isIntro8]
+            <> [CrossOutRecord TheInvestigatorsFoundTheMissingRelic | isIntro8]
+            <> [Record TheRelicIsMissing | isIntro8]
+            <> [RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort | isIntro4]
+            <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
+               | isIntro4
+               ]
+            <> [ SetEncounterDeck encounterDeck
+               , SetAgendaDeck
+               , SetActDeck
+               , placeStartLocation
+               , MoveAllTo (toSource attrs) startLocationId
+               ]
+            <> [createHarbinger | startsOnAgenda5]
+            <> [createYig | startsOnAgenda6]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
       setAsideCards <-
-        genCards
-        $ Assets.relicOfAgesRepossessThePast
-        : [ Enemies.harbingerOfValusia
-          | theHarbingerIsStillAlive && not startsOnAgenda5
-          ]
-        <> [ Enemies.yig | not startsOnAgenda6 ]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
+        genCards $
+          Assets.relicOfAgesRepossessThePast
+            : [ Enemies.harbingerOfValusia
+              | theHarbingerIsStillAlive && not startsOnAgenda5
+              ]
+              <> [Enemies.yig | not startsOnAgenda6]
+              <> replicate setAsidePoisonedCount Treacheries.poisoned
 
       acts <- genCards [Acts.journeyToTheNexus]
       agendas <-
-        genCards
-        $ [ Agendas.theDescentBegins | yigsFury < 6 ] -- 1
-        <> [ Agendas.horrificDescent | yigsFury < 11 ] -- 2
-        <> [ Agendas.endlessCaverns | yigsFury < 15 ] -- 3
-        <> [ Agendas.cityOfBlood | yigsFury < 18 ] -- 4
-        <> [ Agendas.furyThatShakesTheEarth | yigsFury < 21 ] -- 5
-        <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
-
-      TheDepthsOfYoth <$> runMessage
-        msg
-        (attrs
-        & (decksL . at ExplorationDeck ?~ explorationDeck)
-        & (agendaStackL . at 1 ?~ agendas)
-        & (actStackL . at 1 ?~ acts)
-        & (setAsideCardsL .~ setAsideCards <> setAsideLocations)
-        & (metaL .~ toMeta startLocationId)
-        & (countsL .~ mapFromList [(CurrentDepth, 1)])
-        )
+        genCards $
+          [Agendas.theDescentBegins | yigsFury < 6] -- 1
+            <> [Agendas.horrificDescent | yigsFury < 11] -- 2
+            <> [Agendas.endlessCaverns | yigsFury < 15] -- 3
+            <> [Agendas.cityOfBlood | yigsFury < 18] -- 4
+            <> [Agendas.furyThatShakesTheEarth | yigsFury < 21] -- 5
+            <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
+      TheDepthsOfYoth
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at ExplorationDeck ?~ explorationDeck)
+              & (agendaStackL . at 1 ?~ agendas)
+              & (actStackL . at 1 ?~ acts)
+              & (setAsideCardsL .~ setAsideCards <> setAsideLocations)
+              & (metaL .~ toMeta startLocationId)
+              & (countsL .~ mapFromList [(CurrentDepth, 1)])
+          )
     ResolveAmounts _ (getChoiceAmount "Fury" -> n) ScenarioTarget -> do
       push $ RecordCount YigsFury n
       pure s
@@ -244,9 +246,11 @@ instance RunMessage TheDepthsOfYoth where
       isHarbinger <- harbingerId <=~> enemyIs Enemies.harbingerOfValusia
       when isHarbinger $ do
         startingDamage <- getRecordCount TheHarbingerIsStillAlive
-        when (startingDamage > 0) $ push $ PlaceDamage
-          (EnemyTarget harbingerId)
-          startingDamage
+        when (startingDamage > 0) $
+          push $
+            PlaceDamage
+              (EnemyTarget harbingerId)
+              startingDamage
       pure s
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
@@ -261,8 +265,11 @@ instance RunMessage TheDepthsOfYoth where
       gainXp <- map (uncurry GainXP) <$> getXpWithBonus depth
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
-      inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs
-        Enemies.harbingerOfValusia
+      inVictory <-
+        selectAny $
+          VictoryDisplayCardMatch $
+            cardIs
+              Enemies.harbingerOfValusia
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid
@@ -273,35 +280,37 @@ instance RunMessage TheDepthsOfYoth where
           currentDepth <- getCurrentDepth
           let
             resolution = if n == 1 then resolution1 else resolution2
-            recordEntry = if n == 1
-              then TheInvestigatorsFellIntoTheDepths
-              else TheNexusIsNear
-            depthMessages = if n > 1
-              then []
-              else case currentDepth of
-                1 -> map (InvestigatorKilled ScenarioSource) iids <> [GameOver]
-                2 ->
-                  map (\i -> SufferTrauma i 2 0) iids
-                    <> [ScenarioResolutionStep 1 (Resolution 1)]
-                    <> map
-                         (\i ->
-                           SearchCollectionForRandom i (toSource attrs)
-                             $ WeaknessCard
-                             <> CardWithTrait Injury
-                         )
-                         iids
-                3 ->
-                  map (\i -> SufferTrauma i 1 0) iids
-                    <> [ScenarioResolutionStep 1 (Resolution 1)]
-                _ -> []
-          pushAll
-            $ [story iids resolution, Record recordEntry]
-            <> depthMessages
-            <> [ CrossOutRecord TheHarbingerIsStillAlive | inVictory ]
-            <> [ RecordCount TheHarbingerIsStillAlive damage | not inVictory ]
-            <> [RecordCount YigsFury (yigsFury + vengeance)]
-            <> gainXp
-            <> [EndOfGame Nothing]
+            recordEntry =
+              if n == 1
+                then TheInvestigatorsFellIntoTheDepths
+                else TheNexusIsNear
+            depthMessages =
+              if n > 1
+                then []
+                else case currentDepth of
+                  1 -> map (InvestigatorKilled ScenarioSource) iids <> [GameOver]
+                  2 ->
+                    map (\i -> SufferTrauma i 2 0) iids
+                      <> [ScenarioResolutionStep 1 (Resolution 1)]
+                      <> map
+                        ( \i ->
+                            SearchCollectionForRandom i (toSource attrs) $
+                              WeaknessCard
+                                <> CardWithTrait Injury
+                        )
+                        iids
+                  3 ->
+                    map (\i -> SufferTrauma i 1 0) iids
+                      <> [ScenarioResolutionStep 1 (Resolution 1)]
+                  _ -> []
+          pushAll $
+            [story iids resolution, Record recordEntry]
+              <> depthMessages
+              <> [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
+              <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
+              <> [RecordCount YigsFury (yigsFury + vengeance)]
+              <> gainXp
+              <> [EndOfGame Nothing]
         _ -> error "Unknown Resolution"
       pure s
     ScenarioResolutionStep 1 (Resolution 1) -> do
@@ -309,7 +318,8 @@ instance RunMessage TheDepthsOfYoth where
       when allKilled $ push GameOver
       pure s
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
-      for_ mcard $ \card -> push
-        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+      for_ mcard $ \card ->
+        push $
+          ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s
     _ -> TheDepthsOfYoth <$> runMessage msg attrs

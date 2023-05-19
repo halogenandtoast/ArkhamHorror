@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.JeromeDavids
-  ( jeromeDavids
-  , JeromeDavids(..)
-  ) where
+module Arkham.Investigator.Cards.JeromeDavids (
+  jeromeDavids,
+  JeromeDavids (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,57 +23,60 @@ import Arkham.Timing qualified as Timing
 newtype JeromeDavids = JeromeDavids (InvestigatorAttrs `With` PrologueMetadata)
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
-  deriving newtype Entity
+  deriving newtype (Entity)
 
 jeromeDavids :: PrologueMetadata -> InvestigatorCard JeromeDavids
-jeromeDavids meta = investigatorWith
-  (JeromeDavids . (`with` meta))
-  Cards.jeromeDavids
-  Stats
-    { health = 4
-    , sanity = 8
-    , willpower = 2
-    , intellect = 4
-    , combat = 1
-    , agility = 3
-    }
-  ((startsWithInHandL
-   .~ [ Cards.hyperawareness
-      , Cards.mindOverMatter
-      , Cards.workingAHunch
-      , Cards.barricade
-      , Cards.deduction
-      , Cards.magnifyingGlass1
-      , Cards.fingerprintKit
-      , Cards.connectTheDots
-      , Cards.curiosity
-      , Cards.curiosity
-      ]
-   )
-  )
+jeromeDavids meta =
+  investigatorWith
+    (JeromeDavids . (`with` meta))
+    Cards.jeromeDavids
+    Stats
+      { health = 4
+      , sanity = 8
+      , willpower = 2
+      , intellect = 4
+      , combat = 1
+      , agility = 3
+      }
+    ( ( startsWithInHandL
+          .~ [ Cards.hyperawareness
+             , Cards.mindOverMatter
+             , Cards.workingAHunch
+             , Cards.barricade
+             , Cards.deduction
+             , Cards.magnifyingGlass1
+             , Cards.fingerprintKit
+             , Cards.connectTheDots
+             , Cards.curiosity
+             , Cards.curiosity
+             ]
+      )
+    )
 
 instance HasModifiersFor JeromeDavids where
-  getModifiersFor target (JeromeDavids (a `With` _)) | isTarget a target =
-    pure $ toModifiersWith
-      a
-      setActiveDuringSetup
-      [ CannotTakeAction (IsAction Action.Draw)
-      , CannotDrawCards
-      , CannotManipulateDeck
-      , StartingResources (-2)
-      ]
+  getModifiersFor target (JeromeDavids (a `With` _))
+    | isTarget a target =
+        pure $
+          toModifiersWith
+            a
+            setActiveDuringSetup
+            [ CannotTakeAction (IsAction Action.Draw)
+            , CannotDrawCards
+            , CannotManipulateDeck
+            , StartingResources (-2)
+            ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids (a `With` _)) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility a 1 Self
-        $ ReactionAbility
-            (DrawCard
-              Timing.When
-              (InvestigatorAt YourLocation)
-              (BasicCardMatch $ CardWithType TreacheryType)
-              EncounterDeck
+    [ limitedAbility (PlayerLimit PerRound 1) $
+        restrictedAbility a 1 Self $
+          ReactionAbility
+            ( DrawCard
+                Timing.When
+                (InvestigatorAt YourLocation)
+                (BasicCardMatch $ CardWithType TreacheryType)
+                EncounterDeck
             )
             (SkillIconCost 2 $ singleton (SkillIcon SkillIntellect))
     ]
@@ -81,7 +84,7 @@ instance HasAbilities JeromeDavids where
 instance HasTokenValue JeromeDavids where
   getTokenValue iid ElderSign (JeromeDavids (attrs `With` _))
     | iid == toId attrs = do
-      pure $ TokenValue ElderSign $ PositiveModifier 1
+        pure $ TokenValue ElderSign $ PositiveModifier 1
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance RunMessage JeromeDavids where
@@ -101,8 +104,9 @@ instance RunMessage JeromeDavids where
       pure i
     DiscardCard iid _ cardId | iid == toId attrs -> do
       let
-        card = fromJustNote "must be in hand"
-          $ find ((== cardId) . toCardId) (investigatorHand attrs)
+        card =
+          fromJustNote "must be in hand" $
+            find ((== cardId) . toCardId) (investigatorHand attrs)
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do

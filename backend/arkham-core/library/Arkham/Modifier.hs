@@ -128,6 +128,7 @@ data ModifierType
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
   | CannotSpendClues
+  | EffectsCannotBeCanceled
   | MaxCluesDiscovered Int
   | CannotDiscoverCluesAt LocationMatcher
   | CannotTakeAction ActionTarget

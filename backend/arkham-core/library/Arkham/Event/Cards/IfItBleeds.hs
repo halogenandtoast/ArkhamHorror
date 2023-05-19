@@ -31,10 +31,9 @@ getWindowEnemyIds iid = mapMaybe \case
 
 instance RunMessage IfItBleeds where
   runMessage msg e@(IfItBleeds attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
-      let enemyIds = getWindowEnemyIds iid windows
-      enemyIdsWithHorrorValue <- forToSnd enemyIds (field EnemySanityDamage)
-      choices <- for enemyIdsWithHorrorValue $ \(enemyId, horrorValue) -> do
+    InvestigatorPlayEvent iid eid _ (getWindowEnemyIds iid -> enemyIds) _ | eid == toId attrs -> do
+      choices <- for enemyIds $ \enemyId -> do
+        horrorValue <- field EnemySanityDamage enemyId
         healMessages <-
           map snd
             <$> getInvestigatorsWithHealHorror

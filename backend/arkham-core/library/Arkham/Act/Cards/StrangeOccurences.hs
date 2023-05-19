@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.StrangeOccurences
-  ( StrangeOccurences(..)
-  , strangeOccurences
-  ) where
+module Arkham.Act.Cards.StrangeOccurences (
+  StrangeOccurences (..),
+  strangeOccurences,
+) where
 
 import Arkham.Prelude
 
@@ -21,12 +21,11 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Types
 
 newtype StrangeOccurences = StrangeOccurences ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeOccurences :: ActCard StrangeOccurences
@@ -43,22 +42,23 @@ instance HasModifiersFor StrangeOccurences where
           selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
         treacheriesDrawnCount <-
           length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
-        pure $ toModifiers
-          a
-          [ AddKeyword Keyword.Surge
-          | atIchtacasDestination && treacheriesDrawnCount == 1
-          ]
+        pure $
+          toModifiers
+            a
+            [ AddKeyword Keyword.Surge
+            | atIchtacasDestination && treacheriesDrawnCount == 1
+            ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StrangeOccurences where
   getAbilities (StrangeOccurences a) =
     [ restrictedAbility
-          a
-          1
-          (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide E a
     ]
 
@@ -72,19 +72,25 @@ instance RunMessage StrangeOccurences where
       leadInvestigatorId <- getLeadInvestigatorId
       isTownHall <-
         selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
-      ichtaca <- PlayerCard <$> genPlayerCard Assets.ichtacaTheForgottenGuardian
-      iids <- selectList $ NearestToLocation $ locationIs $ if isTownHall
-        then Locations.townHall
-        else Locations.rivertown
+      ichtaca <- genCard Assets.ichtacaTheForgottenGuardian
+      iids <-
+        selectList $
+          NearestToLocation $
+            locationIs $
+              if isTownHall
+                then Locations.townHall
+                else Locations.rivertown
       let
-        takeControlMessage = chooseOrRunOne
-          leadInvestigatorId
-          [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca]
-          | iid <- iids
-          ]
-        nextMessage = if deckCount <= 1
-          then ScenarioResolution $ Resolution 1
-          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
+        takeControlMessage =
+          chooseOrRunOne
+            leadInvestigatorId
+            [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca]
+            | iid <- iids
+            ]
+        nextMessage =
+          if deckCount <= 1
+            then scenarioResolution 1
+            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> StrangeOccurences <$> runMessage msg attrs

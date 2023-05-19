@@ -184,7 +184,7 @@ instance RunMessage LostInTimeAndSpace where
             )
         (_, Tablet) -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid iid)
+          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
         _ -> pure ()
     After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case tokenFace token of
@@ -197,7 +197,7 @@ instance RunMessage LostInTimeAndSpace where
             )
         Tablet -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid iid)
+          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
         _ -> pure ()
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
       do

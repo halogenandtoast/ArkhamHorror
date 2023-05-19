@@ -245,8 +245,8 @@ instance RunMessage TheSecretName where
             if isEasyStandard attrs
               then do
                 atYourLocation <- nahab <=~> EnemyAt (locationWithInvestigator iid)
-                when atYourLocation $ push $ EnemyWillAttack $ enemyAttack nahab iid
-              else push $ EnemyWillAttack $ enemyAttack nahab iid
+                when atYourLocation $ push $ EnemyWillAttack $ enemyAttack nahab attrs iid
+              else push $ EnemyWillAttack $ enemyAttack nahab attrs iid
         ElderThing | isEasyStandard attrs -> push HuntersMove
         _ -> pure ()
       pure s

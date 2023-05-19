@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.ChaosAtTheCarnevale
-  ( ChaosAtTheCarnevale(..)
-  , chaosAtTheCarnevale
-  ) where
+module Arkham.Agenda.Cards.ChaosAtTheCarnevale (
+  ChaosAtTheCarnevale (..),
+  chaosAtTheCarnevale,
+) where
 
 import Arkham.Prelude
 
@@ -17,7 +17,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype ChaosAtTheCarnevale = ChaosAtTheCarnevale AgendaAttrs
@@ -30,10 +30,10 @@ chaosAtTheCarnevale =
 
 instance HasAbilities ChaosAtTheCarnevale where
   getAbilities (ChaosAtTheCarnevale x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ EnemySpawns Timing.After Anywhere
-        $ enemyIs Enemies.writhingAppendage
+    [ mkAbility x 1 $
+      ForcedAbility $
+        EnemySpawns Timing.After Anywhere $
+          enemyIs Enemies.writhingAppendage
     | onSide A x
     ]
 
@@ -46,12 +46,13 @@ instance RunMessage ChaosAtTheCarnevale where
       mCnidathquaId <- selectOne $ enemyIs Enemies.cnidathqua
       a <$ case mCnidathquaId of
         Just cnidathquaId ->
-          pushAll
-            $ [ EnemyAttack $ enemyAttack cnidathquaId iid
+          pushAll $
+            [ EnemyAttack $
+              enemyAttack cnidathquaId attrs iid
                 & damageStrategyL
-                .~ DamageFirst Assets.innocentReveler
-              | iid <- investigatorIds
-              ]
-            <> [RevertAgenda (toId attrs)]
+                  .~ DamageFirst Assets.innocentReveler
+            | iid <- investigatorIds
+            ]
+              <> [RevertAgenda (toId attrs)]
         Nothing -> pure ()
     _ -> ChaosAtTheCarnevale <$> runMessage msg attrs

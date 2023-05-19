@@ -295,7 +295,7 @@ instance RunMessage ThePallidMask where
                 push $
                   chooseOne
                     iid
-                    [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy iid]
+                    [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
                     | enemy <- enemies
                     ]
             else do
@@ -309,7 +309,7 @@ instance RunMessage ThePallidMask where
                     [ targetLabel
                       enemy
                       [ Ready (EnemyTarget enemy)
-                      , InitiateEnemyAttack $ enemyAttack enemy iid
+                      , InitiateEnemyAttack $ enemyAttack enemy attrs iid
                       ]
                     | enemy <- enemies
                     ]

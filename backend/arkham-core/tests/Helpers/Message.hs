@@ -45,7 +45,7 @@ chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (toId i)
 
 enemyAttack :: Investigator -> Enemy -> Message
-enemyAttack i e = EnemyAttack $ Attack.enemyAttack (toId e) (toId i)
+enemyAttack i e = EnemyAttack $ Attack.enemyAttack (toId e) e (toId i)
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
@@ -76,11 +76,13 @@ beginSkillTest i sType n =
 
 beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> Int -> Message
 beginActionSkillTest i a mt sType n =
-  BeginSkillTest $ (initSkillTest (toId i) (TestSource mempty) target sType n)
-    { skillTestAction = Just a }
+  BeginSkillTest $
+    (initSkillTest (toId i) (TestSource mempty) target sType n)
+      { skillTestAction = Just a
+      }
  where
-   target = fromMaybe TestTarget mt
+  target = fromMaybe TestTarget mt
 
 playAssetCard :: PlayerCard -> Investigator -> Message
 playAssetCard card (toId -> iid) =
-  InitiatePlayCard iid (PlayerCard $ card { pcOwner = Just iid}) Nothing (defaultWindows iid) True
+  InitiatePlayCard iid (PlayerCard $ card {pcOwner = Just iid}) Nothing (defaultWindows iid) True

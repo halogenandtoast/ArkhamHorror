@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.DanceOfTheYellowKing
-  ( danceOfTheYellowKing
-  , DanceOfTheYellowKing(..)
-  ) where
+module Arkham.Treachery.Cards.DanceOfTheYellowKing (
+  danceOfTheYellowKing,
+  DanceOfTheYellowKing (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -28,23 +28,26 @@ instance RunMessage DanceOfTheYellowKing where
   runMessage msg t@(DanceOfTheYellowKing attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       anyLunatics <- selectAny $ EnemyWithTrait Lunatic
-      push $ if anyLunatics
-        then RevelationSkillTest iid source SkillWillpower 3
-        else gainSurge attrs
+      push $
+        if anyLunatics
+          then RevelationSkillTest iid source SkillWillpower 3
+          else gainSurge attrs
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        lunatics <- selectList $ NearestEnemy $ EnemyWithTrait Lunatic
-        mlid <- field InvestigatorLocation iid
-        for_ mlid $ \lid -> push $ chooseOrRunOne
-          iid
-          [ targetLabel
-              lunatic
-              [ MoveUntil lid (toTarget lunatic)
-              , EnemyEngageInvestigator lunatic iid
-              , EnemyWillAttack $ enemyAttack lunatic iid
-              ]
-          | lunatic <- lunatics
-          ]
-        pure t
+          lunatics <- selectList $ NearestEnemy $ EnemyWithTrait Lunatic
+          mlid <- field InvestigatorLocation iid
+          for_ mlid $ \lid ->
+            push $
+              chooseOrRunOne
+                iid
+                [ targetLabel
+                  lunatic
+                  [ MoveUntil lid (toTarget lunatic)
+                  , EnemyEngageInvestigator lunatic iid
+                  , EnemyWillAttack $ enemyAttack lunatic attrs iid
+                  ]
+                | lunatic <- lunatics
+                ]
+          pure t
     _ -> DanceOfTheYellowKing <$> runMessage msg attrs

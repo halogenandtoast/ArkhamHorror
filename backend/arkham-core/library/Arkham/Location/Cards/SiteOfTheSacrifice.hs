@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.SiteOfTheSacrifice
-  ( siteOfTheSacrifice
-  , SiteOfTheSacrifice(..)
-  ) where
+module Arkham.Location.Cards.SiteOfTheSacrifice (
+  siteOfTheSacrifice,
+  SiteOfTheSacrifice (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,19 +25,22 @@ siteOfTheSacrifice =
   location SiteOfTheSacrifice Cards.siteOfTheSacrifice 4 (PerPlayer 3)
 
 instance HasAbilities SiteOfTheSacrifice where
-  getAbilities (SiteOfTheSacrifice a) = withBaseAbilities a
-    [ doesNotProvokeAttacksOfOpportunity
-      $ restrictedAbility a 1
-        (Here <> enemyExists (enemyIs Enemies.nahab <> EnemyWithAnyDoom)
-        )
-      $ ActionAbility Nothing
-      $ ActionCost 1 <> GroupClueCost (PerPlayer 1) (LocationWithId $ toId a)
-
-    , restrictedAbility a 2 (CluesOnThis $ LessThan $ PerPlayer 3)
-      $ ForcedAbility
-      $ RoundEnds Timing.When
-    , haunted "You must either place 1 doom on Nahab, or Nahab attacks you." a 3
-    ]
+  getAbilities (SiteOfTheSacrifice a) =
+    withBaseAbilities
+      a
+      [ doesNotProvokeAttacksOfOpportunity
+          $ restrictedAbility
+            a
+            1
+            ( Here <> enemyExists (enemyIs Enemies.nahab <> EnemyWithAnyDoom)
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 1 <> GroupClueCost (PerPlayer 1) (LocationWithId $ toId a)
+      , restrictedAbility a 2 (CluesOnThis $ LessThan $ PerPlayer 3) $
+          ForcedAbility $
+            RoundEnds Timing.When
+      , haunted "You must either place 1 doom on Nahab, or Nahab attacks you." a 3
+      ]
 
 instance RunMessage SiteOfTheSacrifice where
   runMessage msg l@(SiteOfTheSacrifice attrs) = case msg of
@@ -52,9 +55,11 @@ instance RunMessage SiteOfTheSacrifice where
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
       nahab <- getUniqueEnemy Enemies.nahab
-      push $ chooseOne iid
-        [ Label "Place 1 doom on Nahab" [PlaceDoom (toTarget nahab) 1]
-        , Label "Nahab attacks you" [InitiateEnemyAttack $ enemyAttack nahab iid]
-        ]
+      push $
+        chooseOne
+          iid
+          [ Label "Place 1 doom on Nahab" [PlaceDoom (toTarget nahab) 1]
+          , Label "Nahab attacks you" [InitiateEnemyAttack $ enemyAttack nahab attrs iid]
+          ]
       pure l
     _ -> SiteOfTheSacrifice <$> runMessage msg attrs

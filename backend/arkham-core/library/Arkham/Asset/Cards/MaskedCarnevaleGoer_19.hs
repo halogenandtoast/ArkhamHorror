@@ -57,7 +57,7 @@ instance RunMessage MaskedCarnevaleGoer_19 where
               lead
               [ targetLabel
                 investigator
-                [EnemyAttack $ enemyAttack enemyId investigator]
+                [EnemyAttack $ enemyAttack enemyId attrs investigator]
               | investigator <- investigators
               ]
              | isAbilitySource attrs 1 source

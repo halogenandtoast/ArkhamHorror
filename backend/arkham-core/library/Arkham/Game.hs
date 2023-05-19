@@ -2555,7 +2555,7 @@ getEnemyField f e = do
     EnemySanityDamage -> pure enemySanityDamage
     EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
     EnemyKeywords -> do
-      modifiers' <- getModifiers (toTarget e)
+      modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
         additionalKeywords = foldl' applyModifier [] modifiers'
         applyModifier ks = \case
@@ -2728,6 +2728,14 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: (HasGame m) => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      CanCancelRevelationEffect matcher' -> do
+        cardIsMatch <- matches' c matcher'
+        modifiers <- getModifiers (toCardId c)
+        pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers
+      CanCancelAllEffects matcher' -> do
+        cardIsMatch <- matches' c matcher'
+        modifiers <- getModifiers (toCardId c)
+        pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers
       CardWithPerformableAbility abilityMatcher modifiers' -> do
         iid <- view activeInvestigatorIdL <$> getGame
         let
@@ -4622,12 +4630,12 @@ runGameMessage msg g = case msg of
       , EndEnemy
       ]
     pure $ g & phaseL .~ EnemyPhase
-  EnemyAttackFromDiscard iid card -> do
+  EnemyAttackFromDiscard iid source card -> do
     enemyId <- getRandom
     let enemy = createEnemy card enemyId
     push $
       EnemyWillAttack $
-        (enemyAttack enemyId iid)
+        (enemyAttack enemyId source iid)
           { attackDamageStrategy = enemyDamageStrategy (toAttrs enemy)
           }
     pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy

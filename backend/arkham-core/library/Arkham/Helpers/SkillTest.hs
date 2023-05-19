@@ -5,10 +5,12 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
+import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Keyword (Keyword (Peril))
 import Arkham.Message (Message (BeginSkillTest, RevelationSkillTest))
 import Arkham.Projection
 import Arkham.SkillTest.Base
@@ -166,3 +168,13 @@ isInvestigating iid lid =
     , (== Just Investigate) <$> getSkillTestAction
     , (== Just iid) <$> getSkillTestInvestigator
     ]
+
+getIsPerilous :: (HasGame m) => SkillTest -> m Bool
+getIsPerilous skillTest = case skillTestSource skillTest of
+  TreacherySource tid -> do
+    keywords <- field TreacheryKeywords tid
+    pure $ Peril `elem` keywords
+  EnemySource eid -> do
+    keywords <- field EnemyKeywords eid
+    pure $ Peril `elem` keywords
+  _ -> pure False

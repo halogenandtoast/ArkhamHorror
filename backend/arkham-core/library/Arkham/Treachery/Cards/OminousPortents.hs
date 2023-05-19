@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
+import Arkham.Keyword (Keyword (Peril))
 import Arkham.Message
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.SkillType
@@ -37,7 +38,7 @@ instance RunMessage OminousPortents where
                 EffectCardResolutionWindow
                 attrs
                 (toCardId topSpectralCard)
-                [EffectsCannotBeCanceled]
+                [AddKeyword Peril, EffectsCannotBeCanceled]
             , InvestigatorDrewEncounterCard iid (topSpectralCard {ecAddedPeril = True})
             ]
           | topSpectralCard <- maybeToList mTopSpectralCard

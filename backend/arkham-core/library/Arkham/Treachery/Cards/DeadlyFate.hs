@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.DeadlyFate
-  ( deadlyFate
-  , DeadlyFate(..)
-  ) where
+module Arkham.Treachery.Cards.DeadlyFate (
+  deadlyFate,
+  DeadlyFate (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,8 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype DeadlyFate = DeadlyFate TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -25,9 +25,10 @@ instance RunMessage DeadlyFate where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillWillpower 3
       pure t
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t
-      <$ push (DiscardEncounterUntilFirst source Nothing $ CardWithType EnemyType)
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
+      | isSource attrs source ->
+          t
+            <$ push (DiscardEncounterUntilFirst source Nothing $ CardWithType EnemyType)
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       iid <- selectJust You
       case mcard of
@@ -40,13 +41,14 @@ instance RunMessage DeadlyFate where
           pushAll
             [ FocusCards [EncounterCard c]
             , chooseOne
-              iid
-              [ Label "Draw enemy" [InvestigatorDrewEncounterCard iid c]
-              , Label "That enemy attacks you (from the discard pile)"
-                [ AddToEncounterDiscard c
-                , EnemyAttackFromDiscard iid (EncounterCard c)
+                iid
+                [ Label "Draw enemy" [InvestigatorDrewEncounterCard iid c]
+                , Label
+                    "That enemy attacks you (from the discard pile)"
+                    [ AddToEncounterDiscard c
+                    , EnemyAttackFromDiscard iid (toSource attrs) (EncounterCard c)
+                    ]
                 ]
-              ]
             , UnfocusCards
             ]
           pure t

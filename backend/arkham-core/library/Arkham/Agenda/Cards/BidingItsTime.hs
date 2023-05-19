@@ -79,6 +79,6 @@ instance RunMessage BidingItsTime where
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) (SkillTestInitiatorTarget (EnemyTarget eid)) _ _ ->
       do
-        push $ EnemyAttack $ enemyAttack eid iid
+        push $ EnemyAttack $ enemyAttack eid attrs iid
         pure a
     _ -> BidingItsTime <$> runMessage msg attrs

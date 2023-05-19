@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.GuardDog2
-  ( GuardDog2(..)
-  , guardDog2
-  ) where
+module Arkham.Asset.Cards.GuardDog2 (
+  GuardDog2 (..),
+  guardDog2,
+) where
 
 import Arkham.Prelude
 
@@ -11,10 +11,10 @@ import Arkham.Asset.Runner
 import Arkham.Attack
 import Arkham.DamageEffect
 import Arkham.Id
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Source
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype GuardDog2 = GuardDog2 AssetAttrs
@@ -29,19 +29,21 @@ instance HasAbilities GuardDog2 where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> EnemyCriteria
-          (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy)
+        ( ControlsThis
+            <> EnemyCriteria
+              (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy)
         )
-      $ FastAbility
-      $ ExhaustCost
-      $ toTarget x
-    , restrictedAbility x 2 ControlsThis $ ReactionAbility
-      (AssetDealtDamage
-        Timing.When
-        (SourceIsEnemyAttack AnyEnemy)
-        (AssetWithId (toId x))
-      )
-      Free
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget x
+    , restrictedAbility x 2 ControlsThis $
+        ReactionAbility
+          ( AssetDealtDamage
+              Timing.When
+              (SourceIsEnemyAttack AnyEnemy)
+              (AssetWithId (toId x))
+          )
+          Free
     ]
 
 toEnemyId :: [Window] -> EnemyId
@@ -57,15 +59,16 @@ instance RunMessage GuardDog2 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <-
         selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy
-      push $ chooseOrRunOne
-        iid
-        [ targetLabel
+      push $
+        chooseOrRunOne
+          iid
+          [ targetLabel
             enemy
             [ EngageEnemy iid enemy False
-            , InitiateEnemyAttack $ enemyAttack enemy iid
+            , InitiateEnemyAttack $ enemyAttack enemy attrs iid
             ]
-        | enemy <- enemies
-        ]
+          | enemy <- enemies
+          ]
       pure a
     UseCardAbility _ source 2 (toEnemyId -> eid) _ | isSource attrs source -> do
       push $ EnemyDamage eid $ nonAttack source 1

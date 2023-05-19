@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ThePaleMaskBeckons
-  ( thePaleMaskBeckons
-  , ThePaleMaskBeckons(..)
-  ) where
+module Arkham.Treachery.Cards.ThePaleMaskBeckons (
+  thePaleMaskBeckons,
+  ThePaleMaskBeckons (..),
+) where
 
 import Arkham.Prelude
 
@@ -30,7 +30,7 @@ instance RunMessage ThePaleMaskBeckons where
       t <$ case mTheManInThePallidMask of
         Just enemy -> do
           iids <- getInvestigatorIds
-          pushAll $ map (EnemyAttack . enemyAttack enemy) iids
+          pushAll $ map (EnemyAttack . enemyAttack enemy attrs) iids
         Nothing -> do
           enemy <- getCampaignStoryCard Cards.theManInThePallidMask
           pushAll

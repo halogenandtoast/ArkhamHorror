@@ -2197,7 +2197,7 @@ windowMatches iid source window' = \case
             andM
               [ matchWho iid who whoMatcher
               , enemyMatches (attackEnemy details) enemyMatcher
-              , pure $ enemyAttackMatches (attackType details) enemyAttackMatcher
+              , enemyAttackMatches details enemyAttackMatcher
               ]
           _ -> pure False
       _ -> pure False
@@ -2209,7 +2209,7 @@ windowMatches iid source window' = \case
             andM
               [ matchWho iid who whoMatcher
               , enemyMatches (attackEnemy details) enemyMatcher
-              , pure $ enemyAttackMatches (attackType details) enemyAttackMatcher
+              , enemyAttackMatches details enemyAttackMatcher
               ]
           _ -> pure False
       _ -> pure False
@@ -2221,7 +2221,7 @@ windowMatches iid source window' = \case
               andM
                 [ matchWho iid who whoMatcher
                 , enemyMatches (attackEnemy details) enemyMatcher
-                , pure $ enemyAttackMatches (attackType details) enemyAttackMatcher
+                , enemyAttackMatches details enemyAttackMatcher
                 ]
             _ -> pure False
       _ -> pure False
@@ -2920,10 +2920,18 @@ skillTypeMatches st = \case
   Matcher.NotSkillType st' -> st /= st'
   Matcher.IsSkillType st' -> st == st'
 
-enemyAttackMatches :: EnemyAttackType -> Matcher.EnemyAttackMatcher -> Bool
-enemyAttackMatches atkType = \case
-  Matcher.AnyEnemyAttack -> True
-  Matcher.AttackOfOpportunityAttack -> atkType == AttackOfOpportunity
+enemyAttackMatches :: (HasGame m) => EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
+enemyAttackMatches details@EnemyAttackDetails {..} = \case
+  Matcher.AnyEnemyAttack -> pure True
+  Matcher.AttackOfOpportunityAttack -> pure $ attackType == AttackOfOpportunity
+  Matcher.CancelableEnemyAttack matcher -> do
+    modifiers' <- getModifiers (sourceToTarget attackSource)
+    enemyModifiers <- getModifiers attackEnemy
+    andM
+      [ enemyAttackMatches details matcher
+      , pure $ EffectsCannotBeCanceled `notElem` modifiers'
+      , pure $ AttacksCannotBeCancelled `notElem` enemyModifiers
+      ]
 
 damageEffectMatches
   :: (Monad m) => DamageEffect -> Matcher.DamageEffectMatcher -> m Bool

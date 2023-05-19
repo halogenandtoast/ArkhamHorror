@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.Ichtaca
-  ( ichtaca
-  , Ichtaca(..)
-  ) where
+module Arkham.Enemy.Cards.Ichtaca (
+  ichtaca,
+  Ichtaca (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,29 +22,31 @@ ichtaca :: EnemyCard Ichtaca
 ichtaca = enemy Ichtaca Cards.ichtaca (5, Static 4, 4) (2, 0)
 
 instance HasAbilities Ichtaca where
-  getAbilities (Ichtaca a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 OnSameLocation
-      $ ActionAbility (Just Action.Parley)
-      $ ActionCost 1
-    ]
+  getAbilities (Ichtaca a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 OnSameLocation $
+          ActionAbility (Just Action.Parley) $
+            ActionCost 1
+      ]
 
 instance RunMessage Ichtaca where
   runMessage msg e@(Ichtaca attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley
-        iid
-        source
-        (toTarget attrs)
-        SkillIntellect
-        4
+      push $
+        parley
+          iid
+          source
+          (toTarget attrs)
+          SkillIntellect
+          4
       pure e
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ PlaceClues (toTarget attrs) 1
-        pure e
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+          push $ PlaceClues (toTarget attrs) 1
+          pure e
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
-        pure e
+          push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
+          pure e
     _ -> Ichtaca <$> runMessage msg attrs

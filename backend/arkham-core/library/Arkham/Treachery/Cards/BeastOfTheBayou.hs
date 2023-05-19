@@ -27,14 +27,17 @@ instance RunMessage BeastOfTheBayou where
           locationId <- selectJust $ locationWithEnemy eid
           connectedLocationIds <- selectList $ accessibleFrom locationId
           investigatorIds <-
-            selectList $ InvestigatorAt $ LocationMatchAny $ map
-              LocationWithId
-              (locationId : connectedLocationIds)
+            selectList $
+              InvestigatorAt $
+                LocationMatchAny $
+                  map
+                    LocationWithId
+                    (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> pushAll [PlaceDoomOnAgenda]
-            xs -> pushAll $ map (EnemyAttack . enemyAttack eid) xs
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+            xs -> pushAll $ map (EnemyAttack . enemyAttack eid attrs) xs
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+      do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny n 0
         pure t
     _ -> BeastOfTheBayou <$> runMessage msg attrs

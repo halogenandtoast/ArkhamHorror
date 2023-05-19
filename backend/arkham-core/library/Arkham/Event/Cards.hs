@@ -354,8 +354,11 @@ dodge =
     , cdCardTraits = setFromList [Tactic]
     , cdFastWindow =
         Just
-          ( EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack $
-              EnemyWithoutModifier AttacksCannotBeCancelled
+          ( EnemyAttacks
+              Timing.When
+              (InvestigatorAt YourLocation)
+              (CancelableEnemyAttack AnyEnemyAttack)
+              AnyEnemy
           )
     , cdAlternateCardCodes = ["01523", "60113"]
     }
@@ -505,7 +508,7 @@ wardOfProtection =
           DrawCard
             Timing.When
             You
-            (BasicCardMatch NonWeaknessTreachery)
+            (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery)
             EncounterDeck
     , cdAlternateCardCodes = ["01565"]
     }
@@ -813,8 +816,11 @@ hypnoticGaze =
     , cdCardTraits = singleton Spell
     , cdFastWindow =
         Just
-          ( EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack $
-              EnemyWithoutModifier AttacksCannotBeCancelled
+          ( EnemyAttacks
+              Timing.When
+              (InvestigatorAt YourLocation)
+              (CancelableEnemyAttack AnyEnemyAttack)
+              AnyEnemy
           )
     , cdAlternateCardCodes = ["60414"]
     }
@@ -954,7 +960,7 @@ wardOfProtection5 =
           DrawCard
             Timing.When
             You
-            (BasicCardMatch IsEncounterCard)
+            (CanCancelAllEffects $ BasicCardMatch IsEncounterCard)
             EncounterDeck
     , cdLevel = 5
     }
@@ -1381,8 +1387,8 @@ narrowEscape =
           ( EnemyAttacks
               Timing.When
               (InvestigatorAt YourLocation)
-              AttackOfOpportunityAttack
-              $ EnemyWithoutModifier AttacksCannotBeCancelled
+              (CancelableEnemyAttack AttackOfOpportunityAttack)
+              AnyEnemy
           )
     }
 
@@ -1396,7 +1402,7 @@ wardOfProtection2 =
           DrawCard
             Timing.When
             Anyone
-            (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+            (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
             EncounterDeck
     , cdLevel = 2
     }
@@ -2346,8 +2352,11 @@ dodge2 =
     , cdCardTraits = setFromList [Tactic]
     , cdFastWindow =
         Just
-          ( EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack $
-              EnemyWithoutModifier AttacksCannotBeCancelled
+          ( EnemyAttacks
+              Timing.When
+              (InvestigatorAt YourLocation)
+              (CancelableEnemyAttack AnyEnemyAttack)
+              AnyEnemy
           )
     , cdLevel = 2
     }
@@ -2831,8 +2840,11 @@ hypnoticGaze2 =
     , cdCardTraits = singleton Spell
     , cdFastWindow =
         Just
-          ( EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack $
-              EnemyWithoutModifier AttacksCannotBeCancelled
+          ( EnemyAttacks
+              Timing.When
+              (InvestigatorAt YourLocation)
+              (CancelableEnemyAttack AnyEnemyAttack)
+              AnyEnemy
           )
     , cdLevel = 2
     }

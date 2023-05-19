@@ -99,6 +99,7 @@ import Arkham.Skill.Skills (
  )
 import Arkham.Story.Stories (
   josefsPlanEffect,
+  unfinishedBusiness_JEffect,
  )
 import Arkham.Treachery.Treacheries (mysteriesOfTheLodgeEffect)
 
@@ -288,6 +289,7 @@ allEffects =
     , ("05157", SomeEffect witherEffect)
     , ("05158", SomeEffect sixthSenseEffect)
     , ("05171", SomeEffect hereticsGravesSpectral_171Effect)
+    , ("05178j", SomeEffect unfinishedBusiness_JEffect)
     , ("05194", SomeEffect grislyTotemSeeker3Effect)
     , ("05195", SomeEffect grislyTotemSurvivor3Effect)
     , ("05230", SomeEffect telescopicSight3Effect)

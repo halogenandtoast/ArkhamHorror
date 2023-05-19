@@ -1,19 +1,25 @@
 module Arkham.Story.Cards.UnfinishedBusiness_J (
   UnfinishedBusiness_J (..),
   unfinishedBusiness_J,
+  unfinishedBusiness_JEffect,
 ) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Attack
+import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
+import Arkham.Trait (Trait (Spectral))
 
 newtype UnfinishedBusiness_J = UnfinishedBusiness_J StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -34,7 +40,8 @@ instance RunMessage UnfinishedBusiness_J where
           pushAll [RemoveEnemy enemy, AddToVictory (toTarget attrs)]
         else do
           afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy iid
-          afterStoryResolution attrs $ gameModifier attrs enemy CannotBeDefeated
+          afterStoryResolution attrs $
+            createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
       -- TODO: parley only at spectral, +1 per player clues costt
       push $ chooseOne iid [targetLabel (toTarget attrs) []]
       pure s
@@ -45,3 +52,35 @@ instance RunMessage UnfinishedBusiness_J where
       push $ ResolveStory iid ResolveIt (toId attrs)
       pure s
     _ -> UnfinishedBusiness_J <$> runMessage msg attrs
+
+newtype UnfinishedBusiness_JEffect = UnfinishedBusiness_JEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+unfinishedBusiness_JEffect :: EffectArgs -> UnfinishedBusiness_JEffect
+unfinishedBusiness_JEffect = cardEffect UnfinishedBusiness_JEffect Cards.unfinishedBusiness_J
+
+instance HasModifiersFor UnfinishedBusiness_JEffect where
+  getModifiersFor target (UnfinishedBusiness_JEffect a) | effectTarget a == target =
+    do
+      pure $
+        toModifiers a [CannotBeDefeated]
+  getModifiersFor (AbilityTarget _ ability) (UnfinishedBusiness_JEffect a) = do
+    case abilitySource ability of
+      EnemySource eid | EnemyTarget eid == effectTarget a && abilityIndex ability == 1 -> do
+        pure $
+          toModifiers
+            a
+            [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
+            , SetAbilityCriteria
+                (CriteriaOverride $ OnSameLocation <> LocationExists (YourLocation <> LocationWithTrait Spectral))
+            ]
+      _ -> pure []
+  getModifiersFor _ _ = pure []
+
+instance RunMessage UnfinishedBusiness_JEffect where
+  runMessage msg e@(UnfinishedBusiness_JEffect attrs@EffectAttrs {..}) = case msg of
+    EndUpkeep -> do
+      push (DisableEffect effectId)
+      pure e
+    _ -> UnfinishedBusiness_JEffect <$> runMessage msg attrs

@@ -42,6 +42,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
+import Arkham.Helpers.SkillTest (getIsPerilous)
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Location.Types (Field (..))
@@ -2456,6 +2457,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CommitToSkillTest skillTest triggerMessage
     | skillTestInvestigator skillTest /= investigatorId -> do
         let iid = skillTestInvestigator skillTest
+        isPerlious <- getIsPerilous skillTest
         locationId <- getJustLocation iid
         isScenarioAbility <- getIsScenarioAbility
         clueCount <- field LocationClues locationId
@@ -2468,7 +2470,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (pure False)
             (canCommitToAnotherLocation a)
             otherLocation
-        when (locationId == investigatorLocation || canCommit) $ do
+        when (not isPerlious && (locationId == investigatorLocation || canCommit)) $ do
           committedCards <- field InvestigatorCommittedCards investigatorId
           allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
           let

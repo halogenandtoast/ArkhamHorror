@@ -39,7 +39,6 @@ data SkillTest = SkillTest
   , skillTestAction :: Maybe Action
   , skillTestSubscribers :: [Target]
   , skillTestIsRevelation :: Bool
-  , skillTestIsPerilous :: Bool
   }
   deriving stock (Show, Eq, Ord)
 
@@ -114,7 +113,6 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestAction = Nothing
     , skillTestSubscribers = [toTarget iid]
     , skillTestIsRevelation = False
-    , skillTestIsPerilous = False
     }
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)

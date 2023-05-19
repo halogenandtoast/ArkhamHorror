@@ -520,7 +520,7 @@ instance RunMessage EnemyAttrs where
           map
             ( \iid ->
                 EnemyWillAttack $
-                  (enemyAttack enemyId iid)
+                  (enemyAttack enemyId a iid)
                     { attackDamageStrategy = enemyDamageStrategy
                     , attackExhaustsEnemy = True
                     }
@@ -578,7 +578,7 @@ instance RunMessage EnemyAttrs where
                   [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
               ]
                 <> [ EnemyAttack $
-                    (enemyAttack enemyId iid)
+                    (enemyAttack enemyId a iid)
                       { attackDamageStrategy = enemyDamageStrategy
                       }
                    | Keyword.Retaliate
@@ -597,14 +597,14 @@ instance RunMessage EnemyAttrs where
           when shouldAttack $
             push $
               EnemyAttack $
-                (enemyAttack enemyId iid)
+                (enemyAttack enemyId a iid)
                   { attackDamageStrategy = enemyDamageStrategy
                   }
         Nothing -> do
           iids <- selectList $ investigatorEngagedWith eid
           pushAll
             [ EnemyAttack $
-              (enemyAttack enemyId iid)
+              (enemyAttack enemyId a iid)
                 { attackDamageStrategy = enemyDamageStrategy
                 }
             | iid <- iids
@@ -672,7 +672,7 @@ instance RunMessage EnemyAttrs where
             pushAll $
               [whenWindow, afterWindow]
                 <> [ EnemyAttack $
-                    (enemyAttack enemyId iid)
+                    (enemyAttack enemyId a iid)
                       { attackDamageStrategy = enemyDamageStrategy
                       }
                    | Keyword.Alert `elem` keywords
@@ -993,7 +993,7 @@ instance RunMessage EnemyAttrs where
     CheckAttackOfOpportunity iid isFast | not isFast && not enemyExhausted -> do
       willAttack <- member iid <$> select (investigatorEngagedWith enemyId)
       when willAttack $ do
-        modifiers' <- getModifiers (EnemyTarget enemyId)
+        modifiers' <- getModifiers enemyId
         unless (CannotMakeAttacksOfOpportunity `elem` modifiers') $
           push $
             EnemyWillAttack $
@@ -1003,11 +1003,12 @@ instance RunMessage EnemyAttrs where
                 , attackDamageStrategy = enemyDamageStrategy
                 , attackType = AttackOfOpportunity
                 , attackExhaustsEnemy = False
+                , attackSource = toSource a
                 }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       lid <- getJustLocation iid
-      modifiers' <- getModifiers (EnemyTarget enemyId)
+      modifiers' <- getModifiers enemyId
       let
         getModifiedSpawnAt [] = enemySpawnAt
         getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnLocation m

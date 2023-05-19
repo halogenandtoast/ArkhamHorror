@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.CreatureOutOfDemhe
-  ( creatureOutOfDemhe
-  , CreatureOutOfDemhe(..)
-  ) where
+module Arkham.Enemy.Cards.CreatureOutOfDemhe (
+  creatureOutOfDemhe,
+  CreatureOutOfDemhe (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,27 +22,30 @@ newtype CreatureOutOfDemhe = CreatureOutOfDemhe EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 creatureOutOfDemhe :: EnemyCard CreatureOutOfDemhe
-creatureOutOfDemhe = enemyWith
-  CreatureOutOfDemhe
-  Cards.creatureOutOfDemhe
-  (5, Static 4, 2)
-  (1, 1)
-  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Depths of Demhe"))
+creatureOutOfDemhe =
+  enemyWith
+    CreatureOutOfDemhe
+    Cards.creatureOutOfDemhe
+    (5, Static 4, 2)
+    (1, 1)
+    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Depths of Demhe"))
 
 instance HasAbilities CreatureOutOfDemhe where
   getAbilities (CreatureOutOfDemhe a) =
-    withBaseAbilities a
-      $ [ mkAbility a 1 $ ForcedAbility $ Matcher.FlipLocation
-            Timing.When
-            Anyone
-            (LocationMatchAny [LocationOfThis, ConnectedFrom LocationOfThis])
-        ]
+    withBaseAbilities a $
+      [ mkAbility a 1 $
+          ForcedAbility $
+            Matcher.FlipLocation
+              Timing.When
+              Anyone
+              (LocationMatchAny [LocationOfThis, ConnectedFrom LocationOfThis])
+      ]
 
 instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = case msg of
     UseCardAbility _ source 1 [Window _ (Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
-        iids <- selectList $ InvestigatorAt $ LocationWithId lid
-        pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs)) iids
-        pure e
+          iids <- selectList $ InvestigatorAt $ LocationWithId lid
+          pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
+          pure e
     _ -> CreatureOutOfDemhe <$> runMessage msg attrs

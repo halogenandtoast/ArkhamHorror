@@ -50,7 +50,7 @@ instance RunMessage TheEndOfAllThings where
       investigatorIds <- getInvestigatorIds
       yogSothoth <- selectJust (EnemyWithTitle "Yog-Sothoth")
       pushAll $
-        map (EnemyAttack . enemyAttack yogSothoth) investigatorIds
+        map (EnemyAttack . enemyAttack yogSothoth attrs) investigatorIds
           <> [RevertAgenda aid]
       pure a
     _ -> TheEndOfAllThings <$> runMessage msg attrs

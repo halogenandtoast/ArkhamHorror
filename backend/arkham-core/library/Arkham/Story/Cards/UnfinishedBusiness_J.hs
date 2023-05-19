@@ -39,7 +39,7 @@ instance RunMessage UnfinishedBusiness_J where
           send $ format card <> " was \"Banished\""
           pushAll [RemoveEnemy enemy, AddToVictory (toTarget attrs)]
         else do
-          afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy iid
+          afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy attrs iid
           afterStoryResolution attrs $
             createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
       -- TODO: parley only at spectral, +1 per player clues costt

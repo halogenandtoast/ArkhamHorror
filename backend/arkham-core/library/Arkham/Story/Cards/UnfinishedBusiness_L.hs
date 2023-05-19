@@ -32,7 +32,7 @@ instance RunMessage UnfinishedBusiness_L where
           send $ format card <> " was \"Banished\""
           pushAll [RemoveEnemy enemy, AddToVictory (toTarget attrs)]
         else do
-          afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy iid
+          afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy attrs iid
       push $ chooseOne iid [targetLabel (toTarget attrs) []]
       pure s
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
@@ -40,6 +40,6 @@ instance RunMessage UnfinishedBusiness_L where
       pure s
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemy <- selectJust $ enemyIs Enemies.heretic_K
-      afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy iid
+      afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy attrs iid
       pure s
     _ -> UnfinishedBusiness_L <$> runMessage msg attrs

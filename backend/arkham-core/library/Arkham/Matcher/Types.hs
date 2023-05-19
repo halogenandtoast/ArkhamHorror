@@ -444,6 +444,8 @@ data ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
   | CommittableCard InvestigatorId ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
+  | CanCancelRevelationEffect ExtendedCardMatcher
+  | CanCancelAllEffects ExtendedCardMatcher
   deriving stock (Show, Eq, Ord)
 
 instance Semigroup ExtendedCardMatcher where
@@ -857,6 +859,7 @@ data DamageEffectMatcher
 data EnemyAttackMatcher
   = AnyEnemyAttack
   | AttackOfOpportunityAttack
+  | CancelableEnemyAttack EnemyAttackMatcher
   deriving stock (Show, Eq, Ord)
 
 data ScenarioMatcher = TheScenario

@@ -204,7 +204,7 @@ instance RunMessage TheMiskatonicMuseum where
       lid <- getJustLocation iid
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
       for_ mHuntingHorrorId $ \huntingHorrorId ->
-        push (EnemyAttack $ enemyAttack huntingHorrorId iid)
+        push (EnemyAttack $ enemyAttack huntingHorrorId attrs iid)
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of

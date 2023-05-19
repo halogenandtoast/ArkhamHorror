@@ -56,7 +56,7 @@ instance RunMessage AlejandroVela where
       pure e
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
-        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) iid
+        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
         pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

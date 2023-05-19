@@ -370,7 +370,7 @@ data Message
   | EnemyAttack EnemyAttackDetails
   | InitiateEnemyAttack EnemyAttackDetails
   | PerformEnemyAttack EnemyAttackDetails -- Internal
-  | EnemyAttackFromDiscard InvestigatorId Card
+  | EnemyAttackFromDiscard InvestigatorId Source Card
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
   | CheckEnemyEngagement InvestigatorId

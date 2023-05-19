@@ -299,7 +299,7 @@ instance RunMessage UndimensionedAndUnseen where
                 )
                 $ push
                 $ EnemyAttack
-                $ enemyAttack eid iid
+                $ enemyAttack eid attrs iid
             _ -> pure ()
         _ -> pure ()
       pure s

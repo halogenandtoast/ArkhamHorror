@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.HarbingerOfValusia
-  ( harbingerOfValusia
-  , HarbingerOfValusia(..)
-  ) where
+module Arkham.Enemy.Cards.HarbingerOfValusia (
+  harbingerOfValusia,
+  HarbingerOfValusia (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype HarbingerOfValusia = HarbingerOfValusia EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 harbingerOfValusia :: EnemyCard HarbingerOfValusia
@@ -23,29 +23,31 @@ harbingerOfValusia =
   enemy HarbingerOfValusia Cards.harbingerOfValusia (3, PerPlayer 10, 3) (2, 2)
 
 instance HasModifiersFor HarbingerOfValusia where
-  getModifiersFor target (HarbingerOfValusia a) | isTarget a target =
-    pure $ toModifiers a [CanRetaliateWhileExhausted]
+  getModifiersFor target (HarbingerOfValusia a)
+    | isTarget a target =
+        pure $ toModifiers a [CanRetaliateWhileExhausted]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HarbingerOfValusia where
-  getAbilities (HarbingerOfValusia a) = withBaseAbilities
-    a
-    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
-      $ mkAbility a 1
-      $ ForcedAbility
-      $ OrWindowMatcher
-          [ SkillTestResult
-            Timing.After
-            You
-            (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-            (SuccessResult AnyValue)
-          , SkillTestResult
-            Timing.After
-            You
-            (WhileAttackingAnEnemy $ EnemyWithId $ toId a)
-            (SuccessResult AnyValue)
-          ]
-    ]
+  getAbilities (HarbingerOfValusia a) =
+    withBaseAbilities
+      a
+      [ limitedAbility (PlayerLimit PerTestOrAbility 1) $
+          mkAbility a 1 $
+            ForcedAbility $
+              OrWindowMatcher
+                [ SkillTestResult
+                    Timing.After
+                    You
+                    (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+                    (SuccessResult AnyValue)
+                , SkillTestResult
+                    Timing.After
+                    You
+                    (WhileAttackingAnEnemy $ EnemyWithId $ toId a)
+                    (SuccessResult AnyValue)
+                ]
+      ]
 
 instance RunMessage HarbingerOfValusia where
   runMessage msg e@(HarbingerOfValusia attrs) = case msg of
@@ -55,11 +57,12 @@ instance RunMessage HarbingerOfValusia where
         then do
           let
             damage = enemyDamage attrs
-            enemy' = overAttrs (damageL .~ damage)
-              $ cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
+            enemy' =
+              overAttrs (damageL .~ damage) $
+                cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
           push $ SetOutOfPlay SetAsideZone (toTarget attrs)
           pure enemy'
         else do
-          push $ PlaceResources (toTarget attrs) 1
+          push $ PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1
           pure e
     _ -> HarbingerOfValusia <$> runMessage msg attrs

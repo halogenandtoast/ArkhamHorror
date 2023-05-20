@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheDisappearance
-  ( TheDisappearance(..)
-  , theDisappearance
-  ) where
+module Arkham.Act.Cards.TheDisappearance (
+  TheDisappearance (..),
+  theDisappearance,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Projection
@@ -36,8 +36,8 @@ instance RunMessage TheDisappearance where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clues <- field InvestigatorClues iid
       pushAll
-        [ RemoveAllClues (InvestigatorTarget iid)
-        , PlaceClues (toTarget attrs) clues
+        [ RemoveAllClues (toAbilitySource attrs 1) (InvestigatorTarget iid)
+        , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) clues
         ]
       pure a
     _ -> TheDisappearance <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ForbiddenTomeSecretsRevealed3
-  ( forbiddenTomeSecretsRevealed3
-  , ForbiddenTomeSecretsRevealed3(..)
-  ) where
+module Arkham.Asset.Cards.ForbiddenTomeSecretsRevealed3 (
+  forbiddenTomeSecretsRevealed3,
+  ForbiddenTomeSecretsRevealed3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Movement
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenTomeSecretsRevealed3 :: AssetCard ForbiddenTomeSecretsRevealed3
@@ -23,24 +23,25 @@ forbiddenTomeSecretsRevealed3 =
 instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
   getModifiersFor (AbilityTarget iid ab) (ForbiddenTomeSecretsRevealed3 a)
     | isSource a (abilitySource ab) && abilityIndex ab == 1 = do
-      handCount <- getHandCount iid
-      let n = handCount `div` 4
-      pure $ toModifiers a [ ActionCostModifier (-n) | n > 0 ]
+        handCount <- getHandCount iid
+        let n = handCount `div` 4
+        pure $ toModifiers a [ActionCostModifier (-n) | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ForbiddenTomeSecretsRevealed3 where
   getAbilities (ForbiddenTomeSecretsRevealed3 a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> LocationExists
-            (LocationMatchAny
-              [AccessibleLocation, YourLocation <> LocationWithAnyClues]
-            )
-          )
+        a
+        1
+        ( ControlsThis
+            <> LocationExists
+              ( LocationMatchAny
+                  [AccessibleLocation, YourLocation <> LocationWithAnyClues]
+              )
+        )
         $ ActionAbility Nothing
         $ ActionCost 4
-        <> ExhaustCost (toTarget a)
+          <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage ForbiddenTomeSecretsRevealed3 where
@@ -48,10 +49,10 @@ instance RunMessage ForbiddenTomeSecretsRevealed3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       lids <- selectList AccessibleLocation
       pushAll
-        [ chooseOrRunOne iid
-        $ Label "Do not move" []
-        : [targetLabel lid [ MoveTo $ move (toSource attrs) iid lid] | lid <- lids ]
-        , InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
+        [ chooseOrRunOne iid $
+            Label "Do not move" []
+              : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
+        , InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
         ]
       pure a
     _ -> ForbiddenTomeSecretsRevealed3 <$> runMessage msg attrs

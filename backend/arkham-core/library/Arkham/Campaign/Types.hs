@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-dodgy-imports #-}
+
 module Arkham.Campaign.Types where
 
 import Arkham.Prelude
@@ -11,19 +12,32 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
-import Arkham.Modifier
 import Arkham.Id
 import Arkham.Json
+import Arkham.Modifier
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
 
-class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ CampaignId, EntityAttrs a ~ CampaignAttrs) => IsCampaign a
+class
+  ( Typeable a
+  , Show a
+  , Eq a
+  , ToJSON a
+  , FromJSON a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ CampaignId
+  , EntityAttrs a ~ CampaignAttrs
+  ) =>
+  IsCampaign a
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -51,34 +65,37 @@ instance HasModifiersFor CampaignAttrs where
     pure $ findWithDefault [] iid (campaignModifiers attrs)
   getModifiersFor _ _ = pure []
 
+instance Sourceable CampaignAttrs where
+  toSource _ = CampaignSource
+
 completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
-  lens campaignCompletedSteps $ \m x -> m { campaignCompletedSteps = x }
+  lens campaignCompletedSteps $ \m x -> m {campaignCompletedSteps = x}
 
 chaosBagL :: Lens' CampaignAttrs [TokenFace]
-chaosBagL = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
+chaosBagL = lens campaignChaosBag $ \m x -> m {campaignChaosBag = x}
 
 storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [PlayerCard])
-storyCardsL = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
+storyCardsL = lens campaignStoryCards $ \m x -> m {campaignStoryCards = x}
 
 decksL :: Lens' CampaignAttrs (Map InvestigatorId (Deck PlayerCard))
-decksL = lens campaignDecks $ \m x -> m { campaignDecks = x }
+decksL = lens campaignDecks $ \m x -> m {campaignDecks = x}
 
 logL :: Lens' CampaignAttrs CampaignLog
-logL = lens campaignLog $ \m x -> m { campaignLog = x }
+logL = lens campaignLog $ \m x -> m {campaignLog = x}
 
 stepL :: Lens' CampaignAttrs (Maybe CampaignStep)
-stepL = lens campaignStep $ \m x -> m { campaignStep = x }
+stepL = lens campaignStep $ \m x -> m {campaignStep = x}
 
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
-resolutionsL = lens campaignResolutions $ \m x -> m { campaignResolutions = x }
+resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
 
 completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps
 completeStep Nothing steps = steps
 
 modifiersL :: Lens' CampaignAttrs (Map InvestigatorId [Modifier])
-modifiersL = lens campaignModifiers $ \m x -> m { campaignModifiers = x }
+modifiersL = lens campaignModifiers $ \m x -> m {campaignModifiers = x}
 
 instance Entity CampaignAttrs where
   type EntityId CampaignAttrs = CampaignId
@@ -94,7 +111,7 @@ instance FromJSON CampaignAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: (MonadRandom m) => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
@@ -105,12 +122,14 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
 
-campaignWith :: (CampaignAttrs -> a)
+campaignWith
+  :: (CampaignAttrs -> a)
   -> CampaignId
   -> Text
   -> Difficulty
   -> [TokenFace]
-  -> (CampaignAttrs -> CampaignAttrs) -> a
+  -> (CampaignAttrs -> CampaignAttrs)
+  -> a
 campaignWith f campaignId' name difficulty chaosBagContents g = campaign (f . g) campaignId' name difficulty chaosBagContents
 
 campaign
@@ -120,19 +139,21 @@ campaign
   -> Difficulty
   -> [TokenFace]
   -> a
-campaign f campaignId' name difficulty chaosBagContents = f $ CampaignAttrs
-  { campaignId = campaignId'
-  , campaignName = name
-  , campaignDecks = mempty
-  , campaignStoryCards = mempty
-  , campaignDifficulty = difficulty
-  , campaignChaosBag = chaosBagContents
-  , campaignLog = mkCampaignLog
-  , campaignStep = Just PrologueStep
-  , campaignCompletedSteps = []
-  , campaignResolutions = mempty
-  , campaignModifiers = mempty
-  }
+campaign f campaignId' name difficulty chaosBagContents =
+  f $
+    CampaignAttrs
+      { campaignId = campaignId'
+      , campaignName = name
+      , campaignDecks = mempty
+      , campaignStoryCards = mempty
+      , campaignDifficulty = difficulty
+      , campaignChaosBag = chaosBagContents
+      , campaignLog = mkCampaignLog
+      , campaignStep = Just PrologueStep
+      , campaignCompletedSteps = []
+      , campaignResolutions = mempty
+      , campaignModifiers = mempty
+      }
 
 instance Entity Campaign where
   type EntityId Campaign = CampaignId
@@ -144,7 +165,7 @@ instance Entity Campaign where
 instance Targetable Campaign where
   toTarget _ = CampaignTarget
 
-data Campaign = forall a . IsCampaign a => Campaign a
+data Campaign = forall a. (IsCampaign a) => Campaign a
 
 instance Eq Campaign where
   (Campaign (a :: a)) == (Campaign (b :: b)) = case eqT @a @b of
@@ -165,4 +186,3 @@ difficultyOf = campaignDifficulty . toAttrs
 
 chaosBagOf :: Campaign -> [TokenFace]
 chaosBagOf = campaignChaosBag . toAttrs
-

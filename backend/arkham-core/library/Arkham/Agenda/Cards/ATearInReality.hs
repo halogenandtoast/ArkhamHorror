@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.ATearInReality
-  ( ATearInReality(..)
-  , aTearInReality
-  ) where
+module Arkham.Agenda.Cards.ATearInReality (
+  ATearInReality (..),
+  aTearInReality,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
@@ -27,14 +27,15 @@ instance RunMessage ATearInReality where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- fieldMap
-        InvestigatorLocation
-        (fromJustNote "must be at location")
-        leadInvestigatorId
+      locationId <-
+        fieldMap
+          InvestigatorLocation
+          (fromJustNote "must be at location")
+          leadInvestigatorId
       lid <- leftmostLocation locationId
-      pushAll
-        $ RemoveLocation lid
-        : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pushAll $
+        RemoveLocation lid
+          : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
+            <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
     _ -> ATearInReality <$> runMessage msg attrs

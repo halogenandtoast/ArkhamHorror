@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.CreepingDarkness
-  ( creepingDarkness
-  , CreepingDarkness(..)
-  ) where
+module Arkham.Treachery.Cards.CreepingDarkness (
+  creepingDarkness,
+  CreepingDarkness (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,7 +20,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype CreepingDarkness = CreepingDarkness TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 creepingDarkness :: TreacheryCard CreepingDarkness
@@ -30,13 +30,15 @@ instance HasModifiersFor CreepingDarkness where
   getModifiersFor (EnemyTarget eid) (CreepingDarkness a) = do
     isFormlessSpawn <- eid <=~> enemyIs Enemies.formlessSpawn
     n <- getPlayerCountValue (PerPlayer 1)
-    pure $ toModifiers a [ HealthModifier n | isFormlessSpawn ]
+    pure $ toModifiers a [HealthModifier n | isFormlessSpawn]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CreepingDarkness where
   getAbilities (CreepingDarkness a) =
-    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
-        2
+    [ restrictedAbility a 1 OnSameLocation $
+        ActionAbility Nothing $
+          ActionCost
+            2
     ]
 
 instance RunMessage CreepingDarkness where
@@ -45,20 +47,20 @@ instance RunMessage CreepingDarkness where
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       pushAll
         [ AttachTreachery (toId attrs) $ LocationTarget nexus
-        , PlaceDoom (toTarget attrs) 1
+        , PlaceDoom (toSource attrs) (toTarget attrs) 1
         ]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasTorches <- getHasSupply iid Torches
-      push
-        $ chooseOrRunOne iid
-        $ Label
+      push $
+        chooseOrRunOne iid $
+          Label
             "Test {willpower} (3)"
-            [ beginSkillTest iid (toSource attrs) (toTarget attrs) SkillWillpower 3 ]
-        : [ Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches ]
+            [beginSkillTest iid attrs attrs SkillWillpower 3]
+            : [Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches]
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
         pure t
     _ -> CreepingDarkness <$> runMessage msg attrs

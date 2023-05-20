@@ -22,7 +22,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMidnightMasks.Story
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 
@@ -174,24 +173,26 @@ instance RunMessage TheMidnightMasks where
           NearestEnemy $
             EnemyWithTrait
               Trait.Cultist
-      s <$ case closestCultists of
+      case closestCultists of
         [] -> pure ()
-        [x] -> push $ PlaceDoom (EnemyTarget x) 1
+        [x] -> push $ PlaceDoom (TokenEffectSource Cultist) (EnemyTarget x) 1
         xs ->
           push $
             chooseOne
               iid
-              [targetLabel x [PlaceDoom (EnemyTarget x) 1] | x <- xs]
+              [targetLabel x [PlaceDoom (TokenEffectSource Cultist) (toTarget x) 1] | x <- xs]
+      pure s
     ResolveToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- selectList $ EnemyWithTrait Trait.Cultist
-      s <$ case cultists of
+      case cultists of
         [] -> push (DrawAnotherToken iid)
-        xs -> pushAll [PlaceDoom (EnemyTarget eid) 1 | eid <- xs]
+        xs -> pushAll [PlaceDoom (TokenEffectSource Cultist) (toTarget eid) 1 | eid <- xs]
+      pure s
     FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Tablet)) _ _ -> do
       push $
         if isEasyStandard attrs
-          then InvestigatorPlaceAllCluesOnLocation iid
-          else InvestigatorPlaceCluesOnLocation iid 1
+          then InvestigatorPlaceAllCluesOnLocation iid (TokenEffectSource Tablet)
+          else InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Tablet) 1
       pure s
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)
@@ -213,7 +214,7 @@ instance RunMessage TheMidnightMasks where
         ]
           <> [Record ItIsPastMidnight | n == 2]
           <> [CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated]
-          <> [GainXP iid x | (iid, x) <- xp]
+          <> [GainXP iid (toSource attrs) x | (iid, x) <- xp]
           <> [EndOfGame Nothing]
       pure s
     _ -> TheMidnightMasks <$> runMessage msg attrs

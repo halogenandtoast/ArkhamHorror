@@ -35,7 +35,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ShatteredAeons.Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -287,30 +286,30 @@ instance RunMessage ShatteredAeons where
               push $
                 chooseOne
                   iid
-                  [ targetLabel cultist [PlaceDoom (EnemyTarget cultist) 1]
+                  [ targetLabel cultist [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1]
                   | cultist <- cultists
                   ]
           else do
             cultists <- selectList $ EnemyWithTrait Trait.Cultist
             pushAll $
-              [PlaceDoom (EnemyTarget cultist) 1 | cultist <- cultists]
+              [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       when (tokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
             cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
-            unless (null cultists) $
+            unless (null cultists) $ do
               push $
                 chooseOne
                   iid
-                  [ targetLabel cultist [PlaceDoom (EnemyTarget cultist) 1]
+                  [ targetLabel cultist [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1]
                   | cultist <- cultists
                   ]
           else do
             cultists <- selectList $ EnemyWithTrait Trait.Cultist
             pushAll $
-              [PlaceDoom (EnemyTarget cultist) 1 | cultist <- cultists]
+              [PlaceDoom (TokenEffectSource Cultist) (EnemyTarget cultist) 1 | cultist <- cultists]
       when (tokenFace token == Tablet && isHardExpert attrs) $ do
         isPoisoned <- getIsPoisoned iid
         unless isPoisoned $ do
@@ -362,7 +361,7 @@ instance RunMessage ShatteredAeons where
             Just relic ->
               fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
           bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
-          xp <- map (uncurry GainXP) <$> getXpWithBonus (5 + bonus)
+          xp <- toGainXp attrs $ getXpWithBonus (5 + bonus)
           pushAll $
             story iids resolution1
               : Record TheInvestigatorsMendedTheTearInTheFabricOfTime
@@ -398,7 +397,7 @@ instance RunMessage ShatteredAeons where
             Just relic ->
               fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
           bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
-          xp <- map (uncurry GainXP) <$> getXpWithBonus bonus
+          xp <- toGainXp attrs $ getXpWithBonus bonus
           pushAll $
             story iids resolution5
               : Record TheInvestigatorsTurnedBackTime

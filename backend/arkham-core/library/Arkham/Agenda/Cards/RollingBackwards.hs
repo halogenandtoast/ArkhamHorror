@@ -1,21 +1,19 @@
-module Arkham.Agenda.Cards.RollingBackwards
-  ( RollingBackwards(..)
-  , rollingBackwards
-  ) where
+module Arkham.Agenda.Cards.RollingBackwards (
+  RollingBackwards (..),
+  rollingBackwards,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
@@ -29,18 +27,15 @@ rollingBackwards =
 instance RunMessage RollingBackwards where
   runMessage msg a@(RollingBackwards attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       investigatorIds <- getInvestigatorIds
-      locationId <- fieldMap
-        InvestigatorLocation
-        (fromJustNote "must be at a location")
-        leadInvestigatorId
+      locationId <- getJustLocation lead
       lid <- leftmostLocation locationId
       rlid <- selectJust $ LocationInDirection RightOf $ LocationWithId lid
-      a <$ pushAll
-        (RemoveLocation lid
-        : RemoveLocation rlid
-        : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
-        )
+      pushAll $
+        RemoveLocation lid
+          : RemoveLocation rlid
+          : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
+            <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pure a
     _ -> RollingBackwards <$> runMessage msg attrs

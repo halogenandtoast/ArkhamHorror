@@ -23,8 +23,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -51,11 +49,7 @@ curseOfTheRougarou difficulty =
 instance HasTokenValue CurseOfTheRougarou where
   getTokenValue iid tokenFace (CurseOfTheRougarou attrs) = case tokenFace of
     Skull -> do
-      isBayou <-
-        selectAny $
-          LocationWithTrait Bayou
-            <> LocationWithInvestigator
-              (InvestigatorWithId iid)
+      isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
       pure $
         if isBayou
           then toTokenValue attrs Skull 4 6
@@ -187,41 +181,31 @@ instance RunMessage CurseOfTheRougarou where
             <> EnemyAt
               (locationWithInvestigator iid)
       s <$ when rougarouAtYourLocation (push $ DrawAnotherToken iid)
-    ResolveToken _ ElderThing iid ->
+    ResolveToken _ ElderThing iid -> do
       if isEasyStandard attrs
         then do
-          mrougarou <-
-            selectOne $
-              enemyIs Enemies.theRougarou
-                <> EnemyAt
-                  (locationWithInvestigator iid)
-          s
-            <$ for_
-              mrougarou
-              (\eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid)
+          mrougarou <- selectOne $ enemyIs Enemies.theRougarou <> EnemyAt (locationWithInvestigator iid)
+          for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
         else do
           lid <- getJustLocation iid
           connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
           mrougarou <-
             selectOne $
               enemyIs Enemies.theRougarou
-                <> EnemyAt
-                  (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
-          s
-            <$ for_
-              mrougarou
-              (\eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid)
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
-      s
-        <$ when
-          (tokenFace token == Tablet)
-          ( push $
-              CreateEffect
-                "81001"
-                Nothing
-                (TokenSource token)
-                (InvestigatorTarget iid)
-          )
+                <> EnemyAt (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
+          for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      when
+        (tokenFace token == Tablet)
+        ( push $
+            CreateEffect
+              "81001"
+              Nothing
+              (TokenSource token)
+              (InvestigatorTarget iid)
+        )
+      pure s
     ScenarioResolution NoResolution ->
       runMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
@@ -229,7 +213,7 @@ instance RunMessage CurseOfTheRougarou where
       xp <- getXp
       pushAll $
         [story iids resolution1, Record TheRougarouContinuesToHauntTheBayou]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
@@ -248,7 +232,7 @@ instance RunMessage CurseOfTheRougarou where
             , Label "Do not add Lady Esprit to your deck" []
             ]
         ]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
@@ -260,7 +244,7 @@ instance RunMessage CurseOfTheRougarou where
         , Record TheRougarouEscapedAndYouEmbracedTheCurse
         , AddCampaignCardToDeck lead Assets.monstrousTransformation
         ]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     _ -> CurseOfTheRougarou <$> runMessage msg attrs

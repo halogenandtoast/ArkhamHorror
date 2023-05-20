@@ -9,6 +9,8 @@ import Arkham.Prelude
 
 import Arkham.Helpers.Message as X
 import Arkham.Scenario.Types as X
+import Arkham.Source as X
+import Arkham.Target as X
 
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (Field (..))
@@ -18,7 +20,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.ChaosBag ()
-import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasTokenValue
@@ -48,9 +49,7 @@ import Arkham.Modifier (ModifierType (DoNotRemoveDoom, UseEncounterDeck))
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Source
 import Arkham.Story.Types (Field (..))
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
@@ -159,7 +158,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     agendaIds <- selectList Matcher.AnyAgenda
     case agendaIds of
       [] -> pure a
-      [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
+      [x] -> a <$ push (PlaceDoom (toSource a) (AgendaTarget x) 1)
       _ -> error "multiple agendas should be handled by the scenario"
   AdvanceAgendaDeck n _ -> do
     let
@@ -303,14 +302,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   -- is that the act deck has been replaced.
   CheckForRemainingInvestigators -> do
     investigatorIds <- selectList Matcher.UneliminatedInvestigator
-    when (null investigatorIds && not scenarioInResolution) $
-      push $
-        HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
+    when (null investigatorIds && not scenarioInResolution) $ do
+      push $ HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
     pure a
-  AllInvestigatorsResigned ->
-    a
-      <$ push
-        (HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler)
+  AllInvestigatorsResigned -> do
+    push $ HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
+    pure a
   SetNoRemainingInvestigatorsHandler target -> do
     pure $ a & noRemainingInvestigatorsHandlerL .~ target
   HandleNoRemainingInvestigators target | isTarget a target -> do
@@ -324,14 +321,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     afterMsg <-
       checkWindows
         [Window Timing.When (Window.InvestigatorEliminated iid)]
-    a
-      <$ pushAll
-        [ whenMsg
-        , InvestigatorPlaceAllCluesOnLocation iid
-        , InvestigatorEliminated iid
-        , CheckForRemainingInvestigators
-        , afterMsg
-        ]
+    pushAll
+      [ whenMsg
+      , InvestigatorPlaceAllCluesOnLocation iid (toSource a)
+      , InvestigatorEliminated iid
+      , CheckForRemainingInvestigators
+      , afterMsg
+      ]
+    pure a
   Remember logKey -> do
     send $ "Remember \"" <> format logKey <> "\""
     pure $ a & logL %~ insertSet logKey
@@ -991,7 +988,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     events <- selectListMap EventTarget removeDoomEvents
     skills <- selectListMap SkillTarget removeDoomSkills
     pushAll
-      [ RemoveAllDoom target
+      [ RemoveAllDoom (toSource a) target
       | target <-
           locations
             <> investigators

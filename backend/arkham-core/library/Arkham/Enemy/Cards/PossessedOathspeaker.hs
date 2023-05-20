@@ -55,20 +55,18 @@ instance RunMessage PossessedOathspeaker where
   runMessage msg e@(PossessedOathspeaker attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       leadInvestigatorIdL <- getLeadInvestigatorId
-      e
-        <$ push
-          ( if enemyExhausted attrs
-              then
-                chooseOne
-                  leadInvestigatorIdL
-                  [ Label "Ready Possessed Oathspeaker" [Ready (toTarget attrs)]
-                  , Label
-                      "Place 1 doom on Possessed Oathspeaker"
-                      [PlaceDoom (toTarget attrs) 1]
-                  ]
-              else PlaceDoom (toTarget attrs) 1
-          )
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          e <$ push (ScenarioResolution $ Resolution 3)
+      push $
+        if enemyExhausted attrs
+          then
+            chooseOne
+              leadInvestigatorIdL
+              [ Label "Ready Possessed Oathspeaker" [Ready (toTarget attrs)]
+              , Label
+                  "Place 1 doom on Possessed Oathspeaker"
+                  [PlaceDoom (toSource attrs) (toTarget attrs) 1]
+              ]
+          else PlaceDoom (toSource attrs) (toTarget attrs) 1
+      pure e
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      e <$ push (ScenarioResolution $ Resolution 3)
     _ -> PossessedOathspeaker <$> runMessage msg attrs

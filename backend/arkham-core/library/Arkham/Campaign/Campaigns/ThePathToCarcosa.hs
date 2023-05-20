@@ -9,6 +9,7 @@ import Arkham.Campaign.Runner
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.ThePathToCarcosa.Import
+import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
@@ -35,9 +36,7 @@ instance RunMessage ThePathToCarcosa where
   runMessage msg c@(ThePathToCarcosa a) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- allInvestigatorIds
-      lolaHayesChosen <-
-        isJust
-          <$> selectOne (InvestigatorWithTitle "Lola Hayes")
+      lolaHayesChosen <- selectAny (InvestigatorWithTitle "Lola Hayes")
       pushAll $
         [story investigatorIds prologue]
           <> [story investigatorIds lolaPrologue | lolaHayesChosen]
@@ -110,7 +109,7 @@ instance RunMessage ThePathToCarcosa where
                   , Record YouHeadedDanielsWarning
                   , RecordCount Conviction (conviction + 2)
                   ]
-                    <> map (`GainXP` 1) investigatorIds
+                    <> map (\iid -> GainXP iid CampaignSource 1) investigatorIds
                     <> [NextCampaignStep Nothing]
                 )
             ]
@@ -119,18 +118,16 @@ instance RunMessage ThePathToCarcosa where
         Just DanielSurvived -> do
           pushAll $
             [story investigatorIds danielSurvived]
-              <> map (`GainXP` 2) investigatorIds
+              <> map (\iid -> GainXP iid CampaignSource 2) investigatorIds
               <> [respondToWarning]
-          pure c
         Just DanielDidNotSurvive -> do
-          c
-            <$ pushAll
-              [story investigatorIds danielDidNotSurvive, respondToWarning]
+          pushAll
+            [story investigatorIds danielDidNotSurvive, respondToWarning]
         Just DanielWasPossessed -> do
-          c
-            <$ pushAll
-              [story investigatorIds danielWasPossessed, respondToWarning]
+          pushAll
+            [story investigatorIds danielWasPossessed, respondToWarning]
         Just _ -> error "Invalid key for The Unspeakable Oath"
+      pure c
     CampaignStep (Just EpilogueStep) -> do
       possessed <- getRecordSet Possessed
       let
@@ -149,10 +146,8 @@ instance RunMessage ThePathToCarcosa where
         $ a
           & (stepL .~ step)
           & (completedStepsL %~ completeStep (campaignStep a))
-    EnemyDefeated _ cardId _ _ -> do
-      isTheManInThePallidMask <- selectAny $ cardIs Enemies.theManInThePallidMask <> CardWithId cardId
-      when isTheManInThePallidMask $ do
-        n <- getRecordCount ChasingTheStranger
-        push (RecordCount ChasingTheStranger (n + 1))
-      pure c
+    EnemyDefeated _ cardCode _ _
+      | cardCode == toCardCode Enemies.theManInThePallidMask -> do
+          n <- getRecordCount ChasingTheStranger
+          c <$ push (RecordCount ChasingTheStranger (n + 1))
     _ -> ThePathToCarcosa <$> runMessage msg a

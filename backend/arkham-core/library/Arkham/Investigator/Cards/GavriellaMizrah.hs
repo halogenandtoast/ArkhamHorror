@@ -91,7 +91,7 @@ instance HasTokenValue GavriellaMizrah where
 instance RunMessage GavriellaMizrah where
   runMessage msg i@(GavriellaMizrah (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pushAll

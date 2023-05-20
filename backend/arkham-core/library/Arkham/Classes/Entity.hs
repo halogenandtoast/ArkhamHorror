@@ -1,13 +1,9 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Classes.Entity (
-  module Arkham.Classes.Entity,
-  module X,
-) where
+module Arkham.Classes.Entity where
 
 import Arkham.Prelude hiding (to)
 
-import Arkham.Classes.Entity.Source as X
 import Arkham.Target
 import Arkham.Token
 

@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheBarrierIsThin
-  ( TheBarrierIsThin(..)
-  , theBarrierIsThin
-  ) where
+module Arkham.Agenda.Cards.TheBarrierIsThin (
+  TheBarrierIsThin (..),
+  theBarrierIsThin,
+) where
 
 import Arkham.Prelude
 
@@ -38,29 +38,30 @@ instance RunMessage TheBarrierIsThin where
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
 
-      pushAll
-        $ map (AddToVictory . LocationTarget) tenochtitlanLocations
-        <> [NextAdvanceAgendaStep (toId attrs) 1]
-        <> map InvestigatorDiscardAllClues iids
-        <> [NextAdvanceAgendaStep (toId attrs) 2]
-        <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
-           , SetCurrentActDeck 1 [theReturnTrip]
-           ]
+      pushAll $
+        map (AddToVictory . LocationTarget) tenochtitlanLocations
+          <> [NextAdvanceAgendaStep (toId attrs) 1]
+          <> map (InvestigatorDiscardAllClues (toSource attrs)) iids
+          <> [NextAdvanceAgendaStep (toId attrs) 2]
+          <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
+             , SetCurrentActDeck 1 [theReturnTrip]
+             ]
       pure a
     NextAdvanceAgendaStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOneAtATime
-        leadInvestigatorId
-        [ targetLabel
+      push $
+        chooseOneAtATime
+          leadInvestigatorId
+          [ targetLabel
             lid
             [ HandleTargetChoice
                 leadInvestigatorId
                 (toSource attrs)
                 (LocationTarget lid)
             ]
-        | lid <- presentDayLocations
-        ]
+          | lid <- presentDayLocations
+          ]
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       locationSymbol <- field LocationPrintedSymbol lid
@@ -70,14 +71,14 @@ instance RunMessage TheBarrierIsThin where
       pushAll
         [ FocusCards replacements
         , chooseOrRunOne
-          iid
-          [ TargetLabel
+            iid
+            [ TargetLabel
               (CardIdTarget $ toCardId replacement)
               [ RemoveCardFromScenarioDeck ExplorationDeck replacement
               , ReplaceLocation lid replacement DefaultReplace
               ]
-          | replacement <- replacements
-          ]
+            | replacement <- replacements
+            ]
         , UnfocusCards
         ]
       pure a

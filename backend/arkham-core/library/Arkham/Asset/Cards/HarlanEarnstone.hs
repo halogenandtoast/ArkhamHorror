@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.HarlanEarnstone
-  ( harlanEarnstone
-  , HarlanEarnstone(..)
-  ) where
+module Arkham.Asset.Cards.HarlanEarnstone (
+  harlanEarnstone,
+  HarlanEarnstone (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,19 +20,19 @@ harlanEarnstone = asset HarlanEarnstone Cards.harlanEarnstone
 
 instance HasAbilities HarlanEarnstone where
   getAbilities (HarlanEarnstone a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility
-            (Just Action.Parley)
-            (ActionCost 1 <> DiscardTopOfDeckCost 3)
+    [ restrictedAbility a 1 OnSameLocation $
+        ActionAbility
+          (Just Action.Parley)
+          (ActionCost 1 <> DiscardTopOfDeckCost 3)
     ]
 
 instance RunMessage HarlanEarnstone where
   runMessage msg a@(HarlanEarnstone attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley iid source (toTarget attrs) SkillWillpower 4
+      push $ parley iid source attrs SkillWillpower 4
       pure a
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ PlaceClues (toTarget attrs) 1
-        pure a
+          push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
+          pure a
     _ -> HarlanEarnstone <$> runMessage msg attrs

@@ -18,7 +18,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Scenarios.TheDevourerBelow.Story
-import Arkham.Target
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 

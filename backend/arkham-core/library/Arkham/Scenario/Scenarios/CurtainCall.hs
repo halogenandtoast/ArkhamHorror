@@ -1,7 +1,7 @@
-module Arkham.Scenario.Scenarios.CurtainCall
-  ( CurtainCall(..)
-  , curtainCall
-  ) where
+module Arkham.Scenario.Scenarios.CurtainCall (
+  CurtainCall (..),
+  curtainCall,
+) where
 
 import Arkham.Prelude
 
@@ -15,9 +15,9 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -27,7 +27,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurtainCall.Story
-import Arkham.Target
 import Arkham.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
@@ -35,15 +34,16 @@ newtype CurtainCall = CurtainCall ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curtainCall :: Difficulty -> CurtainCall
-curtainCall difficulty = scenario
-  CurtainCall
-  "03043"
-  "Curtain Call"
-  difficulty
-  [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
-  , "lobbyDoorway3 lobby theatre backstage backstageDoorway3"
-  , "lobbyDoorway2 .     .       .         backstageDoorway2"
-  ]
+curtainCall difficulty =
+  scenario
+    CurtainCall
+    "03043"
+    "Curtain Call"
+    difficulty
+    [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
+    , "lobbyDoorway3 lobby theatre backstage backstageDoorway3"
+    , "lobbyDoorway2 .     .       .         backstageDoorway2"
+    ]
 
 instance HasTokenValue CurtainCall where
   getTokenValue iid tokenFace (CurtainCall attrs) = case tokenFace of
@@ -52,29 +52,32 @@ instance HasTokenValue CurtainCall where
       let easyStandardModifier = if horrorCount >= 3 then 3 else 1
       let hardExpertModifier = max 1 horrorCount
       pure $ toTokenValue attrs Skull easyStandardModifier hardExpertModifier
-    face | face `elem` [Cultist, Tablet, ElderThing] ->
-      pure $ toTokenValue attrs face 4 5
+    face
+      | face `elem` [Cultist, Tablet, ElderThing] ->
+          pure $ toTokenValue attrs face 4 5
     otherFace -> getTokenValue iid otherFace attrs
 
 instance RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
     Setup -> do
-      encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.royalEmissary]
-        [ EncounterSet.CurtainCall
-        , EncounterSet.EvilPortents
-        , EncounterSet.Delusions
-        , EncounterSet.Hauntings
-        , EncounterSet.CultOfTheYellowSign
-        , EncounterSet.StrikingFear
-        , EncounterSet.Rats
-        ]
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          [Enemies.royalEmissary]
+          [ EncounterSet.CurtainCall
+          , EncounterSet.EvilPortents
+          , EncounterSet.Delusions
+          , EncounterSet.Hauntings
+          , EncounterSet.CultOfTheYellowSign
+          , EncounterSet.StrikingFear
+          , EncounterSet.Rats
+          ]
 
       (theatreId, placeTheater) <- placeLocationCard Locations.theatre
       (backstageId, placeBackstage) <- placeLocationCard Locations.backstage
-      placeRest <- traverse
-        placeLocationCard_
-        [Locations.lobby, Locations.balcony]
+      placeRest <-
+        traverse
+          placeLocationCard_
+          [Locations.lobby, Locations.balcony]
 
       investigatorIds <- allInvestigatorIds
       mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
@@ -88,48 +91,51 @@ instance RunMessage CurtainCall where
           | lolaId <- maybeToList mLolaId
           ]
 
-      pushAll
-        $ [ story investigatorIds intro
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeTheater
-          , placeBackstage
+      pushAll $
+        [ story investigatorIds intro
+        , SetEncounterDeck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        , placeTheater
+        , placeBackstage
+        ]
+          <> placeRest
+          <> theatreMoveTo
+          <> backstageMoveTo
+
+      setAsideCards <-
+        genCards
+          [ Enemies.royalEmissary
+          , Enemies.theManInThePallidMask
+          , Locations.lightingBox
+          , Locations.boxOffice
+          , Locations.greenRoom
+          , Locations.dressingRoom
+          , Locations.rehearsalRoom
+          , Locations.trapRoom
           ]
-        <> placeRest
-        <> theatreMoveTo
-        <> backstageMoveTo
-
-      setAsideCards <- genCards
-        [ Enemies.royalEmissary
-        , Enemies.theManInThePallidMask
-        , Locations.lightingBox
-        , Locations.boxOffice
-        , Locations.greenRoom
-        , Locations.dressingRoom
-        , Locations.rehearsalRoom
-        , Locations.trapRoom
-        ]
       agendas <- genCards [Agendas.theThirdAct, Agendas.encore]
-      acts <- genCards
-        [ Acts.awakening
-        , Acts.theStrangerACityAflame
-        , Acts.theStrangerThePathIsMine
-        , Acts.theStrangerTheShoresOfHali
-        , Acts.curtainCall
-        ]
+      acts <-
+        genCards
+          [ Acts.awakening
+          , Acts.theStrangerACityAflame
+          , Acts.theStrangerThePathIsMine
+          , Acts.theStrangerTheShoresOfHali
+          , Acts.curtainCall
+          ]
 
-      CurtainCall <$> runMessage
-        msg
-        (attrs
-        & (setAsideCardsL .~ setAsideCards)
-        & (actStackL . at 1 ?~ acts)
-        & (agendaStackL . at 1 ?~ agendas)
-        )
+      CurtainCall
+        <$> runMessage
+          msg
+          ( attrs
+              & (setAsideCardsL .~ setAsideCards)
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     ScenarioResolution resolution -> do
       lead <- getLead
       investigatorIds <- allInvestigatorIds
-      gainXP <- map (uncurry GainXP) <$> getXp
+      gainXP <- toGainXp attrs getXp
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
       let
@@ -142,39 +148,42 @@ instance RunMessage CurtainCall where
           ]
       s <$ case resolution of
         NoResolution ->
+          pushAll $
+            story investigatorIds noResolution
+              : theStrangerIsOnToYou
+                <> gainXP
+                <> [EndOfGame Nothing]
+        Resolution 1 ->
           pushAll
-            $ story investigatorIds noResolution
-            : theStrangerIsOnToYou
-            <> gainXP
-            <> [EndOfGame Nothing]
-        Resolution 1 -> pushAll
-          ([ story investigatorIds resolution1
-           , Record YouTriedToWarnThePolice
-           , RecordCount Conviction (conviction + 1)
-           ]
-          <> [ Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice ]
-          <> theStrangerIsOnToYou
-          <> gainXP
-          <> [EndOfGame Nothing]
-          )
-        Resolution 2 -> pushAll
-          ([ story investigatorIds resolution2
-           , Record YouChoseNotToGoToThePolice
-           , RecordCount Doubt (doubt + 1)
-           ]
-          <> [ Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice ]
-          <> theStrangerIsOnToYou
-          <> gainXP
-          <> [EndOfGame Nothing]
-          )
+            ( [ story investigatorIds resolution1
+              , Record YouTriedToWarnThePolice
+              , RecordCount Conviction (conviction + 1)
+              ]
+                <> [Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice]
+                <> theStrangerIsOnToYou
+                <> gainXP
+                <> [EndOfGame Nothing]
+            )
+        Resolution 2 ->
+          pushAll
+            ( [ story investigatorIds resolution2
+              , Record YouChoseNotToGoToThePolice
+              , RecordCount Doubt (doubt + 1)
+              ]
+                <> [Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice]
+                <> theStrangerIsOnToYou
+                <> gainXP
+                <> [EndOfGame Nothing]
+            )
         _ -> error "Invalid resolution"
     ResolveToken _ tokenFace iid
       | tokenFace `elem` [Cultist, Tablet, ElderThing] -> do
-        lid <- getJustLocation iid
-        horrorCount <- field LocationHorror lid
-        s <$ push
-          (if horrorCount > 0
-            then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-            else PlaceHorror (LocationTarget lid) 1
-          )
+          lid <- getJustLocation iid
+          horrorCount <- field LocationHorror lid
+          s
+            <$ push
+              ( if horrorCount > 0
+                  then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+                  else PlaceHorror (TokenEffectSource tokenFace) (LocationTarget lid) 1
+              )
     _ -> CurtainCall <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.BreakingThrough
-  ( BreakingThrough(..)
-  , breakingThrough
-  ) where
+module Arkham.Agenda.Cards.BreakingThrough (
+  BreakingThrough (..),
+  breakingThrough,
+) where
 
 import Arkham.Prelude
 
@@ -12,6 +12,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 
@@ -25,10 +26,12 @@ breakingThrough =
 
 instance HasAbilities BreakingThrough where
   getAbilities (BreakingThrough x) =
-    [ mkAbility x 1 $ ForcedAbility $ MovedBy
-        Timing.After
-        You
-        EncounterCardSource
+    [ mkAbility x 1 $
+        ForcedAbility $
+          MovedBy
+            Timing.After
+            You
+            Matcher.EncounterCardSource
     ]
 
 instance RunMessage BreakingThrough where
@@ -37,15 +40,16 @@ instance RunMessage BreakingThrough where
       push $ InvestigatorAssignDamage iid source DamageAny 0 1
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      yogSothothSpawnLocation <- fromMaybeM
-        (getJustLocationIdByName "Another Dimension")
-        (getLocationIdByName "The Edge of the Universe")
+      yogSothothSpawnLocation <-
+        fromMaybeM
+          (getJustLocationIdByName "Another Dimension")
+          (getLocationIdByName "The Edge of the Universe")
       yogSothoth <- getSetAsideCard Enemies.yogSothoth
-      createYogSothoth <- createEnemyAt_
-        yogSothoth
-        yogSothothSpawnLocation
-        Nothing
-      pushAll
-        [createYogSothoth, AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      createYogSothoth <-
+        createEnemyAt_
+          yogSothoth
+          yogSothothSpawnLocation
+          Nothing
+      pushAll [createYogSothoth, advanceAgendaDeck attrs]
       pure a
     _ -> BreakingThrough <$> runMessage msg attrs

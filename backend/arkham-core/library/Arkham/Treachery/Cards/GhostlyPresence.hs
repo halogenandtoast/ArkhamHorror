@@ -43,7 +43,7 @@ instance RunMessage GhostlyPresence where
           chooseOneAtATime
             lead
             [targetLabel iid [InitiateEnemyAttack $ enemyAttack nahab attrs iid] | iid <- iids]
-            : [PlaceDoom (toTarget nahab) 1 | atSiteOfTheSacrifice]
+            : [PlaceDoom (toSource attrs) (toTarget nahab) 1 | atSiteOfTheSacrifice]
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) card -> do
       pushM $ createEnemy card (locationWithInvestigator iid)

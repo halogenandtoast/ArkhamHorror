@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.RexMurphy
-  ( RexMurphy(..)
-  , rexMurphy
-  ) where
+module Arkham.Investigator.Cards.RexMurphy (
+  RexMurphy (..),
+  rexMurphy,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.GameValue
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message hiding ( PassSkillTest )
+import Arkham.Message hiding (PassSkillTest)
 import Arkham.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
@@ -18,54 +18,59 @@ newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rexMurphy :: InvestigatorCard RexMurphy
-rexMurphy = investigator
-  RexMurphy
-  Cards.rexMurphy
-  Stats
-    { health = 6
-    , sanity = 9
-    , willpower = 3
-    , intellect = 4
-    , combat = 2
-    , agility = 3
-    }
+rexMurphy =
+  investigator
+    RexMurphy
+    Cards.rexMurphy
+    Stats
+      { health = 6
+      , sanity = 9
+      , willpower = 3
+      , intellect = 4
+      , combat = 2
+      , agility = 3
+      }
 
 instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =
     [ restrictedAbility
-          x
-          1
-          (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
+        x
+        1
+        (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
         $ ReactionAbility
-            (SkillTestResult
+          ( SkillTestResult
               Timing.After
               You
               (WhileInvestigating Anywhere)
               (SuccessResult $ AtLeast $ Static 2)
-            )
-            Free
+          )
+          Free
     ]
 
 instance HasTokenValue RexMurphy where
-  getTokenValue iid ElderSign (RexMurphy attrs) | iid == toId attrs =
-    pure $ TokenValue ElderSign (PositiveModifier 2)
+  getTokenValue iid ElderSign (RexMurphy attrs)
+    | iid == toId attrs =
+        pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance RunMessage RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> i <$ push
-      (InvestigatorDiscoverClues
-        (toId attrs)
-        (investigatorLocation attrs)
-        1
-        Nothing
-      )
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $
+        InvestigatorDiscoverClues
+          (toId attrs)
+          (investigatorLocation attrs)
+          (toAbilitySource attrs 1)
+          1
+          Nothing
+      pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       drawing <- drawCards iid attrs 3
-      push $ chooseOne
-        iid
-        [ Label "Automatically fail to draw 3" [FailSkillTest, drawing]
-        , Label "Resolve normally" []
-        ]
+      push $
+        chooseOne
+          iid
+          [ Label "Automatically fail to draw 3" [FailSkillTest, drawing]
+          , Label "Resolve normally" []
+          ]
       pure i
     _ -> RexMurphy <$> runMessage msg attrs

@@ -29,7 +29,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 
@@ -219,7 +218,7 @@ instance RunMessage LostInTimeAndSpace where
              , Record TheInvestigatorsClosedTheTearInReality
              ]
           <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
-          <> [GainXP iid (n + 5) | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) (n + 5) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do

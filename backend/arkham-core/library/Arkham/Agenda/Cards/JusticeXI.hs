@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.JusticeXI
-  ( JusticeXI(..)
-  , justiceXI
-  ) where
+module Arkham.Agenda.Cards.JusticeXI (
+  JusticeXI (..),
+  justiceXI,
+) where
 
 import Arkham.Prelude
 
@@ -14,17 +14,17 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Types (Field(LocationClues))
+import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (Monster, SilverTwilight) )
-import Arkham.Window ( Window (..) )
+import Arkham.Trait (Trait (Monster, SilverTwilight))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype JusticeXI = JusticeXI AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 justiceXI :: AgendaCard JusticeXI
@@ -40,11 +40,13 @@ instance HasModifiersFor JusticeXI where
 
 instance HasAbilities JusticeXI where
   getAbilities (JusticeXI a) =
-    [ mkAbility a 1 $ ForcedAbility $ DrawCard
-        Timing.When
-        Anyone
-        (BasicCardMatch $ CardWithTrait Monster)
-        EncounterDeck
+    [ mkAbility a 1 $
+        ForcedAbility $
+          DrawCard
+            Timing.When
+            Anyone
+            (BasicCardMatch $ CardWithTrait Monster)
+            EncounterDeck
     ]
 
 toDrawnCard :: [Window] -> Card
@@ -61,54 +63,61 @@ instance RunMessage JusticeXI where
       actId <- selectJust AnyAct
       allLocations <- selectList LocationWithAnyClues
       missingPersons <- getRecordedCardCodes MissingPersons
-      noCluesOnEntryHall <- (== 0)
-        <$> selectJustField LocationClues (LocationWithTitle "Entry Hall")
-      noCluesOnOffice <- (== 0)
-        <$> selectJustField LocationClues (LocationWithTitle "Office")
-      noCluesOnBalcony <- (== 0)
-        <$> selectJustField LocationClues (LocationWithTitle "Balcony")
-      noCluesOnBilliardsRoom <- (== 0)
-        <$> selectJustField LocationClues (LocationWithTitle "BillardsRoom")
-      msgs <- if n < targetAmount
-        then pure $ map (RemoveAllClues . toTarget) iids
-        else do
-          lead <- getLead
-          lids <- selectList $ FarthestLocationFromAll
-            (NotLocation $ LocationWithTitle "Entry Hall")
-          josefMeiger <- getSetAsideCard Enemies.josefMeiger
-          pure
-            [ SpendClues targetAmount iids
-            , chooseOne
-              lead
-              [ targetLabel lid [SpawnEnemyAt josefMeiger lid] | lid <- lids ]
-            ]
+      noCluesOnEntryHall <-
+        (== 0)
+          <$> selectJustField LocationClues (LocationWithTitle "Entry Hall")
+      noCluesOnOffice <-
+        (== 0)
+          <$> selectJustField LocationClues (LocationWithTitle "Office")
+      noCluesOnBalcony <-
+        (== 0)
+          <$> selectJustField LocationClues (LocationWithTitle "Balcony")
+      noCluesOnBilliardsRoom <-
+        (== 0)
+          <$> selectJustField LocationClues (LocationWithTitle "BillardsRoom")
+      msgs <-
+        if n < targetAmount
+          then pure $ map (RemoveAllClues (toSource attrs) . toTarget) iids
+          else do
+            lead <- getLead
+            lids <-
+              selectList $
+                FarthestLocationFromAll
+                  (NotLocation $ LocationWithTitle "Entry Hall")
+            josefMeiger <- getSetAsideCard Enemies.josefMeiger
+            pure
+              [ SpendClues targetAmount iids
+              , chooseOne
+                  lead
+                  [targetLabel lid [SpawnEnemyAt josefMeiger lid] | lid <- lids]
+              ]
 
-      pushAll
-        $ msgs
-        <> map (RemoveAllClues . toTarget) allLocations
-        <> [ story iids interlude1Gavriella
-           | toCardCode Investigators.gavriellaMizrah
-             `elem` missingPersons
-             && noCluesOnEntryHall
-           ]
-        <> [ story iids interlude1Jerome
-           | toCardCode Investigators.jeromeDavids
-             `elem` missingPersons
-             && noCluesOnOffice
-           ]
-        <> [ story iids interlude1Penny
-           | toCardCode Investigators.pennyWhite
-             `elem` missingPersons
-             && noCluesOnBalcony
-           ]
-        <> [ story iids interlude1Valentino
-           | toCardCode Investigators.valentinoRivas
-             `elem` missingPersons
-             && noCluesOnBilliardsRoom
-           ]
-        <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      pushAll $
+        msgs
+          <> map (RemoveAllClues (toSource attrs) . toTarget) allLocations
+          <> [ story iids interlude1Gavriella
+             | toCardCode Investigators.gavriellaMizrah
+                `elem` missingPersons
+                && noCluesOnEntryHall
+             ]
+          <> [ story iids interlude1Jerome
+             | toCardCode Investigators.jeromeDavids
+                `elem` missingPersons
+                && noCluesOnOffice
+             ]
+          <> [ story iids interlude1Penny
+             | toCardCode Investigators.pennyWhite
+                `elem` missingPersons
+                && noCluesOnBalcony
+             ]
+          <> [ story iids interlude1Valentino
+             | toCardCode Investigators.valentinoRivas
+                `elem` missingPersons
+                && noCluesOnBilliardsRoom
+             ]
+          <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther
+             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+             ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (toDrawnCard -> card) _ -> do
       removeMessageType DrawEnemyMessage

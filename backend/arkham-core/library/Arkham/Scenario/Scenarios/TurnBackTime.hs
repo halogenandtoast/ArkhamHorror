@@ -1,7 +1,7 @@
-module Arkham.Scenario.Scenarios.TurnBackTime
-  ( TurnBackTime(..)
-  , turnBackTime
-  ) where
+module Arkham.Scenario.Scenarios.TurnBackTime (
+  TurnBackTime (..),
+  turnBackTime,
+) where
 
 import Arkham.Prelude
 
@@ -20,21 +20,20 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher hiding ( RevealLocation )
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TurnBackTime.Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype TurnBackTime = TurnBackTime ScenarioAttrs
@@ -42,17 +41,18 @@ newtype TurnBackTime = TurnBackTime ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 turnBackTime :: Difficulty -> TurnBackTime
-turnBackTime difficulty = scenario
-  TurnBackTime
-  "04344"
-  "Turn Back Time"
-  difficulty
-  [ ".        ancientHall  undergroundRuins .             .             .    ."
-  , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
-  , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
-  , ".        grandChamber burialPit        .             .             .    ."
-  , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
-  ]
+turnBackTime difficulty =
+  scenario
+    TurnBackTime
+    "04344"
+    "Turn Back Time"
+    difficulty
+    [ ".        ancientHall  undergroundRuins .             .             .    ."
+    , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
+    , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
+    , ".        grandChamber burialPit        .             .             .    ."
+    , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
+    ]
 
 instance HasTokenValue TurnBackTime where
   getTokenValue iid tokenFace (TurnBackTime attrs) = case tokenFace of
@@ -70,126 +70,135 @@ instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = case msg of
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid)] -> do
       mRepossessThePast <-
-        selectOne $ InDeckOf (InvestigatorWithId iid) <> BasicCardMatch
-          (cardIs Assets.relicOfAgesRepossessThePast)
+        selectOne $
+          InDeckOf (InvestigatorWithId iid)
+            <> BasicCardMatch
+              (cardIs Assets.relicOfAgesRepossessThePast)
       pushAll
         [ RemovePlayerCardFromGame True repossessThePast
         | repossessThePast <- maybeToList mRepossessThePast
         ]
       pure s
     Setup -> do
-      forcedToWaitForSupplies <- getHasRecord
-        TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+      forcedToWaitForSupplies <-
+        getHasRecord
+          TheInvestigatorsWereForcedToWaitForAdditionalSupplies
       let intro = if forcedToWaitForSupplies then intro1 else intro2
       iids <- allInvestigatorIds
       crossOut <- drop 3 . campaignLogOrderedKeys <$> getCampaignLog
 
-      encounterDeck <- buildEncounterDeckExcluding
-        [ Enemies.harbingerOfValusia
-        , Locations.ancientHall
-        , Locations.grandChamber
-        , Locations.undergroundRuins
-        , Locations.burialPit
-        , Locations.secretPassage
-        , Locations.chamberOfTime
-        ]
-        [ EncounterSet.TheDoomOfEztli
-        , EncounterSet.AgentsOfYig
-        , EncounterSet.YigsVenom
-        , EncounterSet.TemporalFlux
-        , EncounterSet.DeadlyTraps
-        , EncounterSet.ForgottenRuins
-        , EncounterSet.Poison
-        , EncounterSet.ChillingCold
-        ]
-
-      let
-        encounterDeck' = removeEachFromDeck
-          encounterDeck
-          [ Treacheries.illOmen
-          , Treacheries.deepDark
-          , Treacheries.finalMistake
-          , Treacheries.entombed
-          , Treacheries.cryptChill
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          [ Enemies.harbingerOfValusia
+          , Locations.ancientHall
+          , Locations.grandChamber
+          , Locations.undergroundRuins
+          , Locations.burialPit
+          , Locations.secretPassage
+          , Locations.chamberOfTime
+          ]
+          [ EncounterSet.TheDoomOfEztli
+          , EncounterSet.AgentsOfYig
+          , EncounterSet.YigsVenom
+          , EncounterSet.TemporalFlux
+          , EncounterSet.DeadlyTraps
+          , EncounterSet.ForgottenRuins
+          , EncounterSet.Poison
+          , EncounterSet.ChillingCold
           ]
 
-      explorationDeck <- shuffleM =<< genCards
-        [ Locations.ancientHall
-        , Locations.grandChamber
-        , Locations.burialPit
-        , Locations.undergroundRuins
-        , Locations.secretPassage
-        , Treacheries.illOmen
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        , Treacheries.entombed
-        , Treacheries.cryptChill
-        ]
+      let
+        encounterDeck' =
+          removeEachFromDeck
+            encounterDeck
+            [ Treacheries.illOmen
+            , Treacheries.deepDark
+            , Treacheries.finalMistake
+            , Treacheries.entombed
+            , Treacheries.cryptChill
+            ]
+
+      explorationDeck <-
+        shuffleM
+          =<< genCards
+            [ Locations.ancientHall
+            , Locations.grandChamber
+            , Locations.burialPit
+            , Locations.undergroundRuins
+            , Locations.secretPassage
+            , Treacheries.illOmen
+            , Treacheries.deepDark
+            , Treacheries.finalMistake
+            , Treacheries.entombed
+            , Treacheries.cryptChill
+            ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       setAsideCards <-
-        genCards
-        $ [ Locations.chamberOfTime
+        genCards $
+          [ Locations.chamberOfTime
           , Assets.relicOfAgesRepossessThePast
           , Enemies.harbingerOfValusia
           ]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
+            <> replicate setAsidePoisonedCount Treacheries.poisoned
 
       (entrywayId, placeEntryway) <- placeLocationCard Locations.entryway
 
-      pushAll
-        $ story iids intro
-        : map CrossOutRecord crossOut
-        <> [ SetEncounterDeck encounterDeck'
-           , SetAgendaDeck
-           , SetActDeck
-           , placeEntryway
-           , RevealLocation Nothing entrywayId
-           , MoveAllTo (toSource attrs) entrywayId
-           , AddToken ElderThing
-           ]
+      pushAll $
+        story iids intro
+          : map CrossOutRecord crossOut
+            <> [ SetEncounterDeck encounterDeck'
+               , SetAgendaDeck
+               , SetActDeck
+               , placeEntryway
+               , RevealLocation Nothing entrywayId
+               , MoveAllTo (toSource attrs) entrywayId
+               , AddToken ElderThing
+               ]
 
       agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
-      acts <- genCards
-        [ Acts.intoTheRuinsOnceAgain
-        , Acts.theChamberOfStillRemains
-        , Acts.momentOfDoom
-        ]
+      acts <-
+        genCards
+          [ Acts.intoTheRuinsOnceAgain
+          , Acts.theChamberOfStillRemains
+          , Acts.momentOfDoom
+          ]
 
-      TurnBackTime <$> runMessage
-        msg
-        (attrs
-        & (decksL . at ExplorationDeck ?~ explorationDeck)
-        & (setAsideCardsL .~ setAsideCards)
-        & (agendaStackL . at 1 ?~ agendas)
-        & (actStackL . at 1 ?~ acts)
-        )
+      TurnBackTime
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at ExplorationDeck ?~ explorationDeck)
+              & (setAsideCardsL .~ setAsideCards)
+              & (agendaStackL . at 1 ?~ agendas)
+              & (actStackL . at 1 ?~ acts)
+          )
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid -> push $ PlaceDoom (LocationTarget lid) 1
+      for_ mlid $ \lid -> push $ PlaceDoom (TokenEffectSource ElderThing) (toTarget lid) 1
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       case tokenFace token of
         ElderThing | isEasyStandard attrs -> do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceDoom (LocationTarget lid) 1
+          for_ mlid $ \lid -> push $ PlaceDoom (TokenEffectSource ElderThing) (toTarget lid) 1
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
       case resolution of
         NoResolution ->
-          pushAll
-            $ Record TheFabricOfTimeIsUnwoven
-            : map DrivenInsane iids
-            <> [GameOver]
+          pushAll $
+            Record TheFabricOfTimeIsUnwoven
+              : map DrivenInsane iids
+                <> [GameOver]
         Resolution 1 -> do
-          gainXp <- map (uncurry GainXP) <$> getXp
-          pushAll
-            $ Record TheInvestigatorsSealedTheRelicOfAgesForever
-            : gainXp
-            <> [GameOver]
+          gainXp <- toGainXp attrs getXp
+          pushAll $
+            Record TheInvestigatorsSealedTheRelicOfAgesForever
+              : gainXp
+                <> [GameOver]
         _ -> error "Unknown Resolution"
       pure s
     Explore iid _ _ -> do

@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier as X
+import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)
 
@@ -109,3 +110,7 @@ roundModifier (toSource -> source) (toTarget -> target) modifier = createWindowM
 gameModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 gameModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectGameWindow source target [modifier]
+
+phaseModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+phaseModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectPhaseWindow source target [modifier]

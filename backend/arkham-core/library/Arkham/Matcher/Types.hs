@@ -527,7 +527,7 @@ data WindowMatcher
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
-  | PlacedDoomCounter Timing TargetMatcher
+  | PlacedDoomCounter Timing SourceMatcher TargetMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
@@ -570,10 +570,10 @@ data WindowMatcher
   | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
-  | PlacedCounter Timing Who CounterMatcher ValueMatcher
-  | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher
-  | PlacedCounterOnEnemy Timing EnemyMatcher CounterMatcher ValueMatcher
-  | PlacedCounterOnAgenda Timing AgendaMatcher CounterMatcher ValueMatcher
+  | PlacedCounter Timing Who SourceMatcher CounterMatcher ValueMatcher
+  | PlacedCounterOnLocation Timing Where SourceMatcher CounterMatcher ValueMatcher
+  | PlacedCounterOnEnemy Timing EnemyMatcher SourceMatcher CounterMatcher ValueMatcher
+  | PlacedCounterOnAgenda Timing AgendaMatcher SourceMatcher CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher

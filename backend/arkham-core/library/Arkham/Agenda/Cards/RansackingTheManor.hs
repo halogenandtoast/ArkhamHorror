@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.RansackingTheManor
-  ( RansackingTheManor(..)
-  , ransackingTheManor
-  ) where
+module Arkham.Agenda.Cards.RansackingTheManor (
+  RansackingTheManor (..),
+  ransackingTheManor,
+) where
 
 import Arkham.Prelude
 
@@ -18,11 +18,11 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype RansackingTheManor = RansackingTheManor AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ransackingTheManor :: AgendaCard RansackingTheManor
@@ -36,11 +36,14 @@ instance HasModifiersFor RansackingTheManor where
 
 instance HasAbilities RansackingTheManor where
   getAbilities (RansackingTheManor attrs) =
-    [ mkAbility attrs 1 $ ForcedAbility $ PlacedCounterOnEnemy
-        Timing.After
-        AnyEnemy
-        ClueCounter
-        AnyValue
+    [ mkAbility attrs 1 $
+        ForcedAbility $
+          PlacedCounterOnEnemy
+            Timing.After
+            AnyEnemy
+            AnySource
+            ClueCounter
+            AnyValue
     ]
 
 instance RunMessage RansackingTheManor where
@@ -56,13 +59,13 @@ instance RunMessage RansackingTheManor where
           possessedOathspeaker
           (LocationWithTitle "Entry Hall")
 
-      pushAll
-        $ spawnPossessedOathspeaker
-        : [ spawnSebastienMoreauMessages | spawnSebastienMoreau ]
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll $
+        spawnPossessedOathspeaker
+          : [spawnSebastienMoreauMessages | spawnSebastienMoreau]
+            <> [advanceAgendaDeck attrs]
       pure a
-    UseCardAbility _ source 1 [Window _ (Window.PlacedClues target n)] _
+    UseCardAbility _ source 1 [Window _ (Window.PlacedClues _ target n)] _
       | isSource attrs source -> do
-        pushAll [FlipClues target n]
-        pure a
+          pushAll [FlipClues target n]
+          pure a
     _ -> RansackingTheManor <$> runMessage msg attrs

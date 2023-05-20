@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.MysteriesOfTheLodge
-  ( mysteriesOfTheLodge
-  , mysteriesOfTheLodgeEffect
-  , MysteriesOfTheLodge(..)
-  ) where
+module Arkham.Treachery.Cards.MysteriesOfTheLodge (
+  mysteriesOfTheLodge,
+  mysteriesOfTheLodgeEffect,
+  MysteriesOfTheLodge (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Effect.Types
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Trait (Trait(Cultist))
+import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -28,27 +28,28 @@ instance RunMessage MysteriesOfTheLodge where
   runMessage msg t@(MysteriesOfTheLodge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <-
-        selectList
-        $ NearestEnemy
-        $ EnemyWithTrait Cultist
-        <> EnemyWithoutModifier CannotPlaceDoomOnThis
+        selectList $
+          NearestEnemy $
+            EnemyWithTrait Cultist
+              <> EnemyWithoutModifier CannotPlaceDoomOnThis
       case enemies of
         [] -> push $ gainSurge attrs
-        xs -> pushAll
-          [ chooseOne
-              iid
-              [ targetLabel
+        xs ->
+          pushAll
+            [ chooseOne
+                iid
+                [ targetLabel
                   eid
-                  [ PlaceDoom (EnemyTarget eid) 1
+                  [ PlaceDoom (toSource attrs) (EnemyTarget eid) 1
                   , createCardEffect
-                    Cards.mysteriesOfTheLodge
-                    Nothing
-                    source
-                    (EnemyTarget eid)
+                      Cards.mysteriesOfTheLodge
+                      Nothing
+                      source
+                      (EnemyTarget eid)
                   ]
-              | eid <- xs
-              ]
-          ]
+                | eid <- xs
+                ]
+            ]
       pure t
     _ -> MysteriesOfTheLodge <$> runMessage msg attrs
 
@@ -67,8 +68,8 @@ instance HasModifiersFor MysteriesOfTheLodgeEffect where
     pure $ toModifiers a $ case (mTarget, mAction) of
       (Just target, Just action)
         | target == effectTarget a
-        , action `elem` [Action.Fight, Action.Evade, Action.Parley]
-        -> [Difficulty 2]
+        , action `elem` [Action.Fight, Action.Evade, Action.Parley] ->
+            [Difficulty 2]
       _ -> []
   getModifiersFor _ _ = pure []
 

@@ -58,7 +58,7 @@ instance RunMessage TheFamiliar where
           createEnemyAt_ nahab keziahsRoom Nothing
         3 -> do
           nahab <- getUniqueEnemy Enemies.nahab
-          pure $ PlaceDoom (toTarget nahab) 1
+          pure $ PlaceDoom (toSource attrs) (toTarget nahab) 1
         _ -> error "Invalid act step"
       ghostlyPresences <-
         getSetAsideCardsMatching $ cardIs Treacheries.ghostlyPresence
@@ -76,6 +76,6 @@ instance RunMessage TheFamiliar where
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       playerCount <- getPlayerCount
-      push $ GainClues iid $ if playerCount >= 3 then 2 else 1
+      push $ GainClues iid (toAbilitySource attrs 1) $ if playerCount >= 3 then 2 else 1
       pure a
     _ -> TheFamiliar <$> runMessage msg attrs

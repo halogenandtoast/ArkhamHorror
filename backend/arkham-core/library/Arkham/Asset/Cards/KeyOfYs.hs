@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.KeyOfYs
-  ( keyOfYs
-  , KeyOfYs(..)
-  )
+module Arkham.Asset.Cards.KeyOfYs (
+  keyOfYs,
+  KeyOfYs (..),
+)
 where
 
 import Arkham.Prelude
@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype KeyOfYs = KeyOfYs AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keyOfYs :: AssetCard KeyOfYs
@@ -21,20 +21,20 @@ keyOfYs =
   assetWith KeyOfYs Cards.keyOfYs (sanityL ?~ 4)
 
 instance HasModifiersFor KeyOfYs where
-  getModifiersFor (InvestigatorTarget iid) (KeyOfYs a) = 
-    pure [ toModifier a (AnySkillValue $ assetHorror a) | controlledBy a iid ]
+  getModifiersFor (InvestigatorTarget iid) (KeyOfYs a) =
+    pure [toModifier a (AnySkillValue $ assetHorror a) | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ForcedAbility
-        $ PlacedCounter Timing.When You HorrorCounter (AtLeast $ Static 1)
-    , restrictedAbility x 2 ControlsThis
-        $ ForcedAbility
-        $ AssetLeavesPlay Timing.When
-        $ AssetWithId
-        $ toId x
+    [ restrictedAbility x 1 ControlsThis $
+        ForcedAbility $
+          PlacedCounter Timing.When You AnySource HorrorCounter (AtLeast $ Static 1)
+    , restrictedAbility x 2 ControlsThis $
+        ForcedAbility $
+          AssetLeavesPlay Timing.When $
+            AssetWithId $
+              toId x
     ]
 
 instance RunMessage KeyOfYs where

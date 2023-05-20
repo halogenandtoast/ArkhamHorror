@@ -45,12 +45,12 @@ instance HasAbilities AgentOfTheKing where
 instance RunMessage AgentOfTheKing where
   runMessage msg e@(AgentOfTheKing attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]
+      pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
-        [ RemoveClues (toTarget attrs) (enemyClues attrs)
-        , GainClues iid (enemyClues attrs)
+        [ RemoveClues (toAbilitySource attrs 2) (toTarget attrs) (enemyClues attrs)
+        , GainClues iid (toAbilitySource attrs 2) (enemyClues attrs)
         ]
       pure e
     _ -> AgentOfTheKing <$> runMessage msg attrs

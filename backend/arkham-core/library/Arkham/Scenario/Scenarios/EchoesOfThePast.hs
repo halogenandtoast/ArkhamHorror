@@ -28,8 +28,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.EchoesOfThePast.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait (SecondFloor, ThirdFloor))
 import Arkham.Treachery.Cards qualified as Cards
@@ -196,40 +194,40 @@ instance RunMessage EchoesOfThePast where
 
       fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
 
-      pushAll
-        ( [story investigatorIds intro]
-            <> [ story investigatorIds sebastiensInformation
-               | sebastienInterviewed
-               ]
-            <> [ SetEncounterDeck encounterDeck
-               , SetAgendaDeck
-               , SetActDeck
-               , placeEntryHall
-               ]
-            <> [ PlaceClues (LocationTarget entryHallId) 1
-               | sebastienInterviewed
-               ]
-            <> [ placeQuietHalls1
-               , SetLocationLabel quietHalls1Id "quietHalls1"
-               , placeQuietHalls2
-               , SetLocationLabel quietHalls2Id "quietHalls2"
-               ]
-            <> concatMap snd groundFloorPlacements
-            <> concatMap snd secondFloorPlacements
-            <> concatMap snd thirdFloorPlacements
-            <> spawnMessages
-            <> [MoveAllTo (toSource attrs) entryHallId]
-            <> if fledTheDinnerParty
-              then
-                [ CreateWindowModifierEffect
-                  EffectRoundWindow
-                  (EffectModifiers $ toModifiers attrs [AdditionalActions 1])
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                | iid <- investigatorIds
-                ]
-              else []
-        )
+      pushAll $
+        [story investigatorIds intro]
+          <> [ story investigatorIds sebastiensInformation
+             | sebastienInterviewed
+             ]
+          <> [ SetEncounterDeck encounterDeck
+             , SetAgendaDeck
+             , SetActDeck
+             , placeEntryHall
+             ]
+          <> [ PlaceClues (toSource attrs) (LocationTarget entryHallId) 1
+             | sebastienInterviewed
+             ]
+          <> [ placeQuietHalls1
+             , SetLocationLabel quietHalls1Id "quietHalls1"
+             , placeQuietHalls2
+             , SetLocationLabel quietHalls2Id "quietHalls2"
+             ]
+          <> concatMap snd groundFloorPlacements
+          <> concatMap snd secondFloorPlacements
+          <> concatMap snd thirdFloorPlacements
+          <> spawnMessages
+          <> [MoveAllTo (toSource attrs) entryHallId]
+          <> ( if fledTheDinnerParty
+                then
+                  [ CreateWindowModifierEffect
+                    EffectRoundWindow
+                    (EffectModifiers $ toModifiers attrs [AdditionalActions 1])
+                    (toSource attrs)
+                    (InvestigatorTarget iid)
+                  | iid <- investigatorIds
+                  ]
+                else []
+             )
 
       setAsideCards <-
         genCards
@@ -257,30 +255,22 @@ instance RunMessage EchoesOfThePast where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ token iid
-      | token `elem` [Cultist, Tablet, ElderThing] ->
-          s <$ case token of
-            Cultist -> do
-              matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
-              push $
-                chooseOne
-                  iid
-                  [TargetLabel target [PlaceDoom target 1] | target <- matches]
-            Tablet ->
-              push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
-            ElderThing -> do
-              triggers <- notNull <$> select (EnemyAt YourLocation)
-              when
-                triggers
-                ( push $
-                    InvestigatorAssignDamage
-                      iid
-                      (TokenEffectSource token)
-                      DamageAny
-                      0
-                      1
-                )
-            _ -> pure ()
+    ResolveToken _ token iid | token `elem` [Cultist, Tablet, ElderThing] -> do
+      case token of
+        Cultist -> do
+          matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          push $
+            chooseOne
+              iid
+              [targetLabel target [PlaceDoom (TokenEffectSource Cultist) target 1] | target <- matches]
+        Tablet ->
+          push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
+        ElderThing -> do
+          triggers <- notNull <$> select (EnemyAt YourLocation)
+          when triggers $ do
+            push $ InvestigatorAssignDamage iid (TokenEffectSource token) DamageAny 0 1
+        _ -> pure ()
+      pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ | isEasyStandard attrs -> do
       case tokenFace token of
         Cultist -> do
@@ -288,21 +278,13 @@ instance RunMessage EchoesOfThePast where
           push $
             chooseOne
               iid
-              [TargetLabel target [PlaceDoom target 1] | target <- matches]
+              [targetLabel target [PlaceDoom (TokenEffectSource Cultist) target 1] | target <- matches]
         Tablet ->
           push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
-          when
-            triggers
-            ( push $
-                InvestigatorAssignDamage
-                  iid
-                  (TokenEffectSource $ tokenFace token)
-                  DamageAny
-                  0
-                  1
-            )
+          when triggers $ do
+            push $ InvestigatorAssignDamage iid (TokenEffectSource $ tokenFace token) DamageAny 0 1
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
@@ -313,9 +295,7 @@ instance RunMessage EchoesOfThePast where
     ScenarioResolution (Resolution n) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- allInvestigatorIds
-      gainXp <-
-        map (uncurry GainXP)
-          <$> getXpWithBonus (if n == 4 then 1 else 0)
+      gainXp <- toGainXp attrs $ getXpWithBonus (if n == 4 then 1 else 0)
       sebastienSlain <-
         selectOne
           (VictoryDisplayCardMatch $ cardIs Enemies.sebastienMoreau)

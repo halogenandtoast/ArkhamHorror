@@ -63,7 +63,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
                 leadInvestigatorId
                 [ targetLabel cultist $
                   CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
-                    : [PlaceDoom (EnemyTarget cultist) 1 | deckCount <= 2]
+                    : [PlaceDoom (toSource attrs) (EnemyTarget cultist) 1 | deckCount <= 2]
                 | cultist <- farthestBrotherhoodCultists
                 ]
              ]

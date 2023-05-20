@@ -23,7 +23,6 @@ import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWagesOfSin.Story
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait (Spectral), toTraits)
 

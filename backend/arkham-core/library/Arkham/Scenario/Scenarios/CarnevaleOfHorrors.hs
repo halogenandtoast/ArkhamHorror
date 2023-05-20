@@ -28,8 +28,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Data.List.NonEmpty qualified as NE
@@ -386,7 +384,7 @@ instance RunMessage CarnevaleOfHorrors where
         , Record ManyWereSacrificedToCnidathquaDuringTheCarnivale
         ]
           <> additionalRewardsMsg
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
@@ -398,7 +396,7 @@ instance RunMessage CarnevaleOfHorrors where
         , Record TheSunBanishedCnidathquaIntoTheDepths
         ]
           <> additionalRewardsMsg
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
@@ -410,7 +408,7 @@ instance RunMessage CarnevaleOfHorrors where
         , Record CnidathquaRetreatedToNurseItsWounds
         ]
           <> additionalRewardsMsg
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) ->

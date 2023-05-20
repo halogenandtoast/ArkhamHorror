@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MysteriousRaven
-  ( mysteriousRaven
-  , MysteriousRaven(..)
-  ) where
+module Arkham.Asset.Cards.MysteriousRaven (
+  mysteriousRaven,
+  MysteriousRaven (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,19 +21,21 @@ mysteriousRaven =
 instance HasAbilities MysteriousRaven where
   getAbilities (MysteriousRaven a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> ClueOnLocation <> InvestigatorExists
-            (You <> InvestigatorCanDiscoverCluesAt YourLocation)
-          )
+        a
+        1
+        ( ControlsThis
+            <> ClueOnLocation
+            <> InvestigatorExists
+              (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+        )
         $ FastAbility
         $ DiscardCost FromPlay (toTarget a)
-        <> DamageCost (toSource a) YouTarget 1
+          <> DamageCost (toSource a) YouTarget 1
     ]
 
 instance RunMessage MysteriousRaven where
   runMessage msg a@(MysteriousRaven attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
       pure a
     _ -> MysteriousRaven <$> runMessage msg attrs

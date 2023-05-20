@@ -30,8 +30,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.AtDeathsDoorstep.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait (SilverTwilight, Spectral))
 
@@ -210,7 +208,7 @@ instance RunMessage AtDeathsDoorstep where
                     chooseOrRunN
                       lead
                       n
-                      [targetLabel l [RemoveClues (toTarget l) 1] | l <- locations]
+                      [targetLabel l [RemoveClues (toSource attrs) (toTarget l) 1] | l <- locations]
                 )
                 (doSplit noTimes)
 
@@ -225,16 +223,16 @@ instance RunMessage AtDeathsDoorstep where
         , MoveAllTo (toSource attrs) entryHallId
         ]
           <> otherPlacements
-          <> [ PlaceClues (toTarget entryHallId) 6
+          <> [ PlaceClues (toSource attrs) (toTarget entryHallId) 6
              | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
              ]
-          <> [ PlaceClues (toTarget officeId) 6
+          <> [ PlaceClues (toSource attrs) (toTarget officeId) 6
              | toCardCode Investigators.jeromeDavids `elem` missingPersons
              ]
-          <> [ PlaceClues (toTarget billiardsRoomId) 6
+          <> [ PlaceClues (toSource attrs) (toTarget billiardsRoomId) 6
              | toCardCode Investigators.valentinoRivas `elem` missingPersons
              ]
-          <> [ PlaceClues (toTarget balconyId) 6
+          <> [ PlaceClues (toSource attrs) (toTarget balconyId) 6
              | toCardCode Investigators.pennyWhite `elem` missingPersons
              ]
           <> removeClues
@@ -287,7 +285,7 @@ instance RunMessage AtDeathsDoorstep where
     ScenarioResolution (Resolution n) -> do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
       iids <- allInvestigatorIds
-      gainXp <- toGainXp getXp
+      gainXp <- toGainXp (toSource attrs) getXp
       inVictory <- isInVictoryDisplay Enemies.josefMeiger
       underEntryHall <-
         fieldMap

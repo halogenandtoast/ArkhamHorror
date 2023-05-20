@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.AllIsOne
-  ( AllIsOne(..)
-  , allIsOne
-  ) where
+module Arkham.Agenda.Cards.AllIsOne (
+  AllIsOne (..),
+  allIsOne,
+) where
 
 import Arkham.Prelude
 
@@ -13,6 +13,7 @@ import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 
@@ -25,10 +26,12 @@ allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasAbilities AllIsOne where
   getAbilities (AllIsOne x) =
-    [ mkAbility x 1 $ ForcedAbility $ MovedBy
-        Timing.After
-        You
-        EncounterCardSource
+    [ mkAbility x 1 $
+        ForcedAbility $
+          MovedBy
+            Timing.After
+            You
+            Matcher.EncounterCardSource
     ]
 
 instance RunMessage AllIsOne where
@@ -37,21 +40,22 @@ instance RunMessage AllIsOne where
       push $ InvestigatorAssignDamage iid source DamageAny 0 1
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      failedToSaveStudents <- getHasRecord
-        TheInvestigatorsFailedToSaveTheStudents
+      failedToSaveStudents <-
+        getHasRecord
+          TheInvestigatorsFailedToSaveTheStudents
       investigatorIds <- getInvestigatorIds
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst
+      pushAll $
+        [ ShuffleEncounterDiscardBackIn
+        , DiscardEncounterUntilFirst
             (toSource attrs)
             Nothing
             (CardWithType LocationType)
-          ]
-        <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-           | failedToSaveStudents
-           , iid <- investigatorIds
-           ]
-        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+        ]
+          <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+             | failedToSaveStudents
+             , iid <- investigatorIds
+             ]
+          <> [advanceAgendaDeck attrs]
       pure a
     RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId

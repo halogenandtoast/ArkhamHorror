@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise
-  ( TheRitualBeginsBlackStarsRise(..)
-  , theRitualBeginsBlackStarsRise
-  ) where
+module Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise (
+  TheRitualBeginsBlackStarsRise (..),
+  theRitualBeginsBlackStarsRise,
+) where
 
 import Arkham.Prelude
 
@@ -23,18 +23,19 @@ newtype TheRitualBeginsBlackStarsRise = TheRitualBeginsBlackStarsRise AgendaAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRitualBeginsBlackStarsRise :: AgendaCard TheRitualBeginsBlackStarsRise
-theRitualBeginsBlackStarsRise = agenda
-  (1, C)
-  TheRitualBeginsBlackStarsRise
-  Cards.theRitualBeginsBlackStarsRise
-  (Static 5)
+theRitualBeginsBlackStarsRise =
+  agenda
+    (1, C)
+    TheRitualBeginsBlackStarsRise
+    Cards.theRitualBeginsBlackStarsRise
+    (Static 5)
 
 instance HasAbilities TheRitualBeginsBlackStarsRise where
   getAbilities (TheRitualBeginsBlackStarsRise a) =
-    [ limitedAbility (GroupLimit PerRound 1)
-        $ mkAbility a 1
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1) $
+        mkAbility a 1 $
+          FastAbility $
+            GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage TheRitualBeginsBlackStarsRise where
@@ -48,19 +49,19 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
           a1aDoom <- field AgendaDoom a1aId
           markMsg <- if a1aDoom > 3 then markDoubt else markConviction
           pure [markMsg]
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , ShuffleCardsIntoDeck Deck.EncounterDeck riftSeekers
-          ]
-        <> markDoubtOrConviction
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll $
+        [ ShuffleEncounterDiscardBackIn
+        , ShuffleCardsIntoDeck Deck.EncounterDeck riftSeekers
+        ]
+          <> markDoubtOrConviction
+          <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       drawing <- for investigatorIds $ \iid -> drawCards iid attrs 1
-      pushAll
-        $ PlaceDoom (toTarget attrs) 1
-        : AdvanceAgendaIfThresholdSatisfied
-        : drawing
+      pushAll $
+        PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+          : AdvanceAgendaIfThresholdSatisfied
+          : drawing
       pure a
     _ -> TheRitualBeginsBlackStarsRise <$> runMessage msg attrs

@@ -28,7 +28,7 @@ darkYoungHost =
     Cards.darkYoungHost
     (4, Static 5, 2)
     (2, 2)
-    (spawnAtL ?~ SpawnLocation (LocationWithTrait Bayou))
+    $ spawnAtL ?~ SpawnLocation (LocationWithTrait Bayou)
 
 instance HasAbilities DarkYoungHost where
   getAbilities (DarkYoungHost attrs) =
@@ -38,6 +38,7 @@ instance HasAbilities DarkYoungHost where
             PlacedCounterOnLocation
               Timing.When
               LocationOfThis
+              AnySource
               ClueCounter
               (AtLeast $ Static 1)
       , mkAbility attrs 2 $
@@ -49,12 +50,15 @@ instance HasAbilities DarkYoungHost where
 
 instance RunMessage DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.PlacedClues target n)] _
-      | isSource attrs source -> do
-          e <$ pushAll [RemoveClues target n, PlaceClues (toTarget attrs) n]
+    UseCardAbility _ source 1 [Window _ (Window.PlacedClues _ target n)] _ | isSource attrs source -> do
+      pushAll
+        [ RemoveClues (toAbilitySource attrs 1) target n
+        , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) n
+        ]
+      pure e
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       mEnemyLocation <- field EnemyLocation (toId attrs)
       for_ mEnemyLocation $ \loc ->
-        push $ PlaceClues (toTarget loc) (enemyClues attrs)
+        push $ PlaceClues (toAbilitySource attrs 2) (toTarget loc) (enemyClues attrs)
       pure e
     _ -> DarkYoungHost <$> runMessage msg attrs

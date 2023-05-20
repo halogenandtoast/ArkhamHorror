@@ -22,8 +22,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Scenarios.TheMiskatonicMuseum.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Zone
@@ -197,9 +195,8 @@ instance RunMessage TheMiskatonicMuseum where
         hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
         push (SetLocationLabel lid $ "hall" <> tshow hallCount)
       pure s
-    ResolveToken _ Tablet iid
-      | isEasyStandard attrs ->
-          s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
+    ResolveToken _ Tablet iid | isEasyStandard attrs -> do
+      s <$ push (InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Tablet) 1)
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
@@ -232,7 +229,7 @@ instance RunMessage TheMiskatonicMuseum where
         [ story iids noResolution
         , Record TheInvestigatorsFailedToRecoverTheNecronomicon
         ]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
@@ -242,7 +239,7 @@ instance RunMessage TheMiskatonicMuseum where
         [ story iids resolution1
         , Record TheInvestigatorsDestroyedTheNecronomicon
         ]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
@@ -273,7 +270,7 @@ instance RunMessage TheMiskatonicMuseum where
             ]
         , AddToken ElderThing
         ]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     _ -> TheMiskatonicMuseum <$> runMessage msg attrs

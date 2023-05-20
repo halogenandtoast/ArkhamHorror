@@ -743,7 +743,6 @@ library
       Arkham.ChaosBagStepState
       Arkham.Classes
       Arkham.Classes.Entity
-      Arkham.Classes.Entity.Source
       Arkham.Classes.Entity.TH
       Arkham.Classes.GameLogger
       Arkham.Classes.HasAbilities

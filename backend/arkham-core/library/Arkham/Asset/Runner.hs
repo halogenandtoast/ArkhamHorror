@@ -14,6 +14,7 @@ import Arkham.GameValue as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Message as X hiding (AssetDamage)
+import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
@@ -25,7 +26,6 @@ import Arkham.Matcher (AssetMatcher (AnyAsset))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -61,17 +61,16 @@ instance RunMessage AssetAttrs where
           then pure a
           else a <$ push (Ready $ toTarget a)
       _ -> a <$ push (Ready $ toTarget a)
-    RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
-    PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
-    PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
-    RemoveResources target n
-      | isTarget a target ->
-          pure $ a & resourcesL %~ max 0 . subtract n
-    PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
-    RemoveDoom target n
+    RemoveAllDoom _ target | isTarget a target -> pure $ a & doomL .~ 0
+    PlaceClues _ target n | isTarget a target -> pure $ a & cluesL +~ n
+    PlaceResources _ target n | isTarget a target -> pure $ a & resourcesL +~ n
+    RemoveResources _ target n | isTarget a target -> do
+      pure $ a & resourcesL %~ max 0 . subtract n
+    PlaceDoom _ target n | isTarget a target -> pure $ a & doomL +~ n
+    RemoveDoom _ target n
       | isTarget a target ->
           pure $ a & doomL %~ max 0 . subtract n
-    RemoveClues target n | isTarget a target -> do
+    RemoveClues _ target n | isTarget a target -> do
       when (assetClues - n <= 0) $
         pushAll
           =<< windows
@@ -92,13 +91,13 @@ instance RunMessage AssetAttrs where
             <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard GameSource $ toTarget a)
-    Msg.AssetDamage aid _ damage horror | aid == assetId -> do
+    Msg.AssetDamage aid source damage horror | aid == assetId -> do
       pushAll $
-        [PlaceDamage (toTarget a) damage | damage > 0]
-          <> [PlaceHorror (toTarget a) horror | horror > 0]
+        [PlaceDamage source (toTarget a) damage | damage > 0]
+          <> [PlaceHorror source (toTarget a) horror | horror > 0]
       pure a
-    PlaceDamage target n | isTarget a target -> pure $ a & damageL +~ n
-    PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
+    PlaceDamage _ target n | isTarget a target -> pure $ a & damageL +~ n
+    PlaceHorror _ target n | isTarget a target -> pure $ a & horrorL +~ n
     HealDamage (isTarget a -> True) source n -> do
       afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow

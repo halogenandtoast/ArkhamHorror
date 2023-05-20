@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.CorpseTaker
-  ( CorpseTaker(..)
-  , corpseTaker
-  ) where
+module Arkham.Enemy.Cards.CorpseTaker (
+  CorpseTaker (..),
+  corpseTaker,
+) where
 
 import Arkham.Prelude
 
@@ -20,25 +20,30 @@ newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyCard CorpseTaker
-corpseTaker = enemyWith
-  CorpseTaker
-  Cards.corpseTaker
-  (4, Static 3, 3)
-  (1, 2)
-  (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation))
+corpseTaker =
+  enemyWith
+    CorpseTaker
+    Cards.corpseTaker
+    (4, Static 3, 3)
+    (1, 2)
+    (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation))
 
 instance HasAbilities CorpseTaker where
-  getAbilities (CorpseTaker x) = withBaseAbilities
-    x
-    [ mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
-      MythosPhase
-    , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
-    ]
+  getAbilities (CorpseTaker x) =
+    withBaseAbilities
+      x
+      [ mkAbility x 1 $
+          ForcedAbility $
+            PhaseEnds Timing.When $
+              PhaseIs
+                MythosPhase
+      , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
+      ]
 
 instance RunMessage CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      e <$ pure (PlaceDoom (toTarget attrs) 1)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      e <$ pure (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation enemyId
       case enemyLocation of
@@ -47,21 +52,25 @@ instance RunMessage CorpseTaker where
           mRivertown <- selectOne (LocationWithTitle "Rivertown")
           mMainPath <- selectOne (LocationWithTitle "Main Path")
           let
-            locationId = fromJustNote
-              "one of these has to exist"
-              (mRivertown <|> mMainPath)
+            locationId =
+              fromJustNote
+                "one of these has to exist"
+                (mRivertown <|> mMainPath)
           if loc == locationId
             then do
               pushAll (replicate enemyDoom PlaceDoomOnAgenda)
               pure $ CorpseTaker $ attrs & doomL .~ 0
             else do
               leadInvestigatorId <- getLeadInvestigatorId
-              closestLocationIds <- selectList
-                $ ClosestPathLocation loc locationId
+              closestLocationIds <-
+                selectList $
+                  ClosestPathLocation loc locationId
               case closestLocationIds of
                 [lid] -> push (EnemyMove enemyId lid)
-                lids -> push $ chooseOne
-                  leadInvestigatorId
-                  [ targetLabel lid [EnemyMove enemyId lid] | lid <- lids ]
+                lids ->
+                  push $
+                    chooseOne
+                      leadInvestigatorId
+                      [targetLabel lid [EnemyMove enemyId lid] | lid <- lids]
               pure e
     _ -> CorpseTaker <$> runMessage msg attrs

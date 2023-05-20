@@ -38,7 +38,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -312,7 +311,7 @@ instance RunMessage TheBoundaryBeyond where
         push $
           chooseOrRunOne
             iid
-            [TargetLabel target [PlaceClues target 1] | target <- targets]
+            [targetLabel target [PlaceClues (toSource attrs) target 1] | target <- targets]
       pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       case tokenFace token of
@@ -324,8 +323,8 @@ instance RunMessage TheBoundaryBeyond where
                 push $
                   chooseOne
                     iid
-                    [TargetLabel target [PlaceDoom target 1] | target <- targets]
-              else pushAll $ map (`PlaceDoom` 1) targets
+                    [targetLabel target [PlaceDoom (toSource attrs) target 1] | target <- targets]
+              else pushAll $ map (\t -> PlaceDoom (toSource attrs) t 1) targets
         Tablet -> do
           serpents <-
             selectList $
@@ -353,7 +352,7 @@ instance RunMessage TheBoundaryBeyond where
             push $
               chooseOrRunOne
                 iid
-                [TargetLabel target [PlaceClues target 1] | target <- targets]
+                [targetLabel target [PlaceClues (TokenEffectSource ElderThing) target 1] | target <- targets]
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
@@ -403,7 +402,7 @@ instance RunMessage TheBoundaryBeyond where
           VictoryDisplayCardMatch $
             CardWithTrait
               Trait.Tenochtitlan
-      gainXp <- map (uncurry GainXP) <$> getXpWithBonus n
+      gainXp <- toGainXp attrs $ getXpWithBonus n
       pushAll $
         RecordCount PathsAreKnownToYou n
           : [ Record IchtacaHasConfidenceInYou

@@ -37,8 +37,6 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
 import Arkham.SkillTest
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait (Geist, Ghoul, Madness, Pact))
 
@@ -215,23 +213,22 @@ instance RunMessage ThePallidMask where
       bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
       let catacombsDeck = rest <> bottom
 
-      pushAll
-        ( [story investigatorIds intro]
-            <> [story investigatorIds harukosInformation | harukoInterviewed]
-            <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
-            <> [ SetEncounterDeck encounterDeck
-               , SetAgendaDeck
-               , SetActDeck
-               , placeStartingLocation
-               , SetLocationLabel
-                  startingLocationId
-                  (unLabel $ positionToLabel startPosition)
-               , PlaceResources (LocationTarget startingLocationId) 1
-               , MoveAllTo (toSource attrs) startingLocationId
-               , SetupStep (toTarget attrs) 1
-               , RemoveFromBearersDeckOrDiscard theManInThePallidMask
-               ]
-        )
+      pushAll $
+        [story investigatorIds intro]
+          <> [story investigatorIds harukosInformation | harukoInterviewed]
+          <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
+          <> [ SetEncounterDeck encounterDeck
+             , SetAgendaDeck
+             , SetActDeck
+             , placeStartingLocation
+             , SetLocationLabel
+                startingLocationId
+                (unLabel $ positionToLabel startPosition)
+             , PlaceResources (toSource attrs) (toTarget startingLocationId) 1
+             , MoveAllTo (toSource attrs) startingLocationId
+             , SetupStep (toTarget attrs) 1
+             , RemoveFromBearersDeckOrDiscard theManInThePallidMask
+             ]
       agendas <- genCards [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
       acts <-
         genCards
@@ -374,7 +371,7 @@ instance RunMessage ThePallidMask where
           <> [ScenarioResolutionStep 1 res]
       pure s
     ScenarioResolutionStep 1 _ -> do
-      gainXp <- map (uncurry GainXP) <$> getXp
+      gainXp <- toGainXp attrs getXp
       pushAll $ gainXp <> [EndOfGame Nothing]
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do

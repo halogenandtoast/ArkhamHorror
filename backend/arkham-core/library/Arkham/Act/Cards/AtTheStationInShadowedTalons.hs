@@ -69,7 +69,7 @@ instance RunMessage AtTheStationInShadowedTalons where
                     assetId
                     alejandroVela
                     (AttachedToEnemy huntingNightgaunt)
-                    : [ PlaceDoom (EnemyTarget huntingNightgaunt) 1
+                    : [ PlaceDoom (toSource attrs) (EnemyTarget huntingNightgaunt) 1
                       | deckCount <= 2
                       ]
                 | huntingNightgaunt <- farthestHuntingNightGaunts

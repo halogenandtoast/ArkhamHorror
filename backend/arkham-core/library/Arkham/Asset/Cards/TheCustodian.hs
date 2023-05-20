@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.TheCustodian
-  ( theCustodian
-  , TheCustodian(..)
-  ) where
+module Arkham.Asset.Cards.TheCustodian (
+  theCustodian,
+  TheCustodian (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,18 +24,20 @@ theCustodian = asset TheCustodian Cards.theCustodian
 
 instance HasAbilities TheCustodian where
   getAbilities (TheCustodian a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
           (PhaseBegins Timing.When $ PhaseIs InvestigationPhase)
           Free
     , restrictedAbility
         a
         2
-        (Uncontrolled <> OnSameLocation <> InvestigatorExists
-          (You <> InvestigatorWithAnyClues)
+        ( Uncontrolled
+            <> OnSameLocation
+            <> InvestigatorExists
+              (You <> InvestigatorWithAnyClues)
         )
-      $ ActionAbility (Just Action.Parley)
-      $ ActionCost 1
+        $ ActionAbility (Just Action.Parley)
+        $ ActionCost 1
     ]
 
 instance RunMessage TheCustodian where
@@ -49,12 +51,12 @@ instance RunMessage TheCustodian where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ parley iid (toAbilitySource attrs 2) (toTarget attrs) SkillIntellect 3
       pure a
-    PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         clueCount <- field AssetClues (toId a)
         takeControl <- (clueCount + 1 >=) <$> perPlayer 1
-        pushAll
-          $ [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]
-          <> [ TakeControlOfAsset iid (toId a) | takeControl ]
+        pushAll $
+          [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
+            <> [TakeControlOfAsset iid (toId a) | takeControl]
         pure a
     _ -> TheCustodian <$> runMessage msg attrs

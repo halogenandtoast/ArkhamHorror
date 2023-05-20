@@ -16,7 +16,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 

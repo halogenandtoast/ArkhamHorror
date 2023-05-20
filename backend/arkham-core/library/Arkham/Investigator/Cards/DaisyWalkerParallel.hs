@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Zone qualified as Zone
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs

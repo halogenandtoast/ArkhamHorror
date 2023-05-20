@@ -29,8 +29,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WhereDoomAwaits.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding (Cultist, Expert)
 import Data.Maybe (fromJust)
@@ -212,7 +210,7 @@ instance RunMessage WhereDoomAwaits where
       pushAll $
         story investigatorIds intro
           : [story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks]
-            <> [GainClues lead 1 | naomiHasTheInvestigatorsBacks]
+            <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
             <> [ AddToken token
                , SetEncounterDeck encounterDeck
                , SetAgendaDeck
@@ -244,37 +242,29 @@ instance RunMessage WhereDoomAwaits where
                     <>~ (divergingPaths <> alteredPaths <> setAsideCards)
                 )
           )
-    ResolveToken drawnToken Cultist iid ->
-      s
-        <$ pushAll
-          [ CreateWindowModifierEffect
-              EffectSkillTestWindow
-              (EffectModifiers $ toModifiers attrs [CancelSkills])
-              (TokenSource drawnToken)
-              SkillTestTarget
-          , CancelSkillEffects
-          , DrawAnotherToken iid
-          ]
-    ResolveToken drawnToken ElderThing iid ->
-      s
-        <$ push
-          ( DiscardTopOfDeck
-              iid
-              (if isEasyStandard attrs then 2 else 3)
-              (TokenEffectSource ElderThing)
-              (Just $ TokenTarget drawnToken)
-          )
-    DiscardedTopOfDeck _iid cards _ target@(TokenTarget token) ->
-      s <$ case tokenFace token of
-        ElderThing -> do
-          let
-            n =
-              sum $
-                map
-                  (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
-                  cards
-          push $ CreateTokenValueEffect (-n) (toSource attrs) target
-        _ -> pure ()
+    ResolveToken drawnToken Cultist iid -> do
+      pushAll
+        [ CreateWindowModifierEffect
+            EffectSkillTestWindow
+            (EffectModifiers $ toModifiers attrs [CancelSkills])
+            (TokenSource drawnToken)
+            SkillTestTarget
+        , CancelSkillEffects
+        , DrawAnotherToken iid
+        ]
+      pure s
+    ResolveToken drawnToken ElderThing iid -> do
+      push $
+        DiscardTopOfDeck
+          iid
+          (if isEasyStandard attrs then 2 else 3)
+          (TokenEffectSource ElderThing)
+          (Just $ TokenTarget drawnToken)
+      pure s
+    DiscardedTopOfDeck _iid cards _ target@(TokenTarget (tokenFace -> ElderThing)) -> do
+      let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
+      push $ CreateTokenValueEffect (-n) (toSource attrs) target
+      pure s
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 2)
     ScenarioResolution (Resolution 1) -> do
@@ -284,7 +274,7 @@ instance RunMessage WhereDoomAwaits where
         [ story investigatorIds resolution1
         , Record TheInvestigatorsEnteredTheGate
         ]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do

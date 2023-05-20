@@ -7,6 +7,9 @@ module Arkham.Campaign.Runner (
 import Arkham.Prelude
 
 import Arkham.Campaign.Types as X
+import Arkham.Source as X
+import Arkham.Target as X
+
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep

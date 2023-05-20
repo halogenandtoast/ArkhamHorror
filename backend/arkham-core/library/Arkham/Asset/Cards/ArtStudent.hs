@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ArtStudent
-  ( artStudent
-  , ArtStudent(..)
-  ) where
+module Arkham.Asset.Cards.ArtStudent (
+  artStudent,
+  ArtStudent (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,17 +23,18 @@ instance HasAbilities ArtStudent where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> InvestigatorExists
-          (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+        ( ControlsThis
+            <> InvestigatorExists
+              (You <> InvestigatorCanDiscoverCluesAt YourLocation)
         )
-        (ReactionAbility
-          (AssetEntersPlay Timing.When $ AssetWithId (toId x))
-          Free
+        ( ReactionAbility
+            (AssetEntersPlay Timing.When $ AssetWithId (toId x))
+            Free
         )
     ]
 
 instance RunMessage ArtStudent where
   runMessage msg a@(ArtStudent attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      a <$ push (InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing)
     _ -> ArtStudent <$> runMessage msg attrs

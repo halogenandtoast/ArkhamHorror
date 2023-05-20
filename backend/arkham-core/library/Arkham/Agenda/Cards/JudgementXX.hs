@@ -32,7 +32,7 @@ judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)
 
 instance HasAbilities JudgementXX where
   getAbilities (JudgementXX a) =
-    [ mkAbility a 1 $ ForcedAbility $ PlacedDoomCounter Timing.After AnyTarget
+    [ mkAbility a 1 $ ForcedAbility $ PlacedDoomCounter Timing.After AnySource AnyTarget
     , mkAbility a 2 $
         ForcedAbility $
           InvestigatorDefeated

@@ -29,7 +29,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWitchingHour.Story
-import Arkham.Target
 import Arkham.Token
 import Data.Map.Monoidal qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
@@ -205,7 +204,7 @@ instance RunMessage TheWitchingHour where
       pure s
     ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
-      gainXp <- toGainXp $ getXpWithBonus 1
+      gainXp <- toGainXp attrs $ getXpWithBonus 1
       step <- actStep <$> selectJustField ActSequence AnyAct
       case resolution of
         NoResolution -> do
@@ -236,7 +235,7 @@ instance RunMessage TheWitchingHour where
               <> gainXp
               <> [EndOfGame Nothing]
         Resolution 3 -> do
-          gainXpNoBonus <- toGainXp getXp
+          gainXpNoBonus <- toGainXp attrs getXp
           pushAll $
             [story iids resolution3, Record TheWitches'SpellWasCast]
               <> if step == ActStep 3

@@ -1,13 +1,13 @@
-module Arkham.Enemy.Cards.ElisabettaMagro
-  ( elisabettaMagro
-  , ElisabettaMagro(..)
-  ) where
+module Arkham.Enemy.Cards.ElisabettaMagro (
+  elisabettaMagro,
+  ElisabettaMagro (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -22,17 +22,22 @@ elisabettaMagro :: EnemyCard ElisabettaMagro
 elisabettaMagro =
   enemy ElisabettaMagro Cards.elisabettaMagro (3, Static 4, 4) (1, 1)
 
--- | Abilities
--- The first forced ability is handled by MaskedCarnevaleGoer_18
+{- | Abilities
+The first forced ability is handled by MaskedCarnevaleGoer_18
+-}
 instance HasAbilities ElisabettaMagro where
-  getAbilities (ElisabettaMagro attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
-        MythosPhase
-    ]
+  getAbilities (ElisabettaMagro attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1 $
+          ForcedAbility $
+            PhaseEnds Timing.When $
+              PhaseIs
+                MythosPhase
+      ]
 
 instance RunMessage ElisabettaMagro where
   runMessage msg e@(ElisabettaMagro attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      e <$ push (PlaceDoom (toTarget attrs) 1)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      e <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
     _ -> ElisabettaMagro <$> runMessage msg attrs

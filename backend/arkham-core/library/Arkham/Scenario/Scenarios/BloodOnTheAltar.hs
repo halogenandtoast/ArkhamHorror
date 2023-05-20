@@ -28,7 +28,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
-import Arkham.Target
 import Arkham.Token
 import Control.Monad.Trans.Maybe
 
@@ -260,21 +259,22 @@ instance RunMessage BloodOnTheAltar where
       ResolveToken _ Tablet iid -> do
         lid <- getJustLocation iid
         matches <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid
-        s
-          <$ when
-            (isHardExpert attrs || (isEasyStandard attrs && matches))
-            (push $ DrawAnotherToken iid)
+        when
+          (isHardExpert attrs || (isEasyStandard attrs && matches))
+          (push $ DrawAnotherToken iid)
+        pure s
       ResolveToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <- selectJust AnyAgenda
-        s <$ push (PlaceDoom (toTarget agendaId) 1)
+        push $ PlaceDoom (toSource attrs) (toTarget agendaId) 1
+        pure s
       FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
         s <$ case tokenFace token of
           Cultist -> do
             lid <- getJustLocation iid
-            push (PlaceClues (LocationTarget lid) 1)
+            push $ PlaceClues (toSource attrs) (toTarget lid) 1
           ElderThing | isEasyStandard attrs -> do
             agendaId <- selectJust AnyAgenda
-            push (PlaceDoom (toTarget agendaId) 1)
+            push $ PlaceDoom (toSource attrs) (toTarget agendaId) 1
           _ -> pure ()
       ScenarioResolution NoResolution -> do
         iids <- allInvestigatorIds
@@ -294,7 +294,7 @@ instance RunMessage BloodOnTheAltar where
           ]
             <> map (RemoveCampaignCard . toCardDef) sacrificedToYogSothoth
             <> removeNecronomicon
-            <> [GainXP iid (n + 2) | (iid, n) <- xp]
+            <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
             <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 1) -> do
@@ -307,7 +307,7 @@ instance RunMessage BloodOnTheAltar where
           ]
             <> map (RemoveCampaignCard . toCardDef) sacrificed
             <> removeNecronomicon
-            <> [GainXP iid (n + 2) | (iid, n) <- xp]
+            <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
             <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 2) -> do
@@ -316,7 +316,7 @@ instance RunMessage BloodOnTheAltar where
         pushAll $
           [story iids resolution2, Record TheInvestigatorsRestoredSilasBishop]
             <> map (RemoveCampaignCard . toCardDef) sacrificed
-            <> [GainXP iid (n + 2) | (iid, n) <- xp]
+            <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
             <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 3) -> do
@@ -328,7 +328,7 @@ instance RunMessage BloodOnTheAltar where
             <> map (RemoveCampaignCard . toCardDef) sacrificed
             <> [recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed]
             <> removeNecronomicon
-            <> [GainXP iid (n + 2) | (iid, n) <- xp]
+            <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
             <> [EndOfGame Nothing]
         pure s
       _ -> BloodOnTheAltar . (`with` metadata) <$> runMessage msg attrs

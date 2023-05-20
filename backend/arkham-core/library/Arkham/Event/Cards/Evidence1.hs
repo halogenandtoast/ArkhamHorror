@@ -1,19 +1,19 @@
-module Arkham.Event.Cards.Evidence1
-  ( evidence1
-  , Evidence1(..)
-  ) where
+module Arkham.Event.Cards.Evidence1 (
+  evidence1,
+  Evidence1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Enemy.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.History
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
-import Arkham.Location.Types ( Field (..) )
-import Arkham.Enemy.Types
+import Arkham.History
+import Arkham.Location.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 
@@ -32,9 +32,9 @@ instance RunMessage Evidence1 where
       currentLocationId <- getJustLocation iid
       availableClues <- field LocationClues currentLocationId
       let amount = min availableClues (if totalPrintedHealth >= 4 then 2 else 1)
-      pushAll
-        $ [ InvestigatorDiscoverClues iid currentLocationId amount Nothing
-          | amount > 0
-          ]
+      pushAll $
+        [ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) amount Nothing
+        | amount > 0
+        ]
       pure e
     _ -> Evidence1 <$> runMessage msg attrs

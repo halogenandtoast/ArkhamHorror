@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.Basilisk
-  ( basilisk
-  , Basilisk(..)
-  ) where
+module Arkham.Enemy.Cards.Basilisk (
+  basilisk,
+  Basilisk (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,25 +20,24 @@ newtype Basilisk = Basilisk EnemyAttrs
 
 basilisk :: EnemyCard Basilisk
 basilisk =
-  enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
-    $ spawnAtL
-    ?~ (SpawnLocation $ LocationWithDistanceFrom
-         1
-         (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-       )
+  enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0) $
+    spawnAtL
+      ?~ SpawnLocation (LocationWithDistanceFrom 1 $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
 
 instance HasAbilities Basilisk where
-  getAbilities (Basilisk a) = withBaseAbilities
-    a
-    [ limitedAbility (PerCopyLimit Cards.basilisk PerRound 1)
-      $ mkAbility a 1
-      $ ForcedAbility
-      $ PlacedCounterOnLocation
-          Timing.After
-          (LocationWithTitle "Mouth of K'n-yan")
-          ResourceCounter
-          AnyValue
-    ]
+  getAbilities (Basilisk a) =
+    withBaseAbilities
+      a
+      [ limitedAbility (PerCopyLimit Cards.basilisk PerRound 1) $
+          mkAbility a 1 $
+            ForcedAbility $
+              PlacedCounterOnLocation
+                Timing.After
+                (LocationWithTitle "Mouth of K'n-yan")
+                AnySource
+                ResourceCounter
+                AnyValue
+      ]
 
 instance RunMessage Basilisk where
   runMessage msg e@(Basilisk attrs) = case msg of

@@ -22,7 +22,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
@@ -43,32 +42,30 @@ pennyWhite meta =
       , combat = 3
       , agility = 2
       }
-    ( (startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
-        . ( startsWithInHandL
-              .~ [ Cards.strayCat
-                 , Cards.lucky
-                 , Cards.knife
-                 , Cards.flashlight
-                 , Cards.actOfDesperation
-                 , Cards.actOfDesperation
-                 , Cards.ableBodied
-                 , Cards.ableBodied
-                 ]
-          )
-    )
+    $ (startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
+      . ( startsWithInHandL
+            .~ [ Cards.strayCat
+               , Cards.lucky
+               , Cards.knife
+               , Cards.flashlight
+               , Cards.actOfDesperation
+               , Cards.actOfDesperation
+               , Cards.ableBodied
+               , Cards.ableBodied
+               ]
+        )
 
 instance HasModifiersFor PennyWhite where
-  getModifiersFor target (PennyWhite (a `With` _))
-    | isTarget a target =
-        pure $
-          toModifiersWith
-            a
-            setActiveDuringSetup
-            [ CannotTakeAction (IsAction Action.Draw)
-            , CannotDrawCards
-            , CannotManipulateDeck
-            , StartingResources (-3)
-            ]
+  getModifiersFor target (PennyWhite (a `With` _)) | isTarget a target = do
+    pure $
+      toModifiersWith
+        a
+        setActiveDuringSetup
+        [ CannotTakeAction (IsAction Action.Draw)
+        , CannotDrawCards
+        , CannotManipulateDeck
+        , StartingResources (-3)
+        ]
   getModifiersFor (AssetTarget aid) (PennyWhite (a `With` _)) = do
     isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
     pure $
@@ -101,7 +98,7 @@ instance HasTokenValue PennyWhite where
 instance RunMessage PennyWhite where
   runMessage msg i@(PennyWhite (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest

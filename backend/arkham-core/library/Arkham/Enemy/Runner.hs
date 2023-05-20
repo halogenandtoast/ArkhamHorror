@@ -15,6 +15,7 @@ import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Source as X
 import Arkham.Spawn as X
 import Arkham.Target as X
 
@@ -50,7 +51,6 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType ()
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window (Window (..))
@@ -1072,31 +1072,28 @@ instance RunMessage EnemyAttrs where
           else pure a
       _ -> pure a
     AdvanceAgenda {} -> pure $ a & doomL .~ 0
-    RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
-    RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
-    PlaceDamage target amount
-      | isTarget a target ->
-          pure $ a & damageL +~ amount
-    PlaceDoom target amount | isTarget a target -> do
+    RemoveAllClues _ target | isTarget a target -> pure $ a & cluesL .~ 0
+    RemoveAllDoom _ target | isTarget a target -> pure $ a & doomL .~ 0
+    PlaceDamage _ target amount | isTarget a target -> do
+      pure $ a & damageL +~ amount
+    PlaceDoom source target amount | isTarget a target -> do
       modifiers' <- getModifiers (toTarget a)
       if CannotPlaceDoomOnThis `elem` modifiers'
         then pure a
         else do
-          windows' <- windows [Window.PlacedDoom (toTarget a) amount]
+          windows' <- windows [Window.PlacedDoom source (toTarget a) amount]
           pushAll windows'
           pure $ a & doomL +~ amount
-    RemoveDoom target amount
-      | isTarget a target ->
-          pure $ a & doomL %~ max 0 . subtract amount
-    PlaceClues target n | isTarget a target -> do
-      windows' <- windows [Window.PlacedClues (toTarget a) n]
+    RemoveDoom _ target amount | isTarget a target -> do
+      pure $ a & doomL %~ max 0 . subtract amount
+    PlaceClues source target n | isTarget a target -> do
+      windows' <- windows [Window.PlacedClues source (toTarget a) n]
       pushAll windows'
       pure $ a & cluesL +~ n
-    PlaceResources target n | isTarget a target -> do
+    PlaceResources _ target n | isTarget a target -> do
       pure $ a & resourcesL +~ n
-    RemoveClues target n
-      | isTarget a target ->
-          pure $ a & cluesL %~ max 0 . subtract n
+    RemoveClues _ target n | isTarget a target -> do
+      pure $ a & cluesL %~ max 0 . subtract n
     FlipClues target n | isTarget a target -> do
       let flipCount = min n enemyClues
       pure $ a & cluesL %~ max 0 . subtract n & doomL +~ flipCount

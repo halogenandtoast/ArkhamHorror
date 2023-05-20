@@ -43,7 +43,11 @@ instance RunMessage SebastienMoreau where
       modifiers <- getModifiers iid
       when
         (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
-        (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
+        ( pushAll
+            [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
+            , GainClues iid (toAbilitySource attrs 1) 1
+            ]
+        )
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       theFirstShow <- genCard Story.theFirstShow

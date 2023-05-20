@@ -36,17 +36,19 @@ instance HasAbilities ConstanceDumaine where
 
 instance RunMessage ConstanceDumaine where
   runMessage msg a@(ConstanceDumaine attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              (beginSkillTest iid source (toTarget attrs) SkillIntellect 3)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ beginSkillTest iid source attrs SkillIntellect 3
+      pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           modifiers <- getModifiers (InvestigatorTarget iid)
           when
             (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
-            (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
+            ( pushAll
+                [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
+                , GainClues iid (toAbilitySource attrs 1) 1
+                ]
+            )
           pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       engramsOath <- genCard Story.engramsOath

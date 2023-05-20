@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.FalseLead where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -22,10 +22,11 @@ instance RunMessage FalseLead where
   runMessage msg t@(FalseLead attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- field InvestigatorClues iid
-      push $ if playerClueCount == 0
-        then chooseOne iid [Label "Surge" [gainSurge attrs]]
-        else RevelationSkillTest iid source SkillIntellect 4
+      push $
+        if playerClueCount == 0
+          then chooseOne iid [Label "Surge" [gainSurge attrs]]
+          else RevelationSkillTest iid source SkillIntellect 4
       pure t
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == toId attrs -> t <$ push (InvestigatorPlaceCluesOnLocation iid n)
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n
+      | tid == toId attrs -> t <$ push (InvestigatorPlaceCluesOnLocation iid (toSource attrs) n)
     _ -> FalseLead <$> runMessage msg attrs

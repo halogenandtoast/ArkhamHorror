@@ -13,10 +13,10 @@ import Arkham.Cost as X
 import Arkham.Criteria as X
 
 import Arkham.Action hiding (Ability)
-import Arkham.Classes.Entity.Source
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
+import Arkham.Source
 import Control.Lens (set)
 
 inHandAbility :: Ability -> Bool

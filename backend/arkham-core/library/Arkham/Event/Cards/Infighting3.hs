@@ -1,13 +1,11 @@
-module Arkham.Event.Cards.Infighting3
-  ( infighting3
-  , Infighting3(..)
-  ) where
+module Arkham.Event.Cards.Infighting3 (
+  infighting3,
+  Infighting3 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
@@ -27,14 +25,6 @@ infighting3 = event Infighting3 Cards.infighting3
 instance RunMessage Infighting3 where
   runMessage msg e@(Infighting3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ CreateWindowModifierEffect
-          EffectPhaseWindow
-          (EffectModifiers
-          $ toModifiers attrs [CancelAttacksByEnemies NonEliteEnemy]
-          )
-          (toSource attrs)
-          (InvestigatorTarget iid)
-        ]
+      push $ phaseModifier attrs iid (CancelAttacksByEnemies NonEliteEnemy)
       pure e
     _ -> Infighting3 <$> runMessage msg attrs

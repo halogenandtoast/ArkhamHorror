@@ -1,7 +1,7 @@
-module Arkham.Location.Helpers
-  ( module X
-  , module Arkham.Location.Helpers
-  ) where
+module Arkham.Location.Helpers (
+  module X,
+  module Arkham.Location.Helpers,
+) where
 
 import Arkham.Prelude
 
@@ -11,21 +11,20 @@ import Arkham.Classes.Entity
 import Arkham.Direction
 import Arkham.Game.Helpers as X
 import Arkham.Matcher
+import Arkham.Source
 
-resignAction :: Sourceable a => a -> Ability
+resignAction :: (Sourceable a) => a -> Ability
 resignAction a =
   mkAbility a 99 $ ActionAbility (Just Action.Resign) (ActionCost 1)
 
-drawCardUnderneathAction :: Sourceable a => a -> Ability
+drawCardUnderneathAction :: (Sourceable a) => a -> Ability
 drawCardUnderneathAction a =
-  (restrictedAbility
-        a
-        100
-        (Here <> LocationExists (YourLocation <> LocationWithoutClues))
+  limitedAbility (GroupLimit PerGame 1)
+    $ restrictedAbility
+      a
+      100
+      (Here <> LocationExists (YourLocation <> LocationWithoutClues))
     $ FastAbility Free
-    )
-    { abilityLimit = GroupLimit PerGame 1
-    }
 
 adjacentLocations :: Set Direction
 adjacentLocations = setFromList [minBound .. maxBound]

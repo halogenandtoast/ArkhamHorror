@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.PendulousThreads
-  ( PendulousThreads(..)
-  , pendulousThreads
-  ) where
+module Arkham.Agenda.Cards.PendulousThreads (
+  PendulousThreads (..),
+  pendulousThreads,
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding ( InvestigatorEliminated )
+import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
 
 newtype PendulousThreads = PendulousThreads AgendaAttrs
@@ -28,33 +28,36 @@ pendulousThreads =
 
 instance HasAbilities PendulousThreads where
   getAbilities (PendulousThreads a) =
-    [ mkAbility a 1
-        $ ForcedAbility
-        $ InvestigatorEliminated Timing.When
-        $ AnyInvestigator
-            [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
-            , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
-            , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
-            , HasMatchingAsset (AssetWithTitle "Relic of Ages")
-            ]
+    [ mkAbility a 1 $
+        ForcedAbility $
+          InvestigatorEliminated Timing.When $
+            AnyInvestigator
+              [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
+              , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
+              , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
+              , HasMatchingAsset (AssetWithTitle "Relic of Ages")
+              ]
     ]
 
 instance RunMessage PendulousThreads where
   runMessage msg a@(PendulousThreads attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       inPlay <- selectAny $ enemyIs Enemies.formlessSpawn
-      mVictory <- selectOne $ VictoryDisplayCardMatch $ cardIs
-        Enemies.formlessSpawn
+      mVictory <-
+        selectOne $
+          VictoryDisplayCardMatch $
+            cardIs
+              Enemies.formlessSpawn
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
-      pushAll
-        $ [ShuffleEncounterDiscardBackIn]
-        <> [ PlaceDoom (LocationTarget nexus) 2 | inPlay ]
-        <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [formlessSpawn]
-           | formlessSpawn <- maybeToList mVictory
-           ]
-        <> [ AddToVictory (toTarget attrs)
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      pushAll $
+        [ShuffleEncounterDiscardBackIn]
+          <> [PlaceDoom (toSource attrs) (toTarget nexus) 2 | inPlay]
+          <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [formlessSpawn]
+             | formlessSpawn <- maybeToList mVictory
+             ]
+          <> [ AddToVictory (toTarget attrs)
+             , advanceAgendaDeck attrs
+             ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ AdvanceToAgenda 1 Agendas.snappedThreads B (toSource attrs)

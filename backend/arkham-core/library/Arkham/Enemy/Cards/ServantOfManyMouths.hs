@@ -34,10 +34,9 @@ instance HasAbilities ServantOfManyMouths where
           attrs
           1
           (LocationExists LocationWithAnyClues <> CanDiscoverCluesAt Anywhere)
-          ( ReactionAbility
-              (EnemyDefeated Timing.After You ByAny $ EnemyWithId $ toId attrs)
-              Free
-          )
+          $ ReactionAbility
+            (EnemyDefeated Timing.After You ByAny $ EnemyWithId $ toId attrs)
+            Free
       ]
 
 instance RunMessage ServantOfManyMouths where
@@ -51,7 +50,7 @@ instance RunMessage ServantOfManyMouths where
           iid
           [ targetLabel
             lid
-            [InvestigatorDiscoverClues iid lid 1 Nothing]
+            [InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) 1 Nothing]
           | lid <- locationsWithClues
           ]
       pure e

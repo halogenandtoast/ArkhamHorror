@@ -49,12 +49,14 @@ instance RunMessage Fanatic where
       enemyLocation <- field EnemyLocation (toId attrs)
       for_ enemyLocation $ \loc ->
         pushAll
-          [RemoveClues (LocationTarget loc) 1, PlaceClues (toTarget attrs) 1]
+          [ RemoveClues (toAbilitySource attrs 1) (LocationTarget loc) 1
+          , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
+          ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
-        [ RemoveClues (toTarget attrs) (enemyClues attrs)
-        , GainClues iid (enemyClues attrs)
+        [ RemoveClues (toAbilitySource attrs 2) (toTarget attrs) (enemyClues attrs)
+        , GainClues iid (toAbilitySource attrs 2) (enemyClues attrs)
         ]
       pure e
     _ -> Fanatic <$> runMessage msg attrs

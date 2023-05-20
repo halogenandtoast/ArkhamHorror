@@ -87,6 +87,6 @@ instance RunMessage TheHermitIX where
       pure . TheHermitIX $ attrs `With` Metadata (foundCardCount meta + 1)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       playerCount <- getPlayerCount
-      push $ GainClues iid $ if playerCount >= 3 then 2 else 1
+      push $ GainClues iid (toAbilitySource attrs 1) $ if playerCount >= 3 then 2 else 1
       pure a
     _ -> TheHermitIX . (`with` meta) <$> runMessage msg attrs

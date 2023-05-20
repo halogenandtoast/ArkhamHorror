@@ -32,8 +32,6 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Scenarios.UndimensionedAndUnseen.Story
 import Arkham.SkillTest
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Arkham.Window (defaultWindows)
@@ -334,7 +332,7 @@ instance RunMessage UndimensionedAndUnseen where
         , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
         ]
           <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
@@ -343,7 +341,7 @@ instance RunMessage UndimensionedAndUnseen where
       pushAll $
         [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
           <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
-          <> [GainXP iid n | (iid, n) <- xp]
+          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

@@ -27,7 +27,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheSecretName.Story
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait (Extradimensional))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -279,7 +278,7 @@ instance RunMessage TheSecretName where
       case resolution of
         NoResolution -> pushAll [story iids noResolution, scenarioResolution 1]
         Resolution 1 -> do
-          gainXp <- toGainXp $ getXpWithBonus (brownJenkinBonus + nahabBonus)
+          gainXp <- toGainXp attrs $ getXpWithBonus (brownJenkinBonus + nahabBonus)
           pushAll $
             story iids resolution1
               : gainXp
@@ -288,7 +287,7 @@ instance RunMessage TheSecretName where
                 <> [addTheBlackBook | step >= 2]
                 <> [EndOfGame Nothing]
         Resolution 2 -> do
-          gainXp <- toGainXp $ getXpWithBonus 2
+          gainXp <- toGainXp attrs $ getXpWithBonus 2
           pushAll $
             story iids resolution2
               : gainXp

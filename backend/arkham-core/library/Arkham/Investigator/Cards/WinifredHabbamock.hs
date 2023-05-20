@@ -19,7 +19,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
-import Arkham.Source
 
 newtype WinifredHabbamock = WinifredHabbamock InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

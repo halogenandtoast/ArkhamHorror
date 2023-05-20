@@ -25,6 +25,8 @@ newtype OminousPortents = OminousPortents TreacheryAttrs
 ominousPortents :: TreacheryCard OminousPortents
 ominousPortents = treachery OminousPortents Cards.ominousPortents
 
+-- TODO: enemy spawning
+-- TODO: surge, I don't think anything cancels surge currently so this is fine
 instance RunMessage OminousPortents where
   runMessage msg t@(OminousPortents attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do

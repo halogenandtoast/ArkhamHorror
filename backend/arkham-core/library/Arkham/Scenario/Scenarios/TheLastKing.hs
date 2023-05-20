@@ -34,9 +34,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLastKing.Story
-import Arkham.Source
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 
@@ -159,7 +157,7 @@ instance RunMessage TheLastKing where
             )
             bystanders
             (map AtLocation destinations)
-          <> [ PlaceClues (toTarget assetId) totalClues
+          <> [ PlaceClues (toSource attrs) (toTarget assetId) totalClues
              | (_, assetId) <- bystanders
              ]
 
@@ -185,49 +183,38 @@ instance RunMessage TheLastKing where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ token iid
-      | token `elem` [Skull, Cultist, Tablet] ->
-          s <$ case token of
-            Skull -> push (DrawAnotherToken iid)
-            Cultist | isHardExpert attrs -> do
-              clueCount <- field InvestigatorClues iid
-              when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
-            Tablet
-              | isHardExpert attrs ->
-                  push $
-                    InvestigatorAssignDamage
-                      iid
-                      (TokenEffectSource token)
-                      DamageAny
-                      0
-                      1
-            _ -> pure ()
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
-      s <$ case tokenFace token of
+    ResolveToken _ token iid | token `elem` [Skull, Cultist, Tablet] -> do
+      case token of
+        Skull -> push $ DrawAnotherToken iid
+        Cultist | isHardExpert attrs -> do
+          clueCount <- field InvestigatorClues iid
+          when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Cultist) 1)
+        Tablet | isHardExpert attrs -> do
+          push $ InvestigatorAssignDamage iid (TokenEffectSource token) DamageAny 0 1
+        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
         Skull -> do
           targets <-
             selectListMap EnemyTarget $
               if isEasyStandard attrs
                 then EnemyWithTrait Trait.Lunatic
                 else EnemyWithMostRemainingHealth $ EnemyWithTrait Trait.Lunatic
-          when
-            (notNull targets)
-            ( push $
-                chooseOrRunOne
-                  iid
-                  [TargetLabel target [PlaceDoom target 1] | target <- targets]
-            )
+          when (notNull targets) $ do
+            push $
+              chooseOrRunOne
+                iid
+                [targetLabel target [PlaceDoom (TokenEffectSource Skull) target 1] | target <- targets]
         Cultist | isEasyStandard attrs -> do
           clueCount <- field InvestigatorClues iid
-          when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
-        Tablet
-          | isEasyStandard attrs ->
-              push
-                (InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1)
-        ElderThing
-          | isHardExpert attrs ->
-              push (InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0)
+          when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Cultist) 1)
+        Tablet | isEasyStandard attrs -> do
+          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1
+        ElderThing | isHardExpert attrs -> do
+          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0
         _ -> pure ()
+      pure s
     ScenarioResolution NoResolution -> do
       anyResigned <- notNull <$> select ResignedInvestigator
       s <$ push (ScenarioResolution $ Resolution $ if anyResigned then 1 else 2)
@@ -259,21 +246,18 @@ instance RunMessage TheLastKing where
             (EffectModifiers $ toModifiers (toSource attrs) [XPModifier amount])
             (toSource attrs)
             (InvestigatorTarget iid)
-      s
-        <$ pushAll
-          ( [assignXp assignedXp iid | iid <- investigatorIds]
-              <> [ chooseN
-                    lead
-                    remainingXp
-                    [ Label
-                      ("Choose " <> display name <> " to gain 1 additional XP")
-                      [assignXp 1 iid]
-                    | (iid, name) <- investigatorIdsWithNames
-                    ]
-                 ]
-              <> [recordSetInsert VIPsInterviewed interviewed | notNull interviewed]
-              <> [recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain]
-              <> if n == 2 || n == 3
+      pushAll $
+        [assignXp assignedXp iid | iid <- investigatorIds]
+          <> [ chooseN
+                lead
+                remainingXp
+                [ Label ("Choose " <> display name <> " to gain 1 additional XP") [assignXp 1 iid]
+                | (iid, name) <- investigatorIdsWithNames
+                ]
+             ]
+          <> [recordSetInsert VIPsInterviewed interviewed | notNull interviewed]
+          <> [recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain]
+          <> ( if n == 2 || n == 3
                 then
                   [ RemoveAllTokens Cultist
                   , RemoveAllTokens Tablet
@@ -282,17 +266,15 @@ instance RunMessage TheLastKing where
                   , AddToken Tablet
                   , AddToken ElderThing
                   ]
-                else
-                  []
-                    <> [ crossOutRecordSetEntries VIPsInterviewed interviewed
-                       | n == 3
-                       ]
-                    <> [ScenarioResolutionStep 1 (Resolution n)]
-          )
+                else []
+             )
+          <> [crossOutRecordSetEntries VIPsInterviewed interviewed | n == 3]
+          <> [ScenarioResolutionStep 1 (Resolution n)]
+      pure s
     ScenarioResolutionStep 1 (Resolution n) -> do
       investigatorIds <- allInvestigatorIds
-      gainXp <- toGainXp getXp
-      s <$ case n of
+      gainXp <- toGainXp attrs getXp
+      case n of
         1 ->
           pushAll $
             [story investigatorIds resolution1]
@@ -309,4 +291,5 @@ instance RunMessage TheLastKing where
               <> gainXp
               <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
+      pure s
     _ -> TheLastKing <$> runMessage msg attrs

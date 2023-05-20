@@ -4,19 +4,19 @@ module Arkham.Event.Runner (
   module X,
 ) where
 
+import Arkham.Prelude
+
 import Arkham.Event.Types as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Source as X
 import Arkham.Target as X
-
-import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Source
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do

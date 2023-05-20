@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MariaDeSilva
-  ( mariaDeSilva
-  , MariaDeSilva(..)
-  ) where
+module Arkham.Asset.Cards.MariaDeSilva (
+  mariaDeSilva,
+  MariaDeSilva (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,19 +20,19 @@ mariaDeSilva = asset MariaDeSilva Cards.mariaDeSilva
 
 instance HasAbilities MariaDeSilva where
   getAbilities (MariaDeSilva a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility
-            (Just Action.Parley)
-            (ActionCost 1 <> ResourceCost 1)
+    [ restrictedAbility a 1 OnSameLocation $
+        ActionAbility
+          (Just Action.Parley)
+          (ActionCost 1 <> ResourceCost 1)
     ]
 
 instance RunMessage MariaDeSilva where
   runMessage msg a@(MariaDeSilva attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley iid source (toTarget attrs) SkillIntellect 3
+      push $ parley iid source attrs SkillIntellect 3
       pure a
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ PlaceClues (toTarget attrs) 1
-        pure a
+          push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
+          pure a
     _ -> MariaDeSilva <$> runMessage msg attrs

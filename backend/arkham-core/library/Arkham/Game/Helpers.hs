@@ -1853,64 +1853,71 @@ windowMatches iid source window' = \case
               aid
               agendaMatcher
       _ -> pure False
-  Matcher.PlacedDoomCounter whenMatcher targetMatcher -> case window' of
-    Window t (Window.PlacedDoom target _)
+  Matcher.PlacedDoomCounter whenMatcher sourceMatcher targetMatcher -> case window' of
+    Window t (Window.PlacedDoom source' target _)
       | t == whenMatcher ->
-          targetMatches target targetMatcher
+          andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
-  Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
+  Matcher.PlacedCounter whenMatcher whoMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedHorror (InvestigatorTarget iid') n)
+      Window t (Window.PlacedHorror source' (InvestigatorTarget iid') n)
         | t == whenMatcher && counterMatcher == Matcher.HorrorCounter ->
-            liftA2
-              (&&)
-              (matchWho iid iid' whoMatcher)
-              (gameValueMatches n valueMatcher)
-      Window t (Window.PlacedDamage (InvestigatorTarget iid') n)
+            andM
+              [ matchWho iid iid' whoMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
+      Window t (Window.PlacedDamage source' (InvestigatorTarget iid') n)
         | t == whenMatcher && counterMatcher == Matcher.DamageCounter ->
-            liftA2
-              (&&)
-              (matchWho iid iid' whoMatcher)
-              (gameValueMatches n valueMatcher)
+            andM
+              [ matchWho iid iid' whoMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
       _ -> pure False
-  Matcher.PlacedCounterOnLocation whenMatcher whereMatcher counterMatcher valueMatcher ->
+  Matcher.PlacedCounterOnLocation whenMatcher whereMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedClues (LocationTarget locationId) n)
+      Window t (Window.PlacedClues source' (LocationTarget locationId) n)
         | t == whenMatcher && counterMatcher == Matcher.ClueCounter ->
-            liftA2
-              (&&)
-              (locationMatches iid source window' locationId whereMatcher)
-              (gameValueMatches n valueMatcher)
-      Window t (Window.PlacedResources (LocationTarget locationId) n)
+            andM
+              [ locationMatches iid source window' locationId whereMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
+      Window t (Window.PlacedResources source' (LocationTarget locationId) n)
         | t == whenMatcher && counterMatcher == Matcher.ResourceCounter ->
-            liftA2
-              (&&)
-              (locationMatches iid source window' locationId whereMatcher)
-              (gameValueMatches n valueMatcher)
+            andM
+              [ locationMatches iid source window' locationId whereMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
       _ -> pure False
-  Matcher.PlacedCounterOnEnemy whenMatcher enemyMatcher counterMatcher valueMatcher ->
+  Matcher.PlacedCounterOnEnemy whenMatcher enemyMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedClues (EnemyTarget enemyId) n)
+      Window t (Window.PlacedClues source' (EnemyTarget enemyId) n)
         | t == whenMatcher && counterMatcher == Matcher.ClueCounter ->
-            liftA2
-              (&&)
-              (enemyMatches enemyId enemyMatcher)
-              (gameValueMatches n valueMatcher)
-      Window t (Window.PlacedDoom (EnemyTarget enemyId) n)
+            andM
+              [ enemyMatches enemyId enemyMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
+      Window t (Window.PlacedDoom source' (EnemyTarget enemyId) n)
         | t == whenMatcher && counterMatcher == Matcher.DoomCounter ->
-            liftA2
-              (&&)
-              (enemyMatches enemyId enemyMatcher)
-              (gameValueMatches n valueMatcher)
+            andM
+              [ enemyMatches enemyId enemyMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
       _ -> pure False
-  Matcher.PlacedCounterOnAgenda whenMatcher agendaMatcher counterMatcher valueMatcher ->
+  Matcher.PlacedCounterOnAgenda whenMatcher agendaMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedDoom (AgendaTarget agendaId) n)
+      Window t (Window.PlacedDoom source' (AgendaTarget agendaId) n)
         | t == whenMatcher && counterMatcher == Matcher.DoomCounter ->
-            liftA2
-              (&&)
-              (agendaMatches agendaId agendaMatcher)
-              (gameValueMatches n valueMatcher)
+            andM
+              [ agendaMatches agendaId agendaMatcher
+              , sourceMatches source' sourceMatcher
+              , gameValueMatches n valueMatcher
+              ]
       _ -> pure False
   Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
     case window' of
@@ -2447,7 +2454,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
     case window' of
-      Window t (Window.DiscoverClues who lid n)
+      Window t (Window.DiscoverClues who lid _ n)
         | whenMatcher == t ->
             andM
               [ matchWho iid who whoMatcher
@@ -2456,7 +2463,7 @@ windowMatches iid source window' = \case
               ]
       _ -> pure False
   Matcher.GainsClues whenMatcher whoMatcher valueMatcher -> case window' of
-    Window t (Window.GainsClues who n)
+    Window t (Window.GainsClues who _ n)
       | whenMatcher == t ->
           andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
     _ -> pure False

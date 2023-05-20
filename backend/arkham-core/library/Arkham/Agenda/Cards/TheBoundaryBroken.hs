@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheBoundaryBroken
-  ( TheBoundaryBroken(..)
-  , theBoundaryBroken
-  ) where
+module Arkham.Agenda.Cards.TheBoundaryBroken (
+  TheBoundaryBroken (..),
+  theBoundaryBroken,
+) where
 
 import Arkham.Prelude
 
@@ -30,21 +30,26 @@ instance RunMessage TheBoundaryBroken where
       harbingerAlive <- getHasRecord TheHarbingerIsStillAlive
       yigsFury <- getRecordCount YigsFury
       harbinger <- genCard Enemies.harbingerOfValusia
-      locationId <- if yigsFury >= 6
-        then getJustLocation =<< getLeadInvestigatorId
-        else selectJust $ FarthestLocationFromAll Anywhere
-      createHarbinger <- createEnemyAt_
-        harbinger
-        locationId
-        (Just $ toTarget attrs)
-      pushAll
-        $ [ createHarbinger | harbingerAlive ]
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      locationId <-
+        if yigsFury >= 6
+          then getJustLocation =<< getLeadInvestigatorId
+          else selectJust $ FarthestLocationFromAll Anywhere
+      createHarbinger <-
+        createEnemyAt_
+          harbinger
+          locationId
+          (Just $ toTarget attrs)
+      pushAll $
+        [createHarbinger | harbingerAlive]
+          <> [advanceAgendaDeck attrs]
       pure a
     CreatedEnemyAt harbingerId _ (isTarget attrs -> True) -> do
       startingDamage <- getRecordCount TheHarbingerIsStillAlive
-      when (startingDamage > 0) $ push $ PlaceDamage
-        (EnemyTarget harbingerId)
-        startingDamage
+      when (startingDamage > 0) $
+        push $
+          PlaceDamage
+            (toSource attrs)
+            (EnemyTarget harbingerId)
+            startingDamage
       pure a
     _ -> TheBoundaryBroken <$> runMessage msg attrs

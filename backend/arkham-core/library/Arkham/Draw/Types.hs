@@ -1,10 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Draw.Types where
 
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Classes.Entity
 import Arkham.Deck
 import Arkham.Id
 import Arkham.Source
@@ -32,7 +32,7 @@ data CardDraw = CardDraw
   deriving stock (Show, Eq, Ord)
 
 drewCard :: Card -> CardDraw -> CardDraw
-drewCard c draw = draw { cardDrawState = updatedState }
+drewCard c draw = draw {cardDrawState = updatedState}
  where
   updatedState = case cardDrawState draw of
     UnresolvedCardDraw -> InProgress [c]
@@ -47,22 +47,23 @@ newCardDraw
   -> m CardDraw
 newCardDraw i source n = do
   drawId <- getRandom
-  pure $ CardDraw
-    { cardDrawId = drawId
-    , cardDrawInvestigator = i
-    , cardDrawSource = toSource source
-    , cardDrawDeck = InvestigatorDeck i
-    , cardDrawAmount = n
-    , cardDrawState = UnresolvedCardDraw
-    , cardDrawAction = False
-    , cardDrawRules = mempty
-    }
+  pure $
+    CardDraw
+      { cardDrawId = drawId
+      , cardDrawInvestigator = i
+      , cardDrawSource = toSource source
+      , cardDrawDeck = InvestigatorDeck i
+      , cardDrawAmount = n
+      , cardDrawState = UnresolvedCardDraw
+      , cardDrawAction = False
+      , cardDrawRules = mempty
+      }
 
 asDrawAction :: CardDraw -> CardDraw
-asDrawAction c = c { cardDrawAction = True }
+asDrawAction c = c {cardDrawAction = True}
 
 withCardDrawRule :: CardDrawRules -> CardDraw -> CardDraw
-withCardDrawRule r c = c { cardDrawRules = insertSet r (cardDrawRules c) }
+withCardDrawRule r c = c {cardDrawRules = insertSet r (cardDrawRules c)}
 
 $(deriveJSON defaultOptions ''CardDrawRules)
 $(deriveJSON defaultOptions ''CardDrawState)

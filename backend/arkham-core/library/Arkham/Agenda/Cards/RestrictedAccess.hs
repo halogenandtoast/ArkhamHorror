@@ -27,10 +27,10 @@ restrictedAccess =
 
 instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess x) =
-    [ mkAbility x 1
-      $ ForcedAbility
-      $ EnemySpawns Timing.When Anywhere
-      $ enemyIs Enemies.huntingHorror
+    [ mkAbility x 1 $
+      ForcedAbility $
+        EnemySpawns Timing.When Anywhere $
+          enemyIs Enemies.huntingHorror
     | onSide A x
     ]
 
@@ -39,7 +39,7 @@ instance RunMessage RestrictedAccess where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
       case mShadowSpawnedId of
-        Just tid -> push $ PlaceResources (toTarget tid) 1
+        Just tid -> push $ PlaceResources (toAbilitySource attrs 1) (toTarget tid) 1
         Nothing -> do
           huntingHorror <- selectJust $ enemyIs Enemies.huntingHorror
           shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
@@ -51,8 +51,8 @@ instance RunMessage RestrictedAccess where
       case mHuntingHorrorId of
         Just eid ->
           pushAll
-            [ PlaceDoom (EnemyTarget eid) 1
-            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+            [ PlaceDoom (toSource attrs) (toTarget eid) 1
+            , advanceAgendaDeck attrs
             ]
         Nothing ->
           push $
@@ -66,14 +66,14 @@ instance RunMessage RestrictedAccess where
       lid <- selectJust $ LocationWithTitle "Museum Halls"
       pushAll
         [ EnemySpawnFromVoid Nothing lid eid
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        , advanceAgendaDeck attrs
         ]
       pure a
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- selectJust $ LocationWithTitle "Museum Halls"
       pushAll
         [ SpawnEnemyAt (EncounterCard ec) lid
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        , advanceAgendaDeck attrs
         ]
       pure a
     _ -> RestrictedAccess <$> runMessage msg attrs

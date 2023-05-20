@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.FuryThatShakesTheEarth
-  ( FuryThatShakesTheEarth(..)
-  , furyThatShakesTheEarth
-  ) where
+module Arkham.Agenda.Cards.FuryThatShakesTheEarth (
+  FuryThatShakesTheEarth (..),
+  furyThatShakesTheEarth,
+) where
 
 import Arkham.Prelude
 
@@ -33,17 +33,20 @@ instance HasAbilities FuryThatShakesTheEarth where
   getAbilities (FuryThatShakesTheEarth a) =
     [ limitedAbility (GroupLimit PerGame 1)
         $ restrictedAbility
-            a
-            1
-            (AgendaExists $ AgendaWithId (toId a) <> AgendaWithDoom
-              (AtLeast $ Static 3)
-            )
+          a
+          1
+          ( AgendaExists $
+              AgendaWithId (toId a)
+                <> AgendaWithDoom
+                  (AtLeast $ Static 3)
+          )
         $ ForcedAbility
         $ PlacedCounterOnAgenda
-            Timing.After
-            (AgendaWithSide A)
-            DoomCounter
-            (AtLeast $ Static 1)
+          Timing.After
+          (AgendaWithSide A)
+          AnySource
+          DoomCounter
+          (AtLeast $ Static 1)
     ]
 
 instance RunMessage FuryThatShakesTheEarth where
@@ -52,12 +55,9 @@ instance RunMessage FuryThatShakesTheEarth where
       enemyMsgs <- getPlacePursuitEnemyMessages
       mYig <- maybeGetSetAsideEncounterCard Enemies.yig
       depthStart <- getDepthStart
-      yigMsgs <- for (toList mYig)
-        $ \yig -> createEnemyAt_ (EncounterCard yig) depthStart Nothing
-      pushAll
-        $ enemyMsgs
-        <> yigMsgs
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      yigMsgs <- for (toList mYig) $
+        \yig -> createEnemyAt_ (EncounterCard yig) depthStart Nothing
+      pushAll $ enemyMsgs <> yigMsgs <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       pushAllM getPlacePursuitEnemyMessages

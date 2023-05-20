@@ -31,8 +31,6 @@ import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Injury))
@@ -248,9 +246,7 @@ instance RunMessage TheDepthsOfYoth where
         startingDamage <- getRecordCount TheHarbingerIsStillAlive
         when (startingDamage > 0) $
           push $
-            PlaceDamage
-              (EnemyTarget harbingerId)
-              startingDamage
+            PlaceDamage (toSource attrs) (toTarget harbingerId) startingDamage
       pure s
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
@@ -262,7 +258,7 @@ instance RunMessage TheDepthsOfYoth where
     ScenarioResolution r -> do
       iids <- allInvestigatorIds
       depth <- getCurrentDepth
-      gainXp <- map (uncurry GainXP) <$> getXpWithBonus depth
+      gainXp <- toGainXp attrs $ getXpWithBonus depth
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       inVictory <-

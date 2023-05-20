@@ -46,7 +46,7 @@ instance RunMessage TheWitchLight where
       step <- getCurrentActStep
       pushAll $ case step of
         3 ->
-          [ PlaceDoom (toTarget nahab) 1
+          [ PlaceDoom (toSource attrs) (toTarget nahab) 1
           , advanceAgendaDeck attrs
           ]
         _ ->
@@ -60,6 +60,6 @@ instance RunMessage TheWitchLight where
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       playerCount <- getPlayerCount
-      push $ GainClues iid $ if playerCount >= 3 then 2 else 1
+      push $ GainClues iid (toAbilitySource attrs 1) $ if playerCount >= 3 then 2 else 1
       pure a
     _ -> TheWitchLight <$> runMessage msg attrs

@@ -38,33 +38,30 @@ jeromeDavids meta =
       , combat = 1
       , agility = 3
       }
-    ( ( startsWithInHandL
-          .~ [ Cards.hyperawareness
-             , Cards.mindOverMatter
-             , Cards.workingAHunch
-             , Cards.barricade
-             , Cards.deduction
-             , Cards.magnifyingGlass1
-             , Cards.fingerprintKit
-             , Cards.connectTheDots
-             , Cards.curiosity
-             , Cards.curiosity
-             ]
-      )
-    )
+    $ startsWithInHandL
+      .~ [ Cards.hyperawareness
+         , Cards.mindOverMatter
+         , Cards.workingAHunch
+         , Cards.barricade
+         , Cards.deduction
+         , Cards.magnifyingGlass1
+         , Cards.fingerprintKit
+         , Cards.connectTheDots
+         , Cards.curiosity
+         , Cards.curiosity
+         ]
 
 instance HasModifiersFor JeromeDavids where
-  getModifiersFor target (JeromeDavids (a `With` _))
-    | isTarget a target =
-        pure $
-          toModifiersWith
-            a
-            setActiveDuringSetup
-            [ CannotTakeAction (IsAction Action.Draw)
-            , CannotDrawCards
-            , CannotManipulateDeck
-            , StartingResources (-2)
-            ]
+  getModifiersFor target (JeromeDavids (a `With` _)) | isTarget a target = do
+    pure $
+      toModifiersWith
+        a
+        setActiveDuringSetup
+        [ CannotTakeAction (IsAction Action.Draw)
+        , CannotDrawCards
+        , CannotManipulateDeck
+        , StartingResources (-2)
+        ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JeromeDavids where
@@ -93,7 +90,7 @@ instance RunMessage JeromeDavids where
       push $ CancelNext (toSource attrs) RevelationMessage
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid (TokenEffectSource ElderSign) 1 Nothing
       pure i
     DrawStartingHand iid | iid == toId attrs -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do

@@ -31,8 +31,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait (AncientOne, Monster))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -281,7 +279,7 @@ instance RunMessage DimCarcosa where
         hasturInPlay <- selectAny $ EnemyWithTitle "Hastur"
         when hasturInPlay $ do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceClues (LocationTarget lid) 1
+          for_ mlid $ \lid -> push $ PlaceClues (toSource attrs) (LocationTarget lid) 1
       pure s
     ResolveToken _ ElderThing iid -> do
       mskillTestSource <- getSkillTestSource
@@ -290,22 +288,16 @@ instance RunMessage DimCarcosa where
         (Just (SkillTestSource _ _ _ (Just action)), Just (EnemyTarget eid))
           | action `elem` [Action.Fight, Action.Evade] -> do
               isMonsterOrAncientOne <-
-                member eid
-                  <$> select
-                    (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
-              when isMonsterOrAncientOne $
-                push $
-                  LoseActions
-                    iid
-                    (TokenEffectSource ElderThing)
-                    1
+                member eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
+              when isMonsterOrAncientOne $ do
+                push $ LoseActions iid (TokenEffectSource ElderThing) 1
         _ -> pure ()
       pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds
       conviction <- getConviction
       doubt <- getDoubt
-      gainXp <- map (uncurry GainXP) <$> getXpWithBonus 5
+      gainXp <- toGainXp attrs $ getXpWithBonus 5
       possessed <-
         selectList $
           InvestigatorWithTreacheryInHand $

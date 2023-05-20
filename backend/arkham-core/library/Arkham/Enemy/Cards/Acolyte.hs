@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.Acolyte
-  ( Acolyte(..)
-  , acolyte
-  ) where
+module Arkham.Enemy.Cards.Acolyte (
+  Acolyte (..),
+  acolyte,
+) where
 
 import Arkham.Prelude
 
@@ -18,25 +18,27 @@ newtype Acolyte = Acolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acolyte :: EnemyCard Acolyte
-acolyte = enemyWith
-  Acolyte
-  Cards.acolyte
-  (3, Static 1, 2)
-  (1, 0)
-  (spawnAtL ?~ SpawnLocation EmptyLocation)
+acolyte =
+  enemyWith
+    Acolyte
+    Cards.acolyte
+    (3, Static 1, 2)
+    (1, 0)
+    (spawnAtL ?~ SpawnLocation EmptyLocation)
 
 instance HasAbilities Acolyte where
-  getAbilities (Acolyte a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis)
-      $ ForcedAbility
-      $ EnemySpawns Timing.After Anywhere
-      $ EnemyWithId
-      $ toId a
-    ]
+  getAbilities (Acolyte a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis) $
+          ForcedAbility $
+            EnemySpawns Timing.After Anywhere $
+              EnemyWithId $
+                toId a
+      ]
 
 instance RunMessage Acolyte where
   runMessage msg e@(Acolyte attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      e <$ push (PlaceDoom (toTarget attrs) 1)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      e <$ push (PlaceDoom (toSource attrs) (toTarget attrs) 1)
     _ -> Acolyte <$> runMessage msg attrs

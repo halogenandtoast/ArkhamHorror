@@ -8,7 +8,6 @@ import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
-import Arkham.Source
 
 newtype JimCulver = JimCulver InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)

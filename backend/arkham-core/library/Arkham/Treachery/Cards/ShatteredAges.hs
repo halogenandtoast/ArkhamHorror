@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ShatteredAges
-  ( shatteredAges
-  , ShatteredAges(..)
-  ) where
+module Arkham.Treachery.Cards.ShatteredAges (
+  shatteredAges,
+  ShatteredAges (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,10 +25,10 @@ instance RunMessage ShatteredAges where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 4
       pure t
-    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         locations <- selectList $ NotLocation $ locationIs Locations.nexusOfNKai
         pushAll
-          [ PlaceClues (LocationTarget location) 1 | location <- locations ]
+          [PlaceClues (toSource attrs) (toTarget location) 1 | location <- locations]
         pure t
     _ -> ShatteredAges <$> runMessage msg attrs

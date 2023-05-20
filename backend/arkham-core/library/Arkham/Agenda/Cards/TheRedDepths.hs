@@ -1,8 +1,8 @@
-module Arkham.Agenda.Cards.TheRedDepths
-  ( TheRedDepths(..)
-  , theRedDepthsEffect
-  , theRedDepths
-  ) where
+module Arkham.Agenda.Cards.TheRedDepths (
+  TheRedDepths (..),
+  theRedDepthsEffect,
+  theRedDepths,
+) where
 
 import Arkham.Prelude
 
@@ -17,7 +17,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype TheRedDepths = TheRedDepths AgendaAttrs
@@ -29,11 +28,12 @@ theRedDepths = agenda (6, A) TheRedDepths Cards.theRedDepths (Static 5)
 
 instance HasAbilities TheRedDepths where
   getAbilities (TheRedDepths a) =
-    [ restrictedAbility a 1 (OutOfPlayEnemyExists PursuitZone AnyEnemy)
-        $ ForcedAbility
-        $ PlacedCounterOnAgenda
+    [ restrictedAbility a 1 (OutOfPlayEnemyExists PursuitZone AnyEnemy) $
+        ForcedAbility $
+          PlacedCounterOnAgenda
             Timing.After
             (AgendaWithSide A)
+            AnySource
             DoomCounter
             (AtLeast $ Static 1)
     ]
@@ -43,16 +43,16 @@ instance RunMessage TheRedDepths where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
       card <- flipCard <$> genCard (toCardDef attrs)
-      pushAll
-        $ enemyMsgs
-        <> [ PlaceNextTo ActDeckTarget [card]
-           , createCardEffect
-             Cards.theRedDepths
-             Nothing
-             (toSource attrs)
-             ScenarioTarget
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      pushAll $
+        enemyMsgs
+          <> [ PlaceNextTo ActDeckTarget [card]
+             , createCardEffect
+                Cards.theRedDepths
+                Nothing
+                (toSource attrs)
+                ScenarioTarget
+             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+             ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
@@ -70,15 +70,16 @@ theRedDepthsEffect = cardEffect TheRedDepthsEffect Cards.theRedDepths
 instance HasAbilities TheRedDepthsEffect where
   getAbilities (TheRedDepthsEffect attrs) =
     [ restrictedAbility
-          (ProxySource (AgendaMatcherSource AnyAgenda) (toSource attrs))
-          1
-          (OutOfPlayEnemyExists PursuitZone AnyEnemy)
+        (ProxySource (AgendaMatcherSource AnyAgenda) (toSource attrs))
+        1
+        (OutOfPlayEnemyExists PursuitZone AnyEnemy)
         $ ForcedAbility
         $ PlacedCounterOnAgenda
-            Timing.After
-            (AgendaWithSide A)
-            DoomCounter
-            (AtLeast $ Static 1)
+          Timing.After
+          (AgendaWithSide A)
+          AnySource
+          DoomCounter
+          (AtLeast $ Static 1)
     ]
 
 instance RunMessage TheRedDepthsEffect where

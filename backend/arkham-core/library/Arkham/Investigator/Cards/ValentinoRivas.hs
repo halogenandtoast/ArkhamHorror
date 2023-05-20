@@ -17,7 +17,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Source
 
 newtype ValentinoRivas = ValentinoRivas (InvestigatorAttrs `With` PrologueMetadata)
   deriving stock (Show, Eq, Generic)

@@ -40,19 +40,17 @@ instance HasAbilities ChaosAtTheCarnevale where
 instance RunMessage ChaosAtTheCarnevale where
   runMessage msg a@(ChaosAtTheCarnevale attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source 1 [Window _ (Window.EnemySpawns eid _)] _
-      | isSource attrs source -> a <$ push (PlaceDoom (EnemyTarget eid) 2)
+      | isSource attrs source -> a <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget eid) 2)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
-      mCnidathquaId <- selectOne $ enemyIs Enemies.cnidathqua
-      a <$ case mCnidathquaId of
-        Just cnidathquaId ->
-          pushAll $
-            [ EnemyAttack $
-              enemyAttack cnidathquaId attrs iid
-                & damageStrategyL
-                  .~ DamageFirst Assets.innocentReveler
-            | iid <- investigatorIds
-            ]
-              <> [RevertAgenda (toId attrs)]
-        Nothing -> pure ()
+      cnidathquaId <- selectJust $ enemyIs Enemies.cnidathqua
+      pushAll $
+        [ EnemyAttack $
+          enemyAttack cnidathquaId attrs iid
+            & damageStrategyL
+              .~ DamageFirst Assets.innocentReveler
+        | iid <- investigatorIds
+        ]
+          <> [RevertAgenda (toId attrs)]
+      pure a
     _ -> ChaosAtTheCarnevale <$> runMessage msg attrs

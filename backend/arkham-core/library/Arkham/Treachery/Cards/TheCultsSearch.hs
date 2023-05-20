@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.TheCultsSearch
-  ( theCultsSearch
-  , TheCultsSearch(..)
-  ) where
+module Arkham.Treachery.Cards.TheCultsSearch (
+  theCultsSearch,
+  TheCultsSearch (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card.CardType
 import Arkham.Classes
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait
@@ -27,20 +27,22 @@ instance RunMessage TheCultsSearch where
       cultists <-
         selectWithField EnemyDoom $ EnemyWithTrait Cultist <> EnemyWithAnyDoom
       let
-        revelation = if null cultists
-          then
-            [ FindAndDrawEncounterCard
-              iid
-              (CardWithType EnemyType <> CardWithTrait Cultist)
-              True
-            ]
-          else
-            concatMap
-                (\(enemy, doom) ->
-                  RemoveDoom (EnemyTarget enemy) doom
-                    : replicate doom PlaceDoomOnAgenda
+        revelation =
+          if null cultists
+            then
+              [ FindAndDrawEncounterCard
+                  iid
+                  (CardWithType EnemyType <> CardWithTrait Cultist)
+                  True
+              ]
+            else
+              concatMap
+                ( \(enemy, doom) ->
+                    RemoveDoom (toSource attrs) (toTarget enemy) doom
+                      : replicate doom PlaceDoomOnAgenda
                 )
                 cultists
-              <> [AdvanceAgendaIfThresholdSatisfied]
-      t <$ pushAll revelation
+                <> [AdvanceAgendaIfThresholdSatisfied]
+      pushAll revelation
+      pure t
     _ -> TheCultsSearch <$> runMessage msg attrs

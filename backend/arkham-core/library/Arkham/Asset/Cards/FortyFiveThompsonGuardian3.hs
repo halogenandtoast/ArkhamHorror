@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.FortyFiveThompsonGuardian3
-  ( fortyFiveThompsonGuardian3
-  , FortyFiveThompsonGuardian3(..)
-  ) where
+module Arkham.Asset.Cards.FortyFiveThompsonGuardian3 (
+  fortyFiveThompsonGuardian3,
+  FortyFiveThompsonGuardian3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,10 +21,10 @@ fortyFiveThompsonGuardian3 = asset FortyFiveThompsonGuardian3 Cards.fortyFiveTho
 
 instance HasAbilities FortyFiveThompsonGuardian3 where
   getAbilities (FortyFiveThompsonGuardian3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1
-        <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1
+            <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage FortyFiveThompsonGuardian3 where
@@ -32,14 +32,14 @@ instance RunMessage FortyFiveThompsonGuardian3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [DamageDealt 1, SkillModifier SkillCombat 2]
+            attrs
+            iid
+            [DamageDealt 1, SkillModifier SkillCombat 2]
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a
     SpendUses target Ammo n | isTarget attrs target -> do
       for_ (assetController attrs) $ \iid ->
-        push $ PlaceResources (toTarget iid) n
+        push $ PlaceResources (toSource attrs) (toTarget iid) n
       FortyFiveThompsonGuardian3 <$> runMessage msg attrs
     _ -> FortyFiveThompsonGuardian3 <$> runMessage msg attrs

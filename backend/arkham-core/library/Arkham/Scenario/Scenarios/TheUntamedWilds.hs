@@ -28,7 +28,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Story
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -219,7 +218,7 @@ instance RunMessage TheUntamedWilds where
                  ]
               <> [Record AlejandroChoseToRemainAtCamp | leadingTheWay]
               <> [RecordCount YigsFury vengeance]
-              <> [GainXP iid n | (iid, n) <- xp]
+              <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
               <> [EndOfGame Nothing]
         Resolution 1 -> do
           pushAll $
@@ -229,7 +228,7 @@ instance RunMessage TheUntamedWilds where
             , Record TheInvestigatorsHaveEarnedIchtacasTrust
             , RecordCount YigsFury vengeance
             ]
-              <> [GainXP iid n | (iid, n) <- xp]
+              <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
               <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll $
@@ -245,7 +244,7 @@ instance RunMessage TheUntamedWilds where
               <> [ Record IchtacaIsWaryOfTheInvestigators
                  , RecordCount YigsFury vengeance
                  ]
-              <> [GainXP iid n | (iid, n) <- xp]
+              <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
               <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s

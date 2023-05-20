@@ -36,7 +36,10 @@ instance RunMessage AshleighClarke where
   runMessage msg a@(AshleighClarke attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       when (assetClues attrs > 0) $
-        pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1]
+        pushAll
+          [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
+          , GainClues iid (toAbilitySource attrs 1) 1
+          ]
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       aboveAndBelow <- genCard Story.aboveAndBelow

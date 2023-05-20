@@ -26,7 +26,6 @@ import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
-import Arkham.Classes.Entity.Source
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
@@ -335,8 +334,8 @@ data Message
   | Discarded Target Source Card
   | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Source Target
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Source Target
-  | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
-  | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
+  | DiscoverClues InvestigatorId LocationId Source Int (Maybe Action)
+  | DiscoverCluesAtLocation InvestigatorId LocationId Source Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherToken InvestigatorId
@@ -410,8 +409,8 @@ data Message
   | GainActions InvestigatorId Source Int
   | GainAdditionalAction InvestigatorId Source AdditionalAction
   | UseEffectAction InvestigatorId EffectId [Window]
-  | GainClues InvestigatorId Int
-  | GainXP InvestigatorId Int
+  | GainClues InvestigatorId Source Int
+  | GainXP InvestigatorId Source Int
   | SpendXP InvestigatorId Int
   | GameOver
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
@@ -452,9 +451,9 @@ data Message
   | InvestigatorDefeated Source InvestigatorId
   | InvestigatorIsDefeated Source InvestigatorId
   | InvestigatorDirectDamage InvestigatorId Source Int Int
-  | InvestigatorDiscardAllClues InvestigatorId
-  | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
-  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int (Maybe Action)
+  | InvestigatorDiscardAllClues Source InvestigatorId
+  | InvestigatorDiscoverClues InvestigatorId LocationId Source Int (Maybe Action)
+  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Source Int (Maybe Action)
   | -- | meant to be used internally by investigators                  ^ damage ^ horror
     InvestigatorDoAssignDamage
       InvestigatorId
@@ -475,8 +474,8 @@ data Message
   | InvestigatorMulligan InvestigatorId
   | InvestigatorsMulligan
   | -- | This message exists in case the number of clues will change
-    InvestigatorPlaceAllCluesOnLocation InvestigatorId
-  | InvestigatorPlaceCluesOnLocation InvestigatorId Int
+    InvestigatorPlaceAllCluesOnLocation InvestigatorId Source
+  | InvestigatorPlaceCluesOnLocation InvestigatorId Source Int
   | InvestigatorPlayAsset InvestigatorId AssetId
   | InvestigatorClearUnusedAssetSlots InvestigatorId
   | InvestigatorPlayedAsset InvestigatorId AssetId
@@ -495,7 +494,7 @@ data Message
   | SpendActions InvestigatorId Source (Maybe Action) Int
   | Move Movement
   | MoveAction InvestigatorId LocationId Cost Bool
-  | MoveAllCluesTo Target
+  | MoveAllCluesTo Source Target
   | MoveAllTo Source LocationId
   | MoveFrom Source InvestigatorId LocationId
   | MoveTo Movement
@@ -514,21 +513,21 @@ data Message
   | PayCardCost InvestigatorId Card [Window]
   | PaidForCardCost InvestigatorId Card Payment
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
-  | PlaceClues Target Int
-  | PlaceCluesUpToClueValue LocationId Int
+  | PlaceClues Source Target Int
+  | PlaceCluesUpToClueValue LocationId Source Int
   | FlipClues Target Int
   | FlipDoom Target Int
-  | PlaceDoom Target Int
-  | PlaceDamage Target Int
+  | PlaceDoom Source Target Int
+  | PlaceDamage Source Target Int
   | PlaceAdditionalDamage Target Source Int Int
-  | PlaceHorror Target Int
+  | PlaceHorror Source Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId
   | PlaceEnemy EnemyId Placement
   | PlaceLocation LocationId Card
   | PlaceLocationMatching CardMatcher
-  | PlaceResources Target Int
-  | RemoveResources Target Int
+  | PlaceResources Source Target Int
+  | RemoveResources Source Target Int
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
   | PlaceNextTo Target [Card]
@@ -557,16 +556,16 @@ data Message
   | ScenarioCountDecrementBy ScenarioCountKey Int
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemovePlayerCardFromGame Bool Card
-  | RemoveAllClues Target
+  | RemoveAllClues Source Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers
-  | RemoveAllDoom Target
+  | RemoveAllDoom Source Target
   | RemoveCampaignCard CardDef
   | RemoveCampaignCardFromDeck InvestigatorId CardDef
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId
-  | RemoveClues Target Int
+  | RemoveClues Source Target Int
   | RemoveDiscardFromGame InvestigatorId
-  | RemoveDoom Target Int
+  | RemoveDoom Source Target Int
   | RemoveAsset AssetId
   | RemoveEnemy EnemyId
   | RemoveEvent EventId

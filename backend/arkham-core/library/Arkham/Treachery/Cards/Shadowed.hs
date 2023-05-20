@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.Shadowed
-  ( shadowed
-  , Shadowed(..)
-  ) where
+module Arkham.Treachery.Cards.Shadowed (
+  shadowed,
+  Shadowed (..),
+) where
 
 import Arkham.Prelude
 
@@ -33,18 +33,19 @@ instance RunMessage Shadowed where
             , gainSurge attrs
             ]
         else do
-          push $ chooseOrRunOne
-            iid
-            [ targetLabel
+          push $
+            chooseOrRunOne
+              iid
+              [ targetLabel
                 cultist
-                [ PlaceDoom (toTarget cultist) 1
+                [ PlaceDoom (toSource attrs) (toTarget cultist) 1
                 , RevelationSkillTest iid source SkillWillpower x
                 ]
-            | (cultist, x) <- cultists
-            ]
+              | (cultist, x) <- cultists
+              ]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ InvestigatorAssignDamage iid source DamageAny 0 2
-        pure t
+          push $ InvestigatorAssignDamage iid source DamageAny 0 2
+          pure t
     _ -> Shadowed <$> runMessage msg attrs

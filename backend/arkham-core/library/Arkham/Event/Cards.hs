@@ -1151,7 +1151,7 @@ forewarned1 =
           DrawCard
             Timing.When
             You
-            (BasicCardMatch NonWeaknessTreachery)
+            (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery)
             EncounterDeck
     }
 
@@ -1196,12 +1196,12 @@ aTestOfWill1 =
             [ DrawCard
                 Timing.When
                 (InvestigatorAt YourLocation)
-                (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 Timing.When
                 You
-                (BasicCardMatch NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = 1
@@ -2165,7 +2165,8 @@ fortuneOrFate2 =
   (event "05237" "Fortune or Fate" 2 Survivor)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Fortune, Blessed]
-    , cdFastWindow = Just $ PlacedDoomCounter Timing.When ScenarioCardTarget
+    , cdFastWindow =
+        Just $ PlacedDoomCounter Timing.When (SourceIsCancelable AnySource) ScenarioCardTarget
     }
 
 ghastlyRevelation :: CardDef
@@ -2882,12 +2883,12 @@ aTestOfWill =
             [ DrawCard
                 Timing.When
                 (InvestigatorAt YourLocation)
-                (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 Timing.When
                 You
-                (BasicCardMatch NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery)
                 EncounterDeck
             ]
     }
@@ -2915,7 +2916,7 @@ aTestOfWill2 =
             [ DrawCard
                 Timing.When
                 (InvestigatorAt YourLocation)
-                (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 Timing.When

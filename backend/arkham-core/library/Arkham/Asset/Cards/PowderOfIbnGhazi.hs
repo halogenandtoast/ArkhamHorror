@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.PowderOfIbnGhazi
-  ( powderOfIbnGhazi
-  , PowderOfIbnGhazi(..)
-  ) where
+module Arkham.Asset.Cards.PowderOfIbnGhazi (
+  powderOfIbnGhazi,
+  PowderOfIbnGhazi (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,12 +24,14 @@ instance HasAbilities PowderOfIbnGhazi where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> CluesOnThis (GreaterThan $ Static 0) <> EnemyCriteria
-          (EnemyExists
-          $ ExhaustedEnemy
-          <> EnemyAt YourLocation
-          <> EnemyWithTitle "Brood of Yog-Sothoth"
-          )
+        ( ControlsThis
+            <> CluesOnThis (GreaterThan $ Static 0)
+            <> EnemyCriteria
+              ( EnemyExists $
+                  ExhaustedEnemy
+                    <> EnemyAt YourLocation
+                    <> EnemyWithTitle "Brood of Yog-Sothoth"
+              )
         )
         (FastAbility Free)
     ]
@@ -37,25 +39,25 @@ instance HasAbilities PowderOfIbnGhazi where
 instance RunMessage PowderOfIbnGhazi where
   runMessage msg (PowderOfIbnGhazi attrs) = case msg of
     InvestigatorPlayAsset _ aid | aid == toId attrs -> do
-      survivedCount <- countM
-        getHasRecord
-        [ DrHenryArmitageSurvivedTheDunwichLegacy
-        , ProfessorWarrenRiceSurvivedTheDunwichLegacy
-        , DrFrancisMorganSurvivedTheDunwichLegacy
-        , ZebulonWhateleySurvivedTheDunwichLegacy
-        , EarlSawyerSurvivedTheDunwichLegacy
-        ]
+      survivedCount <-
+        countM
+          getHasRecord
+          [ DrHenryArmitageSurvivedTheDunwichLegacy
+          , ProfessorWarrenRiceSurvivedTheDunwichLegacy
+          , DrFrancisMorganSurvivedTheDunwichLegacy
+          , ZebulonWhateleySurvivedTheDunwichLegacy
+          , EarlSawyerSurvivedTheDunwichLegacy
+          ]
       PowderOfIbnGhazi <$> runMessage msg (attrs & cluesL .~ survivedCount)
     UseCardAbility you source 1 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap EnemyTarget
-        $ EnemyWithTitle "Brood of Yog-Sothoth"
-        <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId you)
-        <> ExhaustedEnemy
+        selectListMap EnemyTarget $
+          EnemyWithTitle "Brood of Yog-Sothoth"
+            <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId you)
+            <> ExhaustedEnemy
       case targets of
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"
-        [x] -> push (PlaceClues x 1)
-        xs -> push (chooseOne you [ TargetLabel x [PlaceClues x 1] | x <- xs ])
+        [x] -> push (PlaceClues (toAbilitySource attrs 1) x 1)
+        xs -> push (chooseOne you [TargetLabel x [PlaceClues (toAbilitySource attrs 1) x 1] | x <- xs])
       pure . PowderOfIbnGhazi $ attrs & cluesL %~ max 0 . subtract 1
     _ -> PowderOfIbnGhazi <$> runMessage msg attrs
-

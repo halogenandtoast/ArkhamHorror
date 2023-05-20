@@ -42,6 +42,6 @@ instance HasAbilities Nahab where
 instance RunMessage Nahab where
   runMessage msg e@(Nahab attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceDoom (toTarget attrs) 1
+      push $ PlaceDoom (toSource attrs) (toTarget attrs) 1
       pure e
     _ -> Nahab <$> runMessage msg attrs

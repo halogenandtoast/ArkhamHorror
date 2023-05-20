@@ -1,14 +1,14 @@
-module Arkham.Asset.Cards.FamilyInheritance
-  ( familyInheritance
-  , FamilyInheritance(..)
-  )
+module Arkham.Asset.Cards.FamilyInheritance (
+  familyInheritance,
+  FamilyInheritance (..),
+)
 where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -22,7 +22,9 @@ familyInheritance =
 
 instance HasAbilities FamilyInheritance where
   getAbilities (FamilyInheritance a) =
-    [ restrictedAbility a 1 (ControlsThis <> ResourcesOnThis (AtLeast $ Static 1)) $ ActionAbility Nothing $ ActionCost 1
+    [ restrictedAbility a 1 (ControlsThis <> ResourcesOnThis (AtLeast $ Static 1)) $
+        ActionAbility Nothing $
+          ActionCost 1
     , restrictedAbility a 2 ControlsThis $ ForcedAbility $ TurnBegins Timing.When You
     ]
 
@@ -32,7 +34,7 @@ instance RunMessage FamilyInheritance where
       push $ TakeResources iid (assetResources attrs) (toAbilitySource attrs 1) False
       pure . FamilyInheritance $ attrs & resourcesL .~ 0
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ PlaceResources (toTarget attrs) 4
+      push $ PlaceResources (toAbilitySource attrs 2) (toTarget attrs) 4
       pure a
     EndTurn iid | Just iid == assetController attrs -> do
       FamilyInheritance <$> runMessage msg (attrs & resourcesL .~ 0)

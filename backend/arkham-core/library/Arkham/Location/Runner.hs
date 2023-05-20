@@ -214,10 +214,10 @@ instance RunMessage LocationAttrs where
         a
           & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
           & (connectedMatchersL <>~ [LocationWithId toLid])
-    DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
+    DiscoverCluesAtLocation iid lid source n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      a <$ push (DiscoverClues iid lid discoveredClues maction)
-    Do (DiscoverClues iid lid n _) | lid == locationId -> do
+      a <$ push (DiscoverClues iid lid source discoveredClues maction)
+    Do (DiscoverClues iid lid _ n _) | lid == locationId -> do
       let lastClue = locationClues - n <= 0
       let clueCount = max 0 $ subtract n locationClues
       push
@@ -313,41 +313,38 @@ instance RunMessage LocationAttrs where
     RemoveEnemy eid -> pure $ a & enemiesL %~ deleteSet eid
     RemovedFromPlay (EnemySource eid) -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
-    MoveAllCluesTo target | not (isTarget a target) -> do
-      when (locationClues > 0) (push $ PlaceClues (toTarget a) locationClues)
+    MoveAllCluesTo source target | not (isTarget a target) -> do
+      when (locationClues > 0) (push $ PlaceClues source (toTarget a) locationClues)
       pure $ a & cluesL .~ 0 & withoutCluesL .~ True
-    PlaceClues target n | isTarget a target -> do
-      modifiers' <- getModifiers (toTarget a)
-      windows' <- windows [Window.PlacedClues (toTarget a) n]
+    PlaceClues source target n | isTarget a target -> do
+      modifiers' <- getModifiers a
+      windows' <- windows [Window.PlacedClues source (toTarget a) n]
       if CannotPlaceClues `elem` modifiers'
         then pure a
         else do
           let clueCount = locationClues + n
           pushAll windows'
           pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
-    PlaceCluesUpToClueValue lid n | lid == locationId -> do
+    PlaceCluesUpToClueValue lid source n | lid == locationId -> do
       clueValue <- getPlayerCountValue locationRevealClues
       let n' = min n (clueValue - locationClues)
-      a <$ push (PlaceClues (toTarget a) n')
-    PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
-    RemoveDoom target n
-      | isTarget a target ->
-          pure $ a & doomL %~ max 0 . subtract n
-    PlaceResources target n | isTarget a target -> do
-      windows' <- windows [Window.PlacedResources (toTarget a) n]
+      a <$ push (PlaceClues source (toTarget a) n')
+    PlaceDoom _ target n | isTarget a target -> pure $ a & doomL +~ n
+    RemoveDoom _ target n | isTarget a target -> do
+      pure $ a & doomL %~ max 0 . subtract n
+    PlaceResources source target n | isTarget a target -> do
+      windows' <- windows [Window.PlacedResources source (toTarget a) n]
       pushAll windows'
       pure $ a & resourcesL +~ n
-    RemoveResources target n
-      | isTarget a target ->
-          pure $ a & resourcesL %~ max 0 . subtract n
-    PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
-    RemoveClues (LocationTarget lid) n | lid == locationId -> do
+    RemoveResources _ target n | isTarget a target -> do
+      pure $ a & resourcesL %~ max 0 . subtract n
+    PlaceHorror _ target n | isTarget a target -> pure $ a & horrorL +~ n
+    RemoveClues _ (LocationTarget lid) n | lid == locationId -> do
       let clueCount = max 0 $ subtract n locationClues
       pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
-    RemoveAllClues target
-      | isTarget a target ->
-          pure $ a & cluesL .~ 0 & withoutCluesL .~ True
-    RemoveAllDoom target | isTarget a target -> pure $ a & doomL .~ 0
+    RemoveAllClues _ target | isTarget a target -> do
+      pure $ a & cluesL .~ 0 & withoutCluesL .~ True
+    RemoveAllDoom _ target | isTarget a target -> pure $ a & doomL .~ 0
     PlacedLocation _ _ lid | lid == locationId -> do
       if locationRevealed
         then do
@@ -358,7 +355,7 @@ instance RunMessage LocationAttrs where
               else getPlayerCountValue locationRevealClues
 
           pushAll
-            [ PlaceClues (toTarget a) locationClueCount
+            [ PlaceClues (toSource a) (toTarget a) locationClueCount
             | locationClueCount > 0
             ]
           pure $ a & withoutCluesL .~ (locationClueCount == 0)
@@ -379,7 +376,7 @@ instance RunMessage LocationAttrs where
           [Window Timing.After (Window.RevealLocation revealer lid)]
       pushAll $
         [whenWindowMsg, afterWindowMsg]
-          <> [PlaceClues (toTarget a) locationClueCount | locationClueCount > 0]
+          <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
       pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount == 0)
     LookAtRevealed iid source target | isTarget a target -> do
       push $

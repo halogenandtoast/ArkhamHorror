@@ -75,7 +75,7 @@ data WindowType
   | DeckHasNoCards InvestigatorId
   | EncounterDeckRunsOutOfCards
   | Discarded InvestigatorId Source Card
-  | DiscoverClues InvestigatorId LocationId Int
+  | DiscoverClues InvestigatorId LocationId Source Int
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
@@ -105,7 +105,7 @@ data WindowType
   | FailSkillTest InvestigatorId Int
   | FailSkillTestAtOrLess InvestigatorId Int
   | FastPlayerWindow
-  | GainsClues InvestigatorId Int
+  | GainsClues InvestigatorId Source Int
   | Healed DamageType Target Source Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
@@ -129,13 +129,13 @@ data WindowType
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlaceUnderneath Target Card
-  | PlacedClues Target Int
-  | PlacedResources Target Int
+  | PlacedClues Source Target Int
+  | PlacedResources Source Target Int
   | LostResources InvestigatorId Source Int
   | LostActions InvestigatorId Source Int
-  | PlacedDamage Target Int
-  | PlacedHorror Target Int
-  | PlacedDoom Target Int
+  | PlacedDamage Source Target Int
+  | PlacedHorror Source Target Int
+  | PlacedDoom Source Target Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
-  ( LetTheStormRageTheFloodBelow(..)
-  , letTheStormRageTheFloodBelow
-  ) where
+module Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow (
+  LetTheStormRageTheFloodBelow (..),
+  letTheStormRageTheFloodBelow,
+) where
 
 import Arkham.Prelude
 
@@ -17,34 +17,35 @@ import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Source
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LetTheStormRageTheFloodBelow = LetTheStormRageTheFloodBelow AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 letTheStormRageTheFloodBelow :: AgendaCard LetTheStormRageTheFloodBelow
-letTheStormRageTheFloodBelow = agenda
-  (2, A)
-  LetTheStormRageTheFloodBelow
-  Cards.letTheStormRageTheFloodBelow
-  (Static 6)
+letTheStormRageTheFloodBelow =
+  agenda
+    (2, A)
+    LetTheStormRageTheFloodBelow
+    Cards.letTheStormRageTheFloodBelow
+    (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheFloodBelow where
   getModifiersFor (CardIdTarget cardId) (LetTheStormRageTheFloodBelow a) = do
     card <- getCard cardId
-    pure $ toModifiers
-      a
-      [ AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils ]
+    pure $
+      toModifiers
+        a
+        [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LetTheStormRageTheFloodBelow where
   getAbilities (LetTheStormRageTheFloodBelow a) =
-    [ limitedAbility (GroupLimit PerRound 1)
-        $ mkAbility a 1
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1) $
+        mkAbility a 1 $
+          FastAbility $
+            GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage LetTheStormRageTheFloodBelow where
@@ -55,10 +56,10 @@ instance RunMessage LetTheStormRageTheFloodBelow where
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
-      pushAll
-        $ [PlaceDoom (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
-           | iid <- investigatorIds
-           ]
+      pushAll $
+        [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
+          <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
+             | iid <- investigatorIds
+             ]
       pure a
     _ -> LetTheStormRageTheFloodBelow <$> runMessage msg attrs

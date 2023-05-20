@@ -13,6 +13,7 @@ import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X
 import Arkham.Investigator.Types as X
 import Arkham.Name as X
+import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Token as X
@@ -65,7 +66,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
@@ -511,20 +511,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resignedL .~ True & endedTurnL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
-    push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
+    push $ PlaceClues (toSource a) (toTarget investigatorLocation) investigatorClues
     pure $ a & cluesL .~ 0 & resourcesL .~ 0
-  EnemyMove eid lid
-    | lid /= investigatorLocation ->
-        pure $ a & engagedEnemiesL %~ deleteSet eid
-  EnemyEngageInvestigator eid iid
-    | iid == investigatorId ->
-        pure $ a & engagedEnemiesL %~ insertSet eid
-  EnemyEngageInvestigator eid iid
-    | iid /= investigatorId ->
-        pure $ a & engagedEnemiesL %~ deleteSet eid
-  RemoveAllClues (InvestigatorTarget iid)
-    | iid == investigatorId ->
-        pure $ a & cluesL .~ 0
+  EnemyMove eid lid | lid /= investigatorLocation -> do
+    pure $ a & engagedEnemiesL %~ deleteSet eid
+  EnemyEngageInvestigator eid iid | iid == investigatorId -> do
+    pure $ a & engagedEnemiesL %~ insertSet eid
+  EnemyEngageInvestigator eid iid | iid /= investigatorId -> do
+    pure $ a & engagedEnemiesL %~ deleteSet eid
+  RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
+    pure $ a & cluesL .~ 0
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   RemovedFromPlay (EnemySource eid) ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
@@ -1128,10 +1124,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageMap = frequencies damageTargets
             horrorMap = frequencies horrorTargets
             placedWindows =
-              [ Window.PlacedDamage target damage
+              [ Window.PlacedDamage source target damage
               | (target, damage) <- mapToList damageMap
               ]
-                <> [ Window.PlacedHorror target horror
+                <> [ Window.PlacedHorror source target horror
                    | (target, horror) <- mapToList horrorMap
                    ]
           placedWindowMsg <-
@@ -1501,56 +1497,54 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
           max 0 (n + m)
         applyModifier _ n = n
-      a
-        <$ pushAll
-          ( [ BeginAction
-            , beforeWindowMsg
-            , TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
-            ]
-              <> [ CheckAttackOfOpportunity iid False
-                 | ActionDoesNotCauseAttacksOfOpportunity Action.Investigate
-                    `notElem` modifiers'
-                 ]
-              <> [ Investigate iid lid source mTarget skillType False
-                 , afterWindowMsg
-                 , FinishAction
-                 ]
-          )
-  InvestigatorDiscoverCluesAtTheirLocation iid n maction
+      pushAll $
+        [ BeginAction
+        , beforeWindowMsg
+        , TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
+        ]
+          <> [ CheckAttackOfOpportunity iid False
+             | ActionDoesNotCauseAttacksOfOpportunity Action.Investigate
+                `notElem` modifiers'
+             ]
+          <> [ Investigate iid lid source mTarget skillType False
+             , afterWindowMsg
+             , FinishAction
+             ]
+      pure a
+  InvestigatorDiscoverCluesAtTheirLocation iid source n maction
     | iid == investigatorId ->
         runMessage
-          (InvestigatorDiscoverClues iid investigatorLocation n maction)
+          (InvestigatorDiscoverClues iid investigatorLocation source n maction)
           a
-  InvestigatorDiscoverClues iid lid n _ | iid == investigatorId -> do
+  InvestigatorDiscoverClues iid lid source n _ | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a lid
-    if canDiscoverClues
-      then do
-        checkWindowMsg <-
-          checkWindows
-            [Window Timing.When (Window.DiscoverClues iid lid n)]
-        a <$ pushAll [checkWindowMsg, Do msg]
-      else pure a
-  Do (InvestigatorDiscoverClues iid lid n maction) | iid == investigatorId -> do
+    when canDiscoverClues $ do
+      checkWindowMsg <-
+        checkWindows
+          [Window Timing.When (Window.DiscoverClues iid lid source n)]
+      pushAll [checkWindowMsg, Do msg]
+    pure a
+  Do (InvestigatorDiscoverClues iid lid source n maction) | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a lid
-    if canDiscoverClues
-      then do
-        a <$ push (DiscoverCluesAtLocation iid lid n maction)
-      else pure a
-  GainClues iid n | iid == investigatorId -> do
+    when canDiscoverClues $
+      push $
+        DiscoverCluesAtLocation iid lid source n maction
+    pure a
+  GainClues iid source n | iid == investigatorId -> do
     window <-
       checkWindows
-        ((`Window` Window.GainsClues iid n) <$> [Timing.When, Timing.After])
-    a
-      <$ pushAll
-        [window, PlaceClues (InvestigatorTarget iid) n, After (GainClues iid n)]
-  PlaceClues (InvestigatorTarget iid) n | iid == investigatorId -> do
+        ((`Window` Window.GainsClues iid source n) <$> [Timing.When, Timing.After])
+    pushAll
+      [window, PlaceClues source (toTarget iid) n, After (GainClues iid source n)]
+    pure a
+  PlaceClues _ (InvestigatorTarget iid) n | iid == investigatorId -> do
     pure $ a & cluesL +~ n
   FlipClues target n | isTarget a target -> do
     let flipCount = min n investigatorClues
     let clueCount = max 0 $ subtract n investigatorClues
     pure $ a & (cluesL .~ clueCount) & (doomL +~ flipCount)
-  DiscoverClues iid lid n maction | iid == investigatorId -> do
-    modifiers <- getModifiers (LocationTarget lid)
+  DiscoverClues iid lid source n maction | iid == investigatorId -> do
+    modifiers <- getModifiers lid
     let
       getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
       getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
@@ -1558,15 +1552,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       getMaybeMax _ x = x
       mMax :: Maybe Int = foldr getMaybeMax Nothing modifiers
       n' = maybe n (min n) mMax
-    a <$ push (Do $ DiscoverClues iid lid n' maction)
-  Do (DiscoverClues iid _ n _) | iid == investigatorId -> do
-    push (After (GainClues iid n))
+    push $ Do $ DiscoverClues iid lid source n' maction
+    pure a
+  Do (DiscoverClues iid _ source n _) | iid == investigatorId -> do
+    push $ After $ GainClues iid source n
     pure $ a & cluesL +~ n
-  InvestigatorDiscardAllClues iid
-    | iid == investigatorId ->
-        pure $ a & cluesL .~ 0
-  MoveAllCluesTo target | not (isTarget a target) -> do
-    when (investigatorClues > 0) (push $ PlaceClues target investigatorClues)
+  InvestigatorDiscardAllClues _ iid | iid == investigatorId -> do
+    pure $ a & cluesL .~ 0
+  MoveAllCluesTo source target | not (isTarget a target) -> do
+    when (investigatorClues > 0) (push $ PlaceClues source target investigatorClues)
     pure $ a & cluesL .~ 0
   InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy windows' asAction
     | iid == investigatorId ->
@@ -2232,7 +2226,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n _ False | iid == investigatorId -> do
     cannotGainResources <- hasModifier a CannotGainResources
     pure $ if cannotGainResources then a else a & resourcesL +~ n
-  PlaceResources target n | isTarget a target -> do
+  PlaceResources _ target n | isTarget a target -> do
     pure $ a & resourcesL +~ n
   EmptyDeck iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -3042,16 +3036,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           a
             & (physicalTraumaL %~ max 0 . subtract physical)
             & (mentalTraumaL %~ max 0 . subtract mental)
-  GainXP iid amount | iid == investigatorId -> pure $ a & xpL +~ amount
+  GainXP iid _ amount | iid == investigatorId -> pure $ a & xpL +~ amount
   SpendXP iid amount
     | iid == investigatorId ->
         pure $ a & xpL %~ max 0 . subtract amount
-  InvestigatorPlaceCluesOnLocation iid n | iid == investigatorId -> do
+  InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
     let cluesToPlace = min n investigatorClues
-    push (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)
+    push $ PlaceClues source (LocationTarget investigatorLocation) cluesToPlace
     pure $ a & cluesL -~ cluesToPlace
-  InvestigatorPlaceAllCluesOnLocation iid | iid == investigatorId -> do
-    push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
+  InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
+    push (PlaceClues source (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0
   RemoveFromBearersDeckOrDiscard card -> do
     if pcOwner card == Just investigatorId

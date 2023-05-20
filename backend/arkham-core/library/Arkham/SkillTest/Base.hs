@@ -6,7 +6,6 @@ import Arkham.Prelude
 
 import Arkham.Action (Action)
 import Arkham.Card
-import Arkham.Classes.Entity
 import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTest.Type

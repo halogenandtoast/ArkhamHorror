@@ -4,7 +4,6 @@ module Arkham.Attack where
 
 import Arkham.Prelude
 
-import Arkham.Classes.Entity.Source
 import Arkham.Id
 import Arkham.Source
 import Arkham.Strategy

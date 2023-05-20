@@ -31,8 +31,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheUnspeakableOath.Story
-import Arkham.Source
-import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding (Cultist, Expert)
 import Arkham.Window qualified as Window
@@ -326,7 +324,7 @@ instance RunMessage TheUnspeakableOath where
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- allInvestigatorIds
-      gainXp <- map (uncurry GainXP) <$> getXp
+      gainXp <- toGainXp attrs getXp
       constanceSlain <-
         selectOne
           (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)

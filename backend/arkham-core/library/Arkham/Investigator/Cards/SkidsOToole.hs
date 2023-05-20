@@ -10,7 +10,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Message
-import Arkham.Source
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

@@ -46,7 +46,7 @@ instance RunMessage BeyondTheWitchHouse where
             agendaId <- selectJust AnyAgenda
             agendaDoom <- field AgendaDoom agendaId
             pure
-              [ RemoveAllDoom (toTarget agendaId)
+              [ RemoveAllDoom (toSource attrs) (toTarget agendaId)
               , PlaceDoom (toSource attrs) (toTarget nahabId) agendaDoom
               ]
           else pure [PlaceDoom (toSource attrs) (toTarget nahabId) 2]

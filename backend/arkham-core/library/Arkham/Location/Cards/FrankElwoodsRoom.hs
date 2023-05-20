@@ -33,7 +33,7 @@ instance RunMessage FrankElwoodsRoom where
         chooseOrRunOne iid $
           [ Label
             "Place 1 of your clues on Frank Elwood's Room"
-            [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]
+            [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
           | hasClues
           ]
             <> [Label "Place 1 doom on the current agenda" [PlaceDoomOnAgenda]]

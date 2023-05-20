@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.VantagePoint
-  ( vantagePoint
-  , vantagePointEffect
-  , VantagePoint(..)
-  ) where
+module Arkham.Event.Cards.VantagePoint (
+  vantagePoint,
+  vantagePointEffect,
+  VantagePoint (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,9 +13,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Id
-import Arkham.Matcher hiding ( RevealLocation, PutLocationIntoPlay )
-import Arkham.Message hiding ( RevealLocation )
-import Arkham.Window hiding ( EndTurn )
+import Arkham.Matcher hiding (PutLocationIntoPlay, RevealLocation)
+import Arkham.Message hiding (RevealLocation)
+import Arkham.Window hiding (EndTurn)
 
 newtype VantagePoint = VantagePoint EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -34,26 +34,26 @@ instance RunMessage VantagePoint where
   runMessage msg e@(VantagePoint attrs) = case msg of
     InvestigatorPlayEvent iid eid _ (vantagePointLocation -> lid) _
       | eid == toId attrs -> do
-        otherLocationsWithClues <-
-          selectList $ LocationWithAnyClues <> NotLocation (LocationWithId lid)
-        pushAll
-          $ createCardEffect
+          otherLocationsWithClues <-
+            selectList $ LocationWithAnyClues <> NotLocation (LocationWithId lid)
+          pushAll $
+            createCardEffect
               Cards.vantagePoint
               Nothing
               (toSource attrs)
               (LocationTarget lid)
-          : [ chooseOne iid
-              $ Label "Do not move a clue" []
-              : [ targetLabel
-                    lid'
-                    [ RemoveClues (LocationTarget lid') 1
-                    , PlaceClues (LocationTarget lid) 1
-                    ]
-                | lid' <- otherLocationsWithClues
+              : [ chooseOne iid $
+                  Label "Do not move a clue" []
+                    : [ targetLabel
+                        lid'
+                        [ RemoveClues (toSource attrs) (LocationTarget lid') 1
+                        , PlaceClues (toSource attrs) (LocationTarget lid) 1
+                        ]
+                      | lid' <- otherLocationsWithClues
+                      ]
+                | notNull otherLocationsWithClues
                 ]
-            | notNull otherLocationsWithClues
-            ]
-        pure e
+          pure e
     _ -> VantagePoint <$> runMessage msg attrs
 
 newtype VantagePointEffect = VantagePointEffect EffectAttrs
@@ -64,8 +64,9 @@ vantagePointEffect :: EffectArgs -> VantagePointEffect
 vantagePointEffect = cardEffect VantagePointEffect Cards.vantagePoint
 
 instance HasModifiersFor VantagePointEffect where
-  getModifiersFor target (VantagePointEffect a) | effectTarget a == target =
-    pure $ toModifiers a [ShroudModifier (-1)]
+  getModifiersFor target (VantagePointEffect a)
+    | effectTarget a == target =
+        pure $ toModifiers a [ShroudModifier (-1)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage VantagePointEffect where

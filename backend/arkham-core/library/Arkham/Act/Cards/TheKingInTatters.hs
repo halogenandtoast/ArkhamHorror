@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheKingInTatters
-  ( TheKingInTatters(..)
-  , theKingInTatters
-  ) where
+module Arkham.Act.Cards.TheKingInTatters (
+  TheKingInTatters (..),
+  theKingInTatters,
+) where
 
 import Arkham.Prelude
 
@@ -11,12 +11,11 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype TheKingInTatters = TheKingInTatters ActAttrs
@@ -32,11 +31,11 @@ instance HasAbilities TheKingInTatters where
         a
         1
         (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped)
-      $ FastAbility Free
-    , mkAbility a 2
-      $ ForcedAbility
-      $ EnemyWouldBeDefeated Timing.When
-      $ EnemyWithTitle "Hastur"
+        $ FastAbility Free
+    , mkAbility a 2 $
+        ForcedAbility $
+          EnemyWouldBeDefeated Timing.When $
+            EnemyWithTitle "Hastur"
     ]
 
 instance RunMessage TheKingInTatters where
@@ -46,23 +45,20 @@ instance RunMessage TheKingInTatters where
       for_ mlid $ \lid -> do
         iids <- getInvestigatorIds
         noClues <- fieldP LocationClues (== 0) lid
-        when noClues
-          $ pushAll
-          $ map InvestigatorDiscardAllClues iids
-          <> [Flip iid source (LocationTarget lid)]
+        when noClues $
+          pushAll $
+            map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
+              <> [Flip iid source (LocationTarget lid)]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing)
-        $ push
-        $ ScenarioResolution
-        $ Resolution 1
-      whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow)
-        $ push
-        $ ScenarioResolution
-        $ Resolution 2
-      whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa)
-        $ push
-        $ ScenarioResolution
-        $ Resolution 3
+      whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing) $
+        push $
+          scenarioResolution 1
+      whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow) $
+        push $
+          scenarioResolution 2
+      whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa) $
+        push $
+          scenarioResolution 3
       pure a
     _ -> TheKingInTatters <$> runMessage msg attrs

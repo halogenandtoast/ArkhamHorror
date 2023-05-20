@@ -30,25 +30,22 @@ instance HasAbilities DisruptingTheRitual where
 
 instance RunMessage DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( chooseOne
-                  iid
-                  [ SkillLabel
-                      SkillWillpower
-                      [beginSkillTest iid source (toTarget attrs) SkillWillpower 3]
-                  , SkillLabel
-                      SkillAgility
-                      [beginSkillTest iid source (toTarget attrs) SkillAgility 3]
-                  ]
-              )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $
+        chooseOne
+          iid
+          [ SkillLabel
+              SkillWillpower
+              [beginSkillTest iid source (toTarget attrs) SkillWillpower 3]
+          , SkillLabel
+              SkillAgility
+              [beginSkillTest iid source (toTarget attrs) SkillAgility 3]
+          ]
+      pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) source AdvancedWithOther)
-    AdvanceAct aid _ _
-      | aid == actId && onSide B attrs ->
-          a <$ push (scenarioResolution 1)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+      a <$ push (scenarioResolution 1)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> a <$ push (PlaceClues (toTarget attrs) 1)
+      | isSource attrs source -> a <$ push (PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1)
     _ -> DisruptingTheRitual <$> runMessage msg attrs

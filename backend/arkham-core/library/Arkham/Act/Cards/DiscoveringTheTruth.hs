@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.DiscoveringTheTruth
-  ( DiscoveringTheTruth(..)
-  , discoveringTheTruth
-  ) where
+module Arkham.Act.Cards.DiscoveringTheTruth (
+  DiscoveringTheTruth (..),
+  discoveringTheTruth,
+) where
 
 import Arkham.Prelude
 
@@ -9,9 +9,9 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message hiding ( InvestigatorEliminated )
+import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -32,6 +32,8 @@ instance RunMessage DiscoveringTheTruth where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clueCount <- field InvestigatorClues iid
       pushAll
-        [InvestigatorDiscardAllClues iid, PlaceClues (toTarget attrs) clueCount]
+        [ InvestigatorDiscardAllClues (toAbilitySource attrs 1) iid
+        , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) clueCount
+        ]
       pure a
     _ -> DiscoveringTheTruth <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.AscendingTheHillV3
-  ( AscendingTheHillV3(..)
-  , ascendingTheHillV3
-  ) where
+module Arkham.Act.Cards.AscendingTheHillV3 (
+  AscendingTheHillV3 (..),
+  ascendingTheHillV3,
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype AscendingTheHillV3 = AscendingTheHillV3 ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingTheHillV3 :: ActCard AscendingTheHillV3
@@ -32,8 +32,11 @@ instance HasModifiersFor AscendingTheHillV3 where
 
 instance HasAbilities AscendingTheHillV3 where
   getAbilities (AscendingTheHillV3 x) =
-    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
-        "Sentinel Peak"
+    [ mkAbility x 1 $
+        ForcedAbility $
+          Enters Timing.When You $
+            LocationWithTitle
+              "Sentinel Peak"
     ]
 
 instance RunMessage AscendingTheHillV3 where
@@ -52,6 +55,6 @@ instance RunMessage AscendingTheHillV3 where
       pure a
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- perPlayer 1
-      push $ PlaceDamage (EnemyTarget eid) damage
+      push $ PlaceDamage (toSource attrs) (toTarget eid) damage
       pure a
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

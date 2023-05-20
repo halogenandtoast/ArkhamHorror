@@ -2,8 +2,8 @@ module Arkham.Event.Cards.DrawnToTheFlame where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 
@@ -16,8 +16,10 @@ drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
 instance RunMessage DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
-      [ InvestigatorDrawEncounterCard iid
-      , InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
-      ]
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+      pushAll
+        [ InvestigatorDrawEncounterCard iid
+        , InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing
+        ]
+      pure e
     _ -> DrawnToTheFlame <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.IllOmen
-  ( illOmen
-  , IllOmen(..)
-  ) where
+module Arkham.Treachery.Cards.IllOmen (
+  illOmen,
+  IllOmen (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,18 +23,19 @@ instance RunMessage IllOmen where
     Revelation iid source | isSource attrs source -> do
       lids <- selectList $ LocationWithInvestigator UneliminatedInvestigator
       locationsWithInvestigators <- forToSnd lids (selectList . investigatorAt)
-      push $ chooseOne
-        iid
-        [ targetLabel
+      push $
+        chooseOne
+          iid
+          [ targetLabel
             lid
-            (PlaceDoom (toTarget lid) 1
-            : map
-                (\i ->
-                  InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1
-                )
-                investigators
+            ( PlaceDoom (toSource attrs) (toTarget lid) 1
+                : map
+                  ( \i ->
+                      InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1
+                  )
+                  investigators
             )
-        | (lid, investigators) <- locationsWithInvestigators
-        ]
+          | (lid, investigators) <- locationsWithInvestigators
+          ]
       pure t
     _ -> IllOmen <$> runMessage msg attrs

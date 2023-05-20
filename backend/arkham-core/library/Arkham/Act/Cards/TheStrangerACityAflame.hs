@@ -1,12 +1,11 @@
-module Arkham.Act.Cards.TheStrangerACityAflame
-  ( TheStrangerACityAflame(..)
-  , theStrangerACityAflame
-  ) where
+module Arkham.Act.Cards.TheStrangerACityAflame (
+  TheStrangerACityAflame (..),
+  theStrangerACityAflame,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -28,28 +27,31 @@ theStrangerACityAflame =
 
 instance HasAbilities TheStrangerACityAflame where
   getAbilities (TheStrangerACityAflame a) =
-    [ mkAbility a 1
-        $ Objective
-        $ ForcedAbility
-        $ EnemyWouldBeDiscarded Timing.When
-        $ enemyIs Enemies.theManInThePallidMask
+    [ mkAbility a 1 $
+        Objective $
+          ForcedAbility $
+            EnemyWouldBeDiscarded Timing.When $
+              enemyIs Enemies.theManInThePallidMask
     ]
 
 instance RunMessage TheStrangerACityAflame where
   runMessage msg a@(TheStrangerACityAflame attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
-      theatre <- fromJustNote "theatre must be in play"
-        <$> selectOne (LocationWithTitle "Theatre")
+      theatre <-
+        fromJustNote "theatre must be in play"
+          <$> selectOne (LocationWithTitle "Theatre")
       card <- flipCard <$> genCard (toCardDef attrs)
-      a <$ pushAll
+      pushAll
         [ AddToken Cultist
         , AddToken Cultist
-        , PlaceHorror (LocationTarget theatre) 1
+        , PlaceHorror (toSource attrs) (toTarget theatre) 1
         , PlaceNextTo ActDeckTarget [card]
         , CreateEffect "03047a" Nothing (toSource attrs) (toTarget attrs)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        , advanceActDeck attrs
         ]
+      pure a
     _ -> TheStrangerACityAflame <$> runMessage msg attrs

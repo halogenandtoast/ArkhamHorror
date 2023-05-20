@@ -6,7 +6,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 
@@ -22,9 +22,9 @@ instance RunMessage Evidence where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getJustLocation iid
       hasClues <- fieldP LocationClues (> 0) currentLocationId
-      pushAll
-        $ [ InvestigatorDiscoverClues iid currentLocationId 1 Nothing
-          | hasClues
-          ]
+      pushAll $
+        [ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) 1 Nothing
+        | hasClues
+        ]
       pure e
     _ -> Evidence <$> runMessage msg attrs

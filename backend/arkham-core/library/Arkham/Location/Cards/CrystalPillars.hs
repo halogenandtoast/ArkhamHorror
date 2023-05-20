@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.CrystalPillars
-  ( crystalPillars
-  , CrystalPillars(..)
-  ) where
+module Arkham.Location.Cards.CrystalPillars (
+  crystalPillars,
+  CrystalPillars (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,28 +23,24 @@ crystalPillars :: LocationCard CrystalPillars
 crystalPillars = location CrystalPillars Cards.crystalPillars 1 (PerPlayer 2)
 
 instance HasAbilities CrystalPillars where
-  getAbilities (CrystalPillars attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1
-      $ ForcedAbility
-      $ Enters Timing.After You
-      $ LocationWithId
-      $ toId attrs
-    ]
+  getAbilities (CrystalPillars attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1 $
+          ForcedAbility $
+            Enters Timing.After You $
+              LocationWithId $
+                toId attrs
+      ]
 
 instance RunMessage CrystalPillars where
   runMessage msg l@(CrystalPillars attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- getVengeanceInVictoryDisplay
-      push $ beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillWillpower
-        (1 + n)
+      push $ beginSkillTest iid attrs iid SkillWillpower (1 + n)
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
         pure l
     _ -> CrystalPillars <$> runMessage msg attrs

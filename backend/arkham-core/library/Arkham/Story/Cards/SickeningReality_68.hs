@@ -47,8 +47,8 @@ instance RunMessage SickeningReality_68 where
           1
         | iid <- iids
         ]
-          <> [ RemoveClues (AssetTarget assetId) clues
-             , PlaceClues (LocationTarget lid) clues
+          <> [ RemoveClues (toSource attrs) (AssetTarget assetId) clues
+             , PlaceClues (toSource attrs) (LocationTarget lid) clues
              , RemoveFromGame (AssetTarget assetId)
              , enemyCreation
              ]

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.PorteDeLAvancee
-  ( porteDeLAvancee
-  , PorteDeLAvancee(..)
-  ) where
+module Arkham.Location.Cards.PorteDeLAvancee (
+  porteDeLAvancee,
+  PorteDeLAvancee (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,27 +22,29 @@ porteDeLAvancee =
   location PorteDeLAvancee Cards.porteDeLAvancee 3 (PerPlayer 1)
 
 instance HasAbilities PorteDeLAvancee where
-  getAbilities (PorteDeLAvancee a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (Here <> AgendaExists AgendaWithAnyDoom)
-      $ ActionAbility Nothing
-      $ ActionCost 2
-    ]
+  getAbilities (PorteDeLAvancee a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (Here <> AgendaExists AgendaWithAnyDoom) $
+          ActionAbility Nothing $
+            ActionCost 2
+      ]
 
 instance RunMessage PorteDeLAvancee where
   runMessage msg l@(PorteDeLAvancee attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectList AgendaWithAnyDoom
       agendasWithOtherAgendas <- forToSnd agendas (selectJust . NotAgenda . AgendaWithId)
-      push $ chooseOrRunOne
-        iid
-        [ targetLabel
+      push $
+        chooseOrRunOne
+          iid
+          [ targetLabel
             target
-            [ RemoveDoom (AgendaTarget target) 1
-            , PlaceDoom (AgendaTarget otherTarget) 1
-            , PlaceClues (toTarget attrs) 2
+            [ RemoveDoom (toAbilitySource attrs 1) (AgendaTarget target) 1
+            , PlaceDoom (toAbilitySource attrs 1) (AgendaTarget otherTarget) 1
+            , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 2
             ]
-        | (target, otherTarget) <- agendasWithOtherAgendas
-        ]
+          | (target, otherTarget) <- agendasWithOtherAgendas
+          ]
       pure l
     _ -> PorteDeLAvancee <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.AncestralFear
-  ( ancestralFear
-  , AncestralFear(..)
-  ) where
+module Arkham.Treachery.Cards.AncestralFear (
+  ancestralFear,
+  AncestralFear (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,16 +24,16 @@ instance RunMessage AncestralFear where
       mLocation <- selectOne $ locationWithInvestigator iid
       -- Due to adding to victory not triggering surge we have to manually call
       -- it. Ideally we would solve surge another way
-      push
-        $ chooseOrRunOne iid
-        $ [ Label
-              "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display)."
-              [PlaceDoom (toTarget lid) 1]
+      push $
+        chooseOrRunOne iid $
+          [ Label
+            "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display)."
+            [PlaceDoom (toSource attrs) (toTarget lid) 1]
           | lid <- maybeToList mLocation
           ]
-        <> [ Label
-               "Place Ancestral Fear in the victory display."
-               [AddToVictory (toTarget attrs), gainSurge attrs]
-           ]
+            <> [ Label
+                  "Place Ancestral Fear in the victory display."
+                  [AddToVictory (toTarget attrs), gainSurge attrs]
+               ]
       pure t
     _ -> AncestralFear <$> runMessage msg attrs

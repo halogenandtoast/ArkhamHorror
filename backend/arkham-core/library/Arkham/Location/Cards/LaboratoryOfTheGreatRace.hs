@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LaboratoryOfTheGreatRace
-  ( laboratoryOfTheGreatRace
-  , LaboratoryOfTheGreatRace(..)
-  ) where
+module Arkham.Location.Cards.LaboratoryOfTheGreatRace (
+  laboratoryOfTheGreatRace,
+  LaboratoryOfTheGreatRace (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,36 +18,33 @@ newtype LaboratoryOfTheGreatRace = LaboratoryOfTheGreatRace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laboratoryOfTheGreatRace :: LocationCard LaboratoryOfTheGreatRace
-laboratoryOfTheGreatRace = location
-  LaboratoryOfTheGreatRace
-  Cards.laboratoryOfTheGreatRace
-  2
-  (PerPlayer 1)
+laboratoryOfTheGreatRace =
+  location
+    LaboratoryOfTheGreatRace
+    Cards.laboratoryOfTheGreatRace
+    2
+    (PerPlayer 1)
 
 instance HasAbilities LaboratoryOfTheGreatRace where
-  getAbilities (LaboratoryOfTheGreatRace attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    ]
+  getAbilities (LaboratoryOfTheGreatRace attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis) $
+          ActionAbility Nothing $
+            ActionCost 1
+      ]
 
 instance RunMessage LaboratoryOfTheGreatRace where
   runMessage msg l@(LaboratoryOfTheGreatRace attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest
-        iid
-        (toAbilitySource attrs 1)
-        (InvestigatorTarget iid)
-        SkillAgility
-        3
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid SkillAgility 3
       pure l
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Remember ActivatedTheDevice
         pure l
-    FailedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
-      -> do
-        push $ PlaceClues (toTarget attrs) 1
+    FailedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
+        push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
         pure l
     _ -> LaboratoryOfTheGreatRace <$> runMessage msg attrs

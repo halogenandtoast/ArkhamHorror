@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TenAcreMeadow_246
-  ( tenAcreMeadow_246
-  , TenAcreMeadow_246(..)
-  ) where
+module Arkham.Location.Cards.TenAcreMeadow_246 (
+  tenAcreMeadow_246,
+  TenAcreMeadow_246 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( tenAcreMeadow_246 )
+import Arkham.Location.Cards qualified as Cards (tenAcreMeadow_246)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -24,18 +24,20 @@ tenAcreMeadow_246 =
   location TenAcreMeadow_246 Cards.tenAcreMeadow_246 3 (Static 1)
 
 instance HasAbilities TenAcreMeadow_246 where
-  getAbilities (TenAcreMeadow_246 attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
-          attrs
-          1
-          (Here <> EnemyCriteria
-            (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination)
-          )
-          (FastAbility Free)
+  getAbilities (TenAcreMeadow_246 attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
+        attrs
+        1
+        ( Here
+            <> EnemyCriteria
+              (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination)
+        )
+        (FastAbility Free)
         & (abilityLimitL .~ GroupLimit PerGame 1)
-    | locationRevealed attrs
-    ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage TenAcreMeadow_246 where
   runMessage msg l@(TenAcreMeadow_246 attrs) = case msg of
@@ -44,19 +46,20 @@ instance RunMessage TenAcreMeadow_246 where
       when
         (null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ pushAll
+      pushAll
         [ chooseOne
             iid
-            [ TargetLabel
-                (EnemyTarget eid)
-                [ PlaceClues (EnemyTarget eid) 1
-                , CreateEffect
+            [ targetLabel
+              eid
+              [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
+              , CreateEffect
                   "02246"
                   Nothing
                   (toSource attrs)
                   (EnemyTarget eid)
-                ]
+              ]
             | eid <- abominations
             ]
         ]
+      pure l
     _ -> TenAcreMeadow_246 <$> runMessage msg attrs

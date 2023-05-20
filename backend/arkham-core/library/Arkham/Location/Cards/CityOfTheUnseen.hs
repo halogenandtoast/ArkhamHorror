@@ -41,6 +41,7 @@ instance HasAbilities CityOfTheUnseen where
               PlacedCounterOnEnemy
                 Timing.After
                 (enemyAt $ toId attrs)
+                AnySource
                 DoomCounter
                 (AtLeast $ Static 1)
       ]
@@ -55,7 +56,7 @@ instance RunMessage CityOfTheUnseen where
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemyId -> enemyId) payment ->
       do
         pushAll
-          [ PlaceDoom (EnemyTarget enemyId) 1
+          [ PlaceDoom (toAbilitySource attrs 1) (toTarget enemyId) 1
           , UseCardAbilityChoice
               iid
               (toSource attrs)

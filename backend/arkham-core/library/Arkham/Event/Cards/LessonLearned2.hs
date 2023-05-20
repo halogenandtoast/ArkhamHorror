@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.LessonLearned2
-  ( lessonLearned2
-  , LessonLearned2(..)
-  ) where
+module Arkham.Event.Cards.LessonLearned2 (
+  lessonLearned2,
+  LessonLearned2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,7 +21,7 @@ instance RunMessage LessonLearned2 where
   runMessage msg e@(LessonLearned2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
-        [ InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
+        [ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing
         ]
       pure e
     _ -> LessonLearned2 <$> runMessage msg attrs

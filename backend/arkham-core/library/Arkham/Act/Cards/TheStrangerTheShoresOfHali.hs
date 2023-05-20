@@ -1,14 +1,14 @@
-module Arkham.Act.Cards.TheStrangerTheShoresOfHali
-  ( TheStrangerTheShoresOfHali(..)
-  , theStrangerTheShoresOfHali
-  ) where
+module Arkham.Act.Cards.TheStrangerTheShoresOfHali (
+  TheStrangerTheShoresOfHali (..),
+  theStrangerTheShoresOfHali,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
@@ -29,28 +29,31 @@ theStrangerTheShoresOfHali =
 
 instance HasAbilities TheStrangerTheShoresOfHali where
   getAbilities (TheStrangerTheShoresOfHali a) =
-    [ mkAbility a 1
-        $ Objective
-        $ ForcedAbility
-        $ EnemyWouldBeDiscarded Timing.When
-        $ enemyIs Enemies.theManInThePallidMask
+    [ mkAbility a 1 $
+        Objective $
+          ForcedAbility $
+            EnemyWouldBeDiscarded Timing.When $
+              enemyIs Enemies.theManInThePallidMask
     ]
 
 instance RunMessage TheStrangerTheShoresOfHali where
   runMessage msg a@(TheStrangerTheShoresOfHali attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
-      privateLocations <- selectListMap LocationTarget
-        $ LocationWithTrait Private
+      privateLocations <-
+        selectListMap LocationTarget $
+          LocationWithTrait Private
       card <- flipCard <$> genCard (toCardDef attrs)
-      a <$ pushAll
-        ([AddToken ElderThing, AddToken ElderThing]
-        <> map (`PlaceHorror` 1) privateLocations
-        <> [ CreateEffect "03047c" Nothing (toSource attrs) (toTarget attrs)
-           , PlaceNextTo ActDeckTarget [card]
-           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-           ]
-        )
+      a
+        <$ pushAll
+          ( [AddToken ElderThing, AddToken ElderThing]
+              <> map (\l -> PlaceHorror (toSource attrs) l 1) privateLocations
+              <> [ CreateEffect "03047c" Nothing (toSource attrs) (toTarget attrs)
+                 , PlaceNextTo ActDeckTarget [card]
+                 , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+                 ]
+          )
     _ -> TheStrangerTheShoresOfHali <$> runMessage msg attrs

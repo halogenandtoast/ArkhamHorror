@@ -29,7 +29,7 @@ instance RunMessage JosefsPlan where
       josefMeiger <- selectJust $ enemyIs Enemies.josefMeiger
       pushAll
         [ createCardEffect Cards.josefsPlan Nothing attrs attrs
-        , RemoveAllDoom (toTarget josefMeiger)
+        , RemoveAllDoom (toSource attrs) (toTarget josefMeiger)
         , DisengageEnemyFromAll josefMeiger
         ]
       pure s

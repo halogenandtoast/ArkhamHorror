@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.Deduction2
-  ( deduction2
-  , Deduction2(..)
-  ) where
+module Arkham.Effect.Effects.Deduction2 (
+  deduction2,
+  Deduction2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,9 +21,11 @@ instance RunMessage Deduction2 where
   runMessage msg e@(Deduction2 attrs@EffectAttrs {..}) = case msg of
     Successful (Action.Investigate, _) iid _ (LocationTarget lid) _ ->
       case effectMetadata of
-        Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' ->
-          e <$ push
-            (InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate))
+        Just (EffectMetaTarget (LocationTarget lid'))
+          | lid == lid' -> do
+              push
+                (InvestigatorDiscoverClues iid lid (toSource attrs) 1 (Just Action.Investigate))
+              pure e
         _ -> pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> Deduction2 <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.RiteOfSeeking4
-  ( riteOfSeeking4
-  , RiteOfSeeking4(..)
-  ) where
+module Arkham.Effect.Effects.RiteOfSeeking4 (
+  riteOfSeeking4,
+  RiteOfSeeking4 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,23 +22,28 @@ riteOfSeeking4 = RiteOfSeeking4 . uncurry4 (baseAttrs "02233")
 instance RunMessage RiteOfSeeking4 where
   runMessage msg e@(RiteOfSeeking4 attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
-      InvestigationTarget iid' _ | iid == iid' -> e <$ when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll
-          [ If
-            (Window.RevealTokenEffect iid token effectId)
-            [SetActions iid effectSource 0, ChooseEndTurn iid]
-          , DisableEffect effectId
-          ]
-        )
+      InvestigationTarget iid' _ | iid == iid' -> do
+        when
+          (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+          ( pushAll
+              [ If
+                  (Window.RevealTokenEffect iid token effectId)
+                  [SetActions iid effectSource 0, ChooseEndTurn iid]
+              , DisableEffect effectId
+              ]
+          )
+        pure e
       _ -> pure e
-    SkillTestEnds _ _ -> e <$ case effectTarget of
-      InvestigatorTarget iid -> pushAll [DisableEffect effectId, EndTurn iid]
-      _ -> push (DisableEffect effectId)
+    SkillTestEnds _ _ -> do
+      case effectTarget of
+        InvestigatorTarget iid -> pushAll [DisableEffect effectId, EndTurn iid]
+        _ -> push (DisableEffect effectId)
+      pure e
     Successful (Action.Investigate, _) iid source _ _
       | effectSource == source -> case effectTarget of
-        InvestigationTarget _ lid' ->
-          e <$ push
-            (InvestigatorDiscoverClues iid lid' 2 (Just Action.Investigate))
-        _ -> pure e
+          InvestigationTarget _ lid' -> do
+            push
+              (InvestigatorDiscoverClues iid lid' (toSource attrs) 2 (Just Action.Investigate))
+            pure e
+          _ -> pure e
     _ -> RiteOfSeeking4 <$> runMessage msg attrs

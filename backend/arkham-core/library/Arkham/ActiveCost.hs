@@ -450,14 +450,14 @@ instance RunMessage ActiveCost where
           push $
             chooseOrRunOne
               iid
-              [TargetLabel target [PlaceDoom target x] | target <- enemies]
+              [TargetLabel target [PlaceDoom source target x] | target <- enemies]
           withPayment $ DoomPayment x
         DoomCost _ (AgendaMatcherTarget matcher) x -> do
           agendas <- selectListMap AgendaTarget matcher
-          pushAll [PlaceDoom target x | target <- agendas]
+          pushAll [PlaceDoom source target x | target <- agendas]
           withPayment $ DoomPayment (x * length agendas)
         DoomCost _ target x -> do
-          push (PlaceDoom target x)
+          push (PlaceDoom source target x)
           withPayment $ DoomPayment x
         HorrorCost _ target x -> case target of
           InvestigatorTarget iid' | iid' == iid -> do
@@ -660,7 +660,7 @@ instance RunMessage ActiveCost where
           push $ InvestigatorSpendClues iid totalClues
           withPayment $ CluePayment totalClues
         PlaceClueOnLocationCost x -> do
-          push $ InvestigatorPlaceCluesOnLocation iid x
+          push $ InvestigatorPlaceCluesOnLocation iid source x
           withPayment $ CluePayment x
         GroupClueCostRange (sVal, eVal) locationMatcher -> do
           mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt locationMatcher)

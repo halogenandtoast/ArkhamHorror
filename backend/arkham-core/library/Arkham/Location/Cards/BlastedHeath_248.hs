@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BlastedHeath_248
-  ( blastedHeath_248
-  , BlastedHeath_248(..)
-  ) where
+module Arkham.Location.Cards.BlastedHeath_248 (
+  blastedHeath_248,
+  BlastedHeath_248 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,8 @@ import Arkham.Classes
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Cards qualified as Cards ( blastedHeath_248 )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Cards (blastedHeath_248)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -26,30 +26,31 @@ blastedHeath_248 =
 
 instance HasAbilities BlastedHeath_248 where
   getAbilities (BlastedHeath_248 attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
-            attrs
-            1
-            (Here
-            <> InvestigatorExists
-                 (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-            <> EnemyCriteria
-                 (EnemyExists
-                 $ EnemyAt YourLocation
-                 <> EnemyWithTrait Abomination
-                 )
-            )
-            (FastAbility Free)
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ limitedAbility (GroupLimit PerGame 1) $
+        restrictedAbility
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists
+                (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> EnemyCriteria
+                ( EnemyExists $
+                    EnemyAt YourLocation
+                      <> EnemyWithTrait Abomination
+                )
+          )
+          (FastAbility Free)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <-
-        selectWithField InvestigatorClues
-        $ investigatorAt (toId attrs)
-        <> InvestigatorWithAnyClues
+        selectWithField InvestigatorClues $
+          investigatorAt (toId attrs)
+            <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
@@ -58,20 +59,21 @@ instance RunMessage BlastedHeath_248 where
       let
         totalClues = sum $ map snd investigatorWithCluePairs
         investigators = map fst investigatorWithCluePairs
-        placeClueOnAbomination = chooseOne
-          iid
-          [ TargetLabel target [SpendClues 1 investigators, PlaceClues target 1]
-          | target <- abominations
-          ]
+        placeClueOnAbomination =
+          chooseOne
+            iid
+            [ targetLabel target [SpendClues 1 investigators, PlaceClues (toAbilitySource attrs 1) target 1]
+            | target <- abominations
+            ]
 
-      pushAll
-        $ placeClueOnAbomination
-        : [ chooseOne
+      pushAll $
+        placeClueOnAbomination
+          : [ chooseOne
               iid
               [ Label "Spend a second clue" [placeClueOnAbomination]
               , Label "Do not spend a second clue" []
               ]
-          | totalClues > 1
-          ]
+            | totalClues > 1
+            ]
       pure l
     _ -> BlastedHeath_248 <$> runMessage msg attrs

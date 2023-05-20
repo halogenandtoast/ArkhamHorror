@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DunwichVillage_242
-  ( dunwichVillage_242
-  , DunwichVillage_242(..)
-  ) where
+module Arkham.Location.Cards.DunwichVillage_242 (
+  dunwichVillage_242,
+  DunwichVillage_242 (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Exception
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( dunwichVillage_242 )
+import Arkham.Location.Cards qualified as Cards (dunwichVillage_242)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -23,18 +23,20 @@ dunwichVillage_242 =
   location DunwichVillage_242 Cards.dunwichVillage_242 3 (Static 1)
 
 instance HasAbilities DunwichVillage_242 where
-  getAbilities (DunwichVillage_242 attrs) = withResignAction
-    attrs
-    [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
-        attrs
-        1
-        (Here
-        <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-        <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
-        )
-        (FastAbility Free)
-    | locationRevealed attrs
-    ]
+  getAbilities (DunwichVillage_242 attrs) =
+    withResignAction
+      attrs
+      [ limitedAbility (GroupLimit PerGame 1) $
+        restrictedAbility
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+              <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
+          )
+          (FastAbility Free)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage DunwichVillage_242 where
   runMessage msg l@(DunwichVillage_242 attrs) = case msg of
@@ -44,23 +46,24 @@ instance RunMessage DunwichVillage_242 where
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ pushAll
+      pushAll
         [ chooseOne
-            iid
-            [ Label
+          iid
+          [ Label
               "Place clue on Abomination"
               [ chooseOne
                   iid
-                  [ TargetLabel
-                      (EnemyTarget eid)
-                      [ PlaceClues (EnemyTarget eid) 1
-                      , InvestigatorSpendClues iid 1
-                      ]
+                  [ targetLabel
+                    eid
+                    [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
+                    , InvestigatorSpendClues iid 1
+                    ]
                   | eid <- abominations
                   ]
               ]
-            , Label "Do not place clue on Abomination" []
-            ]
+          , Label "Do not place clue on Abomination" []
+          ]
         | iid <- investigatorsWithClues
         ]
+      pure l
     _ -> DunwichVillage_242 <$> runMessage msg attrs

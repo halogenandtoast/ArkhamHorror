@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BrightCanyon
-  ( brightCanyon
-  , BrightCanyon(..)
-  ) where
+module Arkham.Location.Cards.BrightCanyon (
+  brightCanyon,
+  BrightCanyon (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,28 +24,31 @@ brightCanyon =
   symbolLabel $ location BrightCanyon Cards.brightCanyon 2 (PerPlayer 2)
 
 instance HasAbilities BrightCanyon where
-  getAbilities (BrightCanyon attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (BrightCanyon attrs) =
+    withBaseAbilities
       attrs
-      1
-      (InvestigatorExists $ You <> HasMatchingTreachery
-        (treacheryIs Treacheries.poisoned)
-      )
-    $ ForcedAbility
-    $ Enters Timing.After You
-    $ LocationWithId
-    $ toId attrs
-    , limitedAbility (GroupLimit PerDepthLevel 1)
-    $ restrictedAbility
-        attrs
-        2
-        (CluesOnThis (AtLeast $ Static 1)
-        <> InvestigatorExists (You <> InvestigatorWithSupply Binoculars)
-        )
-    $ ActionAbility Nothing
-    $ ActionCost 1
-    ]
+      [ restrictedAbility
+          attrs
+          1
+          ( InvestigatorExists $
+              You
+                <> HasMatchingTreachery
+                  (treacheryIs Treacheries.poisoned)
+          )
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId attrs
+      , limitedAbility (GroupLimit PerDepthLevel 1)
+          $ restrictedAbility
+            attrs
+            2
+            ( CluesOnThis (AtLeast $ Static 1)
+                <> InvestigatorExists (You <> InvestigatorWithSupply Binoculars)
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+      ]
 
 instance RunMessage BrightCanyon where
   runMessage msg l@(BrightCanyon attrs) = case msg of
@@ -53,6 +56,6 @@ instance RunMessage BrightCanyon where
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ InvestigatorDiscoverClues iid (toId attrs) 2 Nothing
+      push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 2) 2 Nothing
       pure l
     _ -> BrightCanyon <$> runMessage msg attrs

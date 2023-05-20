@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SearchingForAnswers
-  ( SearchingForAnswers(..)
-  , searchingForAnswers
-  ) where
+module Arkham.Act.Cards.SearchingForAnswers (
+  SearchingForAnswers (..),
+  searchingForAnswers,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Matcher hiding ( RevealLocation )
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 
@@ -25,24 +25,28 @@ searchingForAnswers =
 
 instance HasAbilities SearchingForAnswers where
   getAbilities (SearchingForAnswers x) =
-    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
-        "The Hidden Chamber"
+    [ mkAbility x 1 $
+        ForcedAbility $
+          Enters Timing.When You $
+            LocationWithTitle
+              "The Hidden Chamber"
     ]
 
 instance RunMessage SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       unrevealedLocationIds <- selectList UnrevealedLocation
       hiddenChamber <- selectJust (LocationWithTitle "The Hidden Chamber")
       silasBishop <- genCard Enemies.silasBishop
       createSilasBishop <- createEnemyAt_ silasBishop hiddenChamber Nothing
-      pushAll
-        $ [ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
-        <> [ MoveAllCluesTo (LocationTarget hiddenChamber)
-           , createSilasBishop
-           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-           ]
+      pushAll $
+        [RevealLocation Nothing lid | lid <- unrevealedLocationIds]
+          <> [ MoveAllCluesTo (toSource attrs) (toTarget hiddenChamber)
+             , createSilasBishop
+             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+             ]
       pure a
     _ -> SearchingForAnswers <$> runMessage msg attrs

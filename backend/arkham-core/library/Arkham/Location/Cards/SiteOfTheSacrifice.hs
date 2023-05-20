@@ -46,19 +46,19 @@ instance RunMessage SiteOfTheSacrifice where
   runMessage msg l@(SiteOfTheSacrifice attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       nahab <- getUniqueEnemy Enemies.nahab
-      push $ RemoveDoom (toTarget nahab) 1
+      push $ RemoveDoom (toAbilitySource attrs 1) (toTarget nahab) 1
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       cluesToAdd <-
         max 0 . subtract (locationClues attrs) <$> perPlayer 3
-      push $ PlaceClues (toTarget attrs) cluesToAdd
+      push $ PlaceClues (toAbilitySource attrs 2) (toTarget attrs) cluesToAdd
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
       nahab <- getUniqueEnemy Enemies.nahab
       push $
         chooseOne
           iid
-          [ Label "Place 1 doom on Nahab" [PlaceDoom (toTarget nahab) 1]
+          [ Label "Place 1 doom on Nahab" [PlaceDoom (toAbilitySource attrs 3) (toTarget nahab) 1]
           , Label "Nahab attacks you" [InitiateEnemyAttack $ enemyAttack nahab attrs iid]
           ]
       pure l

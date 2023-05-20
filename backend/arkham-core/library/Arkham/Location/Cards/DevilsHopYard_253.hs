@@ -1,16 +1,15 @@
-module Arkham.Location.Cards.DevilsHopYard_253
-  ( devilsHopYard_253
-  , DevilsHopYard_253(..)
-  ) where
+module Arkham.Location.Cards.DevilsHopYard_253 (
+  devilsHopYard_253,
+  DevilsHopYard_253 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Exception
-import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( devilsHopYard_253 )
+import Arkham.Location.Cards qualified as Cards (devilsHopYard_253)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -24,21 +23,22 @@ devilsHopYard_253 =
   location DevilsHopYard_253 Cards.devilsHopYard_253 2 (PerPlayer 1)
 
 instance HasAbilities DevilsHopYard_253 where
-  getAbilities (DevilsHopYard_253 attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
-        attrs
-        1
-        (Here
-        <> InvestigatorExists
-             (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-        <> EnemyCriteria
-             (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination
-             )
-        )
-        (FastAbility Free)
-    | locationRevealed attrs
-    ]
+  getAbilities (DevilsHopYard_253 attrs) =
+    withRevealedAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerGame 1) $
+          restrictedAbility
+            attrs
+            1
+            ( Here
+                <> InvestigatorExists
+                  (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+                <> EnemyCriteria
+                  ( EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination
+                  )
+            )
+            (FastAbility Free)
+      ]
 
 instance RunMessage DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of
@@ -48,23 +48,24 @@ instance RunMessage DevilsHopYard_253 where
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ pushAll
+      pushAll
         [ chooseOne
-            iid
-            [ Label
+          iid
+          [ Label
               "Place clue on Abomination"
               [ chooseOne
                   iid
-                  [ TargetLabel
-                      (EnemyTarget eid)
-                      [ PlaceClues (EnemyTarget eid) 1
-                      , InvestigatorSpendClues iid 1
-                      ]
+                  [ targetLabel
+                    eid
+                    [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
+                    , InvestigatorSpendClues iid 1
+                    ]
                   | eid <- abominations
                   ]
               ]
-            , Label "Do not place clue on Abomination" []
-            ]
+          , Label "Do not place clue on Abomination" []
+          ]
         | iid <- investigatorsWithClues
         ]
+      pure l
     _ -> DevilsHopYard_253 <$> runMessage msg attrs

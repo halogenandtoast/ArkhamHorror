@@ -13,6 +13,7 @@ import Arkham.Cost as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Classes
@@ -20,7 +21,6 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
@@ -78,7 +78,7 @@ instance RunMessage ActAttrs where
       -- This is assumed to be advancement via spending clues
       push $ AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues
       pure a
-    PlaceClues (ActTarget aid) n | aid == actId -> do
+    PlaceClues _ (ActTarget aid) n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}
     _ -> pure a

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ArousingSuspicions
-  ( ArousingSuspicions(..)
-  , arousingSuspicions
-  ) where
+module Arkham.Treachery.Cards.ArousingSuspicions (
+  ArousingSuspicions (..),
+  arousingSuspicions,
+) where
 
 import Arkham.Prelude
 
@@ -24,11 +24,12 @@ instance RunMessage ArousingSuspicions where
   runMessage msg t@(ArousingSuspicions attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       criminals <-
-        selectList
-        $ EnemyAt YourLocation
-        <> EnemyWithTrait Criminal
-        <> EnemyWithoutModifier CannotPlaceDoomOnThis
-      t <$ if null criminals
+        selectList $
+          EnemyAt YourLocation
+            <> EnemyWithTrait Criminal
+            <> EnemyWithoutModifier CannotPlaceDoomOnThis
+      if null criminals
         then push (SpendResources iid 2)
-        else pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- criminals ]
+        else pushAll [PlaceDoom (toSource attrs) (EnemyTarget eid) 1 | eid <- criminals]
+      pure t
     _ -> ArousingSuspicions <$> runMessage msg attrs

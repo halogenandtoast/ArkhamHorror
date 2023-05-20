@@ -1,21 +1,20 @@
-module Arkham.Location.Cards.TearThroughSpace
-  ( tearThroughSpace
-  , TearThroughSpace(..)
-  ) where
+module Arkham.Location.Cards.TearThroughSpace (
+  tearThroughSpace,
+  TearThroughSpace (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Label ( mkLabel )
-import Arkham.Location.Cards qualified as Cards ( tearThroughSpace )
+import Arkham.Label (mkLabel)
+import Arkham.Location.Cards qualified as Cards (tearThroughSpace)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Timing qualified as Timing
-import Control.Monad.Extra ( findM )
+import Control.Monad.Extra (findM)
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,25 +26,25 @@ tearThroughSpace =
 
 instance HasAbilities TearThroughSpace where
   getAbilities (TearThroughSpace attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When
-        | locationRevealed attrs
-        ]
+    withRevealedAbilities attrs $
+      [ mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When
+      ]
 
 instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (chooseOne
-        iid
-        [ Label
-          "Place 1 doom on Tear through Space"
-          [PlaceDoom (toTarget attrs) 1]
-        , Label "Discard Tear through Space" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
-        ]
-      )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $
+        chooseOne
+          iid
+          [ Label
+              "Place 1 doom on Tear through Space"
+              [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
+          , Label "Discard Tear through Space" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+          ]
+      pure l
     Revelation _ source | isSource attrs source -> do
       let
-        labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4] ]
+        labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4]]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels
       case availableLabel of
         Just label -> pure . TearThroughSpace $ attrs & labelL .~ label

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DevilsHopYard_252
-  ( devilsHopYard_252
-  , DevilsHopYard_252(..)
-  ) where
+module Arkham.Location.Cards.DevilsHopYard_252 (
+  devilsHopYard_252,
+  DevilsHopYard_252 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,8 @@ import Arkham.Classes
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Cards qualified as Cards ( devilsHopYard_252 )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Cards (devilsHopYard_252)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -26,55 +26,58 @@ devilsHopYard_252 =
 
 instance HasAbilities DevilsHopYard_252 where
   getAbilities (DevilsHopYard_252 attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
-            attrs
-            1
-            (Here
-            <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-            <> EnemyCriteria
-                 (EnemyExists
-                 $ EnemyAt YourLocation
-                 <> EnemyWithTrait Abomination
-                 )
-            )
-            (FastAbility Free)
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ limitedAbility (GroupLimit PerGame 1) $
+        restrictedAbility
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+              <> EnemyCriteria
+                ( EnemyExists $
+                    EnemyAt YourLocation
+                      <> EnemyWithTrait Abomination
+                )
+          )
+          (FastAbility Free)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <-
-        selectWithField InvestigatorClues
-        $ investigatorAt (toId attrs)
-        <> InvestigatorWithAnyClues
+        selectWithField InvestigatorClues $
+          investigatorAt (toId attrs)
+            <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
       let
-        placeClueOnAbomination iid' = chooseOne
-          iid'
-          [ TargetLabel
+        placeClueOnAbomination iid' =
+          chooseOne
+            iid'
+            [ targetLabel
               target
-              [PlaceClues target 1, InvestigatorSpendClues iid' 1]
-          | target <- abominations
-          ]
-
-      push $ chooseOne
-        iid
-        [ targetLabel iid'
-          $ placeClueOnAbomination iid'
-          : [ chooseOne
-                iid'
-                [ Label "Spend a second clue" [placeClueOnAbomination iid']
-                , Label "Do not spend a second clue" []
-                ]
-            | clueCount > 1
+              [PlaceClues (toAbilitySource attrs 1) target 1, InvestigatorSpendClues iid' 1]
+            | target <- abominations
             ]
-        | (iid', clueCount) <- investigatorWithCluePairs
-        ]
+
+      push $
+        chooseOne
+          iid
+          [ targetLabel iid' $
+            placeClueOnAbomination iid'
+              : [ chooseOne
+                  iid'
+                  [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                  , Label "Do not spend a second clue" []
+                  ]
+                | clueCount > 1
+                ]
+          | (iid', clueCount) <- investigatorWithCluePairs
+          ]
       pure l
     _ -> DevilsHopYard_252 <$> runMessage msg attrs

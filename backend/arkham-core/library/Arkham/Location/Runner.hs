@@ -23,6 +23,7 @@ import Arkham.Message as X hiding (
   MoveAction,
   RevealLocation,
  )
+import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
@@ -42,7 +43,6 @@ import Arkham.Matcher (
 import Arkham.Message (Message (DiscoverClues, MoveAction, RevealLocation))
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window (Window (..))
@@ -137,7 +137,7 @@ instance RunMessage LocationAttrs where
       unless (AlternateSuccessfullInvestigation `elem` modifiers') $
         pushAll
           [ whenWindowMsg
-          , InvestigatorDiscoverClues iid lid clueAmount (Just Action.Investigate)
+          , InvestigatorDiscoverClues iid lid (toSource a) clueAmount (Just Action.Investigate)
           , afterWindowMsg
           ]
       pure a
@@ -217,12 +217,12 @@ instance RunMessage LocationAttrs where
     DiscoverCluesAtLocation iid lid source n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
       a <$ push (DiscoverClues iid lid source discoveredClues maction)
-    Do (DiscoverClues iid lid _ n _) | lid == locationId -> do
+    Do (DiscoverClues iid lid source n _) | lid == locationId -> do
       let lastClue = locationClues - n <= 0
       let clueCount = max 0 $ subtract n locationClues
       push
         =<< checkWindows
-          ( Window Timing.After (Window.DiscoverClues iid lid n)
+          ( Window Timing.After (Window.DiscoverClues iid lid source n)
               : [ Window Timing.After (Window.DiscoveringLastClue iid lid)
                 | lastClue
                 ]

@@ -39,17 +39,11 @@ instance HasAbilities GreatLibrary where
 instance RunMessage GreatLibrary where
   runMessage msg l@(GreatLibrary attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        beginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillIntellect
-          3
+      push $ beginSkillTest iid attrs iid SkillIntellect 3
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       current <- field LocationClues (toId attrs)
-      push $ PlaceClues (toTarget attrs) (4 - current)
+      push $ PlaceClues (toAbilitySource attrs 2) (toTarget attrs) (4 - current)
       pure l
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

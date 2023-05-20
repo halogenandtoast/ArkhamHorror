@@ -6,7 +6,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 
@@ -22,7 +22,8 @@ instance RunMessage WorkingAHunch where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getJustLocation iid
       locationClueCount <- field LocationClues currentLocationId
-      when (locationClueCount > 0) $ push $
-        InvestigatorDiscoverClues iid currentLocationId 1 Nothing
+      when (locationClueCount > 0) $
+        push $
+          InvestigatorDiscoverClues iid currentLocationId (toSource attrs) 1 Nothing
       pure e
     _ -> WorkingAHunch <$> runMessage msg attrs

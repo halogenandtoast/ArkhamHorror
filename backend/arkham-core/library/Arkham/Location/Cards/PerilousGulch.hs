@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.PerilousGulch
-  ( perilousGulch
-  , PerilousGulch(..)
-  ) where
+module Arkham.Location.Cards.PerilousGulch (
+  perilousGulch,
+  PerilousGulch (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,22 +22,23 @@ perilousGulch :: LocationCard PerilousGulch
 perilousGulch = location PerilousGulch Cards.perilousGulch 4 (PerPlayer 1)
 
 instance HasAbilities PerilousGulch where
-  getAbilities (PerilousGulch attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1
-      $ ForcedAbility
-      $ SkillTestResult
-          Timing.After
-          You
-          (WhileInvestigating $ LocationWithId $ toId attrs)
-      $ FailureResult AnyValue
-    ]
+  getAbilities (PerilousGulch attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+          $ FailureResult AnyValue
+      ]
 
 instance RunMessage PerilousGulch where
   runMessage msg l@(PerilousGulch attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       hasRope <-
         selectAny $ investigatorAt (toId attrs) <> InvestigatorWithSupply Rope
-      unless hasRope $ push $ PlaceDoom (toTarget attrs) 1
+      unless hasRope $ push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
       pure l
     _ -> PerilousGulch <$> runMessage msg attrs

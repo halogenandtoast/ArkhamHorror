@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.WitchHauntedWoodsCairnStones
-  ( witchHauntedWoodsCairnStones
-  , WitchHauntedWoodsCairnStones(..)
-  ) where
+module Arkham.Location.Cards.WitchHauntedWoodsCairnStones (
+  witchHauntedWoodsCairnStones,
+  WitchHauntedWoodsCairnStones (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype WitchHauntedWoodsCairnStones = WitchHauntedWoodsCairnStones LocationAttrs
@@ -20,27 +20,29 @@ newtype WitchHauntedWoodsCairnStones = WitchHauntedWoodsCairnStones LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 witchHauntedWoodsCairnStones :: LocationCard WitchHauntedWoodsCairnStones
-witchHauntedWoodsCairnStones = location
-  WitchHauntedWoodsCairnStones
-  Cards.witchHauntedWoodsCairnStones
-  3
-  (PerPlayer 2)
+witchHauntedWoodsCairnStones =
+  location
+    WitchHauntedWoodsCairnStones
+    Cards.witchHauntedWoodsCairnStones
+    3
+    (PerPlayer 2)
 
 instance HasAbilities WitchHauntedWoodsCairnStones where
-  getAbilities (WitchHauntedWoodsCairnStones a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a)
-      $ ForcedAbility
-      $ DiscoverClues
-          Timing.After
-          You
-          (LocationWithId $ toId a)
-          (AtLeast $ Static 1)
-    ]
+  getAbilities (WitchHauntedWoodsCairnStones a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a) $
+          ForcedAbility $
+            DiscoverClues
+              Timing.After
+              You
+              (LocationWithId $ toId a)
+              (AtLeast $ Static 1)
+      ]
 
 getCount :: [Window] -> Int
 getCount [] = error "wrong window"
-getCount (Window _ (Window.DiscoverClues _ _ n) : _) = n
+getCount (Window _ (Window.DiscoverClues _ _ _ n) : _) = n
 getCount (_ : xs) = getCount xs
 
 instance RunMessage WitchHauntedWoodsCairnStones where

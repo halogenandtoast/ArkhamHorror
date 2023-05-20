@@ -75,6 +75,6 @@ instance RunMessage TemploMayor_174 where
       push $ SpawnEnemyAt (EncounterCard ec) (toId attrs)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ InvestigatorDiscoverClues iid (toId attrs) 1 Nothing
+      push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 2) 1 Nothing
       pure l
     _ -> TemploMayor_174 <$> runMessage msg attrs

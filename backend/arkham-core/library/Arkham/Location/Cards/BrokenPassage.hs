@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BrokenPassage
-  ( brokenPassage
-  , BrokenPassage(..)
-  ) where
+module Arkham.Location.Cards.BrokenPassage (
+  brokenPassage,
+  BrokenPassage (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,21 +23,23 @@ brokenPassage =
   symbolLabel $ location BrokenPassage Cards.brokenPassage 3 (Static 0)
 
 instance HasAbilities BrokenPassage where
-  getAbilities (BrokenPassage attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
-        attrs
-        1
-        (Here <> InvestigatorExists
-          (You <> NotInvestigator (InvestigatorWithSupply Pickaxe))
-        )
-      $ ForcedAbility
-      $ AttemptExplore Timing.When You
-    ]
+  getAbilities (BrokenPassage attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists
+                (You <> NotInvestigator (InvestigatorWithSupply Pickaxe))
+          )
+          $ ForcedAbility
+          $ AttemptExplore Timing.When You
+      ]
 
 instance RunMessage BrokenPassage where
   runMessage msg l@(BrokenPassage attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceDoom (toTarget attrs) 1
+      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
       pure l
     _ -> BrokenPassage <$> runMessage msg attrs

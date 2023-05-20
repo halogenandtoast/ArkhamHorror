@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TheKingsEdict
-  ( theKingsEdict
-  , TheKingsEdict(..)
-  ) where
+module Arkham.Treachery.Cards.TheKingsEdict (
+  theKingsEdict,
+  TheKingsEdict (..),
+) where
 
 import Arkham.Prelude
 
@@ -32,11 +32,11 @@ instance RunMessage TheKingsEdict where
           mlid <- selectOne $ locationWithEnemy cultist
           pure $ do
             lid <- maybeToList mlid
-            [RemoveClues (toTarget lid) 1, PlaceClues (toTarget cultist) 1]
-      pushAll
-        $ msgs
-        <> map
-             (CreateEffect (toCardCode attrs) Nothing source . toTarget)
-             cultists
+            [RemoveClues (toSource attrs) (toTarget lid) 1, PlaceClues (toSource attrs) (toTarget cultist) 1]
+      pushAll $
+        msgs
+          <> map
+            (CreateEffect (toCardCode attrs) Nothing source . toTarget)
+            cultists
       pure t
     _ -> TheKingsEdict <$> runMessage msg attrs

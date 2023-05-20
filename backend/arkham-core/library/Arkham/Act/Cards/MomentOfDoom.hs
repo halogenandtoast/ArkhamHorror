@@ -18,7 +18,6 @@ import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype MomentOfDoom = MomentOfDoom ActAttrs
@@ -73,16 +72,15 @@ instance RunMessage MomentOfDoom where
                 [ targetLabel
                   iid'
                   [ FlipClues (InvestigatorTarget iid') 1
-                  , RemoveDoom (InvestigatorTarget iid') 1
-                  , PlaceDoom (LocationTarget lid) 1
+                  , RemoveDoom (toAbilitySource attrs 1) (InvestigatorTarget iid') 1
+                  , PlaceDoom (toAbilitySource attrs 1) (LocationTarget lid) 1
                   , EnemyDamage yig $ nonAttack attrs 3
                   ]
                 | iid' <- iids
                 ]
         pure a
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       push $ scenarioResolution 1
       pure a

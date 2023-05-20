@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.IntelReport
-  ( intelReport
-  , IntelReport(..)
-  ) where
+module Arkham.Event.Cards.IntelReport (
+  intelReport,
+  IntelReport (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message hiding ( PlayCard )
+import Arkham.Message hiding (PlayCard)
 import Arkham.Timing qualified as Timing
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -30,15 +30,15 @@ instance HasAbilities IntelReport where
   getAbilities (IntelReport a) =
     [ withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"Discover 1 clue\" to \"Discover 2 clues.\""
-      $ restrictedAbility a 1 InYourHand
-      $ ReactionAbility
+        $ restrictedAbility a 1 InYourHand
+        $ ReactionAbility
           (PlayCard Timing.When You (BasicCardMatch $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     , withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-      $ restrictedAbility a 2 InYourHand
-      $ ForcedWhen (LocationExists $ LocationWithoutClues <> YourLocation)
-      $ ReactionAbility
+        $ restrictedAbility a 2 InYourHand
+        $ ForcedWhen (LocationExists $ LocationWithoutClues <> YourLocation)
+        $ ReactionAbility
           (PlayCard Timing.When You (BasicCardMatch $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     ]
@@ -67,40 +67,46 @@ instance RunMessage IntelReport where
       if discoverUpToTwoAway
         then do
           lids <-
-            selectList
-            $ LocationMatchAny
-            $ (locationWithInvestigator iid <> LocationWithAnyClues)
-            : [ LocationWithDistanceFrom n LocationWithAnyClues
-              | n <- [1 .. 2]
-              ]
-          push $ chooseOrRunOne
-            iid
-            [ targetLabel
+            selectList $
+              LocationMatchAny $
+                (locationWithInvestigator iid <> LocationWithAnyClues)
+                  : [ LocationWithDistanceFrom n LocationWithAnyClues
+                    | n <- [1 .. 2]
+                    ]
+          push $
+            chooseOrRunOne
+              iid
+              [ targetLabel
                 lid
-                [InvestigatorDiscoverClues iid lid clueCount Nothing]
-            | lid <- lids
-            ]
-        else push
-          $ InvestigatorDiscoverCluesAtTheirLocation iid clueCount Nothing
+                [InvestigatorDiscoverClues iid lid (toSource attrs) clueCount Nothing]
+              | lid <- lids
+              ]
+        else
+          push $
+            InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) clueCount Nothing
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
-      push $ CreateWindowModifierEffect
-        EffectEventWindow
-        (EffectModifiers $ toModifiers
-          attrs
-          [MetaModifier $ object ["clueCount" .= (2 :: Int)]]
-        )
-        (toSource attrs)
-        (CardIdTarget $ toCardId attrs)
+      push $
+        CreateWindowModifierEffect
+          EffectEventWindow
+          ( EffectModifiers $
+              toModifiers
+                attrs
+                [MetaModifier $ object ["clueCount" .= (2 :: Int)]]
+          )
+          (toSource attrs)
+          (CardIdTarget $ toCardId attrs)
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
-      push $ CreateWindowModifierEffect
-        EffectEventWindow
-        (EffectModifiers $ toModifiers
-          attrs
-          [MetaModifier $ object ["discoverUpToTwoAway" .= True]]
-        )
-        (toSource attrs)
-        (CardIdTarget $ toCardId attrs)
+      push $
+        CreateWindowModifierEffect
+          EffectEventWindow
+          ( EffectModifiers $
+              toModifiers
+                attrs
+                [MetaModifier $ object ["discoverUpToTwoAway" .= True]]
+          )
+          (toSource attrs)
+          (CardIdTarget $ toCardId attrs)
       pure e
     _ -> IntelReport <$> runMessage msg attrs

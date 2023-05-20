@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.Eavesdrop
-  ( eavesdrop
-  , Eavesdrop(..)
-  ) where
+module Arkham.Event.Cards.Eavesdrop (
+  eavesdrop,
+  Eavesdrop (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
@@ -25,27 +25,31 @@ instance RunMessage Eavesdrop where
   runMessage msg e@(Eavesdrop attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectListMap EnemyTarget $ UnengagedEnemy <> EnemyWithEvade <> EnemyAt
-          (locationWithInvestigator iid)
+        selectListMap EnemyTarget $
+          UnengagedEnemy
+            <> EnemyWithEvade
+            <> EnemyAt
+              (locationWithInvestigator iid)
       pushAll
         [ chooseOrRunOne
-          iid
-          [ TargetLabel target [HandleTargetChoice iid (toSource attrs) target]
-          | target <- targets
-          ]
+            iid
+            [ TargetLabel target [HandleTargetChoice iid (toSource attrs) target]
+            | target <- targets
+            ]
         ]
       pure e
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source ->
       do
         n <- fromJustNote "Enemy must have evade" <$> field EnemyEvade eid
-        push $ beginSkillTest
-          iid
-          (toSource attrs)
-          (toTarget attrs)
-          SkillIntellect
-          n
+        push $
+          beginSkillTest
+            iid
+            (toSource attrs)
+            (toTarget attrs)
+            SkillIntellect
+            n
         pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing
       pure e
     _ -> Eavesdrop <$> runMessage msg attrs

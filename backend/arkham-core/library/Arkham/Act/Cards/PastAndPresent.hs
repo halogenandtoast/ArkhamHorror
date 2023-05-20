@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.PastAndPresent
-  ( PastAndPresent(..)
-  , pastAndPresent
-  ) where
+module Arkham.Act.Cards.PastAndPresent (
+  PastAndPresent (..),
+  pastAndPresent,
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -32,14 +32,14 @@ pastAndPresent = act (2, A) PastAndPresent Cards.pastAndPresent Nothing
 instance HasAbilities PastAndPresent where
   getAbilities (PastAndPresent a) =
     [ restrictedAbility
-          a
-          1
-          (LocationCount 6
-          $ LocationWithTrait Tenochtitlan
-          <> LocationWithoutClues
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( LocationCount 6 $
+          LocationWithTrait Tenochtitlan
+            <> LocationWithoutClues
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide A a
     ]
 
@@ -55,29 +55,30 @@ instance RunMessage PastAndPresent where
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
 
-      pushAll
-        $ map (AddToVictory . LocationTarget) tenochtitlanLocations
-        <> [NextAdvanceActStep (toId attrs) 1]
-        <> map InvestigatorDiscardAllClues iids
-        <> [NextAdvanceActStep (toId attrs) 2]
-        <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
-           , SetCurrentActDeck 1 [theReturnTrip]
-           ]
+      pushAll $
+        map (AddToVictory . LocationTarget) tenochtitlanLocations
+          <> [NextAdvanceActStep (toId attrs) 1]
+          <> map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
+          <> [NextAdvanceActStep (toId attrs) 2]
+          <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
+             , SetCurrentActDeck 1 [theReturnTrip]
+             ]
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOneAtATime
-        leadInvestigatorId
-        [ targetLabel
+      push $
+        chooseOneAtATime
+          leadInvestigatorId
+          [ targetLabel
             lid
             [ HandleTargetChoice
                 leadInvestigatorId
                 (toSource attrs)
                 (LocationTarget lid)
             ]
-        | lid <- presentDayLocations
-        ]
+          | lid <- presentDayLocations
+          ]
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       locationSymbol <- field LocationPrintedSymbol lid
@@ -87,14 +88,14 @@ instance RunMessage PastAndPresent where
       pushAll
         [ FocusCards replacements
         , chooseOrRunOne
-          iid
-          [ TargetLabel
+            iid
+            [ TargetLabel
               (CardIdTarget $ toCardId replacement)
               [ RemoveCardFromScenarioDeck ExplorationDeck replacement
               , ReplaceLocation lid replacement DefaultReplace
               ]
-          | replacement <- replacements
-          ]
+            | replacement <- replacements
+            ]
         , UnfocusCards
         ]
       pure a

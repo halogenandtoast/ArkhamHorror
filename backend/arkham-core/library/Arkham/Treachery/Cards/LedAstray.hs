@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.LedAstray
-  ( ledAstray
-  , LedAstray(..)
-  ) where
+module Arkham.Treachery.Cards.LedAstray (
+  ledAstray,
+  LedAstray (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -29,19 +29,22 @@ instance RunMessage LedAstray where
       let
         advanceAgenda = [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
         placeDoomOnCultist target =
-          TargetLabel target [InvestigatorSpendClues iid 1, PlaceClues target 1]
-      pushAll $ if null cultists || hasNoClues
-        then advanceAgenda
-        else
-          [ chooseOne
-              iid
-              [ Label
-                "Place 1 of your clues on a Cultist enemy"
-                [chooseOne iid $ map placeDoomOnCultist cultists]
-              , Label
-                "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)"
-                advanceAgenda
-              ]
-          ]
+          TargetLabel
+            target
+            [InvestigatorSpendClues iid 1, PlaceClues (toSource attrs) target 1]
+      pushAll $
+        if null cultists || hasNoClues
+          then advanceAgenda
+          else
+            [ chooseOne
+                iid
+                [ Label
+                    "Place 1 of your clues on a Cultist enemy"
+                    [chooseOne iid $ map placeDoomOnCultist cultists]
+                , Label
+                    "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)"
+                    advanceAgenda
+                ]
+            ]
       pure t
     _ -> LedAstray <$> runMessage msg attrs

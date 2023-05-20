@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Gondola
-  ( gondola
-  , Gondola(..)
-  ) where
+module Arkham.Location.Cards.Gondola (
+  gondola,
+  Gondola (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,44 +22,31 @@ gondola :: LocationCard Gondola
 gondola = location Gondola Cards.gondola 5 (Static 0)
 
 instance HasAbilities Gondola where
-  getAbilities (Gondola x) = withBaseAbilities
-    x
-    [ restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1
-    | locationRevealed x
-    ]
+  getAbilities (Gondola x) =
+    withBaseAbilities
+      x
+      [ restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1
+      | locationRevealed x
+      ]
 
 instance RunMessage Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       locationIds <- setToList . deleteSet (toId attrs) <$> select Anywhere
-      l <$ pushAll
-        (MoveAllTo (toSource attrs) (toId attrs)
-        : [ RemoveLocation lid | lid <- locationIds ]
-        )
+      pushAll $
+        MoveAllTo (toSource attrs) (toId attrs)
+          : [RemoveLocation lid | lid <- locationIds]
+      pure l
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      l <$ push
-        (chooseOne
+      push $
+        chooseOne
           iid
-          [ Label
-            "Test {combat} (2)"
-            [ beginSkillTest
-                iid
-                (toSource attrs)
-                (toTarget attrs)
-                SkillCombat
-                2
-            ]
-          , Label
-            "Test {agility} (2)"
-            [ beginSkillTest
-                iid
-                (toSource attrs)
-                (toTarget attrs)
-                SkillAgility
-                2
-            ]
+          [ Label "Test {combat} (2)" [beginSkillTest iid attrs attrs SkillCombat 2]
+          , Label "Test {agility} (2)" [beginSkillTest iid attrs attrs SkillAgility 2]
           ]
-        )
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> l <$ push (PlaceResources (toTarget attrs) 1)
+      pure l
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
+      | isSource attrs source -> do
+          push (PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1)
+          pure l
     _ -> Gondola <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.CanalSide
-  ( canalSide
-  , CanalSide(..)
-  ) where
+module Arkham.Location.Cards.CanalSide (
+  canalSide,
+  CanalSide (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,25 +20,26 @@ newtype CanalSide = CanalSide LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canalSide :: LocationCard CanalSide
-canalSide = locationWith
-  CanalSide
-  Cards.canalSide
-  2
-  (Static 1)
-  (connectsToL .~ singleton RightOf)
+canalSide =
+  locationWith
+    CanalSide
+    Cards.canalSide
+    2
+    (Static 1)
+    (connectsToL .~ singleton RightOf)
 
 instance HasAbilities CanalSide where
   getAbilities (CanalSide attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ReactionAbility
-                (Enters Timing.After You $ LocationWithId $ toId attrs)
-                Free
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ReactionAbility
+          (Enters Timing.After You $ LocationWithId $ toId attrs)
+          Free
+      | locationRevealed attrs
+      ]
 
 instance RunMessage CanalSide where
   runMessage msg l@(CanalSide attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      l <$ push (PlaceClues (toTarget attrs) 1)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      l <$ push (PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1)
     _ -> CanalSide <$> runMessage msg attrs

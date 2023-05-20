@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.CavernOfTheForgottenAge
-  ( CavernOfTheForgottenAge(..)
-  , cavernOfTheForgottenAge
-  ) where
+module Arkham.Act.Cards.CavernOfTheForgottenAge (
+  CavernOfTheForgottenAge (..),
+  cavernOfTheForgottenAge,
+) where
 
 import Arkham.Prelude
 
@@ -24,11 +24,12 @@ newtype CavernOfTheForgottenAge = CavernOfTheForgottenAge ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cavernOfTheForgottenAge :: ActCard CavernOfTheForgottenAge
-cavernOfTheForgottenAge = act
-  (1, A)
-  CavernOfTheForgottenAge
-  Cards.cavernOfTheForgottenAge
-  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+cavernOfTheForgottenAge =
+  act
+    (1, A)
+    CavernOfTheForgottenAge
+    Cards.cavernOfTheForgottenAge
+    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance RunMessage CavernOfTheForgottenAge where
   runMessage msg a@(CavernOfTheForgottenAge attrs) = case msg of
@@ -39,24 +40,24 @@ instance RunMessage CavernOfTheForgottenAge where
 
       pushAll
         [ ShuffleCardsIntoDeck
-          (ScenarioDeckByKey ExplorationDeck)
-          [descentToYoth]
+            (ScenarioDeckByKey ExplorationDeck)
+            [descentToYoth]
         , chooseOrRunOne
-          leadInvestigator
-          [ targetLabel
+            leadInvestigator
+            [ targetLabel
               iid
               [ HandleTargetChoice
                   leadInvestigator
                   (toSource attrs)
                   (InvestigatorTarget iid)
               ]
-          | iid <- iids
-          ]
+            | iid <- iids
+            ]
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a
-    HandleTargetChoice leadInvestigator (isSource attrs -> True) (InvestigatorTarget iid)
-      -> do
+    HandleTargetChoice leadInvestigator (isSource attrs -> True) (InvestigatorTarget iid) ->
+      do
         withChalk <- getHasSupply iid Chalk
         unless withChalk $ do
           lid <- getJustLocation iid
@@ -64,35 +65,39 @@ instance RunMessage CavernOfTheForgottenAge where
           enemies <- selectList $ enemyAt lid
           singleSided <-
             lid
-              <=~> (SingleSidedLocation <> NotLocation
-                     (locationIs Locations.mouthOfKnYanTheDepthsBelow)
+              <=~> ( SingleSidedLocation
+                      <> NotLocation
+                        (locationIs Locations.mouthOfKnYanTheDepthsBelow)
                    )
-          mouthOfKnYan <- selectJust
-            $ locationIs Locations.mouthOfKnYanTheDepthsBelow
-          isConnectedToMouthOfKnYan <- mouthOfKnYan
-            <=~> ConnectedTo (LocationWithId lid)
-          moveTo <- if isConnectedToMouthOfKnYan
-            then pure [mouthOfKnYan]
-            else
-              selectList
-              $ NearestLocationToLocation mouthOfKnYan
-              $ ConnectedTo
-              $ LocationWithId lid
+          mouthOfKnYan <-
+            selectJust $
+              locationIs Locations.mouthOfKnYanTheDepthsBelow
+          isConnectedToMouthOfKnYan <-
+            mouthOfKnYan
+              <=~> ConnectedTo (LocationWithId lid)
+          moveTo <-
+            if isConnectedToMouthOfKnYan
+              then pure [mouthOfKnYan]
+              else
+                selectList $
+                  NearestLocationToLocation mouthOfKnYan $
+                    ConnectedTo $
+                      LocationWithId lid
           locations <- selectList Anywhere
-          pushAll
-            $ [ PlaceClues (LocationTarget l) 1 | l <- locations ]
-            <> (guard singleSided
-               *> [ chooseOne
-                    leadInvestigator
-                    [ targetLabel l
-                      $ [ MoveTo $ move attrs i l | i <- investigators ]
-                      <> [ EnemyMove eid lid | eid <- enemies ]
-                    | l <- moveTo
-                    ]
-                  , ShuffleIntoDeck
-                    (ScenarioDeckByKey ExplorationDeck)
-                    (LocationTarget lid)
-                  ]
-               )
+          pushAll $
+            [PlaceClues (toSource attrs) (toTarget l) 1 | l <- locations]
+              <> ( guard singleSided
+                    *> [ chooseOne
+                          leadInvestigator
+                          [ targetLabel l $
+                            [MoveTo $ move attrs i l | i <- investigators]
+                              <> [EnemyMove eid lid | eid <- enemies]
+                          | l <- moveTo
+                          ]
+                       , ShuffleIntoDeck
+                          (ScenarioDeckByKey ExplorationDeck)
+                          (toTarget lid)
+                       ]
+                 )
         pure a
     _ -> CavernOfTheForgottenAge <$> runMessage msg attrs

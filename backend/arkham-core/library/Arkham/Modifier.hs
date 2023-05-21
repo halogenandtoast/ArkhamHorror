@@ -89,7 +89,7 @@ data ModifierType
   | CannotBeDefeated
   | CanOnlyBeDefeatedBy Source
   | CanOnlyBeDefeatedByDamage
-  | CancelAttacksByEnemies EnemyMatcher
+  | CancelAttacksByEnemies Card EnemyMatcher
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher

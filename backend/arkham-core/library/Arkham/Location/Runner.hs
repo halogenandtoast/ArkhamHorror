@@ -178,6 +178,15 @@ instance RunMessage LocationAttrs where
     Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discarded (EnemyTarget eid) _ _ -> pure $ a & enemiesL %~ deleteSet eid
     PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
+    PlaceEnemy eid placement -> do
+      case placement of
+        InThreatArea iid -> do
+          mlid <- field InvestigatorLocation iid
+          if mlid == Just locationId
+            then pure $ a & enemiesL %~ insertSet eid
+            else pure a
+        AtLocation lid | lid == locationId -> pure $ a & enemiesL %~ insertSet eid
+        _ -> pure a
     Flipped (AssetSource aid) card
       | toCardType card /= AssetType ->
           pure $ a & assetsL %~ deleteSet aid

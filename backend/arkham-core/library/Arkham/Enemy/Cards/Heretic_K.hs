@@ -6,11 +6,9 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Message
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Story.Cards qualified as Story
 
@@ -32,15 +30,4 @@ instance HasAbilities Heretic_K where
   getAbilities = hereticAbilities
 
 instance RunMessage Heretic_K where
-  runMessage msg e@(Heretic_K (attrs `With` meta)) = case msg of
-    LookAtRevealed _ _ (isTarget attrs -> True) | hasBeenRevealed meta -> do
-      push $ AddToVictory (toTarget attrs)
-      pure e
-    LookAtRevealed iid _ (isTarget attrs -> True) -> do
-      let unfinishedBusiness = lookupCard Story.unfinishedBusiness_L (toCardId attrs)
-      pushAll
-        [ FocusCards [unfinishedBusiness]
-        , chooseOne iid [Label "Continue" [UnfocusCards]]
-        ]
-      pure . Heretic_K $ attrs `with` Metadata True
-    _ -> hereticRunner Story.unfinishedBusiness_L msg e
+  runMessage = hereticRunner Story.unfinishedBusiness_L

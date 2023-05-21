@@ -84,12 +84,14 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
 class (MonadRandom m) => CardGen m where
   genEncounterCard :: (HasCardDef a) => a -> m EncounterCard
   genPlayerCard :: (HasCardDef a) => a -> m PlayerCard
+  replaceCard :: CardId -> Card -> m ()
 
 instance CardGen IO where
   genEncounterCard a =
     lookupEncounterCard (toCardDef a) . unsafeMakeCardId <$> getRandom
   genPlayerCard a =
     lookupPlayerCard (toCardDef a) . unsafeMakeCardId <$> getRandom
+  replaceCard _ _ = pure ()
 
 genCard :: (HasCardDef a, CardGen m) => a -> m Card
 genCard a =

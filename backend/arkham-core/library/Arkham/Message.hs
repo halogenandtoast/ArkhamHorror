@@ -159,6 +159,7 @@ data Message
   | ResolvedAbility Ability -- INTERNAL
   | -- Story Card Messages
     ReadStory InvestigatorId Card StoryMode (Maybe Target)
+  | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
   | ResolveStory InvestigatorId StoryMode StoryId
   | ResolvedStory StoryMode StoryId
   | -- | ResolveStoryStep InvestigatorId StoryId Int
@@ -324,10 +325,9 @@ data Message
   | DisableEffect EffectId
   | Discard Source Target
   | DiscardHand InvestigatorId Source
-  | DiscardEncounterUntilFirst Source (Maybe InvestigatorId) CardMatcher
   | RevealUntilFirst InvestigatorId Source DeckSignifier CardMatcher
   | RevealedCards InvestigatorId Source DeckSignifier (Maybe Card) [Card]
-  | DiscardUntilFirst InvestigatorId Source ExtendedCardMatcher
+  | DiscardUntilFirst InvestigatorId Source DeckSignifier ExtendedCardMatcher
   | DiscardTopOfDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int Source (Maybe Target) [EncounterCard]

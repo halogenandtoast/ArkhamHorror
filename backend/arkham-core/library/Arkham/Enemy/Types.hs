@@ -58,6 +58,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyFight :: Field Enemy Int
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
+  EnemyHealth :: Field Enemy Int
   EnemyRemainingHealth :: Field Enemy Int
   EnemyHealthDamage :: Field Enemy Int
   EnemySanityDamage :: Field Enemy Int

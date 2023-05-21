@@ -5,7 +5,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
@@ -32,8 +34,10 @@ instance HasAbilities SmiteTheWicked where
 
 instance RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
-    Revelation _iid source | isSource attrs source -> do
-      push $ DiscardEncounterUntilFirst source Nothing (CardWithType EnemyType)
+    Revelation iid source | isSource attrs source -> do
+      key <- getEncounterDeckKey iid
+      push $
+        DiscardUntilFirst iid source (Deck.EncounterDeckByKey key) (BasicCardMatch $ CardWithType EnemyType)
       pure t
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       for_ mcard $ \card -> do

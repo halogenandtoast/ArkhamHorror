@@ -29,7 +29,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const stories = computed(() => Object.values(props.game.stories).filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId))
+const stories = computed(() => Object.values(props.game.stories).filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId && s.otherSide === null))
 
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 const baseUrl = inject('baseUrl')

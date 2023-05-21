@@ -76,7 +76,7 @@ hereticRunner
      , Targetable (EntityAttrs b)
      , IsEnemy b
      , RunMessage (EntityAttrs b)
-     , HasCardDef storyCard
+     , HasCardCode storyCard
      )
   => storyCard
   -> Message
@@ -84,14 +84,28 @@ hereticRunner
   -> GameT b
 hereticRunner storyCard msg heretic = case msg of
   UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-    card <- genCard storyCard
-    push $ ReadStory iid card DoNotResolveIt (Just $ toTarget $ toAttrs heretic)
+    let card = lookupCard storyCard (toCardId attrs)
+    pushAll
+      [ ReplaceCard (toCardId attrs) card
+      , ReadStoryWithPlacement
+          iid
+          card
+          DoNotResolveIt
+          (Just $ toTarget $ toAttrs heretic)
+          (enemyPlacement attrs)
+      , ReplaceCard (toCardId attrs) card
+      ]
     pure heretic
   UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-    card <- genCard storyCard
-    push $ ReadStory iid card ResolveIt (Just $ toTarget $ toAttrs heretic)
+    push $ Flip iid (toSource attrs) (toTarget attrs)
     pure heretic
-  Flip _ _ (isTarget attrs -> True) -> do
+  Flip iid _ (isTarget attrs -> True) -> do
+    let card = lookupCard storyCard (toCardId attrs)
+    pushAll
+      [ RemoveEnemy (toId attrs)
+      , ReplaceCard (toCardId attrs) card
+      , ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
+      ]
     pure heretic
   _ -> overAttrsM (runMessage msg) heretic
  where

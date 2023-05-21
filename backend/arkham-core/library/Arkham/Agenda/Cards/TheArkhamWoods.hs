@@ -10,6 +10,7 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -25,12 +26,14 @@ theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 instance RunMessage TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs) = case msg of
     AdvanceAgenda aid | aid == toId a && onSide B attrs -> do
+      lead <- getLead
       pushAll
         [ ShuffleEncounterDiscardBackIn
-        , DiscardEncounterUntilFirst
+        , DiscardUntilFirst
+            lead
             (AgendaSource aid)
-            Nothing
-            (CardWithType EnemyType <> CardWithTrait Monster)
+            Deck.EncounterDeck
+            (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Monster)
         ]
       pure a
     RequestedEncounterCard source _ mcard | isSource attrs source -> do

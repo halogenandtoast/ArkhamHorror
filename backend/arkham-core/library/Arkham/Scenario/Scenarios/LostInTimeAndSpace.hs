@@ -13,6 +13,7 @@ import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
@@ -172,32 +173,35 @@ instance RunMessage LostInTimeAndSpace where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    After (PassedSkillTest iid _ _ (TokenTarget token) _ _) ->
-      s <$ case (isHardExpert attrs, tokenFace token) of
+    After (PassedSkillTest iid _ _ (TokenTarget token) _ _) -> do
+      case (isHardExpert attrs, tokenFace token) of
         (True, Cultist) ->
           push
-            ( DiscardEncounterUntilFirst
-                (toSource attrs)
-                Nothing
-                (CardWithType LocationType)
+            ( DiscardUntilFirst
+                iid
+                (TokenEffectSource Cultist)
+                Deck.EncounterDeck
+                (BasicCardMatch $ CardWithType LocationType)
             )
         (_, Tablet) -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
         _ -> pure ()
-    After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
-      s <$ case tokenFace token of
+      pure s
+    After (FailedSkillTest iid _ _ (TokenTarget token) _ _) -> do
+      case tokenFace token of
         Cultist ->
-          push
-            ( DiscardEncounterUntilFirst
-                (toSource attrs)
-                (Just iid)
-                (CardWithType LocationType)
-            )
+          push $
+            DiscardUntilFirst
+              iid
+              (TokenEffectSource Cultist)
+              Deck.EncounterDeck
+              (BasicCardMatch $ CardWithType LocationType)
         Tablet -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
         _ -> pure ()
+      pure s
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
       do
         (locationId, placement) <- placeLocation (EncounterCard card)

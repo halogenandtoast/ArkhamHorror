@@ -7,7 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -63,12 +65,14 @@ instance HasAbilities TemploMayor_174 where
 instance RunMessage TemploMayor_174 where
   runMessage msg l@(TemploMayor_174 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      lead <- getLead
       pushAll
         [ ShuffleEncounterDiscardBackIn
-        , DiscardEncounterUntilFirst
+        , DiscardUntilFirst
+            lead
             (toSource attrs)
-            Nothing
-            (CardWithType EnemyType <> CardWithTrait Serpent)
+            Deck.EncounterDeck
+            (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Serpent)
         ]
       pure l
     RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do

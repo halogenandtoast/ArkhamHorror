@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -35,9 +36,10 @@ instance RunMessage VictorianHalls where
   runMessage msg l@(VictorianHalls attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $
-        DiscardEncounterUntilFirst (toSource attrs) (Just iid) $
-          CardWithTrait SilverTwilight
-            <> CardWithType EnemyType
+        DiscardUntilFirst iid (toSource attrs) Deck.EncounterDeck $
+          BasicCardMatch $
+            CardWithTrait SilverTwilight
+              <> CardWithType EnemyType
       pure l
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
       pushAll [SpawnEnemyAt (EncounterCard ec) (toId attrs), GainClues iid (toAbilitySource attrs 1) 2]

@@ -19,8 +19,8 @@ import Arkham.Helpers.Scenario
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 
-afterStoryResolution :: (HasQueue Message m) => StoryAttrs -> Message -> m ()
-afterStoryResolution (toId -> storyId) = pushAfter isResolution
+afterStoryResolution :: (HasQueue Message m) => StoryAttrs -> [Message] -> m ()
+afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . reverse
  where
   isResolution = \case
     ResolvedStory _ story' | story' == storyId -> True

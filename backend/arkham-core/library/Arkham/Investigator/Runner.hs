@@ -1987,15 +1987,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
            | target <- maybeToList mTarget
            ]
     pure $ a & deckL .~ deck' & discardL %~ (reverse cs <>)
-  DiscardUntilFirst iid source matcher | iid == investigatorId -> do
+  DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> do
     (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
     case remainingDeck of
       [] -> do
         pushAll
-          [RequestedPlayerCard iid source Nothing discards, DeckHasNoCards iid Nothing]
+          [RequestedPlayerCard iid' source Nothing discards, DeckHasNoCards iid Nothing]
         pure $ a & deckL .~ mempty & discardL %~ (reverse discards <>)
       (x : xs) -> do
-        push (RequestedPlayerCard iid source (Just x) discards)
+        push (RequestedPlayerCard iid' source (Just x) discards)
         pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
   RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> do
     let

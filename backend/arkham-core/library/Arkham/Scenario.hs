@@ -18,7 +18,6 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
-import Arkham.Target
 import Arkham.Token
 
 instance FromJSON Scenario where

@@ -20,6 +20,7 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackDamageStrategy :: DamageStrategy
   , attackExhaustsEnemy :: Bool
   , attackSource :: Source
+  , attackCanBeCanceled :: Bool
   }
   deriving stock (Show, Eq, Ord)
 
@@ -33,6 +34,7 @@ enemyAttack enemyId (toSource -> source) (toTarget -> target) =
     , attackDamageStrategy = DamageAny
     , attackExhaustsEnemy = False
     , attackSource = source
+    , attackCanBeCanceled = True
     }
 
 attackOfOpportunity

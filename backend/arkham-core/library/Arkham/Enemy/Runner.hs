@@ -691,21 +691,26 @@ instance RunMessage EnemyAttrs where
       whenWouldAttackWindow <-
         checkWindows
           [Window Timing.When (Window.EnemyWouldAttack details)]
-      a
-        <$ pushAll
-          [ whenWouldAttackWindow
-          , whenAttacksWindow
-          , PerformEnemyAttack details
-          , After (PerformEnemyAttack details)
-          , afterAttacksEventIfCancelledWindow
-          ]
+      pushAll
+        [ whenWouldAttackWindow
+        , whenAttacksWindow
+        , PerformEnemyAttack details
+        , After (PerformEnemyAttack details)
+        , afterAttacksEventIfCancelledWindow
+        ]
+      pure a
     PerformEnemyAttack details | attackEnemy details == enemyId -> do
       modifiers <- getModifiers (attackTarget details)
+      sourceModifiers <- getModifiers (sourceToTarget $ attackSource details)
       let
         validEnemyMatcher = foldl' applyModifiers AnyEnemy modifiers
-        applyModifiers m (CancelAttacksByEnemies n) = m <> (NotEnemy n)
+        applyModifiers m (CancelAttacksByEnemies n) = m <> NotEnemy n
         applyModifiers m _ = m
-      allowAttack <- member enemyId <$> select validEnemyMatcher
+      allowAttack <-
+        orM
+          [ member enemyId <$> select validEnemyMatcher
+          , pure $ EffectsCannotBeCanceled `elem` sourceModifiers || not (attackCanBeCanceled details)
+          ]
       case attackTarget details of
         InvestigatorTarget iid ->
           pushAll $
@@ -1004,6 +1009,7 @@ instance RunMessage EnemyAttrs where
                 , attackType = AttackOfOpportunity
                 , attackExhaustsEnemy = False
                 , attackSource = toSource a
+                , attackCanBeCanceled = True
                 }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do

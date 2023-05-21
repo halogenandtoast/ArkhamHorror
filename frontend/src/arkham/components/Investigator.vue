@@ -226,7 +226,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
         @choose="$emit('choose', spendCluesAction)"
       />
       <template v-if="debug">
-        <button @click="debugChoose({tag: 'GainClues', contents: [id, 1]})">+</button>
+        <button @click="debugChoose({tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})">+</button>
       </template>
       <PoolItem
         type="health"

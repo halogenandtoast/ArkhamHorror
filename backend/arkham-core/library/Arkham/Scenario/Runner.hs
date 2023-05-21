@@ -36,7 +36,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
-import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
@@ -45,7 +44,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Modifier (ModifierType (DoNotRemoveDoom, UseEncounterDeck))
+import Arkham.Modifier (ModifierType (DoNotRemoveDoom))
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
@@ -57,7 +56,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
-import Control.Lens (non, _1, _2)
+import Control.Lens (each, _1)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
@@ -740,9 +739,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         FromEncounterDeck ->
           filter ((/= cardId) . toCardId) (unDeck scenarioEncounterDeck)
         _ -> unDeck scenarioEncounterDeck
+      encounterDecksF = case cardSource of
+        FromEncounterDeck ->
+          (encounterDecksL . each . _1 %~ withDeck (filter ((/= cardId) . toCardId)))
+        _ -> id
     shuffled <- shuffleM encounterDeck
     push (InvestigatorDrewEncounterCard iid card)
-    pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard)
+    pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard) & encounterDecksF
   FoundEncounterCardFrom iid target cardSource card -> do
     let
       cardId = toCardId card

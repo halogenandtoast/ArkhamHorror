@@ -702,15 +702,27 @@ instance RunMessage EnemyAttrs where
     PerformEnemyAttack details | attackEnemy details == enemyId -> do
       modifiers <- getModifiers (attackTarget details)
       sourceModifiers <- getModifiers (sourceToTarget $ attackSource details)
+
       let
-        validEnemyMatcher = foldl' applyModifiers AnyEnemy modifiers
-        applyModifiers m (CancelAttacksByEnemies n) = m <> NotEnemy n
-        applyModifiers m _ = m
-      allowAttack <-
-        orM
-          [ member enemyId <$> select validEnemyMatcher
-          , pure $ EffectsCannotBeCanceled `elem` sourceModifiers || not (attackCanBeCanceled details)
-          ]
+        applyModifiers cards (CancelAttacksByEnemies c n) = do
+          canceled <- member enemyId <$> select n
+          pure $
+            if canceled
+              then c : cards
+              else cards
+        applyModifiers m _ = pure m
+
+      cardsThatCanceled <- foldM applyModifiers [] modifiers
+
+      ignoreWindows <- for cardsThatCanceled $ \card -> checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ CardSource card)]
+
+      let
+        allowAttack =
+          and
+            [ null cardsThatCanceled
+            , EffectsCannotBeCanceled `notElem` sourceModifiers && attackCanBeCanceled details
+            ]
+
       case attackTarget details of
         InvestigatorTarget iid ->
           pushAll $
@@ -722,7 +734,8 @@ instance RunMessage EnemyAttrs where
               enemySanityDamage
             | allowAttack
             ]
-              <> [Exhaust (toTarget a) | attackExhaustsEnemy details]
+              <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
+              <> ignoreWindows
               <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
       pure a

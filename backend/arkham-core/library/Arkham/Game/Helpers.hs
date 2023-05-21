@@ -3106,6 +3106,9 @@ sourceMatches s = \case
             Just controllerId -> member controllerId <$> select whoMatcher
             Nothing -> pure False
         InvestigatorSource iid -> member iid <$> select whoMatcher
+        CardSource c -> case toCardOwner c of
+          Nothing -> pure False
+          Just iid -> member iid <$> select whoMatcher
         _ -> pure False
     in
       checkSource s

@@ -1,15 +1,16 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.CampaignLogKey where
 
-import Arkham.Prelude hiding (toLower)
-import Arkham.Classes.GameLogger
-import Arkham.Card.CardCode
 import Arkham.Campaigns.TheCircleUndone.Memento
+import Arkham.Card.CardCode
+import Arkham.Classes.GameLogger
+import Arkham.Prelude hiding (toLower)
 import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
-import Data.Typeable
 import Data.Text qualified as T
+import Data.Typeable
 
 data CampaignLogKey
   = DrivenInsaneInvestigators
@@ -24,8 +25,8 @@ data CampaignLogKey
   | ArkhamSuccumbedToUmordhothsTerribleVengeance
   | TheRitualToSummonUmordhothWasBroken
   | TheInvestigatorsRepelledUmordoth
-  | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
-  -- ^ The Night of the Zealot
+  | -- | The Night of the Zealot
+    TheInvestigatorsSacrificedLitaChantlerToUmordhoth
   | ProfessorWarrenRiceWasKidnapped
   | TheInvestigatorsRescuedProfessorWarrenRice
   | TheInvestigatorsFailedToSaveTheStudents
@@ -59,8 +60,8 @@ data CampaignLogKey
   | TheInvestigatorsEnteredTheGate
   | YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
   | TheInvestigatorsClosedTheTearInReality
-  | YogSothothHasFledToAnotherDimension
-  -- ^ The Dunwich Legacy
+  | -- | The Dunwich Legacy
+    YogSothothHasFledToAnotherDimension
   | TheStrangerIsOnToYou
   | ChasingTheStranger
   | YouTriedToWarnThePolice
@@ -95,8 +96,8 @@ data CampaignLogKey
   | TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
   | TheInvestigatorsPreventedHasturFromEscapingHisPrison
   | HasturHasYouInHisGrasp
-  | Possessed
-  -- ^ The Path to Carcosa
+  | -- | The Path to Carcosa
+    Possessed
   | TheInvestigatorsWereForcedToWaitForAdditionalSupplies
   | IchtacaObservedYourProgressWithKeenInterest
   | AlejandroFollowedTheInvestigatorsIntoTheRuins
@@ -143,8 +144,8 @@ data CampaignLogKey
   | TheInvestigatorsSavedTheCivilizationOfTheYithians
   | TheFabricOfTimeIsUnwoven
   | TheInvestigatorsTurnedBackTime
-  | TheInvestigatorsSealedTheRelicOfAgesForever
-  -- ^ The Forgotten Age
+  | -- | The Forgotten Age
+    TheInvestigatorsSealedTheRelicOfAgesForever
   | MissingPersons
   | WasTakenByTheWatcher
   | WasClaimedBySpecters
@@ -172,22 +173,24 @@ data CampaignLogKey
   | TheInvestigatorsAreDeceivingTheLodge
   | TheInvestigatorsToldTheLodgeAboutTheCoven
   | TheInvestigatorsHidTheirKnowledgeOfTheCoven
-  -- ^ The Circle Undone
+  | TheInvestigatorsSurvivedTheWatchersEmbrace
+  | -- | The Circle Undone
+    HereticsWereUnleashedUntoArkham
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
-  | TheRougarouEscapedAndYouEmbracedTheCurse
-  -- ^ Curse of the Rougarou
+  | -- | Curse of the Rougarou
+    TheRougarouEscapedAndYouEmbracedTheCurse
   | ManyWereSacrificedToCnidathquaDuringTheCarnivale
   | TheSunBanishedCnidathquaIntoTheDepths
-  | CnidathquaRetreatedToNurseItsWounds
-  -- ^ Carnevale of Horrors
+  | -- | Carnevale of Horrors
+    CnidathquaRetreatedToNurseItsWounds
   | YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs
   | YouHaveIdentifiedTheStone
   | DoomApproaches
   | TheHourIsNigh
-  | YouHaveTranslatedTheTome
-  -- ^ Player Cards
+  | -- | Player Cards
+    YouHaveTranslatedTheTome
   deriving stock (Eq, Show, Ord)
 
 $(deriveJSON defaultOptions ''CampaignLogKey)
@@ -198,11 +201,11 @@ instance FromJSONKey CampaignLogKey
 data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Ord, Eq)
 
-instance ToJSON a => ToJSON (Recorded a) where
+instance (ToJSON a) => ToJSON (Recorded a) where
   toJSON (Recorded a) = object ["tag" .= String "Recorded", "contents" .= a]
   toJSON (CrossedOut a) = object ["tag" .= String "CrossedOut", "contents" .= a]
 
-instance FromJSON a => FromJSON (Recorded a) where
+instance (FromJSON a) => FromJSON (Recorded a) where
   parseJSON = withObject "Recorded" $ \o -> do
     tag :: Text <- o .: "tag"
     case tag of
@@ -215,7 +218,7 @@ recordedCardCodes [] = []
 recordedCardCodes (SomeRecorded RecordableCardCode (Recorded a) : as) = a : recordedCardCodes as
 recordedCardCodes (_ : as) = recordedCardCodes as
 
-unrecorded :: forall a. Recordable a => SomeRecorded -> Maybe a
+unrecorded :: forall a. (Recordable a) => SomeRecorded -> Maybe a
 unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
   Just Refl -> case rec of
     Recorded a -> Just a
@@ -224,15 +227,15 @@ unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
 
 instance ToGameLoggerFormat CampaignLogKey where
   format = pack . go . show
-    where
-      go :: String -> String
-      go [] = []
-      go (x:xs) = toLower x : go' xs
+   where
+    go :: String -> String
+    go [] = []
+    go (x : xs) = toLower x : go' xs
 
-      go' :: String -> String
-      go' [] = []
-      go' (x:xs) | isUpper x = ' ' : toLower x : go' xs
-      go' (x:xs) = x : go' xs
+    go' :: String -> String
+    go' [] = []
+    go' (x : xs) | isUpper x = ' ' : toLower x : go' xs
+    go' (x : xs) = x : go' xs
 
 class (ToJSON a, FromJSON a, Eq a, Show a, Typeable a) => Recordable a where
   recordableType :: RecordableType a
@@ -243,10 +246,10 @@ instance Recordable CardCode where
 instance Recordable Memento where
   recordableType = RecordableMemento
 
-recorded :: forall a. Recordable a => a -> SomeRecorded
+recorded :: forall a. (Recordable a) => a -> SomeRecorded
 recorded a = SomeRecorded (recordableType @a) (Recorded a)
 
-crossedOut :: forall a. Recordable a => a -> SomeRecorded
+crossedOut :: forall a. (Recordable a) => a -> SomeRecorded
 crossedOut a = SomeRecorded (recordableType @a) (CrossedOut a)
 
 data RecordableType a where
@@ -269,7 +272,7 @@ instance FromJSON SomeRecordableType where
     other -> fail $ "No such recordable type: " <> unpack other
 
 data SomeRecorded where
-  SomeRecorded :: Recordable a => RecordableType a -> Recorded a -> SomeRecorded
+  SomeRecorded :: (Recordable a) => RecordableType a -> Recorded a -> SomeRecorded
 
 deriving stock instance Show SomeRecorded
 
@@ -291,4 +294,3 @@ instance FromJSON SomeRecorded where
       SomeRecordableType RecordableMemento -> do
         rVal <- o .: "recordVal"
         pure $ SomeRecorded RecordableMemento rVal
-

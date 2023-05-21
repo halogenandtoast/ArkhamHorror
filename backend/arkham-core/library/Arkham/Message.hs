@@ -719,6 +719,7 @@ data Message
   | FinishAction
   | BeginCardPayment Card
   | FinishCardPayment Card
+  | ReplaceCard CardId Card
   | UpdateHistory InvestigatorId History
   | -- The Forgotten Age
     PickSupply InvestigatorId Supply

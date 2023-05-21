@@ -11,14 +11,16 @@ import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
+import Arkham.Target
 import Arkham.Token
-import Control.Lens (non, _2)
+import Control.Lens (non, _1, _2)
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
@@ -109,3 +111,36 @@ getKnownRemainingOriginalDeckCards iid = do
 
 isInVictoryDisplay :: (HasGame m) => CardDef -> m Bool
 isInVictoryDisplay def = scenarioFieldMap ScenarioVictoryDisplay ((elem def) . map toCardDef)
+
+data EncounterDeckHandler = EncounterDeckHandler
+  { deckLens :: Lens' ScenarioAttrs (Deck EncounterCard)
+  , discardLens :: Lens' ScenarioAttrs [EncounterCard]
+  }
+
+getEncounterDeckKey :: (HasGame m, Targetable a) => a -> m ScenarioEncounterDeckKey
+getEncounterDeckKey a = do
+  modifiers' <- getModifiers a
+  pure $ fromMaybe RegularEncounterDeck $ asum $ map toEncounterDeckModifier modifiers'
+
+getEncounterDeckHandler :: (HasGame m, Targetable a) => a -> m EncounterDeckHandler
+getEncounterDeckHandler a = do
+  key <- getEncounterDeckKey a
+  pure $ case key of
+    RegularEncounterDeck ->
+      EncounterDeckHandler
+        { deckLens = encounterDeckLensFromKey RegularEncounterDeck
+        , discardLens = discardL
+        }
+    other ->
+      EncounterDeckHandler
+        { deckLens = encounterDeckLensFromKey other
+        , discardLens = encounterDecksL . at other . non (Deck [], []) . _2
+        }
+
+toEncounterDeckModifier :: ModifierType -> Maybe ScenarioEncounterDeckKey
+toEncounterDeckModifier (UseEncounterDeck k) = Just k
+toEncounterDeckModifier _ = Nothing
+
+encounterDeckLensFromKey :: ScenarioEncounterDeckKey -> Lens' ScenarioAttrs (Deck EncounterCard)
+encounterDeckLensFromKey RegularEncounterDeck = encounterDeckL
+encounterDeckLensFromKey k = encounterDecksL . at k . non (Deck [], []) . _1

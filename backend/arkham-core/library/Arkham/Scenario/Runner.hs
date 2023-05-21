@@ -77,38 +77,9 @@ instance HasTokenValue ScenarioAttrs where
     MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
     otherFace -> pure $ TokenValue otherFace NoModifier
 
-data EncounterDeckHandler = EncounterDeckHandler
-  { deckLens :: Lens' ScenarioAttrs (Deck EncounterCard)
-  , discardLens :: Lens' ScenarioAttrs [EncounterCard]
-  }
-
 instance RunMessage ScenarioAttrs where
   runMessage msg a =
     runScenarioAttrs msg a >>= traverseOf chaosBagL (runMessage msg)
-
-toEncounterDeckModifier :: ModifierType -> Maybe ScenarioEncounterDeckKey
-toEncounterDeckModifier (UseEncounterDeck k) = Just k
-toEncounterDeckModifier _ = Nothing
-
-encounterDeckLensFromKey :: ScenarioEncounterDeckKey -> Lens' ScenarioAttrs (Deck EncounterCard)
-encounterDeckLensFromKey RegularEncounterDeck = encounterDeckL
-encounterDeckLensFromKey k = encounterDecksL . at k . non (Deck [], []) . _1
-
-getEncounterDeckHandler :: (HasGame m, Targetable a) => a -> m EncounterDeckHandler
-getEncounterDeckHandler a = do
-  modifiers' <- getModifiers a
-  let key = fromMaybe RegularEncounterDeck $ asum $ map toEncounterDeckModifier modifiers'
-  pure $ case key of
-    RegularEncounterDeck ->
-      EncounterDeckHandler
-        { deckLens = encounterDeckLensFromKey RegularEncounterDeck
-        , discardLens = discardL
-        }
-    other ->
-      EncounterDeckHandler
-        { deckLens = encounterDeckLensFromKey other
-        , discardLens = encounterDecksL . at other . non (Deck [], []) . _2
-        }
 
 runScenarioAttrs :: Message -> ScenarioAttrs -> GameT ScenarioAttrs
 runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of

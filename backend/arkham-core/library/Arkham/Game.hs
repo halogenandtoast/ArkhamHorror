@@ -5010,10 +5010,12 @@ runGameMessage msg g = case msg of
       TreacheryTarget tid -> field TreacheryCardId tid
       AssetTarget aid -> field AssetCardId aid
       LocationTarget lid -> field LocationCardId lid
+      CardIdTarget cid -> pure cid
       _ -> error "Unhandled surge target"
     (effectId, surgeEffect) <- createSurgeEffect source cardId
     pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
   Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
+  ReplaceCard cardId card -> pure $ g & cardsL %~ insertMap cardId card
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
   SetActiveInvestigator iid -> pure $ g & activeInvestigatorIdL .~ iid
   InvestigatorDrawEncounterCard iid -> do

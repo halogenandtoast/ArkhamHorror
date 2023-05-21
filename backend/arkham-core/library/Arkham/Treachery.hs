@@ -316,6 +316,7 @@ allTreacheries =
     , SomeTreacheryCard burdensOfThePast
     , SomeTreacheryCard ominousPortents
     , SomeTreacheryCard graveLight
+    , SomeTreacheryCard graveLightSpectral
     , SomeTreacheryCard baneOfTheLiving
     , -- Edge of the Earth
       -- signature

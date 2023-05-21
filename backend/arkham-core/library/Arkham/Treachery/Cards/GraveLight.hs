@@ -27,6 +27,7 @@ instance RunMessage GraveLight where
       let graveLightSpectral = lookupCard Cards.graveLightSpectral (toCardId attrs)
       pushAll
         [ GainSurge (toSource attrs) (toTarget attrs)
+        , RemoveTreachery (toId attrs)
         , ReplaceCard (toCardId attrs) graveLightSpectral
         , ShuffleCardsIntoDeck (EncounterDeckByKey SpectralEncounterDeck) [graveLightSpectral]
         ]

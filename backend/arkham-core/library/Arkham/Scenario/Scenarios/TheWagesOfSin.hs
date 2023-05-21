@@ -8,6 +8,8 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -15,11 +17,14 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Act
+import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWagesOfSin.Story
@@ -167,4 +172,22 @@ instance RunMessage TheWagesOfSin where
               & (actStackL . at 1 ?~ acts)
               & (encounterDecksL . at SpectralEncounterDeck ?~ (Deck spectralEncounterDeck, mempty))
           )
+    ScenarioResolution resolution -> do
+      case resolution of
+        NoResolution -> do
+          anyResigned <- selectAny ResignedInvestigator
+          push $ scenarioResolution $ if anyResigned then 1 else 2
+        Resolution res | res `elem` [1, 2] -> do
+          iids <- allInvestigatorIds
+          step <- getCurrentActStep
+          n <- if step == 1 then pure 4 else selectCount $ EnemyWithTitle "Heretic"
+          xp <- toGainXp attrs getXp
+          pushAll $
+            story iids (if res == 1 then resolution1 else resolution2)
+              : [Record TheInvestigatorsSurvivedTheWatchersEmbrace | res == 2]
+                <> [RecordCount HereticsWereUnleashedUntoArkham n]
+                <> [recordSetInsert MementosDiscovered [WispOfSpectralMist] | n <= 3]
+                <> xp
+        _ -> error "invalid resolution"
+      pure s
     _ -> TheWagesOfSin <$> runMessage msg attrs

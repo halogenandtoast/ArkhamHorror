@@ -33,3 +33,29 @@ intro =
       \ a graveyard may not be your safest bet, but you’re not sure one can stay safe\
       \ in this city anymore."
     ]
+
+resolution1 :: FlavorText
+resolution1 =
+  FlavorText
+    (Just "Resolution 1")
+    [ "Rays of faded sunlight stream through the haze, and the unnatural mist finally\
+      \ recedes. As it does, Hangman’s Hill returns to its original state. No other\
+      \ spiteful ghosts emerge to haunt you, and the witches who summoned them have\
+      \ retreated into the shadows once more. You hope that you have done enough to\
+      \ prevent the rest of Arkham to succumbing to this horror."
+    ]
+
+resolution2 :: FlavorText
+resolution2 =
+  FlavorText
+    (Just "Resolution 2")
+    [ "Resigned to your fate, you fall to your knees. The mist parts. Time slows to a\
+      \ crawl as the watcher emerges. Its spectral form glides along the ground,\
+      \ approaching with the slow surety of a ticking clock. You close your eyes,\
+      \ unwilling to look upon your killer. Your fingers dig into your palm, and you\
+      \ brace yourself."
+    , "The moment passes."
+    , "When you open your eyes again, the creature is gone, along with the spectral\
+      \ mist."
+    , "...Have you been spared?"
+    ]

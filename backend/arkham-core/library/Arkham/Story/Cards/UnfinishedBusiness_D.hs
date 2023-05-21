@@ -41,8 +41,6 @@ instance HasAbilities UnfinishedBusiness_D where
 instance RunMessage UnfinishedBusiness_D where
   runMessage msg s@(UnfinishedBusiness_D attrs) = case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
-      enemy <- selectJust $ enemyIs Enemies.heretic_C
-      push $ chooseOne iid [targetLabel (toTarget attrs) [RemoveEnemy enemy]]
       pure . UnfinishedBusiness_D $ attrs & placementL .~ InThreatArea iid
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $

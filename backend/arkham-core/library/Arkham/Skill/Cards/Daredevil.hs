@@ -27,7 +27,7 @@ instance RunMessage Daredevil where
   runMessage msg s@(Daredevil attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       push $
-        DiscardUntilFirst iid (toSource attrs) $
+        DiscardUntilFirst iid (toSource attrs) (InvestigatorDeck iid) $
           CommittableCard iid $
             BasicCardMatch $
               CardWithClass Rogue <> CardWithType SkillType

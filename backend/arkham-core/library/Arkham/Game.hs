@@ -132,6 +132,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Story
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
+import Arkham.Story.Types qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -2551,6 +2552,7 @@ getEnemyField f e = do
     EnemyRemainingHealth -> do
       totalHealth <- getPlayerCountValue enemyHealth
       pure (totalHealth - enemyDamage)
+    EnemyHealth -> getPlayerCountValue enemyHealth
     EnemyHealthDamage -> pure enemyHealthDamage
     EnemySanityDamage -> pure enemySanityDamage
     EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
@@ -4797,12 +4799,19 @@ runGameMessage msg g = case msg of
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
   ReadStory iid card storyMode mtarget -> do
+    placement <- case mtarget of
+      Just (EnemyTarget eid) -> field EnemyPlacement eid
+      Just _ -> error "no known placement for non-enemy target"
+      Nothing -> pure Unplaced
+    push $ ReadStoryWithPlacement iid card storyMode mtarget placement
+    pure g
+  ReadStoryWithPlacement iid card storyMode mtarget placement -> do
     let
       storyId = StoryId $ toCardCode card
-      story' = createStory card mtarget storyId
+      story' = overAttrs (Story.placementL .~ placement) (createStory card mtarget storyId)
     -- if we have a target the ui should visually replace them, otherwise we add to UI by focus
-    case mtarget of
-      Nothing ->
+    case storyPlacement (toAttrs story') of
+      Unplaced ->
         pushAll
           [ FocusCards [card]
           , chooseOne
@@ -4810,8 +4819,12 @@ runGameMessage msg g = case msg of
               [targetLabel (toCardId card) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]]
           , UnfocusCards
           ]
-      Just _ ->
-        pushAll [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
+      _ ->
+        push $
+          chooseOne
+            iid
+            [ targetLabel (toTarget storyId) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
+            ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
   RemoveStory storyId -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
@@ -5015,7 +5028,9 @@ runGameMessage msg g = case msg of
     (effectId, surgeEffect) <- createSurgeEffect source cardId
     pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
   Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
-  ReplaceCard cardId card -> pure $ g & cardsL %~ insertMap cardId card
+  ReplaceCard cardId card -> do
+    replaceCard cardId card -- We must update the IORef
+    pure $ g & cardsL %~ insertMap cardId card
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
   SetActiveInvestigator iid -> pure $ g & activeInvestigatorIdL .~ iid
   InvestigatorDrawEncounterCard iid -> do

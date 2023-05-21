@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -25,15 +26,13 @@ instance RunMessage DeadlyFate where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillWillpower 3
       pure t
-    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          t
-            <$ push (DiscardEncounterUntilFirst source Nothing $ CardWithType EnemyType)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      push $ DiscardUntilFirst iid source Deck.EncounterDeck $ BasicCardMatch $ CardWithType EnemyType
+      pure t
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       iid <- selectJust You
       case mcard of
-        Nothing ->
-          t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
+        Nothing -> push (InvestigatorAssignDamage iid source DamageAny 0 1)
         Just c -> do
           -- tricky, we must create an enemy that has been discaded, have it
           -- attack,  and then remove it
@@ -51,5 +50,5 @@ instance RunMessage DeadlyFate where
                 ]
             , UnfocusCards
             ]
-          pure t
+      pure t
     _ -> DeadlyFate <$> runMessage msg attrs

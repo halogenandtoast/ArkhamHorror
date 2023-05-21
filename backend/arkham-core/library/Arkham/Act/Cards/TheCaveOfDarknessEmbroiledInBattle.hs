@@ -11,6 +11,8 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -51,11 +53,12 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
   runMessage msg a@(TheCaveOfDarknessEmbroiledInBattle attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       deckCount <- getActDecksInPlayCount
+      lead <- getLead
       pushAll $
         [ ShuffleEncounterDiscardBackIn
-        , DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
+        , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
         ]
-          <> [ DiscardEncounterUntilFirst (toSource attrs) Nothing $ CardWithTrait Cultist
+          <> [ DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
              | deckCount <= 2
              ]
           <> [ AdvanceToAct

@@ -331,13 +331,13 @@ instance RunMessage EnemyAttrs where
     After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId -> do
       keywords <- getModifiedKeywords a
-      modifiers' <- getModifiers (EnemyTarget eid)
+      modifiers' <- getModifiers eid
       let
         modifiedFilter iid = do
           if Keyword.Massive `elem` keywords
             then pure True
             else do
-              investigatorModifiers <- getModifiers (InvestigatorTarget iid)
+              investigatorModifiers <- getModifiers iid
               canEngage <- flip allM investigatorModifiers $ \case
                 CannotBeEngagedBy matcher -> notElem eid <$> select matcher
                 _ -> pure True

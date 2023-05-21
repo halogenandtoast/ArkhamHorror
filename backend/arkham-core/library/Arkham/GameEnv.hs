@@ -40,6 +40,10 @@ instance CardGen GameT where
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId (PlayerCard card) (gameCards g)}, ())
     pure card
+  replaceCard cardId card = do
+    ref <- asks gameEnvGame
+    atomicModifyIORef' ref $ \g ->
+      (g {gameCards = insertMap cardId card (gameCards g)}, ())
 
 class (Monad m) => HasGame m where
   getGame :: m Game

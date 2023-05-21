@@ -142,6 +142,13 @@ instance Sourceable Story where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
+instance HasCardCode StoryAttrs where
+  toCardCode = unStoryId . storyId
+
+instance IsCard StoryAttrs where
+  toCardId = storyCardId
+  toCard a = lookupCard (unStoryId $ storyId a) (toCardId a)
+
 data SomeStoryCard = forall a. (IsStory a) => SomeStoryCard (StoryCard a)
 
 liftSomeStoryCard :: (forall a. StoryCard a -> b) -> SomeStoryCard -> b

@@ -8,14 +8,14 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Attack
+import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Creation
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
@@ -32,18 +32,34 @@ instance RunMessage UnfinishedBusiness_J where
   runMessage msg s@(UnfinishedBusiness_J attrs) = case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       alreadyResolved <- getAlreadyResolved attrs
-      enemy <- selectJust $ enemyIs Enemies.heretic_I
+      mEnemy <- selectOne $ enemyIs Enemies.heretic_I
       if alreadyResolved
         then do
-          card <- field EnemyCard enemy
+          let card = lookupCard Enemies.heretic_I (toCardId attrs)
           send $ format card <> " was \"Banished\""
-          pushAll [RemoveEnemy enemy, AddToVictory (toTarget attrs)]
-        else do
-          afterStoryResolution attrs $ InitiateEnemyAttack $ enemyAttack enemy attrs iid
-          afterStoryResolution attrs $
-            createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
-      -- TODO: parley only at spectral, +1 per player clues costt
-      push $ chooseOne iid [targetLabel (toTarget attrs) []]
+          pushAll $
+            [RemoveEnemy enemy | enemy <- maybeToList mEnemy]
+              <> [ReplaceCard (toCardId attrs) (toCard attrs), AddToVictory (toTarget attrs)]
+        else case mEnemy of
+          Just enemy -> do
+            afterStoryResolution
+              attrs
+              [ RemoveStory $ toId attrs
+              , createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
+              , InitiateEnemyAttack $ enemyAttack enemy attrs iid
+              ]
+          Nothing -> do
+            let card = lookupCard Enemies.heretic_I (toCardId attrs)
+            creation <- createEnemy card (storyPlacement attrs)
+            let enemy = enemyCreationEnemyId creation
+            afterStoryResolution
+              attrs
+              [ RemoveStory $ toId attrs
+              , toMessage creation
+              , createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
+              , InitiateEnemyAttack $ enemyAttack enemy attrs iid
+              ]
+
       pure s
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
       push $ chooseOne iid [AbilityLabel iid (mkAbility attrs 1 $ ForcedAbility AnyWindow) [] []]

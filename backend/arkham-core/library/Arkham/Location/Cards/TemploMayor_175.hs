@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -51,7 +52,7 @@ instance RunMessage TemploMayor_175 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ ShuffleDiscardBackIn iid
-        , DiscardUntilFirst iid (toSource attrs) (BasicCardMatch WeaknessCard)
+        , DiscardUntilFirst iid (toSource attrs) (Deck.InvestigatorDeck iid) (BasicCardMatch WeaknessCard)
         ]
       pure l
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do

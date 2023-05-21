@@ -1,12 +1,13 @@
-module Arkham.Treachery.Cards.Wormhole
-  ( wormhole
-  , Wormhole(..)
-  ) where
+module Arkham.Treachery.Cards.Wormhole (
+  wormhole,
+  Wormhole (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -23,10 +24,12 @@ wormhole = treachery Wormhole Cards.wormhole
 instance RunMessage Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ DiscardEncounterUntilFirst
-        source
-        (Just iid)
-        (CardWithType LocationType)
+      push $
+        DiscardUntilFirst
+          iid
+          source
+          Deck.EncounterDeck
+          (BasicCardMatch $ CardWithType LocationType)
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
       do

@@ -11,6 +11,7 @@ import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card.CardType
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -43,13 +44,15 @@ instance RunMessage AllIsOne where
       failedToSaveStudents <-
         getHasRecord
           TheInvestigatorsFailedToSaveTheStudents
+      lead <- getLead
       investigatorIds <- getInvestigatorIds
       pushAll $
         [ ShuffleEncounterDiscardBackIn
-        , DiscardEncounterUntilFirst
+        , DiscardUntilFirst
+            lead
             (toSource attrs)
-            Nothing
-            (CardWithType LocationType)
+            Deck.EncounterDeck
+            (BasicCardMatch $ CardWithType LocationType)
         ]
           <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
              | failedToSaveStudents

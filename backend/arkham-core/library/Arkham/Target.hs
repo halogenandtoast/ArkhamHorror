@@ -98,6 +98,9 @@ instance Targetable EventId where
 instance Targetable SkillId where
   toTarget = SkillTarget
 
+instance Targetable StoryId where
+  toTarget = StoryTarget
+
 toActionTarget :: Target -> Target
 toActionTarget (ProxyTarget _ actionTarget) = actionTarget
 toActionTarget target = target

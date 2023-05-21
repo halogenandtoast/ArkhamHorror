@@ -220,6 +220,7 @@ allEncounterTreacheryCards =
       , ghostlyPresence
       , graspingHands
       , graveLight
+      , graveLightSpectral
       , huntedByByakhee
       , huntedDown
       , huntingShadow
@@ -1490,6 +1491,15 @@ graveLight :: CardDef
 graveLight =
   (treachery "05184" "Grave-Light" TheWagesOfSin 2)
     { cdCardTraits = singleton Curse
+    }
+
+-- Gravelight is the only card that cares which encounter deck it is drawn
+-- from, so instead we represent it as two cards for which deck it is in.
+graveLightSpectral :: CardDef
+graveLightSpectral =
+  (treachery "x05184" "Grave-Light" TheWagesOfSin 0)
+    { cdCardTraits = singleton Curse
+    , cdArt = "05184"
     }
 
 baneOfTheLiving :: CardDef

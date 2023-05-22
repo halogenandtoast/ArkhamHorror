@@ -1,7 +1,7 @@
-module Arkham.Projection
-  ( module Arkham.Projection
-  , module X
-  ) where
+module Arkham.Projection (
+  module Arkham.Projection,
+  module X,
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,8 @@ fieldJust
   -> EntityId a
   -> m typ
 fieldJust fld entityId = fromJustNote missingField <$> field fld entityId
-  where missingField = "Maybe field " <> show fld <> " was Nothing"
+ where
+  missingField = "Maybe field " <> show fld <> " was Nothing"
 
 fieldP
   :: (HasCallStack, HasGame m, Projection a)

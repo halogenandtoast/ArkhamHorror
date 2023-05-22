@@ -4,7 +4,7 @@ concurrent-tests: false
 system-ghc: true
 install-ghc: false
 resolver: nightly-2023-05-17
-compiler: ghc-9.6.1
+compiler: ghc-9.4.5
 
 ghc-options:
   "$locals":

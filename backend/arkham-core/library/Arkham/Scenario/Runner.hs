@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (
@@ -718,7 +719,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
   DiscardUntilFirst iid source Deck.EncounterDeck matcher -> do
-    (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck scenarioEncounterDeck)
+    push $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
+    pure a
+  DiscardUntilFirst iid source (Deck.EncounterDeckByKey RegularEncounterDeck) matcher -> do
+    (discards, remainingDeck) <-
+      traceShowId <$> breakM (`extendedCardMatch` matcher) (unDeck scenarioEncounterDeck)
     case remainingDeck of
       [] -> do
         push (RequestedEncounterCard source (Just iid) Nothing)

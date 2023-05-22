@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (
@@ -152,7 +153,7 @@ import Control.Exception (throw)
 import Control.Lens (each, itraverseOf, itraversed, non, set)
 import Control.Monad.Random (StdGen)
 import Control.Monad.Reader (runReader)
-import Control.Monad.State.Strict hiding (state)
+import Control.Monad.State.Strict hiding (filterM, foldM, state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -2699,34 +2700,8 @@ instance Query PreyMatcher where
 
 instance Query ExtendedCardMatcher where
   select matcher = do
-    handCards <- selectAgg id InvestigatorHand UneliminatedInvestigator
-    deckCards <-
-      map PlayerCard
-        . unDeck
-        <$> selectAgg id InvestigatorDeck UneliminatedInvestigator
-    discards <-
-      PlayerCard <$$> selectAgg id InvestigatorDiscard UneliminatedInvestigator
-    setAsideCards <- scenarioField ScenarioSetAsideCards
-    victoryDisplayCards <- scenarioField ScenarioVictoryDisplay
-    underScenarioReferenceCards <-
-      scenarioField
-        ScenarioCardsUnderScenarioReference
-    underneathCards <-
-      selectAgg
-        id
-        InvestigatorCardsUnderneath
-        UneliminatedInvestigator
-    setFromList
-      <$> filterM
-        (`matches'` matcher)
-        ( handCards
-            <> deckCards
-            <> underneathCards
-            <> underScenarioReferenceCards
-            <> discards
-            <> setAsideCards
-            <> victoryDisplayCards
-        )
+    g <- getGame
+    setFromList <$> filterM (`matches'` matcher) (traceShowId $ Map.elems $ gameCards g)
    where
     matches' :: (HasGame m) => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
@@ -2885,7 +2860,7 @@ instance Query ExtendedCardMatcher where
                         `elem` (cdCommitRestrictions $ toCardDef card)
                         && matchInitial
                   VengeanceCard _ -> error "vengeance card"
-      BasicCardMatch cm -> pure $ cardMatch c cm
+      BasicCardMatch cm -> pure $ traceShowId c `cardMatch` traceShowId cm
       InHandOf who -> do
         iids <- selectList who
         cards <- concat <$> traverse (field InvestigatorHand) iids

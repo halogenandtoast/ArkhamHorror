@@ -11,7 +11,6 @@ import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Source
 import Arkham.Window ( Window )
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs

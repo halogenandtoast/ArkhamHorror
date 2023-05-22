@@ -13,7 +13,6 @@ import Arkham.Exception
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype BindMonster2 = BindMonster2 EventAttrs

@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Source
 
 newtype ArcaneBarrier = ArcaneBarrier EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Strategy
 import Arkham.Token qualified as Token
 

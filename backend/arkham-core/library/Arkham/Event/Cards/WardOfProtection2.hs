@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Source
 
 newtype WardOfProtection2 = WardOfProtection2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

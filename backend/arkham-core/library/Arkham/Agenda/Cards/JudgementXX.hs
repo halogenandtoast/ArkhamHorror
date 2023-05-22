@@ -17,7 +17,6 @@ import Arkham.Investigator.Types (Field (InvestigatorCardCode))
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorDefeated)
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Monster))
 import Arkham.Window (Window (..))

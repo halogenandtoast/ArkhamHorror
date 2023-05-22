@@ -9,11 +9,12 @@ import Arkham.Campaign.Runner
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.ThePathToCarcosa.Import
-import Arkham.Card.CardCode
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message
@@ -146,8 +147,10 @@ instance RunMessage ThePathToCarcosa where
         $ a
           & (stepL .~ step)
           & (completedStepsL %~ completeStep (campaignStep a))
-    EnemyDefeated _ cardCode _ _
-      | cardCode == toCardCode Enemies.theManInThePallidMask -> do
-          n <- getRecordCount ChasingTheStranger
-          c <$ push (RecordCount ChasingTheStranger (n + 1))
+    EnemyDefeated _ cardId _ _ -> do
+      card <- getCard cardId
+      when (card `cardMatch` cardIs Enemies.theManInThePallidMask) $ do
+        n <- getRecordCount ChasingTheStranger
+        push (RecordCount ChasingTheStranger (n + 1))
+      pure c
     _ -> ThePathToCarcosa <$> runMessage msg a

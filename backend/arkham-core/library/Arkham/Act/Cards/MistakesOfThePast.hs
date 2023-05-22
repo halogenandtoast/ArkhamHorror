@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Act.Types
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations

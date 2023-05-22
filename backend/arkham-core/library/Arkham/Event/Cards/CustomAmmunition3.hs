@@ -14,7 +14,6 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Source
 import Arkham.Trait
 
 newtype CustomAmmunition3 = CustomAmmunition3 EventAttrs

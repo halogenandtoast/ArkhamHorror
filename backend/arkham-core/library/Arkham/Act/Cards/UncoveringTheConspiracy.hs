@@ -6,7 +6,6 @@ module Arkham.Act.Cards.UncoveringTheConspiracy
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -15,7 +14,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Source
 import Arkham.Trait
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs

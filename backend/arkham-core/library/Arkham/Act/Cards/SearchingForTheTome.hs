@@ -6,7 +6,6 @@ module Arkham.Act.Cards.SearchingForTheTome
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner

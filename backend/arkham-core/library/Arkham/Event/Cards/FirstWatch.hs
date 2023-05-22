@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Message
-import Arkham.Source
 
 newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(InvestigatorId, EncounterCard)] }
   deriving newtype (Show, Eq, ToJSON, FromJSON)

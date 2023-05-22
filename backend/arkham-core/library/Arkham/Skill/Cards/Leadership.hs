@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Leadership
-  ( leadership
-  , Leadership(..)
-  ) where
+module Arkham.Skill.Cards.Leadership (
+  leadership,
+  Leadership (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,6 @@ import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType
-import Arkham.Source
 
 newtype Leadership = Leadership SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -24,11 +23,12 @@ leadership = skill Leadership Cards.leadership
 instance HasModifiersFor Leadership where
   getModifiersFor (CardIdTarget cid) (Leadership attrs)
     | toCardId attrs == cid = do
-      mSkillTestSource <- getSkillTestSource
-      case mSkillTestSource of
-        Just (SkillTestSource iid' _ _ _) | skillOwner attrs /= iid' ->
-          pure $ toModifiers attrs [AddSkillIcons [SkillIcon SkillWillpower, WildIcon]]
-        _ -> pure []
+        mSkillTestSource <- getSkillTestSource
+        case mSkillTestSource of
+          Just (SkillTestSource iid' _ _ _)
+            | skillOwner attrs /= iid' ->
+                pure $ toModifiers attrs [AddSkillIcons [SkillIcon SkillWillpower, WildIcon]]
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Leadership where

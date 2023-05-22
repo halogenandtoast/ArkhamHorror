@@ -14,7 +14,6 @@ import Arkham.Enemy.Types ( Field (EnemyHealthDamage, EnemySanityDamage) )
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype Aquinnah3 = Aquinnah3 AssetAttrs

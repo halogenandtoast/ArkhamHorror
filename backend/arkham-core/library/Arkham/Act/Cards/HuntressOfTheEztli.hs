@@ -20,7 +20,6 @@ import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Ruins))

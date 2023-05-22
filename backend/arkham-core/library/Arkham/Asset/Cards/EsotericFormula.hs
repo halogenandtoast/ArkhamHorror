@@ -13,7 +13,6 @@ import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Trait
 
 newtype EsotericFormula = EsotericFormula AssetAttrs

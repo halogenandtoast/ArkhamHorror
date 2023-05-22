@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Placement
-import Arkham.Source
 
 newtype Shortcut2 = Shortcut2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

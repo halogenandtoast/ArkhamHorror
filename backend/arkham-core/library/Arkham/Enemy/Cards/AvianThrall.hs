@@ -14,7 +14,6 @@ import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs

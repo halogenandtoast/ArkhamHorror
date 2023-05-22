@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Helpers.Message.Discard as X
 
 import Arkham.Card
-import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Deck
 import Arkham.Draw.Types

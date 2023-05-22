@@ -13,7 +13,6 @@ import Arkham.Ability
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 import Arkham.Timing qualified as Timing

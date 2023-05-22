@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Source
 import Arkham.Token
 
 newtype LuckyDice2 = LuckyDice2 (EffectAttrs `With` Metadata)

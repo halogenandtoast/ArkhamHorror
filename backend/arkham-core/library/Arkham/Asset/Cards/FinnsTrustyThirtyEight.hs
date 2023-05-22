@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Source
 
 newtype FinnsTrustyThirtyEight = FinnsTrustyThirtyEight AssetAttrs
   deriving anyclass IsAsset

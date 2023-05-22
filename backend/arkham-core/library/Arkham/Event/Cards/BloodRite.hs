@@ -16,7 +16,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Source
 
 newtype BloodRite = BloodRite EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

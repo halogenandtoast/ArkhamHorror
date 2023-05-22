@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Token
 
 newtype ShardsOfTheVoid3 = ShardsOfTheVoid3 AssetAttrs

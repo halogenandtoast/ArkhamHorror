@@ -14,7 +14,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
-import Arkham.Source
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

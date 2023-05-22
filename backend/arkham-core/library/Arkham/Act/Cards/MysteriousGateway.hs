@@ -3,7 +3,6 @@ module Arkham.Act.Cards.MysteriousGateway where
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Types
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
@@ -12,7 +11,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
 import Arkham.SkillType
-import Arkham.Source
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

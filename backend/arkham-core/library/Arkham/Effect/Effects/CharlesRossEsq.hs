@@ -14,7 +14,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq EffectAttrs

@@ -3,7 +3,6 @@ module Arkham.Act.Cards.TheBarrier where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -13,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype TheBarrier = TheBarrier ActAttrs

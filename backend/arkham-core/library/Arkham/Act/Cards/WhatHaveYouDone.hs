@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs

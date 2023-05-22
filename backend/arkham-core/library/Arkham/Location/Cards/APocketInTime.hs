@@ -17,7 +17,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Shattered) )
 import Arkham.Window ( Window (..) )

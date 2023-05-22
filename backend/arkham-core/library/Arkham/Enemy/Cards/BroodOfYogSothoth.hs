@@ -14,7 +14,6 @@ import Arkham.Enemy.Runner
 import Arkham.Message qualified as Msg
 import Arkham.Name
 import Arkham.Projection
-import Arkham.Source
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving anyclass IsEnemy

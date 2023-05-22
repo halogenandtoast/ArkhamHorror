@@ -12,7 +12,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali EffectAttrs

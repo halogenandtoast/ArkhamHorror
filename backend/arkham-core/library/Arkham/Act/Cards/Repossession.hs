@@ -15,7 +15,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Source
 
 newtype Repossession = Repossession ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

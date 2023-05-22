@@ -6,7 +6,6 @@ module Arkham.Helpers.Modifiers (
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Classes.Entity
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()

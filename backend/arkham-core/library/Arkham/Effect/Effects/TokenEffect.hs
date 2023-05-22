@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Message
-import Arkham.Source
 import Arkham.Token
 import Arkham.Window (Window)
 

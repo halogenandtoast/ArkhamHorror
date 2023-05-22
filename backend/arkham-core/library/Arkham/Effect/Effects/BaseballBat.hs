@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Source
 import Arkham.Token
 
 newtype BaseballBat = BaseballBat EffectAttrs

@@ -20,7 +20,6 @@ import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Map.Strict qualified as Map

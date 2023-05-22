@@ -33,7 +33,7 @@ import Arkham.Enemy.Cards.SwarmOfRats
 import Arkham.Enemy.Types
 import Arkham.Event as X
 import Arkham.Event.Types
-import Arkham.Game as X hiding (getAsset, newGame, runMessages)
+import Arkham.Game as X hiding (addInvestigator, getAsset, newGame, runMessages)
 import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding (getCanAffordCost)
 import Arkham.GameValue as X
@@ -303,6 +303,16 @@ testInvestigator cardDef f =
 testJenny
   :: (MonadIO m) => (InvestigatorAttrs -> InvestigatorAttrs) -> m Investigator
 testJenny = testInvestigator Investigators.jennyBarnes
+
+addInvestigator
+  :: CardDef
+  -> (InvestigatorAttrs -> InvestigatorAttrs)
+  -> TestAppT Investigator
+addInvestigator defF attrsF = do
+  investigator' <- testInvestigator defF attrsF
+  env <- get
+  runReaderT (overGame (entitiesL . Entities.investigatorsL %~ insertEntity investigator')) env
+  pure investigator'
 
 testConnectedLocations
   :: (LocationAttrs -> LocationAttrs)

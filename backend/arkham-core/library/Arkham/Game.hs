@@ -4696,7 +4696,10 @@ runGameMessage msg g = case msg of
     inSkillTestWindow <- fromQueue $ any (== EndSkillTestWindow)
 
     if inSkillTestWindow
-      then insertAfterMatching msgs' (== EndSkillTestWindow)
+      then
+        if gameInAction g
+          then insertAfterMatching msgs' (== FinishAction)
+          else insertAfterMatching msgs' (== EndSkillTestWindow)
       else pushAll msgs'
     pure g
   BeforeSkillTest skillTest ->

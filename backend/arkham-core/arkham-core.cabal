@@ -2262,6 +2262,11 @@ test-suite spec
       Arkham.Asset.Cards.ArcaneInitiateSpec
       Arkham.Asset.Cards.ArcaneStudies2Spec
       Arkham.Asset.Cards.ArcaneStudiesSpec
+      Arkham.Asset.Cards.BandolierSpec
+      Arkham.Asset.Cards.BeatCopSpec
+      Arkham.Asset.Cards.DigDeep2Spec
+      Arkham.Asset.Cards.DigDeepSpec
+      Arkham.Asset.Cards.DukeSpec
       Helpers.Message
       TestImport
       TestImport.Lifted

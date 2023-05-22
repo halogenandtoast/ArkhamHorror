@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner hiding ( EnemyEvade )
 import Arkham.Helpers.Investigator
 import Arkham.Modifier qualified as Modifier
 import Arkham.SkillType
-import Arkham.Source
 
 newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
   deriving anyclass IsEnemy

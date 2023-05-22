@@ -19,7 +19,6 @@ import Arkham.Keyword ( Keyword (Aloof, Retaliate) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window

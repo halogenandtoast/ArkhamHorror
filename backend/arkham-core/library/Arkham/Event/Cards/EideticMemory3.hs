@@ -16,7 +16,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Source
 import Arkham.Trait
 import Arkham.Timing qualified as Timing
 import Arkham.Window

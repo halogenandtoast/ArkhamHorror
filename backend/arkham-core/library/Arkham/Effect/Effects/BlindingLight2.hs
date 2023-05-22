@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Source
 import Arkham.Token
 import Arkham.Window qualified as Window
 

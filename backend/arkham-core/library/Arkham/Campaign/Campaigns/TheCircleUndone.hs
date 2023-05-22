@@ -18,7 +18,6 @@ import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Source
 import Arkham.Token
 import Arkham.Trait (Trait (SilverTwilight))
 

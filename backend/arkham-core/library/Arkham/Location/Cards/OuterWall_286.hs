@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Source
 
 newtype OuterWall_286 = OuterWall_286 LocationAttrs
   deriving anyclass IsLocation

@@ -9,7 +9,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards ( arkhamWoodsGreatWillow )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs

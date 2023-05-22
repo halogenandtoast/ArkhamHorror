@@ -13,7 +13,6 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 
 newtype FireAxe = FireAxe AssetAttrs
   deriving anyclass IsAsset

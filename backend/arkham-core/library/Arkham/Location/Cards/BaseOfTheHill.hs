@@ -14,7 +14,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Source
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -16,7 +16,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 
 newtype Duke = Duke AssetAttrs
   deriving anyclass IsAsset

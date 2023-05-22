@@ -16,7 +16,6 @@ import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Token
 import Arkham.Window qualified as Window
 

@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Action
 import Arkham.Card.CardDef
-import Arkham.Classes.Entity
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator

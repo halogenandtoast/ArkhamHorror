@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Act.Types
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message

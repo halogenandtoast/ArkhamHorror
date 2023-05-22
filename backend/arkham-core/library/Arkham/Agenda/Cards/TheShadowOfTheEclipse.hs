@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Source
 
 newtype TheShadowOfTheEclipse = TheShadowOfTheEclipse AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

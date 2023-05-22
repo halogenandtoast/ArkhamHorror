@@ -15,7 +15,6 @@ import Arkham.EffectMetadata
 import Arkham.SkillType
 import Arkham.Ability
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype CrystalPendulum = CrystalPendulum AssetAttrs

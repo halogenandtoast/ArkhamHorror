@@ -15,7 +15,6 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait ( Trait (Tactic, Trick) )
 import Arkham.Window (Window(..))

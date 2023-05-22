@@ -14,7 +14,6 @@ import Arkham.Location.Cards qualified as Cards ( arkhamWoodsQuietGlade )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Source
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

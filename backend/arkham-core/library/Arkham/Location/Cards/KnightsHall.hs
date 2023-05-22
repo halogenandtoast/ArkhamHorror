@@ -14,7 +14,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import Arkham.Source
 
 newtype KnightsHall = KnightsHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -12,7 +12,6 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window ( Window (..), defaultWindows )

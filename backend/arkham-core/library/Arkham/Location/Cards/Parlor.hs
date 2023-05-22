@@ -12,7 +12,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Source
 
 newtype Parlor = Parlor LocationAttrs
   deriving anyclass IsLocation

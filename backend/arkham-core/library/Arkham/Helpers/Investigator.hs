@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Card
-import Arkham.Classes.Entity
 import Arkham.Classes.Query
 import Arkham.Damage
 import {-# SOURCE #-} Arkham.GameEnv

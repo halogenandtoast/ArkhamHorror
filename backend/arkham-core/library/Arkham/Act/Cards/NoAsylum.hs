@@ -6,7 +6,6 @@ module Arkham.Act.Cards.NoAsylum
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
@@ -17,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.ScenarioLogKey
-import Arkham.Source
 import Arkham.Trait
 
 newtype NoAsylum = NoAsylum ActAttrs

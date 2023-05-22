@@ -15,7 +15,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.SkillType
-import Arkham.Source
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass IsLocation

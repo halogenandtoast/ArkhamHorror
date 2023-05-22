@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Keyword qualified as Keyword
 import Arkham.SkillType
-import Arkham.Source
 
 newtype Knuckleduster = Knuckleduster AssetAttrs
   deriving anyclass IsAsset

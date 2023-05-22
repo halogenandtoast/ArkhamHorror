@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Id
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window

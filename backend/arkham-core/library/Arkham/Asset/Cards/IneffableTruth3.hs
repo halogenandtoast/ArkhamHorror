@@ -15,7 +15,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Token
 import Arkham.Window qualified as Window
 

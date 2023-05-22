@@ -13,7 +13,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype Maniac = Maniac EnemyAttrs

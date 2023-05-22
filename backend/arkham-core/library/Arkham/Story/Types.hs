@@ -148,6 +148,7 @@ instance HasCardCode StoryAttrs where
 instance IsCard StoryAttrs where
   toCardId = storyCardId
   toCard a = lookupCard (unStoryId $ storyId a) (toCardId a)
+  toCardOwner _ = Nothing
 
 data SomeStoryCard = forall a. (IsStory a) => SomeStoryCard (StoryCard a)
 

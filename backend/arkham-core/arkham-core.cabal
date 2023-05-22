@@ -2267,6 +2267,10 @@ test-suite spec
       Arkham.Asset.Cards.DigDeep2Spec
       Arkham.Asset.Cards.DigDeepSpec
       Arkham.Asset.Cards.DukeSpec
+      Arkham.Asset.Cards.FireAxeSpec
+      Arkham.Asset.Cards.FirstAidSpec
+      Arkham.Asset.Cards.FortyFiveAutomaticSpec
+      Arkham.Asset.Cards.GrotesqueStatue4Spec
       Helpers.Message
       TestImport
       TestImport.Lifted

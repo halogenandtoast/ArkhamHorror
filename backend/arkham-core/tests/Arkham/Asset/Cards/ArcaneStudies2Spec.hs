@@ -6,79 +6,65 @@ import TestImport.Lifted
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Types (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs (..))
 
 spec :: Spec
 spec = describe "Arcane Studies (2)" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
-    investigator <- testJenny $ \attrs ->
-      attrs {investigatorWillpower = 1, investigatorResources = 2}
-    arcaneStudies2 <- buildAsset Assets.arcaneStudies2 (Just investigator)
-    (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
-    gameTestWithLogger
-      logger
-      investigator
-      [ SetTokens [Zero]
-      , playAsset investigator arcaneStudies2
-      , beginSkillTest investigator SkillWillpower 3
-      ]
-      (entitiesL . assetsL %~ insertEntity arcaneStudies2)
-      $ do
-        runMessages
-        chooseOptionMatching
-          "use ability"
-          ( \case
+    gameTest $ \investigator -> do
+      didPassTest <- didPassSkillTestBy investigator SkillWillpower 0
+      updateInvestigator investigator $
+        \attrs -> attrs {investigatorWillpower = 1, investigatorResources = 2}
+      pushAndRun $ SetTokens [Zero]
+      putCardIntoPlay investigator Assets.arcaneStudies2
+      pushAndRun $ beginSkillTest investigator SkillWillpower 3
+      chooseOptionMatching
+        "use ability"
+        ( \case
             AbilityLabel {ability} -> abilityIndex ability == 1
             _ -> False
-          )
-        chooseOptionMatching
-          "use ability"
-          ( \case
+        )
+      chooseOptionMatching
+        "use ability"
+        ( \case
             AbilityLabel {ability} -> abilityIndex ability == 1
             _ -> False
-          )
-        chooseOptionMatching
-          "start skill test"
-          ( \case
-              StartSkillTestButton {} -> True
-              _ -> False
-          )
-        chooseOnlyOption "apply results"
-        didPassTest `refShouldBe` True
+        )
+      chooseOptionMatching
+        "start skill test"
+        ( \case
+            StartSkillTestButton {} -> True
+            _ -> False
+        )
+      chooseOnlyOption "apply results"
+      didPassTest `refShouldBe` True
 
   it "Adds 1 to intellect check for each resource spent" $ do
-    investigator <- testJenny $ \attrs ->
-      attrs {investigatorIntellect = 1, investigatorResources = 2}
-    arcaneStudies2 <- buildAsset Assets.arcaneStudies2 (Just investigator)
+    gameTest $ \investigator -> do
+      updateInvestigator investigator $ \attrs ->
+        attrs {investigatorIntellect = 1, investigatorResources = 2}
 
-    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
-    gameTestWithLogger
-      logger
-      investigator
-      [ SetTokens [Zero]
-      , playAsset investigator arcaneStudies2
-      , beginSkillTest investigator SkillIntellect 3
-      ]
-      (entitiesL . assetsL %~ insertEntity arcaneStudies2)
-      $ do
-        runMessages
-        chooseOptionMatching
-          "use ability"
-          ( \case
+      didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
+      pushAndRun $ SetTokens [Zero]
+      putCardIntoPlay investigator Assets.arcaneStudies2
+      pushAndRun $ beginSkillTest investigator SkillIntellect 3
+      chooseOptionMatching
+        "use ability"
+        ( \case
             AbilityLabel {ability} -> abilityIndex ability == 2
             _ -> False
-          )
-        chooseOptionMatching
-          "use ability"
-          ( \case
-            AbilityLabel {ability} -> abilityIndex ability  == 2
+        )
+      chooseOptionMatching
+        "use ability"
+        ( \case
+            AbilityLabel {ability} -> abilityIndex ability == 2
             _ -> False
-          )
-        chooseOptionMatching
-          "start skill test"
-          ( \case
-              StartSkillTestButton {} -> True
-              _ -> False
-          )
-        chooseOnlyOption "apply results"
-        didPassTest `refShouldBe` True
+        )
+      chooseOptionMatching
+        "start skill test"
+        ( \case
+            StartSkillTestButton {} -> True
+            _ -> False
+        )
+      chooseOnlyOption "apply results"
+      didPassTest `refShouldBe` True

@@ -568,7 +568,11 @@ handIs cards = fieldP InvestigatorHand (== cards) . toId
 putCardIntoPlay :: (HasCardDef def) => Investigator -> def -> TestAppT ()
 putCardIntoPlay i (toCardDef -> def) = do
   card <- genCard def
-  pushAndRun $ PutCardIntoPlay (toId i) card Nothing []
+  let
+    card' = case card of
+      PlayerCard pc -> PlayerCard $ pc {pcOwner = Just $ toId i}
+      other -> other
+  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
 
 updateInvestigator :: Investigator -> (InvestigatorAttrs -> InvestigatorAttrs) -> TestAppT ()
 updateInvestigator i f = do

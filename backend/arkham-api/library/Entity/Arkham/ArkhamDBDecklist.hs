@@ -1,10 +1,10 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Entity.Arkham.ArkhamDBDecklist where
 
 import Relude
 
-import Arkham.Card
 import Arkham.Decklist
-import Arkham.Id
 import Data.Aeson.Types
 import Data.Text qualified as T
 import Database.Persist.Postgresql.JSON ()

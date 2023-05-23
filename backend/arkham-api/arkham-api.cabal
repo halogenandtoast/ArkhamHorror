@@ -98,7 +98,6 @@ library
     , jwt
     , lens
     , monad-logger
-    , parsec
     , path-pieces
     , persistent
     , persistent-postgresql

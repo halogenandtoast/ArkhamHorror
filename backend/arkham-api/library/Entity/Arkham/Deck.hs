@@ -10,7 +10,7 @@ import Arkham.Decklist
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH
-import Entity.Arkham.ArkhamDBDecklist
+import Entity.Arkham.ArkhamDBDecklist ()
 import Entity.User
 import Json
 import Orphans ()

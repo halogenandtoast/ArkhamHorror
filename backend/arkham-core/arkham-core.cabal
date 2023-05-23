@@ -2279,6 +2279,15 @@ test-suite spec
       Arkham.Asset.Cards.Hyperawareness2Spec
       Arkham.Asset.Cards.HyperawarenessSpec
       Arkham.Asset.Cards.JennysTwin45sSpec
+      Arkham.Asset.Cards.JimsTrumpetSpec
+      Arkham.Asset.Cards.KnifeSpec
+      Arkham.Asset.Cards.MacheteSpec
+      Arkham.Asset.Cards.PeterSylvestreSpec
+      Arkham.Asset.Cards.PhysicalTraining2Spec
+      Arkham.Asset.Cards.PhysicalTrainingSpec
+      Arkham.Asset.Cards.Rolands38SpecialSpec
+      Arkham.Asset.Cards.ZoeysCrossSpec
+      Arkham.Enemy.Cards.TheMaskedHunterSpec
       Helpers.Message
       TestImport
       TestImport.Lifted

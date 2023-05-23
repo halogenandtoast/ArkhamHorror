@@ -29,7 +29,6 @@ import Arkham.Cost as X hiding (PaidCost)
 import Arkham.Difficulty
 import Arkham.Enemy as X
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Cards.SwarmOfRats
 import Arkham.Enemy.Types
 import Arkham.Event as X
 import Arkham.Event.Types
@@ -222,19 +221,12 @@ testEnemyWithDef
   -> (EnemyAttrs -> EnemyAttrs)
   -> TestAppT Enemy
 testEnemyWithDef defF attrsF = do
-  card <- genCard Cards.swarmOfRats
-  enemy' <-
-    cbCardBuilder
-      ( Enemy
-          <$> enemyWith
-            SwarmOfRats
-            (defF Cards.swarmOfRats)
-            (1, Static 1, 1)
-            (0, 0)
-            attrsF
-      )
-      (toCardId card)
-      <$> getRandom
+  let def' = defF Cards.swarmOfRats
+  card <- genCard def'
+  enemyId <- getRandom
+  let enemy' =
+        overAttrs (\attrs -> attrsF $ attrs {enemyHealthDamage = 0, enemySanityDamage = 0}) $
+          lookupEnemy (toCardCode card) enemyId (toCardId card)
   env <- get
   runReaderT (overGame (entitiesL . Entities.enemiesL %~ insertEntity enemy')) env
   pure enemy'

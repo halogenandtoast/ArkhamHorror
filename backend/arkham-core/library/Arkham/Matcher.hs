@@ -122,6 +122,10 @@ treacheryInThreatAreaOf :: InvestigatorId -> TreacheryMatcher
 treacheryInThreatAreaOf = TreacheryInThreatAreaOf . InvestigatorWithId
 
 -- ** Event Helpers **
+
+eventIs :: (HasCardCode a) => a -> EventMatcher
+eventIs = EventIs . toCardCode
+
 eventAt :: LocationId -> EventMatcher
 eventAt = EventAt . LocationWithId
 

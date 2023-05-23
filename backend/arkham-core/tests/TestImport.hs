@@ -20,7 +20,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Cards.Adaptable1
 import Arkham.Asset.Types
 import Arkham.Card as X
-import Arkham.Card.CardDef qualified as CardDef
 import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
@@ -44,7 +43,6 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types hiding (assetsL)
 import Arkham.Location as X
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Cards.Study
 import Arkham.Location.Types
 import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Message as X
@@ -211,18 +209,14 @@ testPlayerCard :: (CardGen m) => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
 
 testEnemy :: (EnemyAttrs -> EnemyAttrs) -> TestAppT Enemy
-testEnemy = testEnemyWithDef id
-
-testWeaknessEnemy :: (EnemyAttrs -> EnemyAttrs) -> TestAppT Enemy
-testWeaknessEnemy = testEnemyWithDef (CardDef.subTypeL ?~ Weakness)
+testEnemy = testEnemyWithDef Cards.swarmOfRats
 
 testEnemyWithDef
-  :: (CardDef -> CardDef)
+  :: CardDef
   -> (EnemyAttrs -> EnemyAttrs)
   -> TestAppT Enemy
-testEnemyWithDef defF attrsF = do
-  let def' = defF Cards.swarmOfRats
-  card <- genCard def'
+testEnemyWithDef def attrsF = do
+  card <- genCard def
   enemyId <- getRandom
   let enemy' =
         overAttrs (\attrs -> attrsF $ attrs {enemyHealthDamage = 0, enemySanityDamage = 0}) $
@@ -252,33 +246,33 @@ testAssetWithDef defF attrsF owner = do
     <$> ((,Just $ toId owner) <$> getRandom)
 
 testAgenda
-  :: (MonadIO m, CardGen m)
-  => CardCode
+  :: CardCode
   -> (AgendaAttrs -> AgendaAttrs)
-  -> m Agenda
+  -> TestAppT Agenda
 testAgenda cardCode f = do
   card <- genCard Cards.whatsGoingOn
-  pure $
-    cbCardBuilder
-      ( Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
-      )
-      (toCardId card)
-      (1, AgendaId cardCode)
+  let
+    agenda' =
+      cbCardBuilder
+        ( Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
+        )
+        (toCardId card)
+        (1, AgendaId cardCode)
+  env <- get
+  runReaderT (overGame (entitiesL . Entities.agendasL %~ insertEntity agenda')) env
+  pure agenda'
 
 testLocation :: (LocationAttrs -> LocationAttrs) -> TestAppT Location
-testLocation = testLocationWithDef id
+testLocation = testLocationWithDef Cards.study
 
 testLocationWithDef
-  :: (CardDef -> CardDef)
+  :: CardDef
   -> (LocationAttrs -> LocationAttrs)
   -> TestAppT Location
-testLocationWithDef defF attrsF = do
-  card <- genCard Cards.study
-  location' <-
-    cbCardBuilder
-      (Location <$> locationWith Study (defF Cards.study) 0 (Static 0) attrsF)
-      (toCardId card)
-      <$> getRandom
+testLocationWithDef def attrsF = do
+  card <- genCard def
+  locationId <- getRandom
+  let location' = overAttrs attrsF $ lookupLocation (toCardCode card) locationId (toCardId card)
   env <- get
   runReaderT (overGame (entitiesL . Entities.locationsL %~ insertEntity location')) env
   pure location'
@@ -313,16 +307,16 @@ testConnectedLocations
   :: (LocationAttrs -> LocationAttrs)
   -> (LocationAttrs -> LocationAttrs)
   -> TestAppT (Location, Location)
-testConnectedLocations f1 f2 = testConnectedLocationsWithDef (id, f1) (id, f2)
+testConnectedLocations f1 f2 = testConnectedLocationsWithDef (Cards.rivertown, f1) (Cards.southsideHistoricalSociety, f2)
 
 testConnectedLocationsWithDef
-  :: (CardDef -> CardDef, LocationAttrs -> LocationAttrs)
-  -> (CardDef -> CardDef, LocationAttrs -> LocationAttrs)
+  :: (CardDef, LocationAttrs -> LocationAttrs)
+  -> (CardDef, LocationAttrs -> LocationAttrs)
   -> TestAppT (Location, Location)
-testConnectedLocationsWithDef (defF1, attrsF1) (defF2, attrsF2) = do
+testConnectedLocationsWithDef (def1, attrsF1) (def2, attrsF2) = do
   location1 <-
     testLocationWithDef
-      defF1
+      def1
       ( attrsF1
           . (symbolL .~ Square)
           . (revealedSymbolL .~ Square)
@@ -331,7 +325,7 @@ testConnectedLocationsWithDef (defF1, attrsF1) (defF2, attrsF2) = do
       )
   location2 <-
     testLocationWithDef
-      defF2
+      def2
       ( attrsF2
           . (symbolL .~ Triangle)
           . (revealedSymbolL .~ Triangle)
@@ -537,10 +531,9 @@ newGame investigator = do
 -- Helpers
 
 isInDiscardOf
-  :: (IsCard (EntityAttrs a), Entity a) => Investigator -> a -> TestAppT Bool
-isInDiscardOf i a = do
-  let pc = fromJust $ preview _PlayerCard (toCard $ toAttrs a)
-  fieldP InvestigatorDiscard (elem pc) (toId i)
+  :: (HasCardDef cardDef) => Investigator -> cardDef -> TestAppT Bool
+isInDiscardOf i (toCardDef -> cardDef) = do
+  fieldP InvestigatorDiscard (any (`cardMatch` cardIs cardDef)) (toId i)
 
 getRemainingActions :: Investigator -> TestAppT Int
 getRemainingActions = field InvestigatorRemainingActions . toId
@@ -557,14 +550,32 @@ getActiveCost =
 evadedBy :: Investigator -> Enemy -> TestAppT Bool
 evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId
 
+class ConvertToEntityId a b | a -> b where
+  toEntityId :: a -> b
+
+instance ConvertToEntityId Enemy EnemyId where
+  toEntityId = toId
+
+instance ConvertToEntityId Asset AssetId where
+  toEntityId = toId
+
+instance ConvertToEntityId AssetId AssetId where
+  toEntityId = id
+
+instance ConvertToEntityId Location LocationId where
+  toEntityId = toId
+
+instance ConvertToEntityId Investigator InvestigatorId where
+  toEntityId = toId
+
 fieldAssert
-  :: (HasCallStack, Projection attrs, Entity a, EntityId a ~ EntityId attrs)
+  :: (HasCallStack, Projection attrs, ConvertToEntityId a b, b ~ EntityId attrs)
   => Field attrs typ
   -> (typ -> Bool)
   -> a
   -> TestAppT ()
 fieldAssert fld p a = do
-  result <- fieldP fld p (toId a)
+  result <- fieldP fld p (toEntityId a)
   liftIO $ result `shouldBe` True
 
 handIs :: [Card] -> Investigator -> TestAppT Bool

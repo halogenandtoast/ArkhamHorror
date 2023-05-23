@@ -2288,6 +2288,28 @@ test-suite spec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
+      Arkham.Event.Cards.BackstabSpec
+      Arkham.Event.Cards.BaitAndSwitchSpec
+      Arkham.Event.Cards.Barricade3Spec
+      Arkham.Event.Cards.BarricadeSpec
+      Arkham.Event.Cards.BlindingLight2Spec
+      Arkham.Event.Cards.BlindingLightSpec
+      Arkham.Event.Cards.CloseCall2Spec
+      Arkham.Event.Cards.CrypticResearch4Spec
+      Arkham.Event.Cards.CunningDistractionSpec
+      Arkham.Event.Cards.DarkMemorySpec
+      Arkham.Event.Cards.DodgeSpec
+      Arkham.Event.Cards.DrawnToTheFlameSpec
+      Arkham.Event.Cards.DynamiteBlastSpec
+      Arkham.Event.Cards.EmergencyCacheSpec
+      Arkham.Event.Cards.EvidenceSpec
+      Arkham.Event.Cards.ExtraAmmunition1Spec
+      Arkham.Event.Cards.Lucky2Spec
+      Arkham.Event.Cards.LuckySpec
+      Arkham.Event.Cards.OopsSpec
+      Arkham.Event.Cards.SearchForTheTruthSpec
+      Arkham.Event.Cards.WillToSurvive3Spec
+      Arkham.GameSpec
       Helpers.Message
       TestImport
       TestImport.Lifted

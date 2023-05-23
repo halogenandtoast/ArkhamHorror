@@ -29,6 +29,14 @@ fieldP
   -> m Bool
 fieldP = fieldMap
 
+fieldPM
+  :: (HasCallStack, HasGame m, Projection a)
+  => Field a typ
+  -> (typ -> m Bool)
+  -> EntityId a
+  -> m Bool
+fieldPM = fieldMapM
+
 fieldMap
   :: (HasCallStack, HasGame m, Projection a)
   => (Field a typ)

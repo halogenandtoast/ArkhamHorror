@@ -76,8 +76,8 @@ spec = describe "Jim's Trumpet" $ do
           Investigators.rolandBanks
           (Investigator.sanityDamageL .~ 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
-      rivertown <- testLocationWithDef (const Locations.rivertown) id
-      southside <- testLocationWithDef (const Locations.southsideHistoricalSociety) id
+      rivertown <- testLocationWithDef Locations.rivertown id
+      southside <- testLocationWithDef Locations.southsideHistoricalSociety id
       pushAndRun $ SetTokens [Skull]
       pushAndRun $ placedLocation rivertown
       pushAndRun $ placedLocation southside
@@ -100,8 +100,8 @@ spec = describe "Jim's Trumpet" $ do
           Investigators.rolandBanks
           ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
       putCardIntoPlay investigator Assets.jimsTrumpet
-      rivertown <- testLocationWithDef (const Locations.rivertown) id
-      downtown <- testLocationWithDef (const Locations.downtownArkhamAsylum) id
+      rivertown <- testLocationWithDef Locations.rivertown id
+      downtown <- testLocationWithDef Locations.downtownArkhamAsylum id
       pushAndRun $ SetTokens [Skull]
       pushAndRun $ placedLocation rivertown
       pushAndRun $ placedLocation downtown

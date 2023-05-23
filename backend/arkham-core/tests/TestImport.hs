@@ -17,7 +17,6 @@ import Arkham.Agenda.Cards.WhatsGoingOn
 import Arkham.Agenda.Types
 import Arkham.Asset as X (createAsset, lookupAsset)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Cards.Adaptable1
 import Arkham.Asset.Types
 import Arkham.Card as X
 import Arkham.Card.EncounterCard as X
@@ -226,24 +225,26 @@ testEnemyWithDef def attrsF = do
   pure enemy'
 
 testAsset
-  :: (CardGen m)
-  => (AssetAttrs -> AssetAttrs)
+  :: (AssetAttrs -> AssetAttrs)
   -> Investigator
-  -> m Asset
-testAsset f i = testAssetWithDef id f i
+  -> TestAppT Asset
+testAsset f i = testAssetWithDef Cards.adaptable1 f i
 
 testAssetWithDef
-  :: (CardGen m)
-  => (CardDef -> CardDef)
+  :: CardDef
   -> (AssetAttrs -> AssetAttrs)
   -> Investigator
-  -> m Asset
-testAssetWithDef defF attrsF owner = do
-  card <- genCard Cards.adaptable1
-  cbCardBuilder
-    (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
-    (toCardId card)
-    <$> ((,Just $ toId owner) <$> getRandom)
+  -> TestAppT Asset
+testAssetWithDef def attrsF owner = do
+  card <- genCard def
+  assetId <- getRandom
+  let
+    asset' =
+      overAttrs attrsF $
+        lookupAsset (toCardCode card) assetId (Just $ toId owner) (toCardId card)
+  env <- get
+  runReaderT (overGame (entitiesL . Entities.assetsL %~ insertEntity asset')) env
+  pure asset'
 
 testAgenda
   :: CardCode
@@ -348,13 +349,16 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 createMessageMatcher :: Message -> TestAppT (IORef Bool)
-createMessageMatcher msg = do
+createMessageMatcher msg = createMessageChecker (== msg)
+
+createMessageChecker :: (Message -> Bool) -> TestAppT (IORef Bool)
+createMessageChecker f = do
   ref <- liftIO $ newIORef False
   testApp <- get
   put $
     testApp
       { testLogger =
-          Just (\msg' -> when (msg == msg') (liftIO $ atomicWriteIORef ref True))
+          Just (\msg -> when (f msg) (liftIO $ atomicWriteIORef ref True))
       }
   pure ref
 
@@ -445,22 +449,22 @@ chooseOptionMatching _reason f = do
       _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"
 
+{- | Run a test with a default investigator.
+We use jenny barnes because she has no direct interaction with the game state
+-}
 gameTest :: (Investigator -> TestAppT ()) -> IO ()
-gameTest = gameTestWithLogger (pure . const ())
+gameTest = gameTestWith Investigators.jennyBarnes
 
-gameTestWithLogger
-  :: (Message -> IO ())
-  -> (Investigator -> TestAppT ())
-  -> IO ()
-gameTestWithLogger logger body = do
-  jenny <- testJenny id
-  g <- newGame jenny
+gameTestWith :: CardDef -> (Investigator -> TestAppT ()) -> IO ()
+gameTestWith investigatorDef body = do
+  investigator <- testInvestigator investigatorDef id
+  g <- newGame investigator
   gameRef <- newIORef g
   queueRef <- Queue <$> newIORef []
   genRef <- newIORef $ mkStdGen (gameSeed g)
   runTestApp
-    (TestApp gameRef queueRef genRef (Just logger) (pure . const ()))
-    (body jenny)
+    (TestApp gameRef queueRef genRef Nothing (pure . const ()))
+    (body investigator)
 
 newGame :: (MonadIO m) => Investigator -> m Game
 newGame investigator = do

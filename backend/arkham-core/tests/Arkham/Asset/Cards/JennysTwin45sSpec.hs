@@ -16,7 +16,7 @@ import Arkham.Projection
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
-  fit "enters play with X uses" $ gameTest $ \investigator -> do
+  it "enters play with X uses" $ gameTest $ \investigator -> do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     updateInvestigator investigator $ \attrs ->
       attrs
@@ -25,7 +25,9 @@ spec = describe "Jenny's Twin .45s" $ do
         }
     pushAndRun $ playCard investigator (PlayerCard jennysTwin45s)
     activeCost <- getActiveCost
-    pushAndRun $ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 5)
+    pushAndRunAll $
+      replicate 5 $
+        PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
     assetId <- selectJust $ assetIs Cards.jennysTwin45s
     assert $ fieldP AssetUses ((== 5) . useCount) assetId
 

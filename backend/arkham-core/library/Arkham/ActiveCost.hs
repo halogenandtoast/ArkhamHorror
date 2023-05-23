@@ -313,18 +313,16 @@ instance RunMessage ActiveCost where
               availableResources <- getSpendableResources iid
               pure $ min n (availableResources `div` resources)
             _ -> pure n
-          c
-            <$ when
-              canAfford
-              ( push $
-                  Ask iid $
-                    ChoosePaymentAmounts
-                      ("Pay " <> displayCostType cost)
-                      Nothing
-                      [ PaymentAmountChoice iid 0 maxUpTo $
-                          PayCost acId iid skipAdditionalCosts cost'
-                      ]
-              )
+          when canAfford $
+            push $
+              Ask iid $
+                ChoosePaymentAmounts
+                  ("Pay " <> displayCostType cost)
+                  Nothing
+                  [ PaymentAmountChoice iid 0 maxUpTo $
+                      PayCost acId iid skipAdditionalCosts cost'
+                  ]
+          pure c
         DiscardTopOfDeckCost n -> do
           cards <-
             fieldMap

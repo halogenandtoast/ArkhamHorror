@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (
@@ -2716,7 +2715,7 @@ instance Query PreyMatcher where
 instance Query ExtendedCardMatcher where
   select matcher = do
     g <- getGame
-    setFromList <$> filterM (`matches'` matcher) (traceShowId $ Map.elems $ gameCards g)
+    setFromList <$> filterM (`matches'` matcher) (Map.elems $ gameCards g)
    where
     matches' :: (HasGame m) => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
@@ -2875,7 +2874,7 @@ instance Query ExtendedCardMatcher where
                         `elem` (cdCommitRestrictions $ toCardDef card)
                         && matchInitial
                   VengeanceCard _ -> error "vengeance card"
-      BasicCardMatch cm -> pure $ traceShowId c `cardMatch` traceShowId cm
+      BasicCardMatch cm -> pure $ c `cardMatch` cm
       InHandOf who -> do
         iids <- selectList who
         cards <- concat <$> traverse (field InvestigatorHand) iids

@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (
@@ -722,8 +721,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
     pure a
   DiscardUntilFirst iid source (Deck.EncounterDeckByKey RegularEncounterDeck) matcher -> do
-    (discards, remainingDeck) <-
-      traceShowId <$> breakM (`extendedCardMatch` matcher) (unDeck scenarioEncounterDeck)
+    (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck scenarioEncounterDeck)
     case remainingDeck of
       [] -> do
         push (RequestedEncounterCard source (Just iid) Nothing)

@@ -174,7 +174,6 @@ import Data.These.Lens
 import Data.Typeable
 import Data.UUID (nil)
 import Data.UUID qualified as UUID
-import Safe (headNote)
 import System.Environment
 import Text.Pretty.Simple
 

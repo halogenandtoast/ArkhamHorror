@@ -71,6 +71,9 @@ data GameEnv = GameEnv
   , gameLogger :: Text -> IO ()
   }
 
+instance HasGameRef GameEnv where
+  gameRefL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}
+
 instance HasStdGen GameEnv where
   genL = lens gameRandomGen $ \m x -> m {gameRandomGen = x}
 

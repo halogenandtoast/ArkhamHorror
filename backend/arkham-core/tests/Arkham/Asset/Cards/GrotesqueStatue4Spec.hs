@@ -17,11 +17,7 @@ spec = describe "Grotesque Statue (4)" $ do
       updateInvestigator investigator (intellectL .~ 5)
       putCardIntoPlay investigator Assets.grotesqueStatue4
 
-      didRunMessage <-
-        didPassSkillTestBy
-          investigator
-          SkillIntellect
-          5
+      didRunMessage <- didPassSkillTestBy investigator SkillIntellect 5
 
       pushAndRun $ SetTokens [AutoFail, Zero]
       pushAndRun $ beginSkillTest investigator SkillIntellect 0

@@ -1,59 +1,60 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module Api.Handler.Arkham.Games
-  ( getApiV1ArkhamGameR
-  , getApiV1ArkhamGameExportR
-  , getApiV1ArkhamGameSpectateR
-  , getApiV1ArkhamGamesR
-  , postApiV1ArkhamGamesR
-  , postApiV1ArkhamGamesImportR
-  , putApiV1ArkhamGameR
-  , deleteApiV1ArkhamGameR
-  , putApiV1ArkhamGameRawR
-  ) where
+module Api.Handler.Arkham.Games (
+  getApiV1ArkhamGameR,
+  getApiV1ArkhamGameExportR,
+  getApiV1ArkhamGameSpectateR,
+  getApiV1ArkhamGamesR,
+  postApiV1ArkhamGamesR,
+  postApiV1ArkhamGamesImportR,
+  putApiV1ArkhamGameR,
+  deleteApiV1ArkhamGameR,
+  putApiV1ArkhamGameRawR,
+) where
 
 import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
-import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
+import Arkham.Decklist
 import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Id
-import Arkham.Investigator
 import Arkham.Message
 import Conduit
-import Control.Lens ( view )
-import Control.Monad.Random ( mkStdGen )
-import Control.Monad.Random.Class ( getRandom )
+import Control.Lens (view)
+import Control.Monad.Random (mkStdGen)
+import Control.Monad.Random.Class (getRandom)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
+import Data.List.NonEmpty qualified as NonEmpty
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
-import Data.Traversable ( for )
-import Database.Esqueleto.Experimental hiding ( update )
+import Data.Traversable (for)
+import Database.Esqueleto.Experimental hiding (update)
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
-import Import hiding ( delete, on, (==.) )
+import Import hiding (delete, on, (==.))
 import Json
-import Network.WebSockets ( ConnectionException )
-import Safe ( fromJustNote )
-import UnliftIO.Exception hiding ( Handler )
+import Network.WebSockets (ConnectionException)
+import Safe (fromJustNote)
+import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException $ do
   writeChannel <- lift $ getChannel gameId
   gameChannelClients <- appGameChannelClients <$> getYesod
-  atomicModifyIORef' gameChannelClients
-    $ \channelClients -> (Map.insertWith (+) gameId 1 channelClients, ())
-  bracket (atomically $ dupTChan writeChannel) closeConnection
-    $ \readChannel -> race_
+  atomicModifyIORef' gameChannelClients $
+    \channelClients -> (Map.insertWith (+) gameId 1 channelClients, ())
+  bracket (atomically $ dupTChan writeChannel) closeConnection $
+    \readChannel ->
+      race_
         (forever $ atomically (readTChan readChannel) >>= sendTextData)
         (runConduit $ sourceWS .| mapM_C (atomically . writeTChan writeChannel))
  where
@@ -65,9 +66,9 @@ gameStream gameId = catchingConnectionException $ do
         ( Map.adjust pred gameId channelClients
         , Map.findWithDefault 1 gameId channelClients - 1
         )
-    when (clientCount == 0)
-      $ atomicModifyIORef' gameChannelsRef
-      $ \gameChannels' -> (Map.delete gameId gameChannels', ())
+    when (clientCount == 0) $
+      atomicModifyIORef' gameChannelsRef $
+        \gameChannels' -> (Map.delete gameId gameChannels', ())
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -79,25 +80,29 @@ data GetGameJson = GetGameJson
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
-  deriving anyclass ToJSON
+  deriving anyclass (ToJSON)
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   webSockets (gameStream gameId)
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ge <- runDB $ get404 gameId
-  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404
-    (UniquePlayer userId gameId)
+  ArkhamPlayer {..} <-
+    runDB $
+      entityVal
+        <$> getBy404
+          (UniquePlayer userId gameId)
   let
     Game {..} = arkhamGameCurrentData ge
     investigatorId = case arkhamGameMultiplayerVariant ge of
       Solo -> coerce gameActiveInvestigatorId
       WithFriends -> coerce arkhamPlayerInvestigatorId
   gameLog <- runDB $ getGameLog gameId Nothing
-  pure $ GetGameJson
-    (Just investigatorId)
-    (arkhamGameMultiplayerVariant ge)
-    (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
+  pure $
+    GetGameJson
+      (Just investigatorId)
+      (arkhamGameMultiplayerVariant ge)
+      (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
@@ -107,10 +112,11 @@ getApiV1ArkhamGameSpectateR gameId = do
     Game {..} = arkhamGameCurrentData ge
     investigatorId = coerce gameActiveInvestigatorId
   gameLog <- runDB $ getGameLog gameId Nothing
-  pure $ GetGameJson
-    (Just investigatorId)
-    (arkhamGameMultiplayerVariant ge)
-    (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
+  pure $
+    GetGameJson
+      (Just investigatorId)
+      (arkhamGameMultiplayerVariant ge)
+      (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
 getApiV1ArkhamGamesR :: Handler [PublicGame ArkhamGameId]
 getApiV1ArkhamGamesR = do
@@ -118,11 +124,11 @@ getApiV1ArkhamGamesR = do
   games <- runDB $ select $ do
     (players :& games) <-
       from
-      $ table @ArkhamPlayer
-      `InnerJoin` table @ArkhamGame
-      `on` (\(players :& games) ->
-             players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
-           )
+        $ table @ArkhamPlayer
+          `InnerJoin` table @ArkhamGame
+        `on` ( \(players :& games) ->
+                players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
+             )
     where_ (players ^. ArkhamPlayerUserId ==. val userId)
     orderBy [desc $ games ^. ArkhamGameUpdatedAt]
     pure games
@@ -138,7 +144,7 @@ data CreateGamePost = CreateGamePost
   , multiplayerVariant :: MultiplayerVariant
   }
   deriving stock (Show, Generic)
-  deriving anyclass FromJSON
+  deriving anyclass (FromJSON)
 
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
@@ -156,10 +162,11 @@ getApiV1ArkhamGameExportR gameId = do
 
   entries <- runDB $ getGameLogEntries gameId
 
-  pure $ ArkhamExport
-    { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-    , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
-    }
+  pure $
+    ArkhamExport
+      { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
+      , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
+      }
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
@@ -167,12 +174,12 @@ postApiV1ArkhamGamesImportR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   eExportData :: Either String ArkhamExport <-
     fmap eitherDecodeStrict'
-    . fileSourceByteString
-    . snd
-    . fromJustNote "No export file uploaded"
-    . headMay
-    . snd
-    =<< runRequestBody
+      . fileSourceByteString
+      . snd
+      . fromJustNote "No export file uploaded"
+      . headMay
+      . snd
+      =<< runRequestBody
   now <- liftIO getCurrentTime
 
   case eExportData of
@@ -182,40 +189,43 @@ postApiV1ArkhamGamesImportR = do
         ArkhamGameExportData {..} = aeCampaignData export
         investigatorIds = aeCampaignPlayers export
       key <- runDB $ do
-        gameId <- insert
-          $ ArkhamGame agedName agedCurrentData agedStep Solo now now
-        insertMany_ $ map (\e -> e { arkhamLogEntryArkhamGameId = gameId }) agedLog
+        gameId <-
+          insert $
+            ArkhamGame agedName agedCurrentData agedStep Solo now now
+        insertMany_ $ map (\e -> e {arkhamLogEntryArkhamGameId = gameId}) agedLog
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
         traverse_
-          (\s -> insert_
-            $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s)
+          ( \s ->
+              insert_ $
+                ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s)
           )
           agedSteps
         pure gameId
-      pure $ toPublicGame
-        (Entity key $ ArkhamGame agedName agedCurrentData agedStep Solo now now)
-        (GameLog $ map arkhamLogEntryBody agedLog)
+      pure $
+        toPublicGame
+          (Entity key $ ArkhamGame agedName agedCurrentData agedStep Solo now now)
+          (GameLog $ map arkhamLogEntryBody agedLog)
 
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  investigators <- for (catMaybes deckIds) $ \deckId -> do
+  decks' <- for (catMaybes deckIds) $ \deckId -> do
     deck <- runDB $ get404 deckId
     when (arkhamDeckUserId deck /= userId) notFound
-    (iid, decklist) <- liftIO $ loadDecklist deck
-    pure (lookupInvestigator iid, decklist)
+    pure $ arkhamDeckList deck
+  decks <- maybe (invalidArgs ["must have one deck"]) pure $ nonEmpty decks'
   let
-    investigatorId =
-      coerce . toId . fst . fromJustNote "must have one investigator" $ headMay
-        investigators
+    investigatorId = decklistInvestigatorId $ NonEmpty.head decks
+
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   now <- liftIO getCurrentTime
   case campaignId of
     Just cid -> do
-      (queueRef, game) <- liftIO
-        $ newCampaign cid newGameSeed playerCount investigators difficulty
+      (queueRef, game) <-
+        liftIO $
+          newCampaign cid newGameSeed playerCount decks difficulty
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())
@@ -223,18 +233,21 @@ postApiV1ArkhamGamesR = do
       ge <- readIORef gameRef
       updatedQueue <- readIORef (queueToRef queueRef)
       key <- runDB $ do
-        gameId <- insert
-          $ ArkhamGame campaignName ge 0 multiplayerVariant now now
-        insert_ $ ArkhamPlayer userId gameId investigatorId
+        gameId <-
+          insert $
+            ArkhamGame campaignName ge 0 multiplayerVariant now now
+        insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
         insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0
         pure gameId
-      pure $ toPublicGame
-        (Entity key (ArkhamGame campaignName ge 0 multiplayerVariant now now))
-        mempty
+      pure $
+        toPublicGame
+          (Entity key (ArkhamGame campaignName ge 0 multiplayerVariant now now))
+          mempty
     Nothing -> case scenarioId of
       Just sid -> do
-        (queueRef, game) <- liftIO
-          $ newScenario sid newGameSeed playerCount investigators difficulty
+        (queueRef, game) <-
+          liftIO $
+            newScenario sid newGameSeed playerCount decks difficulty
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
@@ -243,36 +256,38 @@ postApiV1ArkhamGamesR = do
         let diffDown = diff ge game
         updatedQueue <- readIORef (queueToRef queueRef)
         key <- runDB $ do
-          gameId <- insert
-            $ ArkhamGame campaignName ge 0 multiplayerVariant now now
-          insert_ $ ArkhamPlayer userId gameId investigatorId
+          gameId <-
+            insert $
+              ArkhamGame campaignName ge 0 multiplayerVariant now now
+          insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
           insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0
           pure gameId
-        pure $ toPublicGame
-          (Entity key (ArkhamGame campaignName ge 0 multiplayerVariant now now))
-          mempty
+        pure $
+          toPublicGame
+            (Entity key (ArkhamGame campaignName ge 0 multiplayerVariant now now))
+            mempty
       Nothing -> error "missing either campaign id or scenario id"
 
 data Answer
   = Answer QuestionResponse
   | PaymentAmountsAnswer PaymentAmountsResponse
   | AmountsAnswer AmountsResponse
-  deriving stock Generic
-  deriving anyclass FromJSON
+  deriving stock (Generic)
+  deriving anyclass (FromJSON)
 
 data QuestionResponse = QuestionResponse
   { qrChoice :: Int
   , qrInvestigatorId :: Maybe InvestigatorId
   }
-  deriving stock Generic
+  deriving stock (Generic)
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
-  { parAmounts :: Map InvestigatorId Int }
-  deriving stock Generic
+  {parAmounts :: Map InvestigatorId Int}
+  deriving stock (Generic)
 
 newtype AmountsResponse = AmountsResponse
-  { arAmounts :: Map Text Int }
-  deriving stock Generic
+  {arAmounts :: Map Text Int}
+  deriving stock (Generic)
 
 instance FromJSON QuestionResponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
@@ -285,7 +300,7 @@ instance FromJSON AmountsResponse where
 
 extract :: Int -> [a] -> (Maybe a, [a])
 extract n xs =
-  let a = xs !!? n in (a, [ x | (i, x) <- zip [0 ..] xs, i /= n ])
+  let a = xs !!? n in (a, [x | (i, x) <- zip [0 ..] xs, i /= n])
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
@@ -293,13 +308,15 @@ putApiV1ArkhamGameR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
-  Entity pid arkhamPlayer@ArkhamPlayer {..} <- runDB
-    $ getBy404 (UniquePlayer userId gameId)
+  Entity pid arkhamPlayer@ArkhamPlayer {..} <-
+    runDB $
+      getBy404 (UniquePlayer userId gameId)
   let
     gameJson@Game {..} = arkhamGameCurrentData
-    investigatorId = fromMaybe
-      (coerce arkhamPlayerInvestigatorId)
-      (answerInvestigator response)
+    investigatorId =
+      fromMaybe
+        (coerce arkhamPlayerInvestigatorId)
+        (answerInvestigator response)
     messages = handleAnswer gameJson investigatorId response
     currentQueue =
       maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
@@ -320,34 +337,41 @@ putApiV1ArkhamGameR gameId = do
   updatedLog <- readIORef logRef
   now <- liftIO getCurrentTime
   void $ runDB $ do
-    replace gameId $ ArkhamGame
-      arkhamGameName
-      ge
-      (arkhamGameStep + 1)
-      arkhamGameMultiplayerVariant
-      arkhamGameCreatedAt
-      now
+    replace gameId $
+      ArkhamGame
+        arkhamGameName
+        ge
+        (arkhamGameStep + 1)
+        arkhamGameMultiplayerVariant
+        arkhamGameCreatedAt
+        now
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
-    insert_
-      $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+    insert_ $
+      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
     case arkhamGameMultiplayerVariant of
-      Solo -> replace pid $ arkhamPlayer
-        { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-        }
+      Solo ->
+        replace pid $
+          arkhamPlayer
+            { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+            }
       WithFriends -> pure ()
 
-  atomically $ writeTChan
-    writeChannel
-    (encode $ GameUpdate $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge)
+  atomically $
+    writeTChan
+      writeChannel
+      ( encode $
+          GameUpdate $
+            PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
+      )
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
   }
   deriving stock (Show, Generic)
-  deriving anyclass FromJSON
+  deriving anyclass (FromJSON)
 
 handleMessageLog
-  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> Text -> m ()
+  :: (MonadIO m) => IORef [Text] -> TChan BSL.ByteString -> Text -> m ()
 handleMessageLog logRef writeChannel msg = liftIO $ do
   atomicModifyIORef' logRef (\logs -> (logs <> [msg], ()))
   atomically $ writeTChan writeChannel (encode $ GameMessage msg)
@@ -375,24 +399,25 @@ putApiV1ArkhamGameRawR gameId = do
   updatedQueue <- readIORef (queueToRef queueRef)
   let diffDown = diff ge arkhamGameCurrentData
   updatedLog <- readIORef logRef
-  atomically $ writeTChan
-    writeChannel
-    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
+  atomically $
+    writeTChan
+      writeChannel
+      (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   now <- liftIO getCurrentTime
   void $ runDB $ do
     replace
       gameId
-      (ArkhamGame
-        arkhamGameName
-        ge
-        (arkhamGameStep + 1)
-        arkhamGameMultiplayerVariant
-        arkhamGameCreatedAt
-        now
+      ( ArkhamGame
+          arkhamGameName
+          ge
+          (arkhamGameStep + 1)
+          arkhamGameMultiplayerVariant
+          arkhamGameCreatedAt
+          now
       )
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
-    insert
-      $ ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+    insert $
+      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do
@@ -435,21 +460,24 @@ handleAnswer Game {..} investigatorId = \case
     case Map.lookup investigatorId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) ->
         let
-          costMap = Map.fromList
-            $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
+          costMap =
+            Map.fromList $
+              map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
         in
           concatMap
-              (\(iid, n) ->
+            ( \(iid, n) ->
                 replicate n (Map.findWithDefault Noop iid costMap)
-              )
+            )
             $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
   Answer response ->
     let
-      q = fromJustNote
-        "Invalid question type"
-        (Map.lookup investigatorId gameQuestion)
-    in go id q response
+      q =
+        fromJustNote
+          "Invalid question type"
+          (Map.lookup investigatorId gameQuestion)
+    in
+      go id q response
  where
   go
     :: (Question Message -> Question Message)
@@ -468,19 +496,20 @@ handleAnswer Game {..} investigatorId = \case
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
         (Just m', []) -> [uiToRun m']
-        (Just m', msgs'') -> if n - 1 == 0
-          then [uiToRun m']
-          else [uiToRun m', Ask investigatorId $ f $ ChooseN (n - 1) msgs'']
+        (Just m', msgs'') ->
+          if n - 1 == 0
+            then [uiToRun m']
+            else [uiToRun m', Ask investigatorId $ f $ ChooseN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseN n msgs'']
     ChooseUpToN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
         (Just m', []) -> [uiToRun m']
         (Just m'@(Done _), _) -> [uiToRun m']
-        (Just m', msgs'') -> if n - 1 == 0
-          then [uiToRun m']
-          else
-            [uiToRun m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
+        (Just m', msgs'') ->
+          if n - 1 == 0
+            then [uiToRun m']
+            else [uiToRun m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseUpToN n msgs'']
     ChooseOneAtATime msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
@@ -503,6 +532,6 @@ handleAnswer Game {..} investigatorId = \case
       Nothing -> [Ask investigatorId $ f $ PickSupplies remaining chosen qs]
       Just msg -> [uiToRun msg]
     DropDown qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask investigatorId $ f $ DropDown qs] 
+      Nothing -> [Ask investigatorId $ f $ DropDown qs]
       Just (_, msg) -> [msg]
     _ -> error "Wrong question type"

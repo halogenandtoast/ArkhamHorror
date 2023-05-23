@@ -64,7 +64,7 @@ placedLocation :: Location -> Message
 placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
 
 playCard :: Investigator -> Card -> Message
-playCard i c = PlayCard (toId i) c Nothing (defaultWindows $ toId i) True
+playCard i c = InitiatePlayCard (toId i) c Nothing (defaultWindows $ toId i) True
 
 investigate :: Investigator -> Location -> Message
 investigate i l =

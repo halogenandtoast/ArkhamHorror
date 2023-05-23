@@ -765,6 +765,7 @@ library
       Arkham.Damage
       Arkham.DamageEffect
       Arkham.Deck
+      Arkham.Decklist
       Arkham.Decks
       Arkham.DefeatedBy
       Arkham.Difficulty
@@ -2242,6 +2243,7 @@ library
     , monoidal-containers
     , mtl >=2.3.1
     , newtype
+    , parsec
     , pretty-simple
     , random-shuffle
     , safe
@@ -2271,6 +2273,12 @@ test-suite spec
       Arkham.Asset.Cards.FirstAidSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
       Arkham.Asset.Cards.GrotesqueStatue4Spec
+      Arkham.Asset.Cards.GuardDogSpec
+      Arkham.Asset.Cards.HardKnocks2Spec
+      Arkham.Asset.Cards.HardKnocksSpec
+      Arkham.Asset.Cards.Hyperawareness2Spec
+      Arkham.Asset.Cards.HyperawarenessSpec
+      Arkham.Asset.Cards.JennysTwin45sSpec
       Helpers.Message
       TestImport
       TestImport.Lifted

@@ -94,6 +94,9 @@ runMessages = do
 pushAndRun :: Message -> TestAppT ()
 pushAndRun msg = push msg >> runMessages
 
+pushAndRunAll :: [Message] -> TestAppT ()
+pushAndRunAll = traverse_ pushAndRun
+
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
 x `shouldSatisfyM` y = liftIO . (`shouldSatisfy` y) =<< x

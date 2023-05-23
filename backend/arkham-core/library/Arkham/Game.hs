@@ -35,6 +35,7 @@ import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
+import Arkham.Decklist
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
@@ -68,6 +69,7 @@ import Arkham.Id
 import Arkham.Investigator (
   becomePrologueInvestigator,
   becomeYithian,
+  lookupInvestigator,
   returnToBody,
  )
 import Arkham.Investigator.Types (
@@ -151,7 +153,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Exception (throw)
 import Control.Lens (each, itraverseOf, itraversed, non, set)
-import Control.Monad.Random (StdGen)
+import Control.Monad.Random (StdGen, mkStdGen)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM, state)
 import Data.Aeson (Result (..))
@@ -187,7 +189,7 @@ newCampaign
   => CampaignId
   -> Int
   -> Int
-  -> [(Investigator, [PlayerCard])]
+  -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> m (Queue Message, Game)
 newCampaign = newGame . Right
@@ -197,7 +199,7 @@ newScenario
   => ScenarioId
   -> Int
   -> Int
-  -> [(Investigator, [PlayerCard])]
+  -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> m (Queue Message, Game)
 newScenario = newGame . Left
@@ -207,33 +209,18 @@ newGame
   => Either ScenarioId CampaignId
   -> Int
   -> Int
-  -> [(Investigator, [PlayerCard])]
+  -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> m (Queue Message, Game)
-newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
+newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
   let
-    state =
-      if length investigatorsMap /= playerCount then IsPending else IsActive
-  ref <-
-    newQueue $
-      if state == IsActive
-        then
-          map (uncurry InitDeck . bimap toId Deck) investigatorsList
-            <> [StartCampaign]
-        else []
+    initialInvestigatorId = decklistInvestigatorId deck
+    state = if length (deck : decks) /= playerCount then IsPending else IsActive
 
-  pure
-    ( ref
-    , Game
-        { gameParams =
-            GameParams
-              scenarioOrCampaignId
-              playerCount
-              investigatorsList
-              difficulty
-        , gameCards =
-            mapFromList $
-              concatMap (map (toFst toCardId . PlayerCard) . snd) investigatorsList
+    game =
+      Game
+        { gameParams = GameParams scenarioOrCampaignId playerCount [] difficulty
+        , gameCards = mempty
         , gameWindowDepth = 0
         , gameDepthLock = 0
         , gameRoundHistory = mempty
@@ -243,10 +230,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         , gameSeed = seed
         , gameMode = mode
         , gamePlayerCount = playerCount
-        , gameEntities =
-            defaultEntities
-              { entitiesInvestigators = investigatorsMap
-              }
+        , gameEntities = defaultEntities
         , gameModifiers = mempty
         , gameEncounterDiscardEntities = defaultEntities
         , gameInHandEntities = mempty
@@ -265,7 +249,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         , gameActiveCard = Nothing
         , gameResolvingCard = Nothing
         , gameActiveAbilities = mempty
-        , gamePlayerOrder = toList playersMap
+        , gamePlayerOrder = []
         , gameRemovedFromPlay = mempty
         , gameQuestion = mempty
         , gameSkillTestResults = Nothing
@@ -278,13 +262,45 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         , gameInSetup = True
         , gameIgnoreCanModifiers = False -- only to be used with local
         }
+
+  gameRef <- newIORef game
+  queueRef <- newQueue []
+  genRef <- newIORef (mkStdGen seed)
+
+  runGameEnvT (GameEnv gameRef queueRef genRef (\_ -> pure ())) $ do
+    investigatorsList :: [(Investigator, [PlayerCard])] <- for (deck : decks) $ \deck' -> do
+      (iid, decklist) <- loadDecklist deck'
+      pure (lookupInvestigator iid, decklist)
+
+    let
+      playersMap = map (toId . fst) investigatorsList
+      investigatorsMap = mapFromList $ map (toFst toId . fst) (toList investigatorsList)
+
+    when (state == IsActive) $ do
+      pushAll $ map (uncurry InitDeck . bimap toId Deck) investigatorsList <> [StartCampaign]
+
+    overGame $ \g ->
+      g
+        { gameParams =
+            GameParams
+              scenarioOrCampaignId
+              playerCount
+              investigatorsList
+              difficulty
+        , gameCards =
+            mapFromList $
+              concatMap (map (toFst toCardId . PlayerCard) . snd) investigatorsList
+        , gamePlayerOrder = toList playersMap
+        , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
+        }
+
+  game' <- readIORef gameRef
+
+  pure
+    ( queueRef
+    , game'
     )
  where
-  initialInvestigatorId =
-    toId . fst . headNote "No investigators" $ toList investigatorsList
-  playersMap = map (toId . fst) investigatorsList
-  investigatorsMap =
-    mapFromList $ map (toFst toId . fst) (toList investigatorsList)
   campaign =
     either
       (const Nothing)

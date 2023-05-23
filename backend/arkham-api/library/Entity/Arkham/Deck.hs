@@ -6,6 +6,7 @@ module Entity.Arkham.Deck (
   module Entity.Arkham.Deck,
 ) where
 
+import Arkham.Decklist
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH

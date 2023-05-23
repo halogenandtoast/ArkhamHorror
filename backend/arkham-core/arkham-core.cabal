@@ -2310,6 +2310,25 @@ test-suite spec
       Arkham.Event.Cards.SearchForTheTruthSpec
       Arkham.Event.Cards.WillToSurvive3Spec
       Arkham.GameSpec
+      Arkham.Investigator.Cards.AgnesBakerSpec
+      Arkham.Investigator.Cards.AshcanPeteSpec
+      Arkham.Investigator.Cards.DaisyWalkerSpec
+      Arkham.Investigator.Cards.JennyBarnesSpec
+      Arkham.Investigator.Cards.JimCulverSpec
+      Arkham.Investigator.Cards.RexMurphySpec
+      Arkham.Investigator.Cards.RolandBanksSpec
+      Arkham.Investigator.Cards.SkidsOTooleSpec
+      Arkham.Investigator.Cards.WendyAdamsSpec
+      Arkham.Investigator.Cards.ZoeySamarasSpec
+      Arkham.Skill.Cards.DeductionSpec
+      Arkham.Skill.Cards.ViciousBlowSpec
+      Arkham.Treachery.Cards.CoverUpSpec
+      Arkham.Treachery.Cards.FinalRhapsodySpec
+      Arkham.Treachery.Cards.MysteriousChantingSpec
+      Arkham.Treachery.Cards.RexsCurseSpec
+      Arkham.Treachery.Cards.SearchingForIzzieSpec
+      Arkham.Treachery.Cards.SmiteTheWickedSpec
+      Arkham.Treachery.Cards.WrackedByNightmaresSpec
       Helpers.Message
       TestImport
       TestImport.Lifted

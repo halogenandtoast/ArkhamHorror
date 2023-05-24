@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Ability.Types where
 
 import Arkham.Prelude
 
 import Arkham.Ability.Limit
-import Arkham.Ability.Type hiding ( abilityType )
+import Arkham.Ability.Type hiding (abilityType)
 import Arkham.Card.EncounterCard
 import Arkham.Criteria (Criterion)
 import Arkham.Json
@@ -41,22 +42,25 @@ instance Eq Ability where
   a == b =
     (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
 
+instance Sourceable Ability where
+  toSource a = AbilitySource (abilitySource a) (abilityIndex a)
+
 abilityLimitL :: Lens' Ability AbilityLimit
-abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
+abilityLimitL = lens abilityLimit $ \m x -> m {abilityLimit = x}
 
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
-abilityMetadataL = lens abilityMetadata $ \m x -> m { abilityMetadata = x }
+abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 
 abilityTooltipL :: Lens' Ability (Maybe Text)
-abilityTooltipL = lens abilityTooltip $ \m x -> m { abilityTooltip = x }
+abilityTooltipL = lens abilityTooltip $ \m x -> m {abilityTooltip = x}
 
 abilityCriteriaL :: Lens' Ability (Maybe Criterion)
-abilityCriteriaL = lens abilityCriteria $ \m x -> m { abilityCriteria = x }
+abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 
 abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
-  lens abilityDoesNotProvokeAttacksOfOpportunity
-    $ \m x -> m { abilityDoesNotProvokeAttacksOfOpportunity = x }
+  lens abilityDoesNotProvokeAttacksOfOpportunity $
+    \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
 $(deriveJSON (aesonOptions $ Just "ability") ''Ability)

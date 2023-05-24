@@ -165,8 +165,8 @@ getAsIfInHandCards iid = do
       <> cardsAddedViaModifiers
 
 getCanPerformAbility
-  :: (HasGame m) => InvestigatorId -> Source -> Window -> Ability -> m Bool
-getCanPerformAbility !iid !source !window !ability = do
+  :: (HasGame m) => InvestigatorId -> Window -> Ability -> m Bool
+getCanPerformAbility !iid !window !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
   -- passes restrictions
@@ -185,9 +185,9 @@ getCanPerformAbility !iid !source !window !ability = do
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
   andM
-    [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
+    [ getCanAffordCost iid (toSource ability) mAction [window] cost
     , meetsActionRestrictions iid window ability
-    , windowMatches iid source window (abilityWindow ability)
+    , windowMatches iid (toSource ability) window (abilityWindow ability)
     , maybe
         (pure True)
         (passesCriteria iid Nothing (abilitySource ability) [window])
@@ -313,15 +313,15 @@ getCanAffordAbilityCost iid a@Ability {..} = do
   go f = \case
     Haunted -> pure True
     ActionAbility mAction cost ->
-      getCanAffordCost iid abilitySource mAction [] (f cost)
+      getCanAffordCost iid (toSource a) mAction [] (f cost)
     ActionAbilityWithSkill mAction _ cost ->
-      getCanAffordCost iid abilitySource mAction [] (f cost)
+      getCanAffordCost iid (toSource a) mAction [] (f cost)
     ActionAbilityWithBefore _ mBeforeAction cost ->
-      getCanAffordCost iid abilitySource mBeforeAction [] (f cost)
-    ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] (f cost)
-    FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] (f cost)
+      getCanAffordCost iid (toSource a) mBeforeAction [] (f cost)
+    ReactionAbility _ cost -> getCanAffordCost iid (toSource a) Nothing [] (f cost)
+    FastAbility cost -> getCanAffordCost iid (toSource a) Nothing [] (f cost)
     ForcedAbilityWithCost _ cost ->
-      getCanAffordCost iid abilitySource Nothing [] (f cost)
+      getCanAffordCost iid (toSource a) Nothing [] (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     AbilityEffect _ -> pure True
@@ -714,7 +714,7 @@ getActionsWith iid window f = do
     filterM
       ( \action ->
           andM
-            [ getCanPerformAbility iid (abilitySource action) window action
+            [ getCanPerformAbility iid window action
             , getCanAffordAbility iid action window
             ]
       )
@@ -845,11 +845,10 @@ hasFightActions
   :: (HasGame m)
   => InvestigatorId
   -> Matcher.WindowMatcher
-  -> Source
   -> [Window]
   -> m Bool
-hasFightActions iid window source windows' =
-  anyM (\a -> anyM (\w -> getCanPerformAbility iid source w a) windows')
+hasFightActions iid window windows' =
+  anyM (\a -> anyM (\w -> getCanPerformAbility iid w a) windows')
     =<< selectList
       (Matcher.AbilityIsAction Action.Fight <> Matcher.AbilityWindow window)
 
@@ -857,11 +856,10 @@ hasEvadeActions
   :: (HasGame m)
   => InvestigatorId
   -> Matcher.WindowMatcher
-  -> Source
   -> [Window]
   -> m Bool
-hasEvadeActions iid window source windows' =
-  anyM (\a -> anyM (\w -> getCanPerformAbility iid source w a) windows')
+hasEvadeActions iid window windows' =
+  anyM (\a -> anyM (\w -> getCanPerformAbility iid w a) windows')
     =<< selectList
       (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
@@ -958,13 +956,11 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       hasEvadeActions
         iid
         (Matcher.DuringTurn Matcher.You)
-        source
         windows'
     canFight <-
       hasFightActions
         iid
         (Matcher.DuringTurn Matcher.You)
-        source
         windows'
     passesLimits <- allM passesLimit (cdLimits pcDef)
     let

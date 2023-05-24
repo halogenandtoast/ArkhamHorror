@@ -93,7 +93,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         let deck' = deck <> hand <> discard
         push $ LoadDeck iid (Deck deck')
     pure a
-  Setup -> a <$ pushAllEnd [BeginGame, Begin InvestigationPhase]
+  Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
   StartCampaign -> do
     standalone <- getIsStandalone
     a <$ when standalone (push $ StartScenario scenarioId)

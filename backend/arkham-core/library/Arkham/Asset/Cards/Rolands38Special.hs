@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Rolands38Special
-  ( Rolands38Special(..)
-  , rolands38Special
-  ) where
+module Arkham.Asset.Cards.Rolands38Special (
+  Rolands38Special (..),
+  rolands38Special,
+) where
 
 import Arkham.Prelude
 
@@ -21,22 +21,22 @@ rolands38Special = asset Rolands38Special Cards.rolands38Special
 
 instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) =
-    [ restrictedAbility x 1 ControlsThis $ ActionAbility
-        (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Ammo 1])
+    [ restrictedAbility x 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1 <> UseCost (AssetWithId $ toId x) Ammo 1
     ]
 
 instance RunMessage Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       anyClues <-
         selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       pushAll
         [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
-        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+            (toAbilitySource attrs 1)
+            iid
+            [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
+        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing SkillCombat mempty False
         ]
       pure a
     _ -> Rolands38Special <$> runMessage msg attrs

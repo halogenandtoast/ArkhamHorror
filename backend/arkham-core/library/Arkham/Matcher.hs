@@ -10,6 +10,14 @@ import Arkham.Card.CardCode
 import Arkham.Id
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
+import Arkham.Trait (Trait)
+
+class WithTrait a where
+  withTrait :: Trait -> a
+
+instance WithTrait AssetMatcher where
+  withTrait = AssetWithTrait
+  {-# INLINE withTrait #-}
 
 -- ** Investigator Helpers **
 

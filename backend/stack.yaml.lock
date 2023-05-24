@@ -22,6 +22,13 @@ packages:
     version: 0.9.1.2
   original:
     url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
+- completed:
+    hackage: monad-validate-1.2.0.1@sha256:5a100da896f11ca4b7c123da85decbedeb46c37054a097f258ac911e715cb68d,2587
+    pantry-tree:
+      sha256: 034ee4de9765e38b763f5d73b236cc112205728e680cefbfe12d2882accc3264
+      size: 611
+  original:
+    hackage: monad-validate-1.2.0.1
 snapshots:
 - completed:
     sha256: d80dc25c6444db594a338c71492b1b5601d7c613dbeaa5f61dcf448b3114df66

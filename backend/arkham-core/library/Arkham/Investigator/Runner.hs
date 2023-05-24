@@ -522,6 +522,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & cluesL .~ 0
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  RemovedFromPlay source@(AssetSource _) ->
+    pure $ a & (slotsL . each %~ filter ((/= source) . slotSource))
   RemovedFromPlay (EnemySource eid) ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do

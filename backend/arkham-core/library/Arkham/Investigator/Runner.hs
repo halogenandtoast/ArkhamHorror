@@ -2663,19 +2663,35 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [Window Timing.After (Window.LostActions iid source n)]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
-  Do (LoseActions iid _ n)
-    | iid == investigatorId ->
-        pure $ a & remainingActionsL %~ max 0 . subtract n
-  SetActions iid _ n
-    | iid == investigatorId ->
-        pure $ a & remainingActionsL .~ n
-  GainActions iid _ n
-    | iid == investigatorId ->
-        -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
-        pure $ a & remainingActionsL +~ n
-  GainAdditionalAction iid _ n
-    | iid == investigatorId ->
-        pure $ a & additionalActionsL %~ (n :)
+  Do (LoseActions iid source n) | iid == investigatorId -> do
+    -- TODO: after losing all remaining actions we can lose additional actions
+    let
+      remaining = max 0 (n - a ^. remainingActionsL)
+      additional = min remaining (length $ a ^. additionalActionsL)
+      a' = a & remainingActionsL %~ max 0 . subtract n
+    if additional > 0
+      then
+        if additional == length (a' ^. additionalActionsL)
+          then pure $ a' & additionalActionsL .~ []
+          else do
+            push $
+              chooseN
+                iid
+                additional
+                [ Label (additionalActionLabel ac) [LoseAdditionalAction iid source ac]
+                | ac <- a' ^. additionalActionsL
+                ]
+            pure a'
+      else pure a'
+  SetActions iid _ n | iid == investigatorId -> do
+    pure $ a & remainingActionsL .~ n
+  GainActions iid _ n | iid == investigatorId -> do
+    -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
+    pure $ a & remainingActionsL +~ n
+  GainAdditionalAction iid _ n | iid == investigatorId -> do
+    pure $ a & additionalActionsL %~ (n :)
+  LoseAdditionalAction iid _ n | iid == investigatorId -> do
+    pure $ a & additionalActionsL %~ deleteFirst n
   TakeAction iid mAction cost | iid == investigatorId -> do
     pushAll $
       [PayForAbility (abilityEffect a cost) []]

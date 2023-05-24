@@ -31,28 +31,20 @@ daisyWalker =
       }
 
 instance HasTokenValue DaisyWalker where
-  getTokenValue iid ElderSign (DaisyWalker attrs)
-    | iid == toId attrs =
-        pure $ TokenValue ElderSign (PositiveModifier 0)
+  getTokenValue iid ElderSign (DaisyWalker attrs) | iid == toId attrs = do
+    pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance HasModifiersFor DaisyWalker where
-  getModifiersFor target (DaisyWalker a)
-    | isTarget a target =
-        pure $ toModifiers a [GiveAdditionalAction $ TraitRestrictedAdditionalAction Tome AbilitiesOnly]
+  getModifiersFor target (DaisyWalker a) | isTarget a target = do
+    pure $ toModifiers a [GiveAdditionalAction $ TraitRestrictedAdditionalAction Tome AbilitiesOnly]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DaisyWalker where
-  runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of
-    PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
-      do
-        when (tokenFace token == ElderSign) $ do
-          tomeCount <-
-            selectCount $
-              assetControlledBy investigatorId
-                <> AssetWithTrait Tome
-          when (tomeCount > 0) $ do
-            drawing <- drawCards iid attrs tomeCount
-            push drawing
-        pure i
+  runMessage msg i@(DaisyWalker attrs) = case msg of
+    PassedSkillTest iid _ _ (TokenTarget (tokenFace -> ElderSign)) _ _ | iid == toId attrs -> do
+      tomeCount <- selectCount $ assetControlledBy (toId attrs) <> withTrait Tome
+      when (tomeCount > 0) do
+        pushM $ drawCards iid (TokenEffectSource ElderSign) tomeCount
+      pure i
     _ -> DaisyWalker <$> runMessage msg attrs

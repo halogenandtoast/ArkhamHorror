@@ -35,13 +35,9 @@ rolandBanks =
 
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks a) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-        $ reaction
-          a
-          1
-          (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-          Free
-        $ EnemyDefeated Timing.After You ByAny AnyEnemy
+    [ limitedAbility (PlayerLimit PerRound 1) $
+        reaction a 1 (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation) Free $
+          EnemyDefeated Timing.After You ByAny AnyEnemy
     ]
 
 instance HasTokenValue RolandBanks where

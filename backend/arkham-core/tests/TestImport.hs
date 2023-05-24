@@ -1,7 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module TestImport (
   module X,
@@ -460,11 +459,11 @@ gameTestWith investigatorDef body = do
   investigator <- testInvestigator investigatorDef id
   g <- newGame investigator
   gameRef <- newIORef g
-  queueRef <- Queue <$> newIORef []
+  queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
-  runTestApp
-    (TestApp gameRef queueRef genRef Nothing (pure . const ()))
-    (body investigator)
+  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ())
+  runReaderT (overGameM preloadModifiers) testApp
+  runTestApp testApp (body investigator)
 
 newGame :: (MonadIO m) => Investigator -> m Game
 newGame investigator = do

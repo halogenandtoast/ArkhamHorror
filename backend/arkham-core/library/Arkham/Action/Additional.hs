@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Action.Additional where
 
 import Arkham.Prelude
@@ -17,6 +18,14 @@ data AdditionalAction
   | EffectAction Text EffectId
   | AnyAdditionalAction
   deriving stock (Show, Eq, Ord)
+
+additionalActionLabel :: AdditionalAction -> Text
+additionalActionLabel = \case
+  TraitRestrictedAdditionalAction trait AbilitiesOnly -> "Use on " <> tshow trait <> " abilities"
+  TraitRestrictedAdditionalAction trait NoRestriction -> "Use on " <> tshow trait <> " cards"
+  ActionRestrictedAdditionalAction action -> "Use on " <> tshow action <> " actions"
+  EffectAction label _ -> label
+  AnyAdditionalAction -> "Use on any action"
 
 $(deriveJSON defaultOptions ''ActionRestriction)
 $(deriveJSON defaultOptions ''AdditionalAction)

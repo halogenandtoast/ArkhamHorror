@@ -34,34 +34,29 @@ agnesBaker =
 
 instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
-    [ limitedAbility (PlayerLimit PerPhase 1)
-        $ restrictedAbility
-          x
-          1
-          (Self <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-        $ ReactionAbility
-          (PlacedCounter Timing.When You AnySource HorrorCounter (AtLeast $ Static 1))
-          Free
+    [ limitedAbility (PlayerLimit PerPhase 1) $
+        restrictedAbility x 1 (Self <> enemyExists (EnemyAt YourLocation)) $
+          ReactionAbility
+            (PlacedCounter Timing.When You AnySource HorrorCounter $ AtLeast $ Static 1)
+            Free
     ]
 
 instance HasTokenValue AgnesBaker where
-  getTokenValue iid ElderSign (AgnesBaker attrs)
-    | iid == toId attrs =
-        pure $
-          TokenValue ElderSign $
-            PositiveModifier $
-              investigatorSanityDamage
-                attrs
+  getTokenValue iid ElderSign (AgnesBaker attrs) | iid == toId attrs = do
+    pure $ TokenValue ElderSign $ PositiveModifier $ investigatorSanityDamage attrs
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <- selectList $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      targets <-
+        selectList $
+          EnemyAt (locationWithInvestigator $ toId attrs)
+            <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
       push $
         chooseOne
           iid
-          [ targetLabel target [EnemyDamage target $ nonAttack source 1]
+          [ targetLabel target [EnemyDamage target $ nonAttack attrs 1]
           | target <- targets
           ]
       pure i

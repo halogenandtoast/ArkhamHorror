@@ -1768,7 +1768,7 @@ getAssetsMatching matcher = do
       abilities <- selectListMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
       notNull
         <$> filterM
-          ( \ab -> anyM (\w -> getCanPerformAbility iid (InvestigatorSource iid) w ab) (Window.defaultWindows iid)
+          ( \ab -> anyM (\w -> getCanPerformAbility iid w ab) (Window.defaultWindows iid)
           )
           abilities
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
@@ -2148,7 +2148,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Fight)
                 , -- Because ChooseFightEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid (InvestigatorSource iid) window
+                  getCanPerformAbility iid window
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideFunc
                 ]
@@ -2178,7 +2178,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Fight)
                 , -- Because ChooseFightEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid (InvestigatorSource iid) window
+                  getCanPerformAbility iid window
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideAbilityCriteria override
                 ]
@@ -2221,7 +2221,7 @@ enemyMatcherFilter = \case
           ( andM
               . sequence
                 [ pure . (`abilityIs` Action.Evade)
-                , getCanPerformAbility iid (InvestigatorSource iid) window
+                , getCanPerformAbility iid window
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideFunc
                 ]
@@ -2251,7 +2251,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Evade)
                 , -- Because ChooseEvadeEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid (InvestigatorSource iid) window
+                  getCanPerformAbility iid window
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideAbilityCriteria override
                 ]
@@ -2264,7 +2264,7 @@ enemyMatcherFilter = \case
       ( andM
           . sequence
             [ pure . (`abilityIs` Action.Engage)
-            , getCanPerformAbility iid (InvestigatorSource iid) window
+            , getCanPerformAbility iid window
             ]
       )
       (getAbilities enemy)
@@ -2743,7 +2743,7 @@ instance Query ExtendedCardMatcher where
           flip anyM abilities' $ \ab -> do
             let adjustedAbility = applyAbilityModifiers ab modifiers'
             anyM
-              (\w -> getCanPerformAbility iid (InvestigatorSource iid) w (adjustedAbility))
+              (\w -> getCanPerformAbility iid w adjustedAbility)
               (Window.defaultWindows iid)
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher ->
         do
@@ -4664,9 +4664,8 @@ runGameMessage msg g = case msg of
     pushAll windows'
     pure g
   EndRound -> do
-    pushEnd BeginRound
+    pushAllEnd [BeginRound, Begin MythosPhase]
     pure $ g & (roundHistoryL .~ mempty)
-  BeginRound -> g <$ pushEnd (Begin MythosPhase)
   Begin MythosPhase -> do
     phaseBeginsWindow <-
       checkWindows

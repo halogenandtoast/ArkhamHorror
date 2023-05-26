@@ -31,10 +31,9 @@ instance RunMessage EventAttrs where
 runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-  InvestigatorEliminated iid
-    | eventAttachedTarget a == Just (InvestigatorTarget iid) ->
-        a
-          <$ push (Discard GameSource (EventTarget eventId))
+  InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
+    push $ Discard GameSource (toId eventId)
+    pure a
   Discard _ target | eventAttachedTarget a == Just target -> do
     pushAll $
       [UnsealToken token | token <- eventSealedTokens]
@@ -54,27 +53,25 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   ExhaustThen (isTarget a -> True) msgs -> do
     unless eventExhausted $ pushAll msgs
     pure $ a & exhaustedL .~ True
-  PayCardCost _ card _
-    | toCardId a == toCardId card ->
-        pure $ a & beingPaidForL .~ True
-  CardEnteredPlay _ card
-    | toCardId a == toCardId card ->
-        pure $ a & beingPaidForL .~ False
-  SealedToken token card
-    | toCardId card == toCardId a ->
-        pure $ a & sealedTokensL %~ (token :)
+  PayCardCost _ card _ | toCardId a == toCardId card -> do
+    pure $ a & beingPaidForL .~ True
+  CardEnteredPlay _ card | toCardId a == toCardId card -> do
+    pure $ a & beingPaidForL .~ False
+  SealedToken token card | toCardId card == toCardId a -> do
+    pure $ a & sealedTokensL %~ (token :)
   UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
-  PlaceEvent _ eid placement
-    | eid == eventId ->
-        pure $ a & placementL .~ placement
+  PlaceEvent _ eid placement | eid == eventId -> do
+    pure $ a & placementL .~ placement
   FinishedEvent eid | eid == eventId -> do
     case eventPlacement of
       Unplaced -> case eventAfterPlay of
         DiscardThis -> push $ Discard GameSource (toTarget a)
         RemoveThisFromGame -> push (RemoveEvent $ toId a)
+      Limbo -> case eventAfterPlay of
+        DiscardThis -> push $ Discard GameSource (toTarget a)
+        RemoveThisFromGame -> push (RemoveEvent $ toId a)
       _ -> pure ()
     pure a
-  InvestigatorPlayEvent _ eid _ _ _
-    | eid == eventId ->
-        pure $ a & placementL .~ Limbo
+  InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
+    pure $ a & placementL .~ Limbo
   _ -> pure a

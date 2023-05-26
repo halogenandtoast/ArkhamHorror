@@ -2287,6 +2287,7 @@ test-suite spec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec
+      Arkham.Asset.Cards.TheNecronomiconSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Event.Cards.BackstabSpec

@@ -1513,11 +1513,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              , FinishAction
              ]
       pure a
-  InvestigatorDiscoverCluesAtTheirLocation iid source n maction
-    | iid == investigatorId ->
-        runMessage
-          (InvestigatorDiscoverClues iid investigatorLocation source n maction)
-          a
+  InvestigatorDiscoverCluesAtTheirLocation iid source n maction | iid == investigatorId -> do
+    runMessage (InvestigatorDiscoverClues iid investigatorLocation source n maction) a
   InvestigatorDiscoverClues iid lid source n _ | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a lid
     when canDiscoverClues $ do
@@ -1528,9 +1525,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   Do (InvestigatorDiscoverClues iid lid source n maction) | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a lid
-    when canDiscoverClues $
-      push $
-        DiscoverCluesAtLocation iid lid source n maction
+    when canDiscoverClues $ do
+      push $ DiscoverCluesAtLocation iid lid source n maction
     pure a
   GainClues iid source n | iid == investigatorId -> do
     window <-
@@ -1557,6 +1553,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ Do $ DiscoverClues iid lid source n' maction
     pure a
   Do (DiscoverClues iid _ source n _) | iid == investigatorId -> do
+    send $ format a <> " discovered " <> pluralize n "clue"
     push $ After $ GainClues iid source n
     pure $ a & cluesL +~ n
   InvestigatorDiscardAllClues _ iid | iid == investigatorId -> do
@@ -1835,7 +1832,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ]
           push afterWindow
           pure $ a & sanityDamageL %~ max 0 . subtract amount
-  MovedHorror _ (InvestigatorTarget iid) amount | iid == investigatorId -> do
+  MovedHorror _ (isTarget a -> True) amount -> do
+    pure $ a & sanityDamageL +~ amount
+  MovedHorror (isSource a -> True) _ amount -> do
     pure $ a & sanityDamageL %~ max 0 . subtract amount
   HealHorrorDirectly (InvestigatorTarget iid) _ amount
     | iid == investigatorId -> do

@@ -10,9 +10,5 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 
-unshiftEffect :: EventAttrs -> Target -> GameT ()
-unshiftEffect attrs target =
-  pushAll
-    [ CreateEffect (cdCardCode $ toCardDef attrs) Nothing (toSource attrs) target
-    , Discard GameSource $ toTarget attrs
-    ]
+unshiftEffect :: (Targetable target) => EventAttrs -> target -> GameT ()
+unshiftEffect attrs (toTarget -> target) = pushAll [CreateEffect (cdCardCode $ toCardDef attrs) Nothing (toSource attrs) target]

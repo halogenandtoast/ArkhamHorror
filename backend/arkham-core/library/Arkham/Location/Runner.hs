@@ -225,7 +225,8 @@ instance RunMessage LocationAttrs where
           & (connectedMatchersL <>~ [LocationWithId toLid])
     DiscoverCluesAtLocation iid lid source n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      a <$ push (DiscoverClues iid lid source discoveredClues maction)
+      push $ DiscoverClues iid lid source discoveredClues maction
+      pure a
     Do (DiscoverClues iid lid source n _) | lid == locationId -> do
       let lastClue = locationClues - n <= 0
       let clueCount = max 0 $ subtract n locationClues

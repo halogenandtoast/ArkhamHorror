@@ -98,6 +98,10 @@ instance RunMessage AssetAttrs where
       pure a
     PlaceDamage _ target n | isTarget a target -> pure $ a & damageL +~ n
     PlaceHorror _ target n | isTarget a target -> pure $ a & horrorL +~ n
+    MovedHorror (isSource a -> True) _ n -> do
+      pure $ a & horrorL %~ max 0 . subtract n
+    MovedHorror _ (isTarget a -> True) n -> do
+      pure $ a & horrorL +~ n
     HealDamage (isTarget a -> True) source n -> do
       afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow

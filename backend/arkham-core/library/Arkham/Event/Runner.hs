@@ -32,7 +32,7 @@ runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
-    push $ Discard GameSource (toId eventId)
+    push $ Discard GameSource (toTarget eventId)
     pure a
   Discard _ target | eventAttachedTarget a == Just target -> do
     pushAll $

@@ -22,6 +22,9 @@ data SkillTestBaseValue
   | StaticBaseValue Int
   deriving stock (Show, Eq, Ord)
 
+class HasSkillTest m where
+  getSkillTest :: m (Maybe SkillTest)
+
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
   , skillTestType :: SkillTestType

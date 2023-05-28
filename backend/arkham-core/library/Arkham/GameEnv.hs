@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.GameEnv where
 
 import Arkham.Prelude
@@ -130,8 +132,8 @@ instance MonadRandom GameT where
     gen <- atomicModifyIORef' ref split
     pure $ randoms gen
 
-getSkillTest :: (HasGame m) => m (Maybe SkillTest)
-getSkillTest = gameSkillTest <$> getGame
+instance (HasGame m) => HasSkillTest m where
+  getSkillTest = gameSkillTest <$> getGame
 
 getActiveCosts :: (HasGame m) => m [ActiveCost]
 getActiveCosts = toList . gameActiveCost <$> getGame

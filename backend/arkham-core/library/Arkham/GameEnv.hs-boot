@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.GameEnv where
 
 import Arkham.Prelude
@@ -19,7 +21,7 @@ import Arkham.Target
 
 data GameEnv
 
-newtype GameT a = GameT { unGameT :: ReaderT GameEnv IO a }
+newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
 
 instance Functor GameT
 instance Applicative GameT
@@ -30,30 +32,31 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue Message GameT
 
-getAllModifiers :: HasGame m => m (Map Target [Modifier])
-getActiveAbilities :: HasGame m => m [Ability]
-getPhase :: HasGame m => m Phase
-getWindowDepth :: HasGame m => m Int
-getDepthLock :: HasGame m => m Int
-getSkillTest :: HasGame m => m (Maybe SkillTest)
-getActiveCosts :: HasGame m => m [ActiveCost]
-getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
-getAllAbilities :: HasGame m => m [Ability]
-getActionCanBeUndone :: HasGame m => m Bool
-getGameInAction :: HasGame m => m Bool
-getIgnoreCanModifiers :: HasGame m => m Bool
-getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
+getAllModifiers :: (HasGame m) => m (Map Target [Modifier])
+getActiveAbilities :: (HasGame m) => m [Ability]
+getPhase :: (HasGame m) => m Phase
+getWindowDepth :: (HasGame m) => m Int
+getDepthLock :: (HasGame m) => m Int
+getActiveCosts :: (HasGame m) => m [ActiveCost]
+getDistance :: (HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
+getAllAbilities :: (HasGame m) => m [Ability]
+getActionCanBeUndone :: (HasGame m) => m Bool
+getGameInAction :: (HasGame m) => m Bool
+getIgnoreCanModifiers :: (HasGame m) => m Bool
+getHistory :: (HasGame m) => HistoryType -> InvestigatorId -> m History
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 
-class Monad m => HasGame m where
+class (Monad m) => HasGame m where
   getGame :: m Game
 
-getCard :: HasGame m => CardId -> m Card
-findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
+instance (HasGame m) => HasSkillTest m
+
+getCard :: (HasGame m) => CardId -> m Card
+findCard :: (HasGame m) => (Card -> Bool) -> m (Maybe Card)
 
 instance HasGame GameT
 
-instance Monad m => HasGame (ReaderT Game m)
+instance (Monad m) => HasGame (ReaderT Game m)
 
 instance CardGen GameT
 instance HasGameLogger GameEnv

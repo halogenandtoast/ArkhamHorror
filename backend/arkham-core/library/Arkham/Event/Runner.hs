@@ -41,11 +41,10 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure a
   Discard _ (AssetTarget aid) -> do
     case eventPlacement of
-      AttachedToAsset aid' _
-        | aid == aid' ->
-            pushAll $
-              [UnsealToken token | token <- eventSealedTokens]
-                <> [Discard GameSource $ toTarget a]
+      AttachedToAsset aid' _ | aid == aid' -> do
+        pushAll $
+          [UnsealToken token | token <- eventSealedTokens]
+            <> [Discard GameSource $ toTarget a]
       _ -> pure ()
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False

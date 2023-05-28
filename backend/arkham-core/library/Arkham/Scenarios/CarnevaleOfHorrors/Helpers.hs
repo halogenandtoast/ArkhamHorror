@@ -2,17 +2,19 @@ module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Store
 
-getCnidathqua :: (HasGame m) => m (Maybe EnemyId)
+getCnidathqua :: (HasGame m, Store m Card) => m (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
 
 -- | An across location will be 4 locations away
-getAcrossLocation :: (HasCallStack, HasGame m) => LocationId -> m LocationId
+getAcrossLocation :: (HasCallStack, HasGame m, Store m Card) => LocationId -> m LocationId
 getAcrossLocation lid = do
   clockwiseMap <- getClockwiseMap
   pure $
@@ -25,12 +27,12 @@ getAcrossLocation lid = do
   range :: [Int]
   range = [1 .. 4]
 
-getCounterClockwiseLocation :: (HasGame m) => LocationId -> m (Maybe LocationId)
+getCounterClockwiseLocation :: (HasGame m, Store m Card) => LocationId -> m (Maybe LocationId)
 getCounterClockwiseLocation lid = do
   counterClockwiseMap <- getCounterClockwiseMap
   pure $ lookup lid counterClockwiseMap
 
-getCounterClockwiseLocations :: (HasGame m) => LocationId -> m [LocationId]
+getCounterClockwiseLocations :: (HasGame m, Store m Card) => LocationId -> m [LocationId]
 getCounterClockwiseLocations end = do
   counterClockwiseMap <- getCounterClockwiseMap
   pure $ buildList (lookup end counterClockwiseMap) counterClockwiseMap
@@ -40,7 +42,7 @@ getCounterClockwiseLocations end = do
   buildList (Just current) counterClockwiseMap =
     current : buildList (lookup current counterClockwiseMap) counterClockwiseMap
 
-getClockwiseLocations :: (HasGame m) => LocationId -> m [LocationId]
+getClockwiseLocations :: (HasGame m, Store m Card) => LocationId -> m [LocationId]
 getClockwiseLocations end = do
   clockwiseMap <- getClockwiseMap
   pure $ buildList (lookup end clockwiseMap) clockwiseMap
@@ -50,7 +52,7 @@ getClockwiseLocations end = do
   buildList (Just current) clockwiseMap =
     current : buildList (lookup current clockwiseMap) clockwiseMap
 
-getClockwiseMap :: (HasGame m) => m (Map LocationId LocationId)
+getClockwiseMap :: (Store m Card, HasGame m) => m (Map LocationId LocationId)
 getClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
@@ -61,7 +63,7 @@ getClockwiseMap = do
       )
       lids
 
-getCounterClockwiseMap :: (HasGame m) => m (Map LocationId LocationId)
+getCounterClockwiseMap :: (Store m Card, HasGame m) => m (Map LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList

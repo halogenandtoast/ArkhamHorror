@@ -11,6 +11,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Store
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
 
@@ -24,7 +25,7 @@ removeEachFromDeck :: (HasCardDef a) => Deck a -> [CardDef] -> Deck a
 removeEachFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards removals
 
-getDeck :: (HasGame m) => Deck.DeckSignifier -> m [Card]
+getDeck :: (HasGame m, Store m Card) => Deck.DeckSignifier -> m [Card]
 getDeck = \case
   Deck.InvestigatorDeck iid -> fieldMap InvestigatorDeck (map PlayerCard . unDeck) iid
   Deck.InvestigatorDiscard iid -> fieldMap InvestigatorDiscard (map PlayerCard) iid

@@ -2,24 +2,26 @@ module Arkham.Classes.Query where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Projection
 import Arkham.Query
+import Arkham.Store
 import Arkham.Target
 import Data.Set qualified as Set
 
-selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
+selectCount :: (HasCallStack, Query a, HasGame m, Store m Card) => a -> m Int
 selectCount = fmap Set.size . select
 
-selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
+selectAny :: (HasCallStack, Query a, HasGame m, Store m Card) => a -> m Bool
 selectAny = fmap notNull . selectListMap id
 
-selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
+selectNone :: (HasCallStack, Query a, HasGame m, Store m Card) => a -> m Bool
 selectNone = fmap not . selectAny
 
 selectList
-  :: (HasCallStack, Query a, HasGame m) => a -> m [QueryElement a]
+  :: (HasCallStack, Query a, HasGame m, Store m Card) => a -> m [QueryElement a]
 selectList = selectListMap id
 
 selectWithField
@@ -27,6 +29,7 @@ selectWithField
      , Projection rec
      , HasGame m
      , Query a
+     , Store m Card
      )
   => Field rec typ
   -> a
@@ -34,7 +37,7 @@ selectWithField
 selectWithField fld = traverse (traverseToSnd (field fld)) <=< selectList
 
 selectRandom
-  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  :: (HasCallStack, Query a, HasGame m, MonadRandom m, Store m Card)
   => a
   -> m (Maybe (QueryElement a))
 selectRandom matcher = do
@@ -42,7 +45,7 @@ selectRandom matcher = do
   maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
 
 selectRandomJust
-  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  :: (HasCallStack, Query a, HasGame m, MonadRandom m, Store m Card)
   => String
   -> a
   -> m (QueryElement a)
@@ -51,37 +54,39 @@ selectRandomJust err matcher = do
   maybe (error err) sample (nonEmpty results)
 
 selectListMap
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, HasGame m, Store m Card)
   => (QueryElement a -> b)
   -> a
   -> m [b]
 selectListMap f = selectListMapM (pure . f)
 
 selectTargets
-  :: (HasCallStack, Query a, HasGame m, Targetable (QueryElement a))
+  :: (HasCallStack, Query a, HasGame m, Targetable (QueryElement a), Store m Card)
   => a
   -> m [Target]
 selectTargets = selectListMap toTarget
 
 selectListMapM
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, HasGame m, Store m Card)
   => (QueryElement a -> m b)
   -> a
   -> m [b]
 selectListMapM f = (traverse f . setToList =<<) . select
 
 selectJust
-  :: (HasCallStack, Show a, Query a, HasGame m)
+  :: (HasCallStack, Show a, Query a, HasGame m, Store m Card)
   => a
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
-  where errorNote = "Could not find any matches for: " <> show matcher
+ where
+  errorNote = "Could not find any matches for: " <> show matcher
 
 selectJustField
   :: ( HasCallStack
      , Show a
      , Query a
      , HasGame m
+     , Store m Card
      , QueryElement a ~ EntityId entity
      , Projection entity
      )
@@ -95,6 +100,7 @@ selectFields
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
+     , Store m Card
      )
   => Field attrs typ
   -> a
@@ -107,6 +113,7 @@ selectAgg
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
+     , Store m Card
      )
   => (typ -> monoid)
   -> Field attrs typ
@@ -123,6 +130,7 @@ selectSum
      , Query matcher
      , Projection attrs
      , HasGame m
+     , Store m Card
      )
   => Field attrs a
   -> matcher
@@ -137,6 +145,7 @@ selectMax
      , Query matcher
      , Projection attrs
      , HasGame m
+     , Store m Card
      )
   => Field attrs a
   -> matcher
@@ -144,7 +153,7 @@ selectMax
 selectMax fld matcher = getMax0 <$> selectAgg Max fld matcher
 
 selectOne
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, HasGame m, Store m Card)
   => a
   -> m (Maybe (QueryElement a))
 selectOne matcher = do
@@ -154,11 +163,11 @@ selectOne matcher = do
     x : _ -> Just x
 
 isMatch
-  :: (HasCallStack, Query matcher, HasGame m)
+  :: (HasCallStack, Query matcher, HasGame m, Store m Card)
   => QueryElement matcher
   -> matcher
   -> m Bool
 isMatch a m = member a <$> select m
 
 class (Ord (QueryElement a), Eq (QueryElement a)) => Query a where
-  select :: (HasCallStack, HasGame m) => a -> m (Set (QueryElement a))
+  select :: (HasCallStack, HasGame m, Store m Card) => a -> m (Set (QueryElement a))

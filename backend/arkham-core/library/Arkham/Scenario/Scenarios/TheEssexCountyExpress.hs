@@ -28,6 +28,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheEssexCountyExpress.Story
+import Arkham.Store
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -78,7 +79,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-readInvestigatorDefeat :: (HasGame m) => m [Message]
+readInvestigatorDefeat :: (HasGame m, Store m Card) => m [Message]
 readInvestigatorDefeat = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation

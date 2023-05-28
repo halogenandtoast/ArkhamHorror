@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.CampaignLogKey
+import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
@@ -12,15 +13,16 @@ import Arkham.Helpers.Log
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Store
 
-getHauntedAbilities :: (HasGame m) => InvestigatorId -> m [Ability]
+getHauntedAbilities :: (HasGame m, Store m Card) => InvestigatorId -> m [Ability]
 getHauntedAbilities iid =
   selectList $
     HauntedAbility
       <> AbilityOnLocation
         (locationWithInvestigator iid)
 
-runHauntedAbilities :: InvestigatorId -> GameT ()
+runHauntedAbilities :: (HasGame m, Store m Card, HasQueue Message m) => InvestigatorId -> m ()
 runHauntedAbilities iid = do
   hauntedAbilities <- getHauntedAbilities iid
   when (notNull hauntedAbilities) $
@@ -29,5 +31,5 @@ runHauntedAbilities iid = do
         iid
         [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
 
-getMementosDiscoveredCount :: (HasGame m) => m Int
+getMementosDiscoveredCount :: (HasGame m, Store m Card) => m Int
 getMementosDiscoveredCount = length <$> getRecordSet MementosDiscovered

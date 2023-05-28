@@ -20,6 +20,7 @@ import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
+import Arkham.Store
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Foldable (foldrM)
@@ -130,7 +131,7 @@ getAbilitiesForTurn attrs = do
   applyModifier _ n = n
 
 getCanDiscoverClues
-  :: (HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
+  :: (HasGame m, Store m Card) => InvestigatorAttrs -> LocationId -> m Bool
 getCanDiscoverClues attrs lid = do
   modifiers <- getModifiers (toTarget attrs)
   not <$> anyM match modifiers
@@ -304,7 +305,7 @@ getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
-getCanAfford :: (HasGame m) => InvestigatorAttrs -> [Action] -> m Bool
+getCanAfford :: (HasGame m, Store m Card) => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActionCount <-
@@ -326,7 +327,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
       else go (m - 1) (d, PlayerCard c : h, cs)
 
 canCommitToAnotherLocation
-  :: (HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
+  :: (HasGame m, Store m Card) => InvestigatorAttrs -> LocationId -> m Bool
 canCommitToAnotherLocation attrs otherLocation = do
   modifiers <- getModifiers (toTarget attrs)
   anyM permit modifiers
@@ -381,20 +382,22 @@ getAvailableSkillsFor skillType iid = do
     | toReplace == skillType = insertSet toUse skills
   applyModifier _ skills = skills
 
-isEliminated :: (HasGame m) => InvestigatorId -> m Bool
+isEliminated :: (HasGame m, Store m Card) => InvestigatorId -> m Bool
 isEliminated iid =
   orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
 
-getHandCount :: (HasGame m) => InvestigatorId -> m Int
+getHandCount :: (HasGame m, Store m Card) => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
 
-getHealHorrorMessage :: (HasGame m, Sourceable a) => a -> Int -> InvestigatorId -> m (Maybe Message)
+getHealHorrorMessage
+  :: (HasGame m, Sourceable a, Store m Card) => a -> Int -> InvestigatorId -> m (Maybe Message)
 getHealHorrorMessage a n iid = do
   mHorrorId <- canHaveHorrorHealed a iid
   for mHorrorId $ \horrorId ->
     pure $ HealHorror (InvestigatorTarget horrorId) (toSource a) n
 
-canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m (Maybe InvestigatorId)
+canHaveHorrorHealed
+  :: (HasGame m, Sourceable a, Store m Card) => a -> InvestigatorId -> m (Maybe InvestigatorId)
 canHaveHorrorHealed a iid = do
   result <- selectAny $ HealableInvestigator (toSource a) HorrorType $ InvestigatorWithId iid
 
@@ -421,11 +424,11 @@ canHaveHorrorHealed a iid = do
       _ -> pure Nothing
     _ -> pure Nothing
 
-canHaveDamageHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
+canHaveDamageHealed :: (HasGame m, Sourceable a, Store m Card) => a -> InvestigatorId -> m Bool
 canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
 
 getInvestigatorsWithHealHorror
-  :: (HasGame m, Sourceable a)
+  :: (HasGame m, Sourceable a, Store m Card)
   => a
   -> Int
   -> InvestigatorMatcher
@@ -434,7 +437,7 @@ getInvestigatorsWithHealHorror a n =
   selectList >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
 
 additionalActionCovers
-  :: (HasGame m) => Source -> Maybe Action -> AdditionalAction -> m Bool
+  :: (HasGame m, Store m Card) => Source -> Maybe Action -> AdditionalAction -> m Bool
 additionalActionCovers source maction = \case
   TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
     NoRestriction -> member t <$> sourceTraits source
@@ -445,5 +448,5 @@ additionalActionCovers source maction = \case
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True
 
-getCanDrawCards :: (HasGame m) => InvestigatorId -> m Bool
+getCanDrawCards :: (Store m Card, HasGame m) => InvestigatorId -> m Bool
 getCanDrawCards = selectAny . InvestigatorCanDrawCards . InvestigatorWithId

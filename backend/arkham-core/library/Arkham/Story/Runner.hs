@@ -14,10 +14,12 @@ import Arkham.Source as X
 import Arkham.Story.Types as X
 import Arkham.Target as X
 
+import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Store
 
 afterStoryResolution :: (HasQueue Message m) => StoryAttrs -> [Message] -> m ()
 afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . reverse
@@ -26,7 +28,7 @@ afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . re
     ResolvedStory _ story' | story' == storyId -> True
     _ -> False
 
-getAlreadyResolved :: (HasGame m) => StoryAttrs -> m Bool
+getAlreadyResolved :: (Store m Card, HasGame m) => StoryAttrs -> m Bool
 getAlreadyResolved (toId -> storyId) = scenarioFieldMap ScenarioResolvedStories (elem storyId)
 
 instance RunMessage Story where

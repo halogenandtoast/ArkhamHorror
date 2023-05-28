@@ -2,6 +2,7 @@ module Arkham.Helpers.Source where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.Query
 import Arkham.Field.Import
 import {-# SOURCE #-} Arkham.GameEnv
@@ -10,9 +11,10 @@ import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Store
 import Arkham.Trait (Trait, toTraits)
 
-sourceTraits :: (HasCallStack, HasGame m) => Source -> m (Set Trait)
+sourceTraits :: (HasCallStack, Store m Card, HasGame m) => Source -> m (Set Trait)
 sourceTraits = \case
   AbilitySource s _ -> sourceTraits s
   ActDeckSource -> pure mempty
@@ -54,7 +56,7 @@ sourceTraits = \case
   CardCostSource _ -> pure mempty
   BothSource _ _ -> error "doesn't make sense, or will solve later"
 
-getSourceController :: (HasGame m) => Source -> m (Maybe InvestigatorId)
+getSourceController :: (Store m Card, HasGame m) => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
   AssetSource aid -> selectAssetController aid
   EventSource eid -> selectEventController eid

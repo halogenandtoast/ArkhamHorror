@@ -13,13 +13,14 @@ import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Scenario.Types ( Field (..) )
+import Arkham.Scenario.Types (Field (..))
+import Arkham.Store
 import Data.Map.Strict qualified as Map
 
-completedScenario :: HasGame m => ScenarioId -> m Bool
+completedScenario :: (HasGame m, Store m Card) => ScenarioId -> m Bool
 completedScenario cCode = elem cCode <$> getCompletedScenarios
 
-getCompletedScenarios :: HasGame m => m (Set ScenarioId)
+getCompletedScenarios :: (HasGame m, Store m Card) => m (Set ScenarioId)
 getCompletedScenarios = do
   mcampaignId <- selectOne TheCampaign
   case mcampaignId of
@@ -30,35 +31,36 @@ getCompletedScenarios = do
         ScenarioStep scenarioId -> Just scenarioId
         _ -> Nothing
 
-getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
+getOwner :: (HasGame m, Store m Card) => CardDef -> m (Maybe InvestigatorId)
 getOwner cardDef = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardDef) . toCardDef)) campaignStoryCards
 
-getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [PlayerCard])
+getCampaignStoryCards :: (HasGame m, Store m Card) => m (Map InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign
   case mCampaignId of
     Just campaignId -> field CampaignStoryCards campaignId
     Nothing -> scenarioField ScenarioStoryCards
 
-getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m PlayerCard
+getCampaignStoryCard :: (HasCallStack, HasGame m, Store m Card) => CardDef -> m PlayerCard
 getCampaignStoryCard def = do
   cards <- concat . Map.elems <$> getCampaignStoryCards
   pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards
 
-getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
+getIsAlreadyOwned :: (HasGame m, Store m Card) => CardDef -> m Bool
 getIsAlreadyOwned cDef = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ any ((== cDef) . toCardDef) $ concat (toList campaignStoryCards)
 
-campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
+campaignField :: (HasCallStack, HasGame m, Store m Card) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld
 
 matchingCardsAlreadyInDeck
-  :: HasGame m => CardMatcher -> m (Map InvestigatorId (Set CardCode))
+  :: (HasGame m, Store m Card) => CardMatcher -> m (Map InvestigatorId (Set CardCode))
 matchingCardsAlreadyInDeck matcher = do
   decks <- campaignField CampaignDecks
-  pure $ Map.map
-    (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck)
-    decks
+  pure $
+    Map.map
+      (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck)
+      decks

@@ -12,7 +12,6 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher

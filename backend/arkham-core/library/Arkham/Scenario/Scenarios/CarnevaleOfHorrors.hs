@@ -28,6 +28,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+import Arkham.Store
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Data.List.NonEmpty qualified as NE
@@ -95,7 +96,7 @@ abbessSatisfied lead investigatorIds =
           Assets.abbessAllegriaDiBiase
       ]
 
-additionalRewards :: (HasGame m) => ScenarioAttrs -> m [Message]
+additionalRewards :: (HasGame m, Store m Card) => ScenarioAttrs -> m [Message]
 additionalRewards s = do
   lead <- getLead
   investigatorIds <- allInvestigatorIds

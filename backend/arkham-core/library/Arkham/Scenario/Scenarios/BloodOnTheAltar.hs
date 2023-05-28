@@ -28,6 +28,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
+import Arkham.Store
 import Arkham.Token
 import Control.Monad.Trans.Maybe
 
@@ -87,7 +88,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-getRemoveNecronomicon :: (HasGame m) => m [Message]
+getRemoveNecronomicon :: (HasGame m, Store m Card) => m [Message]
 getRemoveNecronomicon = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation

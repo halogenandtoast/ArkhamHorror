@@ -51,6 +51,7 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType ()
+import Arkham.Store
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window (Window (..))
@@ -99,7 +100,7 @@ filterOutEnemyUiMessages eid = \case
   FightLabel eid' _ | eid == eid' -> Nothing
   other -> Just other
 
-getInvestigatorsAtSameLocation :: (HasGame m) => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation :: (HasGame m, Store m Card) => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = do
   enemyLocation <- field EnemyLocation (toId attrs)
   case enemyLocation of

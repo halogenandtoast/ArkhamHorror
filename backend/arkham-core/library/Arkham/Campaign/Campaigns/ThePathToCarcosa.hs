@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message

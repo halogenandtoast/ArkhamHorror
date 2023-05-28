@@ -23,6 +23,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Store
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Newtype (ala)
@@ -54,10 +55,10 @@ theForgottenAge difficulty =
     difficulty
     (chaosBagContents difficulty)
 
-initialSupplyPoints :: (HasGame m) => m Int
+initialSupplyPoints :: (HasGame m, Store m Card) => m Int
 initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
 
-initialResupplyPoints :: (HasGame m) => m Int
+initialResupplyPoints :: (HasGame m, Store m Card) => m Int
 initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 supplyCost :: Supply -> Int

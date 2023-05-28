@@ -1,61 +1,70 @@
-module Arkham.Prelude
-  ( module X
-  , module Arkham.Prelude
-  ) where
+module Arkham.Prelude (
+  module X,
+  module Arkham.Prelude,
+) where
 
-import ClassyPrelude as X hiding ( foldlM, on, (\\) )
+import ClassyPrelude as X hiding (Storable, foldlM, on, (\\))
 import Data.Type.Equality as X (type (~))
 
-import Control.Lens as X
-  ( Lens'
-  , Traversal'
-  , at
-  , ix
-  , lens
-  , preview
-  , to
-  , traverseOf
-  , traverseOf_
-  , view
-  , views
-  , (%~)
-  , (&)
-  , (+~)
-  , (-~)
-  , (.~)
-  , (<>~)
-  , (?~)
-  , (^.)
-  , (^..)
-  , (^?)
-  )
+import Control.Lens as X (
+  Lens',
+  Traversal',
+  at,
+  ix,
+  lens,
+  preview,
+  to,
+  traverseOf,
+  traverseOf_,
+  view,
+  views,
+  (%~),
+  (&),
+  (+~),
+  (-~),
+  (.~),
+  (<>~),
+  (?~),
+  (^.),
+  (^..),
+  (^?),
+ )
 import Control.Lens.TH as X
-import Control.Monad.Extra as X
-  ( allM, andM, orM, anyM, concatForM, concatMapM, fromMaybeM, mapMaybeM, mconcatMapM )
-import Control.Monad.Random as X ( MonadRandom, uniform )
-import Control.Monad.Random.Class as X ( getRandom, getRandomR, getRandoms )
-import Control.Monad.Random.Strict as X ( Random )
-import Data.Aeson as X hiding ( Result (..) )
+import Control.Monad.Extra as X (
+  allM,
+  andM,
+  anyM,
+  concatForM,
+  concatMapM,
+  fromMaybeM,
+  mapMaybeM,
+  mconcatMapM,
+  orM,
+ )
+import Control.Monad.Random as X (MonadRandom, uniform)
+import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
+import Control.Monad.Random.Strict as X (Random)
+import Data.Aeson as X hiding (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
 import Data.Char qualified as C
-import Data.Coerce as X ( coerce )
-import Data.Map.Strict qualified as Map
-import Data.Set qualified as Set
-import Data.Kind as X ( Type )
-import Data.List as X ( nub, (\\) )
+import Data.Coerce as X (coerce)
+import Data.Kind as X (Type)
+import Data.List as X (nub, (\\))
 import Data.List qualified as L
-import Data.List.NonEmpty as X ( NonEmpty (..), nonEmpty )
-import Data.Semigroup as X ( Max (..), Min (..), Sum (..) )
+import Data.List.NonEmpty as X (NonEmpty (..), nonEmpty)
+import Data.Map.Strict qualified as Map
+import Data.Semigroup as X (Max (..), Min (..), Sum (..))
+import Data.Set qualified as Set
 import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Builder
-import Data.UUID as X ( UUID )
+import Data.UUID as X (UUID)
 import GHC.Stack as X
-import Language.Haskell.TH hiding ( location )
-import Safe as X ( fromJustNote )
+import Language.Haskell.TH hiding (location)
+import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
 
-import Data.Foldable ( foldlM )
+import Data.Foldable (foldlM)
 import Data.List.NonEmpty qualified as NE
 
 suffixedNamer :: FieldNamer
@@ -78,24 +87,24 @@ suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 
-mapSet :: Ord b => (a -> b) -> Set a -> Set b
+mapSet :: (Ord b) => (a -> b) -> Set a -> Set b
 mapSet = Set.map
 
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
 
 mapFrom
-  :: IsMap map => (MapValue map -> ContainerKey map) -> [MapValue map] -> map
+  :: (IsMap map) => (MapValue map -> ContainerKey map) -> [MapValue map] -> map
 mapFrom f = mapFromList . map (toFst f)
 
 toSnd :: (a -> b) -> a -> (a, b)
 toSnd f a = (a, f a)
 
-traverseToSnd :: Functor m => (a -> m b) -> a -> m (a, b)
-traverseToSnd f a = (a, ) <$> f a
+traverseToSnd :: (Functor m) => (a -> m b) -> a -> m (a, b)
+traverseToSnd f a = (a,) <$> f a
 
 traverseToSndM :: (Functor f, Functor m) => (a -> m (f b)) -> a -> m (f (a, b))
-traverseToSndM f a = (a, ) <$$> f a
+traverseToSndM f a = (a,) <$$> f a
 
 forToSnd :: (Traversable t, Applicative m) => t a -> (a -> m b) -> m (t (a, b))
 forToSnd xs f = traverse (traverseToSnd f) xs
@@ -104,13 +113,15 @@ maxes :: [(a, Int)] -> [a]
 maxes ps = case sortedPairs of
   [] -> []
   ((_, c) : _) -> map fst $ takeWhile ((== c) . snd) sortedPairs
-  where sortedPairs = sortOn (Down . snd) ps
+ where
+  sortedPairs = sortOn (Down . snd) ps
 
 mins :: [(a, Int)] -> [a]
 mins ps = case sortedPairs of
   [] -> []
   ((_, c) : _) -> map fst $ takeWhile ((== c) . snd) sortedPairs
-  where sortedPairs = sortOn snd ps
+ where
+  sortedPairs = sortOn snd ps
 
 concatMapM'
   :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
@@ -119,20 +130,20 @@ concatMapM' f xs = concatMapM f (toList xs)
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter
 
-countM :: Monad m => (a -> m Bool) -> [a] -> m Int
+countM :: (Monad m) => (a -> m Bool) -> [a] -> m Int
 countM = (fmap length .) . filterM
 
-none :: MonoFoldable mono => (Element mono -> Bool) -> mono -> Bool
+none :: (MonoFoldable mono) => (Element mono -> Bool) -> mono -> Bool
 none = (not .) . any
 
 noneM
   :: (Monad m, MonoFoldable mono) => (Element mono -> m Bool) -> mono -> m Bool
 noneM f xs = not <$> anyM f (otoList xs)
 
-notNull :: MonoFoldable mono => mono -> Bool
+notNull :: (MonoFoldable mono) => mono -> Bool
 notNull = not . null
 
-sample :: MonadRandom m => NonEmpty a -> m a
+sample :: (MonadRandom m) => NonEmpty a -> m a
 sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)
   pure $ xs NE.!! idx
@@ -169,7 +180,7 @@ uncurry4 f ~(a, b, c, d) = f a b c d
 cycleN :: Int -> [a] -> [a]
 cycleN n as = take (length as * n) $ L.cycle as
 
-deleteFirst :: Eq a => a -> [a] -> [a]
+deleteFirst :: (Eq a) => a -> [a] -> [a]
 deleteFirst a = deleteFirstMatch (== a)
 
 deleteFirstMatch :: (a -> Bool) -> [a] -> [a]
@@ -192,25 +203,25 @@ instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
         . TL.unpack
         . toLazyText
         $ "With failed to serialize to object: "
-        <> "\nattrs: "
-        <> encodeToTextBuilder a'
-        <> "\nmetadata: "
-        <> encodeToTextBuilder b'
+          <> "\nattrs: "
+          <> encodeToTextBuilder a'
+          <> "\nmetadata: "
+          <> encodeToTextBuilder b'
 
 instance (FromJSON a, FromJSON b) => FromJSON (a `With` b) where
-  parseJSON = withObject "With"
-    $ \o -> With <$> parseJSON (Object o) <*> parseJSON (Object o)
+  parseJSON = withObject "With" $
+    \o -> With <$> parseJSON (Object o) <*> parseJSON (Object o)
 
 instance (Show a, Show b) => Show (a `With` b) where
   show (With a b) = show a <> " WITH " <> show b
 
-with :: a -> b -> a `With`  b
+with :: a -> b -> a `With` b
 with = With
 
 withBase :: a `With` b -> a
 withBase (a `With` _) = a
 
-findKey :: Ord k => (v -> Bool) -> Map k v -> Maybe k
+findKey :: (Ord k) => (v -> Bool) -> Map k v -> Maybe k
 findKey p = fmap fst . find (p . snd) . mapToList
 
 -- getMax will return a very low number
@@ -221,19 +232,23 @@ getMax0 :: (Ord a, Num a) => Max a -> a
 getMax0 current = getMax $ Max 0 <> current
 
 foldMapM :: (Monad m, Monoid w, Foldable t) => (a -> m w) -> t a -> m w
-foldMapM f = foldlM
-  (\acc a -> do
-    w <- f a
-    return $! mappend acc w
-  )
-  mempty
+foldMapM f =
+  foldlM
+    ( \acc a -> do
+        w <- f a
+        return $! mappend acc w
+    )
+    mempty
 
-frequencies :: Ord a => [a] -> Map a Int
-frequencies as = Map.map getSum $ foldr (unionWith (<>)) mempty $ map
-  (`Map.singleton` (Sum 1))
-  as
+frequencies :: (Ord a) => [a] -> Map a Int
+frequencies as =
+  Map.map getSum $
+    foldr (unionWith (<>)) mempty $
+      map
+        (`Map.singleton` (Sum 1))
+        as
 
-breakM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
+breakM :: (Monad m) => (a -> m Bool) -> [a] -> m ([a], [a])
 breakM _ xs@[] = pure (xs, xs)
 breakM p xs@(x : xs') = do
   b <- p x
@@ -248,7 +263,7 @@ breakM p xs@(x : xs') = do
 infixl 4 <$$>
 
 withIndex :: [a] -> [(Int, a)]
-withIndex = zip [0..]
+withIndex = zip [0 ..]
 
 withIndex1 :: [a] -> [(Int, a)]
-withIndex1 = zip [1..]
+withIndex1 = zip [1 ..]

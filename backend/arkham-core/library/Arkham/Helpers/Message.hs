@@ -19,6 +19,7 @@ import Arkham.Message
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Source
+import Arkham.Store
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), WindowType)
@@ -44,7 +45,7 @@ drawCardsAction i source n = do
   drawing <- newCardDraw i source n
   pure $ DrawCards $ asDrawAction drawing
 
-resolveWithWindow :: (HasGame m) => Message -> WindowType -> m [Message]
+resolveWithWindow :: (Store m Card, HasGame m) => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do
   whenWindow <- checkWindows [Window Timing.When window']
   atIfWindow <- checkWindows [Window Timing.AtIf window']

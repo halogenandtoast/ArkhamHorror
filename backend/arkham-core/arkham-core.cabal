@@ -1928,6 +1928,7 @@ library
       Arkham.Source
       Arkham.Spawn
       Arkham.Stats
+      Arkham.Store
       Arkham.Story
       Arkham.Story.Cards
       Arkham.Story.Cards.AboveAndBelow

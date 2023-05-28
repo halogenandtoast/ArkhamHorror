@@ -31,6 +31,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheUnspeakableOath.Story
+import Arkham.Store
 import Arkham.Token
 import Arkham.Trait hiding (Cultist, Expert)
 import Arkham.Window qualified as Window
@@ -91,7 +92,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-investigatorDefeat :: (HasGame m) => m [Message]
+investigatorDefeat :: (HasGame m, Store m Card) => m [Message]
 investigatorDefeat = do
   investigatorIds <- allInvestigatorIds
   defeatedInvestigatorIds <- selectList DefeatedInvestigator

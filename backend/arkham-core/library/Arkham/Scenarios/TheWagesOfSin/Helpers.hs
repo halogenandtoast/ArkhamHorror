@@ -19,15 +19,16 @@ import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Store
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 
-getSpectralDiscards :: (HasGame m) => m [EncounterCard]
+getSpectralDiscards :: (HasGame m, Store m Card) => m [EncounterCard]
 getSpectralDiscards =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
 
-getSpectralDeck :: (HasGame m) => m (Deck EncounterCard)
+getSpectralDeck :: (HasGame m, Store m Card) => m (Deck EncounterCard)
 getSpectralDeck =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _1))
 
@@ -38,6 +39,7 @@ hereticModifiers
   :: ( EntityId (EntityAttrs a) ~ EnemyId
      , Targetable (EntityAttrs a)
      , HasGame m
+     , Store m Card
      , Entity a
      , Entity (EntityAttrs a)
      , Sourceable (EntityAttrs a)

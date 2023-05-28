@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
+import Arkham.Card
 import Arkham.Event.Types (Field (..))
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
@@ -16,6 +17,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Store
 
 newtype MarieLambeau = MarieLambeau InvestigatorAttrs
   deriving anyclass (IsInvestigator)
@@ -46,7 +48,7 @@ instance HasModifiersFor MarieLambeau where
       toModifiers a [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell NoRestriction) | hasDoom]
   getModifiersFor _ _ = pure []
 
-getDoomAmongstControlledCards :: (HasGame m) => InvestigatorId -> m Int
+getDoomAmongstControlledCards :: (HasGame m, Store m Card) => InvestigatorId -> m Int
 getDoomAmongstControlledCards iid =
   getSum . fold
     <$> sequence

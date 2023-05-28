@@ -13,9 +13,10 @@ import Arkham.Game.Helpers as X
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Matcher
+import Arkham.Store
 
 getHasRecordOrStandalone
-  :: (HasGame m)
+  :: (HasGame m, Store m Card)
   => CampaignLogKey
   -> Bool
   -> m Bool

@@ -14,6 +14,7 @@ import Arkham.Card.Class as X
 import Arkham.Card.EncounterCard as X (EncounterCard (..))
 import Arkham.Card.Id as X
 import Arkham.Card.PlayerCard as X (PlayerCard (..))
+import Arkham.Store
 
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -30,6 +31,17 @@ import Arkham.SkillType
 import Arkham.Trait
 import Data.Aeson.TH
 import Data.Text qualified as T
+
+instance Storable Card where
+  type StoreKey Card = CardId
+
+getCard :: (Store m Card) => CardId -> m Card
+getCard cardId = maybe missingCard id <$> storeGet cardId
+ where
+  missingCard = error $ "Unregistered card id: " <> show cardId
+
+findCard :: (Store m Card) => (Card -> Bool) -> m (Maybe Card)
+findCard cardPred = storeFind cardPred
 
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card

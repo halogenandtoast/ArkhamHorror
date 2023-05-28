@@ -1,4 +1,5 @@
 module Arkham.Helpers.Card (
+  module Arkham.Card,
   module Arkham.Helpers.Card,
   module Arkham.Helpers.Campaign,
 ) where
@@ -21,6 +22,7 @@ import Arkham.Id
 import Arkham.Location.Types
 import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Projection
+import Arkham.Store
 
 isDiscardable :: Card -> Bool
 isDiscardable = not . isWeakness
@@ -41,12 +43,12 @@ getCardPayments c = do
     ForCost c' -> toCardId c == toCardId c'
 
 extendedCardMatch
-  :: (HasGame m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
+  :: (HasGame m, IsCard c, Store m Card) => c -> ExtendedCardMatcher -> m Bool
 extendedCardMatch (toCard -> c) matcher =
   selectAny (BasicCardMatch (CardWithId (toCardId c)) <> matcher)
 
 class ConvertToCard a where
-  convertToCard :: (HasGame m) => a -> m Card
+  convertToCard :: (Store m Card, HasGame m) => a -> m Card
 
 instance ConvertToCard EnemyId where
   convertToCard = getEntityCard @Enemy
@@ -67,7 +69,7 @@ class (Projection a, Entity a) => CardEntity a where
   cardField :: Field a Card
 
 getEntityCard
-  :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m Card
+  :: forall a m. (CardEntity a, HasGame m, Store m Card) => EntityId a -> m Card
 getEntityCard = field (cardField @a)
 
 instance CardEntity Enemy where
@@ -79,10 +81,11 @@ instance CardEntity Asset where
 instance CardEntity Location where
   cardField = LocationCard
 
-getCardField :: (ConvertToCard c, HasGame m) => (CardDef -> a) -> c -> m a
+getCardField :: (ConvertToCard c, Store m Card, HasGame m) => (CardDef -> a) -> c -> m a
 getCardField f c = f . toCardDef <$> convertToCard c
 
-getVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getVictoryPoints
+  :: (ConvertToCard c, Store m Card, HasGame m) => c -> m (Maybe Int)
 getVictoryPoints c = do
   card <- convertToCard c
   printedVictory <- getPrintedVictoryPoints card
@@ -92,18 +95,18 @@ getVictoryPoints c = do
   applyModifier (GainVictory n) _ = Just n
   applyModifier _ n = n
 
-getHasVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m Bool
+getHasVictoryPoints :: (ConvertToCard c, Store m Card, HasGame m) => c -> m Bool
 getHasVictoryPoints c = isJust <$> getVictoryPoints c
 
-getPrintedVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getPrintedVictoryPoints :: (ConvertToCard c, Store m Card, HasGame m) => c -> m (Maybe Int)
 getPrintedVictoryPoints = getCardField cdVictoryPoints
 
 -- To get abilities we convert to some entity in Entities and get all abilities
 getCardAbilities :: InvestigatorId -> Card -> [Ability]
 getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c
 
-findJustCard :: (HasGame m) => (Card -> Bool) -> m Card
+findJustCard :: (Store m Card) => (Card -> Bool) -> m Card
 findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
 
-findUniqueCard :: (HasGame m) => CardDef -> m Card
+findUniqueCard :: (Store m Card) => CardDef -> m Card
 findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))

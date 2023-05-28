@@ -5,15 +5,17 @@ module Arkham.Projection (
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Field as X
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Store
 
 class Projection a where
-  field :: (HasCallStack, HasGame m) => Field a typ -> EntityId a -> m typ
+  field :: (HasCallStack, HasGame m, Store m Card) => Field a typ -> EntityId a -> m typ
 
 fieldJust
-  :: (HasCallStack, Projection a, HasGame m, Show (Field a (Maybe typ)))
+  :: (HasCallStack, Projection a, HasGame m, Store m Card, Show (Field a (Maybe typ)))
   => Field a (Maybe typ)
   -> EntityId a
   -> m typ
@@ -22,7 +24,7 @@ fieldJust fld entityId = fromJustNote missingField <$> field fld entityId
   missingField = "Maybe field " <> show fld <> " was Nothing"
 
 fieldP
-  :: (HasCallStack, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a, Store m Card)
   => Field a typ
   -> (typ -> Bool)
   -> EntityId a
@@ -30,7 +32,7 @@ fieldP
 fieldP = fieldMap
 
 fieldPM
-  :: (HasCallStack, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a, Store m Card)
   => Field a typ
   -> (typ -> m Bool)
   -> EntityId a
@@ -38,7 +40,7 @@ fieldPM
 fieldPM = fieldMapM
 
 fieldMap
-  :: (HasCallStack, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a, Store m Card)
   => (Field a typ)
   -> (typ -> b)
   -> EntityId a
@@ -46,7 +48,7 @@ fieldMap
 fieldMap f g = fieldMapM f (pure . g)
 
 fieldMapM
-  :: (HasCallStack, HasGame m, Projection a)
+  :: (HasCallStack, HasGame m, Projection a, Store m Card)
   => (Field a typ)
   -> (typ -> m b)
   -> EntityId a

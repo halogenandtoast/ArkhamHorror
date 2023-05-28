@@ -27,6 +27,7 @@ import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
+import Arkham.Store
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -35,7 +36,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
-calculateSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
+calculateSkillTestResultsData :: (HasGame m, Store m Card) => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers SkillTestTarget
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
@@ -66,7 +67,7 @@ calculateSkillTestResultsData s = do
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       isSuccess
 
-autoFailSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData :: (HasGame m, Store m Card) => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
   tokenValues <-
@@ -149,7 +150,7 @@ getModifiedSkillTestDifficulty s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedTokenValue :: (HasGame m) => SkillTest -> Token -> m Int
+getModifiedTokenValue :: (HasGame m, Store m Card) => SkillTest -> Token -> m Int
 getModifiedTokenValue s t = do
   tokenModifiers' <- getModifiers (TokenTarget t)
   modifiedTokenFaces' <- getModifiedTokenFaces [t]

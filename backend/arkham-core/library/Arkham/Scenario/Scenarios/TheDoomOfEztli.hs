@@ -33,6 +33,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
+import Arkham.Store
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -113,7 +114,7 @@ standaloneCampaignLog =
           [TheInvestigatorsClearedAPathToTheEztliRuins]
     }
 
-investigatorDefeat :: (HasGame m) => ScenarioAttrs -> m [Message]
+investigatorDefeat :: (HasGame m, Store m Card) => ScenarioAttrs -> m [Message]
 investigatorDefeat attrs = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds

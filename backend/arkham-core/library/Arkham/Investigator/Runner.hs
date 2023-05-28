@@ -134,6 +134,7 @@ getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
     , maybe
         (pure True)
         ( withAlteredGame withoutCanModifiers
+            . lift
             . passesCriteria
               iid
               Nothing

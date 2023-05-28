@@ -28,6 +28,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Spawn
+import Arkham.Store
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -37,7 +38,7 @@ import Arkham.Window qualified as Window
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
 
-getModifiedHealth :: (HasGame m) => EnemyAttrs -> m Int
+getModifiedHealth :: (HasGame m, Store m Card) => EnemyAttrs -> m Int
 getModifiedHealth EnemyAttrs {..} = do
   playerCount <- getPlayerCount
   modifiers' <- getModifiers (EnemyTarget enemyId)
@@ -152,7 +153,7 @@ canEnterLocation eid lid = do
     Modifier.CannotBeEnteredByNonElite {} -> Elite `notMember` traits
     _ -> False
 
-getFightableEnemyIds :: (HasGame m) => InvestigatorId -> Source -> m [EnemyId]
+getFightableEnemyIds :: (HasGame m, Store m Card) => InvestigatorId -> Source -> m [EnemyId]
 getFightableEnemyIds iid source = do
   fightAnywhereEnemyIds <-
     selectList AnyEnemy >>= filterM \eid -> do
@@ -181,7 +182,7 @@ getFightableEnemyIds iid source = do
         )
         modifiers'
 
-getEnemyAccessibleLocations :: (HasGame m) => EnemyId -> m [LocationId]
+getEnemyAccessibleLocations :: (HasGame m, Store m Card) => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location
@@ -196,16 +197,17 @@ getEnemyAccessibleLocations eid = do
             `notElem` modifiers'
   filterM unblocked connectedLocationIds
 
-getUniqueEnemy :: (HasGame m) => CardDef -> m EnemyId
+getUniqueEnemy :: (HasGame m, Store m Card) => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs
 
-getUniqueEnemyMaybe :: (HasGame m) => CardDef -> m (Maybe EnemyId)
+getUniqueEnemyMaybe :: (HasGame m, Store m Card) => CardDef -> m (Maybe EnemyId)
 getUniqueEnemyMaybe = selectOne . enemyIs
 
-getEnemyIsInPlay :: (HasGame m) => CardDef -> m Bool
+getEnemyIsInPlay :: (HasGame m, Store m Card) => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
 
-defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m [Message]
+defeatEnemy
+  :: (HasGame m, Sourceable source, Store m Card) => EnemyId -> InvestigatorId -> source -> m [Message]
 defeatEnemy enemyId investigatorId (toSource -> source) = do
   whenMsg <-
     checkWindows

@@ -13,7 +13,6 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher

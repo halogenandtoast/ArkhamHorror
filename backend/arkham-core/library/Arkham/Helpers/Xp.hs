@@ -13,14 +13,15 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
+import Arkham.Store
 
 toGainXp :: (HasGame m, Sourceable source) => source -> m [(InvestigatorId, Int)] -> m [Message]
 toGainXp (toSource -> source) f = map (\(iid, n) -> GainXP iid source n) <$> f
 
-getXp :: (HasGame m) => m [(InvestigatorId, Int)]
+getXp :: (HasGame m, Store m Card) => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXpWithBonus :: (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]
+getXpWithBonus :: (HasCallStack, HasGame m, Store m Card) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
   victoryPileVictory <- toVictory =<< scenarioField ScenarioVictoryDisplay
   locationVictory <-
@@ -34,5 +35,5 @@ getXpWithBonus bonus = do
  where
   applyModifier n (XPModifier m) = max 0 (n + m)
   applyModifier n _ = n
-  toVictory :: (ConvertToCard c, HasGame m) => [c] -> m (Sum Int)
+  toVictory :: (ConvertToCard c, HasGame m, Store m Card) => [c] -> m (Sum Int)
   toVictory = fmap (mconcat . map Sum . catMaybes) . traverse getVictoryPoints

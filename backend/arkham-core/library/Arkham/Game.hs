@@ -132,6 +132,7 @@ import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Store
 import Arkham.Story
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Story.Types qualified as Story
@@ -2717,7 +2718,7 @@ instance Query ExtendedCardMatcher where
     g <- getGame
     setFromList <$> filterM (`matches'` matcher) (Map.elems $ gameCards g)
    where
-    matches' :: (HasGame m) => Card -> ExtendedCardMatcher -> m Bool
+    matches' :: (HasGame m, Store m Card) => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
       CanCancelRevelationEffect matcher' -> do
         cardIsMatch <- matches' c matcher'
@@ -2743,7 +2744,7 @@ instance Query ExtendedCardMatcher where
           flip anyM abilities' $ \ab -> do
             let adjustedAbility = applyAbilityModifiers ab modifiers'
             anyM
-              (\w -> getCanPerformAbility iid w adjustedAbility)
+              (\w -> lift $ getCanPerformAbility iid w adjustedAbility)
               (Window.defaultWindows iid)
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher ->
         do
@@ -3217,7 +3218,7 @@ instance Projection Story where
     let
       StoryAttrs {..} = toAttrs s
     case fld of
-      StoryCard -> getCard storyCardId
+      StoryCard -> pure $ lookupCard (unStoryId sid) storyCardId
       StoryPlacement -> pure storyPlacement
       StoryOtherSide -> pure storyOtherSide
 
@@ -5380,7 +5381,7 @@ We only preload modifiers while the scenario is active in order to prevent
 scenario specific modifiers from causing an exception. For instance when we
 need to call `getVengeanceInVictoryDisplay`
 -}
-preloadModifiers :: (Monad m) => Game -> m Game
+preloadModifiers :: (Monad m, HasGame m, Store m Card) => Game -> m Game
 preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
@@ -5390,14 +5391,16 @@ preloadModifiers g = case gameMode g of
     allModifiers <-
       getMonoidalMap
         <$> foldMapM
-          ( `toTargetModifiers`
-              ( entities
-                  <> inHandEntities
-                  <> maybeToList
-                    (SomeEntity <$> modeScenario (gameMode g))
-                  <> maybeToList
-                    (SomeEntity <$> modeCampaign (gameMode g))
-              )
+          ( lift
+              . ( `toTargetModifiers`
+                    ( entities
+                        <> inHandEntities
+                        <> maybeToList
+                          (SomeEntity <$> modeScenario (gameMode g))
+                        <> maybeToList
+                          (SomeEntity <$> modeCampaign (gameMode g))
+                    )
+                )
           )
           ( SkillTestTarget
               : map TokenTarget tokens
@@ -5426,14 +5429,14 @@ preloadModifiers g = case gameMode g of
   toTargetModifiers target =
     foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)
 
-handleTraitRestrictedModifiers :: (MonadUnliftIO m) => Game -> m Game
+handleTraitRestrictedModifiers :: (MonadUnliftIO m, Store m Card, HasGame m) => Game -> m Game
 handleTraitRestrictedModifiers g = do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers $ \case
         Modifier source (TraitRestrictedModifier t mt) isSetup -> do
-          traits <- runReaderT (targetTraits target) g
+          traits <- runReaderT (lift . lift $ targetTraits target) g
           when (t `member` traits) $
             modify $
               insertWith

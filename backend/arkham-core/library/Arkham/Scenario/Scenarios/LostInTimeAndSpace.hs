@@ -30,6 +30,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
+import Arkham.Store
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 
@@ -101,7 +102,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-readInvestigatorDefeat :: (HasGame m) => ScenarioAttrs -> m [Message]
+readInvestigatorDefeat :: (HasGame m, Store m Card) => ScenarioAttrs -> m [Message]
 readInvestigatorDefeat a = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds

@@ -10,18 +10,19 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Store
 import Arkham.Trait
 
-bayouLocations :: HasGame m => m (Set LocationId)
+bayouLocations :: (HasGame m, Store m Card) => m (Set LocationId)
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: HasGame m => m (Set LocationId)
+nonBayouLocations :: (HasGame m, Store m Card) => m (Set LocationId)
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
-getTheRougarou :: HasGame m => m (Maybe EnemyId)
+getTheRougarou :: (HasGame m, Store m Card) => m (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
-locationsWithLabels :: MonadRandom m => Trait -> [Card] -> m [(Text, Card)]
+locationsWithLabels :: (MonadRandom m) => Trait -> [Card] -> m [(Text, Card)]
 locationsWithLabels trait locationSet = do
   let
     (before, bayou :| after) = case break (elem Bayou . toTraits) locationSet of
@@ -37,24 +38,30 @@ locationsWithLabels trait locationSet = do
     ]
 
 locationsByTrait :: Map Trait [CardDef]
-locationsByTrait = mapFromList
-  [ ( NewOrleans
-    , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]
-    )
-  , ( Riverside
-    , [ Locations.brackishWaters
-      , Locations.audubonPark
-      , Locations.faubourgMarigny
-      ]
-    )
-  , ( Wilderness
-    , [ Locations.forgottenMarsh
-      , Locations.trappersCabin
-      , Locations.twistedUnderbrush
-      ]
-    )
-  , ( Unhallowed
-    , [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns]
-    )
-  ]
-
+locationsByTrait =
+  mapFromList
+    [
+      ( NewOrleans
+      , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]
+      )
+    ,
+      ( Riverside
+      ,
+        [ Locations.brackishWaters
+        , Locations.audubonPark
+        , Locations.faubourgMarigny
+        ]
+      )
+    ,
+      ( Wilderness
+      ,
+        [ Locations.forgottenMarsh
+        , Locations.trappersCabin
+        , Locations.twistedUnderbrush
+        ]
+      )
+    ,
+      ( Unhallowed
+      , [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns]
+      )
+    ]

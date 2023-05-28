@@ -16,11 +16,13 @@ import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
+import Arkham.Store
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
@@ -28,7 +30,7 @@ advanceActDeck :: ActAttrs -> Message
 advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
 
 advanceActSideA
-  :: (HasGame m) => ActAttrs -> AdvancementMethod -> m [Message]
+  :: (HasGame m, Store m Card) => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure

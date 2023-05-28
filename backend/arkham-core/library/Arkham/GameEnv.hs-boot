@@ -17,6 +17,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
 import Arkham.SkillTest.Base
+import Arkham.Store
 import Arkham.Target
 
 data GameEnv
@@ -51,12 +52,11 @@ class (Monad m) => HasGame m where
 
 instance (HasGame m) => HasSkillTest m
 
-getCard :: (HasGame m) => CardId -> m Card
-findCard :: (HasGame m) => (Card -> Bool) -> m (Maybe Card)
-
 instance HasGame GameT
 
 instance (Monad m) => HasGame (ReaderT Game m)
+
+instance Store GameT Card
 
 instance CardGen GameT
 instance HasGameLogger GameEnv

@@ -18,6 +18,7 @@ import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
+import Arkham.Store
 import Arkham.Target
 import Arkham.Token
 import Control.Lens (non, _1, _2)
@@ -25,21 +26,21 @@ import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 
-scenarioField :: (HasCallStack, HasGame m) => Field Scenario a -> m a
+scenarioField :: (HasCallStack, HasGame m, Store m Card) => Field Scenario a -> m a
 scenarioField fld = scenarioFieldMap fld id
 
 scenarioFieldMap
-  :: (HasCallStack, HasGame m) => Field Scenario a -> (a -> b) -> m b
+  :: (HasCallStack, HasGame m, Store m Card) => Field Scenario a -> (a -> b) -> m b
 scenarioFieldMap fld f = scenarioFieldMapM fld (pure . f)
 
 scenarioFieldMapM
-  :: (HasCallStack, HasGame m) => Field Scenario a -> (a -> m b) -> m b
+  :: (HasCallStack, HasGame m, Store m Card) => Field Scenario a -> (a -> m b) -> m b
 scenarioFieldMapM fld f = selectJust TheScenario >>= fieldMapM fld f
 
-getIsStandalone :: (HasGame m) => m Bool
+getIsStandalone :: (HasGame m, Store m Card) => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
-whenStandalone :: (HasGame m) => m () -> m ()
+whenStandalone :: (HasGame m, Store m Card) => m () -> m ()
 whenStandalone = whenM getIsStandalone
 
 addRandomBasicWeaknessIfNeeded
@@ -68,38 +69,38 @@ isHardExpert :: ScenarioAttrs -> Bool
 isHardExpert ScenarioAttrs {scenarioDifficulty} =
   scenarioDifficulty `elem` [Hard, Expert]
 
-getScenarioDeck :: (HasGame m) => ScenarioDeckKey -> m [Card]
+getScenarioDeck :: (HasGame m, Store m Card) => ScenarioDeckKey -> m [Card]
 getScenarioDeck k =
   scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
 
-getEncounterDiscard :: (HasGame m) => ScenarioEncounterDeckKey -> m [EncounterCard]
+getEncounterDiscard :: (HasGame m, Store m Card) => ScenarioEncounterDeckKey -> m [EncounterCard]
 getEncounterDiscard RegularEncounterDeck = scenarioField ScenarioDiscard
 getEncounterDiscard k =
   scenarioFieldMap ScenarioEncounterDecks (view (at k . non (Deck [], []) . _2))
 
 withStandalone
-  :: (HasGame m) => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
+  :: (HasGame m, Store m Card) => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
 withStandalone cf sf =
   maybe (sf =<< selectJust TheScenario) cf =<< selectOne TheCampaign
 
-resignedWith :: (HasGame m) => CardDef -> m Bool
+resignedWith :: (HasGame m, Store m Card) => CardDef -> m Bool
 resignedWith cDef =
   scenarioFieldMap ScenarioResignedCardCodes (elem (toCardCode cDef))
 
-findTopOfDiscard :: (HasGame m) => CardMatcher -> m (Maybe EncounterCard)
+findTopOfDiscard :: (HasGame m, Store m Card) => CardMatcher -> m (Maybe EncounterCard)
 findTopOfDiscard = fmap listToMaybe . findInDiscard
 
-findInDiscard :: (HasGame m) => CardMatcher -> m [EncounterCard]
+findInDiscard :: (HasGame m, Store m Card) => CardMatcher -> m [EncounterCard]
 findInDiscard matcher =
   scenarioFieldMap ScenarioDiscard (filter (`cardMatch` matcher))
 
-getOriginalDeck :: (HasGame m) => InvestigatorId -> m (Deck PlayerCard)
+getOriginalDeck :: (HasGame m, Store m Card) => InvestigatorId -> m (Deck PlayerCard)
 getOriginalDeck iid = do
   dict <- withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
   pure $ findWithDefault mempty iid dict
 
 getKnownRemainingOriginalDeckCards
-  :: (HasGame m) => InvestigatorId -> m [PlayerCard]
+  :: (HasGame m, Store m Card) => InvestigatorId -> m [PlayerCard]
 getKnownRemainingOriginalDeckCards iid = do
   let onlyPlayerCards = mapMaybe (preview _PlayerCard)
   cards <- unDeck <$> getOriginalDeck iid
@@ -109,7 +110,7 @@ getKnownRemainingOriginalDeckCards iid = do
   let knownNotInDeck = inDiscard <> inHand <> inVictory
   pure $ filter (`notElem` knownNotInDeck) cards
 
-isInVictoryDisplay :: (HasGame m) => CardDef -> m Bool
+isInVictoryDisplay :: (HasGame m, Store m Card) => CardDef -> m Bool
 isInVictoryDisplay def = scenarioFieldMap ScenarioVictoryDisplay ((elem def) . map toCardDef)
 
 data EncounterDeckHandler = EncounterDeckHandler

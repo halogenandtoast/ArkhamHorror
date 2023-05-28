@@ -21,6 +21,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
 import Arkham.SkillTest.Base
+import Arkham.Store
 import Arkham.Target
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 
@@ -47,18 +48,11 @@ instance CardGen GameT where
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId card (gameCards g)}, ())
 
+instance Store GameT Card where
+  storeAll = gameCards <$> getGame
+
 class (Monad m) => HasGame m where
   getGame :: m Game
-
-getCard :: (HasGame m) => CardId -> m Card
-getCard cardId = do
-  g <- getGame
-  case lookup cardId (gameCards g) of
-    Nothing -> error $ "Unregistered card id: " <> show cardId
-    Just card -> pure card
-
-findCard :: (HasGame m) => (Card -> Bool) -> m (Maybe Card)
-findCard cardPred = find cardPred . toList . gameCards <$> getGame
 
 instance (Monad m) => HasGame (ReaderT Game m) where
   getGame = ask

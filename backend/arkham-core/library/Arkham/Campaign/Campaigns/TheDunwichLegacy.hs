@@ -15,12 +15,13 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Id
 import Arkham.Message
+import Arkham.Store
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass (IsCampaign)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
-findOwner :: (HasGame m) => CardCode -> m (Maybe InvestigatorId)
+findOwner :: (HasGame m, Store m Card) => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards

@@ -1,18 +1,17 @@
-module Arkham.Event.Cards.OneTwoPunch
-  ( oneTwoPunch
-  , OneTwoPunch(..)
-  , oneTwoPunchEffect
-  , OneTwoPunchEffect(..)
-  ) where
+module Arkham.Event.Cards.OneTwoPunch (
+  oneTwoPunch,
+  OneTwoPunch (..),
+  oneTwoPunchEffect,
+  OneTwoPunchEffect (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
@@ -20,7 +19,7 @@ import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
 
-newtype Metadata = Metadata { isFirst :: Bool }
+newtype Metadata = Metadata {isFirst :: Bool}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -36,16 +35,16 @@ instance RunMessage OneTwoPunch where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
         [ skillTestModifier
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          (SkillModifier SkillCombat 1)
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            (SkillModifier SkillCombat 1)
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure e
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source && isFirst metadata -> do
-        push $ CreateEffect "60117" Nothing source (InvestigatorTarget iid)
-        pure . OneTwoPunch $ attrs `with` Metadata False
+          push $ CreateEffect "60117" Nothing source (InvestigatorTarget iid)
+          pure . OneTwoPunch $ attrs `with` Metadata False
     _ -> OneTwoPunch . (`with` metadata) <$> runMessage msg attrs
 
 newtype OneTwoPunchEffect = OneTwoPunchEffect EffectAttrs
@@ -62,31 +61,31 @@ instance RunMessage OneTwoPunchEffect where
       case (mSkillTest, effectTarget) of
         (Just skillTest, InvestigatorTarget iid) -> do
           case (skillTestResult skillTest, skillTestTarget skillTest) of
-            (SucceededBy{}, EnemyTarget eid) -> do
+            (SucceededBy {}, EnemyTarget eid) -> do
               isStillAlive <- selectAny $ EnemyWithId eid
-              push
-                $ chooseOrRunOne iid
-                $ [ Label
-                      "Fight that enemy again"
-                      [ skillTestModifiers
+              push $
+                chooseOrRunOne iid $
+                  [ Label
+                    "Fight that enemy again"
+                    [ skillTestModifiers
                         (toSource attrs)
                         (InvestigatorTarget iid)
                         [SkillModifier SkillCombat 2, DamageDealt 1]
-                      , ChooseFightEnemy
+                    , ChooseFightEnemy
                         iid
                         (toSource attrs)
                         Nothing
                         SkillCombat
                         mempty
                         False
-                      , DisableEffect (toId attrs)
-                      ]
+                    , DisableEffect (toId attrs)
+                    ]
                   | isStillAlive
                   ]
-                <> [ Label
-                       "Do not fight that enemy again"
-                       [DisableEffect (toId attrs)]
-                   ]
+                    <> [ Label
+                          "Do not fight that enemy again"
+                          [DisableEffect (toId attrs)]
+                       ]
             _ -> pure ()
         (_, _) -> error "invalid call"
       pure . OneTwoPunchEffect $ attrs & finishedL .~ True

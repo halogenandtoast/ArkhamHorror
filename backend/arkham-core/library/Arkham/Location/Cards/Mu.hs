@@ -1,11 +1,10 @@
-module Arkham.Location.Cards.Mu
-  ( mu
-  , Mu(..)
-  ) where
+module Arkham.Location.Cards.Mu (
+  mu,
+  Mu (..),
+) where
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
@@ -14,7 +13,7 @@ import Arkham.SkillTest.Base
 import Arkham.Token
 
 newtype Mu = Mu LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mu :: LocationCard Mu
@@ -25,8 +24,9 @@ instance HasModifiersFor Mu where
     mSkillTest <- getSkillTest
     case mSkillTest of
       Nothing -> pure []
-      Just st -> pure
-        $ toModifiers a [ RevealAnotherToken | length (skillTestRevealedTokens st) == 1]
+      Just st ->
+        pure $
+          toModifiers a [RevealAnotherToken | length (skillTestRevealedTokens st) == 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Mu where

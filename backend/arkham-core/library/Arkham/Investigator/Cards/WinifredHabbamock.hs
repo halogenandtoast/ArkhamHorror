@@ -1,8 +1,8 @@
-module Arkham.Investigator.Cards.WinifredHabbamock
-  ( winifredHabbamock
-  , winifredHabbamockEffect
-  , WinifredHabbamock(..)
-  )
+module Arkham.Investigator.Cards.WinifredHabbamock (
+  winifredHabbamock,
+  winifredHabbamockEffect,
+  WinifredHabbamock (..),
+)
 where
 
 import Arkham.Prelude
@@ -11,7 +11,6 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
@@ -25,23 +24,27 @@ newtype WinifredHabbamock = WinifredHabbamock InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 winifredHabbamock :: InvestigatorCard WinifredHabbamock
-winifredHabbamock = investigator
-  WinifredHabbamock
-  Cards.winifredHabbamock
-  Stats
-    { health = 8
-    , sanity = 7
-    , willpower = 1
-    , intellect = 3
-    , combat = 3
-    , agility = 5
-    }
+winifredHabbamock =
+  investigator
+    WinifredHabbamock
+    Cards.winifredHabbamock
+    Stats
+      { health = 8
+      , sanity = 7
+      , willpower = 1
+      , intellect = 3
+      , combat = 3
+      , agility = 5
+      }
 
 instance HasAbilities WinifredHabbamock where
   getAbilities (WinifredHabbamock a) =
-    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
-      $ restrictedAbility a 1 (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy (toId a))))
-      $ FastAbility Free
+    [ limitedAbility (PlayerLimit PerTestOrAbility 1) $
+        restrictedAbility
+          a
+          1
+          (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy (toId a)))) $
+          FastAbility Free
     ]
 
 instance HasTokenValue WinifredHabbamock where
@@ -79,7 +82,11 @@ instance RunMessage WinifredHabbamockEffect where
             InvestigatorSource iid -> do
               committedCards <- field InvestigatorCommittedCards iid
               unless (null committedCards) $ do
-                push $ chooseN iid (min (n `div` 2) (length committedCards)) [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- committedCards]
+                push $
+                  chooseN
+                    iid
+                    (min (n `div` 2) (length committedCards))
+                    [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- committedCards]
             _ -> error "invalid source"
           _ -> pure ()
       pure e

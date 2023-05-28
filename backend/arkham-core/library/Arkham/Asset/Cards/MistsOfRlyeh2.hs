@@ -1,9 +1,9 @@
-module Arkham.Asset.Cards.MistsOfRlyeh2
-  ( mistsOfRlyeh2
-  , MistsOfRlyeh2(..)
-  , mistsOfRlyeh2Effect
-  , MistsOfRlyeh2Effect(..)
-  ) where
+module Arkham.Asset.Cards.MistsOfRlyeh2 (
+  mistsOfRlyeh2,
+  MistsOfRlyeh2 (..),
+  mistsOfRlyeh2Effect,
+  MistsOfRlyeh2Effect (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,11 +11,10 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.EffectMetadata
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding ( MoveAction )
+import Arkham.EffectMetadata
+import Arkham.Matcher hiding (MoveAction)
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -31,9 +30,10 @@ mistsOfRlyeh2 = asset MistsOfRlyeh2 Cards.mistsOfRlyeh2
 
 instance HasAbilities MistsOfRlyeh2 where
   getAbilities (MistsOfRlyeh2 a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Evade)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility
+          (Just Action.Evade)
+          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
 instance RunMessage MistsOfRlyeh2 where
@@ -41,19 +41,19 @@ instance RunMessage MistsOfRlyeh2 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
         [ createCardEffect
-          Cards.mistsOfRlyeh2
-          (Just $ EffectInt 1)
-          source
-          (InvestigatorTarget iid)
+            Cards.mistsOfRlyeh2
+            (Just $ EffectInt 1)
+            source
+            (InvestigatorTarget iid)
         , createCardEffect
-          Cards.mistsOfRlyeh2
-          (Just $ EffectInt 2)
-          source
-          (InvestigatorTarget iid)
+            Cards.mistsOfRlyeh2
+            (Just $ EffectInt 2)
+            source
+            (InvestigatorTarget iid)
         , skillTestModifier
-          source
-          (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower 1)
+            source
+            (InvestigatorTarget iid)
+            (SkillModifier SkillWillpower 1)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
       pure a
@@ -69,15 +69,18 @@ mistsOfRlyeh2Effect = cardEffect MistsOfRlyeh2Effect Cards.mistsOfRlyeh2
 instance RunMessage MistsOfRlyeh2Effect where
   runMessage msg e@(MistsOfRlyeh2Effect attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> case effectTarget of
-      InvestigatorTarget iid' | iid == iid' -> e <$ when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll
-          [ If
-            (Window.RevealTokenEffect iid token effectId)
-            [toMessage $ chooseAndDiscardCard iid effectSource]
-          , DisableEffect effectId
-          ]
-        )
+      InvestigatorTarget iid'
+        | iid == iid' ->
+            e
+              <$ when
+                (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+                ( pushAll
+                    [ If
+                        (Window.RevealTokenEffect iid token effectId)
+                        [toMessage $ chooseAndDiscardCard iid effectSource]
+                    , DisableEffect effectId
+                    ]
+                )
       _ -> pure e
     SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
       case effectTarget of
@@ -87,13 +90,14 @@ instance RunMessage MistsOfRlyeh2Effect where
             Just (SucceededBy _ _) -> do
               unblockedConnectedLocationIds <- selectList AccessibleLocation
               let
-                moveOptions = chooseOrRunOne
-                  iid
-                  ([Label "Do not move to a connecting location" []]
-                  <> [ targetLabel lid [MoveAction iid lid Free False]
-                     | lid <- unblockedConnectedLocationIds
-                     ]
-                  )
+                moveOptions =
+                  chooseOrRunOne
+                    iid
+                    ( [Label "Do not move to a connecting location" []]
+                        <> [ targetLabel lid [MoveAction iid lid Free False]
+                           | lid <- unblockedConnectedLocationIds
+                           ]
+                    )
               pushAll [moveOptions, DisableEffect effectId]
             _ -> push (DisableEffect effectId)
         _ -> error "Invalid Target"

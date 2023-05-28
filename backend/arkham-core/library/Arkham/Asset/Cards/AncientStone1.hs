@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection

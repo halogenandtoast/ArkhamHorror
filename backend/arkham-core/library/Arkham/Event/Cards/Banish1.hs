@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.Banish1
-  ( banish1
-  , banish1Effect
-  , Banish1(..)
-  )
+module Arkham.Event.Cards.Banish1 (
+  banish1,
+  banish1Effect,
+  Banish1 (..),
+)
 where
 
 import Arkham.Prelude
@@ -12,7 +12,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
@@ -47,7 +46,7 @@ banish1Effect = cardEffect Banish1Effect Cards.banish1
 
 instance RunMessage Banish1Effect where
   runMessage msg e@(Banish1Effect attrs@EffectAttrs {..}) = case msg of
-    After (PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _) | source == effectSource-> do
+    After (PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _) | source == effectSource -> do
       mSkillTestTarget <- getSkillTestTarget
       for_ mSkillTestTarget $ \case
         target@(EnemyTarget eid) | target == effectTarget -> do
@@ -57,12 +56,15 @@ instance RunMessage Banish1Effect where
               Nothing -> []
               Just st ->
                 let faces = map tokenFace (skillTestRevealedTokens st)
-                in [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
-                   | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
-                   ]
+                in  [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
+                    | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
+                    ]
 
           locations <- selectList (LocationWithoutModifier CannotBeEnteredByNonElite)
-          let locationMsgs = if null locations then [] else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
+          let locationMsgs =
+                if null locations
+                  then []
+                  else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
 
           pushAll $ locationMsgs <> modifierMsgs
         _ -> pure ()

@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.SkillTest.Base
@@ -30,9 +29,9 @@ instance RunMessage Lucky3 where
           pushAll
             [ drawing
             , skillTestModifier
-              (toSource attrs)
-              (InvestigatorTarget iid')
-              (AnySkillValue 3)
+                (toSource attrs)
+                (InvestigatorTarget iid')
+                (AnySkillValue 3)
             , RerunSkillTest
             ]
       pure e

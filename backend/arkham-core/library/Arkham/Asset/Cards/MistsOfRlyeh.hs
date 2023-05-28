@@ -1,9 +1,9 @@
-module Arkham.Asset.Cards.MistsOfRlyeh
-  ( mistsOfRlyeh
-  , MistsOfRlyeh(..)
-  , mistsOfRlyehEffect
-  , MistsOfRlyehEffect(..)
-  ) where
+module Arkham.Asset.Cards.MistsOfRlyeh (
+  mistsOfRlyeh,
+  MistsOfRlyeh (..),
+  mistsOfRlyehEffect,
+  MistsOfRlyehEffect (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,8 +14,7 @@ import Arkham.Asset.Runner
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.EffectMetadata
-import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding ( MoveAction )
+import Arkham.Matcher hiding (MoveAction)
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -31,9 +30,10 @@ mistsOfRlyeh = asset MistsOfRlyeh Cards.mistsOfRlyeh
 
 instance HasAbilities MistsOfRlyeh where
   getAbilities (MistsOfRlyeh a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Evade)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility
+          (Just Action.Evade)
+          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
 instance RunMessage MistsOfRlyeh where
@@ -41,15 +41,15 @@ instance RunMessage MistsOfRlyeh where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
         [ createCardEffect
-          Cards.mistsOfRlyeh
-          (Just $ EffectInt 1)
-          source
-          (InvestigatorTarget iid)
+            Cards.mistsOfRlyeh
+            (Just $ EffectInt 1)
+            source
+            (InvestigatorTarget iid)
         , createCardEffect
-          Cards.mistsOfRlyeh
-          (Just $ EffectInt 2)
-          source
-          (InvestigatorTarget iid)
+            Cards.mistsOfRlyeh
+            (Just $ EffectInt 2)
+            source
+            (InvestigatorTarget iid)
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
       pure a
@@ -66,17 +66,18 @@ instance RunMessage MistsOfRlyehEffect where
   runMessage msg e@(MistsOfRlyehEffect attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | effectMetadata == Just (EffectInt 1) -> do
       case effectTarget of
-        InvestigatorTarget iid' | iid == iid' ->
-          when
-              (tokenFace token
-              `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
-              )
-            $ pushAll
-                [ If
-                  (Window.RevealTokenEffect iid token effectId)
-                  [toMessage $ chooseAndDiscardCard iid effectSource]
-                , DisableEffect effectId
-                ]
+        InvestigatorTarget iid'
+          | iid == iid' ->
+              when
+                ( tokenFace token
+                    `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+                )
+                $ pushAll
+                  [ If
+                      (Window.RevealTokenEffect iid token effectId)
+                      [toMessage $ chooseAndDiscardCard iid effectSource]
+                  , DisableEffect effectId
+                  ]
         _ -> pure ()
       pure e
     SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
@@ -88,11 +89,11 @@ instance RunMessage MistsOfRlyehEffect where
               unblockedConnectedLocationIds <- selectList AccessibleLocation
               let
                 moveOptions =
-                  chooseOrRunOne iid
-                    $ [Label "Do not move to a connecting location" []]
-                    <> [ targetLabel lid [MoveAction iid lid Free False]
-                       | lid <- unblockedConnectedLocationIds
-                       ]
+                  chooseOrRunOne iid $
+                    [Label "Do not move to a connecting location" []]
+                      <> [ targetLabel lid [MoveAction iid lid Free False]
+                         | lid <- unblockedConnectedLocationIds
+                         ]
               pushAll [moveOptions, DisableEffect effectId]
             _ -> push $ DisableEffect effectId
         _ -> error "Invalid Target"

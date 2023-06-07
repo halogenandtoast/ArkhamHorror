@@ -153,6 +153,7 @@ allPlayerAssetCards =
       , archaicGlyphsProphecyForetold3
       , armorOfArdennes5
       , artStudent
+      , augustLindquist
       , azureFlame
       , azureFlame3
       , azureFlame5
@@ -397,6 +398,7 @@ allPlayerAssetCards =
       , powderOfIbnGhazi
       , professorWarrenRice
       , protectiveIncantation1
+      , puzzleBox
       , quickLearner4
       , quickStudy2
       , rabbitsFoot
@@ -3281,6 +3283,21 @@ theCouncilsCoffer2 =
     , cdCardTraits = setFromList [Item, Relic]
     , cdLevel = 2
     , cdUses = Uses Lock (PerPlayer 1)
+    , cdUnique = True
+    }
+
+augustLindquist :: CardDef
+augustLindquist =
+  (storyAsset "05227" ("August Lindquist" <:> "Elegant and Elusive") 0 ForTheGreaterGood)
+    { cdCardTraits = setFromList [Cultist, SilverTwilight]
+    , cdUnique = True
+    , cdCost = Nothing
+    }
+
+puzzleBox :: CardDef
+puzzleBox =
+  (storyAsset "05228" ("Puzzle Box" <:> "Mysterious Device") 0 ForTheGreaterGood)
+    { cdCardTraits = setFromList [Item, Relic]
     , cdUnique = True
     }
 

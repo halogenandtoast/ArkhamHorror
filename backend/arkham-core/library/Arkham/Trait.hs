@@ -141,6 +141,7 @@ data Trait
   | Riverside
   | Ruins
   | Salem
+  | Sanctum
   | Scheme
   | Scholar
   | Science

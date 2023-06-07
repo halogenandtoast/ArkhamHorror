@@ -125,6 +125,7 @@ allEncounterEnemyCards =
       , brownJenkin
       , carnevaleSentinel
       , catacombsDocent
+      , cellKeeper
       , cloverClubPitBoss
       , cnidathqua
       , conglomerationOfSpheres
@@ -181,6 +182,9 @@ allEncounterEnemyCards =
       , josefMeiger
       , keeperOfSecrets
       , keeperOfTheGreatLibrary
+      , knightOfTheInnerCircle
+      , knightOfTheOuterVoid
+      , lodgeJailor
       , lodgeNeophyte
       , lupineThrall
       , madPatient
@@ -191,6 +195,8 @@ allEncounterEnemyCards =
       , mobster
       , nahab
       , narogath
+      , nathanWickMasterOfIndoctrination
+      , nathanWickMasterOfInitiation
       , netherMist
       , oBannionsThug
       , padmaAmrita
@@ -226,6 +232,7 @@ allEncounterEnemyCards =
       , spawnOfHali
       , specterOfDeath
       , stealthyByakhee
+      , summonedBeast
       , swampLeech
       , swarmOfRats
       , swiftByakhee
@@ -1350,6 +1357,61 @@ malevolentSpirit :: CardDef
 malevolentSpirit =
   (enemy "05180" "Malevolent Spirit" TheWagesOfSin 2)
     { cdCardTraits = setFromList [Monster, Geist, Spectral]
+    }
+
+nathanWickMasterOfInitiation :: CardDef
+nathanWickMasterOfInitiation =
+  unique $
+    (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") TheWagesOfSin 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
+      , cdKeywords = singleton Keyword.Retaliate
+      , cdDoubleSided = True
+      , cdVictoryPoints = Just 1
+      }
+
+nathanWickMasterOfIndoctrination :: CardDef
+nathanWickMasterOfIndoctrination =
+  unique $
+    (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") TheWagesOfSin 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
+      , cdKeywords = singleton Keyword.Alert
+      , cdDoubleSided = True
+      , cdVictoryPoints = Just 1
+      }
+
+lodgeJailor :: CardDef
+lodgeJailor =
+  (enemy "05218" "Lodge Jailor" ForTheGreaterGood 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    , cdKeywords = singleton Keyword.Aloof
+    }
+
+cellKeeper :: CardDef
+cellKeeper =
+  (enemy "05219" "Cell Keeper" ForTheGreaterGood 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    , cdKeywords = singleton Keyword.Alert
+    }
+
+summonedBeast :: CardDef
+summonedBeast =
+  (enemy "05220" ("Summoned Beast" <:> "Guardian of the Trap") ForTheGreaterGood 1)
+    { cdCardTraits = setFromList [Monster, SilverTwilight, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Hunter]
+    }
+
+knightOfTheInnerCircle :: CardDef
+knightOfTheInnerCircle =
+  (enemy "05221" "Knight of the Inner Circle" ForTheGreaterGood 2)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Aloof, Keyword.Hunter]
+    }
+
+knightOfTheOuterVoid :: CardDef
+knightOfTheOuterVoid =
+  (enemy "05222" "Knight of the Outer Void" ForTheGreaterGood 2)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Peril, Keyword.Retaliate]
     }
 
 corpseHungryGhoul :: CardDef

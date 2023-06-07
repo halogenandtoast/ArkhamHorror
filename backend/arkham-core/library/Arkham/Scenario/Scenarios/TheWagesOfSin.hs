@@ -112,9 +112,9 @@ instance RunMessage TheWagesOfSin where
       theWatcher <-
         map EncounterCard
           <$> gatherEncounterSet EncounterSet.TheWatcher
-      spectralWebs <- traverse genCard (replicate 4 Assets.spectralWeb)
+      spectralWebs <- genCards (replicate 4 Assets.spectralWeb)
       heretics <-
-        traverse genCard
+        genCards
           =<< sampleN
             4
             ( Enemies.heretic_A

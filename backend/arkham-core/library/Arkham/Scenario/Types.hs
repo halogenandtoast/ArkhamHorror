@@ -20,6 +20,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Json
+import Arkham.Key
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
@@ -102,6 +103,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioResignedCardCodes :: [CardCode]
   , scenarioResolvedStories :: [StoryId]
   , scenarioDecksLayout :: [GridTemplateRow]
+  , scenarioSetAsideKeys :: Set ArkhamKey
   , scenarioMeta :: Value
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
@@ -175,6 +177,7 @@ scenario f cardCode name difficulty layout =
       , scenarioResignedCardCodes = mempty
       , scenarioResolvedStories = mempty
       , scenarioDecksLayout = ["agenda1 act1"]
+      , scenarioSetAsideKeys = mempty
       , scenarioMeta = Null
       , scenarioStoryCards = mempty
       , scenarioPlayerDecks = mempty

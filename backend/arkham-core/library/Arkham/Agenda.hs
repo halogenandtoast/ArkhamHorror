@@ -173,6 +173,9 @@ allAgendas =
     , -- The Wages of Sin
       SomeAgendaCard theHangedManXII
     , SomeAgendaCard deathsApproach
+    , -- For the Greater Good
+      SomeAgendaCard theHierophantV
+    , SomeAgendaCard endsAndMeans
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

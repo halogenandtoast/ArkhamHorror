@@ -170,11 +170,13 @@ allEncounterTreacheryCards =
       , bathophobia
       , beastOfTheBayou
       , bedeviled
+      , beneathTheLodge
       , betweenWorlds
       , beyondTheVeil
       , blackStarsRise
       , brokenRails
       , burdensOfThePast
+      , callToOrder
       , captiveMind
       , centuriesOfSecrets
       , chaosInTheWater
@@ -207,6 +209,7 @@ allEncounterTreacheryCards =
       , entombed
       , ephemeralExhibits
       , evilPast
+      , expulsion
       , extradimensionalVisions
       , eyesInTheWalls
       , falseLead
@@ -236,6 +239,7 @@ allEncounterTreacheryCards =
       , lostInTime
       , lostInVenice
       , lowOnSupplies
+      , markOfTheOrder
       , markedByTheSign
       , maskOfUmordhoth
       , maskedHorrors
@@ -1507,6 +1511,31 @@ baneOfTheLiving =
   (treachery "05185" "Bane of the Living" TheWagesOfSin 2)
     { cdCardTraits = setFromList [Curse, Spectral]
     , cdKeywords = singleton Keyword.Peril
+    }
+
+callToOrder :: CardDef
+callToOrder =
+  (treachery "05223" "Call to Order" ForTheGreaterGood 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+expulsion :: CardDef
+expulsion =
+  (treachery "05224" "Expulsion" ForTheGreaterGood 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+beneathTheLodge :: CardDef
+beneathTheLodge =
+  (treachery "05225" "Beneath the Lodge" ForTheGreaterGood 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+markOfTheOrder :: CardDef
+markOfTheOrder =
+  (treachery "05226" "Mark of the Order" ForTheGreaterGood 2)
+    { cdCardTraits = singleton Scheme
+    , cdKeywords = singleton Keyword.Surge
     }
 
 theHarbinger :: CardDef

@@ -318,6 +318,11 @@ allTreacheries =
     , SomeTreacheryCard graveLight
     , SomeTreacheryCard graveLightSpectral
     , SomeTreacheryCard baneOfTheLiving
+    , -- For the Greater Good
+      SomeTreacheryCard callToOrder
+    , SomeTreacheryCard expulsion
+    , SomeTreacheryCard beneathTheLodge
+    , SomeTreacheryCard markOfTheOrder
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

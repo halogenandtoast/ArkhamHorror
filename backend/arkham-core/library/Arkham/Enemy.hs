@@ -260,6 +260,14 @@ allEnemies =
     , SomeEnemyCard vengefulWitch
     , SomeEnemyCard malevolentSpirit
     , SomeEnemyCard reanimatedDead
+    , -- For the Greater Good
+      SomeEnemyCard nathanWickMasterOfInitiation
+    , SomeEnemyCard nathanWickMasterOfIndoctrination
+    , SomeEnemyCard lodgeJailor
+    , SomeEnemyCard cellKeeper
+    , SomeEnemyCard summonedBeast
+    , SomeEnemyCard knightOfTheInnerCircle
+    , SomeEnemyCard knightOfTheOuterVoid
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

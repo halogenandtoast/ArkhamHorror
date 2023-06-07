@@ -435,6 +435,20 @@ allLocations =
     , SomeLocationCard chapelAtticSpectral_175
     , SomeLocationCard chapelAttic_176
     , SomeLocationCard chapelAtticSpectral_176
+    , -- The Wages of Sin
+      SomeLocationCard lodgeGatesWeveBeenExpectingYou
+    , SomeLocationCard lodgeGatesMembersOnly
+    , SomeLocationCard lobbyWeveBeenExpectingYou
+    , SomeLocationCard lobbyMembersOnly
+    , SomeLocationCard lodgeCellarWeveBeenExpectingYou
+    , SomeLocationCard lodgeCellarMembersOnly
+    , SomeLocationCard lounge
+    , SomeLocationCard vault
+    , SomeLocationCard library
+    , SomeLocationCard lodgeCatacombs
+    , SomeLocationCard sanctumDoorwayCeremonyRoom
+    , SomeLocationCard sanctumDoorwayHoldingCells
+    , SomeLocationCard innerSanctum
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -197,6 +197,11 @@ allActs =
     , --- The Wages of Sin
       SomeActCard inPursuitOfTheDead
     , SomeActCard inPursuitOfTheLiving
+    , --- For the Greater Good
+      SomeActCard warmWelcome
+    , SomeActCard infiltratingTheLodge
+    , SomeActCard obtainingTheDevice
+    , SomeActCard theFourKeys
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

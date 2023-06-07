@@ -108,6 +108,7 @@ allActCards =
       , hiddenAgendas
       , huntingTheRougarou
       , huntressOfTheEztli
+      , infiltratingTheLodge
       , intoTheBeyond
       , intoTheDarkness
       , intoTheRuins
@@ -128,6 +129,7 @@ allActCards =
       , mysteriousGateway
       , nightAtTheMuseum
       , noAsylum
+      , obtainingTheDevice
       , openingTheMaw
       , openThePathAbove
       , openThePathBelow
@@ -168,6 +170,7 @@ allActCards =
       , theChamberOfStillRemains
       , theChamberOfTheBeast
       , theDisappearance
+      , theFourKeys
       , theGateOpens
       , theGuardedRuins
       , theGuardiansInquiry
@@ -193,6 +196,7 @@ allActCards =
       , trapped
       , trialOfTheHuntress
       , uncoveringTheConspiracy
+      , warmWelcome
       , whatHaveYouDone
       , witchHauntings
       , worldsBeyond
@@ -591,6 +595,18 @@ inPursuitOfTheDead = act "05164" "In Pursuit of the Dead" 1 TheWagesOfSin
 
 inPursuitOfTheLiving :: CardDef
 inPursuitOfTheLiving = act "05165" "In Pursuit of the Living" 2 TheWagesOfSin
+
+warmWelcome :: CardDef
+warmWelcome = act "05200" "Warm Welcome" 1 ForTheGreaterGood
+
+infiltratingTheLodge :: CardDef
+infiltratingTheLodge = act "05201" "Infiltrating the Lodge" 1 ForTheGreaterGood
+
+obtainingTheDevice :: CardDef
+obtainingTheDevice = act "05202" "Obtaining the Device" 2 ForTheGreaterGood
+
+theFourKeys :: CardDef
+theFourKeys = act "05203" "The Four Keys" 3 ForTheGreaterGood
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

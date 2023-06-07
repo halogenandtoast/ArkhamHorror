@@ -83,6 +83,7 @@ allAgendaCards =
       , empireOfTheUndead
       , encore
       , endlessCaverns
+      , endsAndMeans
       , expeditionIntoTheWild
       , eyesInTheDark
       , fashionablyLate
@@ -141,6 +142,7 @@ allAgendaCards =
       , theFirstNight
       , theHangedManXII
       , theHermitIX
+      , theHierophantV
       , theJunglesHeart
       , theLonelyCaverns
       , theMawWidens
@@ -471,6 +473,12 @@ theHangedManXII = agenda "05162" "THE HANGED MAN • XII" 1 TheWagesOfSin
 
 deathsApproach :: CardDef
 deathsApproach = agenda "05163" "Death's Approach" 2 TheWagesOfSin
+
+theHierophantV :: CardDef
+theHierophantV = agenda "05198" "THE HIEROPHANT · V" 1 ForTheGreaterGood
+
+endsAndMeans :: CardDef
+endsAndMeans = agenda "05199" "Ends and Means" 2 ForTheGreaterGood
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

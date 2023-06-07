@@ -309,6 +309,7 @@ allLocationCards =
       , houseInTheReeds_211
       , humanitiesBuilding
       , infirmary
+      , innerSanctum
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
@@ -324,10 +325,19 @@ allLocationCards =
       , landlordsQuarters
       , leMarais217
       , leMarais218
+      , library
       , lightingBox
       , livingRoom
       , lobby
+      , lobbyMembersOnly
+      , lobbyWeveBeenExpectingYou
+      , lodgeCatacombs
+      , lodgeCellarMembersOnly
+      , lodgeCellarWeveBeenExpectingYou
+      , lodgeGatesMembersOnly
+      , lodgeGatesWeveBeenExpectingYou
       , lostMemories
+      , lounge
       , mainPath
       , masterBedroom
       , masterBedroomSpectral
@@ -405,6 +415,8 @@ allLocationCards =
       , sacredWoods_185
       , salemGaol1692
       , sanMarcoBasilica
+      , sanctumDoorwayCeremonyRoom
+      , sanctumDoorwayHoldingCells
       , schoolhouse_212
       , schoolhouse_213
       , scienceBuilding
@@ -465,6 +477,7 @@ allLocationCards =
       , uprootedWoods
       , valusia
       , vastPassages
+      , vault
       , velmasDiner
       , venetianGarden
       , victorianHalls
@@ -4305,6 +4318,148 @@ chapelAtticSpectral_176 =
       Moon
       [Plus, Diamond]
       TheWagesOfSin
+
+lodgeGatesWeveBeenExpectingYou :: CardDef
+lodgeGatesWeveBeenExpectingYou =
+  location
+    "05204"
+    ("Lodge Gates" <:> "We've Been Expecting You")
+    [Lodge]
+    Diamond
+    [Circle]
+    ForTheGreaterGood
+
+lodgeGatesMembersOnly :: CardDef
+lodgeGatesMembersOnly =
+  location
+    "05205"
+    ("Lodge Gates" <:> "Members Only")
+    [Lodge]
+    Diamond
+    [T]
+    ForTheGreaterGood
+
+lobbyWeveBeenExpectingYou :: CardDef
+lobbyWeveBeenExpectingYou =
+  location
+    "05206"
+    ("Lobby" <:> "We've Been Expecting You")
+    [Lodge]
+    Circle
+    [Diamond, T, Moon]
+    ForTheGreaterGood
+
+lobbyMembersOnly :: CardDef
+lobbyMembersOnly =
+  location
+    "05207"
+    ("Lobby" <:> "Members Only")
+    [Lodge]
+    Circle
+    [T, Moon]
+    ForTheGreaterGood
+
+lodgeCellarWeveBeenExpectingYou :: CardDef
+lodgeCellarWeveBeenExpectingYou =
+  location
+    "05208"
+    ("Lodge Cellar" <:> "We've Been Expecting You")
+    [Lodge]
+    T
+    [Circle, Squiggle]
+    ForTheGreaterGood
+
+lodgeCellarMembersOnly :: CardDef
+lodgeCellarMembersOnly =
+  location
+    "05209"
+    ("Lodge Cellar" <:> "Members Only")
+    [Lodge]
+    T
+    [Diamond, Circle, Squiggle]
+    ForTheGreaterGood
+
+lounge :: CardDef
+lounge =
+  location
+    "05210"
+    "Lounge"
+    [Lodge]
+    Moon
+    [Circle, Heart, Plus]
+    ForTheGreaterGood
+
+vault :: CardDef
+vault =
+  location
+    "05211"
+    "Lounge"
+    [Lodge]
+    Plus
+    [Moon]
+    ForTheGreaterGood
+
+library :: CardDef
+library =
+  location
+    "05212"
+    "Library"
+    [Lodge]
+    Heart
+    [Moon]
+    ForTheGreaterGood
+
+lodgeCatacombs :: CardDef
+lodgeCatacombs =
+  location
+    "05213"
+    "Lodge Catacombs"
+    [Lodge, Sanctum]
+    Squiggle
+    [T, Star, Triangle, Square, Hourglass]
+    ForTheGreaterGood
+
+sanctumDoorwayCeremonyRoom :: CardDef
+sanctumDoorwayCeremonyRoom =
+  locationWithUnrevealed
+    "05214"
+    "Sanctum Doorway"
+    [Lodge, Sanctum]
+    Star
+    [Squiggle]
+    "Ceremony Room"
+    [Lodge, Sanctum]
+    Triangle
+    [Squiggle]
+    ForTheGreaterGood
+
+sanctumDoorwayHoldingCells :: CardDef
+sanctumDoorwayHoldingCells =
+  locationWithUnrevealed
+    "05215"
+    "Sanctum Doorway"
+    [Lodge, Sanctum]
+    Star
+    [Squiggle]
+    "Holding Cells"
+    [Lodge, Sanctum]
+    Square
+    [Squiggle]
+    ForTheGreaterGood
+
+innerSanctum :: CardDef
+innerSanctum =
+  locationWithUnrevealed
+    "05216"
+    "Inner Sanctum"
+    [Lodge, Sanctum]
+    Star
+    [Squiggle]
+    "Inner Sanctum"
+    [Lodge, Sanctum]
+    Hourglass
+    [Squiggle]
+    ForTheGreaterGood
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

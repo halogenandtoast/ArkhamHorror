@@ -56,7 +56,7 @@ blackStarsRise difficulty =
 instance HasTokenValue BlackStarsRise where
   getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of
     Skull -> do
-      maxDoom <- selectMax AgendaDoom AnyAgenda
+      maxDoom <- fieldMax AgendaDoom AnyAgenda
       totalDoom <- selectSum AgendaDoom AnyAgenda
       pure $ toTokenValue attrs Skull maxDoom totalDoom
     Cultist ->

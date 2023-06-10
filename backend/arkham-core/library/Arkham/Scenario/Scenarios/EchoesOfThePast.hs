@@ -52,7 +52,7 @@ echoesOfThePast difficulty =
 instance HasTokenValue EchoesOfThePast where
   getTokenValue iid tokenFace (EchoesOfThePast attrs) = case tokenFace of
     Skull -> do
-      highestDoom <- selectMax EnemyDoom AnyEnemy
+      highestDoom <- fieldMax EnemyDoom AnyEnemy
       totalDoom <- selectSum EnemyDoom AnyEnemy
       pure $ toTokenValue attrs Skull highestDoom totalDoom
     Cultist -> pure $ toTokenValue attrs Cultist 2 4

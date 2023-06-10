@@ -37,7 +37,7 @@ instance RunMessage SerpentsIre where
       serpents <-
         selectList $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
       fightValue <-
-        selectMax
+        fieldMax
           (OutOfPlayEnemyField PursuitZone EnemyFight)
           (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-

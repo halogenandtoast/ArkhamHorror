@@ -55,7 +55,7 @@ threadsOfFate difficulty =
 instance HasTokenValue ThreadsOfFate where
   getTokenValue iid tokenFace (ThreadsOfFate attrs) = case tokenFace of
     Skull -> do
-      n <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
+      n <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
       doom <- getDoomCount
       pure $ toTokenValue attrs Skull n doom
     Cultist -> pure $ toTokenValue attrs Cultist 2 2

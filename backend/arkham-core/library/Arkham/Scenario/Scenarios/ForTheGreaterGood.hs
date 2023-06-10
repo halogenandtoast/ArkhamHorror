@@ -220,6 +220,34 @@ instance RunMessage ForTheGreaterGood where
           pushAll [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
       pure s
     FailedSkillTest iid _ _ (TokenTarget (tokenFace -> ElderThing)) _ _ -> do
-      closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+      if isEasyStandard attrs
+        then do
+          closestCultists <- selectList $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
+          unless (null closestCultists) $
+            push $
+              chooseOne
+                iid
+                [ targetLabel
+                  cultist
+                  [RemoveDoom (TokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
+                | cultist <- closestCultists
+                ]
+        else do
+          maxDoomCultists <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
+          if notNull maxDoomCultists
+            then do
+              agenda <- selectJust AnyAgenda
+              maxDoom <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
+              push $
+                chooseOrRunOne
+                  iid
+                  [ targetLabel
+                    cultist
+                    [ RemoveAllDoom (toSource attrs) (toTarget cultist)
+                    , PlaceDoom (TokenEffectSource ElderThing) (toTarget agenda) maxDoom
+                    ]
+                  | cultist <- maxDoomCultists
+                  ]
+            else push $ DrawAnotherToken iid
       pure s
     _ -> ForTheGreaterGood <$> runMessage msg attrs

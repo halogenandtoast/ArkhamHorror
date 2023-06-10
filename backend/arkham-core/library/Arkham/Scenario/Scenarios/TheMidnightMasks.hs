@@ -46,7 +46,7 @@ theMidnightMasks difficulty =
 instance HasTokenValue TheMidnightMasks where
   getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
     Skull | isEasyStandard attrs -> do
-      tokenValue' <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
+      tokenValue' <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
       pure $ TokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do
       doomCount <- getDoomCount

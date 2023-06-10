@@ -75,7 +75,8 @@ selectJust
   => a
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
-  where errorNote = "Could not find any matches for: " <> show matcher
+ where
+  errorNote = "Could not find any matches for: " <> show matcher
 
 selectJustField
   :: ( HasCallStack
@@ -129,7 +130,7 @@ selectSum
   -> m a
 selectSum fld matcher = getSum <$> selectAgg Sum fld matcher
 
-selectMax
+fieldMax
   :: ( QueryElement matcher ~ EntityId attrs
      , Num a
      , Ord a
@@ -141,7 +142,27 @@ selectMax
   => Field attrs a
   -> matcher
   -> m a
-selectMax fld matcher = getMax0 <$> selectAgg Max fld matcher
+fieldMax fld matcher = getMax0 <$> selectAgg Max fld matcher
+
+selectMax
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Bounded a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     , Ord a
+     )
+  => Field attrs a
+  -> matcher
+  -> m [QueryElement matcher]
+selectMax fld matcher = do
+  maxValue <- fieldMax fld matcher
+  if maxValue > 0
+    then do
+      results <- selectList matcher
+      filterM (fmap (== maxValue) . field fld) results
+    else pure []
 
 selectOne
   :: (HasCallStack, Query a, HasGame m)

@@ -727,11 +727,11 @@ getInvestigatorsMatching matcher = do
     MostRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <-
-        selectMax InvestigatorRemainingSanity UneliminatedInvestigator
+        fieldMax InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
       mostHorrorCount <-
-        selectMax InvestigatorHorror UneliminatedInvestigator
+        fieldMax InvestigatorHorror UneliminatedInvestigator
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToLocation locationMatcher -> \i -> do
       let
@@ -813,7 +813,7 @@ getInvestigatorsMatching matcher = do
         (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
     MostClues -> \i -> do
       mostClueCount <-
-        selectMax InvestigatorClues UneliminatedInvestigator
+        fieldMax InvestigatorClues UneliminatedInvestigator
       pure $ mostClueCount == investigatorClues (toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame

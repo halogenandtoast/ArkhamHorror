@@ -36,7 +36,7 @@ instance HasAbilities GrandRue where
 instance RunMessage GrandRue where
   runMessage msg l@(GrandRue attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      maxDoom <- selectMax AgendaDoom AnyAgenda
+      maxDoom <- fieldMax AgendaDoom AnyAgenda
       agendas <-
         selectListMap AgendaTarget $
           AgendaWithDoom $

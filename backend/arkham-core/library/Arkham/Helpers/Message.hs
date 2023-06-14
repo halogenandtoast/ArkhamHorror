@@ -146,6 +146,9 @@ placeLocationCard = placeLocation <=< genCard
 placeLocationCard_ :: CardDef -> GameT Message
 placeLocationCard_ = placeLocation_ <=< genCard
 
+placeLocationCards_ :: [CardDef] -> GameT [Message]
+placeLocationCards_ = traverse placeLocationCard_
+
 scenarioResolution :: Int -> Message
 scenarioResolution = ScenarioResolution . Resolution
 

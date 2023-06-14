@@ -8,6 +8,7 @@ import Arkham.Projection
 import Arkham.Query
 import Arkham.Target
 import Data.Set qualified as Set
+import Data.Typeable
 
 selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
 selectCount = fmap Set.size . select
@@ -118,6 +119,20 @@ selectAgg f p matcher = do
   values <- traverse (fieldMap p f) results
   pure $ fold values
 
+selectAgg'
+  :: ( Monoid monoid
+     , Query a
+     , QueryElement a ~ EntityId attrs
+     , Projection attrs
+     , HasGame m
+     , Coercible monoid b
+     )
+  => (typ -> monoid)
+  -> Field attrs typ
+  -> a
+  -> m b
+selectAgg' f p matcher = coerce <$> selectAgg f p matcher
+
 selectSum
   :: ( QueryElement matcher ~ EntityId attrs
      , Num a
@@ -128,13 +143,12 @@ selectSum
   => Field attrs a
   -> matcher
   -> m a
-selectSum fld matcher = getSum <$> selectAgg Sum fld matcher
+selectSum fld matcher = selectAgg' Sum fld matcher
 
 fieldMax
   :: ( QueryElement matcher ~ EntityId attrs
      , Num a
      , Ord a
-     , Bounded a
      , Query matcher
      , Projection attrs
      , HasGame m
@@ -142,12 +156,11 @@ fieldMax
   => Field attrs a
   -> matcher
   -> m a
-fieldMax fld matcher = getMax0 <$> selectAgg Max fld matcher
+fieldMax fld matcher = selectAgg' Max0 fld matcher
 
 selectMax
   :: ( QueryElement matcher ~ EntityId attrs
      , Num a
-     , Bounded a
      , Query matcher
      , Projection attrs
      , HasGame m
@@ -173,6 +186,23 @@ selectOne matcher = do
   pure $ case result of
     [] -> Nothing
     x : _ -> Just x
+
+selectOnlyOne
+  :: forall a m
+   . (HasCallStack, Show a, Query a, HasGame m, Typeable (QueryElement a))
+  => a
+  -> m (QueryElement a)
+selectOnlyOne matcher =
+  selectList matcher >>= \case
+    [x] -> pure x
+    xs ->
+      error $
+        "Expected only one "
+          <> show (typeRep (Proxy @(QueryElement a)))
+          <> " result for: "
+          <> show matcher
+          <> ", got: "
+          <> show (length xs)
 
 isMatch
   :: (HasCallStack, Query matcher, HasGame m)

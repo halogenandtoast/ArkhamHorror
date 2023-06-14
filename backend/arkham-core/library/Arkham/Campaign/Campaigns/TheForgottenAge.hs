@@ -25,7 +25,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
-import Control.Newtype (ala)
 import Data.Monoid (Endo (..))
 
 data Metadata = Metadata

@@ -954,7 +954,7 @@ isHighestAmongst iid matcher f = do
   allIds <- selectList matcher
   if iid `elem` allIds
     then do
-      highestCount <- getMax0 <$> foldMapM (fmap Max . f) allIds
+      highestCount <- getMax0 <$> foldMapM (fmap Max0 . f) allIds
       thisCount <- f iid
       pure $ highestCount == thisCount
     else pure False
@@ -1271,7 +1271,7 @@ getLocationsMatching lmatcher = do
         then pure []
         else do
           highestShroud <-
-            getMax0 <$> foldMapM (fieldMap LocationShroud Max . toId) ls'
+            getMax0 <$> foldMapM (fieldMap LocationShroud Max0 . toId) ls'
           filterM (fieldMap LocationShroud (== highestShroud) . toId) ls'
     IsIchtacasDestination -> do
       allKeys <- toList <$> scenarioField ScenarioRemembered
@@ -2002,7 +2002,7 @@ enemyMatcherFilter = \case
                   case melid' of
                     Nothing -> pure Nothing
                     Just elid' -> getDistance ilid elid'
-            let maxDistance = getMax0 $ foldMap Max distances
+            let maxDistance = ala Max0 foldMap distances
             pure $ mdistance == Just maxDistance
           _ -> pure False
       else pure False

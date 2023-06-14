@@ -1,8 +1,8 @@
 ---
 - ignore: {name: "Redundant do", within: spec}
-# - ignore: {name: "Eta reduce"}
-# - ignore: {name: "Use list comprehension"}
-# - ignore: {name: "Reduce duplication"}
+- ignore: {name: "Eta reduce"}
+- ignore: {name: "Use list comprehension"}
+- ignore: {name: "Reduce duplication"}
 - ignore: {name: "Use fmap"}  # we use classy prelude so this would be in error
 - ignore: {name: "Avoid restricted function", within: Application}
 - ignore: {name: "Use ."}  # commonly broken or less readable
@@ -65,4 +65,3 @@
   - {name: [Data.ByteString.Lazy.Char8], as: BSL8}
   - {name: [Data.List.NonEmpty], as: NE}
   - {name: [Data.Sequence], as: Seq}
-

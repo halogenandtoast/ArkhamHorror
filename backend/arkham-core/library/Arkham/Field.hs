@@ -1,4 +1,5 @@
 {-# LANGUAGE QuantifiedConstraints #-}
+
 module Arkham.Field where
 
 import Arkham.Prelude
@@ -6,11 +7,22 @@ import Data.Typeable
 
 data family Field a :: Type -> Type
 
-instance Show (Field a typ) => Eq (Field a typ) where
+instance (Show (Field a typ)) => Eq (Field a typ) where
   a == b = show a == show b
 
 data SomeField a where
-  SomeField :: (ToJSON typ, FromJSON typ, Ord typ, Typeable typ, Show typ, Eq typ, Show (Field a typ), ToJSON (Field a typ)) => Field a typ -> SomeField a
+  SomeField
+    :: ( ToJSON typ
+       , FromJSON typ
+       , Ord typ
+       , Typeable typ
+       , Show typ
+       , Eq typ
+       , Show (Field a typ)
+       , ToJSON (Field a typ)
+       )
+    => Field a typ
+    -> SomeField a
 
 instance Show (SomeField a) where
   show (SomeField f) = show f

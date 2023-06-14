@@ -2277,7 +2277,6 @@ library
     , lens
     , monoidal-containers
     , mtl >=2.3.1
-    , newtype
     , parsec
     , pretty-simple
     , random-shuffle

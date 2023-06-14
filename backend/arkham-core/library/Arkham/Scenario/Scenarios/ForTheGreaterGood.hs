@@ -15,6 +15,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDoom))
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
@@ -50,8 +51,8 @@ instance HasTokenValue ForTheGreaterGood where
     Skull -> do
       doomValue <-
         if isEasyStandard attrs
-          then getMax0 <$> selectAgg Max EnemyDoom (EnemyWithTrait Trait.Cultist)
-          else getSum <$> selectAgg Sum EnemyDoom (EnemyWithTrait Trait.Cultist)
+          then selectAgg' Max0 EnemyDoom (EnemyWithTrait Trait.Cultist)
+          else selectAgg' Sum EnemyDoom (EnemyWithTrait Trait.Cultist)
       pure $ TokenValue Cultist (NegativeModifier doomValue)
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 3)
@@ -112,12 +113,11 @@ instance RunMessage ForTheGreaterGood where
           ]
       pure s
     SetTokensForScenario -> do
-      whenM getIsStandalone $ push (SetTokens standaloneTokens)
+      pushWhenM getIsStandalone (SetTokens standaloneTokens)
       pure s
     Setup -> do
       encounterDeck <-
-        buildEncounterDeckExcluding
-          []
+        buildEncounterDeck
           [ EncounterSet.ForTheGreaterGood
           , EncounterSet.CityOfSins
           , EncounterSet.SilverTwilightLodge
@@ -162,7 +162,7 @@ instance RunMessage ForTheGreaterGood where
 
       (lodgeGatesId, placeLodgeGates) <- placeLocationCard lodgeGates
       otherPlacements <-
-        traverse placeLocationCard_ [lobby, lodgeCellar, Locations.lodgeCatacombs, Locations.lounge]
+        placeLocationCards_ [lobby, lodgeCellar, Locations.lodgeCatacombs, Locations.lounge]
 
       pushAll $
         [ SetEncounterDeck encounterDeck'
@@ -202,7 +202,7 @@ instance RunMessage ForTheGreaterGood where
       pure s
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       noCultists <- selectNone $ EnemyWithTrait Trait.Cultist
-      when noCultists $ push $ DrawAnotherToken iid
+      pushWhen noCultists $ DrawAnotherToken iid
       pure s
     FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Tablet)) _ _ -> do
       if isEasyStandard attrs
@@ -236,7 +236,7 @@ instance RunMessage ForTheGreaterGood where
           maxDoomCultists <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
           if notNull maxDoomCultists
             then do
-              agenda <- selectJust AnyAgenda
+              agenda <- getCurrentAgenda
               maxDoom <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
               push $
                 chooseOrRunOne

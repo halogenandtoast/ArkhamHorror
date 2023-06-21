@@ -154,11 +154,10 @@ import Control.Exception (throw)
 import Control.Lens (each, itraverseOf, itraversed, non, set)
 import Control.Monad.Random (StdGen, mkStdGen)
 import Control.Monad.Reader (runReader)
-import Control.Monad.State.Strict hiding (filterM, foldM, state)
+import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Align hiding (nil)
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal (getMonoidalMap)
 import Data.Map.Monoidal qualified as MonoidalMap
@@ -266,13 +265,12 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
   genRef <- newIORef (mkStdGen seed)
 
   runGameEnvT (GameEnv gameRef queueRef genRef (\_ -> pure ())) $ do
-    investigatorsList :: [(Investigator, [PlayerCard])] <- for (deck : decks) $ \deck' -> do
-      (iid, decklist) <- loadDecklist deck'
-      pure (lookupInvestigator iid, decklist)
+    investigatorsList <-
+      traverse (fmap (first lookupInvestigator) . loadDecklist) (deck : decks)
 
     let
       playersMap = map (toId . fst) investigatorsList
-      investigatorsMap = mapFromList $ map (toFst toId . fst) (toList investigatorsList)
+      investigatorsMap = mapFromList $ map (toFst toId . fst) investigatorsList
 
     when (state == IsActive) $ do
       pushAll $ map (uncurry InitDeck . bimap toId Deck) investigatorsList <> [StartCampaign]
@@ -288,7 +286,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
         , gameCards =
             mapFromList $
               concatMap (map (toFst toCardId . PlayerCard) . snd) investigatorsList
-        , gamePlayerOrder = toList playersMap
+        , gamePlayerOrder = playersMap
         , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
         }
 
@@ -299,17 +297,11 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
     , game'
     )
  where
-  campaign =
+  mode =
     either
-      (const Nothing)
-      (Just . (`lookupCampaign` difficulty))
+      (That . (`lookupScenario` difficulty))
+      (This . (`lookupCampaign` difficulty))
       scenarioOrCampaignId
-  scenario =
-    either
-      (Just . (`lookupScenario` difficulty))
-      (const Nothing)
-      scenarioOrCampaignId
-  mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
   :: (MonadReader env m, HasQueue Message m, HasGameRef env)
@@ -5463,6 +5455,7 @@ applyBlank s = do
         other -> Just other
     modify $ insertMap target modifiers'
 
+-- can we run these on different threadsjjkk
 instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
@@ -5481,14 +5474,14 @@ instance RunMessage Game where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg
-      >>= handleActionDiff g
+      <&> handleActionDiff g
       <&> set enemyMovingL Nothing
       <&> set enemyEvadingL Nothing
 
-handleActionDiff :: Game -> Game -> GameT Game
+handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new
-  | gameInAction new = pure $ new & actionDiffL %~ (diff new old :)
-  | otherwise = pure new
+  | gameInAction new = new & actionDiffL %~ (diff new old :)
+  | otherwise = new
 
 delve :: Game -> Game
 delve g = g {gameDepthLock = gameDepthLock g + 1}

@@ -28,7 +28,7 @@ const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.st
   <div v-if="upgradeDeck" id="game" class="game">
     <UpgradeDeck :game="game" :investigatorId="investigatorId" />
   </div>
-  <div v-else-if="game.gameState === 'IsActive'" id="game" class="game">
+  <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
     <Scenario
       v-if="game.scenario"
       :game="game"

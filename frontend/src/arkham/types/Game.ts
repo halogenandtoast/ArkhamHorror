@@ -22,6 +22,17 @@ import {
   cardDecoder,
 } from '@/arkham/types/Card';
 
+type GameState = { tag: 'IsPending' } | { tag: 'IsActive' } | { tag: 'IsOver' };
+
+export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
+  [
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsPending') }, 'IsPending'),
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsActive') }, 'IsActive'),
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsOver') }, 'IsOver'),
+  ],
+  'GameState'
+);
+
 export interface Game {
   id: string;
   name: string;
@@ -36,7 +47,7 @@ export interface Game {
   stories: Record<string, Story>;
   outOfPlayEnemies: Record<string, Enemy>;
   enemiesInVoid: Record<string, Enemy>;
-  gameState: string;
+  gameState: GameState;
   investigators: Record<string, Investigator>;
   leadInvestigatorId: string;
   locations: Record<string, Location>;
@@ -136,7 +147,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     stories: JsonDecoder.dictionary<Story>(storyDecoder, 'Dict<UUID, Story>'),
     outOfPlayEnemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     enemiesInVoid: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
-    gameState: JsonDecoder.string,
+    gameState: gameStateDecoder,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),

@@ -1,39 +1,31 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE StrictData #-}
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Game.Base where
 
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
-import Arkham.Campaign.Types ( Campaign )
+import Arkham.Campaign.Types (Campaign)
 import {-# SOURCE #-} Arkham.Card
-import Arkham.Difficulty
-import Arkham.Id
-import Arkham.Investigator.Types ( Investigator )
-import Arkham.Message
 import {-# SOURCE #-} Arkham.Entities
+import Arkham.History
+import Arkham.Id
+import Arkham.Investigator.Types (Investigator)
+import Arkham.Message
+import Arkham.Modifier
 import Arkham.Phase
-import Arkham.Scenario.Types ( Scenario )
+import Arkham.Scenario.Types (Scenario)
 import Arkham.SkillTest.Base
 import Arkham.Target
-import Arkham.Modifier
-import Arkham.History
 import Arkham.Token
 import Arkham.Zone
 import Data.Aeson.Diff qualified as Diff
 import Data.These
 
 type GameMode = These Campaign Scenario
-data GameState = IsPending | IsActive | IsOver
-  deriving stock (Eq, Show)
-
-data GameParams = GameParams
-  { gameParamsMode :: Either ScenarioId CampaignId
-  , gameParamsPlayerCount :: Int
-  , gameParamsPlayersInOrder :: [(Investigator, [PlayerCard])]
-  , gameParamsDifficulty :: Difficulty
-  }
+data GameState = IsPending [(Investigator, [PlayerCard])] | IsActive | IsOver
   deriving stock (Eq, Show)
 
 data Game = Game
@@ -42,7 +34,6 @@ data Game = Game
   , gameRoundHistory :: Map InvestigatorId History
   , gameInitialSeed :: Int
   , gameSeed :: Int
-  , gameParams :: GameParams
   , gameWindowDepth :: Int
   , gameDepthLock :: Int
   , gameIgnoreCanModifiers :: Bool

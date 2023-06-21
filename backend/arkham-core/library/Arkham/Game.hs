@@ -212,12 +212,14 @@ newGame
 newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
   let
     initialInvestigatorId = decklistInvestigatorId deck
-    state = if length (deck : decks) /= playerCount then IsPending else IsActive
+    state =
+      if length (deck : decks) /= playerCount
+        then IsPending []
+        else IsActive
 
     game =
       Game
-        { gameParams = GameParams scenarioOrCampaignId playerCount [] difficulty
-        , gameCards = mempty
+        { gameCards = mempty
         , gameWindowDepth = 0
         , gameDepthLock = 0
         , gameRoundHistory = mempty
@@ -277,13 +279,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
 
     overGame $ \g ->
       g
-        { gameParams =
-            GameParams
-              scenarioOrCampaignId
-              playerCount
-              investigatorsList
-              difficulty
-        , gameCards =
+        { gameCards =
             mapFromList $
               concatMap (map (toFst toCardId . PlayerCard) . snd) investigatorsList
         , gamePlayerOrder = playersMap
@@ -315,24 +311,22 @@ addInvestigator i d = do
 
   let
     iid = toId i
+    pendingPlayers = case game ^. gameStateL of
+      IsPending xs -> xs
+      _ -> []
     g' =
       game
         & (entitiesL . investigatorsL %~ insertEntity i)
         & (playerOrderL <>~ [iid])
     gameState =
       if size (g' ^. entitiesL . investigatorsL) < g' ^. playerCountL
-        then IsPending
+        then IsPending $ pendingPlayers <> [(i, d)]
         else IsActive
-
-  let
-    GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
-      gameParams game
-    investigatorsList' = investigatorsList <> [(i, d)]
 
   when (gameState == IsActive) $
     atomicWriteIORef
       (queueToRef queueRef)
-      ( map (uncurry InitDeck . bimap toId Deck) investigatorsList'
+      ( map (uncurry InitDeck . bimap toId Deck) pendingPlayers
           <> [StartCampaign]
       )
 
@@ -342,13 +336,6 @@ addInvestigator i d = do
       -- Adding players causes RNG split so we reset the initial seed on each player
       -- being added so that choices can replay correctly
       & (initialSeedL .~ gameSeed game)
-      & ( paramsL
-            .~ GameParams
-              scenarioOrCampaignId
-              playerCount
-              investigatorsList'
-              difficulty
-        )
 
 -- TODO: Rename this
 toExternalGame

@@ -31,7 +31,7 @@ packages:
     url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
 snapshots:
 - completed:
-    sha256: d80dc25c6444db594a338c71492b1b5601d7c613dbeaa5f61dcf448b3114df66
-    size: 631260
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/5/17.yaml
-  original: nightly-2023-05-17
+    sha256: df68a6720fa104c94823ee5e517d8d5bfdafc42693d3ccc50a599fd943326998
+    size: 639352
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/6/19.yaml
+  original: nightly-2023-06-19

@@ -108,7 +108,7 @@ const debugChoose = inject('debugChoose')
       />
 
       <template v-if="debug">
-        <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
+        <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
       </template>
     </div>
 

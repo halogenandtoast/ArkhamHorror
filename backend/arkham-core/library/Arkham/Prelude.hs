@@ -143,6 +143,9 @@ noneM f xs = not <$> anyM f (otoList xs)
 notNull :: (MonoFoldable mono) => mono -> Bool
 notNull = not . null
 
+unlessNull :: (Monad m, MonoFoldable mono) => mono -> m () -> m ()
+unlessNull xs = unless (null xs)
+
 sample :: (MonadRandom m) => NonEmpty a -> m a
 sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)
@@ -176,6 +179,9 @@ infix 9 !!?
 
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d
+
+eachWithRest :: (Eq a) => [a] -> [(a, [a])]
+eachWithRest xs = [(x, deleteFirst x xs) | x <- xs]
 
 cycleN :: Int -> [a] -> [a]
 cycleN n as = take (length as * n) $ L.cycle as

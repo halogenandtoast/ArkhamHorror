@@ -39,25 +39,28 @@ defeatedEnemy =
 
 -- given a list of investigators and a list of cultists have each investigator choose a cultist to draw
 buildDrawCultists :: [Card] -> NonEmpty InvestigatorId -> NonEmpty EncounterCard -> Message
-buildDrawCultists originalCards (investigator :| []) cards =
+buildDrawCultists focused (investigator :| []) cards =
   Run
-    [ FocusCards originalCards
+    [ FocusCards focused
     , chooseOne
         investigator
         [ targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard investigator card]
         | card <- toList cards
         ]
     ]
-buildDrawCultists originalCards (investigator :| (nextInvestigator : remainingInvestigators)) cards =
+buildDrawCultists focused (investigator :| (nextInvestigator : remainingInvestigators)) cards =
   Run
-    [ FocusCards originalCards
+    [ FocusCards focused
     , chooseOne
         investigator
         [ targetLabel
           (toCardId card)
           ( UnfocusCards
               : InvestigatorDrewEncounterCard investigator card
-              : [ buildDrawCultists originalCards (nextInvestigator :| remainingInvestigators) rest'
+              : [ buildDrawCultists
+                  (deleteFirst (toCard card) focused)
+                  (nextInvestigator :| remainingInvestigators)
+                  rest'
                 | rest' <- maybeToList (nonEmpty rest)
                 ]
           )

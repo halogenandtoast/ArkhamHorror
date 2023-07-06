@@ -151,7 +151,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Exception (throw)
-import Control.Lens (each, itraverseOf, itraversed, non, set)
+import Control.Lens (each, itraverseOf, itraversed, non, over, set)
 import Control.Monad.Random (StdGen, mkStdGen)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
@@ -300,13 +300,12 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
       scenarioOrCampaignId
 
 addInvestigator
-  :: (MonadReader env m, HasQueue Message m, HasGameRef env)
+  :: (MonadReader env m, HasQueue Message m, HasGameRef env, HasGame m)
   => Investigator
   -> [PlayerCard]
   -> m ()
 addInvestigator i d = do
-  gameRef <- view gameRefL
-  game <- liftIO $ readIORef gameRef
+  game <- getGame
   queueRef <- messageQueue
 
   let
@@ -5447,19 +5446,19 @@ instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
       >>= runPreGameMessage msg
-      >>= traverseOf (modeL . here) (runMessage msg)
-      >>= traverseOf (modeL . there) (runMessage msg)
-      >>= traverseOf entitiesL (runMessage msg)
+      >>= (modeL . here) (runMessage msg)
+      >>= (modeL . there) (runMessage msg)
+      >>= entitiesL (runMessage msg)
       >>= itraverseOf
         (inHandEntitiesL . itraversed)
-        (\i e -> runMessage (InHand i msg) e)
+        (\i -> runMessage (InHand i msg))
       >>= itraverseOf
         (inDiscardEntitiesL . itraversed)
-        (\i e -> runMessage (InDiscard i msg) e)
-      >>= traverseOf (inDiscardEntitiesL . itraversed) (runMessage msg)
-      >>= traverseOf inSearchEntitiesL (runMessage (InSearch msg))
-      >>= traverseOf (skillTestL . traverse) (runMessage msg)
-      >>= traverseOf (activeCostL . traverse) (runMessage msg)
+        (\i -> runMessage (InDiscard i msg))
+      >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
+      >>= inSearchEntitiesL (runMessage (InSearch msg))
+      >>= (skillTestL . traverse) (runMessage msg)
+      >>= (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg
       <&> handleActionDiff g
       <&> set enemyMovingL Nothing
@@ -5471,28 +5470,26 @@ handleActionDiff old new
   | otherwise = new
 
 delve :: Game -> Game
-delve g = g {gameDepthLock = gameDepthLock g + 1}
+delve = over depthLockL (+ 1)
 
 withoutCanModifiers :: Game -> Game
-withoutCanModifiers g = g {gameIgnoreCanModifiers = True}
+withoutCanModifiers = set ignoreCanModifiersL True
 
 withCardEntity :: InvestigatorId -> Card -> Game -> Game
-withCardEntity controller c g =
-  let
-    setAssetPlacement :: forall a. (Typeable a) => a -> a
-    setAssetPlacement a = case eqT @a @Asset of
-      Just Refl ->
-        overAttrs
-          (\attrs -> attrs {assetPlacement = StillInHand controller, assetController = Just controller})
-          a
-      Nothing -> a
-    extraEntities = addCardEntityWith controller setAssetPlacement defaultEntities c
-  in
-    g {gameEntities = gameEntities g <> extraEntities}
+withCardEntity controller c = over entitiesL (<> extraEntities)
+ where
+  setAssetPlacement :: forall a. (Typeable a) => a -> a
+  setAssetPlacement a = case eqT @a @Asset of
+    Just Refl ->
+      overAttrs
+        (\attrs -> attrs {assetPlacement = StillInHand controller, assetController = Just controller})
+        a
+    Nothing -> a
+  extraEntities = addCardEntityWith controller setAssetPlacement defaultEntities c
 
 instance HasAbilities Game where
   getAbilities g =
     getAbilities (gameEntities g)
       <> getAbilities (gameInSearchEntities g)
-      <> concatMap getAbilities (toList $ gameInHandEntities g)
-      <> concatMap getAbilities (toList $ gameInDiscardEntities g)
+      <> concatMap getAbilities (gameInHandEntities g)
+      <> concatMap getAbilities (gameInDiscardEntities g)

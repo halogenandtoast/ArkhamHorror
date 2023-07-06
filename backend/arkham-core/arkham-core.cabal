@@ -2281,7 +2281,6 @@ library
     , pretty-simple
     , random-shuffle
     , safe
-    , semialign
     , template-haskell
     , text
     , these

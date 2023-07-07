@@ -22,7 +22,7 @@ import Arkham.Window (Window)
 
 -- start importing directly
 
-import Arkham.Act.Acts (theYithianRelicEffect)
+import Arkham.Act.Acts (infiltratingTheLodgeEffect, theYithianRelicEffect)
 import Arkham.Agenda.Agendas (lostMemoriesEffect, theRedDepthsEffect)
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
@@ -292,6 +292,7 @@ allEffects =
     , ("05178j", SomeEffect unfinishedBusiness_JEffect)
     , ("05194", SomeEffect grislyTotemSeeker3Effect)
     , ("05195", SomeEffect grislyTotemSurvivor3Effect)
+    , ("05201", SomeEffect infiltratingTheLodgeEffect)
     , ("05230", SomeEffect telescopicSight3Effect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)

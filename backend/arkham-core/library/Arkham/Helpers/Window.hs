@@ -41,3 +41,9 @@ defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     Window _ (Window.EnemyDefeated _ _ eid) -> Just eid
     _ -> Nothing
+
+evadedEnemy :: [Window] -> EnemyId
+evadedEnemy =
+  fromMaybe (error "missing enemy") . asum . map \case
+    Window _ (Window.EnemyEvaded _ eid) -> Just eid
+    _ -> Nothing

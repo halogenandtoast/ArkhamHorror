@@ -39,6 +39,7 @@ export interface Scenario {
   cardsUnderActDeck: Card[];
   cardsNextToActDeck: Card[];
   setAsideCards: Card[];
+  setAsideKeys: string[];
   chaosBag: ChaosBag;
   discard: EncounterCardContents[];
   victoryDisplay: Card[];
@@ -63,6 +64,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
   cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
+  setAsideKeys: JsonDecoder.array<string>(JsonDecoder.string, 'Keys'),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),

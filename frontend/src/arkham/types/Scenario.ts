@@ -9,6 +9,15 @@ import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
 import { logContentsDecoder } from '@/arkham/types/Campaign';
 import type { LogContents } from '@/arkham/types/Campaign';
 
+export type ArkhamKey = "SkullKey" | "CultistKey" | "TabletKey" | "ElderThingKey"
+
+export const arkhamKeyDecoder = JsonDecoder.oneOf<ArkhamKey>([
+  JsonDecoder.isExactly("SkullKey"),
+  JsonDecoder.isExactly("CultistKey"),
+  JsonDecoder.isExactly("TabletKey"),
+  JsonDecoder.isExactly("ElderThingKey"),
+], 'ArkhamKey');
+
 export interface ScenarioName {
   title: string;
   subtitle: string | null;
@@ -39,7 +48,7 @@ export interface Scenario {
   cardsUnderActDeck: Card[];
   cardsNextToActDeck: Card[];
   setAsideCards: Card[];
-  setAsideKeys: string[];
+  setAsideKeys: ArkhamKey[];
   chaosBag: ChaosBag;
   discard: EncounterCardContents[];
   victoryDisplay: Card[];
@@ -64,7 +73,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
   cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
-  setAsideKeys: JsonDecoder.array<string>(JsonDecoder.string, 'Keys'),
+  setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),

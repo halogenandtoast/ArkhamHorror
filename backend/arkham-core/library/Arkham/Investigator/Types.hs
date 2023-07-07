@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Investigator.Types where
 
 import Arkham.Prelude
@@ -8,13 +9,13 @@ import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.RunMessage.Internal
-import Arkham.ClassSymbol
 import Arkham.Deck qualified as Deck
 import Arkham.Discard
 import Arkham.Helpers
@@ -22,6 +23,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards
 import Arkham.Investigator.Deck
 import Arkham.Json
+import Arkham.Key
 import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
@@ -32,11 +34,25 @@ import Arkham.Trait
 import Data.Text qualified as T
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, HasTokenValue a, RunMessage a, Entity a, EntityId a ~ InvestigatorId, EntityAttrs a ~ InvestigatorAttrs) => IsInvestigator a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , HasTokenValue a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ InvestigatorId
+  , EntityAttrs a ~ InvestigatorAttrs
+  ) =>
+  IsInvestigator a
 
 type InvestigatorCard a = CardBuilder () a
 
-newtype PrologueMetadata = PrologueMetadata { original :: Value }
+newtype PrologueMetadata = PrologueMetadata {original :: Value}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -128,14 +144,16 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorFoundCards :: Map Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorAdditionalActions :: [AdditionalAction]
-  -- handling liquid courage
-  , investigatorHorrorHealed :: Int
-  -- the forgotten age
-  , investigatorSupplies :: [Supply]
+  , -- handling liquid courage
+    investigatorHorrorHealed :: Int
+  , -- the forgotten age
+    investigatorSupplies :: [Supply]
   , investigatorDrawnCards :: [PlayerCard] -- temporarily track drawn cards mid shuffle
   , investigatorIsYithian :: Bool
-  -- internal tracking
-  , investigatorDiscarding :: Maybe (HandDiscard Message)
+  , -- keys
+    investigatorKeys :: Set ArkhamKey
+  , -- internal tracking
+    investigatorDiscarding :: Maybe (HandDiscard Message)
   }
   deriving stock (Show, Eq, Generic)
 
@@ -179,18 +197,18 @@ instance Named InvestigatorAttrs where
 
 instance Targetable InvestigatorAttrs where
   toTarget = InvestigatorTarget . toId
-  isTarget InvestigatorAttrs { investigatorId } (InvestigatorTarget iid) =
+  isTarget InvestigatorAttrs {investigatorId} (InvestigatorTarget iid) =
     iid == investigatorId
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
 instance Sourceable InvestigatorAttrs where
   toSource = InvestigatorSource . toId
-  isSource InvestigatorAttrs { investigatorId } (InvestigatorSource iid) =
+  isSource InvestigatorAttrs {investigatorId} (InvestigatorSource iid) =
     iid == investigatorId
   isSource _ _ = False
 
-data Investigator = forall a . IsInvestigator a => Investigator a
+data Investigator = forall a. (IsInvestigator a) => Investigator a
 
 instance Eq Investigator where
   Investigator (a :: a) == Investigator (b :: b) = case eqT @a @b of
@@ -231,13 +249,13 @@ instance ToGameLoggerFormat Investigator where
   format = format . toAttrs
 
 data SomeInvestigatorCard
-  = forall a . IsInvestigator a => SomeInvestigatorCard (InvestigatorCard a)
+  = forall a. (IsInvestigator a) => SomeInvestigatorCard (InvestigatorCard a)
 
 instance HasCardCode Investigator where
   toCardCode = investigatorCardCode . toAttrs
 
 liftInvestigatorCard
-  :: (forall a . InvestigatorCard a -> b) -> SomeInvestigatorCard -> b
+  :: (forall a. InvestigatorCard a -> b) -> SomeInvestigatorCard -> b
 liftInvestigatorCard f (SomeInvestigatorCard a) = f a
 
 someInvestigatorCardCode :: SomeInvestigatorCard -> CardCode

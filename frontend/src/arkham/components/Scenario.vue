@@ -16,6 +16,7 @@ import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
+import Key from '@/arkham/components/Key.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -302,6 +303,8 @@ const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
 
+const keys = computed(() => props.scenario.setAsideKeys)
+
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === null))
 
@@ -427,6 +430,9 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
             :src="scenarioGuide"
           />
           <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
+          <div class="keys" v-if="keys.length > 0">
+            <Key v-for="key in keys" :key="key" :name="key" />
+          </div>
         </div>
         <ChaosBag
           :game="game"
@@ -783,6 +789,8 @@ const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 }
 
 .scenario-guide {
+  display: flex;
+  flex-direction: column;
   position: relative;
   .depth {
     position: absolute;

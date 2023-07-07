@@ -38,9 +38,6 @@ instance RunMessage ObtainingTheDevice where
       puzzleBox <- selectJust $ assetIs Assets.puzzleBox
       investigators <- getInvestigators
       lead <- getLead
-      -- TODO: We don't care here because it's just flavor text but we likely
-      -- want a new datatype for defeated enemies to track how they were
-      -- defeated
       pushAll
         [ chooseOrRunOne
             lead

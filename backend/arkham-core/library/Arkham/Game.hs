@@ -921,6 +921,8 @@ getInvestigatorsMatching matcher = do
                 <$> select (matcher' <> InvestigatorWithAnyHorror)
     InvestigatorWithMostCardsInPlayArea -> \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
+    InvestigatorWithKey key -> \i ->
+      pure $ key `elem` investigatorKeys (toAttrs i)
 
 isHighestAmongst
   :: (HasGame m)

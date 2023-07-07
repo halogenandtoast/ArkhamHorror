@@ -21,6 +21,7 @@ import Arkham.Deck
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Key
 import Arkham.Keyword (Keyword)
 import Arkham.Label
 import Arkham.LocationSymbol
@@ -103,6 +104,7 @@ data InvestigatorMatcher
   | HealableInvestigator Source DamageType InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
+  | InvestigatorWithKey ArkhamKey
   deriving stock (Show, Eq, Ord)
 
 instance Semigroup InvestigatorMatcher where

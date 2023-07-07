@@ -31,12 +31,6 @@ instance HasAbilities TheHierophantV where
     [ mkAbility a 1 $ ForcedAbility $ EnemyDefeated Timing.When You ByAny $ EnemyWithTrait SilverTwilight
     ]
 
-defeatedEnemy :: [Window] -> EnemyId
-defeatedEnemy =
-  fromMaybe (error "missing enemy") . asum . map \case
-    Window _ (Window.EnemyDefeated _ _ eid) -> Just eid
-    _ -> Nothing
-
 -- given a list of investigators and a list of cultists have each investigator choose a cultist to draw
 buildDrawCultists :: [Card] -> NonEmpty InvestigatorId -> NonEmpty EncounterCard -> Message
 buildDrawCultists focused (investigator :| []) cards =

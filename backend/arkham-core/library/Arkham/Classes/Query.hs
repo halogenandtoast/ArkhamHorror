@@ -187,6 +187,14 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
+selectMaybe
+  :: (HasCallStack, Query a, HasGame m)
+  => b
+  -> (QueryElement a -> b)
+  -> a
+  -> m b
+selectMaybe def f matcher = maybe def f <$> selectOne matcher
+
 selectOnlyOne
   :: forall a m
    . (HasCallStack, Show a, Query a, HasGame m, Typeable (QueryElement a))

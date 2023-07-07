@@ -12,13 +12,6 @@ packages:
   original:
     hackage: happy-1.20.1.1
 - completed:
-    hackage: monad-validate-1.2.0.1@sha256:5a100da896f11ca4b7c123da85decbedeb46c37054a097f258ac911e715cb68d,2587
-    pantry-tree:
-      sha256: 034ee4de9765e38b763f5d73b236cc112205728e680cefbfe12d2882accc3264
-      size: 611
-  original:
-    hackage: monad-validate-1.2.0.1
-- completed:
     name: clientsession
     pantry-tree:
       sha256: e8f800c0c0fed1a148257f2d47361d1f08319092e38ab3ab5b11f0d9f74f8c9a
@@ -29,6 +22,17 @@ packages:
     version: 0.9.1.2
   original:
     url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
+- completed:
+    name: monad-validate
+    pantry-tree:
+      sha256: 948419ea481c9606d59f2ca30faa32545924f99de89de55b053763e27ac1e347
+      size: 835
+    sha256: 536cf3bb960a55de94a1606f6c561cbc449195c8b22511cf9848e5ba204ae612
+    size: 17451
+    url: https://github.com/jul1u5/monad-validate/archive/0af25b99a2b874e14c2adc22f5805a4ae0f065cc.tar.gz
+    version: 1.2.0.1
+  original:
+    url: https://github.com/jul1u5/monad-validate/archive/0af25b99a2b874e14c2adc22f5805a4ae0f065cc.tar.gz
 snapshots:
 - completed:
     sha256: df68a6720fa104c94823ee5e517d8d5bfdafc42693d3ccc50a599fd943326998

@@ -472,8 +472,7 @@ newGame investigator = do
   let
     game =
       Game
-        { gameParams = GameParams (Left "01104") 1 mempty Easy -- Not used in tests
-        , gameWindowDepth = 0
+        { gameWindowDepth = 0
         , gameDepthLock = 0
         , gamePhaseHistory = mempty
         , gameRoundHistory = mempty

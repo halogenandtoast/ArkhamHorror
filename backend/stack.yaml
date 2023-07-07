@@ -38,6 +38,7 @@ allow-newer: true
 
 extra-deps:
 - happy-1.20.1.1
-- monad-validate-1.2.0.1
 - github: jmazon/clientsession
   commit: 1221230770feff60f77ff676d52fc464cb77b2d9
+- github: jul1u5/monad-validate
+  commit: 0af25b99a2b874e14c2adc22f5805a4ae0f065cc

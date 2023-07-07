@@ -15,7 +15,7 @@ const keyImage = computed(() => {
     case "CultistKey": return `${baseUrl}/img/arkham/ct_cultist.png`
     case "TabletKey": return `${baseUrl}/img/arkham/ct_tablet.png`
     case "ElderThingKey": return `${baseUrl}/img/arkham/ct_elderthing.png`
-    default: return ""
+    default: return props.name satisfies never
   }
 })
 

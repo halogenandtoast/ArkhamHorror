@@ -299,7 +299,6 @@ data Message
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
   | CreateEnemy (EnemyCreation Message)
-  | CreatedEnemy2 (EnemyCreation Message) Target
   | CreatedEnemyAt EnemyId LocationId Target
   | -- new payment bs
     PayForAbility Ability [Window]

@@ -25,7 +25,7 @@ windows :: (HasGame m) => [WindowType] -> m [Message]
 windows windows' = do
   iids <- selectList UneliminatedInvestigator
   pure $ do
-    timing <- [Timing.When, Timing.After]
+    timing <- [Timing.When, Timing.AtIf, Timing.After]
     [CheckWindow iids $ map (Window timing) windows']
 
 splitWithWindows :: (HasGame m) => Message -> [WindowType] -> m [Message]

@@ -495,6 +495,9 @@ allAssets =
     , SomeAssetCard grislyTotemSurvivor3
     , --- neutral [fgg]
       SomeAssetCard theCouncilsCoffer2
+    , --- story [fgg]
+      SomeAssetCard augustLindquist
+    , SomeAssetCard puzzleBox
     , -- Union and Disillusion
       --- seeker [uad]
       SomeAssetCard esotericAtlas1

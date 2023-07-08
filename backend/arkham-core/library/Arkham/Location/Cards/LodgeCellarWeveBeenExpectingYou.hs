@@ -29,7 +29,8 @@ instance HasAbilities LodgeCellarWeveBeenExpectingYou where
 instance RunMessage LodgeCellarWeveBeenExpectingYou where
   runMessage msg l@(LodgeCellarWeveBeenExpectingYou attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      key <- getRandomKey
-      push $ PlaceKey (toTarget attrs) key
+      mKey <- getRandomKey
+      for_ mKey $ \key ->
+        push $ PlaceKey (toTarget attrs) key
       pure l
     _ -> LodgeCellarWeveBeenExpectingYou <$> runMessage msg attrs

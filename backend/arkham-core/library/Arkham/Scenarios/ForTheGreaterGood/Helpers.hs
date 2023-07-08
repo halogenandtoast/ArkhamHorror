@@ -6,9 +6,7 @@ import Arkham.Key
 import Arkham.Prelude
 import Arkham.Scenario.Types
 
-getRandomKey :: GameT ArkhamKey
+getRandomKey :: GameT (Maybe ArkhamKey)
 getRandomKey = do
   ks <- setToList <$> scenarioField ScenarioSetAsideKeys
-  case nonEmpty ks of
-    Nothing -> error "called with no remaining keys"
-    Just neKeys -> sample neKeys
+  traverse sample $ nonEmpty ks

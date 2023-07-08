@@ -37,7 +37,8 @@ instance HasAbilities InnerSanctum where
 instance RunMessage InnerSanctum where
   runMessage msg l@(InnerSanctum attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      key <- getRandomKey
-      push $ PlaceKey (toTarget attrs) key
+      mKey <- getRandomKey
+      for_ mKey $ \key ->
+        push $ PlaceKey (toTarget attrs) key
       pure l
     _ -> InnerSanctum <$> runMessage msg attrs

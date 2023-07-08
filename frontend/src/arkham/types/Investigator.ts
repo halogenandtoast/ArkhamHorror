@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
+import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import {
   Card,
   PlayerCardContents,
@@ -72,6 +73,7 @@ export interface Investigator {
   foundCards: Record<string, Card[]>;
   xp: number;
   supplies: string[];
+  keys: ArkhamKey[];
   hunchDeck?: PlayerCardContents[];
   revealedHunchCard?: string | null;
   isYithian: boolean;
@@ -116,6 +118,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
   xp: JsonDecoder.number,
   supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),

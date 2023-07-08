@@ -81,8 +81,6 @@ const enemies = computed(() => {
     .filter((e) => props.game.enemies[e].engagedInvestigators.length === 0);
 })
 
-console.log(props.game.investigators[props.investigatorId].modifiers)
-
 const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked")
   || props.game.investigators[props.investigatorId].modifiers.some(modifier => modifier.type.tag == "CannotEnter" && modifier.type.contents == props.location.id))
 

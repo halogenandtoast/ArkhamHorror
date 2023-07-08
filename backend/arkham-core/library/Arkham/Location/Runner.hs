@@ -34,6 +34,7 @@ import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Key
 import Arkham.Location.Helpers
 import Arkham.Matcher (
   InvestigatorMatcher (..),
@@ -399,6 +400,8 @@ instance RunMessage LocationAttrs where
           pure $ a & revealedL .~ False
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & keysL %~ insertSet k
+    PlaceKey (isTarget a -> False) k -> do
+      pure $ a & keysL %~ deleteSet k
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
@@ -434,6 +437,10 @@ instance RunMessage LocationAttrs where
           locationId
           Free -- already paid by using ability
           True
+      pure a
+    UseCardAbility iid source n _ _ | isSource a source && n >= 500 && n <= 520 -> do
+      let k = fromJustNote "missing key" $ setToList locationKeys !!? (n - 500)
+      push $ PlaceKey (InvestigatorTarget iid) k
       pure a
     _ -> pure a
 
@@ -514,6 +521,13 @@ instance HasAbilities LocationAttrs where
         )
         $ ActionAbility (Just Action.Move) moveCost
     ]
+      <> [ withTooltip ("Take " <> keyName k <> " key") $
+          restrictedAbility l (500 + idx) (OnLocation $ LocationWithId $ toId l) $
+            FastAbility Free
+         | locationRevealed l
+         , locationClues l == 0
+         , (idx, k) <- withIndex (toList $ locationKeys l)
+         ]
    where
     moveCost =
       if not (locationRevealed l)

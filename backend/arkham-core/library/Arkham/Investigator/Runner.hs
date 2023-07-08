@@ -572,6 +572,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AttachTreachery tid (InvestigatorTarget iid)
     | iid == investigatorId ->
         pure $ a & treacheriesL %~ insertSet tid
+  PlaceKey (isTarget a -> True) k -> do
+    pure $ a & keysL %~ insertSet k
+  PlaceKey (isTarget a -> False) k -> do
+    pure $ a & keysL %~ deleteSet k
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do
     handSize <- getHandSize a
     inHandCount <- getInHandCount a

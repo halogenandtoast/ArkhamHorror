@@ -26,6 +26,11 @@ export interface UseEncounterDeck {
   contents: string
 }
 
+export interface CannotEnter {
+  tag: "CannotEnter"
+  contents: string
+}
+
 export interface OtherModifier {
   tag: string
 }
@@ -45,6 +50,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
   JsonDecoder.object<UseEncounterDeck>(
     {
       tag: JsonDecoder.isExactly('UseEncounterDeck'),
+      contents: JsonDecoder.string
+    }, 'UseEncounterDeck'),
+  JsonDecoder.object<CannotEnter>(
+    {
+      tag: JsonDecoder.isExactly('CannotEnter'),
       contents: JsonDecoder.string
     }, 'UseEncounterDeck'),
   JsonDecoder.object<SkillModifier>(

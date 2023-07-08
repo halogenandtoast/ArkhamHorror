@@ -7,6 +7,7 @@ import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 export interface Props {
@@ -177,6 +178,8 @@ function isActiveEffectAction(action) {
   return choice !== -1
 }
 
+const keys = computed(() => props.player.keys)
+
 const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value))
 const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value))
 const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value))
@@ -209,6 +212,9 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
     </div>
 
     <div class="resources">
+      <div class="keys" v-if="keys.length > 0">
+        <Key v-for="key in keys" :key="key" :name="key" />
+      </div>
       <PoolItem
         type="resource"
         :amount="player.resources"

@@ -176,6 +176,8 @@ instance RunMessage AssetAttrs where
           : [UnsealToken token | token <- assetSealedTokens]
             <> [RemovedFromPlay source]
       pure a
+    PlaceKey (isTarget a -> True) k -> do
+      pure $ a & (keysL %~ insertSet k)
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow

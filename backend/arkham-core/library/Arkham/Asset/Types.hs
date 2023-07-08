@@ -16,6 +16,7 @@ import Arkham.Classes.RunMessage.Internal
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
+import Arkham.Key
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -178,6 +179,7 @@ data AssetAttrs = AssetAttrs
   , assetIsStory :: Bool
   , assetCardsUnderneath :: [Card]
   , assetSealedTokens :: [Token]
+  , assetKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
 
@@ -245,6 +247,7 @@ assetWith f cardDef g =
             , assetIsStory = False
             , assetCardsUnderneath = []
             , assetSealedTokens = []
+            , assetKeys = mempty
             }
     }
 

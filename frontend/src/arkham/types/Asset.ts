@@ -4,6 +4,7 @@ import {
   Card,
   cardDecoder,
 } from '@/arkham/types/Card';
+import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 
 export interface Uses {
   amount: number; // eslint-disable-line
@@ -31,6 +32,7 @@ export interface Asset {
   assets: string[];
   cardsUnderneath: Card[];
   sealedTokens: ChaosToken[];
+  keys: ArkhamKey[];
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
@@ -50,5 +52,6 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
-  sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')
+  sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+    keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
 }, 'Asset');

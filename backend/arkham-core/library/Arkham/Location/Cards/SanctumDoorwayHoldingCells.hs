@@ -1,14 +1,18 @@
-module Arkham.Location.Cards.SanctumDoorwayHoldingCells
-  ( sanctumDoorwayHoldingCells
-  , SanctumDoorwayHoldingCells(..)
-  )
+module Arkham.Location.Cards.SanctumDoorwayHoldingCells (
+  sanctumDoorwayHoldingCells,
+  SanctumDoorwayHoldingCells (..),
+)
 where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Timing qualified as Timing
+import Arkham.Trait (Trait (Cultist))
 
 newtype SanctumDoorwayHoldingCells = SanctumDoorwayHoldingCells LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +23,27 @@ sanctumDoorwayHoldingCells = location SanctumDoorwayHoldingCells Cards.sanctumDo
 
 instance HasAbilities SanctumDoorwayHoldingCells where
   getAbilities (SanctumDoorwayHoldingCells attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1 $
+          ForcedAbility $
+            RevealLocation Timing.After Anyone $
+              LocationWithId $
+                toId attrs
+      ]
 
 instance RunMessage SanctumDoorwayHoldingCells where
-  runMessage msg (SanctumDoorwayHoldingCells attrs) =
-    SanctumDoorwayHoldingCells <$> runMessage msg attrs
+  runMessage msg l@(SanctumDoorwayHoldingCells attrs) = case msg of
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push
+        $ FindEncounterCard
+          iid
+          (toTarget attrs)
+          [FromEncounterDeck, FromEncounterDiscard]
+        $ CardWithType EnemyType
+          <> CardWithTrait Cultist
+      pure l
+    FoundEncounterCard _iid (isTarget attrs -> True) card -> do
+      push $ SpawnEnemyAt (EncounterCard card) (toId attrs)
+      pure l
+    _ -> SanctumDoorwayHoldingCells <$> runMessage msg attrs

@@ -38,7 +38,7 @@ instance RunMessage Ichtaca where
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
       push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
       pure e
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source && enemyReady attrs -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
       pure e
     _ -> Ichtaca <$> runMessage msg attrs

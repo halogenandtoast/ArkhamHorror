@@ -181,6 +181,7 @@ instance RunMessage ForTheGreaterGood where
         genCards
           [ Locations.library
           , Locations.vault
+          , Locations.innerSanctum
           , Locations.sanctumDoorwayHoldingCells
           , Locations.sanctumDoorwayCeremonyRoom
           , Assets.puzzleBox

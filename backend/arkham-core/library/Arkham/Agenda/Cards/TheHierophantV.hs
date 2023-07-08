@@ -16,8 +16,6 @@ import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Cultist, SilverTwilight))
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype TheHierophantV = TheHierophantV AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

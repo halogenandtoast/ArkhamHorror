@@ -41,10 +41,10 @@ forTheGreaterGood difficulty =
     "05197"
     "For the Greater Good"
     difficulty
-    [ ".       .      lodgeGates .              .            ."
-    , ".       lobby  .          lodgeCellar    .            ."
-    , "library lounge .          lodgeCatacombs holdingCells ceremonyRoom"
-    , ".       vault  .          innerSanctum   .            ."
+    [ ".       .      lodgeGates .              ."
+    , ".       lobby  .          lodgeCellar    ."
+    , "library lounge .          lodgeCatacombs sanctumDoorway1"
+    , ".       vault  .          innerSanctum   sanctumDoorway2"
     ]
 
 instance HasTokenValue ForTheGreaterGood where

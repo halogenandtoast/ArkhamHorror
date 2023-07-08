@@ -511,8 +511,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resignedL .~ True & endedTurnL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
-    push $ PlaceClues (toSource a) (toTarget investigatorLocation) investigatorClues
-    pure $ a & cluesL .~ 0 & resourcesL .~ 0
+    pushAll $
+      PlaceClues (toSource a) (toTarget investigatorLocation) investigatorClues
+        : [PlaceKey (toTarget investigatorLocation) k | k <- toList investigatorKeys]
+    pure $ a & cluesL .~ 0 & resourcesL .~ 0 & keysL .~ mempty
   EnemyMove eid lid | lid /= investigatorLocation -> do
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId -> do

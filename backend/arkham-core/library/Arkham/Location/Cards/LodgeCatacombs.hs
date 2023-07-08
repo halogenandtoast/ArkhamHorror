@@ -46,7 +46,7 @@ instance RunMessage LodgeCatacombs where
       sanctumDoorways <- shuffleM =<< getSetAsideCardsMatching (CardWithTitle "Sanctum Doorway")
       msgs <- for (withIndex1 sanctumDoorways) \(idx, sanctumDoorway) -> do
         (locationId, placement) <- placeLocation sanctumDoorway
-        pure [placement, SetLocationLabel locationId $ "sanctumDoorway" <> tshow (idx + 1)]
+        pure [placement, SetLocationLabel locationId $ "sanctumDoorway" <> tshow idx]
       pushAll $ PlaceLocationMatching (CardWithTitle "Inner Sanctum") : concat msgs
       pure l
     _ -> LodgeCatacombs <$> runMessage msg attrs

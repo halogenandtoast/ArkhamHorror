@@ -4393,7 +4393,7 @@ vault :: CardDef
 vault =
   location
     "05211"
-    "Lounge"
+    "Vault"
     [Lodge]
     Plus
     [Moon]

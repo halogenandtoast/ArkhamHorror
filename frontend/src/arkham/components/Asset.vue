@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
+import Key from '@/arkham/components/Key.vue';
 import Event from '@/arkham/components/Event.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -31,8 +32,10 @@ const hasPool = computed(() => {
     clues,
     resources,
     sealedTokens,
+    keys,
   } = props.asset;
-  return sanity || health || damage || horror || uses || doom > 0 || clues > 0 || resources > 0 || sealedTokens.length > 0;
+  console.log(keys)
+  return sanity || health || damage || horror || uses || doom > 0 || clues > 0 || resources > 0 || sealedTokens.length > 0 || keys.length > 0;
 })
 
 const exhausted = computed(() => props.asset.exhausted)
@@ -102,6 +105,8 @@ const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
 
+const keys = computed(() => props.asset.keys)
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
@@ -137,6 +142,9 @@ const choose = (idx: number) => emit('choose', idx)
       <button v-if="asset.investigator" @click="debugChoose({tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
     </template>
     <div v-if="hasPool" class="pool">
+      <div class="keys" v-if="keys.length > 0">
+        <Key v-for="key in keys" :key="key" :name="key" />
+      </div>
       <PoolItem
         v-if="asset.uses && asset.uses.amount > 0"
         type="resource"

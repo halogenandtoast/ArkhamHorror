@@ -37,7 +37,8 @@ instance HasAbilities Vault where
 instance RunMessage Vault where
   runMessage msg l@(Vault attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      key <- getRandomKey
-      push $ PlaceKey (toTarget attrs) key
+      mKey <- getRandomKey
+      for_ mKey $ \key ->
+        push $ PlaceKey (toTarget attrs) key
       pure l
     _ -> Vault <$> runMessage msg attrs

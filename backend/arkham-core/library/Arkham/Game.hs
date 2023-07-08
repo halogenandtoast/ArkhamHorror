@@ -286,7 +286,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
         , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
         }
 
-  game' <- readIORef gameRef
+  game' <- atomicModifyIORef gameRef \x -> (x, x)
 
   pure
     ( queueRef
@@ -3247,13 +3247,15 @@ instance HasDistance Game where
       $ result
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
-readGame = view gameRefL >>= readIORef
+readGame = view gameRefL >>= (`atomicModifyIORef'` dupe)
+ where
+  dupe a = (a, a)
 
 putGame :: (MonadIO m, MonadReader env m, HasGameRef env) => Game -> m ()
 putGame g = do
   -- we want to retain the card database between puts
   ref <- view gameRefL
-  g' <- readIORef ref
+  g' <- readGame
   atomicWriteIORef ref $ g {gameCards = gameCards g' <> gameCards g}
 
 overGameReader :: (MonadIO m, HasGame m) => Reader Game a -> m a
@@ -4188,7 +4190,9 @@ runGameMessage msg g = case msg of
               & (entitiesL . treacheriesL %~ insertMap tid treachery)
               & (activeCardL ?~ card)
         AssetType -> do
-          aid <- getRandom
+          -- asset might have been put into play via revelation
+          mAid <- selectOne $ AssetWithCardId cardId
+          aid <- maybe getRandom pure mAid
           asset <-
             runMessage
               (SetOriginalCardCode $ pcOriginalCardCode pc)

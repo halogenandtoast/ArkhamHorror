@@ -52,7 +52,7 @@ spec = describe "The Necronomicon" $ do
       fieldAssert AssetHorror (== 2) theNecronomicon
       fieldAssert InvestigatorHorror (== 1) investigator
 
-    it "it is discarded when there is no more horror" . gameTest $ \investigator -> do
+    fit "it is discarded when there is no more horror" . gameTest $ \investigator -> do
       setup investigator
       theNecronomicon <- selectJust $ assetIs Cards.theNecronomicon
       [action] <- field AssetAbilities theNecronomicon

@@ -61,7 +61,7 @@ import Arkham.Window as X (
  )
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
-import Control.Monad.State hiding (replicateM)
+import Control.Monad.State
 import Control.Monad.State as X (get)
 import Data.Map.Strict qualified as Map
 import Data.Maybe as X (fromJust)
@@ -102,7 +102,7 @@ x `shouldMatchListM` y = liftIO . (`shouldMatchList` y) =<< x
 
 refShouldBe :: (HasCallStack, Show a, Eq a, MonadIO m) => IORef a -> a -> m ()
 ref `refShouldBe` y = do
-  result <- liftIO $ readIORef ref
+  result <- liftIO $ atomicModifyIORef ref (\x -> (x, x))
   liftIO $ result `shouldBe` y
 
 nonFast :: Window
@@ -128,7 +128,7 @@ newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}
 instance HasGame TestAppT where
   getGame = do
     env <- get
-    readIORef $ game env
+    atomicModifyIORef (game env) (\x -> (x, x))
 
 instance CardGen TestAppT where
   genEncounterCard a = do

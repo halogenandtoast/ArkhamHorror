@@ -28,4 +28,3 @@ const app = createApp(App).
 app.provide('baseUrl', process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '')
 
 app.mount('#app')
-

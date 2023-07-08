@@ -397,6 +397,8 @@ instance RunMessage LocationAttrs where
     After (LookAtRevealed _ _ target)
       | isTarget a target ->
           pure $ a & revealedL .~ False
+    PlaceKey (isTarget a -> True) k -> do
+      pure $ a & keysL %~ insertSet k
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)

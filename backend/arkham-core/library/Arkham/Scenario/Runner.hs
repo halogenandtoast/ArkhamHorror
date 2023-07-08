@@ -998,6 +998,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       a
         & (actStackL . at n ?~ actStack')
         & (completedActStackL . at n ?~ (oldAct : completedActStack))
+  PlaceKey target k | not (isTarget a target) -> do
+    pure $ a & (setAsideKeysL %~ deleteSet k)
   RestartScenario -> do
     pure $ a & (inResolutionL .~ False)
   _ -> pure a

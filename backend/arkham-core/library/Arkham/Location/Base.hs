@@ -8,8 +8,9 @@ import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
+import Arkham.Key
 import Arkham.LocationSymbol
-import Arkham.Matcher ( LocationMatcher (..) )
+import Arkham.Matcher (LocationMatcher (..))
 import Arkham.SkillType
 
 data LocationAttrs = LocationAttrs
@@ -40,10 +41,11 @@ data LocationAttrs = LocationAttrs
   , locationCanBeFlipped :: Bool
   , locationInvestigateSkill :: SkillType
   , locationInFrontOf :: Maybe InvestigatorId
-  -- We need to track if a location has no clues because timings will interact
-  -- with the location being revealed and claim there are no clues before they
-  -- are placed. TODO: this could be a hasBeenRevealed bool
-  , locationWithoutClues :: Bool
+  , locationKeys :: Set ArkhamKey
+  , -- We need to track if a location has no clues because timings will interact
+    -- with the location being revealed and claim there are no clues before they
+    -- are placed. TODO: this could be a hasBeenRevealed bool
+    locationWithoutClues :: Bool
   }
   deriving stock (Show, Eq, Generic)
 

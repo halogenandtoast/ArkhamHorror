@@ -7,16 +7,8 @@ import {
 } from '@/arkham/types/Card';
 import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
 import { logContentsDecoder } from '@/arkham/types/Campaign';
+import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
-
-export type ArkhamKey = "SkullKey" | "CultistKey" | "TabletKey" | "ElderThingKey"
-
-export const arkhamKeyDecoder = JsonDecoder.oneOf<ArkhamKey>([
-  JsonDecoder.isExactly("SkullKey"),
-  JsonDecoder.isExactly("CultistKey"),
-  JsonDecoder.isExactly("TabletKey"),
-  JsonDecoder.isExactly("ElderThingKey"),
-], 'ArkhamKey');
 
 export interface ScenarioName {
   title: string;

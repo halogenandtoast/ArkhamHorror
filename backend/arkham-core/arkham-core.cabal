@@ -1848,6 +1848,7 @@ library
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.ExtracurricularActivity.FlavorText
+      Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Story
       Arkham.Scenarios.HeartOfTheElders.Story
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText

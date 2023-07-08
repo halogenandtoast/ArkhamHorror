@@ -3173,6 +3173,7 @@ instance Projection Scenario where
       ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
       ScenarioSetAsideCards -> pure scenarioSetAsideCards
+      ScenarioSetAsideKeys -> pure scenarioSetAsideKeys
       ScenarioName -> pure scenarioName
       ScenarioMeta -> pure scenarioMeta
       ScenarioStoryCards -> pure scenarioStoryCards

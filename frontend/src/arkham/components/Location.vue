@@ -3,6 +3,7 @@ import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message } from '@/arkham/types/Message';
+import Key from '@/arkham/components/Key.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -82,6 +83,8 @@ const enemies = computed(() => {
 
 const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked"))
 
+const keys = computed(() => props.location.keys)
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 </script>
@@ -148,6 +151,9 @@ const debugChoose = inject('debugChoose')
         @choose="$emit('choose', $event)"
       />
       <div class="pool">
+        <div class="keys" v-if="keys.length > 0">
+          <Key v-for="key in keys" :key="key" :name="key" />
+        </div>
         <div v-if="location.clues > 0" class="pool">
           <PoolItem type="clue" :amount="location.clues" />
         </div>

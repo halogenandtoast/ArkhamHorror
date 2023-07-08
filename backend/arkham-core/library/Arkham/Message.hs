@@ -40,6 +40,7 @@ import Arkham.Exception
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
+import Arkham.Key
 import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated)
 import Arkham.Movement
 import Arkham.Name
@@ -314,6 +315,7 @@ data Message
   | PlaceAsset AssetId Placement
   | PlaceEvent InvestigatorId EventId Placement
   | PlaceTreachery TreacheryId TreacheryPlacement
+  | PlaceKey Target ArkhamKey
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId

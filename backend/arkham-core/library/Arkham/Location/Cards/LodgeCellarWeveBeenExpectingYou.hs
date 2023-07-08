@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LodgeCellarWeveBeenExpectingYou
-  ( lodgeCellarWeveBeenExpectingYou
-  , LodgeCellarWeveBeenExpectingYou(..)
-  )
+module Arkham.Location.Cards.LodgeCellarWeveBeenExpectingYou (
+  lodgeCellarWeveBeenExpectingYou,
+  LodgeCellarWeveBeenExpectingYou (..),
+)
 where
 
 import Arkham.Prelude
@@ -9,6 +9,9 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Timing qualified as Timing
 
 newtype LodgeCellarWeveBeenExpectingYou = LodgeCellarWeveBeenExpectingYou LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +22,14 @@ lodgeCellarWeveBeenExpectingYou = location LodgeCellarWeveBeenExpectingYou Cards
 
 instance HasAbilities LodgeCellarWeveBeenExpectingYou where
   getAbilities (LodgeCellarWeveBeenExpectingYou attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation Timing.After You $ LocationWithId $ toId attrs]
 
 instance RunMessage LodgeCellarWeveBeenExpectingYou where
-  runMessage msg (LodgeCellarWeveBeenExpectingYou attrs) =
-    LodgeCellarWeveBeenExpectingYou <$> runMessage msg attrs
+  runMessage msg l@(LodgeCellarWeveBeenExpectingYou attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      key <- getRandomKey
+      push $ PlaceKey (toTarget attrs) key
+      pure l
+    _ -> LodgeCellarWeveBeenExpectingYou <$> runMessage msg attrs

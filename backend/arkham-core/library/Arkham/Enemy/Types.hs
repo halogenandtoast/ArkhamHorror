@@ -21,6 +21,7 @@ import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Key
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Modifier
@@ -71,6 +72,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyLocation :: Field Enemy (Maybe LocationId)
   EnemyPlacement :: Field Enemy Placement
   EnemySealedTokens :: Field Enemy [Token]
+  EnemyKeys :: Field Enemy (Set ArkhamKey)
 
 deriving stock instance Show (Field Enemy typ)
 

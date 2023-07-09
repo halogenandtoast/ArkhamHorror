@@ -528,6 +528,15 @@ handleAnswer Game {..} investigatorId = \case
           [Done _] -> [uiToRun m']
           rest -> [uiToRun m', Ask investigatorId $ f $ ChooseSome rest]
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseSome msgs'']
+    ChooseSome1 doneMsg msgs -> do
+      let (mm, msgs') = extract (qrChoice response) msgs
+      case (mm, msgs') of
+        (Just (Done _), _) -> []
+        (Just m', msgs'') -> case msgs'' of
+          [] -> [uiToRun m']
+          [Done _] -> [uiToRun m']
+          rest -> [uiToRun m', Ask investigatorId $ f $ ChooseSome $ Done doneMsg : rest]
+        (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseSome $ Done doneMsg : msgs'']
     PickSupplies remaining chosen qs -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ f $ PickSupplies remaining chosen qs]
       Just msg -> [uiToRun msg]

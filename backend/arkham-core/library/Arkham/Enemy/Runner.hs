@@ -960,15 +960,16 @@ instance RunMessage EnemyAttrs where
           <> victoryMsgs
           <> [afterMsg]
           <> defeatMsgs
-      pure a
+      pure $ a & keysL .~ mempty
     Discard source target | a `isTarget` target -> do
+      miid <- getSourceController source
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll $
         windows'
           <> [ RemovedFromPlay $ toSource a
              , Discarded (toTarget a) source (toCard a)
              ]
-      pure a
+      pure $ a & keysL .~ mempty
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll $
         resolve (RemoveEnemy $ toId a)

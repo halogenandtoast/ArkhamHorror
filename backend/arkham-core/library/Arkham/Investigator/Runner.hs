@@ -45,6 +45,7 @@ import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Attrs
+import Arkham.Key
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   AssetMatcher (..),
@@ -55,6 +56,7 @@ import Arkham.Matcher (
   LocationMatcher (..),
   assetControlledBy,
   assetIs,
+  colocatedWith,
   treacheryInHandOf,
   pattern InvestigatorCanDisengage,
  )
@@ -3384,6 +3386,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ( \UsedAbility {..} ->
                     abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
                 )
+  UseCardAbility iid (isSource a -> True) 500 _ _ -> do
+    otherInvestigators <-
+      selectList $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
+    case nonEmpty otherInvestigators of
+      Nothing -> error "No other investigators"
+      Just (x :| xs) -> do
+        push $
+          chooseOrRunOne
+            iid
+            [ targetLabel
+              iid'
+              [ chooseSome1
+                  iid
+                  "Done giving keys"
+                  [Label ("Give " <> keyName k <> " key") [PlaceKey (toTarget iid') k] | k <- toList investigatorKeys]
+              ]
+            | iid' <- x : xs
+            ]
+    pure a
   UseAbility iid ability windows | iid == investigatorId -> do
     pushAll [PayForAbility ability windows, ResolvedAbility ability]
     case find ((== ability) . usedAbility) investigatorUsedAbilities of

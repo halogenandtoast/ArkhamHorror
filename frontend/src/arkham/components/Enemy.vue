@@ -4,6 +4,7 @@ import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -82,6 +83,8 @@ const abilities = computed(() => {
 
 const isExhausted = computed(() => props.enemy.exhausted)
 
+const keys = computed(() => props.enemy.keys)
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 </script>
@@ -104,6 +107,9 @@ const debugChoose = inject('debugChoose')
         />
     </template>
     <div class="pool">
+      <div class="keys" v-if="keys.length > 0">
+        <Key v-for="key in keys" :key="key" :name="key" />
+      </div>
       <PoolItem type="health" :amount="enemy.damage + enemy.assignedDamage" />
       <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />
       <PoolItem v-if="enemy.clues > 0" type="clue" :amount="enemy.clues" />

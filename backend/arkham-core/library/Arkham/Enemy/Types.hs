@@ -166,6 +166,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyDamageStrategy = DamageAny
             , enemyBearer = Nothing
             , enemySealedTokens = []
+            , enemyKeys = mempty
             }
     }
 

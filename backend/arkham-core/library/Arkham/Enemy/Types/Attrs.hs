@@ -7,8 +7,9 @@ import Arkham.DamageEffect
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
+import Arkham.Key
 import Arkham.Matcher
-import Arkham.Modifier ( Modifier )
+import Arkham.Modifier (Modifier)
 import Arkham.Placement
 import Arkham.Source
 import Arkham.Spawn
@@ -41,6 +42,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDamageStrategy :: DamageStrategy
   , enemyBearer :: Maybe InvestigatorId
   , enemySealedTokens :: [Token]
+  , enemyKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
 

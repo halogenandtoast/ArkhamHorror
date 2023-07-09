@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
+import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 
 export interface Enemy {
   id: string;
@@ -17,6 +18,7 @@ export interface Enemy {
   asSelfLocation: string | null;
   sealedTokens: ChaosToken[];
   placement: Placement;
+  keys: ArkhamKey[];
 }
 
 type DamageAssignment = { damageAssignmentAmount: number }
@@ -44,5 +46,6 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   asSelfLocation: JsonDecoder.nullable(JsonDecoder.string),
   sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-  placement: placementDecoder
+  placement: placementDecoder,
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]')
 }, 'Enemy');

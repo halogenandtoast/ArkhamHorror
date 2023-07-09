@@ -1111,6 +1111,10 @@ instance RunMessage EnemyAttrs where
       pure $ a & cluesL +~ n
     PlaceResources _ target n | isTarget a target -> do
       pure $ a & resourcesL +~ n
+    PlaceKey (isTarget a -> True) k -> do
+      pure $ a & keysL %~ insertSet k
+    PlaceKey (isTarget a -> False) k -> do
+      pure $ a & keysL %~ deleteSet k
     RemoveClues _ target n | isTarget a target -> do
       pure $ a & cluesL %~ max 0 . subtract n
     FlipClues target n | isTarget a target -> do

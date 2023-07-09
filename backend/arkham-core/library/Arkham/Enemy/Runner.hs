@@ -78,6 +78,9 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
   ChooseSome msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseSome x)
+  ChooseSome1 doneMsg msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseSome1 doneMsg x)
   ChooseUpToN n msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseUpToN n x)
@@ -962,7 +965,6 @@ instance RunMessage EnemyAttrs where
           <> defeatMsgs
       pure $ a & keysL .~ mempty
     Discard source target | a `isTarget` target -> do
-      miid <- getSourceController source
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll $
         windows'

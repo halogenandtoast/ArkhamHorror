@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
@@ -24,6 +25,7 @@ import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ForTheGreaterGood.Story
@@ -251,5 +253,43 @@ instance RunMessage ForTheGreaterGood where
                   | cultist <- maxDoomCultists
                   ]
             else push $ DrawAnotherToken iid
+      pure s
+    ScenarioResolution n -> do
+      iids <- allInvestigatorIds
+      lead <- getLead
+      xp <- toGainXp attrs getXp
+      case n of
+        NoResolution ->
+          pushAll $ [story iids noResolution, Record TheGuardianOfTheTrapEmerged] <> xp <> [EndOfGame Nothing]
+        Resolution 1 ->
+          pushAll $
+            [ story iids resolution1
+            , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
+            , addCampaignCardToDeckChoice
+                lead
+                iids
+                Assets.puzzleBox
+            ]
+              <> xp
+              <> [EndOfGame (Just $ UpgradeDeckStep $ InterludeStep 3 Nothing)]
+        Resolution 2 ->
+          pushAll $
+            [ story iids resolution2
+            , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
+            , addCampaignCardToDeckChoice
+                lead
+                iids
+                Assets.puzzleBox
+            ]
+              <> xp
+              <> [EndOfGame Nothing]
+        Resolution 3 ->
+          pushAll $
+            [ story iids resolution3
+            , Record TheGuardianOfTheTrapEmergedAndWasDefeated
+            ]
+              <> xp
+              <> [EndOfGame Nothing]
+        _ -> error "invalid resolution"
       pure s
     _ -> ForTheGreaterGood <$> runMessage msg attrs

@@ -230,10 +230,10 @@ instance HasTokenValue Investigator where
   getTokenValue iid tokenFace (Investigator a) = getTokenValue iid tokenFace a
 
 instance HasAbilities Investigator where
-  getAbilities (Investigator a) =
+  getAbilities i@(Investigator a) =
     getAbilities a
       <> [ restrictedAbility
-          (Investigator a)
+          i
           500
           ( Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a))
           )

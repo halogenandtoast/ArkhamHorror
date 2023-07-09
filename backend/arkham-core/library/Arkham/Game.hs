@@ -793,6 +793,9 @@ getInvestigatorsMatching matcher = do
       mostClueCount <-
         fieldMax InvestigatorClues UneliminatedInvestigator
       pure $ mostClueCount == investigatorClues (toAttrs i)
+    MostKeys -> \i -> do
+      mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
+      pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
@@ -2576,6 +2579,7 @@ instance Projection Investigator where
     let InvestigatorAttrs {..} = toAttrs i
     case f of
       InvestigatorCardCode -> pure investigatorCardCode
+      InvestigatorKeys -> pure investigatorKeys
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorAdditionalActions -> pure investigatorAdditionalActions

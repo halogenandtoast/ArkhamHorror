@@ -193,7 +193,7 @@ resolveAssetMatcher iid (Just lid) = go
     other -> other
 
 replaceYourLocation
-  :: InvestigatorId -> (Maybe LocationId) -> LocationMatcher -> LocationMatcher
+  :: InvestigatorId -> Maybe LocationId -> LocationMatcher -> LocationMatcher
 replaceYourLocation _ Nothing = id
 replaceYourLocation iid (Just lid) = go
  where

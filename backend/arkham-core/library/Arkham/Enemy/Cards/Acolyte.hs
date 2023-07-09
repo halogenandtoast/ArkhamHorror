@@ -30,7 +30,7 @@ instance HasAbilities Acolyte where
   getAbilities (Acolyte a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis) $
+      [ restrictedAbility a 1 CanPlaceDoomOnThis $
           ForcedAbility $
             EnemySpawns Timing.After Anywhere $
               EnemyWithId $

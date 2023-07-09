@@ -60,7 +60,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (createEnemy)
 import Arkham.History
@@ -3411,6 +3411,23 @@ runPreGameMessage msg g = case msg of
 getActiveInvestigator :: (HasGame m) => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
+getPlacementLocation :: (HasGame m) => Placement -> m (Maybe LocationId)
+getPlacementLocation = \case
+  AtLocation location -> pure $ Just location
+  AttachedToLocation location -> pure $ Just location
+  InPlayArea investigator -> field InvestigatorLocation investigator
+  InThreatArea investigator -> field InvestigatorLocation investigator
+  StillInHand _ -> pure Nothing
+  AttachedToEnemy enemy -> field EnemyLocation enemy
+  AttachedToAsset asset _ -> field AssetLocation asset
+  AttachedToAct _ -> pure Nothing
+  AttachedToAgenda _ -> pure Nothing
+  AttachedToInvestigator investigator -> field InvestigatorLocation investigator
+  Unplaced -> pure Nothing
+  Limbo -> pure Nothing
+  Global -> pure Nothing
+  OutOfPlay _ -> pure Nothing
+
 getTurnInvestigator :: (HasGame m) => m (Maybe Investigator)
 getTurnInvestigator =
   getGame
@@ -4885,6 +4902,7 @@ runGameMessage msg g = case msg of
       [ Will (EnemySpawn Nothing lid enemyId)
       , When (EnemySpawn Nothing lid enemyId)
       , EnemySpawn Nothing lid enemyId
+      , After (EnemySpawn Nothing lid enemyId)
       ]
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   SpawnEnemyAtEngagedWith card lid iid -> do
@@ -4926,6 +4944,7 @@ runGameMessage msg g = case msg of
           ]
             <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
             <> enemyCreationAfter enemyCreation
+            <> [After (EnemySpawn (Just iid) lid enemyId)]
       SpawnAtLocation lid -> do
         windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt enemyId lid)]
         pushAll $
@@ -4936,6 +4955,7 @@ runGameMessage msg g = case msg of
               ]
               <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
               <> enemyCreationAfter enemyCreation
+              <> [After (EnemySpawn Nothing lid enemyId)]
       SpawnAtLocationMatching locationMatcher -> do
         windows' <- windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
         matches' <- selectList locationMatcher
@@ -4951,8 +4971,20 @@ runGameMessage msg g = case msg of
                       | lid <- lids
                       ]
                    ]
-      SpawnWithPlacement placement ->
-        pushAll $ PlaceEnemy enemyId placement : enemyCreationAfter enemyCreation
+      SpawnWithPlacement placement -> do
+        mLocation <- getPlacementLocation placement
+        let
+          (beforeMessages, afterMessages) = case mLocation of
+            Nothing -> ([], [])
+            Just lid ->
+              ( [Will (EnemySpawn Nothing lid enemyId), When (EnemySpawn Nothing lid enemyId)]
+              , [After (EnemySpawn Nothing lid enemyId)]
+              )
+        pushAll $
+          beforeMessages
+            <> [PlaceEnemy enemyId placement]
+            <> enemyCreationAfter enemyCreation
+            <> afterMessages
       SpawnEngagedWithPrey ->
         pushAll $
           [ Will (EnemySpawnEngagedWithPrey enemyId)

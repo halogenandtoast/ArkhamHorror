@@ -43,7 +43,7 @@ instance RunMessage SanctumDoorwayHoldingCells where
         $ CardWithType EnemyType
           <> CardWithTrait Cultist
       pure l
-    FoundEncounterCard _iid (isTarget attrs -> True) card -> do
-      push $ SpawnEnemyAt (EncounterCard card) (toId attrs)
+    FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
+      pushM $ createEnemyAt_ card (toId attrs) Nothing
       pure l
     _ -> SanctumDoorwayHoldingCells <$> runMessage msg attrs

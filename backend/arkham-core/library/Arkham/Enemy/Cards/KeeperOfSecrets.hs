@@ -34,7 +34,7 @@ instance HasAbilities KeeperOfSecrets where
   getAbilities (KeeperOfSecrets a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (Negate $ SelfHasModifier CannotPlaceDoomOnThis) $
+      [ restrictedAbility a 1 CanPlaceDoomOnThis $
           ForcedAbility $
             PhaseEnds Timing.When $
               PhaseIs MythosPhase

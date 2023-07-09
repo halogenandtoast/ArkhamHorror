@@ -1412,6 +1412,7 @@ knightOfTheOuterVoid =
   (enemy "05222" "Knight of the Outer Void" ForTheGreaterGood 2)
     { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Peril, Keyword.Retaliate]
+    , cdRevelation = True
     }
 
 corpseHungryGhoul :: CardDef

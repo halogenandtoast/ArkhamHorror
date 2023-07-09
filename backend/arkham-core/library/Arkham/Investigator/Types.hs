@@ -94,6 +94,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorMentalTrauma :: Field Investigator Int
   InvestigatorXp :: Field Investigator Int
   InvestigatorCardCode :: Field Investigator CardCode
+  InvestigatorKeys :: Field Investigator (Set ArkhamKey)
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 

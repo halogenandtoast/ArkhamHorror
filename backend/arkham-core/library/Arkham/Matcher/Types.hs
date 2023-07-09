@@ -62,6 +62,7 @@ data InvestigatorMatcher
   | HasMatchingSkill SkillMatcher
   | HasMatchingTreachery TreacheryMatcher
   | MostClues
+  | MostKeys
   | UneliminatedInvestigator
   | ResignedInvestigator
   | DefeatedInvestigator

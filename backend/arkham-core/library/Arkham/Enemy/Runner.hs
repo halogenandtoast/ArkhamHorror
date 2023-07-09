@@ -42,6 +42,7 @@ import Arkham.Matcher (
   investigatorEngagedWith,
   locationWithInvestigator,
   preyWith,
+  replaceYourLocation,
   pattern InvestigatorCanDisengage,
   pattern MassiveEnemy,
  )
@@ -1050,15 +1051,17 @@ instance RunMessage EnemyAttrs where
           spawnAt enemyId (applyMatcherExclusions modifiers' matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
-      lids <- selectList locationMatcher
+      activeInvestigatorId <- getActiveInvestigatorId
+      yourLocation <- selectOne $ locationWithInvestigator activeInvestigatorId
+      lids <- selectList $ replaceYourLocation activeInvestigatorId yourLocation locationMatcher
       leadInvestigatorId <- getLeadInvestigatorId
       case lids of
         [] ->
           pushAll $
             Discard GameSource (EnemyTarget eid)
               : [ Surge iid (toSource a)
-                | iid <- maybeToList miid
-                , enemySurgeIfUnableToSpawn
+                | enemySurgeIfUnableToSpawn
+                , iid <- maybeToList miid
                 ]
         [lid] -> do
           windows' <-

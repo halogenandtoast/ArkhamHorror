@@ -24,6 +24,7 @@ import Arkham.Investigator.Cards
 import Arkham.Investigator.Deck
 import Arkham.Json
 import Arkham.Key
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
@@ -229,7 +230,17 @@ instance HasTokenValue Investigator where
   getTokenValue iid tokenFace (Investigator a) = getTokenValue iid tokenFace a
 
 instance HasAbilities Investigator where
-  getAbilities (Investigator a) = getAbilities a
+  getAbilities (Investigator a) =
+    getAbilities a
+      <> [ restrictedAbility
+          (Investigator a)
+          500
+          ( Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a))
+          )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+         | notNull (investigatorKeys $ toAttrs a)
+         ]
 
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId

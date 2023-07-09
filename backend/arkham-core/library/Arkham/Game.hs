@@ -2542,6 +2542,7 @@ getEnemyField f e = do
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
     EnemySealedTokens -> pure enemySealedTokens
+    EnemyKeys -> pure enemyKeys
     EnemyDoom -> pure enemyDoom
     EnemyEvade -> pure enemyEvade
     EnemyFight -> pure enemyFight
@@ -4462,7 +4463,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . actsL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discard _ (AgendaTarget aid) ->
     pure $ g & entitiesL . agendasL %~ Map.filterWithKey (\k _ -> k /= aid)
-  Discarded (EnemyTarget eid) _ _ -> do
+  Discarded (EnemyTarget eid) source _ -> do
     enemy <- getEnemy eid
     case toCard (toAttrs enemy) of
       PlayerCard pc -> do
@@ -4472,6 +4473,21 @@ runGameMessage msg g = case msg of
           Just iid' -> push (AddToDiscard iid' pc)
       EncounterCard _ -> pure ()
       VengeanceCard _ -> error "Vengeance card"
+
+    miid <- getSourceController source
+    mLocation <- field EnemyLocation eid
+
+    let
+      handleKey k =
+        case miid of
+          Nothing -> case mLocation of
+            Just location -> PlaceKey (toTarget location) k
+            Nothing -> error "Could not place key"
+          Just iid -> PlaceKey (toTarget iid) k
+
+    ks <- fieldMap EnemyKeys toList eid
+    pushAll $ map handleKey ks
+
     pure $ g & (entitiesL . enemiesL %~ deleteMap eid)
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do

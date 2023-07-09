@@ -1,12 +1,13 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
   CHOOSE_UP_TO_N = 'ChooseUpToN',
   CHOOSE_SOME = 'ChooseSome',
+  CHOOSE_SOME_1 = 'ChooseSome1',
   CHOOSE_N = 'ChooseN',
   CHOOSE_ONE_AT_A_TIME = 'ChooseOneAtATime',
   CHOOSE_UPGRADE_DECK = 'ChooseUpgradeDeck',
@@ -93,7 +94,12 @@ export interface ChooseN {
 
 export interface ChooseSome {
   tag: QuestionType.CHOOSE_SOME
-  contents: Message[]
+  choices: Message[]
+}
+
+export interface ChooseSome1 {
+  tag: QuestionType.CHOOSE_SOME_1
+  choices: Message[]
 }
 
 export interface ChooseUpToN {
@@ -237,9 +243,17 @@ export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
 export const chooseSomeDecoder = JsonDecoder.object<ChooseSome>(
   {
     tag: JsonDecoder.isExactly(QuestionType.CHOOSE_SOME),
-    contents: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseSome',
+);
+
+export const chooseSome1Decoder = JsonDecoder.object<ChooseSome1>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_SOME_1),
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+  },
+  'ChooseSome1',
 );
 
 export const chooseNDecoder = JsonDecoder.object<ChooseN>(
@@ -273,6 +287,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseOneDecoder,
     chooseNDecoder,
     chooseSomeDecoder,
+    chooseSome1Decoder,
     chooseUpToNDecoder,
     chooseOneAtATimeDecoder,
     chooseUpgradeDeckDecoder,

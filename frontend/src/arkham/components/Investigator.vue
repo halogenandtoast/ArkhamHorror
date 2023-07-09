@@ -270,7 +270,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
         v-for="ability in abilities"
         :key="ability"
         :ability="choices[ability]"
-        @click="choose(ability)"
+        @click="$emit('choose', ability)"
         />
       <button
         :disabled="endTurnAction === -1"

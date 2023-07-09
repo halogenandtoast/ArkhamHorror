@@ -24,6 +24,7 @@ import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword (Keyword)
 import Arkham.Label
+import Arkham.Location.Brazier
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
@@ -336,9 +337,10 @@ data LocationMatcher
   | BlockedLocation
   | -- | only useful for windows
     ThisLocation
-  | IsIchtacasDestination
   | -- | Scenario specific criteria
     LocationIsInFrontOf InvestigatorMatcher
+  | IsIchtacasDestination
+  | LocationWithBrazier Brazier
   deriving stock (Show, Eq, Ord)
 
 class IsLocationMatcher a where

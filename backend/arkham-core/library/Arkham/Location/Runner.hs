@@ -402,6 +402,8 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
+    SetBrazier lid brazier | lid == locationId -> do
+      pure $ a & brazierL ?~ brazier
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)

@@ -222,6 +222,7 @@ locationWith f def shroud' revealClues g =
             , locationInFrontOf = Nothing
             , locationWithoutClues = False
             , locationKeys = mempty
+            , locationBrazier = Nothing
             }
     }
 

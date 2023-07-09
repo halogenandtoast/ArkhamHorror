@@ -1359,6 +1359,7 @@ library
       Arkham.Label
       Arkham.Location
       Arkham.Location.Base
+      Arkham.Location.Brazier
       Arkham.Location.Cards
       Arkham.Location.Cards.AbandonedChapel
       Arkham.Location.Cards.AbandonedChapelSpectral

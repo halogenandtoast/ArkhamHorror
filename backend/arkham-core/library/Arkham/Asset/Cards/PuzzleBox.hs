@@ -1,21 +1,67 @@
-module Arkham.Asset.Cards.PuzzleBox
-  ( puzzleBox
-  , PuzzleBox(..)
-  )
+module Arkham.Asset.Cards.PuzzleBox (
+  puzzleBox,
+  PuzzleBox (..),
+)
 where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Runner hiding (InvestigatorDefeated)
+import Arkham.DamageEffect
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Brazier
+import Arkham.Matcher
+import Arkham.Timing qualified as Timing
 
 newtype PuzzleBox = PuzzleBox AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 puzzleBox :: AssetCard PuzzleBox
 puzzleBox =
   asset PuzzleBox Cards.puzzleBox
 
+instance HasAbilities PuzzleBox where
+  getAbilities (PuzzleBox attrs) =
+    [ restrictedAbility attrs 1 (ControlsThis <> InvestigatorExists (NotInvestigator You)) $
+        ForcedAbility $
+          InvestigatorDefeated Timing.When ByAny You
+    , limitedAbility (GroupLimit PerGame 1)
+        $ restrictedAbility
+          attrs
+          2
+          ( ControlsThis
+              <> AnyCriterion
+                [ enemyExists (enemyIs Enemies.theSpectralWatcher)
+                , LocationExists (YourLocation <> LocationWithBrazier Lit)
+                ]
+          )
+        $ ActionAbility Nothing
+        $ ActionCost 1
+    ]
+
 instance RunMessage PuzzleBox where
-  runMessage msg (PuzzleBox attrs) = PuzzleBox <$> runMessage msg attrs
+  runMessage msg a@(PuzzleBox attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      others <- selectList $ NotInvestigator (InvestigatorWithId iid)
+      push $ chooseOne iid [targetLabel other [TakeControlOfAsset other (toId attrs)] | other <- others]
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      exhaustedSpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ExhaustedEnemy
+      readySpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ReadyEnemy
+      locationLit <- selectOne $ LocationWithBrazier Lit <> locationWithInvestigator iid
+      push $
+        chooseOrRunOne iid $
+          [ Label "Unlight a brazier at your location" [SetBrazier location Unlit]
+          | location <- maybeToList locationLit
+          ]
+            <> [ Label "Exhaust the Spectral Watcher" [Exhaust (toTarget enemyId)]
+               | enemyId <- maybeToList readySpectralWatcher
+               ]
+            <> [ Label "Deal 5 damage to the Spectral Watcher" [EnemyDamage enemyId $ nonAttack attrs 5]
+               | enemyId <- maybeToList exhaustedSpectralWatcher
+               ]
+      pure a
+    _ -> PuzzleBox <$> runMessage msg attrs

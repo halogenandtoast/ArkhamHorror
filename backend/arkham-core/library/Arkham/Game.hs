@@ -1554,7 +1554,8 @@ getLocationsMatching lmatcher = do
             AtLocation x -> Just x
             _ -> Nothing
       pure $ filter ((`elem` validLids) . toId) ls
-
+    LocationWithBrazier brazier -> do
+      pure $ filter ((== Just brazier) . locationBrazier . toAttrs) ls
     -- these can not be queried
     LocationLeavingPlay -> pure []
     SameLocation -> pure []

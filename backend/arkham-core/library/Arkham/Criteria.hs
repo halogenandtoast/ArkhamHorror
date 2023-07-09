@@ -147,6 +147,11 @@ data Criterion
 enemyExists :: EnemyMatcher -> Criterion
 enemyExists = EnemyCriteria . EnemyExists
 
+pattern CanPlaceDoomOnThis :: Criterion
+pattern CanPlaceDoomOnThis <- Negate (SelfHasModifier CannotPlaceDoomOnThis)
+  where
+    CanPlaceDoomOnThis = Negate (SelfHasModifier CannotPlaceDoomOnThis)
+
 instance Semigroup Criterion where
   Never <> _ = Never
   _ <> Never = Never

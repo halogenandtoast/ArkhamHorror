@@ -140,7 +140,12 @@ instance RunMessage EnemyAttrs where
             leadInvestigatorId
             [ targetLabel
               lid
-              [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
+              [ Will (EnemySpawn (Just iid) lid eid)
+              , When (EnemySpawn (Just iid) lid eid)
+              , EnemySpawnedAt lid eid
+              , EnemyEngageInvestigator eid iid
+              , After (EnemySpawn (Just iid) lid eid)
+              ]
             | (iid, lid) <- toList iids
             ]
       pure a

@@ -39,12 +39,14 @@ instance RunMessage KnightOfTheOuterVoid where
   runMessage msg e@(KnightOfTheOuterVoid attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
       lead <- getLead
-      push $
-        chooseOne
-          lead
-          [ Label "Place 1 doom" [PlaceDoom (toSource attrs) (toTarget attrs) 1]
-          , Label "Place 2 doom" [PlaceDoom (toSource attrs) (toTarget attrs) 2]
-          ]
+      canPlaceDoom <- toId attrs <=~> NotEnemy (EnemyWithModifier CannotPlaceDoomOnThis)
+      when canPlaceDoom $ do
+        push $
+          chooseOne
+            lead
+            [ Label "Place 1 doom" [PlaceDoom (toSource attrs) (toTarget attrs) 1]
+            , Label "Place 2 doom" [PlaceDoom (toSource attrs) (toTarget attrs) 2]
+            ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $

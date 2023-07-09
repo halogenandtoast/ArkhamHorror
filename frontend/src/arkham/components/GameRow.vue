@@ -27,7 +27,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
 </script>
 
 <template>
-  <div class="game" :class="{ 'finished-game': game.gameState == 'IsOver' }">
+  <div class="game" :class="{ 'finished-game': game.gameState.tag == 'IsOver' }">
     <div class="game-details">
       <div class="game-title">
         <div class="campaign-icon-container" v-if="campaign">

@@ -16,8 +16,8 @@ const currentUser = computed<User | null>(() => store.getCurrentUser)
 const deleteId = ref<string | null>(null)
 const games: Ref<Game[]> = ref([])
 
-const activeGames = computed(() => games.value.filter(g => g.gameState !== 'IsOver'))
-const finishedGames = computed(() => games.value.filter(g => g.gameState === 'IsOver'))
+const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
+const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
 
 fetchGames().then((result) => games.value = result)
 

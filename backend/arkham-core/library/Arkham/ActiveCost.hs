@@ -656,10 +656,10 @@ instance RunMessage ActiveCost where
         ClueCost gv -> do
           totalClues <- getPlayerCountValue gv
           push $ InvestigatorSpendClues iid totalClues
-          withPayment $ CluePayment totalClues
+          withPayment $ CluePayment iid totalClues
         PlaceClueOnLocationCost x -> do
           push $ InvestigatorPlaceCluesOnLocation iid source x
-          withPayment $ CluePayment x
+          withPayment $ CluePayment iid x
         GroupClueCostRange (sVal, eVal) locationMatcher -> do
           mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt locationMatcher)
           if mVal == sVal
@@ -699,14 +699,13 @@ instance RunMessage ActiveCost where
                     )
                     iidsWithClues
               leadInvestigatorId <- getLeadInvestigatorId
-              c
-                <$ push
-                  ( Ask leadInvestigatorId $
-                      ChoosePaymentAmounts
-                        (displayCostType cost)
-                        (Just totalClues)
-                        paymentOptions
-                  )
+              push $
+                Ask leadInvestigatorId $
+                  ChoosePaymentAmounts
+                    (displayCostType cost)
+                    (Just totalClues)
+                    paymentOptions
+              pure c
         -- push (SpendClues totalClues iids)
         -- withPayment $ CluePayment totalClues
         HandDiscardCost x cardMatcher -> do

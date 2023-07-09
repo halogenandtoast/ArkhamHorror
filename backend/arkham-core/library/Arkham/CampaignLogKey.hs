@@ -13,7 +13,8 @@ import Data.Text qualified as T
 import Data.Typeable
 
 data CampaignLogKey
-  = DrivenInsaneInvestigators
+  = -- | The Night of the Zealot
+    DrivenInsaneInvestigators
   | KilledInvestigators
   | GhoulPriestIsStillAlive
   | YourHouseIsStillStanding
@@ -25,9 +26,9 @@ data CampaignLogKey
   | ArkhamSuccumbedToUmordhothsTerribleVengeance
   | TheRitualToSummonUmordhothWasBroken
   | TheInvestigatorsRepelledUmordoth
-  | -- | The Night of the Zealot
-    TheInvestigatorsSacrificedLitaChantlerToUmordhoth
-  | ProfessorWarrenRiceWasKidnapped
+  | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
+  | -- | The Dunwich Legacy
+    ProfessorWarrenRiceWasKidnapped
   | TheInvestigatorsRescuedProfessorWarrenRice
   | TheInvestigatorsFailedToSaveTheStudents
   | TheStudentsWereRescued
@@ -60,9 +61,9 @@ data CampaignLogKey
   | TheInvestigatorsEnteredTheGate
   | YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
   | TheInvestigatorsClosedTheTearInReality
-  | -- | The Dunwich Legacy
-    YogSothothHasFledToAnotherDimension
-  | TheStrangerIsOnToYou
+  | YogSothothHasFledToAnotherDimension
+  | -- | The Path to Carcosa
+    TheStrangerIsOnToYou
   | ChasingTheStranger
   | YouTriedToWarnThePolice
   | ThePoliceAreSuspiciousOfYou
@@ -96,9 +97,9 @@ data CampaignLogKey
   | TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
   | TheInvestigatorsPreventedHasturFromEscapingHisPrison
   | HasturHasYouInHisGrasp
-  | -- | The Path to Carcosa
-    Possessed
-  | TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+  | Possessed
+  | -- | The Forgotten Age
+    TheInvestigatorsWereForcedToWaitForAdditionalSupplies
   | IchtacaObservedYourProgressWithKeenInterest
   | AlejandroFollowedTheInvestigatorsIntoTheRuins
   | IchtacaIsWaryOfTheInvestigators
@@ -144,9 +145,9 @@ data CampaignLogKey
   | TheInvestigatorsSavedTheCivilizationOfTheYithians
   | TheFabricOfTimeIsUnwoven
   | TheInvestigatorsTurnedBackTime
-  | -- | The Forgotten Age
-    TheInvestigatorsSealedTheRelicOfAgesForever
-  | MissingPersons
+  | TheInvestigatorsSealedTheRelicOfAgesForever
+  | -- | The Circle Undone
+    MissingPersons
   | WasTakenByTheWatcher
   | WasClaimedBySpecters
   | DisappearedIntoTheMist
@@ -174,23 +175,25 @@ data CampaignLogKey
   | TheInvestigatorsToldTheLodgeAboutTheCoven
   | TheInvestigatorsHidTheirKnowledgeOfTheCoven
   | TheInvestigatorsSurvivedTheWatchersEmbrace
-  | -- | The Circle Undone
-    HereticsWereUnleashedUntoArkham
-  | TheRougarouContinuesToHauntTheBayou
-  | TheRougarouIsDestroyed
+  | HereticsWereUnleashedUntoArkham
+  | TheGuardianOfTheTrapEmerged
+  | TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
+  | TheGuardianOfTheTrapEmergedAndWasDefeated
   | -- | Curse of the Rougarou
-    TheRougarouEscapedAndYouEmbracedTheCurse
-  | ManyWereSacrificedToCnidathquaDuringTheCarnivale
-  | TheSunBanishedCnidathquaIntoTheDepths
+    TheRougarouContinuesToHauntTheBayou
+  | TheRougarouIsDestroyed
+  | TheRougarouEscapedAndYouEmbracedTheCurse
   | -- | Carnevale of Horrors
-    CnidathquaRetreatedToNurseItsWounds
-  | YouHaveIdentifiedTheSolution
+    ManyWereSacrificedToCnidathquaDuringTheCarnivale
+  | TheSunBanishedCnidathquaIntoTheDepths
+  | CnidathquaRetreatedToNurseItsWounds
+  | -- | Player Cards
+    YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs
   | YouHaveIdentifiedTheStone
   | DoomApproaches
   | TheHourIsNigh
-  | -- | Player Cards
-    YouHaveTranslatedTheTome
+  | YouHaveTranslatedTheTome
   deriving stock (Eq, Show, Ord)
 
 $(deriveJSON defaultOptions ''CampaignLogKey)

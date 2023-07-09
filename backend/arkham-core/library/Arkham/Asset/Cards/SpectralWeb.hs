@@ -34,7 +34,7 @@ instance HasAbilities SpectralWeb where
     ]
 
 toSpentClues :: Payment -> Int
-toSpentClues (CluePayment x) = x
+toSpentClues (CluePayment _ x) = x
 toSpentClues (Payments xs) = sum $ map toSpentClues xs
 toSpentClues _ = 0
 

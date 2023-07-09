@@ -67,7 +67,7 @@ increaseResourceCost other _ = other
 data Payment
   = ActionPayment Int
   | AdditionalActionPayment
-  | CluePayment Int
+  | CluePayment InvestigatorId Int
   | DoomPayment Int
   | ResourcePayment Int
   | CardPayment Card

@@ -22,7 +22,7 @@ markOfTheOrder = treachery MarkOfTheOrder Cards.markOfTheOrder
 
 instance RunMessage MarkOfTheOrder where
   runMessage msg t@(MarkOfTheOrder attrs) = case msg of
-    Revelation iid (isSource attrs -> True) -> do
+    Revelation _ (isSource attrs -> True) -> do
       skullInvestigator <- selectOne $ InvestigatorWithKey SkullKey
       cultistInvestigator <- selectOne $ InvestigatorWithKey CultistKey
       tabletInvestigator <- selectOne $ InvestigatorWithKey TabletKey
@@ -32,7 +32,7 @@ instance RunMessage MarkOfTheOrder where
         push $ LoseResources i (toSource attrs) 3
 
       for_ tabletInvestigator $ \i ->
-        push $ toMessage $ randomDiscard iid attrs
+        push $ toMessage $ randomDiscard i attrs
 
       for_ cultistInvestigator $ \i ->
         push $ InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1

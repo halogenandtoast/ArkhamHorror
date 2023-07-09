@@ -136,6 +136,8 @@ const debugExport = () => {
   });
 }
 
+const gameOver = computed(() => game.value.gameState.tag === "IsOver")
+
 const source = ref(`${window.location.href}/join`) // fix-syntax`
 const { copy } = useClipboard({ source })
 </script>
@@ -145,7 +147,7 @@ const { copy } = useClipboard({ source })
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
-    <div v-if="game.gameState === 'IsPending'" class="invite-container">
+    <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
       <header>
         <h2>Waiting for more players</h2>
       </header>
@@ -169,7 +171,7 @@ const { copy } = useClipboard({ source })
           @update="update"
         />
         <Scenario
-          v-else-if="game.scenario && !game.gameOver"
+          v-else-if="game.scenario && !gameOver"
           :game="game"
           :gameLog="gameLog"
           :scenario="game.scenario"
@@ -177,7 +179,7 @@ const { copy } = useClipboard({ source })
           @choose="choose"
           @update="update"
         />
-        <div class="sidebar" v-if="game.scenario && game.gameState !== 'IsPending'">
+        <div class="sidebar" v-if="game.scenario && game.gameState.tag !== 'IsPending'">
           <CardOverlay />
           <GameLog :game="game" :gameLog="gameLog" />
           <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
@@ -187,7 +189,7 @@ const { copy } = useClipboard({ source })
           <button @click="toggleDebug">Toggle Debug</button>
           <button @click="debugExport">Debug Export</button>
         </div>
-        <div class="game-over" v-if="game.gameState === 'IsOver'">
+        <div class="game-over" v-if="gameOver">
           <p>Game over</p>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
         </div>

@@ -310,10 +310,11 @@ const locations = computed(() => Object.values(props.game.locations).
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
+const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 </script>
 
 <template>
-  <div v-if="!game.gameOver" id="scenario" class="scenario">
+  <div v-if="!gameOver" id="scenario" class="scenario">
     <div class="scenario-body">
       <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
       <CardRow

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, provide, watch } from 'vue'
+import { ref, provide, watch, computed } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGameReplay } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
@@ -20,6 +20,7 @@ const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 const step = ref(1)
 const totalSteps = ref(0)
+const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 watch(step, currentStep => {
   fetchGameReplay(props.gameId, currentStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
@@ -42,7 +43,7 @@ watch(step, currentStep => {
         :investigatorId="investigatorId"
       />
       <Scenario
-        v-else-if="game.scenario && !game.gameOver"
+        v-else-if="game.scenario && !gameOver"
         :game="game"
         :gameLog="gameLog"
         :scenario="game.scenario"

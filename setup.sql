@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.6 (Homebrew)
--- Dumped by pg_dump version 14.6 (Homebrew)
+-- Dumped from database version 14.8 (Homebrew)
+-- Dumped by pg_dump version 14.8 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -188,6 +188,36 @@ CREATE TABLE public.arkham_steps (
     choice jsonb NOT NULL,
     step integer NOT NULL
 );
+
+
+--
+-- Name: password_resets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.password_resets (
+    id uuid DEFAULT public.uuid_generate_v1mc() NOT NULL,
+    user_id bigint NOT NULL,
+    expires_at timestamp with time zone NOT NULL
+);
+
+
+--
+-- Name: password_resets_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.password_resets_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: password_resets_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.password_resets_user_id_seq OWNED BY public.password_resets.user_id;
 
 
 --
@@ -735,6 +765,13 @@ ALTER TABLE ONLY public.arkham_players ALTER COLUMN user_id SET DEFAULT nextval(
 
 
 --
+-- Name: password_resets user_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.password_resets ALTER COLUMN user_id SET DEFAULT nextval('public.password_resets_user_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -771,6 +808,14 @@ ALTER TABLE ONLY public.arkham_log_entries
 
 ALTER TABLE ONLY public.arkham_players
     ADD CONSTRAINT arkham_players_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: password_resets password_resets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.password_resets
+    ADD CONSTRAINT password_resets_pkey PRIMARY KEY (id);
 
 
 --
@@ -921,6 +966,14 @@ ALTER TABLE ONLY public.arkham_players
 
 ALTER TABLE ONLY public.arkham_steps
     ADD CONSTRAINT arkham_steps_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id);
+
+
+--
+-- Name: password_resets password_resets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.password_resets
+    ADD CONSTRAINT password_resets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

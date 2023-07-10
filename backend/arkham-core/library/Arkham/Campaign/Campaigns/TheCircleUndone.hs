@@ -163,6 +163,8 @@ instance RunMessage TheCircleUndone where
         , NextCampaignStep Nothing
         ]
       pure c
+    CampaignStep (Just (InterludeStep 3 _)) -> do
+      pure c
     NextCampaignStep mOverrideStep -> do
       let step = mOverrideStep <|> nextStep attrs
       push $ CampaignStep step

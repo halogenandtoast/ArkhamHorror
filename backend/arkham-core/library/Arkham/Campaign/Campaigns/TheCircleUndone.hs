@@ -10,6 +10,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Import
+import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Helpers
@@ -163,7 +164,72 @@ instance RunMessage TheCircleUndone where
         , NextCampaignStep Nothing
         ]
       pure c
-    CampaignStep (Just (InterludeStep 3 _)) -> do
+    CampaignStep (Just (InterludeStep 3 mInterludeKey)) -> do
+      iids <- allInvestigatorIds
+      lead <- getLead
+      pushAll
+        [ story iids theInnerCircle1
+        , chooseOne
+            lead
+            [ Label "" [CampaignStep (Just (InterludeStepPart 3 mInterludeKey 2))]
+            , Label "" [CampaignStep (Just (InterludeStepPart 3 mInterludeKey 3))]
+            ]
+        ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 3 mInterludeKey 2)) -> do
+      iids <- allInvestigatorIds
+      rescuedJosef <- getHasRecord TheInvestigatorsRescuedJosef
+      toldLodgeAboutCoven <- getHasRecord TheInvestigatorsToldTheLodgeAboutTheCoven
+      someMementos <- getRecordSet MementosDiscovered
+      let mementos = mapMaybe (unrecorded @Memento) someMementos
+      pushAll
+        [ story iids theInnerCircle2
+        , crossOutRecordSetEntries MementosDiscovered (toList mementos)
+        , CampaignStep
+            (Just (InterludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5))
+        ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 3 _ 3)) -> do
+      iids <- allInvestigatorIds
+      pushAll
+        [ story iids theInnerCircle3
+        , Record TheInvestigatorsKeptsTheirMementosHidden
+        , NextCampaignStep Nothing
+        ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 3 mInterludeKey 4)) -> do
+      iids <- allInvestigatorIds
+      lead <- getLead
+      pushAll
+        [ story iids theInnerCircle4
+        , chooseUpToN
+            lead
+            3
+            "Done asking question"
+            [ Label "What is the creature?" [story iids whatIsTheCreature]
+            , Label "What do you want with the creature?" [story iids whatDoYouWantWithTheCreature]
+            , Label "What do the witches want with the creature?" [story iids whatDoTheWitchesWantWithTheCreature]
+            , Label
+                "Did you know about the creature before the charity gala?"
+                [story iids didYouKnowAboutTheCreatureBeforeTheCharityGala]
+            , Label
+                "Where are the four missing people from the charity gala?"
+                [story iids whereAreTheFourMissingPeopleFromTheCharityGala]
+            ]
+        , CampaignStep (Just (InterludeStepPart 3 mInterludeKey 6))
+        ]
+      pure c
+    CampaignStep (Just (InterludeStepPart 3 _ 5)) -> do
+      iids <- allInvestigatorIds
+      pushAll [story iids theInnerCircle5, NextCampaignStep Nothing]
+      pure c
+    CampaignStep (Just (InterludeStepPart 3 _ 6)) -> do
+      iids <- allInvestigatorIds
+      pushAll
+        [ story iids theInnerCircle6
+        , Record TheInvestigatorsWereInductedIntoTheInnerCircle
+        , NextCampaignStep Nothing
+        ]
       pure c
     NextCampaignStep mOverrideStep -> do
       let step = mOverrideStep <|> nextStep attrs

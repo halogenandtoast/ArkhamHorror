@@ -179,6 +179,8 @@ data CampaignLogKey
   | TheGuardianOfTheTrapEmerged
   | TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
   | TheGuardianOfTheTrapEmergedAndWasDefeated
+  | TheInvestigatorsKeptsTheirMementosHidden
+  | TheInvestigatorsWereInductedIntoTheInnerCircle
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -225,7 +227,7 @@ unrecorded :: forall a. (Recordable a) => SomeRecorded -> Maybe a
 unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
   Just Refl -> case rec of
     Recorded a -> Just a
-    CrossedOut a -> Just a
+    _ -> Nothing
   Nothing -> Nothing
 
 instance ToGameLoggerFormat CampaignLogKey where

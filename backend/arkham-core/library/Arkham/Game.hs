@@ -3756,12 +3756,12 @@ runGameMessage msg g = case msg of
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
     miid <- getSourceController source
-    leadId <- getLeadInvestigatorId
+    lead <- getLead
     -- TODO: This is wrong but history is the way we track if enemies were
     -- defeated for cards like Kerosene (1), we need a history independent of
     -- the iid for cases where we aren't looking at a specific investigator
     let
-      iid = fromMaybe leadId miid
+      iid = fromMaybe lead miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid
       historyItem =
         mempty
@@ -3843,11 +3843,11 @@ runGameMessage msg g = case msg of
                 , locationWithoutClues = locationWithoutClues oldAttrs
                 }
     -- todo: should we just run this in place?
-    iid <- getLeadInvestigatorId
+    lead <- getLead
     enemies <- selectList $ enemyAt lid
     afterPutIntoPlayWindow <-
       checkWindows
-        [Window Timing.After (Window.PutLocationIntoPlay iid lid)]
+        [Window Timing.After (Window.PutLocationIntoPlay lead lid)]
     if replaceStrategy == Swap
       then pushAll $ map EnemyCheckEngagement enemies
       else
@@ -3869,45 +3869,38 @@ runGameMessage msg g = case msg of
       _ -> False
     pure $ g & entitiesL . enemiesL %~ deleteMap eid
   RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
-  When (RemoveEnemy eid) -> do
-    window <-
+  When (RemoveEnemy enemy) -> do
+    pushM $
       checkWindows
-        [Window Timing.When (Window.LeavePlay $ EnemyTarget eid)]
-    g <$ push window
+        [Window Timing.When (Window.LeavePlay $ toTarget enemy)]
+    pure g
   RemoveTreachery tid -> do
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
-    pure $
-      g
-        & entitiesL
-          . treacheriesL
-          %~ deleteMap tid
+    pure $ g & entitiesL . treacheriesL %~ deleteMap tid
   When (RemoveLocation lid) -> do
-    window <-
+    pushM $
       checkWindows
-        [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
-    g <$ push window
+        [Window Timing.When (Window.LeavePlay $ toTarget lid)]
+    pure g
   RemovedLocation lid -> do
-    treacheryIds <- selectList $ TreacheryAt $ LocationWithId lid
-    pushAll $
-      concatMap
-        (resolve . Discard GameSource . TreacheryTarget)
-        treacheryIds
-    enemyIds <- selectList $ EnemyAt $ LocationWithId lid
-    pushAll $ concatMap (resolve . Discard GameSource . EnemyTarget) enemyIds
-    eventIds <- selectList $ EventAt $ LocationWithId lid
-    pushAll $ concatMap (resolve . Discard GameSource . EventTarget) eventIds
-    assetIds <- selectList (AssetAt $ LocationWithId lid)
-    pushAll $ concatMap (resolve . Discard GameSource . AssetTarget) assetIds
-    investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+    treacheries <- selectList $ TreacheryAt $ LocationWithId lid
+    pushAll $ concatMap (resolve . Discard GameSource . toTarget) treacheries
+    enemies <- selectList $ enemyAt lid
+    pushAll $ concatMap (resolve . Discard GameSource . toTarget) enemies
+    events <- selectList $ eventAt lid
+    pushAll $ concatMap (resolve . Discard GameSource . toTarget) events
+    assets <- selectList $ assetAt lid
+    pushAll $ concatMap (resolve . Discard GameSource . toTarget) assets
+    investigators <- selectList $ investigatorAt lid
     -- since we handle the would be defeated window in the previous message we
     -- skip directly to the is defeated message even though we would normally
     -- not want to do this
     pushAll $
       concatMap
-        (resolve . Msg.InvestigatorIsDefeated (LocationSource lid))
-        investigatorIds
+        (resolve . Msg.InvestigatorIsDefeated (toSource lid))
+        investigators
     pure $ g & entitiesL . locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
@@ -3927,10 +3920,8 @@ runGameMessage msg g = case msg of
       xs -> do
         if sum (map snd investigatorsWithClues) == n
           then
-            pushAll
-              [ InvestigatorSpendClues iid x
-              | (iid, x) <- investigatorsWithClues
-              ]
+            pushAll $
+              map (uncurry InvestigatorSpendClues) investigatorsWithClues
           else
             pushAll
               [ chooseOne (gameLeadInvestigatorId g) $
@@ -3948,8 +3939,7 @@ runGameMessage msg g = case msg of
       newAgenda = lookupAgenda newAgendaId agendaDeckId (toCardId card)
     pure $
       g
-        & (entitiesL . agendasL %~ deleteMap aid1)
-        & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda)
+        & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda . deleteMap aid1)
   ReplaceAct aid1 card -> do
     actDeckId <- field ActDeckId aid1
     let
@@ -3957,8 +3947,7 @@ runGameMessage msg g = case msg of
       newAct = lookupAct newActId actDeckId (toCardId card)
     pure $
       g
-        & (entitiesL . actsL %~ deleteMap aid1)
-        & (entitiesL . actsL %~ insertMap newActId newAct)
+        & (entitiesL . actsL %~ insertMap newActId newAct . deleteMap aid1)
   AddAct deckNum card -> do
     let aid = ActId $ toCardCode card
     pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum (toCardId card)
@@ -3972,7 +3961,7 @@ runGameMessage msg g = case msg of
         SkillType -> do
           skillId <- getRandom
           let skill = createSkill pc iid skillId
-          push (InvestigatorCommittedSkill iid skillId)
+          push $ InvestigatorCommittedSkill iid skillId
           for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
             let ability = abilityEffect skill cost
             push $ PayForAbility ability []
@@ -4094,9 +4083,8 @@ runGameMessage msg g = case msg of
 
       card <- field AssetCard assetId
       if assetIsStory $ toAttrs asset
-        then push $ Discard GameSource $ AssetTarget assetId
-        else do
-          pushAll [RemoveFromPlay (AssetSource assetId), addToHand iid card]
+        then push $ Discard GameSource $ toTarget assetId
+        else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
     pure g
   PlaceEnemy enemyId (OutOfPlay outOfPlayZone) -> do
     push $ SetOutOfPlay outOfPlayZone (EnemyTarget enemyId)
@@ -4995,11 +4983,10 @@ runGameMessage msg g = case msg of
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
   Discarded (InvestigatorTarget iid) source card -> do
-    push
-      =<< checkWindows
-        ( (`Window` Window.Discarded iid source card)
-            <$> [Timing.When, Timing.After]
-        )
+    pushM $
+      checkWindows $
+        (`Window` Window.Discarded iid source card)
+          <$> [Timing.When, Timing.After]
     pure g
   InvestigatorAssignDamage iid' (InvestigatorSource iid) _ n 0 | n > 0 -> do
     let
@@ -5012,12 +4999,12 @@ runGameMessage msg g = case msg of
   Msg.EnemyDamage eid assignment@(damageAssignmentAmount -> n) | n > 0 -> do
     let source = damageAssignmentSource assignment
     miid <- getSourceController source
-    leadId <- getLeadInvestigatorId
+    lead <- getLead
     -- TODO: This is wrong but history is the way we track if enemies were
     -- defeated for cards like Kerosene (1), we need a history independent of
     -- the iid for cases where we aren't looking at a specific investigator
     let
-      iid = fromMaybe leadId miid
+      iid = fromMaybe lead miid
       historyItem = mempty {historyDealtDamageTo = [EnemyTarget eid]}
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =

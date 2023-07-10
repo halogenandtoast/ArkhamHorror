@@ -2698,6 +2698,7 @@ locationMatches investigatorId source window locationId matcher' = do
     -- special cases
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
+    Matcher.LocationWithBrazier _ -> locationId <=~> matcher
     Matcher.LocationWithDefeatedEnemyThisRound -> locationId <=~> matcher
     Matcher.LocationWithDiscoverableCluesBy _ -> locationId <=~> matcher
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
@@ -2705,25 +2706,11 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.IsIchtacasDestination -> locationId <=~> matcher
     Matcher.HauntedLocation -> locationId <=~> matcher
     Matcher.SingleSidedLocation -> locationId <=~> matcher
-    Matcher.LocationWithEnemy enemyMatcher ->
-      selectAny
-        (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
-    Matcher.LocationWithAsset assetMatcher ->
-      selectAny
-        (Matcher.AssetAt (Matcher.LocationWithId locationId) <> assetMatcher)
-    Matcher.LocationWithInvestigator whoMatcher ->
-      selectAny
-        (Matcher.InvestigatorAt (Matcher.LocationWithId locationId) <> whoMatcher)
-    Matcher.LocationWithoutTreachery treacheryMatcher -> do
-      selectNone
-        ( Matcher.TreacheryAt (Matcher.LocationWithId locationId)
-            <> treacheryMatcher
-        )
-    Matcher.LocationWithTreachery treacheryMatcher -> do
-      selectAny
-        ( Matcher.TreacheryAt (Matcher.LocationWithId locationId)
-            <> treacheryMatcher
-        )
+    Matcher.LocationWithEnemy enemyMatcher -> selectAny $ Matcher.enemyAt locationId <> enemyMatcher
+    Matcher.LocationWithAsset assetMatcher -> selectAny $ Matcher.assetAt locationId <> assetMatcher
+    Matcher.LocationWithInvestigator whoMatcher -> selectAny $ Matcher.investigatorAt locationId <> whoMatcher
+    Matcher.LocationWithoutTreachery treacheryMatcher -> do selectNone $ Matcher.treacheryAt locationId <> treacheryMatcher
+    Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
     Matcher.LocationWithLowerShroudThan _ -> locationId <=~> matcher

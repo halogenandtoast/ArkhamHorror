@@ -17,7 +17,7 @@ You will need to install [Docker][docker].
 Afterwards you can run:
 
 ```
-docker-compose up
+docker compose up
 ```
 
 And launch http://localhost:3000
@@ -25,9 +25,9 @@ And launch http://localhost:3000
 If you pull updates in the future make sure to run
 
 ```
-docker-compose down
-docker-compose build
-docker-compose up
+docker compose down
+docker compose build
+docker compose up
 ```
 
 ## Features

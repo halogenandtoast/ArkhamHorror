@@ -12,6 +12,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql
   web:
+    image: "halogenandtoast/arkham-horror:latest"
     build:
       context: .
       args:

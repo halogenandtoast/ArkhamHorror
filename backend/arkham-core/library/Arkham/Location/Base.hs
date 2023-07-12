@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Location.Base where
 
 import Arkham.Prelude
@@ -56,3 +58,5 @@ instance ToJSON LocationAttrs where
 
 instance FromJSON LocationAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
+
+makeLensesWith suffixedFields ''LocationAttrs

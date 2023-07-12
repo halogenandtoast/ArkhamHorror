@@ -37,11 +37,12 @@ import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
 import Arkham.Exception
+import Arkham.Field
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Key
-import Arkham.Location.Brazier
+import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated)
 import Arkham.Movement
 import Arkham.Name
@@ -734,7 +735,7 @@ data Message
   | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId
-  | SetBrazier LocationId Brazier
+  | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
   | -- Commit
     Do Message

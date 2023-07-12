@@ -11,7 +11,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (InvestigatorDefeated)
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Field
 import Arkham.Location.Brazier
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -54,7 +56,9 @@ instance RunMessage PuzzleBox where
       locationLit <- selectOne $ LocationWithBrazier Lit <> locationWithInvestigator iid
       push $
         chooseOrRunOne iid $
-          [ Label "Unlight a brazier at your location" [SetBrazier location Unlit]
+          [ Label
+            "Unlight a brazier at your location"
+            [UpdateLocation location (LocationBrazier ?=. Unlit)]
           | location <- maybeToList locationLit
           ]
             <> [ Label "Exhaust the Spectral Watcher" [Exhaust (toTarget enemyId)]

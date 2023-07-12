@@ -2361,6 +2361,7 @@ instance Projection Location where
       LocationHorror -> pure locationHorror
       LocationDoom -> pure locationDoom
       LocationShroud -> pure locationShroud
+      LocationBrazier -> pure locationBrazier
       LocationTraits -> do
         modifiers <- withDepthGuard 3 [] $ getModifiers (toTarget attrs)
         let

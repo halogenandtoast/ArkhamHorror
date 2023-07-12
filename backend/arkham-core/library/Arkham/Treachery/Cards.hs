@@ -197,6 +197,7 @@ allEncounterTreacheryCards =
       , daemonicPiping
       , danceOfTheYellowKing
       , deadlyFate
+      , deathApproaches
       , deepDark
       , descentIntoMadness
       , diabolicVoices
@@ -206,6 +207,7 @@ allEncounterTreacheryCards =
       , draggedUnder
       , dreamsOfRlyeh
       , eagerForDeath
+      , eagerForDeathUnionAndDisillusion
       , entombed
       , ephemeralExhibits
       , evilPast
@@ -264,6 +266,7 @@ allEncounterTreacheryCards =
       , possessionTorturous
       , possessionTraitorous
       , psychopompsSong
+      , psychopompsSongUnionAndDisillusion
       , pulledByTheStars
       , punishment
       , pushedIntoTheBeyond
@@ -322,6 +325,7 @@ allEncounterTreacheryCards =
       , vortexOfTime
       , wallsClosingIn
       , watchersGaze
+      , watchersGazeUnionAndDisillusion
       , watchersGrasp
       , whispersInTheDark
       , whispersInYourHeadAnxiety
@@ -1536,6 +1540,38 @@ markOfTheOrder =
   (treachery "05226" "Mark of the Order" ForTheGreaterGood 2)
     { cdCardTraits = singleton Scheme
     , cdKeywords = singleton Keyword.Surge
+    }
+
+eagerForDeathUnionAndDisillusion :: CardDef
+eagerForDeathUnionAndDisillusion =
+  (treachery "05268" "Eager for Death" UnionAndDisillusion 2)
+    { cdCardTraits = setFromList [Omen]
+    }
+
+psychopompsSongUnionAndDisillusion :: CardDef
+psychopompsSongUnionAndDisillusion =
+  (treachery "05268" "Psychopomp's Song" UnionAndDisillusion 2)
+    { cdCardTraits = singleton Omen
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril]
+    }
+
+deathApproaches :: CardDef
+deathApproaches =
+  (treachery "05269" "Death Approaches" UnionAndDisillusion 2)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril]
+    }
+
+markedForDeath :: CardDef
+markedForDeath =
+  (treachery "05270" "Marked for Death" UnionAndDisillusion 2)
+    { cdCardTraits = singleton Curse
+    }
+
+watchersGazeUnionAndDisillusion :: CardDef
+watchersGazeUnionAndDisillusion =
+  (treachery "05271" "Watcher's Gaze" UnionAndDisillusion 1)
+    { cdCardTraits = singleton Curse
     }
 
 theHarbinger :: CardDef

@@ -69,4 +69,8 @@ allStories =
     , SomeStoryCard unfinishedBusiness_H
     , SomeStoryCard unfinishedBusiness_J
     , SomeStoryCard unfinishedBusiness_L
+    , SomeStoryCard gavriellasFate
+    , SomeStoryCard jeromesFate
+    , SomeStoryCard pennysFate
+    , SomeStoryCard valentinosFate
     ]

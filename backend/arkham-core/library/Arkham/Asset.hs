@@ -507,6 +507,11 @@ allAssets =
       SomeAssetCard deVermisMysteriis2
     , --- survivor [uad]
       SomeAssetCard guidingSpirit1
+    , --- story [uad]
+      SomeAssetCard gavriellaMizrah
+    , SomeAssetCard jeromeDavids
+    , SomeAssetCard pennyWhite
+    , SomeAssetCard valentinoRivas
     , -- In the Clutches of Chaos
       --- guardian [icc]
       SomeAssetCard mk1Grenades4

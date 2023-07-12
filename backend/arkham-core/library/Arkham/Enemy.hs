@@ -268,6 +268,13 @@ allEnemies =
     , SomeEnemyCard summonedBeast
     , SomeEnemyCard knightOfTheInnerCircle
     , SomeEnemyCard knightOfTheOuterVoid
+    , -- Union and Disillusion
+      SomeEnemyCard gavriellaMizrah
+    , SomeEnemyCard jeromeDavids
+    , SomeEnemyCard pennyWhite
+    , SomeEnemyCard valentinoRivas
+    , SomeEnemyCard whippoorwillUnionAndDisillusion
+    , SomeEnemyCard spectralRaven
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

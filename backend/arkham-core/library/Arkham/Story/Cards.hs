@@ -96,6 +96,10 @@ allStoryCards =
       , unfinishedBusiness_H
       , unfinishedBusiness_J
       , unfinishedBusiness_L
+      , gavriellasFate
+      , jeromesFate
+      , pennysFate
+      , valentinosFate
       ]
 
 sickeningReality_65 :: CardDef
@@ -194,3 +198,15 @@ unfinishedBusiness_J = story "05178j" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_L :: CardDef
 unfinishedBusiness_L = story "05178l" "Unfinished Business" TheWagesOfSin
+
+gavriellasFate :: CardDef
+gavriellasFate = story "05262" "Gavriella's Fate" UnionAndDisillusion
+
+jeromesFate :: CardDef
+jeromesFate = story "05263" "Jerome's Fate" UnionAndDisillusion
+
+pennysFate :: CardDef
+pennysFate = story "05264" "Penny's Fate" UnionAndDisillusion
+
+valentinosFate :: CardDef
+valentinosFate = story "05265" "Valentino's Fate" UnionAndDisillusion

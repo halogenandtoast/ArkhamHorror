@@ -176,6 +176,9 @@ allAgendas =
     , -- For the Greater Good
       SomeAgendaCard theHierophantV
     , SomeAgendaCard endsAndMeans
+    , -- Union and Disillusion
+      SomeAgendaCard theLoversVI
+    , SomeAgendaCard crossroadsOfFate
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

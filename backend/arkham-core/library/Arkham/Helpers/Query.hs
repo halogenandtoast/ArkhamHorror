@@ -34,6 +34,9 @@ getInvestigatorIds = selectList UneliminatedInvestigator
 allInvestigatorIds :: (HasGame m) => m [InvestigatorId]
 allInvestigatorIds = selectList Anyone
 
+allInvestigators :: (HasGame m) => m [InvestigatorId]
+allInvestigators = allInvestigatorIds
+
 selectAssetController
   :: (HasGame m) => AssetId -> m (Maybe InvestigatorId)
 selectAssetController = selectOne . HasMatchingAsset . AssetWithId

@@ -34,3 +34,56 @@ instance Eq (SomeField a) where
 
 instance ToJSON (SomeField a) where
   toJSON (SomeField f) = toJSON f
+
+data Update a where
+  Update
+    :: (Show typ, Eq typ, Typeable typ, FromJSON typ, ToJSON typ, Show (Field a typ), ToJSON (Field a typ))
+    => Field a typ
+    -> typ
+    -> Update a
+
+instance Show (Update a) where
+  show (Update f v) = show f <> " = " <> show v
+
+instance Eq (Update a) where
+  Update (f1 :: Field a typ1) v1 == Update (f2 :: Field a typ2) v2 = case eqT @typ1 @typ2 of
+    Just Refl -> f1 == f2 && v1 == v2
+    Nothing -> False
+
+instance ToJSON (Update a) where
+  toJSON (Update f v) = object ["field" .= f, "value" .= v]
+
+instance (FromJSON (SomeField a)) => FromJSON (Update a) where
+  parseJSON = withObject "Update" $ \o -> do
+    someField <- o .: "field"
+    case someField of
+      SomeField (f :: Field a typ) ->
+        Update f <$> o .: "value"
+
+(?=.)
+  :: ( Show typ
+     , Eq typ
+     , Typeable typ
+     , FromJSON typ
+     , ToJSON typ
+     , Show (Field a (Maybe typ))
+     , ToJSON (Field a (Maybe typ))
+     )
+  => Field a (Maybe typ)
+  -> typ
+  -> Update a
+(?=.) fld val = Update fld (Just val)
+
+(=.)
+  :: ( Show typ
+     , Eq typ
+     , Typeable typ
+     , FromJSON typ
+     , ToJSON typ
+     , Show (Field a typ)
+     , ToJSON (Field a typ)
+     )
+  => Field a typ
+  -> typ
+  -> Update a
+(=.) = Update

@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Location.Types (
@@ -23,6 +22,7 @@ import Arkham.Id
 import Arkham.Keyword
 import Arkham.Label qualified as L
 import Arkham.Location.Base as X
+import Arkham.Location.Brazier
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
@@ -31,6 +31,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait)
+import Control.Lens (set)
 import Data.Text qualified as T
 import Data.Typeable
 
@@ -60,16 +61,11 @@ data instance Field Location :: Type -> Type where
   LocationHorror :: Field Location Int
   LocationDoom :: Field Location Int
   LocationShroud :: Field Location Int
-  LocationTraits :: Field Location (Set Trait)
-  LocationKeywords :: Field Location (Set Keyword)
-  LocationUnrevealedName :: Field Location Name
-  LocationName :: Field Location Name
   LocationConnectedMatchers :: Field Location [LocationMatcher]
   LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
   LocationRevealed :: Field Location Bool
   LocationConnectsTo :: Field Location (Set Direction)
   LocationCardsUnderneath :: Field Location [Card]
-  LocationConnectedLocations :: Field Location (Set LocationId)
   LocationInvestigators :: Field Location (Set InvestigatorId)
   LocationEnemies :: Field Location (Set EnemyId)
   LocationAssets :: Field Location (Set AssetId)
@@ -78,8 +74,14 @@ data instance Field Location :: Type -> Type where
   LocationInvestigateSkill :: Field Location SkillType
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationCardId :: Field Location CardId
+  LocationBrazier :: Field Location (Maybe Brazier)
   LocationLabel :: Field Location Text
   -- virtual
+  LocationTraits :: Field Location (Set Trait)
+  LocationKeywords :: Field Location (Set Keyword)
+  LocationUnrevealedName :: Field Location Name
+  LocationName :: Field Location Name
+  LocationConnectedLocations :: Field Location (Set LocationId)
   LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card
   LocationAbilities :: Field Location [Ability]
@@ -88,6 +90,47 @@ data instance Field Location :: Type -> Type where
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
+
+fieldLens :: Field Location typ -> Lens' LocationAttrs typ
+fieldLens = \case
+  LocationClues -> cluesL
+  LocationResources -> resourcesL
+  LocationHorror -> horrorL
+  LocationDoom -> doomL
+  LocationShroud -> shroudL
+  LocationConnectedMatchers -> connectedMatchersL
+  LocationRevealedConnectedMatchers -> revealedConnectedMatchersL
+  LocationRevealed -> revealedL
+  LocationConnectsTo -> connectsToL
+  LocationCardsUnderneath -> cardsUnderneathL
+  LocationInvestigators -> investigatorsL
+  LocationEnemies -> enemiesL
+  LocationAssets -> assetsL
+  LocationEvents -> eventsL
+  LocationTreacheries -> treacheriesL
+  LocationInvestigateSkill -> investigateSkillL
+  LocationInFrontOf -> inFrontOfL
+  LocationCardId -> cardIdL
+  LocationBrazier -> brazierL
+  LocationLabel -> labelL
+  LocationTraits -> virtual
+  LocationKeywords -> virtual
+  LocationUnrevealedName -> virtual
+  LocationName -> virtual
+  LocationConnectedLocations -> virtual
+  LocationCardDef -> virtual
+  LocationCard -> virtual
+  LocationAbilities -> virtual
+  LocationPrintedSymbol -> virtual
+  LocationVengeance -> virtual
+ where
+  virtual = error "virtual attribute can not be set directly"
+
+updateLocation :: [Update Location] -> LocationAttrs -> LocationAttrs
+updateLocation updates attrs = foldr go attrs updates
+ where
+  go :: Update Location -> LocationAttrs -> LocationAttrs
+  go (Update fld val) = set (fieldLens fld) val
 
 instance ToJSON (Field Location typ) where
   toJSON = toJSON . show
@@ -350,8 +393,6 @@ instance IsCard LocationAttrs where
   toCard = defaultToCard
   toCardId = locationCardId
   toCardOwner = const Nothing
-
-makeLensesWith suffixedFields ''LocationAttrs
 
 symbolLabel
   :: (Entity a, EntityAttrs a ~ LocationAttrs)

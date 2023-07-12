@@ -191,3 +191,8 @@ findEncounterCard
   -> Message
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher
+
+placeLabeledLocations :: Text -> [CardDef] -> GameT [Message]
+placeLabeledLocations lbl cards = concatForM (withIndex1 cards) $ \(idx, card) -> do
+  (location, placement) <- placeLocationCard card
+  pure [placement, SetLocationLabel location (lbl <> tshow idx)]

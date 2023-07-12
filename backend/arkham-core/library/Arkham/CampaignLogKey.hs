@@ -181,6 +181,8 @@ data CampaignLogKey
   | TheGuardianOfTheTrapEmergedAndWasDefeated
   | TheInvestigatorsKeptsTheirMementosHidden
   | TheInvestigatorsWereInductedIntoTheInnerCircle
+  | TheInvestigatorsSidedWithTheLodge
+  | TheInvestigatorsSidedWithTheCoven
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

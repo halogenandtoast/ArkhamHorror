@@ -202,6 +202,15 @@ allActs =
     , SomeActCard infiltratingTheLodge
     , SomeActCard obtainingTheDevice
     , SomeActCard theFourKeys
+    , -- Union and Disillusion
+      SomeActCard theUnvisitedIsle
+    , SomeActCard fatedSouls
+    , SomeActCard beyondTheMistV1
+    , SomeActCard beyondTheMistV2
+    , SomeActCard beyondTheMistV3
+    , SomeActCard beyondTheMistV4
+    , SomeActCard theBindingRite
+    , SomeActCard theBrokenRite
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

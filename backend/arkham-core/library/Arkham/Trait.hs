@@ -138,6 +138,7 @@ data Trait
   | Reporter
   | Research
   | Ritual
+  | River
   | Riverside
   | Ruins
   | Salem

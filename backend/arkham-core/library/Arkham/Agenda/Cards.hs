@@ -76,6 +76,7 @@ allAgendaCards =
       , chaosInTheCloverClub
       , cityOfBlood
       , cityOfTheGreatRace
+      , crossroadsOfFate
       , deadOfNight
       , deathsApproach
       , drawnIn
@@ -145,6 +146,7 @@ allAgendaCards =
       , theHierophantV
       , theJunglesHeart
       , theLonelyCaverns
+      , theLoversVI
       , theMawWidens
       , theNightHowls
       , theOldOnesHunger
@@ -479,6 +481,12 @@ theHierophantV = agenda "05198" "THE HIEROPHANT · V" 1 ForTheGreaterGood
 
 endsAndMeans :: CardDef
 endsAndMeans = agenda "05199" "Ends and Means" 2 ForTheGreaterGood
+
+theLoversVI :: CardDef
+theLoversVI = agenda "05239" "THE LOVERS · VI" 1 UnionAndDisillusion
+
+crossroadsOfFate :: CardDef
+crossroadsOfFate = agenda "05240" "Crossroads of Fate" 2 UnionAndDisillusion
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

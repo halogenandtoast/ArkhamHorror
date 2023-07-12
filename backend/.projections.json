@@ -411,7 +411,7 @@
        "",
        "instance RunMessage {dot} where",
        "  runMessage msg s@({dot} attrs) = case msg of",
-       "    ResolveStory _ story' | story' == toId attrs -> do",
+       "    ResolveStory _ ResolveIt story' | story' == toId attrs -> do",
        "      pure s",
        "    _ -> {dot} <$> runMessage msg attrs"
     ]

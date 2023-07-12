@@ -449,6 +449,16 @@ allLocations =
     , SomeLocationCard sanctumDoorwayCeremonyRoom
     , SomeLocationCard sanctumDoorwayHoldingCells
     , SomeLocationCard innerSanctum
+    , -- Union and Disillusion
+      SomeLocationCard miskatonicRiver
+    , SomeLocationCard forbiddingShore
+    , SomeLocationCard unvisitedIsleStandingStones
+    , SomeLocationCard unvisitedIsleMistyClearing
+    , SomeLocationCard unvisitedIsleForsakenWoods
+    , SomeLocationCard unvisitedIsleMossCoveredSteps
+    , SomeLocationCard unvisitedIsleHauntedSpring
+    , SomeLocationCard unvisitedIsleDecayedWillow
+    , SomeLocationCard theGeistTrap
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

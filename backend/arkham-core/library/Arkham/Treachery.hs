@@ -323,6 +323,12 @@ allTreacheries =
     , SomeTreacheryCard expulsion
     , SomeTreacheryCard beneathTheLodge
     , SomeTreacheryCard markOfTheOrder
+    , -- Union and Disillusion
+      SomeTreacheryCard eagerForDeathUnionAndDisillusion
+    , SomeTreacheryCard psychopompsSongUnionAndDisillusion
+    , SomeTreacheryCard deathApproaches
+    , SomeTreacheryCard markedForDeath
+    , SomeTreacheryCard watchersGazeUnionAndDisillusion
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

@@ -150,6 +150,7 @@ allEncounterEnemyCards =
       , fangOfYig
       , fleshEater
       , formlessSpawn
+      , gavriellaMizrah
       , ghoulFromTheDepths
       , ghoulMinion
       , ghoulPriest
@@ -178,6 +179,7 @@ allEncounterEnemyCards =
       , interstellarTraveler
       , ishimaruHaruko
       , jeremiahPierce
+      , jeromeDavids
       , jordanPerry
       , josefMeiger
       , keeperOfSecrets
@@ -200,6 +202,7 @@ allEncounterEnemyCards =
       , netherMist
       , oBannionsThug
       , padmaAmrita
+      , pennyWhite
       , peterWarren
       , piperOfAzathoth
       , pitViper
@@ -231,6 +234,7 @@ allEncounterEnemyCards =
       , slimeCoveredDhole
       , spawnOfHali
       , specterOfDeath
+      , spectralRaven
       , stealthyByakhee
       , summonedBeast
       , swampLeech
@@ -247,9 +251,11 @@ allEncounterEnemyCards =
       , thrall
       , tidalTerror
       , umordhoth
+      , valentinoRivas
       , vengefulWitch
       , victoriaDevereux
       , whippoorwill
+      , whippoorwillUnionAndDisillusion
       , wingedOne
       , wizardOfTheOrder
       , wizardOfYogSothoth
@@ -1413,6 +1419,60 @@ knightOfTheOuterVoid =
     { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Peril, Keyword.Retaliate]
     , cdRevelation = True
+    }
+
+gavriellaMizrah :: CardDef
+gavriellaMizrah =
+  unique $
+    (enemy "05262b" ("Gavriella Mizrah" <:> "You're Next") UnionAndDisillusion 1)
+      { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+      , cdDoubleSided = True
+      , cdVictoryPoints = Just 0
+      }
+
+jeromeDavids :: CardDef
+jeromeDavids =
+  unique $
+    (enemy "05263b" ("Jerome Davids" <:> "Starved for Answers") UnionAndDisillusion 1)
+      { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
+      , cdKeywords = singleton Keyword.Hunter
+      , cdDoubleSided = True
+      , cdVictoryPoints = Just 0
+      }
+
+pennyWhite :: CardDef
+pennyWhite =
+  unique $
+    (enemy "05264b" ("Penny White" <:> "Tragic Loss") UnionAndDisillusion 1)
+      { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
+      , cdKeywords = singleton Keyword.Hunter
+      , cdDoubleSided = True
+      , cdVictoryPoints = Just 0
+      }
+
+valentinoRivas :: CardDef
+valentinoRivas =
+  unique $
+    (enemy "05265b" ("Valentino Rivas" <:> "Ripped Asunder") UnionAndDisillusion 1)
+      { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      , cdDoubleSided = True
+      , cdVictoryPoints = Just 0
+      }
+
+whippoorwillUnionAndDisillusion :: CardDef
+whippoorwillUnionAndDisillusion =
+  (enemy "05266" "Whippoorwill" UnionAndDisillusion 3)
+    { cdCardTraits = setFromList [Creature]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    }
+
+spectralRaven :: CardDef
+spectralRaven =
+  (enemy "05267" "Spectral Raven" UnionAndDisillusion 2)
+    { cdCardTraits = setFromList [Creature, Spectral]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
     }
 
 corpseHungryGhoul :: CardDef

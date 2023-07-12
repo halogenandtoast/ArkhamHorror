@@ -266,6 +266,7 @@ allPlayerAssetCards =
       , fortyOneDerringer
       , fortyOneDerringer2
       , fourOfCups1
+      , gavriellaMizrah
       , gildedVolto
       , grannyOrne
       , grannyOrne3
@@ -310,6 +311,7 @@ allPlayerAssetCards =
       , inTheKnow1
       , jakeWilliams
       , jennysTwin45s
+      , jeromeDavids
       , jewelOfAureolus3
       , jimsTrumpet
       , joeyTheRatVigil
@@ -385,6 +387,7 @@ allPlayerAssetCards =
       , painkillers
       , pantalone
       , pathfinder1
+      , pennyWhite
       , peterSylvestre
       , peterSylvestre2
       , physicalTraining
@@ -501,6 +504,7 @@ allPlayerAssetCards =
       , tryAndTryAgain3
       , twilightBlade
       , untilTheEndOfTime
+      , valentinoRivas
       , vaultOfKnowledge
       , venturer
       , wellConnected
@@ -3335,6 +3339,34 @@ guidingSpirit1 =
     , cdCardTraits = setFromList [Ally, Geist]
     , cdSlots = [AllySlot]
     , cdLevel = 1
+    }
+
+gavriellaMizrah :: CardDef
+gavriellaMizrah =
+  (storyAsset "05258" ("Gavriella Mizrah" <:> "Not Going Down That Easily") 2 ForTheGreaterGood)
+    { cdCardTraits = setFromList [Ally, Veteran]
+    , cdUnique = True
+    }
+
+jeromeDavids :: CardDef
+jeromeDavids =
+  (storyAsset "05259" ("Jerome Davids" <:> "In Way Over His Head") 2 ForTheGreaterGood)
+    { cdCardTraits = setFromList [Ally, Assistant]
+    , cdUnique = True
+    }
+
+pennyWhite :: CardDef
+pennyWhite =
+  (storyAsset "05260" ("Penny White" <:> "The Nightmare is Over") 2 ForTheGreaterGood)
+    { cdCardTraits = setFromList [Ally, Assistant]
+    , cdUnique = True
+    }
+
+valentinoRivas :: CardDef
+valentinoRivas =
+  (storyAsset "05261" ("Valentino Rivas" <:> "Took You Long Enough") 2 ForTheGreaterGood)
+    { cdCardTraits = setFromList [Ally, Socialite]
+    , cdUnique = True
     }
 
 mk1Grenades4 :: CardDef

@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Cards hiding (valentinoRivas)
 import Arkham.Card
 import Arkham.Draw.Types
 import Arkham.Event.Cards qualified as Cards

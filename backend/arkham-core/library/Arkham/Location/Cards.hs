@@ -261,6 +261,7 @@ allLocationCards =
       , farAboveYourHouse
       , faubourgMarigny
       , floodedSquare
+      , forbiddingShore
       , forgottenMarsh
       , forkedPath
       , foulSwamp
@@ -344,6 +345,7 @@ allLocationCards =
       , messHall
       , metropolitanCathedral
       , miskatonicQuad
+      , miskatonicRiver
       , miskatonicUniversity
       , miskatonicUniversityMiskatonicMuseum
       , moldyHalls
@@ -455,6 +457,7 @@ allLocationCards =
       , tenAcreMeadow_247
       , theEdgeOfTheUniverse
       , theGateToHell
+      , theGeistTrap
       , theGuardian
       , theHiddenChamber
       , theatre
@@ -474,6 +477,12 @@ allLocationCards =
       , twilightAbyss
       , twistedUnderbrush
       , undergroundRuins
+      , unvisitedIsleDecayedWillow
+      , unvisitedIsleForsakenWoods
+      , unvisitedIsleHauntedSpring
+      , unvisitedIsleMistyClearing
+      , unvisitedIsleMossCoveredSteps
+      , unvisitedIsleStandingStones
       , uprootedWoods
       , valusia
       , vastPassages
@@ -4460,6 +4469,127 @@ innerSanctum =
     Hourglass
     [Squiggle]
     ForTheGreaterGood
+
+miskatonicRiver :: CardDef
+miskatonicRiver =
+  location
+    "05249"
+    "Miskatonic River"
+    [River]
+    Triangle
+    [Moon]
+    UnionAndDisillusion
+
+forbiddingShore :: CardDef
+forbiddingShore =
+  location
+    "05250"
+    "Forbidding Shore"
+    [Woods]
+    Moon
+    [Triangle, Squiggle]
+    UnionAndDisillusion
+
+unvisitedIsleStandingStones :: CardDef
+unvisitedIsleStandingStones =
+  victory 1 $
+    locationWithUnrevealed
+      "05251"
+      "Unvisited Isle"
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      ("Unvisited Isle" <:> "Standing Stones")
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      UnionAndDisillusion
+
+unvisitedIsleMistyClearing :: CardDef
+unvisitedIsleMistyClearing =
+  victory 1 $
+    locationWithUnrevealed
+      "05252"
+      "Unvisited Isle"
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      ("Unvisited Isle" <:> "Misty Clearing")
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      UnionAndDisillusion
+
+unvisitedIsleForsakenWoods :: CardDef
+unvisitedIsleForsakenWoods =
+  victory 1 $
+    locationWithUnrevealed
+      "05253"
+      "Unvisited Isle"
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      ("Unvisited Isle" <:> "Forsaken Woods")
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      UnionAndDisillusion
+
+unvisitedIsleMossCoveredSteps :: CardDef
+unvisitedIsleMossCoveredSteps =
+  victory 1 $
+    locationWithUnrevealed
+      "05254"
+      "Unvisited Isle"
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      ("Unvisited Isle" <:> "Moss-Covered Steps")
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      UnionAndDisillusion
+
+unvisitedIsleHauntedSpring :: CardDef
+unvisitedIsleHauntedSpring =
+  victory 1 $
+    locationWithUnrevealed
+      "05255"
+      "Unvisited Isle"
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      ("Unvisited Isle" <:> "Haunted Spring")
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      UnionAndDisillusion
+
+unvisitedIsleDecayedWillow :: CardDef
+unvisitedIsleDecayedWillow =
+  victory 1 $
+    locationWithUnrevealed
+      "05256"
+      "Unvisited Isle"
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      ("Unvisited Isle" <:> "Decayed Willow")
+      [Woods]
+      Squiggle
+      [Squiggle, Moon, Plus]
+      UnionAndDisillusion
+
+theGeistTrap :: CardDef
+theGeistTrap =
+  victory 1 $
+    location
+      "05256"
+      "Unvisited Isle"
+      [Woods, Spectral]
+      Plus
+      [Squiggle]
+      UnionAndDisillusion
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

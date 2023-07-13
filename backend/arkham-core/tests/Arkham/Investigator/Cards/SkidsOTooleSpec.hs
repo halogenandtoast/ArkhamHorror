@@ -32,7 +32,7 @@ spec = describe "\"Skids\" O'Toole" $ do
 
   context "elder sign" $ do
     it "gains 2 resources on success" $ gameTestWith Investigators.skidsOToole $ \skidsOToole -> do
-      pushAndRunAll [SetTokens [ElderSign], beginSkillTest skidsOToole SkillAgility 4]
+      pushAndRunAll [SetChaosTokens [ElderSign], beginSkillTest skidsOToole SkillAgility 4]
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"
       fieldAssert InvestigatorResources (== 2) skidsOToole

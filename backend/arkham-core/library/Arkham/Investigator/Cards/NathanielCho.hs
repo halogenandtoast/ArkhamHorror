@@ -43,11 +43,11 @@ instance HasAbilities NathanielCho where
         Free
     ]
 
-instance HasTokenValue NathanielCho where
-  getTokenValue iid ElderSign (NathanielCho attrs)
+instance HasChaosTokenValue NathanielCho where
+  getChaosTokenValue iid ElderSign (NathanielCho attrs)
     | iid == investigatorId attrs = pure
-    $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
@@ -55,7 +55,7 @@ instance RunMessage NathanielCho where
       | isSource attrs source
       -> a <$ push
         (CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid))
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSource <- getSkillTestSource
       case mSource of
         Just (SkillTestSource _ _ _ (Just Action.Fight)) ->

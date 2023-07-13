@@ -1,18 +1,18 @@
-module Arkham.Location.Cards.EztliExhibit
-  ( eztliExhibit
-  , EztliExhibit(..)
-  ) where
+module Arkham.Location.Cards.EztliExhibit (
+  eztliExhibit,
+  EztliExhibit (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosToken
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Runner hiding (RevealChaosToken)
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype EztliExhibit = EztliExhibit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,17 +22,18 @@ eztliExhibit :: LocationCard EztliExhibit
 eztliExhibit = location EztliExhibit Cards.eztliExhibit 3 (PerPlayer 2)
 
 instance HasAbilities EztliExhibit where
-  getAbilities (EztliExhibit attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
-        attrs
-        1
-        (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
-      $ ForcedAbility
-      $ RevealChaosToken Timing.After You
-      $ TokenMatchesAny
-      $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
-    ]
+  getAbilities (EztliExhibit attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
+          attrs
+          1
+          (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
+          $ ForcedAbility
+          $ RevealChaosToken Timing.After You
+          $ ChaosTokenMatchesAny
+          $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
+      ]
 
 instance RunMessage EztliExhibit where
   runMessage msg l@(EztliExhibit attrs) = case msg of

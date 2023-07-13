@@ -55,14 +55,14 @@ getDoomAmongstControlledCards iid =
       , selectAgg Sum InvestigatorDoom (InvestigatorWithId iid)
       ]
 
-instance HasTokenValue MarieLambeau where
-  getTokenValue iid ElderSign (MarieLambeau attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue MarieLambeau where
+  getChaosTokenValue iid ElderSign (MarieLambeau attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage MarieLambeau where
   runMessage msg i@(MarieLambeau attrs) = case msg of
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       controlledAssets <- selectList (assetControlledBy iid)
       controlledEvents <- selectList (eventControlledBy iid)
       assetsWithDoom <- filterM (<=~> AssetWithAnyDoom) controlledAssets

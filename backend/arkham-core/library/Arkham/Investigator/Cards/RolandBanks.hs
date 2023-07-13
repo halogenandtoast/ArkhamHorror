@@ -40,11 +40,11 @@ instance HasAbilities RolandBanks where
           EnemyDefeated Timing.After You ByAny AnyEnemy
     ]
 
-instance HasTokenValue RolandBanks where
-  getTokenValue iid ElderSign (RolandBanks attrs) | iid == toId attrs = do
+instance HasChaosTokenValue RolandBanks where
+  getChaosTokenValue iid ElderSign (RolandBanks attrs) | iid == toId attrs = do
     clues <- field LocationClues (investigatorLocation attrs)
-    pure $ TokenValue ElderSign (PositiveModifier clues)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    pure $ ChaosTokenValue ElderSign (PositiveModifier clues)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of

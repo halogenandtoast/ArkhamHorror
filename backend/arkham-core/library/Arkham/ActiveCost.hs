@@ -13,12 +13,13 @@ import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding (Ability, TakenAction)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types (
-  Field (AssetCard, AssetController, AssetSealedTokens, AssetUses),
+  Field (AssetCard, AssetController, AssetSealedChaosTokens, AssetUses),
  )
 import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
@@ -49,7 +50,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -78,9 +78,9 @@ costsL = lens activeCostCosts $ \m x -> m {activeCostCosts = x}
 costPaymentsL :: Lens' ActiveCost Payment
 costPaymentsL = lens activeCostPayments $ \m x -> m {activeCostPayments = x}
 
-costSealedTokensL :: Lens' ActiveCost [Token]
-costSealedTokensL =
-  lens activeCostSealedTokens $ \m x -> m {activeCostSealedTokens = x}
+costSealedChaosTokensL :: Lens' ActiveCost [ChaosToken]
+costSealedChaosTokensL =
+  lens activeCostSealedChaosTokens $ \m x -> m {activeCostSealedChaosTokens = x}
 
 activeCostPaid :: ActiveCost -> Bool
 activeCostPaid = (== Free) . activeCostCosts
@@ -356,54 +356,54 @@ instance RunMessage ActiveCost where
               )
         SealCost matcher -> do
           targets <-
-            filterM (\t -> matchToken iid t matcher)
-              =<< scenarioFieldMap ScenarioChaosBag chaosBagTokens
+            filterM (\t -> matchChaosToken iid t matcher)
+              =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
           pushAll
-            [ FocusTokens targets
+            [ FocusChaosTokens targets
             , chooseOne
                 iid
                 [ TargetLabel
-                  (TokenTarget target)
-                  [PayCost acId iid skipAdditionalCosts (SealTokenCost target)]
+                  (ChaosTokenTarget target)
+                  [PayCost acId iid skipAdditionalCosts (SealChaosTokenCost target)]
                 | target <- targets
                 ]
-            , UnfocusTokens
+            , UnfocusChaosTokens
             ]
           pure c
-        SealTokenCost token -> do
-          push $ SealToken token
+        SealChaosTokenCost token -> do
+          push $ SealChaosToken token
           pure $
             c
               & costPaymentsL
-                <>~ SealTokenPayment token
-              & costSealedTokensL
+                <>~ SealChaosTokenPayment token
+              & costSealedChaosTokensL
                 %~ (token :)
-        ReleaseTokensCost n -> do
+        ReleaseChaosTokensCost n -> do
           case source of
             AssetSource aid -> do
-              tokens <- field AssetSealedTokens aid
+              tokens <- field AssetSealedChaosTokens aid
               pushAll $
-                [ FocusTokens tokens
+                [ FocusChaosTokens tokens
                 , chooseN
                     iid
                     n
                     [ TargetLabel
-                      (TokenTarget t)
+                      (ChaosTokenTarget t)
                       [ PayCost
                           acId
                           iid
                           skipAdditionalCosts
-                          (ReleaseTokenCost t)
+                          (ReleaseChaosTokenCost t)
                       ]
                     | t <- tokens
                     ]
-                , UnfocusTokens
+                , UnfocusChaosTokens
                 ]
             _ -> error "Unhandled source for releasing tokens cost"
           pure c
-        ReleaseTokenCost t -> do
-          push $ UnsealToken t
-          pure $ c & (costPaymentsL <>~ ReleaseTokenPayment t)
+        ReleaseChaosTokenCost t -> do
+          push $ UnsealChaosToken t
+          pure $ c & (costPaymentsL <>~ ReleaseChaosTokenPayment t)
         SupplyCost matcher supply -> do
           iid' <-
             selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
@@ -949,11 +949,11 @@ instance RunMessage ActiveCost where
             [ PlayCard iid card Nothing (activeCostWindows c) False
             , PaidForCardCost iid card (activeCostPayments c)
             ]
-              <> [SealedToken token card | token <- activeCostSealedTokens c]
+              <> [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
               <> [FinishAction | isPlayAction == IsPlayAction]
         ForCost card ->
           pushAll
-            [SealedToken token card | token <- activeCostSealedTokens c]
+            [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
       pure c
     _ -> pure c
 

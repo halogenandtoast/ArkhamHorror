@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Window ( Window )
 import Arkham.Window qualified as Window
 
@@ -26,13 +26,13 @@ intFromMetadata = \case
 
 instance RunMessage Shrivelling where
   runMessage msg e@(Shrivelling attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       let damage = maybe 1 intFromMetadata effectMetadata
       when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (pushAll
           [ If
-            (Window.RevealTokenEffect iid token effectId)
+            (Window.RevealChaosTokenEffect iid token effectId)
             [InvestigatorAssignDamage iid effectSource DamageAny 0 damage]
           , DisableEffect effectId
           ]

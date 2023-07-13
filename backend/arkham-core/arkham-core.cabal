@@ -763,16 +763,17 @@ library
       Arkham.ChaosBag.Base
       Arkham.ChaosBag.RevealStrategy
       Arkham.ChaosBagStepState
+      Arkham.ChaosToken
       Arkham.Classes
       Arkham.Classes.Entity
       Arkham.Classes.Entity.TH
       Arkham.Classes.GameLogger
       Arkham.Classes.HasAbilities
+      Arkham.Classes.HasChaosTokenValue
       Arkham.Classes.HasDistance
       Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasSet
-      Arkham.Classes.HasTokenValue
       Arkham.Classes.Query
       Arkham.Classes.RunMessage
       Arkham.Classes.RunMessage.Internal
@@ -806,6 +807,7 @@ library
       Arkham.Effect.Effects.BlindingLight
       Arkham.Effect.Effects.BlindingLight2
       Arkham.Effect.Effects.CallingInFavors
+      Arkham.Effect.Effects.ChaosTokenEffect
       Arkham.Effect.Effects.CharlesRossEsq
       Arkham.Effect.Effects.CursedShores
       Arkham.Effect.Effects.CurseOfTheRougarouTabletToken
@@ -852,7 +854,6 @@ library
       Arkham.Effect.Effects.TheStrangerACityAflame
       Arkham.Effect.Effects.TheStrangerThePathIsMine
       Arkham.Effect.Effects.TheStrangerTheShoresOfHali
-      Arkham.Effect.Effects.TokenEffect
       Arkham.Effect.Effects.TommyMalloy
       Arkham.Effect.Effects.UncageTheSoul
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
@@ -1810,11 +1811,12 @@ library
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard
+      Arkham.Pool
       Arkham.Prelude
       Arkham.Projection
       Arkham.Query
       Arkham.Question
-      Arkham.RequestedTokenStrategy
+      Arkham.RequestedChaosTokenStrategy
       Arkham.Resolution
       Arkham.Scenario
       Arkham.Scenario.Deck
@@ -2037,8 +2039,6 @@ library
       Arkham.Target
       Arkham.Text
       Arkham.Timing
-      Arkham.Token
-      Arkham.TokenResponse
       Arkham.TokenStrategy
       Arkham.Trait
       Arkham.Treachery

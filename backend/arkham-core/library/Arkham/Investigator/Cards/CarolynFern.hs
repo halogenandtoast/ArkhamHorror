@@ -71,10 +71,10 @@ getHealed (Window _ (Window.Healed _ (InvestigatorTarget investigatorId) _ _) : 
   = HealedInvestigator investigatorId
 getHealed (_ : xs) = getHealed xs
 
-instance HasTokenValue CarolynFern where
-  getTokenValue iid ElderSign (CarolynFern attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign NoModifier
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue CarolynFern where
+  getChaosTokenValue iid ElderSign (CarolynFern attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign NoModifier
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage CarolynFern where
   runMessage msg i@(CarolynFern attrs) = case msg of
@@ -88,7 +88,7 @@ instance RunMessage CarolynFern where
         when (healedController /= toId attrs || canGainResources) $ do
           push $ TakeResources healedController 1 (toAbilitySource attrs 1) False
         pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       investigatorsWithHealHorror <- getInvestigatorsWithHealHorror attrs 1
         $ colocatedWith iid
       assetsWithHorror <-

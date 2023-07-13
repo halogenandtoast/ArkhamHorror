@@ -25,7 +25,7 @@ spec = describe "Duke" $ do
         putCardIntoPlay investigator Assets.duke
         duke <- selectJust $ assetIs Assets.duke
         location <- testLocation id
-        pushAndRun $ SetTokens [Zero]
+        pushAndRun $ SetChaosTokens [Zero]
         pushAndRun $ enemySpawn location enemy
         pushAndRun $ moveTo investigator location
         [doFight, _] <- field AssetAbilities duke
@@ -45,7 +45,7 @@ spec = describe "Duke" $ do
         location <-
           testLocation
             (\attrs -> attrs {locationShroud = 4, locationClues = 1})
-        pushAndRun $ SetTokens [Zero]
+        pushAndRun $ SetChaosTokens [Zero]
         pushAndRun $ moveTo investigator location
         [_, investigateAction] <- field AssetAbilities duke
         pushAndRun $
@@ -68,7 +68,7 @@ spec = describe "Duke" $ do
           \attrs -> attrs {locationShroud = 4, locationClues = 1}
         pushAndRun $ placedLocation location1
         pushAndRun $ placedLocation location2
-        pushAndRun $ SetTokens [Zero]
+        pushAndRun $ SetChaosTokens [Zero]
         pushAndRun $ moveTo investigator location1
         [_, investigateAction] <- field AssetAbilities duke
         pushAndRun $ moveTo investigator location1

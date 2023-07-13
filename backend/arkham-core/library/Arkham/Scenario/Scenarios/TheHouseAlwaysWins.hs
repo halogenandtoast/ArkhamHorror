@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -21,7 +22,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Story
-import Arkham.Token
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
   deriving stock (Generic)
@@ -43,12 +43,12 @@ theHouseAlwaysWins difficulty =
     , ".           .                .                  backHallDoorway3 ."
     ]
 
-instance HasTokenValue TheHouseAlwaysWins where
-  getTokenValue iid tokenFace (TheHouseAlwaysWins attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 2 3
-    Cultist -> pure $ TokenValue Cultist (NegativeModifier 3)
-    Tablet -> pure $ TokenValue Tablet (NegativeModifier 2)
-    otherFace -> getTokenValue iid otherFace attrs
+instance HasChaosTokenValue TheHouseAlwaysWins where
+  getChaosTokenValue iid chaosTokenFace (TheHouseAlwaysWins attrs) = case chaosTokenFace of
+    Skull -> pure $ toChaosTokenValue attrs Skull 2 3
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 3)
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
@@ -121,8 +121,8 @@ instance RunMessage TheHouseAlwaysWins where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
-    ResolveToken drawnToken Skull iid -> do
+    ResolveChaosToken _ Tablet iid -> s <$ push (SpendResources iid 3)
+    ResolveChaosToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid
       if resourceCount >= requiredResources
@@ -136,23 +136,23 @@ instance RunMessage TheHouseAlwaysWins where
                       <> " resources to treat this token as a 0"
                   )
                   [ SpendResources iid requiredResources
-                  , CreateTokenValueEffect
+                  , CreateChaosTokenValueEffect
                       (if isEasyStandard attrs then 2 else 3)
-                      (TokenSource drawnToken)
-                      (TokenTarget drawnToken)
+                      (ChaosTokenSource drawnToken)
+                      (ChaosTokenTarget drawnToken)
                   ]
               , Label "Do not spend resources" []
               ]
         else pure ()
       pure s
-    PassedSkillTest iid _ _ (TokenTarget token) _ _ ->
-      s <$ case tokenFace token of
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
+      s <$ case chaosTokenFace token of
         Cultist
           | isEasyStandard attrs ->
-              push $ TakeResources iid 3 (TokenEffectSource Cultist) False
+              push $ TakeResources iid 3 (ChaosTokenEffectSource Cultist) False
         _ -> pure ()
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
-      s <$ case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
+      s <$ case chaosTokenFace token of
         Cultist | isHardExpert attrs -> push $ SpendResources iid 3
         Tablet | isEasyStandard attrs -> push $ SpendResources iid 3
         _ -> pure ()
@@ -166,7 +166,7 @@ instance RunMessage TheHouseAlwaysWins where
         , Record OBannionGangHasABoneToPickWithTheInvestigators
         , Record DrFrancisMorganWasKidnapped
         ]
-          <> [AddToken ElderThing | Cheated `member` scenarioLog attrs]
+          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
           <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
@@ -193,7 +193,7 @@ instance RunMessage TheHouseAlwaysWins where
             , Label "Do not add Dr. Francis Morgan to any deck" []
             ]
         ]
-          <> [AddToken ElderThing | Cheated `member` scenarioLog attrs]
+          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
@@ -205,7 +205,7 @@ instance RunMessage TheHouseAlwaysWins where
         , Record NaomiHasTheInvestigatorsBacks
         , Record DrFrancisMorganWasKidnapped
         ]
-          <> [AddToken ElderThing | Cheated `member` scenarioLog attrs]
+          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
@@ -218,7 +218,7 @@ instance RunMessage TheHouseAlwaysWins where
         , Record DrFrancisMorganWasKidnapped
         , Record InvestigatorsWereUnconsciousForSeveralHours
         ]
-          <> [AddToken ElderThing | Cheated `member` scenarioLog attrs]
+          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
           <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s

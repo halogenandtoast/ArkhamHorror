@@ -14,49 +14,54 @@ newtype JimCulver = JimCulver InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jimCulver :: InvestigatorCard JimCulver
-jimCulver = investigator
-  JimCulver
-  Cards.jimCulver
-  Stats
-    { health = 7
-    , sanity = 8
-    , willpower = 4
-    , intellect = 3
-    , combat = 3
-    , agility = 2
-    }
+jimCulver =
+  investigator
+    JimCulver
+    Cards.jimCulver
+    Stats
+      { health = 7
+      , sanity = 8
+      , willpower = 4
+      , intellect = 3
+      , combat = 3
+      , agility = 2
+      }
 
 instance HasModifiersFor JimCulver where
-  getModifiersFor (TokenTarget token) (JimCulver attrs)
-    | tokenFace token == Skull = do
-      mSkillTestSource <- getSkillTestSource
-      case mSkillTestSource of
-        Just (SkillTestSource iid _ _ _) | iid == toId attrs ->
-          pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
-        _ -> pure []
+  getModifiersFor (ChaosTokenTarget token) (JimCulver attrs)
+    | chaosTokenFace token == Skull = do
+        mSkillTestSource <- getSkillTestSource
+        case mSkillTestSource of
+          Just (SkillTestSource iid _ _ _)
+            | iid == toId attrs ->
+                pure $ toModifiers attrs [ChangeChaosTokenModifier $ PositiveModifier 0]
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
-instance HasTokenValue JimCulver where
-  getTokenValue iid ElderSign (JimCulver attrs) | iid == investigatorId attrs =
-    pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue JimCulver where
+  getChaosTokenValue iid ElderSign (JimCulver attrs)
+    | iid == investigatorId attrs =
+        pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
-    When (RevealToken _ iid token) | iid == investigatorId -> do
-      faces <- getModifiedTokenFace token
+    When (RevealChaosToken _ iid token) | iid == investigatorId -> do
+      faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) $ do
-        push $ chooseOne iid
-          [ Label "Resolve as Elder Sign" []
-          , Label
-            "Resolve as Skull"
-            [ CreateTokenEffect
-                (EffectModifiers
-                $ toModifiers attrs [TokenFaceModifier [Skull]]
-                )
-                (toSource attrs)
-                token
+        push $
+          chooseOne
+            iid
+            [ Label "Resolve as Elder Sign" []
+            , Label
+                "Resolve as Skull"
+                [ CreateChaosTokenEffect
+                    ( EffectModifiers $
+                        toModifiers attrs [ChaosTokenFaceModifier [Skull]]
+                    )
+                    (toSource attrs)
+                    token
+                ]
             ]
-          ]
       pure i
     _ -> JimCulver <$> runMessage msg attrs

@@ -17,7 +17,7 @@ spec = describe "Deduction" $ do
       \attrs -> attrs {locationRevealClues = Static 2, locationShroud = 2}
     deduction <- genCard Cards.deduction
     pushAndRunAll
-      [ SetTokens [Zero]
+      [ SetChaosTokens [Zero]
       , moveTo investigator location
       , addToHand (toId investigator) deduction
       , investigate investigator location

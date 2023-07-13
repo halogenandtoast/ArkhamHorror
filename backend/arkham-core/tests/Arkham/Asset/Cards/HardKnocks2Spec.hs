@@ -16,7 +16,7 @@ spec = describe "Hard Knocks (2)" $ do
         \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
       putCardIntoPlay investigator Assets.hardKnocks2
       didPassTest <- didPassSkillTestBy investigator SkillCombat 0
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ beginSkillTest investigator SkillCombat 3
       chooseOptionMatching
         "use ability"
@@ -47,7 +47,7 @@ spec = describe "Hard Knocks (2)" $ do
 
       didPassTest <- didPassSkillTestBy investigator SkillAgility 0
 
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ beginSkillTest investigator SkillAgility 3
       chooseOptionMatching
         "use ability"

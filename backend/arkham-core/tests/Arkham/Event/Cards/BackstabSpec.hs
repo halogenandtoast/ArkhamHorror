@@ -21,7 +21,7 @@ spec = do
       enemy <-
         testEnemy
           ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
-      pushAndRun $ SetTokens [MinusOne]
+      pushAndRun $ SetChaosTokens [MinusOne]
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
       putCardIntoPlay investigator Events.backstab

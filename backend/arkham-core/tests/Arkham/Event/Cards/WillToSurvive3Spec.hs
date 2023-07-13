@@ -15,7 +15,7 @@ spec = describe "Will to Survive (3)" $ do
 
     didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
 
-    pushAndRun $ SetTokens [AutoFail]
+    pushAndRun $ SetChaosTokens [AutoFail]
     putCardIntoPlay investigator Events.willToSurvive3
     pushAndRun $ beginSkillTest investigator SkillIntellect 3
     chooseOnlyOption "start skill test"
@@ -28,7 +28,7 @@ spec = describe "Will to Survive (3)" $ do
 
     didFailTest <- didFailSkillTestBy investigator SkillIntellect 3
 
-    pushAndRun $ SetTokens [AutoFail]
+    pushAndRun $ SetChaosTokens [AutoFail]
     putCardIntoPlay investigator Events.willToSurvive3
     pushAndRunAll
       [ ChooseEndTurn (toId investigator)

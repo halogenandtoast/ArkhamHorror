@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype AlchemicalTransmutation = AlchemicalTransmutation EffectAttrs
@@ -22,13 +22,13 @@ alchemicalTransmutation =
 instance RunMessage AlchemicalTransmutation where
   runMessage msg e@(AlchemicalTransmutation attrs@EffectAttrs {..}) =
     case msg of
-      RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+      RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
         when
-          (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+          (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
           )
           (pushAll
             [ If
-              (Window.RevealTokenEffect iid token effectId)
+              (Window.RevealChaosTokenEffect iid token effectId)
               [InvestigatorAssignDamage iid effectSource DamageAny 1 0]
             , DisableEffect effectId
             ]

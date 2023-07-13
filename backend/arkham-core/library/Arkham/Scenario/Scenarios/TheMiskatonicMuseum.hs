@@ -8,6 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -22,7 +23,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Scenarios.TheMiskatonicMuseum.Story
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Zone
 
@@ -46,8 +46,8 @@ theMiskatonicMuseum difficulty =
     , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
     ]
 
-instance HasTokenValue TheMiskatonicMuseum where
-  getTokenValue iid tokenFace (TheMiskatonicMuseum attrs) = case tokenFace of
+instance HasChaosTokenValue TheMiskatonicMuseum where
+  getChaosTokenValue iid chaosTokenFace (TheMiskatonicMuseum attrs) = case chaosTokenFace of
     Skull -> do
       huntingHorrorAtYourLocation <-
         selectAny $
@@ -56,15 +56,15 @@ instance HasTokenValue TheMiskatonicMuseum where
               (LocationWithInvestigator $ InvestigatorWithId iid)
       pure $
         if huntingHorrorAtYourLocation
-          then toTokenValue attrs Skull 3 4
-          else toTokenValue attrs Skull 1 2
-    Cultist -> pure $ toTokenValue attrs Cultist 1 3
-    Tablet -> pure $ toTokenValue attrs Tablet 2 4
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
-    otherFace -> getTokenValue iid otherFace attrs
+          then toChaosTokenValue attrs Skull 3 4
+          else toChaosTokenValue attrs Skull 1 2
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 5
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -86,8 +86,8 @@ standaloneTokens =
 
 instance RunMessage TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
-    SetTokensForScenario -> do
-      whenStandalone $ push (SetTokens standaloneTokens)
+    SetChaosTokensForScenario -> do
+      whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
       pure s
     LookAtTopOfDeck iid ScenarioDeckTarget n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
@@ -195,16 +195,16 @@ instance RunMessage TheMiskatonicMuseum where
         hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
         push (SetLocationLabel lid $ "hall" <> tshow hallCount)
       pure s
-    ResolveToken _ Tablet iid | isEasyStandard attrs -> do
-      s <$ push (InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Tablet) 1)
-    ResolveToken _ Tablet iid | isHardExpert attrs -> do
+    ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
+      s <$ push (InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1)
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
       for_ mHuntingHorrorId $ \huntingHorrorId ->
         push (EnemyAttack $ enemyAttack huntingHorrorId attrs iid)
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
-      s <$ case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
+      s <$ case chaosTokenFace token of
         Cultist ->
           push $
             FindEncounterCard
@@ -214,7 +214,7 @@ instance RunMessage TheMiskatonicMuseum where
               (cardIs Enemies.huntingHorror)
         ElderThing ->
           push $
-            ChooseAndDiscardAsset iid (TokenEffectSource ElderThing) AnyAsset
+            ChooseAndDiscardAsset iid (ChaosTokenEffectSource ElderThing) AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getJustLocation iid
@@ -268,7 +268,7 @@ instance RunMessage TheMiskatonicMuseum where
                 "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
                 []
             ]
-        , AddToken ElderThing
+        , AddChaosToken ElderThing
         ]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]

@@ -13,6 +13,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Id
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Cost.Status
 import Arkham.Criteria.Override
@@ -34,7 +35,6 @@ import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
-import Arkham.Token
 import Arkham.Trait
 import Arkham.Zone
 import Data.Aeson.TH
@@ -562,9 +562,9 @@ data WindowMatcher
   | EnemyAttacks Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacksEvenIfCancelled Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
-  | RevealChaosToken Timing Who TokenMatcher
-  | CancelChaosToken Timing Who TokenMatcher
-  | IgnoreChaosToken Timing Who TokenMatcher
+  | RevealChaosToken Timing Who ChaosTokenMatcher
+  | CancelChaosToken Timing Who ChaosTokenMatcher
+  | IgnoreChaosToken Timing Who ChaosTokenMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing Who SourceMatcher CardMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
@@ -623,7 +623,7 @@ data WindowMatcher
   | CancelledOrIgnoredCardOrGameEffect SourceMatcher
   | LostResources Timing Who SourceMatcher
   | LostActions Timing Who SourceMatcher
-  | WouldTriggerTokenRevealEffectOnCard Who CardMatcher [TokenFace]
+  | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
   deriving stock (Show, Eq, Ord)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep
@@ -745,27 +745,27 @@ data SkillTestValueMatcher
   | AnySkillTestValue
   deriving stock (Show, Eq, Ord)
 
-data TokenMatcher
+data ChaosTokenMatcher
   = WithNegativeModifier
-  | TokenFaceIs TokenFace
-  | TokenFaceIsNot TokenFace
-  | TokenMatchesAny [TokenMatcher]
-  | AnyToken
-  | TokenMatches [TokenMatcher]
-  | IncludeSealed TokenMatcher
+  | ChaosTokenFaceIs ChaosTokenFace
+  | ChaosTokenFaceIsNot ChaosTokenFace
+  | ChaosTokenMatchesAny [ChaosTokenMatcher]
+  | AnyChaosToken
+  | ChaosTokenMatches [ChaosTokenMatcher]
+  | IncludeSealed ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   deriving stock (Show, Eq, Ord)
 
-instance Semigroup TokenMatcher where
-  AnyToken <> x = x
-  x <> AnyToken = x
-  TokenMatches xs <> TokenMatches ys = TokenMatches $ xs <> ys
-  TokenMatches xs <> x = TokenMatches $ xs <> [x]
-  x <> TokenMatches xs = TokenMatches $ x : xs
-  x <> y = TokenMatches [x, y]
+instance Semigroup ChaosTokenMatcher where
+  AnyChaosToken <> x = x
+  x <> AnyChaosToken = x
+  ChaosTokenMatches xs <> ChaosTokenMatches ys = ChaosTokenMatches $ xs <> ys
+  ChaosTokenMatches xs <> x = ChaosTokenMatches $ xs <> [x]
+  x <> ChaosTokenMatches xs = ChaosTokenMatches $ x : xs
+  x <> y = ChaosTokenMatches [x, y]
 
-instance Monoid TokenMatcher where
-  mempty = AnyToken
+instance Monoid ChaosTokenMatcher where
+  mempty = AnyChaosToken
 
 data PhaseMatcher = AnyPhase | PhaseIs Phase
   deriving stock (Show, Eq, Ord)
@@ -918,6 +918,7 @@ $( do
     asset <- deriveJSON defaultOptions ''AssetMatcher
     card <- deriveJSON defaultOptions ''CardMatcher
     cardList <- deriveJSON defaultOptions ''CardListMatcher
+    chaosToken <- deriveJSON defaultOptions ''ChaosTokenMatcher
     counter <- deriveJSON defaultOptions ''CounterMatcher
     damageEffect <- deriveJSON defaultOptions ''DamageEffectMatcher
     deck <- deriveJSON defaultOptions ''DeckMatcher
@@ -942,7 +943,6 @@ $( do
     story <- deriveJSON defaultOptions ''StoryMatcher
     target <- deriveJSON defaultOptions ''TargetMatcher
     targetList <- deriveJSON defaultOptions ''TargetListMatcher
-    token <- deriveJSON defaultOptions ''TokenMatcher
     treachery <- deriveJSON defaultOptions ''TreacheryMatcher
     value <- deriveJSON defaultOptions ''ValueMatcher
     window <- deriveJSON defaultOptions ''WindowMatcher
@@ -956,6 +956,7 @@ $( do
         , asset
         , card
         , cardList
+        , chaosToken
         , counter
         , damageEffect
         , deck
@@ -980,7 +981,6 @@ $( do
         , story
         , target
         , targetList
-        , token
         , treachery
         , value
         , window

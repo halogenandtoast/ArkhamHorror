@@ -7,13 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (cloverClubCardroom)
 import Arkham.Location.Runner
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,20 +25,19 @@ cloverClubCardroom =
 
 instance HasAbilities CloverClubCardroom where
   getAbilities (CloverClubCardroom attrs) =
-    withBaseAbilities
+    withRevealedAbilities
       attrs
       [ restrictedAbility attrs 1 (OnAct 1 <> Here) $
-        ActionAbility Nothing $
-          Costs [ActionCost 1, ResourceCost 2]
-      | locationRevealed attrs
+          ActionAbility Nothing $
+            Costs [ActionCost 1, ResourceCost 2]
       ]
 
 instance RunMessage CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      l <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
-    RequestedTokens source (Just iid) tokens | isSource attrs source -> do
-      tokenFaces <- getModifiedTokenFaces tokens
+      l <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)
+    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
+      chaosTokenFaces <- getModifiedChaosTokenFaces tokens
       let
         msgs =
           concatMap
@@ -60,9 +59,9 @@ instance RunMessage CloverClubCardroom where
                 ElderThing -> []
                 AutoFail -> []
             )
-            tokenFaces
+            chaosTokenFaces
       pushAll $
         [chooseOne iid [Label "Apply results" msgs]]
-          <> [ResetTokens source]
+          <> [ResetChaosTokens source]
       pure l
     _ -> CloverClubCardroom <$> runMessage msg attrs

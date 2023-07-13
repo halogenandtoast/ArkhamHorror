@@ -1,21 +1,21 @@
-module Arkham.Event.Cards.ParallelFates
-  ( parallelFates
-  , ParallelFates(..)
-  ) where
+module Arkham.Event.Cards.ParallelFates (
+  parallelFates,
+  ParallelFates (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
 
-newtype Metadata = Metadata { drawnCards :: [EncounterCard] }
+newtype Metadata = Metadata {drawnCards :: [EncounterCard]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -35,33 +35,36 @@ instance RunMessage ParallelFates where
     RequestedEncounterCards target cards | isTarget attrs target -> do
       pushAll
         [ FocusCards (map EncounterCard cards)
-        , RequestTokens
-          (toSource attrs)
-          (Just $ eventOwner attrs)
-          (Reveal 1)
-          SetAside
+        , RequestChaosTokens
+            (toSource attrs)
+            (Just $ eventOwner attrs)
+            (Reveal 1)
+            SetAside
         , UnfocusCards
         ]
       pure $ ParallelFates (attrs `With` Metadata cards)
-    RequestedTokens (isSource attrs -> True) (Just iid) (map tokenFace -> tokens)
-      -> do
-        push $ ResetTokens (toSource attrs)
-        if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
-          then push $ chooseOne
-            iid
-            [ Label
-                "Shuffle back in"
-                [ ShuffleCardsIntoDeck
-                    EncounterDeck
-                    (map EncounterCard $ drawnCards meta)
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) ->
+      do
+        push $ ResetChaosTokens (toSource attrs)
+        push $
+          if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
+            then
+              chooseOne
+                iid
+                [ Label
+                    "Shuffle back in"
+                    [ ShuffleCardsIntoDeck
+                        EncounterDeck
+                        (map EncounterCard $ drawnCards meta)
+                    ]
                 ]
-            ]
-          else push $ chooseOneAtATime
-            iid
-            [ targetLabel
-                (toCardId c)
-                [PutCardOnTopOfDeck iid EncounterDeck (EncounterCard c)]
-            | c <- drawnCards meta
-            ]
+            else
+              chooseOneAtATime
+                iid
+                [ targetLabel
+                  (toCardId c)
+                  [PutCardOnTopOfDeck iid EncounterDeck (EncounterCard c)]
+                | c <- drawnCards meta
+                ]
         pure e
     _ -> ParallelFates . (`with` meta) <$> runMessage msg attrs

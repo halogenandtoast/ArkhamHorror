@@ -16,9 +16,9 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Message
 import Arkham.Projection
-import Arkham.RequestedTokenStrategy
+import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -50,22 +50,22 @@ instance RunMessage HypnoticGaze2 where
         ]
       pushAll
         [ CancelNext (toSource attrs) AttackMessage
-        , RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
+        , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
         , ignoreWindow
         ]
       pure $ HypnoticGaze2 (attrs `with` Metadata (Just enemyId))
-    RequestedTokens source (Just iid) faces | isSource attrs source -> do
-      push $ ResetTokens (toSource attrs)
+    RequestedChaosTokens source (Just iid) faces | isSource attrs source -> do
+      push $ ResetChaosTokens (toSource attrs)
       let
         enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
         shouldDamageEnemy = any
-          ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . tokenFace)
+          ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace)
           faces
       when shouldDamageEnemy $ do
         healthDamage' <- field EnemyHealthDamage enemyId
         sanityDamage' <- field EnemySanityDamage enemyId
         when (healthDamage' > 0 || sanityDamage' > 0) $ push $ If
-          (Window.RevealTokenEventEffect (eventOwner attrs) faces (toId attrs))
+          (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
           [ chooseOrRunOne iid
             $ [ Label
                   "Deal health damage"

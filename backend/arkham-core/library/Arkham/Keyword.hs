@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Keyword where
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.Matcher.Types
 import Arkham.CampaignLogKey
+import {-# SOURCE #-} Arkham.Matcher.Types
 import Data.Aeson.TH
 
 data Keyword
@@ -21,7 +22,7 @@ data Keyword
   | Exceptional
   | Permanent
   | Researched CampaignLogKey
-  | Seal TokenMatcher
+  | Seal ChaosTokenMatcher
   deriving stock (Show, Eq, Ord)
 
 class HasKeywords a where

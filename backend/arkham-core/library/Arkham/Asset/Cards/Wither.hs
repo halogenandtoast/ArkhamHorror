@@ -16,7 +16,7 @@ import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.SkillType
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype Wither = Wither AssetAttrs
@@ -51,13 +51,13 @@ witherEffect = cardEffect WitherEffect Cards.wither
 
 instance RunMessage WitherEffect where
   runMessage msg e@(WitherEffect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
       when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing])
+        (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing])
         (pushAll
           [ If
-            (Window.RevealTokenEffect iid token effectId)
+            (Window.RevealChaosTokenEffect iid token effectId)
             [CreateWindowModifierEffect EffectTurnWindow (EffectModifiers $ toModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]) (AbilitySource effectSource 1) (toTarget enemyId)]
           , DisableEffect effectId
           ]

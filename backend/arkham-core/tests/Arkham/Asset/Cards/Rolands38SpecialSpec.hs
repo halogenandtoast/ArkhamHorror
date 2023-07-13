@@ -22,7 +22,7 @@ spec = describe "Roland's .39 Special" $ do
     enemy <- testEnemy $
       \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
     location <- testLocation id
-    pushAndRun $ SetTokens [Zero]
+    pushAndRun $ SetChaosTokens [Zero]
     pushAndRun $ placedLocation location
     pushAndRun $ enemySpawn location enemy
     pushAndRun $ moveTo investigator location
@@ -45,7 +45,7 @@ spec = describe "Roland's .39 Special" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyFight = 4, enemyHealth = Static 3}
       location <- testLocation $ \attrs -> attrs {locationClues = 1}
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location

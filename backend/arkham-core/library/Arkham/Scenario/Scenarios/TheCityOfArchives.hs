@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -29,7 +30,6 @@ import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait hiding (Trait (Cultist))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -52,25 +52,25 @@ theCityOfArchives difficulty =
     , ".                greatLibrary                    .                                .                               interviewRoom3"
     ]
 
-instance HasTokenValue TheCityOfArchives where
-  getTokenValue iid tokenFace (TheCityOfArchives attrs) = case tokenFace of
+instance HasChaosTokenValue TheCityOfArchives where
+  getChaosTokenValue iid chaosTokenFace (TheCityOfArchives attrs) = case chaosTokenFace of
     Skull -> do
       cardsInHand <- fieldMap InvestigatorHand length iid
       pure $
         if cardsInHand >= 5
           then
-            TokenValue Skull $
+            ChaosTokenValue Skull $
               if isEasyStandard attrs
                 then NegativeModifier 3
                 else AutoFailModifier
-          else toTokenValue attrs Skull 1 2
-    Cultist -> pure $ TokenValue Cultist $ NegativeModifier 2
-    Tablet -> pure $ TokenValue Tablet $ NegativeModifier 3
-    ElderThing -> pure $ TokenValue ElderThing $ NegativeModifier 2
-    otherFace -> getTokenValue iid otherFace attrs
+          else toChaosTokenValue attrs Skull 1 2
+    Cultist -> pure $ ChaosTokenValue Cultist $ NegativeModifier 2
+    Tablet -> pure $ ChaosTokenValue Tablet $ NegativeModifier 3
+    ElderThing -> pure $ ChaosTokenValue ElderThing $ NegativeModifier 2
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -90,8 +90,8 @@ standaloneTokens =
 
 instance RunMessage TheCityOfArchives where
   runMessage msg s@(TheCityOfArchives attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid)] -> do
       uniqueItemAssetCards <-
@@ -236,14 +236,14 @@ instance RunMessage TheCityOfArchives where
           & (setAsideCardsL %~ (<> setAsideCards))
           & (agendaStackL . at 1 ?~ agendas)
           & (actStackL . at 1 ?~ acts)
-    ResolveToken _ tokenFace iid
-      | isHardExpert attrs && tokenFace `elem` [Cultist, ElderThing] -> do
-          push $ InvestigatorPlaceCluesOnLocation iid (TokenEffectSource tokenFace) 1
+    ResolveChaosToken _ chaosTokenFace iid
+      | isHardExpert attrs && chaosTokenFace `elem` [Cultist, ElderThing] -> do
+          push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource chaosTokenFace) 1
           pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ n -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case chaosTokenFace token of
         face | face `elem` [Cultist, ElderThing] -> do
-          push $ InvestigatorPlaceCluesOnLocation iid (TokenEffectSource face) 1
+          push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource face) 1
         Tablet -> do
           let discardCount = if isEasyStandard attrs then 1 else n
           pushAll $
@@ -251,7 +251,7 @@ instance RunMessage TheCityOfArchives where
               toMessage $
                 randomDiscard
                   iid
-                  (TokenEffectSource Tablet)
+                  (ChaosTokenEffectSource Tablet)
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

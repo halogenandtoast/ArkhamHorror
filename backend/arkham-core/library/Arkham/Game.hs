@@ -26,6 +26,7 @@ import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.PlayerCard
 import Arkham.ChaosBag.Base
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Classes.HasDistance
@@ -137,7 +138,6 @@ import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Story.Types qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
 import Arkham.Treachery.Types (
@@ -244,7 +244,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
         , gameGameState = state
         , gameFocusedCards = mempty
         , gameFoundCards = mempty
-        , gameFocusedTokens = mempty
+        , gameFocusedChaosTokens = mempty
         , gameActiveCard = Nothing
         , gameResolvingCard = Nothing
         , gameActiveAbilities = mempty
@@ -535,20 +535,20 @@ instance (ToJSON gid) => ToJSON (PublicGame gid) where
       , "playerOrder" .= toJSON gamePlayerOrder
       , "phase" .= toJSON gamePhase
       , "skillTest" .= toJSON gameSkillTest
-      , "skillTestTokens"
+      , "skillTestChaosTokens"
           .= toJSON
             ( runReader
                 ( maybe
                     (pure [])
-                    (traverse withSkillTestModifiers . skillTestSetAsideTokens)
+                    (traverse withSkillTestModifiers . skillTestSetAsideChaosTokens)
                     gameSkillTest
                 )
                 g
             )
       , "focusedCards" .= toJSON gameFocusedCards
       , "foundCards" .= toJSON gameFoundCards
-      , "focusedTokens"
-          .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
+      , "focusedChaosTokens"
+          .= toJSON (runReader (traverse withModifiers gameFocusedChaosTokens) g)
       , "activeCard" .= toJSON gameActiveCard
       , "removedFromPlay" .= toJSON gameRemovedFromPlay
       , "gameState" .= toJSON gameGameState
@@ -2465,7 +2465,7 @@ instance Projection Asset where
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> pure assetSlots
-      AssetSealedTokens -> pure assetSealedTokens
+      AssetSealedChaosTokens -> pure assetSealedChaosTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
@@ -2543,7 +2543,7 @@ getEnemyField f e = do
           then select (InvestigatorAt $ locationWithEnemy enemyId)
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
-    EnemySealedTokens -> pure enemySealedTokens
+    EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemyDoom -> pure enemyDoom
     EnemyEvade -> pure enemyEvade
@@ -2638,9 +2638,9 @@ instance Projection Investigator where
       InvestigatorXp -> pure investigatorXp
       InvestigatorSupplies -> pure investigatorSupplies
 
-instance Query TokenMatcher where
+instance Query ChaosTokenMatcher where
   select matcher = do
-    tokens <- if includeSealed then getAllTokens else getBagTokens
+    tokens <- if includeSealed then getAllChaosTokens else getBagChaosTokens
     setFromList <$> filterM (go matcher) tokens
    where
     includeSealed = case matcher of
@@ -2653,25 +2653,25 @@ instance Query TokenMatcher where
           Nothing -> pure False
           Just skillTest -> do
             iid' <- toId <$> getActiveInvestigator
-            tv <- getTokenValue iid' (tokenFace t) ()
+            tv <- getChaosTokenValue iid' (chaosTokenFace t) ()
             case tv of
-              (TokenValue _ AutoFailModifier) -> pure True
-              (TokenValue _ other) -> do
+              (ChaosTokenValue _ AutoFailModifier) -> pure True
+              (ChaosTokenValue _ other) -> do
                 currentSkillValue <- getCurrentSkillValue skillTest
-                let currentTokenModifier = fromMaybe 0 (tokenModifierToInt other)
-                pure $ (currentSkillValue + currentTokenModifier) <= 0
+                let currentChaosTokenModifier = fromMaybe 0 (chaosTokenModifierToInt other)
+                pure $ (currentSkillValue + currentChaosTokenModifier) <= 0
       WithNegativeModifier -> \t -> do
         iid' <- toId <$> getActiveInvestigator
-        tv <- getTokenValue iid' (tokenFace t) ()
+        tv <- getChaosTokenValue iid' (chaosTokenFace t) ()
         pure $ case tv of
-          TokenValue _ (NegativeModifier _) -> True
-          TokenValue _ (DoubleNegativeModifier _) -> True
+          ChaosTokenValue _ (NegativeModifier _) -> True
+          ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
-      TokenFaceIs face -> pure . (== face) . tokenFace
-      TokenFaceIsNot face -> fmap not . go (TokenFaceIs face)
-      AnyToken -> pure . const True
-      TokenMatchesAny ms -> \t -> anyM (`go` t) ms
-      TokenMatches ms -> \t -> allM (`go` t) ms
+      ChaosTokenFaceIs face -> pure . (== face) . chaosTokenFace
+      ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
+      AnyChaosToken -> pure . const True
+      ChaosTokenMatchesAny ms -> \t -> anyM (`go` t) ms
+      ChaosTokenMatches ms -> \t -> allM (`go` t) ms
       IncludeSealed m -> go m
 
 instance Query AssetMatcher where
@@ -2906,17 +2906,17 @@ setScenario c (This a) = These a c
 setScenario c (That _) = That c
 setScenario c (These a _) = These a c
 
-instance HasTokenValue () where
-  getTokenValue iid token _ = do
+instance HasChaosTokenValue () where
+  getChaosTokenValue iid token _ = do
     mScenario <- modeScenario . view modeL <$> getGame
     case mScenario of
-      Just scenario -> getTokenValue iid token scenario
+      Just scenario -> getChaosTokenValue iid token scenario
       Nothing -> error "missing scenario"
 
-instance HasTokenValue InvestigatorId where
-  getTokenValue iid token iid' = do
+instance HasChaosTokenValue InvestigatorId where
+  getChaosTokenValue iid token iid' = do
     investigator' <- getInvestigator iid'
-    getTokenValue iid token investigator'
+    getChaosTokenValue iid token investigator'
 
 instance HasModifiersFor Entities where
   getModifiersFor target e =
@@ -3113,7 +3113,7 @@ eventField e fld = do
     cdef = toCardDef attrs
   case fld of
     EventCardId -> pure eventCardId
-    EventSealedTokens -> pure eventSealedTokens
+    EventSealedChaosTokens -> pure eventSealedChaosTokens
     EventPlacement -> pure eventPlacement
     EventTraits -> pure $ cdCardTraits cdef
     EventAbilities -> pure $ getAbilities e
@@ -3463,7 +3463,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
     additionalCosts = flip mapMaybe allModifiers $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
-    sealTokenCosts =
+    sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
@@ -3474,7 +3474,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
         [resourceCost]
           <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
           <> additionalCosts
-          <> sealTokenCosts
+          <> sealChaosTokenCosts
   pure
     ActiveCost
       { activeCostId = acId
@@ -3483,7 +3483,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
       , activeCostTarget = ForCard isPlayAction card
       , activeCostWindows = windows'
       , activeCostInvestigator = iid
-      , activeCostSealedTokens = []
+      , activeCostSealedChaosTokens = []
       }
 
 createActiveCostForAdditionalCardCosts
@@ -3500,11 +3500,11 @@ createActiveCostForAdditionalCardCosts iid card = do
     additionalCosts = flip mapMaybe allModifiers $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
-    sealTokenCosts =
+    sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
-    cost = mconcat $ additionalCosts <> sealTokenCosts
+    cost = mconcat $ additionalCosts <> sealChaosTokenCosts
 
   pure $
     if cost == Cost.Free
@@ -3518,7 +3518,7 @@ createActiveCostForAdditionalCardCosts iid card = do
             , activeCostTarget = ForCost card
             , activeCostWindows = []
             , activeCostInvestigator = iid
-            , activeCostSealedTokens = []
+            , activeCostSealedChaosTokens = []
             }
 
 runGameMessage :: Message -> Game -> GameT Game
@@ -3581,7 +3581,7 @@ runGameMessage msg g = case msg of
         & (gameStateL .~ IsActive)
         & (turnPlayerInvestigatorIdL .~ Nothing)
         & (focusedCardsL .~ mempty)
-        & (focusedTokensL .~ mempty)
+        & (focusedChaosTokensL .~ mempty)
         & (activeCardL .~ Nothing)
         & (activeAbilitiesL .~ mempty)
         & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
@@ -3599,7 +3599,7 @@ runGameMessage msg g = case msg of
         : [StandaloneSetup | standalone]
           <> [ ChooseLeadInvestigator
              , SetupInvestigators
-             , SetTokensForScenario -- (chaosBagOf campaign')
+             , SetChaosTokensForScenario -- (chaosBagOf campaign')
              , InvestigatorsMulligan
              , Setup
              , EndSetup
@@ -3616,7 +3616,7 @@ runGameMessage msg g = case msg of
         : [StandaloneSetup | standalone]
           <> [ ChooseLeadInvestigator
              , SetupInvestigators
-             , SetTokensForScenario -- (chaosBagOf campaign')
+             , SetChaosTokensForScenario -- (chaosBagOf campaign')
              , InvestigatorsMulligan
              , Setup
              , EndSetup
@@ -3640,12 +3640,12 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  CreateTokenValueEffect n source target -> do
-    (effectId, effect) <- createTokenValueEffect n source target
+  CreateChaosTokenValueEffect n source target -> do
+    (effectId, effect) <- createChaosTokenValueEffect n source target
     push $
       CreatedEffect
         effectId
-        (Just $ EffectModifiers [Modifier source (TokenValueModifier n) False])
+        (Just $ EffectModifiers [Modifier source (ChaosTokenValueModifier n) False])
         source
         target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
@@ -3678,7 +3678,7 @@ runGameMessage msg g = case msg of
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'
           , activeCostInvestigator = iid
-          , activeCostSealedTokens = []
+          , activeCostSealedChaosTokens = []
           }
     push $ CreatedCost acId
     pure $ g & activeCostL %~ insertMap acId activeCost
@@ -3692,14 +3692,14 @@ runGameMessage msg g = case msg of
         target
     push (CreatedEffect effectId (Just effectMetadata) source target)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  CreateTokenEffect effectMetadata source token -> do
-    (effectId, effect) <- createTokenEffect effectMetadata source token
+  CreateChaosTokenEffect effectMetadata source token -> do
+    (effectId, effect) <- createChaosTokenEffect effectMetadata source token
     push $
       CreatedEffect
         effectId
         (Just effectMetadata)
         source
-        (TokenTarget token)
+        (ChaosTokenTarget token)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId ->
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
@@ -3724,8 +3724,8 @@ runGameMessage msg g = case msg of
   ShuffleCardsIntoDeck _ cards ->
     pure $
       g & focusedCardsL %~ filter (`notElem` cards) & foundCardsL . each %~ filter (`notElem` cards)
-  FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
-  UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
+  FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
+  UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChooseLeadInvestigator -> do
     iids <- getInvestigatorIds
     case iids of
@@ -5426,8 +5426,8 @@ preloadModifiers g = case gameMode g of
               )
           )
           ( SkillTestTarget
-              : map TokenTarget tokens
-                <> map TokenFaceTarget [minBound .. maxBound]
+              : map ChaosTokenTarget tokens
+                <> map ChaosTokenFaceTarget [minBound .. maxBound]
                 <> map toTarget entities
                 <> map CardTarget (toList $ gameCards g)
                 <> map CardIdTarget (keys $ gameCards g)
@@ -5444,10 +5444,10 @@ preloadModifiers g = case gameMode g of
     concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
   tokens =
     nub $
-      maybe [] allSkillTestTokens (gameSkillTest g)
+      maybe [] allSkillTestChaosTokens (gameSkillTest g)
         <> maybe
           []
-          (allChaosBagTokens . scenarioChaosBag . toAttrs)
+          (allChaosBagChaosTokens . scenarioChaosBag . toAttrs)
           (modeScenario $ gameMode g)
   toTargetModifiers target =
     foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)

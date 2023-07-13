@@ -76,8 +76,9 @@ cluesToDiscover investigatorId startValue = do
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
-    UpdateLocation lid (Update _fld _val) | lid == locationId -> do
-      pure a
+    UpdateLocation lid upd | lid == locationId -> do
+      -- TODO: we may want life cycles around this, generally this might just be a bad idea
+      pure $ updateLocation [upd] a
     FlipClues target n | isTarget a target -> do
       let flipCount = min n locationClues
       let clueCount = max 0 $ subtract n locationClues

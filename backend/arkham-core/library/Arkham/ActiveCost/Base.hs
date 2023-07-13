@@ -2,12 +2,12 @@ module Arkham.ActiveCost.Base where
 
 import Arkham.Prelude
 
+import Arkham.Ability.Types
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Cost
 import Arkham.Id
-import Arkham.Token
-import Arkham.Ability.Types
-import Arkham.Window ( Window )
+import Arkham.Window (Window)
 
 data ActiveCost = ActiveCost
   { activeCostId :: ActiveCostId
@@ -16,7 +16,7 @@ data ActiveCost = ActiveCost
   , activeCostTarget :: ActiveCostTarget
   , activeCostWindows :: [Window]
   , activeCostInvestigator :: InvestigatorId
-  , activeCostSealedTokens :: [Token]
+  , activeCostSealedChaosTokens :: [ChaosToken]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -33,7 +33,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.HeartOfTheElders.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -83,8 +83,8 @@ part2Locations =
   , ".            darkHollow    .              ."
   ]
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -103,23 +103,23 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasTokenValue HeartOfTheElders where
-  getTokenValue iid tokenFace (HeartOfTheElders (attrs `With` _)) =
-    case tokenFace of
+instance HasChaosTokenValue HeartOfTheElders where
+  getChaosTokenValue iid chaosTokenFace (HeartOfTheElders (attrs `With` _)) =
+    case chaosTokenFace of
       Skull -> do
         inCave <-
           selectAny $ locationWithInvestigator iid <> LocationWithTrait Cave
         let caveModifier = if inCave then 2 else 0
-        pure $ toTokenValue attrs Skull (1 + caveModifier) (2 + caveModifier)
-      Cultist -> pure $ toTokenValue attrs Cultist 2 3
-      Tablet -> pure $ toTokenValue attrs Tablet 2 3
-      ElderThing -> pure $ toTokenValue attrs ElderThing 3 4
-      otherFace -> getTokenValue iid otherFace attrs
+        pure $ toChaosTokenValue attrs Skull (1 + caveModifier) (2 + caveModifier)
+      Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+      Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+      ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
+      otherFace -> getChaosTokenValue iid otherFace attrs
 
 runAMessage :: Message -> HeartOfTheElders -> GameT HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  SetTokensForScenario -> do
-    whenM getIsStandalone $ push $ SetTokens standaloneTokens
+  SetChaosTokensForScenario -> do
+    whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
     pure s
   StandaloneSetup -> do
     leadInvestigatorId <- getLeadInvestigatorId

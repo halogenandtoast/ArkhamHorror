@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Premonition
-  ( premonition
-  , Premonition(..)
-  ) where
+module Arkham.Event.Cards.Premonition (
+  premonition,
+  Premonition (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
+import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing
 
 newtype Premonition = Premonition EventAttrs
@@ -27,24 +27,26 @@ premonition = event Premonition Cards.premonition
 instance HasAbilities Premonition where
   getAbilities (Premonition a) =
     [ mkAbility a 1 $ ForcedAbility $ WouldRevealChaosToken Timing.When Anyone
-    | notNull (eventSealedTokens a)
+    | notNull (eventSealedChaosTokens a)
     ]
 
 instance RunMessage Premonition where
   runMessage msg e@(Premonition attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ RequestTokens (toSource attrs) (Just iid) (Reveal 1) RemoveTokens
+      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
       pure e
-    RequestedTokens (isSource attrs -> True) _ ts -> do
-      pushAll $ concatMap (\t -> [SealToken t, SealedToken t (toCard attrs)]) ts <> [ResetTokens (toSource attrs)]
+    RequestedChaosTokens (isSource attrs -> True) _ ts -> do
+      pushAll $
+        concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toCard attrs)]) ts
+          <> [ResetChaosTokens (toSource attrs)]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      let ts = eventSealedTokens attrs
+      let ts = eventSealedChaosTokens attrs
       pushAll $
         CancelNext (toSource attrs) RunWindowMessage
-        : map UnsealToken ts
-        <> [ ReplaceCurrentDraw (toSource attrs) iid
-               $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
-           ]
+          : map UnsealChaosToken ts
+            <> [ ReplaceCurrentDraw (toSource attrs) iid $
+                  Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
+               ]
       pure e
     _ -> Premonition <$> runMessage msg attrs

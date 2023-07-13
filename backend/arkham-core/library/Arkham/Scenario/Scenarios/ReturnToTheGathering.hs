@@ -36,9 +36,9 @@ returnToTheGathering difficulty =
     ]
     (referenceL .~ "01104")
 
-instance HasTokenValue ReturnToTheGathering where
-  getTokenValue iid tokenFace (ReturnToTheGathering theGathering') =
-    getTokenValue iid tokenFace theGathering'
+instance HasChaosTokenValue ReturnToTheGathering where
+  getChaosTokenValue iid chaosTokenFace (ReturnToTheGathering theGathering') =
+    getChaosTokenValue iid chaosTokenFace theGathering'
 
 instance RunMessage ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) =

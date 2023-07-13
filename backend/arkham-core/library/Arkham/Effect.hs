@@ -7,6 +7,7 @@ module Arkham.Effect (
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Effects
 import Arkham.Effect.Types
@@ -17,7 +18,6 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Arkham.Window (Window)
 
 -- start importing directly
@@ -114,11 +114,11 @@ createEffect cardCode meffectMetadata source target = do
   eid <- getRandom
   pure (eid, lookupEffect cardCode eid meffectMetadata source target)
 
-createTokenValueEffect
+createChaosTokenValueEffect
   :: (MonadRandom m) => Int -> Source -> Target -> m (EffectId, Effect)
-createTokenValueEffect n source target = do
+createChaosTokenValueEffect n source target = do
   eid <- getRandom
-  pure (eid, buildTokenValueEffect eid n source target)
+  pure (eid, buildChaosTokenValueEffect eid n source target)
 
 createWindowModifierEffect
   :: (MonadRandom m)
@@ -134,15 +134,15 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
     , buildWindowModifierEffect eid effectMetadata effectWindow source target
     )
 
-createTokenEffect
+createChaosTokenEffect
   :: (MonadRandom m)
   => EffectMetadata Window Message
   -> Source
-  -> Token
+  -> ChaosToken
   -> m (EffectId, Effect)
-createTokenEffect effectMetadata source token = do
+createChaosTokenEffect effectMetadata source token = do
   eid <- getRandom
-  pure (eid, buildTokenEffect eid effectMetadata source token)
+  pure (eid, buildChaosTokenEffect eid effectMetadata source token)
 
 createSurgeEffect
   :: (MonadRandom m, Sourceable source, Targetable target)
@@ -171,11 +171,11 @@ lookupEffect cardCode eid mmetadata source target =
     Nothing -> error $ "Unknown effect: " <> show cardCode
     Just (SomeEffect f) -> Effect $ f (eid, mmetadata, source, target)
 
-buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
-buildTokenValueEffect eid n source =
+buildChaosTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
+buildChaosTokenValueEffect eid n source =
   buildWindowModifierEffect
     eid
-    (EffectModifiers [Modifier source (TokenValueModifier n) False])
+    (EffectModifiers [Modifier source (ChaosTokenValueModifier n) False])
     EffectSkillTestWindow
     source
 
@@ -189,10 +189,10 @@ buildWindowModifierEffect
 buildWindowModifierEffect eid metadata effectWindow source target =
   Effect $ windowModifierEffect' eid metadata effectWindow source target
 
-buildTokenEffect
-  :: EffectId -> EffectMetadata Window Message -> Source -> Token -> Effect
-buildTokenEffect eid metadata source token =
-  Effect $ tokenEffect' eid metadata source token
+buildChaosTokenEffect
+  :: EffectId -> EffectMetadata Window Message -> Source -> ChaosToken -> Effect
+buildChaosTokenEffect eid metadata source token =
+  Effect $ chaosTokenEffect' eid metadata source token
 
 instance FromJSON Effect where
   parseJSON = withObject "Effect" $ \o -> do
@@ -336,6 +336,6 @@ allEffects =
     , ("82035", SomeEffect mesmerize)
     , ("90002", SomeEffect daisysToteBagAdvanced)
     , ("wmode", SomeEffect windowModifierEffect)
-    , ("tokef", SomeEffect tokenEffect)
+    , ("ctokef", SomeEffect chaosTokenEffect)
     , ("surge", SomeEffect surgeEffect)
     ]

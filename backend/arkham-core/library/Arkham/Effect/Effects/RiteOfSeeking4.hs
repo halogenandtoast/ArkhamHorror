@@ -9,7 +9,7 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 EffectAttrs
@@ -21,13 +21,13 @@ riteOfSeeking4 = RiteOfSeeking4 . uncurry4 (baseAttrs "02233")
 
 instance RunMessage RiteOfSeeking4 where
   runMessage msg e@(RiteOfSeeking4 attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token -> case effectTarget of
+    RevealChaosToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> do
         when
-          (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+          (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
           ( pushAll
               [ If
-                  (Window.RevealTokenEffect iid token effectId)
+                  (Window.RevealChaosTokenEffect iid token effectId)
                   [SetActions iid effectSource 0, ChooseEndTurn iid]
               , DisableEffect effectId
               ]

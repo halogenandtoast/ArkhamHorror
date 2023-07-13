@@ -1,21 +1,21 @@
-module Arkham.Skill.Cards.Defiance
-  ( defiance
-  , defianceEffect
-  , Defiance(..)
-  ) where
+module Arkham.Skill.Cards.Defiance (
+  defiance,
+  defianceEffect,
+  Defiance (..),
+) where
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Game.Helpers
-import Arkham.Message
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.Game.Helpers
+import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.Timing qualified as Timing
-import Arkham.Token
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Defiance = Defiance SkillAttrs
@@ -27,22 +27,22 @@ defiance = skill Defiance Cards.defiance
 
 instance RunMessage Defiance where
   runMessage msg s@(Defiance attrs) = case msg of
-    BeforeRevealTokens -> do
-      push
-        $ chooseOne (skillOwner attrs)
-          $ [ Label
+    BeforeRevealChaosTokens -> do
+      push $
+        chooseOne (skillOwner attrs) $
+          [ Label
               "Choose {skull}"
-              [ createCardEffect Cards.defiance Nothing (toSource attrs) (TokenFaceTarget Skull) ]
-            , Label
+              [createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Skull)]
+          , Label
               "Choose {cultist}"
-              [ createCardEffect Cards.defiance Nothing (toSource attrs) (TokenFaceTarget Cultist) ]
-            , Label
+              [createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Cultist)]
+          , Label
               "Choose {tablet}"
-              [ createCardEffect Cards.defiance Nothing (toSource attrs) (TokenFaceTarget Tablet) ]
-            , Label
+              [createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Tablet)]
+          , Label
               "Choose {elderThing}"
-              [ createCardEffect Cards.defiance Nothing (toSource attrs) (TokenFaceTarget ElderThing) ]
-            ]
+              [createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget ElderThing)]
+          ]
       pure s
     _ -> Defiance <$> runMessage msg attrs
 
@@ -54,14 +54,16 @@ defianceEffect :: EffectArgs -> DefianceEffect
 defianceEffect = cardEffect DefianceEffect Cards.defiance
 
 instance HasModifiersFor DefianceEffect where
-  getModifiersFor target (DefianceEffect a) | effectTarget a == target =
-    pure $ toModifiers a [ IgnoreTokenEffects ]
+  getModifiersFor target (DefianceEffect a)
+    | effectTarget a == target =
+        pure $ toModifiers a [IgnoreChaosTokenEffects]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DefianceEffect where
   runMessage msg e@(DefianceEffect attrs@EffectAttrs {..}) = case msg of
-    ResolveToken _drawnToken tokenFace _ | not effectFinished && TokenFaceTarget tokenFace == effectTarget -> do
-      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+    ResolveChaosToken _drawnToken chaosTokenFace _ | not effectFinished && ChaosTokenFaceTarget chaosTokenFace == effectTarget -> do
+      ignoreWindow <-
+        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       push ignoreWindow
       pure $ DefianceEffect $ attrs & finishedL .~ True
     SkillTestEnds _ _ -> do

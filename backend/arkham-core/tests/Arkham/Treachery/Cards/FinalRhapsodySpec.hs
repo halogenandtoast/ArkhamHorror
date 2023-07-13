@@ -13,7 +13,7 @@ spec = describe "Final Rhapsody" $ do
     finalRhapsody <- genPlayerCard Cards.finalRhapsody
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
-      [ SetTokens [Skull, Skull, AutoFail, Zero, Cultist]
+      [ SetChaosTokens [Skull, Skull, AutoFail, Zero, Cultist]
       , loadDeck investigator [finalRhapsody]
       , drawing
       ]

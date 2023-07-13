@@ -39,7 +39,7 @@ instance RunMessage CampaignAttrs where
               : map chooseUpgradeDeck investigatorIds
                 <> [FinishedUpgradingDecks]
           )
-    SetTokensForScenario -> a <$ push (SetTokens campaignChaosBag)
+    SetChaosTokensForScenario -> a <$ push (SetChaosTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardDef -> do
       card <- genPlayerCard cardDef
       pure $
@@ -63,8 +63,8 @@ instance RunMessage CampaignAttrs where
             %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
           & decksL
             %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
-    AddToken token -> pure $ a & chaosBagL %~ (token :)
-    RemoveAllTokens token -> pure $ a & chaosBagL %~ filter (/= token)
+    AddChaosToken token -> pure $ a & chaosBagL %~ (token :)
+    RemoveAllChaosTokens token -> pure $ a & chaosBagL %~ filter (/= token)
     InitDeck iid deck -> do
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
       let

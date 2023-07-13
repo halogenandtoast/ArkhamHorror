@@ -19,7 +19,7 @@ spec = describe "Grotesque Statue (4)" $ do
 
       didRunMessage <- didPassSkillTestBy investigator SkillIntellect 5
 
-      pushAndRun $ SetTokens [AutoFail, Zero]
+      pushAndRun $ SetChaosTokens [AutoFail, Zero]
       pushAndRun $ beginSkillTest investigator SkillIntellect 0
       chooseOnlyOption "start skill test"
       chooseOptionMatching
@@ -49,5 +49,5 @@ spec = describe "Grotesque Statue (4)" $ do
       chooseOnlyOption "apply results"
 
       didRunMessage `refShouldBe` True
-      tokens <- scenarioFieldMap ScenarioChaosBag (map tokenFace . chaosBagTokens)
+      tokens <- scenarioFieldMap ScenarioChaosBag (map chaosTokenFace . chaosBagTokens)
       liftIO $ tokens `shouldMatchList` [Zero, AutoFail]

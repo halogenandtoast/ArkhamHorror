@@ -20,7 +20,7 @@ spec = do
           ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
       location <- testLocation id
       pushAndRunAll
-        [ SetTokens [MinusOne]
+        [ SetChaosTokens [MinusOne]
         , enemySpawn location enemy
         , moveTo investigator location
         ]
@@ -39,7 +39,7 @@ spec = do
           ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
       location <- testLocation id
       pushAndRunAll
-        [ SetTokens [MinusOne]
+        [ SetChaosTokens [MinusOne]
         , enemySpawn location enemy
         , moveTo investigator location
         ]
@@ -61,7 +61,7 @@ spec = do
             ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
         location <- testLocation id
         pushAndRunAll
-          [ SetTokens [token]
+          [ SetChaosTokens [token]
           , enemySpawn location enemy
           , moveTo investigator location
           ]

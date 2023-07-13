@@ -49,7 +49,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       duke <- selectJust $ assetIs Assets.duke
 
       pushAndRunAll
-          [ SetTokens [ElderSign]
+          [ SetChaosTokens [ElderSign]
           , Exhaust (toTarget duke)
           , beginSkillTest ashcanPete SkillIntellect 2
           ]

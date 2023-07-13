@@ -1,18 +1,18 @@
-module Arkham.Treachery.Cards.Nihilism
-  ( nihilism
-  , Nihilism(..)
-  )
+module Arkham.Treachery.Cards.Nihilism (
+  nihilism,
+  Nihilism (..),
+)
 where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message hiding (RevealChaosToken)
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Nihilism = Nihilism TreacheryAttrs
@@ -24,23 +24,27 @@ nihilism = treachery Nihilism Cards.nihilism
 
 instance HasAbilities Nihilism where
   getAbilities (Nihilism a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-      $ ForcedAbility
-      $ OrWindowMatcher
-        [ RevealChaosToken Timing.After You (TokenFaceIs AutoFail)
-        , CancelChaosToken Timing.After You (TokenFaceIs AutoFail)
-        , IgnoreChaosToken Timing.After You (TokenFaceIs AutoFail)
-        ]
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost
-      2
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ForcedAbility $
+          OrWindowMatcher
+            [ RevealChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
+            , CancelChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
+            , IgnoreChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
+            ]
+    , restrictedAbility a 2 OnSameLocation $
+        ActionAbility Nothing $
+          ActionCost
+            2
     ]
 
 instance RunMessage Nihilism where
   runMessage msg t@(Nihilism attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      t <$ push (InvestigatorAssignDamage iid source DamageAny 1 1)
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          t <$ push (InvestigatorAssignDamage iid source DamageAny 1 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure t

@@ -15,6 +15,7 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria.Override
@@ -30,7 +31,6 @@ import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
-import Arkham.Token
 import Arkham.Trait
 import Data.Aeson.TH
 
@@ -74,7 +74,7 @@ data ModifierType
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
   | CanBecomeFastOrReduceCostOf CardMatcher Int -- Used by Chuck Fergus (2), check for notes
-  | RevealTokensBeforeCommittingCards
+  | RevealChaosTokensBeforeCommittingCards
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
@@ -97,7 +97,7 @@ data ModifierType
   | CannotBeEvaded
   | CannotBeRevealed
   | CannotCancelHorror
-  | CannotCancelOrIgnoreToken TokenFace
+  | CannotCancelOrIgnoreChaosToken ChaosTokenFace
   | CannotCommitCards CardMatcher
   | CannotDiscoverClues
   | CannotDrawCards
@@ -137,7 +137,7 @@ data ModifierType
   | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
   | CannotTriggerFastAbilities
   | CardsCannotLeaveYourDiscardPile
-  | ChangeTokenModifier TokenModifier
+  | ChangeChaosTokenModifier ChaosTokenModifier
   | ControlledAssetsCannotReady
   | DamageDealt Int
   | DamageTaken Int
@@ -151,7 +151,7 @@ data ModifierType
   | DoomThresholdModifier Int
   | DoomSubtracts
   | DoubleDifficulty
-  | DoubleNegativeModifiersOnTokens
+  | DoubleNegativeModifiersOnChaosTokens
   | DoubleSkillIcons
   | DoubleSuccess
   | DoubleBaseSkillValue
@@ -167,7 +167,7 @@ data ModifierType
   | CountsAsInvestigatorForHunterEnemies
   | FailTies
   | FewerSlots SlotType Int
-  | ForcedTokenChange TokenFace [TokenFace]
+  | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
   | ForcePrey PreyMatcher
   | HandSize Int
   | IgnoreHandSizeReduction
@@ -182,8 +182,8 @@ data ModifierType
   | IgnoreRetaliate
   | IgnoreAloof
   | IgnoreText
-  | IgnoreToken
-  | IgnoreTokenEffects
+  | IgnoreChaosToken
+  | IgnoreChaosTokenEffects
   | IncreaseCostOf CardMatcher Int
   | KilledIfDefeated
   | MaxDamageTaken Int
@@ -212,11 +212,11 @@ data ModifierType
   | StartingHand Int
   | StartingResources Int
   | StartingClues Int
-  | TokenFaceModifier [TokenFace]
-  | TokenValueModifier Int
+  | ChaosTokenFaceModifier [ChaosTokenFace]
+  | ChaosTokenValueModifier Int
   | TopCardOfDeckIsRevealed
   | TreatAllDamageAsDirect
-  | TreatRevealedTokenAs TokenFace
+  | TreatRevealedChaosTokenAs ChaosTokenFace
   | UseSkillInPlaceOf SkillType SkillType
   | UseSkillInsteadOf SkillType SkillType
   | SkillModifiersAffectOtherSkill SkillType SkillType
@@ -230,7 +230,7 @@ data ModifierType
   | EnemyEvadeActionCriteria CriteriaOverride
   | CanPlayWithOverride CriteriaOverride
   | SetAbilityCriteria CriteriaOverride
-  | RevealAnotherToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
+  | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
   | IgnoreLimit
   | CanIgnoreLimit
   | DoNotExhaustEvaded

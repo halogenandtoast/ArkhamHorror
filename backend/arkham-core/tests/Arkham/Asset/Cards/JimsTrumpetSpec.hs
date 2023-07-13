@@ -17,7 +17,7 @@ spec = describe "Jim's Trumpet" $ do
       updateInvestigator investigator (Investigator.sanityDamageL .~ 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       location <- testLocation id
-      pushAndRun $ SetTokens [Skull]
+      pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ moveTo investigator location
       pushAndRun $ beginSkillTest investigator SkillIntellect 0
       chooseOnlyOption "start skill test"
@@ -37,7 +37,7 @@ spec = describe "Jim's Trumpet" $ do
           (Investigator.sanityDamageL .~ 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       location <- testLocation id
-      pushAndRun $ SetTokens [Skull]
+      pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ moveAllTo location
       pushAndRun $ beginSkillTest investigator SkillIntellect 0
       chooseOnlyOption "start skill test"
@@ -57,7 +57,7 @@ spec = describe "Jim's Trumpet" $ do
           (Investigator.sanityDamageL .~ 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       location <- testLocation id
-      pushAndRun $ SetTokens [Skull]
+      pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ moveAllTo location
       pushAndRun $ beginSkillTest investigator2 SkillIntellect 0
       chooseOnlyOption "start skill test"
@@ -78,7 +78,7 @@ spec = describe "Jim's Trumpet" $ do
       putCardIntoPlay investigator Assets.jimsTrumpet
       rivertown <- testLocationWithDef Locations.rivertown id
       southside <- testLocationWithDef Locations.southsideHistoricalSociety id
-      pushAndRun $ SetTokens [Skull]
+      pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ placedLocation rivertown
       pushAndRun $ placedLocation southside
       pushAndRun $ moveTo investigator rivertown
@@ -102,7 +102,7 @@ spec = describe "Jim's Trumpet" $ do
       putCardIntoPlay investigator Assets.jimsTrumpet
       rivertown <- testLocationWithDef Locations.rivertown id
       downtown <- testLocationWithDef Locations.downtownArkhamAsylum id
-      pushAndRun $ SetTokens [Skull]
+      pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ placedLocation rivertown
       pushAndRun $ placedLocation downtown
       pushAndRun $ moveTo investigator rivertown

@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype BlindingLight = BlindingLight EffectAttrs
@@ -22,12 +22,12 @@ blindingLight = BlindingLight . uncurry4 (baseAttrs "01066")
 
 instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
-        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (pushAll
           [ If
-            (Window.RevealTokenEffect iid token effectId)
+            (Window.RevealChaosTokenEffect iid token effectId)
             [LoseActions iid (toSource attrs) 1]
           , DisableEffect effectId
           ]

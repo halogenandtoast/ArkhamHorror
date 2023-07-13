@@ -20,7 +20,7 @@ spec = describe "Roland Banks" $ do
           \attrs -> attrs {enemyFight = 4, enemyHealth = Static 1}
         location <- testLocation $ \attrs -> attrs {locationClues = 1}
         pushAndRunAll
-          [ SetTokens [Zero]
+          [ SetChaosTokens [Zero]
           , enemySpawn location enemy
           , moveTo rolandBanks location
           , fightEnemy rolandBanks enemy
@@ -40,7 +40,7 @@ spec = describe "Roland Banks" $ do
       location <- testLocation $
         \attrs -> attrs {locationClues = 1, locationShroud = 4}
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , moveTo rolandBanks location
         , investigate rolandBanks location
         ]

@@ -14,6 +14,7 @@ import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.CampaignSteps (pattern TheSecretName)
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -30,7 +31,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.AtDeathsDoorstep.Story
-import Arkham.Token
 import Arkham.Trait (Trait (SilverTwilight, Spectral))
 
 newtype AtDeathsDoorstep = AtDeathsDoorstep ScenarioAttrs
@@ -49,20 +49,20 @@ atDeathsDoorstep difficulty =
     , ".             .          entryHall      .             ."
     ]
 
-instance HasTokenValue AtDeathsDoorstep where
-  getTokenValue iid tokenFace (AtDeathsDoorstep attrs) = case tokenFace of
+instance HasChaosTokenValue AtDeathsDoorstep where
+  getChaosTokenValue iid chaosTokenFace (AtDeathsDoorstep attrs) = case chaosTokenFace of
     Skull -> do
       isHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation
-      pure . uncurry (toTokenValue attrs Skull) $
+      pure . uncurry (toChaosTokenValue attrs Skull) $
         if isHaunted
           then (1, 2)
           else (3, 4)
-    Tablet -> pure $ toTokenValue attrs Tablet 2 3
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
-    otherFace -> getTokenValue iid otherFace attrs
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -101,8 +101,8 @@ standaloneCampaignLog =
 
 instance RunMessage AtDeathsDoorstep where
   runMessage msg s@(AtDeathsDoorstep attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     PreScenarioSetup -> do
       iids <- getInvestigatorIds
@@ -245,8 +245,8 @@ instance RunMessage AtDeathsDoorstep where
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
           )
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Tablet | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
@@ -254,13 +254,13 @@ instance RunMessage AtDeathsDoorstep where
               runHauntedAbilities iid
         _ -> pure ()
       pure s
-    ResolveToken _ Tablet iid | isHardExpert attrs -> do
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       mAction <- getSkillTestAction
       for_ mAction $ \action ->
         when (action `elem` [Action.Fight, Action.Evade]) $
           runHauntedAbilities iid
       pure s
-    ResolveToken _ ElderThing iid -> do
+    ResolveChaosToken _ ElderThing iid -> do
       isSpectralEnemy <-
         selectAny $
           EnemyAt (locationWithInvestigator iid)
@@ -269,7 +269,7 @@ instance RunMessage AtDeathsDoorstep where
         push $
           InvestigatorAssignDamage
             iid
-            (TokenEffectSource ElderThing)
+            (ChaosTokenEffectSource ElderThing)
             DamageAny
             1
             (if isHardExpert attrs then 1 else 0)

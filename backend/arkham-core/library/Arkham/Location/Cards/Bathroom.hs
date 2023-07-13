@@ -3,14 +3,14 @@ module Arkham.Location.Cards.Bathroom where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( bathroom )
+import Arkham.Location.Cards qualified as Cards (bathroom)
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Runner hiding (RevealChaosToken)
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype Bathroom = Bathroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,20 +21,19 @@ bathroom = location Bathroom Cards.bathroom 1 (PerPlayer 1)
 
 instance HasAbilities Bathroom where
   getAbilities (Bathroom attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
+    withRevealedAbilities attrs $
+      [ restrictedAbility
+          attrs
+          1
+          (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
           $ ForcedAbility
           $ RevealChaosToken Timing.After You
-          $ TokenMatchesAny
-          $ map TokenFaceIs [Skull, Cultist, Tablet, AutoFail]
-        | locationRevealed attrs
-        ]
+          $ ChaosTokenMatchesAny
+          $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, AutoFail]
+      ]
 
 instance RunMessage Bathroom where
   runMessage msg l@(Bathroom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       l <$ pushAll [SetActions iid source 0, ChooseEndTurn iid]
     _ -> Bathroom <$> runMessage msg attrs

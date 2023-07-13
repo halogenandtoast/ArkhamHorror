@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DrElliHorowitz
-  ( drElliHorowitz
-  , DrElliHorowitz(..)
-  ) where
+module Arkham.Asset.Cards.DrElliHorowitz (
+  drElliHorowitz,
+  DrElliHorowitz (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,12 +14,12 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenario.Types ( Field (..) )
+import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype DrElliHorowitz = DrElliHorowitz AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drElliHorowitz :: AssetCard DrElliHorowitz
@@ -33,59 +33,64 @@ instance HasModifiersFor DrElliHorowitz where
       Just iid -> do
         placement <- field AssetPlacement aid
         pure case placement of
-          AttachedToAsset aid' _ | aid' == toId a ->
-            toModifiers a [AsIfUnderControlOf iid]
+          AttachedToAsset aid' _
+            | aid' == toId a ->
+                toModifiers a [AsIfUnderControlOf iid]
           _ -> []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DrElliHorowitz where
   getAbilities (DrElliHorowitz a) =
-    [ restrictedAbility a 1 (ControlsThis <> CanManipulateDeck)
-        $ ReactionAbility
-            (AssetEntersPlay Timing.When $ AssetWithId $ toId a)
-            Free
+    [ restrictedAbility a 1 (ControlsThis <> CanManipulateDeck) $
+        ReactionAbility
+          (AssetEntersPlay Timing.When $ AssetWithId $ toId a)
+          Free
     ]
 
 instance RunMessage DrElliHorowitz where
   runMessage msg a@(DrElliHorowitz attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ Search
-        iid
-        source
-        (InvestigatorTarget iid)
-        [fromTopOfDeck 9]
-        AnyCard -- no filter because we need to handle game logic
-        (DeferSearchedToTarget $ toTarget attrs)
+      push $
+        Search
+          iid
+          source
+          (InvestigatorTarget iid)
+          [fromTopOfDeck 9]
+          AnyCard -- no filter because we need to handle game logic
+          (DeferSearchedToTarget $ toTarget attrs)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      validCards <- pure $ filter
-        (`cardMatch` (CardWithType AssetType <> CardWithTrait Relic))
-        cards
-      tokens <- scenarioFieldMap ScenarioChaosBag chaosBagTokens
+      validCards <-
+        pure $
+          filter
+            (`cardMatch` (CardWithType AssetType <> CardWithTrait Relic))
+            cards
+      tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
       let
         validAfterSeal c = do
           let
-            sealTokenMatchers =
+            sealChaosTokenMatchers =
               flip mapMaybe (setToList $ cdKeywords $ toCardDef c) $ \case
                 Keyword.Seal matcher -> Just $ matcher
                 _ -> Nothing
           allM
-            (\matcher -> anyM (\t -> matchToken iid t matcher) tokens)
-            sealTokenMatchers
+            (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens)
+            sealChaosTokenMatchers
       validCardsAfterSeal <- filterM validAfterSeal validCards
       if null validCardsAfterSeal
         then push $ chooseOne iid [Label "No Cards Found" []]
         else do
           assetId <- getRandom
-          push $ chooseOne
-            iid
-            [ targetLabel
+          push $
+            chooseOne
+              iid
+              [ targetLabel
                 (toCardId c)
-                [ CreateAssetAt assetId c
-                    $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)
+                [ CreateAssetAt assetId c $
+                    AttachedToAsset (toId attrs) (Just $ InPlayArea iid)
                 ]
-            | c <- validCardsAfterSeal
-            ]
+              | c <- validCardsAfterSeal
+              ]
       pure a
     SearchNoneFound iid target | isTarget attrs target -> do
       push $ chooseOne iid [Label "No Cards Found" []]

@@ -7,6 +7,7 @@ module Arkham.Investigator.Runner (
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
 import Arkham.Helpers.Investigator as X
@@ -16,7 +17,6 @@ import Arkham.Name as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
-import Arkham.Token as X
 import Arkham.Trait as X hiding (Cultist)
 
 import Arkham.Ability
@@ -2303,20 +2303,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
           cards
     pure $ a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
-  TokenCanceled iid _ token | iid == investigatorId -> do
-    whenWindow <- checkWindows [Window Timing.When (Window.CancelToken iid token)]
-    afterWindow <- checkWindows [Window Timing.After (Window.CancelToken iid token)]
+  ChaosTokenCanceled iid _ token | iid == investigatorId -> do
+    whenWindow <- checkWindows [Window Timing.When (Window.CancelChaosToken iid token)]
+    afterWindow <- checkWindows [Window Timing.After (Window.CancelChaosToken iid token)]
     pushAll [whenWindow, afterWindow]
     pure a
-  TokenIgnored iid _ token | iid == investigatorId -> do
-    whenWindow <- checkWindows [Window Timing.When (Window.IgnoreToken iid token)]
-    afterWindow <- checkWindows [Window Timing.After (Window.IgnoreToken iid token)]
+  ChaosTokenIgnored iid _ token | iid == investigatorId -> do
+    whenWindow <- checkWindows [Window Timing.When (Window.IgnoreChaosToken iid token)]
+    afterWindow <- checkWindows [Window Timing.After (Window.IgnoreChaosToken iid token)]
     pushAll [whenWindow, afterWindow]
     pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == investigatorId -> do
     skillTestModifiers' <- getModifiers SkillTestTarget
     push $
-      if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'
+      if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
         then StartSkillTest investigatorId
         else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
     pure a

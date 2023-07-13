@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 
 newtype AdamLynch = AdamLynch AssetAttrs
   deriving anyclass IsAsset
@@ -49,5 +49,5 @@ instance HasModifiersFor AdamLynch where
 instance RunMessage AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]
+      a <$ pushAll [AddChaosToken Tablet, RemoveFromGame $ toTarget attrs]
     _ -> AdamLynch <$> runMessage msg attrs

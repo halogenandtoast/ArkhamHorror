@@ -82,18 +82,18 @@ instance HasAbilities GavriellaMizrah where
           Free
     ]
 
-instance HasTokenValue GavriellaMizrah where
-  getTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _))
+instance HasChaosTokenValue GavriellaMizrah where
+  getChaosTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _))
     | iid == toId attrs = do
-        pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage GavriellaMizrah where
   runMessage msg i@(GavriellaMizrah (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
       pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pushAll
         [ HealHorror (toTarget attrs) (toSource attrs) 1
         , HealDamage (toTarget attrs) (toSource attrs) 1

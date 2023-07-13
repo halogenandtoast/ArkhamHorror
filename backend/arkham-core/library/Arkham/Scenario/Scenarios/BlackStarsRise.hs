@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Difficulty
@@ -28,7 +29,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BlackStarsRise.Story
 import Arkham.SkillTest
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
@@ -53,12 +53,12 @@ blackStarsRise difficulty =
     ]
     (decksLayoutL .~ ["act1 agenda1 agenda2 act2"])
 
-instance HasTokenValue BlackStarsRise where
-  getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of
+instance HasChaosTokenValue BlackStarsRise where
+  getChaosTokenValue iid chaosTokenFace (BlackStarsRise attrs) = case chaosTokenFace of
     Skull -> do
       maxDoom <- fieldMax AgendaDoom AnyAgenda
       totalDoom <- selectSum AgendaDoom AnyAgenda
-      pure $ toTokenValue attrs Skull maxDoom totalDoom
+      pure $ toChaosTokenValue attrs Skull maxDoom totalDoom
     Cultist ->
       if isEasyStandard attrs
         then do
@@ -74,15 +74,15 @@ instance HasTokenValue BlackStarsRise where
                         pure $ if hasDoom then AutoFailModifier else NoModifier
                       _ -> pure NoModifier
               _ -> pure NoModifier
-          pure $ TokenValue Cultist modifier
+          pure $ ChaosTokenValue Cultist modifier
         else do
           anyEnemyWithDoom <- selectAny EnemyWithAnyDoom
           let
             modifier = if anyEnemyWithDoom then AutoFailModifier else NoModifier
-          pure $ TokenValue Cultist modifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
-    otherFace -> getTokenValue iid otherFace attrs
+          pure $ ChaosTokenValue Cultist modifier
+    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 data Version = TheFloodBelow | TheVortexAbove
   deriving stock (Eq)
@@ -90,8 +90,8 @@ data Version = TheFloodBelow | TheVortexAbove
 versions :: NonEmpty Version
 versions = TheFloodBelow :| [TheVortexAbove]
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -113,10 +113,10 @@ standaloneTokens =
 
 instance RunMessage BlackStarsRise where
   runMessage msg s@(BlackStarsRise attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       whenStandalone $ do
         randomToken <- sample $ Cultist :| [Tablet, ElderThing]
-        push $ SetTokens $ standaloneTokens <> [randomToken, randomToken]
+        push $ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -219,7 +219,7 @@ instance RunMessage BlackStarsRise where
              | iid <- investigatorIds
              , not isStandalone
              ]
-          <> [AddToken tokenToAdd, SetAgendaDeck, SetEncounterDeck encounterDeck]
+          <> [AddChaosToken tokenToAdd, SetAgendaDeck, SetEncounterDeck encounterDeck]
           <> (placePorteDeLAvancee : otherPlacements)
           <> [MoveAllTo (toSource attrs) porteDeLAvanceeId]
 
@@ -251,16 +251,16 @@ instance RunMessage BlackStarsRise where
           | agendaId <- agendaIds
           ]
       pure s
-    PassedSkillTest _ _ _ (TokenTarget token) _ n | n < 1 -> do
-      when (tokenFace token == Tablet) $ do
+    PassedSkillTest _ _ _ (ChaosTokenTarget token) _ n | n < 1 -> do
+      when (chaosTokenFace token == Tablet) $ do
         targets <- selectListMap AgendaTarget AnyAgenda
         pushAll [PlaceDoom (toSource attrs) target 1 | target <- targets]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      when (tokenFace token == Tablet) $ do
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      when (chaosTokenFace token == Tablet) $ do
         targets <- selectListMap AgendaTarget AnyAgenda
         pushAll [PlaceDoom (toSource attrs) target 1 | target <- targets]
-      when (tokenFace token == ElderThing) $ do
+      when (chaosTokenFace token == ElderThing) $ do
         push $
           FindAndDrawEncounterCard
             iid
@@ -284,13 +284,13 @@ instance RunMessage BlackStarsRise where
           pushAll $
             [ story iids resolution1
             , Record YouOpenedThePathBelow
-            , RemoveAllTokens Cultist
-            , RemoveAllTokens Tablet
-            , RemoveAllTokens ElderThing
-            , AddToken Cultist
-            , AddToken Cultist
-            , AddToken Tablet
-            , AddToken Tablet
+            , RemoveAllChaosTokens Cultist
+            , RemoveAllChaosTokens Tablet
+            , RemoveAllChaosTokens ElderThing
+            , AddChaosToken Cultist
+            , AddChaosToken Cultist
+            , AddChaosToken Tablet
+            , AddChaosToken Tablet
             ]
               <> updateSlain
               <> gainXp
@@ -299,13 +299,13 @@ instance RunMessage BlackStarsRise where
           pushAll $
             [ story iids resolution2
             , Record YouOpenedThePathAbove
-            , RemoveAllTokens Cultist
-            , RemoveAllTokens Tablet
-            , RemoveAllTokens ElderThing
-            , AddToken Cultist
-            , AddToken Cultist
-            , AddToken ElderThing
-            , AddToken ElderThing
+            , RemoveAllChaosTokens Cultist
+            , RemoveAllChaosTokens Tablet
+            , RemoveAllChaosTokens ElderThing
+            , AddChaosToken Cultist
+            , AddChaosToken Cultist
+            , AddChaosToken ElderThing
+            , AddChaosToken ElderThing
             ]
               <> updateSlain
               <> gainXp

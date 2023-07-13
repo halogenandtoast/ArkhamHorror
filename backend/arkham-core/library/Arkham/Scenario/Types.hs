@@ -13,7 +13,7 @@ import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Classes.Entity
 import Arkham.Classes.HasModifiersFor
-import Arkham.Classes.HasTokenValue
+import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
@@ -38,7 +38,7 @@ class
   , Show a
   , HasModifiersFor a
   , RunMessage a
-  , HasTokenValue a
+  , HasChaosTokenValue a
   , Entity a
   , EntityId a ~ ScenarioId
   , EntityAttrs a ~ ScenarioAttrs

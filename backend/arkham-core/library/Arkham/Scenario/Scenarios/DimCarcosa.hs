@@ -11,6 +11,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -31,7 +32,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Story
-import Arkham.Token
 import Arkham.Trait (Trait (AncientOne, Monster))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -62,24 +62,24 @@ instance HasModifiersFor DimCarcosa where
     pure $ toModifiers a [CanOnlyBeDefeatedByDamage]
   getModifiersFor _ _ = pure []
 
-instance HasTokenValue DimCarcosa where
-  getTokenValue iid tokenFace (DimCarcosa attrs) = case tokenFace of
+instance HasChaosTokenValue DimCarcosa where
+  getChaosTokenValue iid chaosTokenFace (DimCarcosa attrs) = case chaosTokenFace of
     Skull -> do
       remainingSanity <- field InvestigatorRemainingSanity iid
       horror <- field InvestigatorHorror iid
       pure $
-        toTokenValue
+        toChaosTokenValue
           attrs
           Skull
           (if remainingSanity == 0 then 4 else 2)
           horror
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ toTokenValue attrs Tablet 3 5
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
-    otherFace -> getTokenValue iid otherFace attrs
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 5
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -103,8 +103,8 @@ standaloneTokens =
 
 instance RunMessage DimCarcosa where
   runMessage msg s@(DimCarcosa attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -121,8 +121,8 @@ instance RunMessage DimCarcosa where
             , Label "Neither" []
             ]
         , Record pathOpened
-        , AddToken token
-        , AddToken token
+        , AddChaosToken token
+        , AddChaosToken token
         , AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
         ]
       pure s
@@ -266,22 +266,22 @@ instance RunMessage DimCarcosa where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      when (tokenFace token == Cultist) $
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      when (chaosTokenFace token == Cultist) $
         push $
           InvestigatorAssignDamage
             iid
-            (TokenEffectSource Cultist)
+            (ChaosTokenEffectSource Cultist)
             DamageAny
             0
             (if isEasyStandard attrs then 1 else 2)
-      when (tokenFace token == Tablet) $ do
+      when (chaosTokenFace token == Tablet) $ do
         hasturInPlay <- selectAny $ EnemyWithTitle "Hastur"
         when hasturInPlay $ do
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> push $ PlaceClues (toSource attrs) (LocationTarget lid) 1
       pure s
-    ResolveToken _ ElderThing iid -> do
+    ResolveChaosToken _ ElderThing iid -> do
       mskillTestSource <- getSkillTestSource
       mskillTestTarget <- getSkillTestTarget
       case (mskillTestSource, mskillTestTarget) of
@@ -290,7 +290,7 @@ instance RunMessage DimCarcosa where
               isMonsterOrAncientOne <-
                 member eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
               when isMonsterOrAncientOne $ do
-                push $ LoseActions iid (TokenEffectSource ElderThing) 1
+                push $ LoseActions iid (ChaosTokenEffectSource ElderThing) 1
         _ -> pure ()
       pure s
     ScenarioResolution res -> do

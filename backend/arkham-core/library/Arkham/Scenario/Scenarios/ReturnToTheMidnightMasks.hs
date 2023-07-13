@@ -35,9 +35,9 @@ returnToTheMidnightMasks difficulty =
     ]
     ((decksL .~ mapFromList [(CultistDeck, [])]) . (referenceL .~ "01120"))
 
-instance HasTokenValue ReturnToTheMidnightMasks where
-  getTokenValue iid tokenFace (ReturnToTheMidnightMasks theMidnightMasks') =
-    getTokenValue iid tokenFace theMidnightMasks'
+instance HasChaosTokenValue ReturnToTheMidnightMasks where
+  getChaosTokenValue iid chaosTokenFace (ReturnToTheMidnightMasks theMidnightMasks') =
+    getChaosTokenValue iid chaosTokenFace theMidnightMasks'
 
 instance RunMessage ReturnToTheMidnightMasks where
   runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs)) =

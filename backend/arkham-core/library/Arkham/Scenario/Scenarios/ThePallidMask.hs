@@ -13,6 +13,7 @@ import Arkham.Attack
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Distance
@@ -37,7 +38,6 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
 import Arkham.SkillTest
-import Arkham.Token
 import Arkham.Trait (Trait (Geist, Ghoul, Madness, Pact))
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
@@ -90,8 +90,8 @@ standaloneCampaignLog =
           [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn]
     }
 
-instance HasTokenValue ThePallidMask where
-  getTokenValue iid tokenFace (ThePallidMask attrs) = case tokenFace of
+instance HasChaosTokenValue ThePallidMask where
+  getChaosTokenValue iid chaosTokenFace (ThePallidMask attrs) = case chaosTokenFace of
     Skull -> do
       -- -X where X is the number of locations away from the starting location
       startingLocation <-
@@ -105,14 +105,14 @@ instance HasTokenValue ThePallidMask where
         unDistance
           . fromMaybe (Distance 0)
           <$> getDistance startingLocation yourLocation
-      pure $ toTokenValue attrs Skull (min 5 distance) distance
-    Cultist -> pure $ toTokenValue attrs Cultist 2 3
-    Tablet -> pure $ toTokenValue attrs Tablet 2 3
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 4
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull (min 5 distance) distance
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -133,10 +133,10 @@ standaloneTokens =
 
 instance RunMessage ThePallidMask where
   runMessage msg s@(ThePallidMask attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       whenM getIsStandalone $ do
         randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -261,7 +261,7 @@ instance RunMessage ThePallidMask where
             | catacomb <- catacombs
             ]
       pure s
-    ResolveToken t token iid ->
+    ResolveChaosToken t token iid ->
       s <$ case token of
         Cultist -> do
           mskillTestSource <- getSkillTestSource
@@ -278,7 +278,7 @@ instance RunMessage ThePallidMask where
                               else NoDamageDealt
                           ]
                     )
-                    (TokenSource t)
+                    (ChaosTokenSource t)
                     (InvestigatorTarget iid)
                 )
             _ -> pure ()
@@ -312,7 +312,7 @@ instance RunMessage ThePallidMask where
                     ]
           pure ()
         _ -> pure ()
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> case chaosTokenFace token of
       ElderThing -> do
         push $
           FindAndDrawEncounterCard
@@ -358,11 +358,11 @@ instance RunMessage ThePallidMask where
                 | iid <- investigatorIds
                 ]
              ]
-          <> [ RemoveAllTokens Cultist
-             , RemoveAllTokens Tablet
-             , RemoveAllTokens ElderThing
-             , AddToken token
-             , AddToken token
+          <> [ RemoveAllChaosTokens Cultist
+             , RemoveAllChaosTokens Tablet
+             , RemoveAllChaosTokens ElderThing
+             , AddChaosToken token
+             , AddChaosToken token
              ]
           <> [ RecordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
              | res == Resolution 2

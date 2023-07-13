@@ -58,13 +58,13 @@ instance Show EnemyMatcher
 instance Eq EnemyMatcher
 instance Ord EnemyMatcher
 
-data TokenMatcher
+data ChaosTokenMatcher
 
-instance ToJSON TokenMatcher
-instance FromJSON TokenMatcher
-instance Show TokenMatcher
-instance Eq TokenMatcher
-instance Ord TokenMatcher
+instance ToJSON ChaosTokenMatcher
+instance FromJSON ChaosTokenMatcher
+instance Show ChaosTokenMatcher
+instance Eq ChaosTokenMatcher
+instance Ord ChaosTokenMatcher
 
 data PreyMatcher
 

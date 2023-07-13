@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Token qualified as Token
+import Arkham.ChaosToken qualified as Token
 import Arkham.Window (defaultWindows)
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
@@ -26,7 +26,7 @@ instance HasModifiersFor TheNecronomiconAdvanced where
   getModifiersFor (InvestigatorTarget iid) (TheNecronomiconAdvanced a) =
     pure $ toModifiers
       a
-      [ ForcedTokenChange
+      [ ForcedChaosTokenChange
           Token.ElderSign
           [Token.Cultist, Token.Tablet, Token.ElderThing]
       | controlledBy a iid

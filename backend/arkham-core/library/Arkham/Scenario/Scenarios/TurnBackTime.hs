@@ -12,6 +12,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -31,7 +32,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TurnBackTime.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -54,17 +54,17 @@ turnBackTime difficulty =
     , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
     ]
 
-instance HasTokenValue TurnBackTime where
-  getTokenValue iid tokenFace (TurnBackTime attrs) = case tokenFace of
+instance HasChaosTokenValue TurnBackTime where
+  getChaosTokenValue iid chaosTokenFace (TurnBackTime attrs) = case chaosTokenFace of
     Skull -> do
       locationsWithDoom <- selectCount LocationWithAnyDoom
       totalLocationDoom <-
         getSum <$> selectAgg Sum LocationDoom LocationWithAnyDoom
-      pure $ toTokenValue attrs Skull locationsWithDoom totalLocationDoom
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ toTokenValue attrs ElderThing 4 6
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull locationsWithDoom totalLocationDoom
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = case msg of
@@ -154,7 +154,7 @@ instance RunMessage TurnBackTime where
                , placeEntryway
                , RevealLocation Nothing entrywayId
                , MoveAllTo (toSource attrs) entrywayId
-               , AddToken ElderThing
+               , AddChaosToken ElderThing
                ]
 
       agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
@@ -174,15 +174,15 @@ instance RunMessage TurnBackTime where
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
           )
-    ResolveToken _ ElderThing iid | isHardExpert attrs -> do
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid -> push $ PlaceDoom (TokenEffectSource ElderThing) (toTarget lid) 1
+      for_ mlid $ \lid -> push $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget lid) 1
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         ElderThing | isEasyStandard attrs -> do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceDoom (TokenEffectSource ElderThing) (toTarget lid) 1
+          for_ mlid $ \lid -> push $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget lid) 1
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do

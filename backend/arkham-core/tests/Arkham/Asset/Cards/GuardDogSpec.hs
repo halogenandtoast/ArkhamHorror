@@ -14,7 +14,7 @@ spec = describe "Guard Dog" $ do
       enemy <- testEnemy ((healthDamageL .~ 1) . (healthL .~ Static 2))
       location <- testLocation id
       putCardIntoPlay investigator Assets.guardDog
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
       pushAndRun EnemiesAttack

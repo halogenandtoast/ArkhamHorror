@@ -89,18 +89,18 @@ instance HasAbilities PennyWhite where
             Free
     ]
 
-instance HasTokenValue PennyWhite where
-  getTokenValue iid ElderSign (PennyWhite (attrs `With` _))
+instance HasChaosTokenValue PennyWhite where
+  getChaosTokenValue iid ElderSign (PennyWhite (attrs `With` _))
     | iid == toId attrs = do
-        pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage PennyWhite where
   runMessage msg i@(PennyWhite (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
       pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest
       for_ mSkillTest $ \skillTest ->
         when (skillTestIsRevelation skillTest) $
@@ -143,7 +143,7 @@ instance RunMessage PennyWhiteEffect where
     BeginTurn iid | InvestigatorTarget iid == effectTarget -> do
       pushAll
         [ DisableEffect effectId
-        , GainActions iid (TokenEffectSource ElderSign) 1
+        , GainActions iid (ChaosTokenEffectSource ElderSign) 1
         ]
       pure e
     _ -> PennyWhiteEffect <$> runMessage msg attrs

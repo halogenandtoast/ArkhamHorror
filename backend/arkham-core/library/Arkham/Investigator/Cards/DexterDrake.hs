@@ -48,10 +48,10 @@ instance HasAbilities DexterDrake where
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand You (PlayableCardWithCostReduction 1 (BasicCardMatch AssetCard)) AnyAsset
     ]
 
-instance HasTokenValue DexterDrake where
-  getTokenValue iid ElderSign (DexterDrake attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 2
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue DexterDrake where
+  getChaosTokenValue iid ElderSign (DexterDrake attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 toCardPaid :: Payment -> Card
 toCardPaid (DiscardPayment [(_, c)]) = c

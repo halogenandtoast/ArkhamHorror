@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -17,7 +18,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDevourerBelow.Story
-import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
@@ -39,15 +39,15 @@ theDevourerBelow difficulty =
     , "   .   ritualSite   .  "
     ]
 
-instance HasTokenValue TheDevourerBelow where
-  getTokenValue iid tokenFace (TheDevourerBelow attrs) = case tokenFace of
+instance HasChaosTokenValue TheDevourerBelow where
+  getChaosTokenValue iid chaosTokenFace (TheDevourerBelow attrs) = case chaosTokenFace of
     Skull -> do
       monsterCount <- selectCount $ EnemyWithTrait Monster
-      pure $ toTokenValue attrs Skull monsterCount 3
-    Cultist -> pure $ toTokenValue attrs Cultist 2 4
-    Tablet -> pure $ toTokenValue attrs Tablet 3 5
-    ElderThing -> pure $ toTokenValue attrs ElderThing 5 7
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull monsterCount 3
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 5 7
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 actDeck :: [CardDef]
 actDeck =
@@ -123,7 +123,7 @@ instance RunMessage TheDevourerBelow where
       pushAll $
         [ story investigatorIds intro
         , SetEncounterDeck encounterDeck
-        , AddToken ElderThing
+        , AddChaosToken ElderThing
         , SetAgendaDeck
         , SetActDeck
         , placeMainPath
@@ -149,19 +149,19 @@ instance RunMessage TheDevourerBelow where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ Cultist iid -> do
+    ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- selectList $ NearestEnemy AnyEnemy
       case closestEnemyIds of
         [] -> pure ()
-        [x] -> push $ PlaceDoom (TokenEffectSource Cultist) (toTarget x) doom
+        [x] -> push $ PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget x) doom
         xs ->
           push $
             chooseOne
               iid
-              [targetLabel x [PlaceDoom (TokenEffectSource Cultist) (toTarget x) doom] | x <- xs]
+              [targetLabel x [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget x) doom] | x <- xs]
       pure s
-    ResolveToken _ Tablet iid -> do
+    ResolveChaosToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
       isMonsterAtYourLocation <-
         selectAny $
@@ -171,15 +171,15 @@ instance RunMessage TheDevourerBelow where
         push $
           InvestigatorAssignDamage
             iid
-            (TokenEffectSource Tablet)
+            (ChaosTokenEffectSource Tablet)
             DamageAny
             1
             horror
       pure s
-    ResolveToken _ ElderThing iid -> do
+    ResolveChaosToken _ ElderThing iid -> do
       anyAncientOnes <- selectAny $ EnemyWithTrait AncientOne
-      s <$ when anyAncientOnes (push $ DrawAnotherToken iid)
-    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Skull)) _ _
+      s <$ when anyAncientOnes (push $ DrawAnotherChaosToken iid)
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _
       | isHardExpert attrs -> do
           push $
             FindAndDrawEncounterCard

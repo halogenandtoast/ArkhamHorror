@@ -7,6 +7,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -19,7 +20,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheGathering.Story
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype TheGathering = TheGathering ScenarioAttrs
@@ -36,21 +36,21 @@ theGathering difficulty =
     difficulty
     ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
 
-instance HasTokenValue TheGathering where
-  getTokenValue iid tokenFace (TheGathering attrs) = case tokenFace of
+instance HasChaosTokenValue TheGathering where
+  getChaosTokenValue iid chaosTokenFace (TheGathering attrs) = case chaosTokenFace of
     Skull -> do
       ghoulCount <-
         selectCount $
           EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
             <> EnemyWithTrait Trait.Ghoul
-      pure $ toTokenValue attrs Skull ghoulCount 2
+      pure $ toChaosTokenValue attrs Skull ghoulCount 2
     Cultist ->
       pure $
-        TokenValue
+        ChaosTokenValue
           Cultist
           (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
-    Tablet -> pure $ toTokenValue attrs Tablet 2 4
-    otherFace -> getTokenValue iid otherFace attrs
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck =
@@ -103,9 +103,9 @@ instance RunMessage TheGathering where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ Cultist iid ->
-      s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
-    ResolveToken _ Tablet iid -> do
+    ResolveChaosToken _ Cultist iid ->
+      s <$ when (isHardExpert attrs) (push $ DrawAnotherChaosToken iid)
+    ResolveChaosToken _ Tablet iid -> do
       ghoulCount <-
         selectCount $
           EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
@@ -116,13 +116,13 @@ instance RunMessage TheGathering where
           ( push $
               InvestigatorAssignDamage
                 iid
-                (TokenEffectSource Tablet)
+                (ChaosTokenEffectSource Tablet)
                 DamageAny
                 1
                 (if isEasyStandard attrs then 0 else 1)
           )
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Skull | isHardExpert attrs -> do
           push $
             FindAndDrawEncounterCard
@@ -133,7 +133,7 @@ instance RunMessage TheGathering where
           push $
             InvestigatorAssignDamage
               iid
-              (TokenSource token)
+              (ChaosTokenSource token)
               DamageAny
               0
               (if isEasyStandard attrs then 1 else 2)

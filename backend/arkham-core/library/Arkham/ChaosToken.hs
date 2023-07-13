@@ -1,14 +1,15 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Token where
+
+module Arkham.ChaosToken where
 
 import Arkham.Prelude
 
 import Data.Aeson.TH
 
-newtype TokenId = TokenId { getTokenId :: UUID }
+newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
   deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random)
 
-data TokenModifier
+data ChaosTokenModifier
   = PositiveModifier Int
   | NegativeModifier Int
   | ZeroModifier
@@ -18,11 +19,11 @@ data TokenModifier
   | NoModifier
   deriving stock (Show, Eq, Ord)
 
-instance Monoid TokenModifier where
+instance Monoid ChaosTokenModifier where
   mempty = NoModifier
 
 -- TODO: this is a huge bandaid and might not work later
-instance Semigroup TokenModifier where
+instance Semigroup ChaosTokenModifier where
   -- If a skill test both automatically succeeds and automatically fails, [for
   -- instance by drawing {Autofail} and {ElderSign} with Olive McBride while
   -- playing as Father Mateo], the automatic failure takes precedence, and the
@@ -36,21 +37,21 @@ instance Semigroup TokenModifier where
   a <> b =
     let
       calc =
-        fromMaybe 0 (tokenModifierToInt a) + fromMaybe 0 (tokenModifierToInt b)
+        fromMaybe 0 (chaosTokenModifierToInt a) + fromMaybe 0 (chaosTokenModifierToInt b)
     in
       case compare 0 calc of
         EQ -> PositiveModifier calc
         GT -> PositiveModifier calc
         LT -> NegativeModifier calc
 
-data TokenValue = TokenValue TokenFace TokenModifier
+data ChaosTokenValue = ChaosTokenValue ChaosTokenFace ChaosTokenModifier
   deriving stock (Show, Eq)
 
-tokenValue :: TokenValue -> Maybe Int
-tokenValue (TokenValue _ modifier) = tokenModifierToInt modifier
+chaosTokenValue :: ChaosTokenValue -> Maybe Int
+chaosTokenValue (ChaosTokenValue _ modifier) = chaosTokenModifierToInt modifier
 
-tokenModifierToInt :: TokenModifier -> Maybe Int
-tokenModifierToInt = \case
+chaosTokenModifierToInt :: ChaosTokenModifier -> Maybe Int
+chaosTokenModifierToInt = \case
   PositiveModifier n -> Just n
   NegativeModifier n -> Just (-n)
   DoubleNegativeModifier n -> Just (-(n * 2))
@@ -59,13 +60,13 @@ tokenModifierToInt = \case
   NoModifier -> Just 0
   ZeroModifier -> Just 0
 
-data Token = Token
-  { tokenId :: TokenId
-  , tokenFace :: TokenFace
+data ChaosToken = ChaosToken
+  { chaosTokenId :: ChaosTokenId
+  , chaosTokenFace :: ChaosTokenFace
   }
   deriving stock (Show, Eq, Ord)
 
-data TokenFace
+data ChaosTokenFace
   = PlusOne
   | Zero
   | MinusOne
@@ -84,8 +85,8 @@ data TokenFace
   | ElderSign
   deriving stock (Bounded, Enum, Show, Eq, Ord)
 
-isNumberToken :: TokenFace -> Bool
-isNumberToken = \case
+isNumberChaosToken :: ChaosTokenFace -> Bool
+isNumberChaosToken = \case
   PlusOne -> True
   Zero -> True
   MinusOne -> True
@@ -103,8 +104,8 @@ isNumberToken = \case
   AutoFail -> False
   ElderSign -> False
 
-isEvenToken :: TokenFace -> Bool
-isEvenToken = \case
+isEvenChaosToken :: ChaosTokenFace -> Bool
+isEvenChaosToken = \case
   PlusOne -> False
   Zero -> True
   MinusOne -> False
@@ -122,8 +123,8 @@ isEvenToken = \case
   AutoFail -> False
   ElderSign -> False
 
-isOddToken :: TokenFace -> Bool
-isOddToken = \case
+isOddChaosToken :: ChaosTokenFace -> Bool
+isOddChaosToken = \case
   PlusOne -> True
   Zero -> False
   MinusOne -> True
@@ -141,8 +142,8 @@ isOddToken = \case
   AutoFail -> False
   ElderSign -> False
 
-isSymbolToken :: TokenFace -> Bool
-isSymbolToken = \case
+isSymbolChaosToken :: ChaosTokenFace -> Bool
+isSymbolChaosToken = \case
   PlusOne -> False
   Zero -> False
   MinusOne -> False
@@ -160,8 +161,7 @@ isSymbolToken = \case
   AutoFail -> True
   ElderSign -> True
 
-$(deriveJSON defaultOptions ''TokenModifier)
-$(deriveJSON defaultOptions ''TokenFace)
-$(deriveJSON defaultOptions ''Token)
-$(deriveJSON defaultOptions ''TokenValue)
-
+$(deriveJSON defaultOptions ''ChaosTokenModifier)
+$(deriveJSON defaultOptions ''ChaosTokenFace)
+$(deriveJSON defaultOptions ''ChaosToken)
+$(deriveJSON defaultOptions ''ChaosTokenValue)

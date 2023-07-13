@@ -14,6 +14,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
@@ -36,7 +37,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ShatteredAeons.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -61,8 +61,8 @@ shatteredAeons difficulty =
     , "yuggoth         betweenWorlds2 mu          plateauOfLeng  ."
     ]
 
-instance HasTokenValue ShatteredAeons where
-  getTokenValue iid tokenFace (ShatteredAeons attrs) = case tokenFace of
+instance HasChaosTokenValue ShatteredAeons where
+  getChaosTokenValue iid chaosTokenFace (ShatteredAeons attrs) = case chaosTokenFace of
     Skull -> do
       atRelicsLocation <-
         selectAny $
@@ -71,20 +71,20 @@ instance HasTokenValue ShatteredAeons where
               (locationWithInvestigator iid)
       pure $
         if atRelicsLocation
-          then toTokenValue attrs Skull 4 5
-          else toTokenValue attrs Skull 2 3
-    Cultist -> pure $ toTokenValue attrs Cultist 2 3
+          then toChaosTokenValue attrs Skull 4 5
+          else toChaosTokenValue attrs Skull 2 3
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     Tablet -> do
       poisoned <- getIsPoisoned iid
       pure $
         if poisoned
-          then TokenValue Tablet AutoFailModifier
-          else toTokenValue attrs Tablet 2 3
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
-    otherFace -> getTokenValue iid otherFace attrs
+          then ChaosTokenValue Tablet AutoFailModifier
+          else toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -111,8 +111,8 @@ standaloneCampaignLog =
 
 instance RunMessage ShatteredAeons where
   runMessage msg s@(ShatteredAeons attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -122,23 +122,23 @@ instance RunMessage ShatteredAeons where
           [ Label
               "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag."
               [ Record IchtacaIsSetAgainstYou
-              , AddToken Tablet
-              , AddToken Tablet
-              , AddToken Tablet
+              , AddChaosToken Tablet
+              , AddChaosToken Tablet
+              , AddChaosToken Tablet
               ]
           , Label
               "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag."
               [ Record AlejandroIsSetAgainstYou
-              , AddToken Cultist
-              , AddToken Cultist
-              , AddToken Cultist
+              , AddChaosToken Cultist
+              , AddChaosToken Cultist
+              , AddChaosToken Cultist
               ]
           , Label
               " Ichtaca is set against you. Alejandro is set against you. Add2 {elderThing} tokens to the chaos bag. Choose this option for the ultimate challenge."
               [ Record IchtacaIsSetAgainstYou
               , Record AlejandroIsSetAgainstYou
-              , AddToken ElderThing
-              , AddToken ElderThing
+              , AddChaosToken ElderThing
+              , AddChaosToken ElderThing
               ]
           ]
 
@@ -158,15 +158,15 @@ instance RunMessage ShatteredAeons where
         showIntro4 = foundTheMissingRelic
         showIntro5 = not foundTheMissingRelic
 
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       investigators <- allInvestigatorIds
-      tokens <- getBagTokens
+      tokens <- getBagChaosTokens
 
       leadDeck <- fieldMap InvestigatorDeck unDeck lead
 
       let
-        cultistCount = count ((== Cultist) . tokenFace) tokens
-        tabletCount = count ((== Tablet) . tokenFace) tokens
+        cultistCount = count ((== Cultist) . chaosTokenFace) tokens
+        tabletCount = count ((== Tablet) . chaosTokenFace) tokens
         additionalSets = case compare cultistCount tabletCount of
           GT -> [EncounterSet.DarkCult]
           LT -> [EncounterSet.AgentsOfYig]
@@ -277,8 +277,8 @@ instance RunMessage ShatteredAeons where
               & (setAsideCardsL .~ setAsideCards)
               & (victoryDisplayL .~ map VengeanceCard cardsToAddToVictory)
           )
-    PassedSkillTest iid _ _ (TokenTarget token) _ n | n < 1 -> do
-      when (tokenFace token == Cultist) $ do
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | n < 1 -> do
+      when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
             cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
@@ -286,16 +286,16 @@ instance RunMessage ShatteredAeons where
               push $
                 chooseOne
                   iid
-                  [ targetLabel cultist [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1]
+                  [ targetLabel cultist [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1]
                   | cultist <- cultists
                   ]
           else do
             cultists <- selectList $ EnemyWithTrait Trait.Cultist
             pushAll $
-              [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
+              [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      when (tokenFace token == Cultist) $ do
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
             cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
@@ -303,19 +303,19 @@ instance RunMessage ShatteredAeons where
               push $
                 chooseOne
                   iid
-                  [ targetLabel cultist [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1]
+                  [ targetLabel cultist [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1]
                   | cultist <- cultists
                   ]
           else do
             cultists <- selectList $ EnemyWithTrait Trait.Cultist
             pushAll $
-              [PlaceDoom (TokenEffectSource Cultist) (EnemyTarget cultist) 1 | cultist <- cultists]
-      when (tokenFace token == Tablet && isHardExpert attrs) $ do
+              [PlaceDoom (ChaosTokenEffectSource Cultist) (EnemyTarget cultist) 1 | cultist <- cultists]
+      when (chaosTokenFace token == Tablet && isHardExpert attrs) $ do
         isPoisoned <- getIsPoisoned iid
         unless isPoisoned $ do
           poisoned <- getSetAsidePoisoned
           push $ CreateWeaknessInThreatArea poisoned iid
-      when (tokenFace token == ElderThing) $ do
+      when (chaosTokenFace token == ElderThing) $ do
         let
           mHex =
             find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
@@ -325,21 +325,21 @@ instance RunMessage ShatteredAeons where
               (Deck.ScenarioDeckByKey ExplorationDeck)
               [EncounterCard hex]
       pure s
-    ResolveToken _ ElderThing iid | isHardExpert attrs -> do
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
       let
         mHex =
           find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
-      modifiers <- getModifiers (TokenFaceTarget ElderThing)
-      when (RevealAnotherToken `elem` modifiers) $ push $ DrawAnotherToken iid
+      modifiers <- getModifiers (ChaosTokenFaceTarget ElderThing)
+      when (RevealAnotherChaosToken `elem` modifiers) $ push $ DrawAnotherChaosToken iid
       for_ mHex $ \hex -> do
         push $
           ShuffleCardsIntoDeck
             (Deck.ScenarioDeckByKey ExplorationDeck)
             [EncounterCard hex]
       pure s
-    ResolveToken _ face iid -> do
-      modifiers <- getModifiers (TokenFaceTarget face)
-      when (RevealAnotherToken `elem` modifiers) $ push $ DrawAnotherToken iid
+    ResolveChaosToken _ face iid -> do
+      modifiers <- getModifiers (ChaosTokenFaceTarget face)
+      when (RevealAnotherChaosToken `elem` modifiers) $ push $ DrawAnotherChaosToken iid
       ShatteredAeons <$> runMessage msg attrs
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]

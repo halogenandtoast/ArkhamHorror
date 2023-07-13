@@ -13,6 +13,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Effect.Window
@@ -39,7 +40,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -65,22 +65,22 @@ theBoundaryBeyond difficulty =
     , ".        .        .    heart   heart   .       .      ."
     ]
 
-instance HasTokenValue TheBoundaryBeyond where
-  getTokenValue iid tokenFace (TheBoundaryBeyond attrs) = case tokenFace of
+instance HasChaosTokenValue TheBoundaryBeyond where
+  getChaosTokenValue iid chaosTokenFace (TheBoundaryBeyond attrs) = case chaosTokenFace of
     Skull -> do
       atAncientLocation <-
         selectAny $
           LocationWithTrait Trait.Ancient
             <> locationWithInvestigator iid
       let n = if atAncientLocation then 2 else 0
-      pure $ toTokenValue attrs Skull (1 + n) (2 + n)
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ toTokenValue attrs ElderThing 4 4
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull (1 + n) (2 + n)
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -170,17 +170,17 @@ instance RunMessage TheBoundaryBeyond where
               <> [UseSupply iid Gasoline | iid <- maybeToList withGasoline]
               <> [story iids introPart2]
       pure s
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     Setup -> do
       iids <- allInvestigatorIds
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
-      tokens <- getBagTokens
+      tokens <- getBagChaosTokens
       let
-        cultistCount = count ((== Cultist) . tokenFace) tokens
-        tabletCount = count ((== Tablet) . tokenFace) tokens
+        cultistCount = count ((== Cultist) . chaosTokenFace) tokens
+        tabletCount = count ((== Tablet) . chaosTokenFace) tokens
         additionalSets =
           ( guard (cultistCount >= 2)
               *> [EncounterSet.PnakoticBrotherhood, EncounterSet.DarkCult]
@@ -298,10 +298,10 @@ instance RunMessage TheBoundaryBeyond where
       card <- genCard replacement
       push $ ReplaceLocation lid card DefaultReplace
       pure s
-    ResolveToken _ tokenFace iid | tokenFace `elem` [Cultist, Tablet] -> do
-      push $ DrawAnotherToken iid
+    ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet] -> do
+      push $ DrawAnotherChaosToken iid
       pure s
-    ResolveToken _ ElderThing iid | isHardExpert attrs -> do
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
       targets <-
         selectListMap LocationTarget $
           NearestLocationToYou $
@@ -313,8 +313,8 @@ instance RunMessage TheBoundaryBeyond where
             iid
             [targetLabel target [PlaceClues (toSource attrs) target 1] | target <- targets]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Cultist -> do
           targets <- selectListMap EnemyTarget $ EnemyWithTrait Trait.Cultist
           when (notNull targets) $
@@ -352,7 +352,7 @@ instance RunMessage TheBoundaryBeyond where
             push $
               chooseOrRunOne
                 iid
-                [targetLabel target [PlaceClues (TokenEffectSource ElderThing) target 1] | target <- targets]
+                [targetLabel target [PlaceClues (ChaosTokenEffectSource ElderThing) target 1] | target <- targets]
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do

@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.IneffableTruth
-  ( ineffableTruth
-  , IneffableTruth(..)
-  , ineffableTruthEffect
-  ) where
+module Arkham.Asset.Cards.IneffableTruth (
+  ineffableTruth,
+  IneffableTruth (..),
+  ineffableTruthEffect,
+) where
 
 import Arkham.Prelude
 
@@ -10,12 +10,12 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Matcher hiding ( MoveAction )
+import Arkham.Matcher hiding (MoveAction, RevealChaosToken)
 import Arkham.SkillType
-import Arkham.Token
 import Arkham.Window qualified as Window
 
 newtype IneffableTruth = IneffableTruth AssetAttrs
@@ -27,25 +27,18 @@ ineffableTruth = asset IneffableTruth Cards.ineffableTruth
 
 instance HasAbilities IneffableTruth where
   getAbilities (IneffableTruth a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Evade)
-        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility
+          (Just Action.Evade)
+          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
 instance RunMessage IneffableTruth where
   runMessage msg a@(IneffableTruth attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
-        [ createCardEffect
-          Cards.ineffableTruth
-          Nothing
-          source
-          (InvestigatorTarget iid)
-        , createCardEffect
-          Cards.ineffableTruth
-          Nothing
-          source
-          SkillTestTarget
+        [ createCardEffect Cards.ineffableTruth Nothing source iid
+        , createCardEffect Cards.ineffableTruth Nothing source SkillTestTarget
         , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
         ]
       pure a
@@ -60,23 +53,23 @@ ineffableTruthEffect = cardEffect IneffableTruthEffect Cards.ineffableTruth
 
 instance RunMessage IneffableTruthEffect where
   runMessage msg e@(IneffableTruthEffect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       when
-        (tokenFace token `elem` [ElderSign, PlusOne, Zero])
-        (pushAll
+        (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
+        $ pushAll
           [ If
-            (Window.RevealTokenEffect iid token effectId)
-            [LoseResources iid (AbilitySource effectSource 1) 1]
+              (Window.RevealChaosTokenEffect iid token effectId)
+              [LoseResources iid (AbilitySource effectSource 1) 1]
           , DisableEffect effectId
           ]
-        )
       pure e
     SkillTestEnds _ _ ->
       e <$ push (DisableEffect effectId)
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
-      | SkillTestTarget == effectTarget
-      -> e <$ pushAll
-        [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 1
-        , DisableEffect effectId
-        ]
+      | SkillTestTarget == effectTarget -> do
+          pushAll
+            [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 1
+            , DisableEffect effectId
+            ]
+          pure e
     _ -> IneffableTruthEffect <$> runMessage msg attrs

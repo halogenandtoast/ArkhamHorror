@@ -6,20 +6,36 @@ module Arkham.Scenario.Scenarios.UnionAndDisillusion (
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Field
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
+import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Message
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
+import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.UnionAndDisillusion.Story
-import Arkham.Token
+import Arkham.Story.Cards qualified as Stories
+import Arkham.Trait (Trait (Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype UnionAndDisillusion = UnionAndDisillusion ScenarioAttrs
@@ -36,18 +52,62 @@ unionAndDisillusion difficulty =
     [ ".              miskatonicRiver ."
     , ".              forbiddingShore ."
     , "unvisitedIsle1 .               unvisitedIsle2"
+    , ".              theGeistTrap    ."
     ]
 
-instance HasTokenValue UnionAndDisillusion where
-  getTokenValue iid tokenFace (UnionAndDisillusion attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 3 5
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
-    otherFace -> getTokenValue iid otherFace attrs
+instance HasChaosTokenValue UnionAndDisillusion where
+  getChaosTokenValue iid chaosTokenFace (UnionAndDisillusion attrs) = case chaosTokenFace of
+    Skull -> pure $ toChaosTokenValue attrs Skull 2 3
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 3 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
+
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
+standaloneCampaignLog :: CampaignLog
+standaloneCampaignLog =
+  mkCampaignLog
+    { campaignLogRecordedSets =
+        mapFromList
+          [
+            ( MissingPersons
+            , [ crossedOut (toCardCode i)
+              | i <-
+                  [ Investigators.gavriellaMizrah
+                  , Investigators.jeromeDavids
+                  , Investigators.valentinoRivas
+                  , Investigators.pennyWhite
+                  ]
+              ]
+            )
+          ]
+    , campaignLogRecorded = setFromList [JosefIsAliveAndWell]
+    }
 
 instance RunMessage UnionAndDisillusion where
   runMessage msg s@(UnionAndDisillusion attrs) = case msg of
+    SetChaosTokensForScenario -> do
+      pushWhenM getIsStandalone (SetChaosTokens standaloneChaosTokens)
+      pure s
     PreScenarioSetup -> do
       investigators <- allInvestigators
       lead <- getLead
@@ -66,6 +126,12 @@ instance RunMessage UnionAndDisillusion where
               ]
         ]
       pure s
+    StandaloneSetup -> do
+      pure
+        . UnionAndDisillusion
+        $ attrs
+          & standaloneCampaignLogL
+            .~ standaloneCampaignLog
     Setup -> do
       encounterDeck <-
         buildEncounterDeckExcluding
@@ -77,10 +143,30 @@ instance RunMessage UnionAndDisillusion where
           , EncounterSet.AncientEvils
           , EncounterSet.ChillingCold
           ]
+
+      missingPersons <- getRecordedCardCodes MissingPersons
+
       setAsideCards <-
-        concatMapM
-          (fmap (map toCard) . gatherEncounterSet)
-          [EncounterSet.AnettesCoven, EncounterSet.SilverTwilightLodge, EncounterSet.TheWatcher]
+        liftA2
+          (<>)
+          ( concatMapM
+              (fmap (map toCard) . gatherEncounterSet)
+              [EncounterSet.AnettesCoven, EncounterSet.SilverTwilightLodge, EncounterSet.TheWatcher]
+          )
+          ( genCards $
+              [Locations.theGeistTrap, Treacheries.watchersGaze, Enemies.anetteMason, Enemies.josefMeiger]
+                <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
+                <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
+                <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
+                <> [Assets.pennyWhite | "05049" `elem` missingPersons]
+          )
+
+      storyCards <-
+        genCards $
+          [Stories.gavriellasFate | "05046" `elem` missingPersons]
+            <> [Stories.jeromesFate | "05047" `elem` missingPersons]
+            <> [Stories.valentinosFate | "05048" `elem` missingPersons]
+            <> [Stories.pennysFate | "05049" `elem` missingPersons]
 
       sidedWithTheLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
@@ -90,7 +176,7 @@ instance RunMessage UnionAndDisillusion where
       keptMementosHidden <- getHasRecord TheInvestigatorsKeptsTheirMementosHidden
       hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
 
-      unvisitedIsles <-
+      unvisitedIsleCards <-
         sampleN
           2
           $ Locations.unvisitedIsleStandingStones
@@ -101,22 +187,28 @@ instance RunMessage UnionAndDisillusion where
                , Locations.unvisitedIsleDecayedWillow
                ]
 
-      (miskatonicRiverId, placeMiskatonicRiver) <- placeLocationCard Locations.miskatonicRiver
-      placeForbiddingShore <- placeLocationCard_ Locations.forbiddingShore
-      placeUnvisitedIsles <- placeLabeledLocations "unvisitedIsle" unvisitedIsles
+      (miskatonicRiver, placeMiskatonicRiver) <- placeLocationCard Locations.miskatonicRiver
+      (forbiddingShore, placeForbiddingShore) <- placeLocationCard Locations.forbiddingShore
+      (unvisitedIsles, placeUnvisitedIsles) <- placeLabeledLocations "unvisitedIsle" unvisitedIsleCards
+
+      let lightBrazier location = UpdateLocation location (LocationBrazier ?=. Lit)
 
       pushAll $
         [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
           <> replicate hereticCount PlaceDoomOnAgenda
-          <> [placeMiskatonicRiver, MoveAllTo (toSource attrs) miskatonicRiverId, placeForbiddingShore]
+          <> [placeMiskatonicRiver, MoveAllTo (toSource attrs) miskatonicRiver, placeForbiddingShore]
           <> placeUnvisitedIsles
+          <> if sidedWithTheCoven then map lightBrazier (forbiddingShore : unvisitedIsles) else []
 
       let
         (act3, act4)
           | sidedWithTheLodge = (Acts.beyondTheMistV1, Acts.theBindingRite)
-          | sidedWithTheCoven && deceivingTheLodge && inductedIntoTheInnerCircle =
+          | sidedWithTheCoven
+          , deceivingTheLodge
+          , inductedIntoTheInnerCircle =
               (Acts.beyondTheMistV2, Acts.theBrokenRite)
-          | sidedWithTheCoven && count id [deceivingTheLodge, hidTheirKnowledge, keptMementosHidden] >= 2 =
+          | sidedWithTheCoven
+          , count id [deceivingTheLodge, hidTheirKnowledge, keptMementosHidden] >= 2 =
               (Acts.beyondTheMistV3, Acts.theBrokenRite)
           | otherwise = (Acts.beyondTheMistV4, Acts.theBrokenRite)
 
@@ -130,5 +222,37 @@ instance RunMessage UnionAndDisillusion where
               & (setAsideCardsL .~ setAsideCards)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
+              & (cardsUnderScenarioReferenceL .~ storyCards)
           )
+    ResolveChaosToken _ Skull iid -> do
+      mAction <- getSkillTestAction
+      when (mAction == Just Circle) $ do
+        push $ DrawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ Cultist iid -> do
+      damage <- field InvestigatorDamage iid
+      horror <- field InvestigatorHorror iid
+      when (damage == 0 || horror == 0) $ do
+        push $
+          InvestigatorAssignDamage
+            iid
+            (ChaosTokenEffectSource Cultist)
+            DamageAny
+            (if damage == 0 then 1 else 0)
+            (if horror == 0 then 1 else 0)
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
+      enemies <- selectList $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
+      unless (null enemies) $ do
+        push $
+          chooseOrRunOne
+            iid
+            [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy (ChaosTokenEffectSource Tablet) iid]
+            | enemy <- enemies
+            ]
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
+      mAction <- getSkillTestAction
+      when (mAction == Just Circle) $ runHauntedAbilities iid
+      pure s
     _ -> UnionAndDisillusion <$> runMessage msg attrs

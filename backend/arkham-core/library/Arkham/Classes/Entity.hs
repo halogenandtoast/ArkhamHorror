@@ -4,8 +4,8 @@ module Arkham.Classes.Entity where
 
 import Arkham.Prelude hiding (to)
 
+import Arkham.ChaosToken
 import Arkham.Target
-import Arkham.Token
 
 type family IdOf a
 
@@ -39,9 +39,9 @@ insertEntity
   :: (Entity v, EntityId v ~ k, Ord k) => v -> Map k v -> Map k v
 insertEntity a = insertMap (toId a) a
 
-instance Targetable Token where
-  toTarget = TokenTarget
-  isTarget t (TokenTarget t') = t == t'
+instance Targetable ChaosToken where
+  toTarget = ChaosTokenTarget
+  isTarget t (ChaosTokenTarget t') = t == t'
   isTarget _ _ = False
 
 newtype DiscardedEntity a = DiscardedEntity a

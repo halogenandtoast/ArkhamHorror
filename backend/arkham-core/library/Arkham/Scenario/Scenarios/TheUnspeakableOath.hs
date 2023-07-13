@@ -12,6 +12,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -31,7 +32,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheUnspeakableOath.Story
-import Arkham.Token
 import Arkham.Trait hiding (Cultist, Expert)
 import Arkham.Window qualified as Window
 
@@ -54,25 +54,25 @@ theUnspeakableOath difficulty =
     ]
     (decksL .~ mapFromList [(LunaticsDeck, []), (MonstersDeck, [])])
 
-instance HasTokenValue TheUnspeakableOath where
-  getTokenValue iid tokenFace (TheUnspeakableOath attrs) = case tokenFace of
+instance HasChaosTokenValue TheUnspeakableOath where
+  getChaosTokenValue iid chaosTokenFace (TheUnspeakableOath attrs) = case chaosTokenFace of
     Skull ->
       pure $
         if isEasyStandard attrs
-          then TokenValue Skull (NegativeModifier 1)
-          else TokenValue Skull NoModifier
+          then ChaosTokenValue Skull (NegativeModifier 1)
+          else ChaosTokenValue Skull NoModifier
     Cultist -> do
       horror <- field InvestigatorHorror iid
-      pure $ TokenValue Cultist (NegativeModifier horror)
+      pure $ ChaosTokenValue Cultist (NegativeModifier horror)
     Tablet -> do
       lid <- getJustLocation iid
       shroud <- field LocationShroud lid
-      pure $ TokenValue Tablet (NegativeModifier shroud)
-    ElderThing -> pure $ TokenValue ElderThing ZeroModifier
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ ChaosTokenValue Tablet (NegativeModifier shroud)
+    ElderThing -> pure $ ChaosTokenValue ElderThing ZeroModifier
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -111,10 +111,10 @@ investigatorDefeat = do
 
 instance RunMessage TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       whenM getIsStandalone $ do
         randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     Setup -> do
       gatheredCards <-
@@ -247,7 +247,7 @@ instance RunMessage TheUnspeakableOath where
                 "asylumHallsEasternPatientWing"
              ]
           <> placeOtherLocations
-          <> [AddToken tokenToAdd]
+          <> [AddChaosToken tokenToAdd]
           <> spawnMessages
 
       tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
@@ -278,8 +278,8 @@ instance RunMessage TheUnspeakableOath where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ tokenFace iid -> case tokenFace of
-      Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
+    ResolveChaosToken _ chaosTokenFace iid -> case chaosTokenFace of
+      Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherChaosToken iid)
       ElderThing -> do
         monsters <-
           getSetAsideCardsMatching
@@ -299,8 +299,8 @@ instance RunMessage TheUnspeakableOath where
                     ]
                 )
       _ -> TheUnspeakableOath <$> runMessage msg attrs
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Skull -> do
           monsters <-
             getSetAsideCardsMatching
@@ -312,9 +312,9 @@ instance RunMessage TheUnspeakableOath where
               push (PlaceUnderneath ActDeckTarget [monster])
         Cultist ->
           push $
-            InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1
+            InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
         Tablet ->
-          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1
+          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
@@ -343,9 +343,9 @@ instance RunMessage TheUnspeakableOath where
           | constance <- maybeToList constanceSlain
           ]
         removeTokens =
-          [ RemoveAllTokens Cultist
-          , RemoveAllTokens Tablet
-          , RemoveAllTokens ElderThing
+          [ RemoveAllChaosTokens Cultist
+          , RemoveAllChaosTokens Tablet
+          , RemoveAllChaosTokens ElderThing
           ]
 
       case n of
@@ -374,7 +374,7 @@ instance RunMessage TheUnspeakableOath where
               <> claspMessages
               <> updateSlain
               <> removeTokens
-              <> [AddToken Cultist, AddToken Cultist]
+              <> [AddChaosToken Cultist, AddChaosToken Cultist]
               <> [EndOfGame Nothing]
         2 ->
           pushAll $
@@ -385,7 +385,7 @@ instance RunMessage TheUnspeakableOath where
               <> gainXp
               <> updateSlain
               <> removeTokens
-              <> [AddToken Tablet, AddToken Tablet]
+              <> [AddChaosToken Tablet, AddChaosToken Tablet]
               <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
         3 ->
           pushAll $
@@ -395,7 +395,7 @@ instance RunMessage TheUnspeakableOath where
               <> gainXp
               <> updateSlain
               <> removeTokens
-              <> [AddToken ElderThing, AddToken ElderThing]
+              <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
               <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
         _ -> error "invalid resolution"
       pure s

@@ -13,6 +13,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -30,7 +31,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Story
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.IntMap.Strict qualified as IntMap
@@ -52,19 +52,19 @@ threadsOfFate difficulty =
     ]
     (decksLayoutL .~ [". act1", "agenda1 act2", ". act3"])
 
-instance HasTokenValue ThreadsOfFate where
-  getTokenValue iid tokenFace (ThreadsOfFate attrs) = case tokenFace of
+instance HasChaosTokenValue ThreadsOfFate where
+  getChaosTokenValue iid chaosTokenFace (ThreadsOfFate attrs) = case chaosTokenFace of
     Skull -> do
       n <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
       doom <- getDoomCount
-      pure $ toTokenValue attrs Skull n doom
-    Cultist -> pure $ toTokenValue attrs Cultist 2 2
-    Tablet -> pure $ toTokenValue attrs Tablet 2 2
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull n doom
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 2
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 2
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -84,8 +84,8 @@ standaloneTokens =
 
 instance RunMessage ThreadsOfFate where
   runMessage msg s@(ThreadsOfFate attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -287,7 +287,7 @@ instance RunMessage ThreadsOfFate where
         4 ->
           pure
             ( Remember YouListenedToIchtacasTale
-                : [AddToken Cultist | standalone]
+                : [AddChaosToken Cultist | standalone]
             , 7
             )
         5 -> do
@@ -305,9 +305,9 @@ instance RunMessage ThreadsOfFate where
                       ( if standalone
                           then [Record YouAreForgingYourOwnWay]
                           else
-                            [ RemoveAllTokens Cultist
-                            , RemoveAllTokens Tablet
-                            , AddToken ElderThing
+                            [ RemoveAllChaosTokens Cultist
+                            , RemoveAllChaosTokens Tablet
+                            , AddChaosToken ElderThing
                             , Record YouAreForgingYourOwnWay
                             ]
                       )
@@ -319,12 +319,12 @@ instance RunMessage ThreadsOfFate where
         _ -> error "Invalid step"
       pushAll $ msgs <> [SetupStep (toTarget attrs) nextStep]
       pure s
-    PassedSkillTest iid _ _ (TokenTarget token) _ n -> do
-      case tokenFace token of
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case chaosTokenFace token of
         Cultist | isEasyStandard attrs && n < 1 -> do
-          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0
+          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 1 0
         Cultist | isHardExpert attrs && n < 2 -> do
-          push $ InvestigatorDirectDamage iid (TokenSource token) 1 0
+          push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
         Tablet | isEasyStandard attrs && n < 1 -> do
           targets <-
             selectListMap EnemyTarget $
@@ -333,20 +333,20 @@ instance RunMessage ThreadsOfFate where
             push $
               chooseOrRunOne
                 iid
-                [TargetLabel target [PlaceDoom (TokenEffectSource Tablet) target 1] | target <- targets]
+                [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs && n < 2 -> do
           targets <-
             selectListMap EnemyTarget $
               NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
-          pushAll [PlaceDoom (TokenEffectSource Tablet) target 1 | target <- targets]
+          pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
         _ -> pure ()
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Cultist | isEasyStandard attrs -> do
-          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0
+          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 1 0
         Cultist | isHardExpert attrs -> do
-          push $ InvestigatorDirectDamage iid (TokenSource token) 1 0
+          push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
         Tablet | isEasyStandard attrs -> do
           targets <-
             selectListMap EnemyTarget $
@@ -355,14 +355,14 @@ instance RunMessage ThreadsOfFate where
             push $
               chooseOrRunOne
                 iid
-                [TargetLabel target [PlaceDoom (TokenEffectSource Tablet) target 1] | target <- targets]
+                [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs -> do
           targets <-
             selectListMap EnemyTarget $
               NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
-          pushAll [PlaceDoom (TokenEffectSource Tablet) target 1 | target <- targets]
+          pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
         ElderThing -> do
-          push $ RemoveClues (TokenEffectSource ElderThing) (InvestigatorTarget iid) 1
+          push $ RemoveClues (ChaosTokenEffectSource ElderThing) (InvestigatorTarget iid) 1
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do

@@ -22,7 +22,7 @@ spec = describe "Fire Axe" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
@@ -41,7 +41,7 @@ spec = describe "Fire Axe" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
@@ -84,7 +84,7 @@ spec = describe "Fire Axe" $ do
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocation id
 
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
@@ -114,7 +114,7 @@ spec = describe "Fire Axe" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe

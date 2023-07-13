@@ -122,10 +122,10 @@ instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
-    SealedToken token card
+    SealedChaosToken token card
       | toCardId card == toCardId a ->
-          pure $ a & sealedTokensL %~ (token :)
-    UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
+          pure $ a & sealedChaosTokensL %~ (token :)
+    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       prey <- getPreyMatcher a
       preyIds <- selectList prey
@@ -996,7 +996,7 @@ instance RunMessage EnemyAttrs where
       pushAll $
         windowMsg
           : map (Discard GameSource . AssetTarget) enemyAssets
-            <> [UnsealToken token | token <- enemySealedTokens]
+            <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getJustLocation iid

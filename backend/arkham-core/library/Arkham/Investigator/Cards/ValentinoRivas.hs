@@ -73,19 +73,19 @@ instance HasAbilities ValentinoRivas where
             ResourceCost 2
     ]
 
-instance HasTokenValue ValentinoRivas where
-  getTokenValue iid ElderSign (ValentinoRivas (attrs `With` _))
+instance HasChaosTokenValue ValentinoRivas where
+  getChaosTokenValue iid ElderSign (ValentinoRivas (attrs `With` _))
     | iid == toId attrs = do
-        pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage ValentinoRivas where
   runMessage msg i@(ValentinoRivas (attrs `With` meta)) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ skillTestModifier (toSource attrs) SkillTestTarget (Difficulty (-1))
       pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ TakeResources iid 2 (TokenEffectSource ElderSign) False
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
+      push $ TakeResources iid 2 (ChaosTokenEffectSource ElderSign) False
       pure i
     DrawStartingHand iid | iid == toId attrs -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do

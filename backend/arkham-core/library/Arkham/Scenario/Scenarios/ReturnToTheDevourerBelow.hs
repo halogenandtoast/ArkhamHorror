@@ -18,7 +18,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Scenarios.TheDevourerBelow.Story
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
@@ -41,9 +41,9 @@ returnToTheDevourerBelow difficulty =
     ]
     (referenceL .~ "01142")
 
-instance HasTokenValue ReturnToTheDevourerBelow where
-  getTokenValue iid tokenFace (ReturnToTheDevourerBelow theDevourerBelow') =
-    getTokenValue iid tokenFace theDevourerBelow'
+instance HasChaosTokenValue ReturnToTheDevourerBelow where
+  getChaosTokenValue iid chaosTokenFace (ReturnToTheDevourerBelow theDevourerBelow') =
+    getChaosTokenValue iid chaosTokenFace theDevourerBelow'
 
 instance RunMessage ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs)) =
@@ -117,7 +117,7 @@ instance RunMessage ReturnToTheDevourerBelow where
         pushAll $
           [ story investigatorIds intro
           , SetEncounterDeck encounterDeck
-          , AddToken ElderThing
+          , AddChaosToken ElderThing
           , SetAgendaDeck
           , SetActDeck
           , placeMainPath

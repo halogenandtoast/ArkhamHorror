@@ -9,6 +9,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
+import Arkham.ChaosToken qualified as Token
 import Arkham.ClassSymbol
 import Arkham.Criteria qualified as Criteria
 import Arkham.EncounterSet hiding (Dunwich)
@@ -18,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType ()
 import Arkham.Slot
-import Arkham.Token qualified as Token
 import Arkham.Trait hiding (Supply)
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
@@ -2321,7 +2321,7 @@ theCodexOfAges =
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
     , cdSlots = [HandSlot]
-    , cdKeywords = singleton (Keyword.Seal $ TokenFaceIs Token.ElderSign)
+    , cdKeywords = singleton (Keyword.Seal $ ChaosTokenFaceIs Token.ElderSign)
     , cdUnique = True
     , cdDeckRestrictions = [Signature "04004"]
     }
@@ -2413,13 +2413,12 @@ theChthonianStone =
     , cdSlots = [HandSlot]
     , cdUnique = True
     , cdKeywords =
-        singleton
-          ( Keyword.Seal $
-              TokenMatchesAny $
-                map
-                  TokenFaceIs
-                  [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
-          )
+        singleton $
+          Keyword.Seal $
+            ChaosTokenMatchesAny $
+              map
+                ChaosTokenFaceIs
+                [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
 
 protectiveIncantation1 :: CardDef
@@ -2428,7 +2427,7 @@ protectiveIncantation1 =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ritual, Blessed]
     , cdSlots = [ArcaneSlot]
-    , cdKeywords = singleton (Keyword.Seal $ TokenFaceIsNot Token.AutoFail)
+    , cdKeywords = singleton (Keyword.Seal $ ChaosTokenFaceIsNot Token.AutoFail)
     , cdLevel = 1
     }
 
@@ -2710,13 +2709,12 @@ crystallineElderSign3 =
     , cdSkills = [#wild]
     , cdSlots = [AccessorySlot]
     , cdKeywords =
-        singleton
-          ( Keyword.Seal $
-              TokenMatchesAny $
-                map
-                  TokenFaceIs
-                  [Token.PlusOne, Token.ElderSign]
-          )
+        singleton $
+          Keyword.Seal $
+            ChaosTokenMatchesAny $
+              map
+                ChaosTokenFaceIs
+                [Token.PlusOne, Token.ElderSign]
     , cdLevel = 3
     }
 
@@ -2877,7 +2875,7 @@ shardsOfTheVoid3 :: CardDef
 shardsOfTheVoid3 =
   (asset "04310" "Shards of the Void" 3 Mystic)
     { cdSkills = [#willpower, #combat]
-    , cdKeywords = singleton $ Keyword.Seal $ TokenFaceIs Token.Zero
+    , cdKeywords = singleton $ Keyword.Seal $ ChaosTokenFaceIs Token.Zero
     , cdCardTraits = singleton Spell
     , cdUses = uses Charge 3
     , cdSlots = [ArcaneSlot]
@@ -2888,7 +2886,7 @@ sealOfTheSeventhSign5 :: CardDef
 sealOfTheSeventhSign5 =
   (asset "04311" ("Seal of the Seventh Sign" <:> "Over the Threshold and Beyond") 4 Mystic)
     { cdSkills = [#willpower, #wild]
-    , cdKeywords = singleton $ Keyword.Seal $ TokenFaceIs Token.AutoFail
+    , cdKeywords = singleton $ Keyword.Seal $ ChaosTokenFaceIs Token.AutoFail
     , cdCardTraits = setFromList [Spell, Ritual]
     , cdUses = uses Charge 7
     , cdSlots = [ArcaneSlot]

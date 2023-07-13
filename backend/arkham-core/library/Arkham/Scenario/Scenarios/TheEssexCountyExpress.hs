@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Direction
@@ -28,7 +29,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheEssexCountyExpress.Story
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -46,18 +46,18 @@ theEssexCountyExpress difficulty =
     difficulty
     ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
 
-instance HasTokenValue TheEssexCountyExpress where
-  getTokenValue iid tokenFace (TheEssexCountyExpress attrs) = case tokenFace of
+instance HasChaosTokenValue TheEssexCountyExpress where
+  getChaosTokenValue iid chaosTokenFace (TheEssexCountyExpress attrs) = case chaosTokenFace of
     Skull -> do
       step <- getCurrentAgendaStep
-      pure $ toTokenValue attrs Skull step (step + 1)
-    Cultist -> pure $ toTokenValue attrs Cultist 1 0
-    Tablet -> pure $ toTokenValue attrs Tablet 2 4
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull step (step + 1)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 0
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 3
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -107,9 +107,9 @@ readInvestigatorDefeat = do
 instance RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
     case msg of
-      SetTokensForScenario -> do
+      SetChaosTokensForScenario -> do
         standalone <- getIsStandalone
-        s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+        s <$ if standalone then push (SetChaosTokens standaloneChaosTokens) else pure ()
       Setup -> do
         investigatorIds <- allInvestigatorIds
 
@@ -167,7 +167,7 @@ instance RunMessage TheEssexCountyExpress where
 
         pushAll $
           [ story investigatorIds intro
-          , AddToken token
+          , AddChaosToken token
           , SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
@@ -212,7 +212,7 @@ instance RunMessage TheEssexCountyExpress where
                 & (actStackL . at 1 ?~ acts)
                 & (agendaStackL . at 1 ?~ agendas)
             )
-      ResolveToken _ Tablet iid | isEasyStandard attrs -> do
+      ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <-
           selectList $
             NearestEnemyTo iid $
@@ -226,26 +226,25 @@ instance RunMessage TheEssexCountyExpress where
               chooseOne
                 iid
                 [targetLabel x [PlaceDoom (toSource attrs) (EnemyTarget x) 1] | x <- xs]
-      ResolveToken _ Tablet _ | isHardExpert attrs -> do
+      ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
         cultists <- selectList $ EnemyWithTrait Trait.Cultist
         s <$ pushAll [PlaceDoom (toSource attrs) (EnemyTarget eid) 1 | eid <- cultists]
-      FailedSkillTest iid _ _ (TokenTarget token) _ n ->
-        s <$ case tokenFace token of
+      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n ->
+        s <$ case chaosTokenFace token of
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-          ElderThing
-            | isEasyStandard attrs ->
-                push $
-                  toMessage $
-                    chooseAndDiscardCard
-                      iid
-                      (TokenEffectSource ElderThing)
+          ElderThing | isEasyStandard attrs -> do
+            push $
+              toMessage $
+                chooseAndDiscardCard
+                  iid
+                  (ChaosTokenEffectSource ElderThing)
           ElderThing | isHardExpert attrs -> do
             pushAll $
               replicate n $
                 toMessage $
                   chooseAndDiscardCard iid $
-                    TokenEffectSource ElderThing
+                    ChaosTokenEffectSource ElderThing
           _ -> pure ()
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]

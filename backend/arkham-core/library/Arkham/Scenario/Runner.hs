@@ -20,9 +20,10 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.ChaosBag ()
+import Arkham.ChaosToken
 import Arkham.Classes.GameLogger
+import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasQueue
-import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Deck qualified as Deck
@@ -50,7 +51,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Story.Types (Field (..))
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -60,21 +60,21 @@ import Control.Lens (each, _1)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
-instance HasTokenValue ScenarioAttrs where
-  getTokenValue iid tokenFace _ = case tokenFace of
-    ElderSign -> getTokenValue iid ElderSign iid
-    AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
-    PlusOne -> pure $ TokenValue PlusOne (PositiveModifier 1)
-    Zero -> pure $ TokenValue Zero (PositiveModifier 0)
-    MinusOne -> pure $ TokenValue MinusOne (NegativeModifier 1)
-    MinusTwo -> pure $ TokenValue MinusTwo (NegativeModifier 2)
-    MinusThree -> pure $ TokenValue MinusThree (NegativeModifier 3)
-    MinusFour -> pure $ TokenValue MinusFour (NegativeModifier 4)
-    MinusFive -> pure $ TokenValue MinusFive (NegativeModifier 5)
-    MinusSix -> pure $ TokenValue MinusSix (NegativeModifier 6)
-    MinusSeven -> pure $ TokenValue MinusSeven (NegativeModifier 7)
-    MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
-    otherFace -> pure $ TokenValue otherFace NoModifier
+instance HasChaosTokenValue ScenarioAttrs where
+  getChaosTokenValue iid chaosTokenFace _ = case chaosTokenFace of
+    ElderSign -> getChaosTokenValue iid ElderSign iid
+    AutoFail -> pure $ ChaosTokenValue AutoFail AutoFailModifier
+    PlusOne -> pure $ ChaosTokenValue PlusOne (PositiveModifier 1)
+    Zero -> pure $ ChaosTokenValue Zero (PositiveModifier 0)
+    MinusOne -> pure $ ChaosTokenValue MinusOne (NegativeModifier 1)
+    MinusTwo -> pure $ ChaosTokenValue MinusTwo (NegativeModifier 2)
+    MinusThree -> pure $ ChaosTokenValue MinusThree (NegativeModifier 3)
+    MinusFour -> pure $ ChaosTokenValue MinusFour (NegativeModifier 4)
+    MinusFive -> pure $ ChaosTokenValue MinusFive (NegativeModifier 5)
+    MinusSix -> pure $ ChaosTokenValue MinusSix (NegativeModifier 6)
+    MinusSeven -> pure $ ChaosTokenValue MinusSeven (NegativeModifier 7)
+    MinusEight -> pure $ ChaosTokenValue MinusEight (NegativeModifier 8)
+    otherFace -> pure $ ChaosTokenValue otherFace NoModifier
 
 instance RunMessage ScenarioAttrs where
   runMessage msg a =
@@ -309,8 +309,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       a
         & countsL
           %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
-  ResolveToken _drawnToken token iid -> do
-    TokenValue _ tokenModifier <- getTokenValue iid token ()
+  ResolveChaosToken _drawnToken token iid -> do
+    ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
     pure a
   EndOfScenario mNextCampaignStep -> do

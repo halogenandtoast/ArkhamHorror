@@ -8,6 +8,6 @@ import Arkham.Classes.HasAbilities as X
 import Arkham.Classes.HasModifiersFor as X
 import Arkham.Classes.HasQueue as X
 import Arkham.Classes.HasSet as X
-import Arkham.Classes.HasTokenValue as X
+import Arkham.Classes.HasChaosTokenValue as X
 import Arkham.Classes.Query as X
 import Arkham.Classes.RunMessage as X

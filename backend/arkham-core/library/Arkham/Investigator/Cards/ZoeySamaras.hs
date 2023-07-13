@@ -38,16 +38,16 @@ instance HasAbilities ZoeySamaras where
         $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy) Free
     ]
 
-instance HasTokenValue ZoeySamaras where
-  getTokenValue iid ElderSign (ZoeySamaras attrs) | iid == toId attrs =
-    pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue ZoeySamaras where
+  getChaosTokenValue iid ElderSign (ZoeySamaras attrs) | iid == toId attrs =
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs) = case msg of
     UseCardAbility _ (InvestigatorSource iid) 1 _ _ | iid == toId attrs ->
       i <$ push (TakeResources (toId attrs) 1 (toAbilitySource attrs 1) False)
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> i <$ push
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> i <$ push
       (CreateWindowModifierEffect
         EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [DamageDealt 1])

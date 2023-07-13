@@ -45,10 +45,10 @@ instance HasAbilities HarveyWalters where
             Free
     ]
 
-instance HasTokenValue HarveyWalters where
-  getTokenValue iid ElderSign (HarveyWalters attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue HarveyWalters where
+  getChaosTokenValue iid ElderSign (HarveyWalters attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage HarveyWalters where
   runMessage msg i@(HarveyWalters attrs) = case msg of
@@ -57,7 +57,7 @@ instance RunMessage HarveyWalters where
         drawing <- drawCards iid' attrs 1
         push drawing
         pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       drawing <- drawCards iid attrs 1
       push drawing
       pure i

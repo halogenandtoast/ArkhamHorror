@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -28,7 +29,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
-import Arkham.Token
 import Control.Monad.Trans.Maybe
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata {sacrifices :: [Card]}
@@ -52,21 +52,21 @@ bloodOnTheAltar difficulty =
     , ". burnedRuinsHiddenChamber burnedRuinsHiddenChamber burnedRuins burnedRuins bishopsBrook bishopsBrook bishopsBrookHiddenChamber bishopsBrookHiddenChamber ."
     ]
 
-instance HasTokenValue BloodOnTheAltar where
-  getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) =
-    case tokenFace of
+instance HasChaosTokenValue BloodOnTheAltar where
+  getChaosTokenValue iid chaosTokenFace (BloodOnTheAltar (attrs `With` _)) =
+    case chaosTokenFace of
       Skull -> do
         numLocations <-
           countM (fieldMap LocationCardsUnderneath null)
             =<< selectList Anywhere
-        pure $ toTokenValue attrs Skull (min 4 numLocations) numLocations
-      Cultist -> pure $ toTokenValue attrs Cultist 2 4
-      Tablet -> pure $ toTokenValue attrs Tablet 2 3
-      ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
-      otherFace -> getTokenValue iid otherFace attrs
+        pure $ toChaosTokenValue attrs Skull (min 4 numLocations) numLocations
+      Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
+      Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+      ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 3
+      otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -100,8 +100,8 @@ getRemoveNecronomicon = do
 instance RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed))) =
     case msg of
-      SetTokensForScenario -> do
-        whenM getIsStandalone $ push $ SetTokens standaloneTokens
+      SetChaosTokensForScenario -> do
+        whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
         pure s
       Setup -> do
         investigatorIds <- allInvestigatorIds
@@ -256,19 +256,19 @@ instance RunMessage BloodOnTheAltar where
                 & (actStackL . at 1 ?~ acts)
                 & (agendaStackL . at 1 ?~ agendas)
             )
-      ResolveToken _ Tablet iid -> do
+      ResolveChaosToken _ Tablet iid -> do
         lid <- getJustLocation iid
         matches <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid
         when
           (isHardExpert attrs || (isEasyStandard attrs && matches))
-          (push $ DrawAnotherToken iid)
+          (push $ DrawAnotherChaosToken iid)
         pure s
-      ResolveToken _ ElderThing _ | isHardExpert attrs -> do
+      ResolveChaosToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <- selectJust AnyAgenda
         push $ PlaceDoom (toSource attrs) (toTarget agendaId) 1
         pure s
-      FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
-        s <$ case tokenFace token of
+      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
+        s <$ case chaosTokenFace token of
           Cultist -> do
             lid <- getJustLocation iid
             push $ PlaceClues (toSource attrs) (toTarget lid) 1

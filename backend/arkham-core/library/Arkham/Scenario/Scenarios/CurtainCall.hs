@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -27,7 +28,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurtainCall.Story
-import Arkham.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -45,17 +45,17 @@ curtainCall difficulty =
     , "lobbyDoorway2 .     .       .         backstageDoorway2"
     ]
 
-instance HasTokenValue CurtainCall where
-  getTokenValue iid tokenFace (CurtainCall attrs) = case tokenFace of
+instance HasChaosTokenValue CurtainCall where
+  getChaosTokenValue iid chaosTokenFace (CurtainCall attrs) = case chaosTokenFace of
     Skull -> do
       horrorCount <- field InvestigatorHorror iid
       let easyStandardModifier = if horrorCount >= 3 then 3 else 1
       let hardExpertModifier = max 1 horrorCount
-      pure $ toTokenValue attrs Skull easyStandardModifier hardExpertModifier
+      pure $ toChaosTokenValue attrs Skull easyStandardModifier hardExpertModifier
     face
       | face `elem` [Cultist, Tablet, ElderThing] ->
-          pure $ toTokenValue attrs face 4 5
-    otherFace -> getTokenValue iid otherFace attrs
+          pure $ toChaosTokenValue attrs face 4 5
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
@@ -176,14 +176,14 @@ instance RunMessage CurtainCall where
                 <> [EndOfGame Nothing]
             )
         _ -> error "Invalid resolution"
-    ResolveToken _ tokenFace iid
-      | tokenFace `elem` [Cultist, Tablet, ElderThing] -> do
+    ResolveChaosToken _ chaosTokenFace iid
+      | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do
           lid <- getJustLocation iid
           horrorCount <- field LocationHorror lid
           s
             <$ push
               ( if horrorCount > 0
                   then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-                  else PlaceHorror (TokenEffectSource tokenFace) (LocationTarget lid) 1
+                  else PlaceHorror (ChaosTokenEffectSource chaosTokenFace) (LocationTarget lid) 1
               )
     _ -> CurtainCall <$> runMessage msg attrs

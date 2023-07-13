@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
+import Arkham.ChaosToken
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,8 +23,8 @@ twistOfFate = treachery TwistOfFate Cards.twistOfFate
 instance RunMessage TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
-    RequestedTokens source (Just iid) tokens | isSource attrs source -> do
+      t <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)
+    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs = mapMaybe
           (\case
@@ -56,8 +56,8 @@ instance RunMessage TwistOfFate where
                 Just (InvestigatorAssignDamage iid source DamageAny 0 2)
               AutoFail ->
                 Just (InvestigatorAssignDamage iid source DamageAny 0 2)
-          . tokenFace
+          . chaosTokenFace
           )
           tokens
-      t <$ pushAll (msgs <> [ResetTokens source])
+      t <$ pushAll (msgs <> [ResetChaosTokens source])
     _ -> TwistOfFate <$> runMessage msg attrs

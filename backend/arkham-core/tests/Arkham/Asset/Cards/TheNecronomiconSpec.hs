@@ -37,7 +37,7 @@ spec = describe "The Necronomicon" $ do
         FailSkillTest -> True
         _ -> False
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , beginSkillTest investigator SkillWillpower 0
         ]
       chooseOnlyOption "Start skill test"
@@ -52,7 +52,7 @@ spec = describe "The Necronomicon" $ do
       fieldAssert AssetHorror (== 2) theNecronomicon
       fieldAssert InvestigatorHorror (== 1) investigator
 
-    fit "it is discarded when there is no more horror" . gameTest $ \investigator -> do
+    it "it is discarded when there is no more horror" . gameTest $ \investigator -> do
       setup investigator
       theNecronomicon <- selectJust $ assetIs Cards.theNecronomicon
       [action] <- field AssetAbilities theNecronomicon

@@ -13,6 +13,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
@@ -29,7 +30,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WhereDoomAwaits.Story
-import Arkham.Token
 import Arkham.Trait hiding (Cultist, Expert)
 import Data.Maybe (fromJust)
 
@@ -49,8 +49,8 @@ whereDoomAwaits difficulty =
     , "alteredPath1 alteredPath2 alteredPath3"
     ]
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -78,17 +78,17 @@ standaloneCampaignLog =
     { campaignLogRecorded = setFromList [NoBroodEscapedIntoTheWild]
     }
 
-instance HasTokenValue WhereDoomAwaits where
-  getTokenValue iid tokenFace (WhereDoomAwaits attrs) = case tokenFace of
+instance HasChaosTokenValue WhereDoomAwaits where
+  getChaosTokenValue iid chaosTokenFace (WhereDoomAwaits attrs) = case chaosTokenFace of
     Skull -> do
       isAltered <-
         selectAny $
           LocationWithInvestigator (InvestigatorWithId iid)
             <> LocationWithTrait Altered
       if isAltered
-        then pure $ toTokenValue attrs Skull 3 5
-        else pure $ toTokenValue attrs Skull 1 2
-    Cultist -> pure $ TokenValue Cultist NoModifier
+        then pure $ toChaosTokenValue attrs Skull 3 5
+        else pure $ toChaosTokenValue attrs Skull 1 2
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> do
       agendaId <- selectJust AnyAgenda
       agendaStep <-
@@ -97,20 +97,20 @@ instance HasTokenValue WhereDoomAwaits where
           (AS.unAgendaStep . AS.agendaStep)
           agendaId
       pure $
-        TokenValue
+        ChaosTokenValue
           Tablet
           ( if isEasyStandard attrs
               then NegativeModifier (if agendaStep == 2 then 4 else 2)
               else if agendaStep == 2 then AutoFailModifier else NegativeModifier 3
           )
-    ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 0) -- determined by an effect
-    otherFace -> getTokenValue iid otherFace attrs
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 0) -- determined by an effect
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WhereDoomAwaits where
   runMessage msg s@(WhereDoomAwaits attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       standalone <- getIsStandalone
-      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+      s <$ if standalone then push (SetChaosTokens standaloneChaosTokens) else pure ()
     StandaloneSetup -> do
       pure
         . WhereDoomAwaits
@@ -211,7 +211,7 @@ instance RunMessage WhereDoomAwaits where
         story investigatorIds intro
           : [story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks]
             <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
-            <> [ AddToken token
+            <> [ AddChaosToken token
                , SetEncounterDeck encounterDeck
                , SetAgendaDeck
                , SetActDeck
@@ -242,28 +242,28 @@ instance RunMessage WhereDoomAwaits where
                     <>~ (divergingPaths <> alteredPaths <> setAsideCards)
                 )
           )
-    ResolveToken drawnToken Cultist iid -> do
+    ResolveChaosToken drawnToken Cultist iid -> do
       pushAll
         [ CreateWindowModifierEffect
             EffectSkillTestWindow
             (EffectModifiers $ toModifiers attrs [CancelSkills])
-            (TokenSource drawnToken)
+            (ChaosTokenSource drawnToken)
             SkillTestTarget
         , CancelSkillEffects
-        , DrawAnotherToken iid
+        , DrawAnotherChaosToken iid
         ]
       pure s
-    ResolveToken drawnToken ElderThing iid -> do
+    ResolveChaosToken drawnToken ElderThing iid -> do
       push $
         DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 2 else 3)
-          (TokenEffectSource ElderThing)
-          (Just $ TokenTarget drawnToken)
+          (ChaosTokenEffectSource ElderThing)
+          (Just $ ChaosTokenTarget drawnToken)
       pure s
-    DiscardedTopOfDeck _iid cards _ target@(TokenTarget (tokenFace -> ElderThing)) -> do
+    DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) -> do
       let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
-      push $ CreateTokenValueEffect (-n) (toSource attrs) target
+      push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
       pure s
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 2)

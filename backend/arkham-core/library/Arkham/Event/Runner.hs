@@ -36,14 +36,14 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure a
   Discard _ target | eventAttachedTarget a == Just target -> do
     pushAll $
-      [UnsealToken token | token <- eventSealedTokens]
+      [UnsealChaosToken token | token <- eventSealedChaosTokens]
         <> [Discard GameSource $ toTarget a]
     pure a
   Discard _ (AssetTarget aid) -> do
     case eventPlacement of
       AttachedToAsset aid' _ | aid == aid' -> do
         pushAll $
-          [UnsealToken token | token <- eventSealedTokens]
+          [UnsealChaosToken token | token <- eventSealedChaosTokens]
             <> [Discard GameSource $ toTarget a]
       _ -> pure ()
     pure a
@@ -56,9 +56,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure $ a & beingPaidForL .~ True
   CardEnteredPlay _ card | toCardId a == toCardId card -> do
     pure $ a & beingPaidForL .~ False
-  SealedToken token card | toCardId card == toCardId a -> do
-    pure $ a & sealedTokensL %~ (token :)
-  UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
+  SealedChaosToken token card | toCardId card == toCardId a -> do
+    pure $ a & sealedChaosTokensL %~ (token :)
+  UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   PlaceEvent _ eid placement | eid == eventId -> do
     pure $ a & placementL .~ placement
   FinishedEvent eid | eid == eventId -> do

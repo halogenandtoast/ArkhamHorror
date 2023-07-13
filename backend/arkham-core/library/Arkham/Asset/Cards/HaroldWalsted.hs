@@ -12,7 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait
 
 newtype HaroldWalsted = HaroldWalsted AssetAttrs
@@ -55,5 +55,5 @@ instance HasModifiersFor HaroldWalsted where
 instance RunMessage HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]
+      a <$ pushAll [AddChaosToken Tablet, RemoveFromGame $ toTarget attrs]
     _ -> HaroldWalsted <$> runMessage msg attrs

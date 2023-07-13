@@ -75,11 +75,11 @@ instance HasAbilities JoeDiamond where
             PhaseIs InvestigationPhase
     ]
 
-instance HasTokenValue JoeDiamond where
-  getTokenValue iid ElderSign (JoeDiamond (attrs `With` _))
+instance HasChaosTokenValue JoeDiamond where
+  getChaosTokenValue iid ElderSign (JoeDiamond (attrs `With` _))
     | iid == toId attrs = do
-        pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JoeDiamond where
   runMessage msg i@(JoeDiamond (attrs `With` meta)) = case msg of
@@ -166,7 +166,7 @@ instance RunMessage JoeDiamond where
       pure $
         JoeDiamond . (`with` Metadata Nothing) $
           attrs & decksL . at HunchDeck ?~ hunchDeck'
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       insights <-
         filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
           <$> field InvestigatorDiscard iid

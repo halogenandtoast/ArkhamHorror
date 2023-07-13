@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.Token
+import Arkham.ChaosToken
 
 newtype BaseballBat = BaseballBat EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -19,10 +19,10 @@ baseballBat = BaseballBat . uncurry4 (baseAttrs "01074")
 
 instance RunMessage BaseballBat where
   runMessage msg e@(BaseballBat attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget ->
       case effectSource of
         AssetSource assetId -> e <$ when
-          (tokenFace token `elem` [Skull, AutoFail])
+          (chaosTokenFace token `elem` [Skull, AutoFail])
           (pushAll [Discard effectSource (AssetTarget assetId), DisableEffect effectId])
         _ -> error "wrong source"
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)

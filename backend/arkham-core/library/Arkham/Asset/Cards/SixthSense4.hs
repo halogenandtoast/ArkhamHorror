@@ -1,22 +1,22 @@
-module Arkham.Asset.Cards.SixthSense4
-  ( sixthSense4
-  , sixthSense4Effect
-  , SixthSense4(..)
-  ) where
+module Arkham.Asset.Cards.SixthSense4 (
+  sixthSense4,
+  sixthSense4Effect,
+  SixthSense4 (..),
+) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.ChaosToken
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Helpers.Investigator
-import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Token
 import Arkham.Window qualified as Window
 
 newtype SixthSense4 = SixthSense4 AssetAttrs
@@ -28,9 +28,9 @@ sixthSense4 = asset SixthSense4 Cards.sixthSense4
 
 instance HasAbilities SixthSense4 where
   getAbilities (SixthSense4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Investigate) $
+          ActionCost 1
     ]
 
 instance RunMessage SixthSense4 where
@@ -39,22 +39,15 @@ instance RunMessage SixthSense4 where
       lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
-        [ createCardEffect
-          Cards.sixthSense4
-          Nothing
-          source
-          (InvestigationTarget iid lid)
-        , skillTestModifier
-          (toAbilitySource attrs 1)
-          iid
-          (SkillModifier SkillWillpower 2)
+        [ createCardEffect Cards.sixthSense4 Nothing source (InvestigationTarget iid lid)
+        , skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier SkillWillpower 2)
         , Investigate
-          iid
-          lid
-          source
-          Nothing
-          (if skillType == SkillIntellect then SkillWillpower else skillType)
-          False
+            iid
+            lid
+            source
+            Nothing
+            (if skillType == SkillIntellect then SkillWillpower else skillType)
+            False
         ]
       pure a
     _ -> SixthSense4 <$> runMessage msg attrs
@@ -68,47 +61,47 @@ sixthSense4Effect = cardEffect SixthSense4Effect Cards.sixthSense4
 
 instance RunMessage SixthSense4Effect where
   runMessage msg e@(SixthSense4Effect attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid token -> case effectTarget of
+    RevealChaosToken _ iid token -> case effectTarget of
       InvestigationTarget iid' lid | iid == iid' -> do
-        when (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
+        when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
           currentShroud <- field LocationShroud lid
           locations <-
-            selectWithField LocationShroud
-            $ RevealedLocation
-            <> LocationMatchAny
-                 [ LocationWithDistanceFrom n Anywhere
-                 | n <- [1 .. 2]
-                 ]
+            selectWithField LocationShroud $
+              RevealedLocation
+                <> LocationMatchAny
+                  [ LocationWithDistanceFrom n Anywhere
+                  | n <- [1 .. 2]
+                  ]
           pushAll
             [ If
-              (Window.RevealTokenEffect iid token effectId)
-              [ chooseOne iid
-                $ Label "Do not choose other location" []
-                : [ targetLabel
-                      location
-                      [ SetSkillTestTarget
-                        (BothTarget (toTarget location) (toTarget lid))
-                      , chooseOne
-                        iid
-                        [ Label
-                          "Use new location's shroud"
-                          [ skillTestModifier
-                              (AbilitySource effectSource 1)
-                              SkillTestTarget
-                              (SetDifficulty shroud)
+                (Window.RevealChaosTokenEffect iid token effectId)
+                [ chooseOne iid $
+                    Label "Do not choose other location" []
+                      : [ targetLabel
+                          location
+                          [ SetSkillTestTarget
+                              (BothTarget (toTarget location) (toTarget lid))
+                          , chooseOne
+                              iid
+                              [ Label
+                                  "Use new location's shroud"
+                                  [ skillTestModifier
+                                      (AbilitySource effectSource 1)
+                                      SkillTestTarget
+                                      (SetDifficulty shroud)
+                                  ]
+                              , Label
+                                  "Use original locations shroud"
+                                  [ skillTestModifier
+                                      (AbilitySource effectSource 1)
+                                      SkillTestTarget
+                                      (SetDifficulty currentShroud)
+                                  ]
+                              ]
                           ]
-                        , Label
-                          "Use original locations shroud"
-                          [ skillTestModifier
-                              (AbilitySource effectSource 1)
-                              SkillTestTarget
-                              (SetDifficulty currentShroud)
-                          ]
+                        | (location, shroud) <- locations
                         ]
-                      ]
-                  | (location, shroud) <- locations
-                  ]
-              ]
+                ]
             , DisableEffect effectId
             ]
         pure e

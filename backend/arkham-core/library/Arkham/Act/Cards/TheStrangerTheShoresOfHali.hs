@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali ActAttrs
@@ -48,7 +48,7 @@ instance RunMessage TheStrangerTheShoresOfHali where
       card <- flipCard <$> genCard (toCardDef attrs)
       a
         <$ pushAll
-          ( [AddToken ElderThing, AddToken ElderThing]
+          ( [AddChaosToken ElderThing, AddChaosToken ElderThing]
               <> map (\l -> PlaceHorror (toSource attrs) l 1) privateLocations
               <> [ CreateEffect "03047c" Nothing (toSource attrs) (toTarget attrs)
                  , PlaceNextTo ActDeckTarget [card]

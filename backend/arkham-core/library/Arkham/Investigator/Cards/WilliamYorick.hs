@@ -32,12 +32,12 @@ williamYorick =
       , agility = 3
       }
 
-instance HasTokenValue WilliamYorick where
-  getTokenValue iid ElderSign (WilliamYorick attrs)
+instance HasChaosTokenValue WilliamYorick where
+  getChaosTokenValue iid ElderSign (WilliamYorick attrs)
     | iid == investigatorId attrs =
         pure $
-          TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+          ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance HasAbilities WilliamYorick where
   getAbilities (WilliamYorick attrs) =
@@ -73,22 +73,20 @@ instance RunMessage WilliamYorick where
         filterM
           (getIsPlayable iid source UnpaidCost windows'' . PlayerCard)
           targets
-      i
-        <$ push
-          ( chooseOne iid $
-              [ TargetLabel
-                (CardIdTarget $ toCardId card)
-                (playCardMsgs $ PlayerCard card)
-              | card <- playableTargets
-              ]
-          )
-    ResolveToken _ ElderSign iid | iid == toId attrs -> do
-      i
-        <$ push
-          ( CreateEffect
-              (unInvestigatorId $ toId attrs)
-              Nothing
-              (TokenEffectSource ElderSign)
-              (InvestigatorTarget iid)
-          )
+      push $
+        chooseOne iid $
+          [ targetLabel
+            (toCardId card)
+            (playCardMsgs $ PlayerCard card)
+          | card <- playableTargets
+          ]
+      pure i
+    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
+      push $
+        CreateEffect
+          (unInvestigatorId $ toId attrs)
+          Nothing
+          (ChaosTokenEffectSource ElderSign)
+          (InvestigatorTarget iid)
+      pure i
     _ -> WilliamYorick <$> runMessage msg attrs

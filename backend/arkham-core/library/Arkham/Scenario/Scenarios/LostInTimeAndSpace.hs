@@ -12,6 +12,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
@@ -30,7 +31,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
-import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 
 newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
@@ -58,28 +58,28 @@ lostInTimeAndSpace difficulty =
     , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
     ]
 
-instance HasTokenValue LostInTimeAndSpace where
-  getTokenValue iid tokenFace (LostInTimeAndSpace attrs) = case tokenFace of
+instance HasChaosTokenValue LostInTimeAndSpace where
+  getChaosTokenValue iid chaosTokenFace (LostInTimeAndSpace attrs) = case chaosTokenFace of
     Skull -> do
       extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
       pure $
-        TokenValue
+        ChaosTokenValue
           Skull
           ( NegativeModifier $
               if isEasyStandard attrs
                 then min extradimensionalCount 5
                 else extradimensionalCount
           )
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ toTokenValue attrs Tablet 3 5
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
     ElderThing -> do
       mlid <- field InvestigatorLocation iid
       shroud <- maybe (pure 0) (field LocationShroud) mlid
-      pure $ toTokenValue attrs ElderThing shroud (shroud * 2)
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs ElderThing shroud (shroud * 2)
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -115,8 +115,8 @@ readInvestigatorDefeat a = do
 
 instance RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
-    SetTokensForScenario -> do
-      whenStandalone $ push (SetTokens standaloneTokens)
+    SetChaosTokensForScenario -> do
+      whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -173,13 +173,13 @@ instance RunMessage LostInTimeAndSpace where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    After (PassedSkillTest iid _ _ (TokenTarget token) _ _) -> do
-      case (isHardExpert attrs, tokenFace token) of
+    After (PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+      case (isHardExpert attrs, chaosTokenFace token) of
         (True, Cultist) ->
           push
             ( DiscardUntilFirst
                 iid
-                (TokenEffectSource Cultist)
+                (ChaosTokenEffectSource Cultist)
                 Deck.EncounterDeck
                 (BasicCardMatch $ CardWithType LocationType)
             )
@@ -188,13 +188,13 @@ instance RunMessage LostInTimeAndSpace where
           for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
         _ -> pure ()
       pure s
-    After (FailedSkillTest iid _ _ (TokenTarget token) _ _) -> do
-      case tokenFace token of
+    After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+      case chaosTokenFace token of
         Cultist ->
           push $
             DiscardUntilFirst
               iid
-              (TokenEffectSource Cultist)
+              (ChaosTokenEffectSource Cultist)
               Deck.EncounterDeck
               (BasicCardMatch $ CardWithType LocationType)
         Tablet -> do

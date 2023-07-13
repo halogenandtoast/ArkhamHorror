@@ -1,21 +1,21 @@
-module Arkham.Asset.Cards.JimsTrumpet
-  ( JimsTrumpet(..)
-  , jimsTrumpet
-  ) where
+module Arkham.Asset.Cards.JimsTrumpet (
+  JimsTrumpet (..),
+  jimsTrumpet,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Runner hiding (RevealChaosToken)
+import Arkham.ChaosToken
 import Arkham.Damage
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,15 +29,16 @@ instance HasAbilities JimsTrumpet where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> InvestigatorExists
-          (HealableInvestigator (toSource x) HorrorType $ AnyInvestigator
-            [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
-          )
+        ( ControlsThis
+            <> InvestigatorExists
+              ( HealableInvestigator (toSource x) HorrorType $
+                  AnyInvestigator
+                    [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
+              )
         )
-        (ReactionAbility
-          (RevealChaosToken Timing.When Anyone (TokenFaceIs Skull))
+        $ ReactionAbility
+          (RevealChaosToken Timing.When Anyone (ChaosTokenFaceIs Skull))
           (ExhaustCost $ toTarget x)
-        )
     ]
 
 instance RunMessage JimsTrumpet where
@@ -45,21 +46,24 @@ instance RunMessage JimsTrumpet where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       case assetPlacement of
         InPlayArea controllerId -> do
-          locationId <- fieldMap
-            InvestigatorLocation
-            (fromJustNote "must be at a location")
-            controllerId
+          locationId <-
+            fieldMap
+              InvestigatorLocation
+              (fromJustNote "must be at a location")
+              controllerId
           investigatorIdsWithHeal <-
-            getInvestigatorsWithHealHorror attrs 1 $ AnyInvestigator
-              [ colocatedWith controllerId
-              , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
-              ]
+            getInvestigatorsWithHealHorror attrs 1 $
+              AnyInvestigator
+                [ colocatedWith controllerId
+                , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
+                ]
 
-          push $ chooseOne
-            controllerId
-            [ targetLabel iid [healHorror]
-            | (iid, healHorror) <- investigatorIdsWithHeal
-            ]
+          push $
+            chooseOne
+              controllerId
+              [ targetLabel iid [healHorror]
+              | (iid, healHorror) <- investigatorIdsWithHeal
+              ]
           pure a
         _ -> error "Invalid call"
     _ -> JimsTrumpet <$> runMessage msg attrs

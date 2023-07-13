@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.HuntingNightgaunt
-  ( huntingNightgaunt
-  , HuntingNightgaunt(..)
-  ) where
+module Arkham.Enemy.Cards.HuntingNightgaunt (
+  huntingNightgaunt,
+  HuntingNightgaunt (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 
 newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 huntingNightgaunt :: EnemyCard HuntingNightgaunt
@@ -19,13 +19,12 @@ huntingNightgaunt =
   enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
 
 instance HasModifiersFor HuntingNightgaunt where
-  getModifiersFor (TokenTarget _) (HuntingNightgaunt a) = do
+  getModifiersFor (ChaosTokenTarget _) (HuntingNightgaunt a) = do
     mtarget <- getSkillTestTarget
     mSkillTestSource <- getSkillTestSource
     case (mSkillTestSource, mtarget) of
-      (Just (SkillTestSource _ _ _ (Just Evade)), Just target)
-        | isTarget a target -> pure
-        $ toModifiers a [DoubleNegativeModifiersOnTokens]
+      (Just (SkillTestSource _ _ _ (Just Evade)), Just target) | isTarget a target -> do
+        pure $ toModifiers a [DoubleNegativeModifiersOnChaosTokens]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

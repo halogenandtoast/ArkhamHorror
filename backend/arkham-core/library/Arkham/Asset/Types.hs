@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.ChaosToken (ChaosToken)
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -23,7 +24,6 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token (Token)
 import Arkham.Trait (Trait)
 import Data.Typeable
 
@@ -111,7 +111,7 @@ data instance Field Asset :: Type -> Type where
   AssetCardCode :: Field Asset CardCode
   AssetCardId :: Field Asset CardId
   AssetSlots :: Field Asset [SlotType]
-  AssetSealedTokens :: Field Asset [Token]
+  AssetSealedChaosTokens :: Field Asset [ChaosToken]
   AssetPlacement :: Field Asset Placement
   AssetCardsUnderneath :: Field Asset [Card]
   -- virtual
@@ -146,7 +146,7 @@ instance FromJSON (SomeField Asset) where
     "AssetCardCode" -> pure $ SomeField AssetCardCode
     "AssetCardId" -> pure $ SomeField AssetCardId
     "AssetSlots" -> pure $ SomeField AssetSlots
-    "AssetSealedTokens" -> pure $ SomeField AssetSealedTokens
+    "AssetSealedChaosTokens" -> pure $ SomeField AssetSealedChaosTokens
     "AssetPlacement" -> pure $ SomeField AssetPlacement
     "AssetClasses" -> pure $ SomeField AssetClasses
     "AssetTraits" -> pure $ SomeField AssetTraits
@@ -178,7 +178,7 @@ data AssetAttrs = AssetAttrs
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
   , assetCardsUnderneath :: [Card]
-  , assetSealedTokens :: [Token]
+  , assetSealedChaosTokens :: [ChaosToken]
   , assetKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
@@ -246,7 +246,7 @@ assetWith f cardDef g =
             , assetDiscardWhenNoUses = False
             , assetIsStory = False
             , assetCardsUnderneath = []
-            , assetSealedTokens = []
+            , assetSealedChaosTokens = []
             , assetKeys = mempty
             }
     }

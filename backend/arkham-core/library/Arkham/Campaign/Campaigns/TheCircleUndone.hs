@@ -19,7 +19,7 @@ import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype Metadata = Metadata
@@ -154,12 +154,12 @@ instance RunMessage TheCircleUndone where
       pushAll [Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing]
       pure c
     CampaignStep (Just (InterludeStepPart 2 _ 8)) -> do
-      pushAll [Record TheInvestigatorsAreMembersOfTheLodge, AddToken Cultist, NextCampaignStep Nothing]
+      pushAll [Record TheInvestigatorsAreMembersOfTheLodge, AddChaosToken Cultist, NextCampaignStep Nothing]
       pure c
     CampaignStep (Just (InterludeStepPart 2 _ 9)) -> do
       pushAll
         [ Record TheInvestigatorsAreMembersOfTheLodge
-        , AddToken Cultist
+        , AddChaosToken Cultist
         , Record TheInvestigatorsAreDeceivingTheLodge
         , NextCampaignStep Nothing
         ]

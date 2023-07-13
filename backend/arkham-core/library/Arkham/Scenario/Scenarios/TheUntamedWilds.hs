@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -29,7 +30,6 @@ import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -53,18 +53,18 @@ theUntamedWilds difficulty =
     , ".               .             expeditionCamp .               ."
     ]
 
-instance HasTokenValue TheUntamedWilds where
-  getTokenValue iid tokenFace (TheUntamedWilds attrs) = case tokenFace of
+instance HasChaosTokenValue TheUntamedWilds where
+  getChaosTokenValue iid chaosTokenFace (TheUntamedWilds attrs) = case chaosTokenFace of
     Skull -> do
       vengeance <- getVengeanceInVictoryDisplay
-      pure $ toTokenValue attrs Skull vengeance (vengeance + 1)
+      pure $ toChaosTokenValue attrs Skull vengeance (vengeance + 1)
     Cultist -> do
       locationCount <- selectCount Anywhere
-      pure $ toTokenValue attrs Cultist (min 5 locationCount) locationCount
+      pure $ toChaosTokenValue attrs Cultist (min 5 locationCount) locationCount
     Tablet -> do
       explorationDeckCount <- length <$> getExplorationDeck
       pure $
-        toTokenValue
+        toChaosTokenValue
           attrs
           Tablet
           (min 5 explorationDeckCount)
@@ -72,9 +72,9 @@ instance HasTokenValue TheUntamedWilds where
     ElderThing -> do
       isPoisoned <- getIsPoisoned iid
       if isPoisoned
-        then pure $ TokenValue ElderThing AutoFailModifier
-        else pure $ toTokenValue attrs ElderThing 2 3
-    otherFace -> getTokenValue iid otherFace attrs
+        then pure $ ChaosTokenValue ElderThing AutoFailModifier
+        else pure $ toChaosTokenValue attrs ElderThing 2 3
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
@@ -170,7 +170,7 @@ instance RunMessage TheUntamedWilds where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> case chaosTokenFace token of
       ElderThing | isHardExpert attrs -> do
         isPoisoned <- getIsPoisoned iid
         unless isPoisoned $ do

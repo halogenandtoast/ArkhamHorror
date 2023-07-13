@@ -20,7 +20,7 @@ spec = describe "Bait and Switch" $ do
     pushAndRunAll
       [ placedLocation location1
       , placedLocation location2
-      , SetTokens [Zero]
+      , SetChaosTokens [Zero]
       , enemySpawn location1 enemy
       , moveTo investigator location1
       ]

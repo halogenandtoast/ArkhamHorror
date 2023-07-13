@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EffectMetadata
@@ -16,10 +17,9 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (RevealToken)
+import Arkham.Message hiding (RevealChaosToken)
 import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait
 import Arkham.Window qualified as Window
 
@@ -40,7 +40,7 @@ instance HasAbilities BeginnersLuck where
               mkAbility
                 x
                 1
-                (ReactionAbility (RevealChaosToken Timing.When Anyone AnyToken) Free)
+                (ReactionAbility (RevealChaosToken Timing.When Anyone AnyChaosToken) Free)
           , mkAbility x 2 $
               Objective $
                 ForcedAbilityWithCost
@@ -51,25 +51,25 @@ instance HasAbilities BeginnersLuck where
 
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
-    UseCardAbility iid source 1 (Window.revealedTokens -> [token]) _
+    UseCardAbility iid source 1 (Window.revealedChaosTokens -> [token]) _
       | isSource attrs source -> do
-          tokensInBag <- getOnlyTokensInBag
+          chaosTokensInBag <- getOnlyChaosTokensInBag
           pushAll
-            [ FocusTokens tokensInBag
+            [ FocusChaosTokens chaosTokensInBag
             , chooseOne
                 iid
                 [ TargetLabel
-                  (TokenFaceTarget $ tokenFace token')
-                  [ CreateTokenEffect
+                  (ChaosTokenFaceTarget $ chaosTokenFace token')
+                  [ CreateChaosTokenEffect
                       ( EffectModifiers $
-                          toModifiers attrs [TokenFaceModifier [tokenFace token']]
+                          toModifiers attrs [ChaosTokenFaceModifier [chaosTokenFace token']]
                       )
                       source
                       token
-                  , UnfocusTokens
-                  , FocusTokens [token']
+                  , UnfocusChaosTokens
+                  , FocusChaosTokens [token']
                   ]
-                | token' <- tokensInBag
+                | token' <- chaosTokensInBag
                 ]
             , Remember Cheated
             ]

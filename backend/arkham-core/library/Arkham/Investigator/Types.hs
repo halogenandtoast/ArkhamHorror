@@ -13,8 +13,8 @@ import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasModifiersFor
-import Arkham.Classes.HasTokenValue
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Deck qualified as Deck
 import Arkham.Discard
@@ -43,7 +43,7 @@ class
   , Show a
   , HasAbilities a
   , HasModifiersFor a
-  , HasTokenValue a
+  , HasChaosTokenValue a
   , RunMessage a
   , Entity a
   , EntityId a ~ InvestigatorId
@@ -226,8 +226,8 @@ instance ToJSON Investigator where
 instance HasModifiersFor Investigator where
   getModifiersFor target (Investigator a) = getModifiersFor target a
 
-instance HasTokenValue Investigator where
-  getTokenValue iid tokenFace (Investigator a) = getTokenValue iid tokenFace a
+instance HasChaosTokenValue Investigator where
+  getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a
 
 instance HasAbilities Investigator where
   getAbilities i@(Investigator a) =

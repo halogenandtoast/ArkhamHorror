@@ -1,12 +1,13 @@
-module Arkham.Event.Cards.Banish1
-  ( banish1
-  , banish1Effect
-  , Banish1(..)
-  )
+module Arkham.Event.Cards.Banish1 (
+  banish1,
+  banish1Effect,
+  Banish1 (..),
+)
 where
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
@@ -18,7 +19,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillTest.Base
 import Arkham.SkillType
-import Arkham.Token
 
 newtype Banish1 = Banish1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -47,7 +47,7 @@ banish1Effect = cardEffect Banish1Effect Cards.banish1
 
 instance RunMessage Banish1Effect where
   runMessage msg e@(Banish1Effect attrs@EffectAttrs {..}) = case msg of
-    After (PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _) | source == effectSource-> do
+    After (PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _) | source == effectSource -> do
       mSkillTestTarget <- getSkillTestTarget
       for_ mSkillTestTarget $ \case
         target@(EnemyTarget eid) | target == effectTarget -> do
@@ -56,13 +56,16 @@ instance RunMessage Banish1Effect where
             modifierMsgs = case mSkillTest of
               Nothing -> []
               Just st ->
-                let faces = map tokenFace (skillTestRevealedTokens st)
-                in [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
-                   | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
-                   ]
+                let faces = map chaosTokenFace (skillTestRevealedChaosTokens st)
+                in  [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
+                    | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
+                    ]
 
           locations <- selectList (LocationWithoutModifier CannotBeEnteredByNonElite)
-          let locationMsgs = if null locations then [] else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
+          let locationMsgs =
+                if null locations
+                  then []
+                  else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
 
           pushAll $ locationMsgs <> modifierMsgs
         _ -> pure ()

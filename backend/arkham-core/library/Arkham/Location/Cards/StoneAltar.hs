@@ -12,8 +12,8 @@ import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Projection
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
+import Arkham.ChaosToken
 
 newtype StoneAltar = StoneAltar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,14 +28,14 @@ instance HasAbilities StoneAltar where
 instance RunMessage StoneAltar where
   runMessage msg l@(StoneAltar attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
+      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       pure l
-    RequestedTokens (isSource attrs -> True) (Just iid) tokens -> do
-      push $ ResetTokens (toSource attrs)
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do
+      push $ ResetChaosTokens (toSource attrs)
       when
           (any
             ((`elem` [ElderSign, Skull, Cultist, Tablet, ElderThing, AutoFail])
-            . tokenFace
+            . chaosTokenFace
             )
             tokens
           )

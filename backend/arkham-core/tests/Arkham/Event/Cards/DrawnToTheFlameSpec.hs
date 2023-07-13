@@ -21,7 +21,7 @@ spec = describe "Drawn to the flame" $ do
     onWingsOfDarkness <- genEncounterCard Cards.onWingsOfDarkness
     pushAndRunAll
       [ SetEncounterDeck (Deck [onWingsOfDarkness])
-      , SetTokens [Zero]
+      , SetChaosTokens [Zero]
       , placedLocation rivertown
       , placedLocation southside
       , PlaceClues GameSource (toTarget rivertown) 1

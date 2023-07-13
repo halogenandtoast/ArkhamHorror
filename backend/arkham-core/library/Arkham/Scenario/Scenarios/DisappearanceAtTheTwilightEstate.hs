@@ -12,6 +12,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Difficulty
@@ -27,7 +28,6 @@ import Arkham.Movement
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DisappearanceAtTheTwilightEstate = DisappearanceAtTheTwilightEstate ScenarioAttrs
@@ -47,11 +47,11 @@ disappearanceAtTheTwilightEstate difficulty =
     , ".             .          entryHall      .             ."
     ]
 
-instance HasTokenValue DisappearanceAtTheTwilightEstate where
-  getTokenValue iid tokenFace (DisappearanceAtTheTwilightEstate attrs) =
-    case tokenFace of
-      Skull -> pure $ toTokenValue attrs Skull 3 5
-      otherFace -> getTokenValue iid otherFace attrs
+instance HasChaosTokenValue DisappearanceAtTheTwilightEstate where
+  getChaosTokenValue iid chaosTokenFace (DisappearanceAtTheTwilightEstate attrs) =
+    case chaosTokenFace of
+      Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+      otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
   runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = case msg of
@@ -192,8 +192,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
              | pennyChosen
              ]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Skull -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->

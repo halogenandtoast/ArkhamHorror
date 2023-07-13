@@ -37,17 +37,17 @@ instance HasAbilities SkidsOToole where
             ResourceCost 2
     ]
 
-instance HasTokenValue SkidsOToole where
-  getTokenValue iid ElderSign (SkidsOToole attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue SkidsOToole where
+  getChaosTokenValue iid ElderSign (SkidsOToole attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage SkidsOToole where
   runMessage msg i@(SkidsOToole attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ GainActions (toId attrs) (toAbilitySource attrs 1) 1
       pure i
-    PassedSkillTest iid _ _ (TokenTarget (tokenFace -> ElderSign)) _ _ | iid == toId attrs -> do
-      push $ TakeResources iid 2 (TokenEffectSource ElderSign) False
+    PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _ | iid == toId attrs -> do
+      push $ TakeResources iid 2 (ChaosTokenEffectSource ElderSign) False
       pure i
     _ -> SkidsOToole <$> runMessage msg attrs

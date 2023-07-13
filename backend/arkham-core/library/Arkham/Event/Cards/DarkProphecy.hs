@@ -1,11 +1,12 @@
-module Arkham.Event.Cards.DarkProphecy
-  ( darkProphecy
-  , DarkProphecy(..)
-  ) where
+module Arkham.Event.Cards.DarkProphecy (
+  darkProphecy,
+  DarkProphecy (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.ChaosBagStepState
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -13,8 +14,7 @@ import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Token
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype DarkProphecy = DarkProphecy EventAttrs
@@ -27,20 +27,22 @@ darkProphecy = event DarkProphecy Cards.darkProphecy
 instance RunMessage DarkProphecy where
   runMessage msg e@(DarkProphecy attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] _
-      | eid == toId attrs
-      -> do
-        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-        pushAll
-          [ ReplaceCurrentDraw drawSource iid $ ChooseMatch
-            (toSource attrs)
-            1
-            ResolveChoice
-            (replicate 5 $ Undecided Draw)
-            []
-            (TokenMatchesAny
-            $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
-            )
-          , ignoreWindow
-          ]
-        pure e
+      | eid == toId attrs ->
+          do
+            ignoreWindow <-
+              checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+            pushAll
+              [ ReplaceCurrentDraw drawSource iid $
+                  ChooseMatch
+                    (toSource attrs)
+                    1
+                    ResolveChoice
+                    (replicate 5 $ Undecided Draw)
+                    []
+                    ( ChaosTokenMatchesAny $
+                        map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
+                    )
+              , ignoreWindow
+              ]
+            pure e
     _ -> DarkProphecy <$> runMessage msg attrs

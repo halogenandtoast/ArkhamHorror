@@ -25,6 +25,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.DamageEffect
@@ -43,12 +44,12 @@ import Arkham.History
 import Arkham.Id
 import Arkham.Key
 import {-# SOURCE #-} Arkham.Location.Types
-import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated)
+import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated, RevealChaosToken)
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
-import Arkham.RequestedTokenStrategy
+import Arkham.RequestedChaosTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
@@ -59,7 +60,6 @@ import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Control.Exception
@@ -68,13 +68,13 @@ import Data.Aeson.TH
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack {} = Just AttackMessage
 messageType Revelation {} = Just RevelationMessage
-messageType DrawToken {} = Just DrawTokenMessage
-messageType ResolveToken {} = Just ResolveTokenMessage
+messageType DrawChaosToken {} = Just DrawChaosTokenMessage
+messageType ResolveChaosToken {} = Just ResolveChaosTokenMessage
 messageType EnemySpawn {} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy {} = Just DrawEnemyMessage
 messageType EnemyDefeated {} = Just EnemyDefeatedMessage
 messageType (Discard GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
-messageType RevealToken {} = Just RevealTokenMessage
+messageType RevealChaosToken {} = Just RevealChaosTokenMessage
 messageType InvestigatorDamage {} = Just DamageMessage
 messageType InvestigatorDoAssignDamage {} = Just DamageMessage
 messageType InvestigatorDrewEncounterCard {} = Just DrawEncounterCardMessage
@@ -232,8 +232,8 @@ data Message
     AddToVictory Target
   | DefeatedAddToVictory Target
   | -- Tokens
-    AddToken TokenFace
-  | RemoveAllTokens TokenFace
+    AddChaosToken ChaosTokenFace
+  | RemoveAllChaosTokens ChaosTokenFace
   | -- Asset Uses
     AddUses AssetId UseType Int
   | -- Asks
@@ -254,7 +254,7 @@ data Message
     AttachAsset AssetId Target
   | AttachStoryTreacheryTo Card Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
-  | BeforeRevealTokens
+  | BeforeRevealChaosTokens
   | BeforeSkillTest SkillTest
   | ChangeSkillTestType SkillTestType SkillTestBaseValue
   | -- Game State Control
@@ -295,7 +295,7 @@ data Message
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
   | ChooseRandomLocation Target (Set LocationId)
   | ChosenRandomLocation Target LocationId
-  | ChooseTokenGroups Source InvestigatorId ChaosBagStep
+  | ChooseChaosTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId Card
   | CommitToSkillTest SkillTest (UI Message)
   | Continue Text
@@ -311,7 +311,7 @@ data Message
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
   | -- end  new payment bs
     CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
-  | CreateTokenEffect (EffectMetadata Window Message) Source Token
+  | CreateChaosTokenEffect (EffectMetadata Window Message) Source ChaosToken
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement
@@ -319,7 +319,7 @@ data Message
   | PlaceTreachery TreacheryId TreacheryPlacement
   | PlaceKey Target ArkhamKey
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
-  | CreateTokenValueEffect Int Source Target
+  | CreateChaosTokenValueEffect Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId
   | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
   | CrossOutRecord CampaignLogKey
@@ -341,10 +341,10 @@ data Message
   | DiscoverCluesAtLocation InvestigatorId LocationId Source Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
-  | DrawAnotherToken InvestigatorId
+  | DrawAnotherChaosToken InvestigatorId
   | DrawCards CardDraw -- use drawCards
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
-  | DrawToken InvestigatorId Token
+  | DrawChaosToken InvestigatorId ChaosToken
   | DrewPlayerEnemy InvestigatorId Card
   | DrewTreachery InvestigatorId (Maybe DeckSignifier) Card
   | ResolveTreachery InvestigatorId TreacheryId
@@ -403,7 +403,7 @@ data Message
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]
-  | FocusTokens [Token]
+  | FocusChaosTokens [ChaosToken]
   | Force Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | FoundEncounterCard InvestigatorId Target EncounterCard
@@ -506,7 +506,7 @@ data Message
   | MoveTopOfDeckToBottom Source DeckSignifier Int
   | MoveUntil LocationId Target
   | NextCampaignStep (Maybe CampaignStep)
-  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
+  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | Noop
   | PassSkillTest
   | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
@@ -591,36 +591,36 @@ data Message
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | SetChaosBagChoice Source InvestigatorId ChaosBagStep -- internal
   | RequestSetAsideCard Source CardCode
-  | RequestTokens Source (Maybe InvestigatorId) RevealStrategy RequestedTokenStrategy
+  | RequestChaosTokens Source (Maybe InvestigatorId) RevealStrategy RequestedChaosTokenStrategy
   | RequestedEncounterCard Source (Maybe InvestigatorId) (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard) [PlayerCard]
   | RequestedSetAsideCard Source Card
-  | RequestedTokens Source (Maybe InvestigatorId) [Token]
+  | RequestedChaosTokens Source (Maybe InvestigatorId) [ChaosToken]
   | RerunSkillTest
   | ResetInvestigators
   | ResetGame
-  | ResetTokens Source
+  | ResetChaosTokens Source
   | Resign InvestigatorId
   | ResignWith Target
   | ResolveAmounts InvestigatorId [(Text, Int)] Target
   | ResolveEvent InvestigatorId EventId (Maybe Target) [Window]
   | ResolveEventChoice InvestigatorId EventId Int (Maybe Target) [Window]
   | ResolveSkill SkillId
-  | ResolveToken Token TokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
-  | ReturnSkillTestRevealedTokens
-  | ReturnTokens [Token]
+  | ResolveChaosToken ChaosToken ChaosTokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
+  | ReturnSkillTestRevealedChaosTokens
+  | ReturnChaosTokens [ChaosToken]
   | RevealInHand CardId
   | RevealLocation (Maybe InvestigatorId) LocationId
   | UnrevealLocation LocationId
-  | RevealSkillTestTokens InvestigatorId
-  | RevealToken Source InvestigatorId Token
+  | RevealSkillTestChaosTokens InvestigatorId
+  | RevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
   | RevelationSkillTest InvestigatorId Source SkillType Int
   | Run [Message]
-  | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
-  | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
+  | RunBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
+  | RunDrawFromBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | RunSkillTest InvestigatorId
   | RecalculateSkillTestResults
   | RemoveFromBearersDeckOrDiscard PlayerCard
@@ -633,10 +633,10 @@ data Message
   | SetEncounterDeck (Deck EncounterCard)
   | SetLocationLabel LocationId Text
   | SetRole InvestigatorId ClassSymbol
-  | ForceTokenDraw TokenFace
+  | ForceChaosTokenDraw ChaosTokenFace
   | SetActiveInvestigator InvestigatorId
-  | SetTokens [TokenFace]
-  | SetTokensForScenario
+  | SetChaosTokens [ChaosTokenFace]
+  | SetChaosTokensForScenario
   | Setup
   | EndSetup
   | SetupInvestigators
@@ -692,12 +692,12 @@ data Message
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | UnfocusCards
   | UnfocusTargets
-  | UnfocusTokens
-  | SealToken Token
-  | SealedToken Token Card
-  | UnsealToken Token
-  | TokenIgnored InvestigatorId Source Token
-  | TokenCanceled InvestigatorId Source Token
+  | UnfocusChaosTokens
+  | SealChaosToken ChaosToken
+  | SealedChaosToken ChaosToken Card
+  | UnsealChaosToken ChaosToken
+  | ChaosTokenIgnored InvestigatorId Source ChaosToken
+  | ChaosTokenCanceled InvestigatorId Source ChaosToken
   | UnsetActiveCard
   | AddCardEntity Card
   | RemoveCardEntity Card
@@ -764,7 +764,7 @@ uiToRun = \case
   EndTurnButton _ msgs -> Run msgs
   StartSkillTestButton iid -> Run [StartSkillTest iid]
   SkillTestApplyResultsButton -> Run [SkillTestApplyResults]
-  TokenGroupChoice source iid step -> Run [ChooseTokenGroups source iid step]
+  ChaosTokenGroupChoice source iid step -> Run [ChooseChaosTokenGroups source iid step]
   EffectActionButton _ _ msgs -> Run msgs
   Done _ -> Run []
 

@@ -32,10 +32,10 @@ lolaHayes = investigator
     , agility = 3
     }
 
-instance HasTokenValue LolaHayes where
-  getTokenValue iid ElderSign (LolaHayes attrs) | iid == investigatorId attrs =
-    pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue LolaHayes where
+  getChaosTokenValue iid ElderSign (LolaHayes attrs) | iid == investigatorId attrs =
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance HasAbilities LolaHayes where
   getAbilities (LolaHayes attrs) =
@@ -59,6 +59,6 @@ instance RunMessage LolaHayes where
       i <$ switchRole attrs
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       i <$ switchRole attrs
-    ResolveToken _ ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       i <$ switchRole attrs
     _ -> LolaHayes <$> runMessage msg attrs

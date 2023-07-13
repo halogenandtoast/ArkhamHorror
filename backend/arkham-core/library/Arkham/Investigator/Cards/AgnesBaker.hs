@@ -41,10 +41,10 @@ instance HasAbilities AgnesBaker where
             Free
     ]
 
-instance HasTokenValue AgnesBaker where
-  getTokenValue iid ElderSign (AgnesBaker attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier $ investigatorSanityDamage attrs
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue AgnesBaker where
+  getChaosTokenValue iid ElderSign (AgnesBaker attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier $ investigatorSanityDamage attrs
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of

@@ -29,6 +29,7 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Cost.FieldCost
@@ -65,7 +66,6 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
@@ -79,15 +79,15 @@ replaceThisCard c = \case
   ThisCard -> CardCostSource (toCardId c)
   s -> s
 
-cancelToken :: Token -> GameT ()
-cancelToken token = withQueue_ $ \queue ->
+cancelChaosToken :: ChaosToken -> GameT ()
+cancelChaosToken token = withQueue_ $ \queue ->
   filter
     ( \case
-        When (RevealToken _ _ token') | token == token' -> False
-        RevealToken _ _ token' | token == token' -> False
-        After (RevealToken _ _ token') | token == token' -> False
-        RequestedTokens _ _ [token'] | token == token' -> False
-        RequestedTokens {} -> error "not setup for multiple tokens"
+        When (RevealChaosToken _ _ token') | token == token' -> False
+        RevealChaosToken _ _ token' | token == token' -> False
+        After (RevealChaosToken _ _ token') | token == token' -> False
+        RequestedChaosTokens _ _ [token'] | token == token' -> False
+        RequestedChaosTokens {} -> error "not setup for multiple tokens"
         _ -> True
     )
     queue
@@ -592,16 +592,16 @@ getCanAffordCost iid source mAction windows' = \case
   ReturnMatchingAssetToHandCost assetMatcher -> selectAny assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
   SealCost tokenMatcher -> do
-    tokens <- scenarioFieldMap ScenarioChaosBag chaosBagTokens
-    anyM (\token -> matchToken iid token tokenMatcher) tokens
-  SealTokenCost _ -> pure True
-  ReleaseTokensCost n -> do
+    tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+    anyM (\token -> matchChaosToken iid token tokenMatcher) tokens
+  SealChaosTokenCost _ -> pure True
+  ReleaseChaosTokensCost n -> do
     case source of
-      AssetSource aid -> fieldMap AssetSealedTokens ((>= n) . length) aid
+      AssetSource aid -> fieldMap AssetSealedChaosTokens ((>= n) . length) aid
       _ -> error "Unhandled release token cost source"
-  ReleaseTokenCost t -> do
+  ReleaseChaosTokenCost t -> do
     case source of
-      AssetSource aid -> fieldMap AssetSealedTokens (elem t) aid
+      AssetSource aid -> fieldMap AssetSealedChaosTokens (elem t) aid
       _ -> error "Unhandled release token cost source"
   FieldResourceCost (FieldCost mtchr fld) -> do
     n <- getSum <$> selectAgg Sum fld mtchr
@@ -763,8 +763,8 @@ targetToSource = \case
   EventTarget eid -> EventSource eid
   SkillTarget sid -> SkillSource sid
   SkillTestInitiatorTarget _ -> error "can not convert"
-  TokenTarget tid -> TokenSource tid
-  TokenFaceTarget _ -> error "Not convertable"
+  ChaosTokenTarget _ -> error "not convertable"
+  ChaosTokenFaceTarget _ -> error "Not convertable"
   TestTarget -> TestSource mempty
   ResourceTarget -> ResourceSource
   ActDeckTarget -> ActDeckSource
@@ -788,8 +788,8 @@ sourceToTarget = \case
   ScenarioSource -> ScenarioTarget
   InvestigatorSource iid -> InvestigatorTarget iid
   CardCodeSource cid -> CardCodeTarget cid
-  TokenSource t -> TokenTarget t
-  TokenEffectSource _ -> error "not implemented"
+  ChaosTokenSource t -> ChaosTokenTarget t
+  ChaosTokenEffectSource _ -> error "not implemented"
   AgendaSource aid -> AgendaTarget aid
   LocationSource lid -> LocationTarget lid
   SkillTestSource {} -> SkillTestTarget
@@ -967,7 +967,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x
         _ -> Nothing
-      sealedTokenCost = flip mapMaybe (setToList $ cdKeywords pcDef) $ \case
+      sealedChaosTokenCost = flip mapMaybe (setToList $ cdKeywords pcDef) $ \case
         Keyword.Seal matcher ->
           if costStatus == PaidCost then Nothing else Just $ SealCost matcher
         _ -> Nothing
@@ -980,7 +980,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         (getCanAffordCost iid (CardSource c) Nothing windows')
         ( [ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]
             <> additionalCosts
-            <> sealedTokenCost
+            <> sealedChaosTokenCost
         )
 
     passesSlots <-
@@ -1089,7 +1089,7 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source windows' = \case
-  Criteria.TokenCountIs tokenMatcher valueMatcher -> do
+  Criteria.ChaosTokenCountIs tokenMatcher valueMatcher -> do
     n <- selectCount tokenMatcher
     gameValueMatches n valueMatcher
   Criteria.DuringPhase phaseMatcher -> do
@@ -1575,28 +1575,28 @@ windowMatches
 windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
-  Matcher.WouldTriggerTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
+  Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
     case window' of
       Window timing' wType | timing' == Timing.AtIf -> case wType of
-        Window.RevealTokenEffect who token effectId -> do
+        Window.RevealChaosTokenEffect who token effectId -> do
           cardCode <- field EffectCardCode effectId
           andM
             [ matchWho iid who whoMatcher
-            , pure $ tokenFace token `elem` tokens
+            , pure $ chaosTokenFace token `elem` tokens
             , pure $ lookupCard cardCode nullCardId `cardMatch` cardMatcher
             ]
-        Window.RevealTokenEventEffect who tokens' eventId -> do
+        Window.RevealChaosTokenEventEffect who tokens' eventId -> do
           card <- field EventCard eventId
           andM
             [ matchWho iid who whoMatcher
-            , pure $ any ((`elem` tokens) . tokenFace) tokens'
+            , pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher
             ]
-        Window.RevealTokenAssetAbilityEffect who tokens' assetId -> do
+        Window.RevealChaosTokenAssetAbilityEffect who tokens' assetId -> do
           card <- field AssetCard assetId
           andM
             [ matchWho iid who whoMatcher
-            , pure $ any ((`elem` tokens) . tokenFace) tokens'
+            , pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher
             ]
         _ -> pure False
@@ -2269,21 +2269,21 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.RevealToken who token)
+      Window t (Window.RevealChaosToken who token)
         | whenMatcher == t ->
-            andM [matchWho iid who whoMatcher, matchToken who token tokenMatcher]
+            andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
       _ -> pure False
   Matcher.CancelChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.CancelToken who token)
+      Window t (Window.CancelChaosToken who token)
         | whenMatcher == t ->
-            andM [matchWho iid who whoMatcher, matchToken who token tokenMatcher]
+            andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
       _ -> pure False
   Matcher.IgnoreChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.IgnoreToken who token)
+      Window t (Window.IgnoreChaosToken who token)
         | whenMatcher == t ->
-            andM [matchWho iid who whoMatcher, matchToken who token tokenMatcher]
+            andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
       _ -> pure False
   Matcher.AddedToVictory timingMatcher cardMatcher -> case window' of
     Window t (Window.AddedToVictory card)
@@ -2636,7 +2636,7 @@ targetTraits = \case
   TreacheryTarget tid -> field TreacheryTraits tid
   StoryTarget _ -> pure mempty
   TestTarget -> pure mempty
-  TokenTarget _ -> pure mempty
+  ChaosTokenTarget _ -> pure mempty
   YouTarget -> selectJust Matcher.You >>= field InvestigatorTraits
   InvestigatorHandTarget _ -> pure mempty
   InvestigatorDiscardTarget _ -> pure mempty
@@ -2647,7 +2647,7 @@ targetTraits = \case
   SearchedCardTarget _ -> pure mempty
   SkillTestInitiatorTarget _ -> pure mempty
   PhaseTarget _ -> pure mempty
-  TokenFaceTarget _ -> pure mempty
+  ChaosTokenFaceTarget _ -> pure mempty
   InvestigationTarget _ _ -> pure mempty
   AgendaMatcherTarget _ -> pure mempty
   CampaignTarget -> pure mempty
@@ -2847,25 +2847,25 @@ skillTestMatches iid source st = \case
       _ -> pure False
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
 
-matchToken
-  :: (HasGame m) => InvestigatorId -> Token -> Matcher.TokenMatcher -> m Bool
-matchToken _ = (<=~>)
+matchChaosToken
+  :: (HasGame m) => InvestigatorId -> ChaosToken -> Matcher.ChaosTokenMatcher -> m Bool
+matchChaosToken _ = (<=~>)
 
 matchPhase :: (Monad m) => Phase -> Matcher.PhaseMatcher -> m Bool
 matchPhase p = \case
   Matcher.AnyPhase -> pure True
   Matcher.PhaseIs p' -> pure $ p == p'
 
-getModifiedTokenFaces :: (HasGame m) => [Token] -> m [TokenFace]
-getModifiedTokenFaces tokens = concatMapM getModifiedTokenFace tokens
+getModifiedChaosTokenFaces :: (HasGame m) => [ChaosToken] -> m [ChaosTokenFace]
+getModifiedChaosTokenFaces tokens = concatMapM getModifiedChaosTokenFace tokens
 
-getModifiedTokenFace :: (HasGame m) => Token -> m [TokenFace]
-getModifiedTokenFace token = do
-  modifiers' <- getModifiers (TokenTarget token)
-  pure $ foldl' applyModifier [tokenFace token] modifiers'
+getModifiedChaosTokenFace :: (HasGame m) => ChaosToken -> m [ChaosTokenFace]
+getModifiedChaosTokenFace token = do
+  modifiers' <- getModifiers (ChaosTokenTarget token)
+  pure $ foldl' applyModifier [chaosTokenFace token] modifiers'
  where
-  applyModifier _ (TokenFaceModifier fs') = fs'
-  applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs
+  applyModifier _ (ChaosTokenFaceModifier fs') = fs'
+  applyModifier [f'] (ForcedChaosTokenChange f fs) | f == f' = fs
   applyModifier fs _ = fs
 
 cardListMatches :: (HasGame m) => [Card] -> Matcher.CardListMatcher -> m Bool

@@ -23,11 +23,11 @@ jennyBarnes = investigator
     , agility = 3
     }
 
-instance HasTokenValue JennyBarnes where
-  getTokenValue iid ElderSign (JennyBarnes attrs)
+instance HasChaosTokenValue JennyBarnes where
+  getChaosTokenValue iid ElderSign (JennyBarnes attrs)
     | iid == investigatorId attrs = pure
-    $ TokenValue ElderSign (PositiveModifier $ investigatorResources attrs)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    $ ChaosTokenValue ElderSign (PositiveModifier $ investigatorResources attrs)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JennyBarnes where
   runMessage msg (JennyBarnes attrs) = case msg of

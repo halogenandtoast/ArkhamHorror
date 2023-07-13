@@ -22,7 +22,7 @@ spec = describe "Machete" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
@@ -43,7 +43,7 @@ spec = describe "Machete" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3, enemyExhausted = True}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location
@@ -66,7 +66,7 @@ spec = describe "Machete" $ do
       enemy2 <- testEnemy $
         \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
       pushAndRun $ enemySpawn location enemy1
       pushAndRun $ enemySpawn location enemy2

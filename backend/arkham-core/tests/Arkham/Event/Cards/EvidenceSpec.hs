@@ -20,7 +20,7 @@ spec = describe
       location <- testLocation (revealCluesL .~ Static 1)
       evidence <- genCard Events.evidence
       pushAndRunAll
-        [ SetTokens [Zero]
+        [ SetChaosTokens [Zero]
         , addToHand (toId investigator) evidence
         , enemySpawn location enemy
         , moveTo investigator location

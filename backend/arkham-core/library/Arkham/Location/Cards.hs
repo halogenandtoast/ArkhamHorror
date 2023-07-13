@@ -4584,7 +4584,7 @@ theGeistTrap :: CardDef
 theGeistTrap =
   victory 1 $
     location
-      "05256"
+      "05257"
       "Unvisited Isle"
       [Woods, Spectral]
       Plus

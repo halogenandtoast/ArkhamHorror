@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
@@ -21,7 +22,10 @@ theLoversVI = agenda (1, A) TheLoversVI Cards.theLoversVI (Static 8)
 instance RunMessage TheLoversVI where
   runMessage msg a@(TheLoversVI attrs) =
     case msg of
-      AdvanceAgenda aid
-        | aid == toId attrs && onSide B attrs ->
-            a <$ pushAll [advanceAgendaDeck attrs]
+      AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+        takenByTheWatcher <- getRecordSet WasTakenByTheWatcher
+        if notNull takenByTheWatcher
+          then pushAll [advanceAgendaDeck attrs]
+          else pushAll [advanceAgendaDeck attrs]
+        pure a
       _ -> TheLoversVI <$> runMessage msg attrs

@@ -10,10 +10,10 @@ import {-# SOURCE #-} Arkham.Ability.Types
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.Id
+import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Token
 import Arkham.Trait
 import Data.Aeson.TH
 
@@ -45,9 +45,9 @@ data Target
   | EventTarget EventId
   | SkillTarget SkillId
   | SkillTestInitiatorTarget Target
-  | TokenTarget Token
   | PhaseTarget Phase
-  | TokenFaceTarget TokenFace
+  | ChaosTokenTarget ChaosToken
+  | ChaosTokenFaceTarget ChaosTokenFace
   | TestTarget
   | ResourceTarget
   | YouTarget

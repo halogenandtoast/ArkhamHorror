@@ -47,11 +47,11 @@ instance HasAbilities UrsulaDowns where
         $ ReactionAbility (Moves Timing.After You AnySource Anywhere Anywhere) Free
     ]
 
-instance HasTokenValue UrsulaDowns where
-  getTokenValue iid ElderSign (UrsulaDowns (attrs `With` _))
+instance HasChaosTokenValue UrsulaDowns where
+  getChaosTokenValue iid ElderSign (UrsulaDowns (attrs `With` _))
     | iid == toId attrs = do
-      pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+      pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage UrsulaDowns where
   runMessage msg i@(UrsulaDowns (attrs `With` metadata)) = case msg of
@@ -84,7 +84,7 @@ instance RunMessage UrsulaDowns where
            | item <- playableCards
            ]
       pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
     SkillTestEnds _ _ | moveAfterTest metadata -> do
       targets <- selectList $ accessibleFrom $ investigatorLocation attrs

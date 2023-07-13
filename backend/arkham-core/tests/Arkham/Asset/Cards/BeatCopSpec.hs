@@ -33,7 +33,7 @@ spec = describe "Beat Cop" $ do
       enemy <- testEnemy $
         \attrs -> attrs {enemyHealth = Static 2}
       location <- testLocation id
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
       pushAndRun $ enemySpawn location enemy
       pushAndRun $ moveTo investigator location

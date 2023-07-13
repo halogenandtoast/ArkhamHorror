@@ -12,8 +12,8 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
+import Arkham.ChaosToken
 import Arkham.Trait qualified as Trait
 import Arkham.Window qualified as Window
 
@@ -32,17 +32,17 @@ instance RunMessage AstralTravel where
         [ chooseOne
           iid
           [ targetLabel lid [MoveAction iid lid Free False] | lid <- locations ]
-        , RequestTokens (toSource attrs) Nothing (Reveal 1) SetAside
+        , RequestChaosTokens (toSource attrs) Nothing (Reveal 1) SetAside
         ]
       pure e
-    RequestedTokens source _ tokens | isSource attrs source -> do
-      push $ ResetTokens (toSource attrs)
+    RequestedChaosTokens source _ tokens | isSource attrs source -> do
+      push $ ResetChaosTokens (toSource attrs)
       let faces = [Skull, Cultist, Tablet, ElderThing, AutoFail]
-      when (any ((`elem` faces) . tokenFace) tokens) $ do
+      when (any ((`elem` faces) . chaosTokenFace) tokens) $ do
         targets <- selectList
           $ AssetOneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
         push $ If
-          (Window.RevealTokenEventEffect (eventOwner attrs) tokens (toId attrs))
+          (Window.RevealChaosTokenEventEffect (eventOwner attrs) tokens (toId attrs))
           [ case targets of
               [] ->
                 InvestigatorAssignDamage (eventOwner attrs) source DamageAny 1 0

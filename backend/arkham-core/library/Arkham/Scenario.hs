@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet (EncounterSet)
@@ -18,7 +19,6 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
-import Arkham.Token
 
 instance FromJSON Scenario where
   parseJSON = withObject "Scenario" $ \o -> do
@@ -30,31 +30,31 @@ instance FromJSON Scenario where
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of
-    ResolveToken _ tokenFace _ -> do
-      modifiers' <- getModifiers (TokenFaceTarget tokenFace)
-      if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
+    ResolveChaosToken _ chaosTokenFace _ -> do
+      modifiers' <- getModifiers (ChaosTokenFaceTarget chaosTokenFace)
+      if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
-    FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
-      modifiers' <- getModifiers (TokenFaceTarget $ tokenFace token)
-      if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
+    FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
+      modifiers' <- getModifiers (ChaosTokenFaceTarget $ chaosTokenFace token)
+      if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
-    PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
-      modifiers' <- getModifiers (TokenFaceTarget $ tokenFace token)
-      if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
+    PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
+      modifiers' <- getModifiers (ChaosTokenFaceTarget $ chaosTokenFace token)
+      if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
     _ -> go
    where
     go = Scenario <$> runMessage msg s
 
-instance HasTokenValue Scenario where
-  getTokenValue iid tokenFace (Scenario s) = do
-    modifiers' <- getModifiers (TokenFaceTarget tokenFace)
-    if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
-      then pure $ TokenValue tokenFace NoModifier
-      else getTokenValue iid tokenFace s
+instance HasChaosTokenValue Scenario where
+  getChaosTokenValue iid chaosTokenFace (Scenario s) = do
+    modifiers' <- getModifiers (ChaosTokenFaceTarget chaosTokenFace)
+    if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
+      then pure $ ChaosTokenValue chaosTokenFace NoModifier
+      else getChaosTokenValue iid chaosTokenFace s
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario scenarioId =
@@ -158,6 +158,7 @@ allScenarios =
     , ("05120", SomeScenario theSecretName)
     , ("05161", SomeScenario theWagesOfSin)
     , ("05197", SomeScenario forTheGreaterGood)
+    , ("05238", SomeScenario unionAndDisillusion)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
@@ -202,6 +203,7 @@ scenarioEncounterSets =
     , ("05120", EncounterSet.TheSecretName)
     , ("05161", EncounterSet.TheWagesOfSin)
     , ("05197", EncounterSet.ForTheGreaterGood)
+    , ("05238", EncounterSet.UnionAndDisillusion)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)

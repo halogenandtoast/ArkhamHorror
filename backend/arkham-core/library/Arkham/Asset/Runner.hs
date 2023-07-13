@@ -50,10 +50,9 @@ instance RunMessage Asset where
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-    SealedToken token card
-      | toCardId card == toCardId a ->
-          pure $ a & sealedTokensL %~ (token :)
-    UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
+    SealedChaosToken token card | toCardId card == toCardId a -> do
+      pure $ a & sealedChaosTokensL %~ (token :)
+    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     ReadyExhausted -> case assetPlacement of
       InPlayArea iid -> do
         modifiers <- getModifiers (InvestigatorTarget iid)
@@ -67,9 +66,8 @@ instance RunMessage AssetAttrs where
     RemoveResources _ target n | isTarget a target -> do
       pure $ a & resourcesL %~ max 0 . subtract n
     PlaceDoom _ target n | isTarget a target -> pure $ a & doomL +~ n
-    RemoveDoom _ target n
-      | isTarget a target ->
-          pure $ a & doomL %~ max 0 . subtract n
+    RemoveDoom _ target n | isTarget a target -> do
+      pure $ a & doomL %~ max 0 . subtract n
     RemoveClues _ target n | isTarget a target -> do
       when (assetClues - n <= 0) $
         pushAll
@@ -173,7 +171,7 @@ instance RunMessage AssetAttrs where
           )
       pushAll $
         windowMsg
-          : [UnsealToken token | token <- assetSealedTokens]
+          : [UnsealChaosToken token | token <- assetSealedChaosTokens]
             <> [RemovedFromPlay source]
       pure a
     PlaceKey (isTarget a -> True) k -> do

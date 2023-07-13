@@ -14,6 +14,7 @@ import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.Id
+import Arkham.ChaosToken (ChaosToken)
 import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.GameValue
 import Arkham.Id
@@ -22,7 +23,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Arkham.Token (Token)
 import Data.Aeson.TH
 import Data.Text qualified as T
 
@@ -83,8 +83,8 @@ data Payment
   | InvestigatorDamagePayment Int
   | SkillIconPayment [SkillIcon]
   | Payments [Payment]
-  | SealTokenPayment Token
-  | ReleaseTokenPayment Token
+  | SealChaosTokenPayment ChaosToken
+  | ReleaseChaosTokenPayment ChaosToken
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
@@ -131,10 +131,10 @@ data Cost
   | DynamicUseCost AssetMatcher UseType DynamicUseCostValue
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
-  | SealCost TokenMatcher
-  | ReleaseTokenCost Token
-  | ReleaseTokensCost Int
-  | SealTokenCost Token -- internal to track sealed token
+  | SealCost ChaosTokenMatcher
+  | ReleaseChaosTokenCost ChaosToken
+  | ReleaseChaosTokensCost Int
+  | SealChaosTokenCost ChaosToken -- internal to track sealed token
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   deriving stock (Show, Eq, Ord)
@@ -244,10 +244,10 @@ displayCostType = \case
     Lock -> tshow n <> "-" <> tshow m <> " Locks"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
-  SealTokenCost _ -> "Seal token"
-  ReleaseTokenCost _ -> "Release a chaos token sealed here"
-  ReleaseTokensCost 1 -> "Release a chaos token sealed here"
-  ReleaseTokensCost _ -> "Release chaos tokens sealed here"
+  SealChaosTokenCost _ -> "Seal token"
+  ReleaseChaosTokenCost _ -> "Release a chaos token sealed here"
+  ReleaseChaosTokensCost 1 -> "Release a chaos token sealed here"
+  ReleaseChaosTokensCost _ -> "Release chaos tokens sealed here"
   FieldResourceCost {} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"

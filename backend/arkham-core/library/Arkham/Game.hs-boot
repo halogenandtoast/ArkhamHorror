@@ -13,8 +13,8 @@ import Arkham.Campaign.Types
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasDistance
-import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Query
 import Arkham.Effect.Types
 import Arkham.Enemy.Types
@@ -56,7 +56,7 @@ instance Query RemainingActMatcher
 instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query StoryMatcher
-instance Query TokenMatcher
+instance Query ChaosTokenMatcher
 instance Query TreacheryMatcher
 
 instance Projection Act
@@ -77,8 +77,8 @@ instance Projection Skill
 instance Projection Treachery
 instance Projection Story
 
-instance HasTokenValue InvestigatorId
-instance HasTokenValue ()
+instance HasChaosTokenValue InvestigatorId
+instance HasChaosTokenValue ()
 
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game

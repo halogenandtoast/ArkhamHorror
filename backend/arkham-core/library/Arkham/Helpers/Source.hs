@@ -44,8 +44,8 @@ sourceTraits = \case
   TreacherySource tid -> field TreacheryTraits tid
   StorySource _ -> pure mempty
   TestSource traits -> pure traits
-  TokenEffectSource _ -> pure mempty
-  TokenSource _ -> pure mempty
+  ChaosTokenSource _ -> pure mempty
+  ChaosTokenEffectSource _ -> pure mempty
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   LocationMatcherSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty

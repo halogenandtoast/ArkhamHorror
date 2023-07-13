@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 
 newtype TheStrangerACityAflame = TheStrangerACityAflame ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -46,8 +46,8 @@ instance RunMessage TheStrangerACityAflame where
           <$> selectOne (LocationWithTitle "Theatre")
       card <- flipCard <$> genCard (toCardDef attrs)
       pushAll
-        [ AddToken Cultist
-        , AddToken Cultist
+        [ AddChaosToken Cultist
+        , AddChaosToken Cultist
         , PlaceHorror (toSource attrs) (toTarget theatre) 1
         , PlaceNextTo ActDeckTarget [card]
         , CreateEffect "03047a" Nothing (toSource attrs) (toTarget attrs)

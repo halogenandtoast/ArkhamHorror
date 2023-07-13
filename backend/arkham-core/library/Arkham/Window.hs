@@ -9,6 +9,7 @@ import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.Attack
 import Arkham.Card (Card)
+import Arkham.ChaosToken (ChaosToken)
 import Arkham.Damage
 import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
@@ -22,7 +23,6 @@ import Arkham.Source (Source)
 import Arkham.Target (Target)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
-import Arkham.Token (Token)
 import Data.Aeson.TH
 
 data Result b a = Success a | Failure b
@@ -46,10 +46,10 @@ hasEliminatedWindow = any $ \case
   Window _ (InvestigatorEliminated {}) -> True
   _ -> False
 
-revealedTokens :: [Window] -> [Token]
-revealedTokens [] = []
-revealedTokens (Window _ (RevealToken _ token) : rest) = token : revealedTokens rest
-revealedTokens (_ : rest) = revealedTokens rest
+revealedChaosTokens :: [Window] -> [ChaosToken]
+revealedChaosTokens [] = []
+revealedChaosTokens (Window _ (RevealChaosToken _ token) : rest) = token : revealedChaosTokens rest
+revealedChaosTokens (_ : rest) = revealedChaosTokens rest
 
 data WindowType
   = ActAdvance ActId
@@ -79,7 +79,7 @@ data WindowType
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
-  | DrawToken InvestigatorId Token
+  | DrawChaosToken InvestigatorId ChaosToken
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
   | EndOfGame
@@ -140,13 +140,13 @@ data WindowType
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
-  | RevealToken InvestigatorId Token
-  | IgnoreToken InvestigatorId Token
-  | CancelToken InvestigatorId Token
-  | RevealTokenEffect InvestigatorId Token EffectId
-  | RevealTokenEventEffect InvestigatorId [Token] EventId
-  | RevealTokenAssetAbilityEffect InvestigatorId [Token] AssetId
-  | RevealTokenWithNegativeModifier InvestigatorId Token
+  | RevealChaosToken InvestigatorId ChaosToken
+  | IgnoreChaosToken InvestigatorId ChaosToken
+  | CancelChaosToken InvestigatorId ChaosToken
+  | RevealChaosTokenEffect InvestigatorId ChaosToken EffectId
+  | RevealChaosTokenEventEffect InvestigatorId [ChaosToken] EventId
+  | RevealChaosTokenAssetAbilityEffect InvestigatorId [ChaosToken] AssetId
+  | RevealChaosTokenWithNegativeModifier InvestigatorId ChaosToken
   | WouldPerformRevelationSkillTest InvestigatorId
   | SkillTest SkillTestType
   | SkillTestEnded SkillTest

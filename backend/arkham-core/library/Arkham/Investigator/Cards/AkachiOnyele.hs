@@ -46,15 +46,15 @@ akachiOnyele = investigator
     , agility = 3
     }
 
-instance HasTokenValue AkachiOnyele where
-  getTokenValue iid ElderSign (AkachiOnyele attrs)
+instance HasChaosTokenValue AkachiOnyele where
+  getChaosTokenValue iid ElderSign (AkachiOnyele attrs)
     | iid == investigatorId attrs = pure
-    $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
-    ResolveToken _ ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       assets <- filterM
         (fieldMap AssetUses (\u -> useType u == Just Charge && useCount u > 0))
         (setToList $ investigatorAssets attrs)

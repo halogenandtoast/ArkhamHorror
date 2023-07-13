@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import Arkham.Campaign.Types (Campaign)
 import {-# SOURCE #-} Arkham.Card
+import Arkham.ChaosToken
 import {-# SOURCE #-} Arkham.Entities
 import Arkham.History
 import Arkham.Id
@@ -19,7 +20,6 @@ import Arkham.Phase
 import Arkham.Scenario.Types (Scenario)
 import Arkham.SkillTest.Base
 import Arkham.Target
-import Arkham.Token
 import Arkham.Zone
 import Data.Aeson.Diff qualified as Diff
 import Data.These
@@ -60,7 +60,7 @@ data Game = Game
   , gameSkillTest :: Maybe SkillTest
   , gameFocusedCards :: [Card]
   , gameFoundCards :: Map Zone [Card]
-  , gameFocusedTokens :: [Token]
+  , gameFocusedChaosTokens :: [ChaosToken]
   , gameActiveCard :: Maybe Card
   , gameResolvingCard :: Maybe Card
   , gameActiveAbilities :: [Ability]

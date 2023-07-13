@@ -12,6 +12,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -31,7 +32,6 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Arkham.Token
 import Arkham.Trait
 import Data.Typeable
 
@@ -71,7 +71,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyCardId :: Field Enemy CardId
   EnemyLocation :: Field Enemy (Maybe LocationId)
   EnemyPlacement :: Field Enemy Placement
-  EnemySealedTokens :: Field Enemy [Token]
+  EnemySealedChaosTokens :: Field Enemy [ChaosToken]
   EnemyKeys :: Field Enemy (Set ArkhamKey)
 
 deriving stock instance Show (Field Enemy typ)
@@ -101,7 +101,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyCardId" -> pure $ SomeField EnemyCardId
     "EnemyLocation" -> pure $ SomeField EnemyLocation
     "EnemyPlacement" -> pure $ SomeField EnemyPlacement
-    "EnemySealedTokens" -> pure $ SomeField EnemySealedTokens
+    "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
     _ -> error "no such field"
 
 data instance Field (OutOfPlayEntity Enemy) :: Type -> Type where
@@ -167,7 +167,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyMovedFromHunterKeyword = False
             , enemyDamageStrategy = DamageAny
             , enemyBearer = Nothing
-            , enemySealedTokens = []
+            , enemySealedChaosTokens = []
             , enemyKeys = mempty
             }
     }

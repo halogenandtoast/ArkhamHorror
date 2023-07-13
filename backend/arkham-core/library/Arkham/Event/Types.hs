@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -19,7 +20,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token (Token)
 import Arkham.Trait
 import Data.Typeable
 
@@ -48,7 +48,7 @@ data instance Field Event :: Type -> Type where
   EventDoom :: Field Event Int
   EventCard :: Field Event Card
   EventCardId :: Field Event CardId
-  EventSealedTokens :: Field Event [Token]
+  EventSealedChaosTokens :: Field Event [ChaosToken]
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId
@@ -70,7 +70,7 @@ data EventAttrs = EventAttrs
   , eventExhausted :: Bool
   , eventBeingPaidFor :: Bool
   , eventPaymentMessages :: [Message]
-  , eventSealedTokens :: [Token]
+  , eventSealedChaosTokens :: [ChaosToken]
   , eventPlacement :: Placement
   , eventAfterPlay :: AfterPlayStrategy
   }
@@ -124,7 +124,7 @@ event f cardDef =
             , -- currently only relevant to time warp
               eventBeingPaidFor = False
             , eventPaymentMessages = []
-            , eventSealedTokens = []
+            , eventSealedChaosTokens = []
             , eventPlacement = Unplaced
             , eventAfterPlay = DiscardThis
             }

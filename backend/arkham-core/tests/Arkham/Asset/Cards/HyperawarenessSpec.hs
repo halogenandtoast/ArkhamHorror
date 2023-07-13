@@ -17,7 +17,7 @@ spec = describe "Hyperawareness" $ do
 
     didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
 
-    pushAndRun $ SetTokens [Zero]
+    pushAndRun $ SetChaosTokens [Zero]
     pushAndRun $ beginSkillTest investigator SkillIntellect 3
     chooseOptionMatching
       "use ability"
@@ -47,7 +47,7 @@ spec = describe "Hyperawareness" $ do
 
     didPassTest <- didPassSkillTestBy investigator SkillAgility 0
 
-    pushAndRun $ SetTokens [Zero]
+    pushAndRun $ SetChaosTokens [Zero]
     pushAndRun $ beginSkillTest investigator SkillAgility 3
     chooseOptionMatching
       "use ability"

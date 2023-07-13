@@ -22,7 +22,7 @@ spec = describe "Lucky! (2)" $ do
     didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
 
     pushAndRunAll
-      [ SetTokens [Zero]
+      [ SetChaosTokens [Zero]
       , addToHand (toId investigator) lucky2
       , beginSkillTest investigator SkillIntellect 3
       ]
@@ -51,7 +51,7 @@ spec = describe "Lucky! (2)" $ do
     didFailTest <- didFailSkillTestBy investigator SkillIntellect 2
 
     pushAndRunAll
-      [ SetTokens [AutoFail]
+      [ SetChaosTokens [AutoFail]
       , addToHand (toId investigator) lucky2
       , beginSkillTest investigator SkillIntellect 2
       ]

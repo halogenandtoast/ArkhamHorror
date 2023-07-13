@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
@@ -15,8 +16,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
 
 newtype DiningRoom = DiningRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -47,22 +47,21 @@ instance RunMessage DiningRoom where
       mHealHorror <- getHealHorrorMessage attrs 1 iid
       pushAll $
         maybeToList mHealHorror
-          <> [RequestTokens source (Just iid) (Reveal 1) SetAside]
+          <> [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
       pure l
-    RequestedTokens source (Just iid) tokens | isSource attrs source -> do
-      push $ ResetTokens (toSource attrs)
-      tokenFaces <- getModifiedTokenFaces tokens
-      let
-        msgs =
-          concatMap
-            ( \case
-                tokenFace
-                  | tokenFace `elem` [Skull, AutoFail] ->
-                      [ InvestigatorAssignDamage iid source DamageAny 0 1
-                      , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-                      ]
-                _ -> []
-            )
-            tokenFaces
-      l <$ pushAll msgs
+    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
+      push $ ResetChaosTokens (toSource attrs)
+      chaosTokenFaces <- getModifiedChaosTokenFaces tokens
+      pushAll $
+        concatMap
+          ( \case
+              chaosTokenFace
+                | chaosTokenFace `elem` [Skull, AutoFail] ->
+                    [ InvestigatorAssignDamage iid source DamageAny 0 1
+                    , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+                    ]
+              _ -> []
+          )
+          chaosTokenFaces
+      pure l
     _ -> DiningRoom <$> runMessage msg attrs

@@ -32,7 +32,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait (Trait (Injury))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -58,18 +58,18 @@ theDepthsOfYoth difficulty =
     , ".        square  . .         squiggle ."
     ]
 
-instance HasTokenValue TheDepthsOfYoth where
-  getTokenValue iid tokenFace (TheDepthsOfYoth attrs) = case tokenFace of
+instance HasChaosTokenValue TheDepthsOfYoth where
+  getChaosTokenValue iid chaosTokenFace (TheDepthsOfYoth attrs) = case chaosTokenFace of
     Skull -> do
       depth <- getCurrentDepth
-      pure $ TokenValue Skull $ NegativeModifier depth
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ ChaosTokenValue Skull $ NegativeModifier depth
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -93,8 +93,8 @@ standaloneCampaignLog =
 
 instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -180,7 +180,7 @@ instance RunMessage TheDepthsOfYoth where
       pushAll $
         story investigatorIds intro1
           : [story investigatorIds intro2 | isIntro2]
-            <> [AddToken ElderThing | isIntro2 && not isStandalone]
+            <> [AddChaosToken ElderThing | isIntro2 && not isStandalone]
             <> [ story investigatorIds intro3
                | not forgingYourOwnPath && ichtacasFaithIsRestored
                ]

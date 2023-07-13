@@ -12,6 +12,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -34,7 +35,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -67,27 +67,27 @@ theDoomOfEztli difficulty =
     , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
     ]
 
-instance HasTokenValue TheDoomOfEztli where
-  getTokenValue iid tokenFace (TheDoomOfEztli (attrs `With` _)) =
-    case tokenFace of
+instance HasChaosTokenValue TheDoomOfEztli where
+  getChaosTokenValue iid chaosTokenFace (TheDoomOfEztli (attrs `With` _)) =
+    case chaosTokenFace of
       Skull -> do
         hasDoom <-
           selectAny $ LocationWithAnyDoom <> locationWithInvestigator iid
         pure $
           if hasDoom
-            then toTokenValue attrs Skull 3 4
-            else toTokenValue attrs Skull 1 2
+            then toChaosTokenValue attrs Skull 3 4
+            else toChaosTokenValue attrs Skull 1 2
       face | face `elem` [Cultist, Tablet] -> do
         n <-
           if isEasyStandard attrs
             then selectCount LocationWithAnyDoom
             else getSum <$> selectAgg Sum LocationDoom LocationWithAnyDoom
-        pure $ TokenValue Cultist (NegativeModifier n)
-      ElderThing -> pure $ TokenValue ElderThing NoModifier
-      otherFace -> getTokenValue iid otherFace attrs
+        pure $ ChaosTokenValue Cultist (NegativeModifier n)
+      ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+      otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -151,8 +151,8 @@ investigatorDefeat attrs = do
 
 instance RunMessage TheDoomOfEztli where
   runMessage msg s@(TheDoomOfEztli (attrs `With` metadata)) = case msg of
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetTokens standaloneTokens
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup ->
       pure
@@ -264,17 +264,17 @@ instance RunMessage TheDoomOfEztli where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
-    ResolveToken _ ElderThing iid -> do
-      push $ DrawAnotherToken iid
+    ResolveChaosToken _ ElderThing iid -> do
+      push $ DrawAnotherChaosToken iid
       when (isHardExpert attrs) $ do
         mlid <- field InvestigatorLocation iid
-        for_ mlid $ \lid -> push $ PlaceDoom (TokenEffectSource ElderThing) (toTarget lid) 1
+        for_ mlid $ \lid -> push $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget lid) 1
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         ElderThing | isEasyStandard attrs -> do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceDoom (TokenEffectSource ElderThing) (toTarget lid) 1
+          for_ mlid $ \lid -> push $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget lid) 1
         _ -> pure ()
       pure s
     ScenarioResolution n -> do
@@ -350,7 +350,7 @@ instance RunMessage TheDoomOfEztli where
               <> [StandaloneSetup | standalone]
               <> [ ChooseLeadInvestigator
                  , SetupInvestigators
-                 , SetTokensForScenario -- (chaosBagOf campaign')
+                 , SetChaosTokensForScenario -- (chaosBagOf campaign')
                  , InvestigatorsMulligan
                  , Setup
                  , EndSetup

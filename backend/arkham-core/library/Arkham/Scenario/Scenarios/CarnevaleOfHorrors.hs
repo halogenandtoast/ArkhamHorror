@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Direction
@@ -28,7 +29,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Data.List.NonEmpty qualified as NE
 
@@ -53,8 +53,8 @@ carnevaleOfHorrors difficulty =
     , ".         .         .         location5  .         .         ."
     ]
 
-instance HasTokenValue CarnevaleOfHorrors where
-  getTokenValue iid tokenFace (CarnevaleOfHorrors attrs) = case tokenFace of
+instance HasChaosTokenValue CarnevaleOfHorrors where
+  getChaosTokenValue iid chaosTokenFace (CarnevaleOfHorrors attrs) = case chaosTokenFace of
     Skull -> do
       let
         countInnocentRevelers = count ((== Assets.innocentReveler) . toCardDef)
@@ -64,11 +64,11 @@ instance HasTokenValue CarnevaleOfHorrors where
                   then 0
                   else countInnocentRevelers (scenarioCardsUnderActDeck attrs)
               )
-      pure $ TokenValue Skull (NegativeModifier $ 2 + innocentRevelerCount)
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ toTokenValue attrs Tablet 3 4
-    ElderThing -> pure $ toTokenValue attrs ElderThing 4 6
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ ChaosTokenValue Skull (NegativeModifier $ 2 + innocentRevelerCount)
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 masks :: [CardDef]
 masks =
@@ -230,7 +230,7 @@ instance RunMessage CarnevaleOfHorrors where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       let
         tokens =
           if isEasyStandard attrs
@@ -276,9 +276,9 @@ instance RunMessage CarnevaleOfHorrors where
               , AutoFail
               , ElderSign
               ]
-      s <$ push (SetTokens tokens)
-    ResolveToken _ Cultist iid -> s <$ push (DrawAnotherToken iid)
-    ResolveToken token Tablet iid | isHardExpert attrs -> do
+      s <$ push (SetChaosTokens tokens)
+    ResolveChaosToken _ Cultist iid -> s <$ push (DrawAnotherChaosToken iid)
+    ResolveChaosToken token Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       closestInnocentRevelers <-
         selectList $
@@ -293,10 +293,10 @@ instance RunMessage CarnevaleOfHorrors where
               iid
               [ ComponentLabel
                   (AssetComponent x DamageToken)
-                  [AssetDamage x (TokenSource token) 1 0]
+                  [AssetDamage x (ChaosTokenSource token) 1 0]
               , ComponentLabel
                   (AssetComponent x HorrorToken)
-                  [AssetDamage x (TokenSource token) 0 1]
+                  [AssetDamage x (ChaosTokenSource token) 0 1]
               ]
         xs ->
           push $
@@ -308,17 +308,17 @@ instance RunMessage CarnevaleOfHorrors where
                     iid
                     [ ComponentLabel
                         (AssetComponent x DamageToken)
-                        [AssetDamage x (TokenSource token) 1 0]
+                        [AssetDamage x (ChaosTokenSource token) 1 0]
                     , ComponentLabel
                         (AssetComponent x HorrorToken)
-                        [AssetDamage x (TokenSource token) 0 1]
+                        [AssetDamage x (ChaosTokenSource token) 0 1]
                     ]
                 ]
               | x <- xs
               ]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Cultist -> push $ InvestigatorDrawEncounterCard iid
         Tablet -> do
           lid <- getJustLocation iid
@@ -335,10 +335,10 @@ instance RunMessage CarnevaleOfHorrors where
                   iid
                   [ ComponentLabel
                       (AssetComponent x DamageToken)
-                      [AssetDamage x (TokenSource token) 1 0]
+                      [AssetDamage x (ChaosTokenSource token) 1 0]
                   , ComponentLabel
                       (AssetComponent x HorrorToken)
-                      [AssetDamage x (TokenSource token) 0 1]
+                      [AssetDamage x (ChaosTokenSource token) 0 1]
                   ]
             xs ->
               push $
@@ -350,10 +350,10 @@ instance RunMessage CarnevaleOfHorrors where
                         iid
                         [ ComponentLabel
                             (AssetComponent x DamageToken)
-                            [AssetDamage x (TokenSource token) 1 0]
+                            [AssetDamage x (ChaosTokenSource token) 1 0]
                         , ComponentLabel
                             (AssetComponent x HorrorToken)
-                            [AssetDamage x (TokenSource token) 0 1]
+                            [AssetDamage x (ChaosTokenSource token) 0 1]
                         ]
                     ]
                   | x <- xs

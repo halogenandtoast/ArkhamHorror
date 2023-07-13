@@ -42,14 +42,14 @@ instance HasAbilities AshcanPete where
         (FastAbility $ HandDiscardCost 1 AnyCard)
     ]
 
-instance HasTokenValue AshcanPete where
-  getTokenValue iid ElderSign (AshcanPete attrs) | iid == toId attrs =
-    pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue AshcanPete where
+  getChaosTokenValue iid ElderSign (AshcanPete attrs) | iid == toId attrs =
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mduke <- selectOne $ assetIs Assets.duke
       for_ mduke $ \duke -> push $ Ready (AssetTarget duke)
       pure i

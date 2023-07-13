@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -29,7 +30,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ForTheGreaterGood.Story
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype ForTheGreaterGood = ForTheGreaterGood ScenarioAttrs
@@ -49,21 +49,21 @@ forTheGreaterGood difficulty =
     , ".       vault  .          innerSanctum   sanctumDoorway2"
     ]
 
-instance HasTokenValue ForTheGreaterGood where
-  getTokenValue iid tokenFace (ForTheGreaterGood attrs) = case tokenFace of
+instance HasChaosTokenValue ForTheGreaterGood where
+  getChaosTokenValue iid chaosTokenFace (ForTheGreaterGood attrs) = case chaosTokenFace of
     Skull -> do
       doomValue <-
         if isEasyStandard attrs
           then selectAgg' Max0 EnemyDoom (EnemyWithTrait Trait.Cultist)
           else selectAgg' Sum EnemyDoom (EnemyWithTrait Trait.Cultist)
-      pure $ TokenValue Cultist (NegativeModifier doomValue)
-    Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
-    Tablet -> pure $ TokenValue Tablet (NegativeModifier 3)
-    ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 3)
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ ChaosTokenValue Cultist (NegativeModifier doomValue)
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 3)
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 3)
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -115,8 +115,8 @@ instance RunMessage ForTheGreaterGood where
           , Label "The investigators are not members of the Lodge." []
           ]
       pure s
-    SetTokensForScenario -> do
-      pushWhenM getIsStandalone (SetTokens standaloneTokens)
+    SetChaosTokensForScenario -> do
+      pushWhenM getIsStandalone (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       encounterDeck <-
@@ -201,14 +201,14 @@ instance RunMessage ForTheGreaterGood where
               & (actStackL . at 1 ?~ acts)
               & (setAsideKeysL .~ setFromList [SkullKey, CultistKey, TabletKey, ElderThingKey])
           )
-    ResolveToken _ Cultist iid -> do
-      push $ DrawAnotherToken iid
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
       pure s
-    ResolveToken _ Tablet iid | isHardExpert attrs -> do
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       noCultists <- selectNone $ EnemyWithTrait Trait.Cultist
-      pushWhen noCultists $ DrawAnotherToken iid
+      pushWhen noCultists $ DrawAnotherChaosToken iid
       pure s
-    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Tablet)) _ _ -> do
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       if isEasyStandard attrs
         then do
           closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
@@ -216,14 +216,14 @@ instance RunMessage ForTheGreaterGood where
             push $
               chooseOrRunOne
                 iid
-                [ targetLabel cultist [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1]
+                [ targetLabel cultist [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1]
                 | cultist <- closestCultists
                 ]
         else do
           cultists <- selectList $ EnemyWithTrait Trait.Cultist
-          pushAll [PlaceDoom (TokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
+          pushAll [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> ElderThing)) _ _ -> do
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       if isEasyStandard attrs
         then do
           closestCultists <- selectList $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
@@ -233,7 +233,7 @@ instance RunMessage ForTheGreaterGood where
                 iid
                 [ targetLabel
                   cultist
-                  [RemoveDoom (TokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
+                  [RemoveDoom (ChaosTokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
                 | cultist <- closestCultists
                 ]
         else do
@@ -248,11 +248,11 @@ instance RunMessage ForTheGreaterGood where
                   [ targetLabel
                     cultist
                     [ RemoveAllDoom (toSource attrs) (toTarget cultist)
-                    , PlaceDoom (TokenEffectSource ElderThing) (toTarget agenda) maxDoom
+                    , PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget agenda) maxDoom
                     ]
                   | cultist <- maxDoomCultists
                   ]
-            else push $ DrawAnotherToken iid
+            else push $ DrawAnotherChaosToken iid
       pure s
     ScenarioResolution n -> do
       iids <- allInvestigatorIds

@@ -6,14 +6,14 @@ module Arkham.Location.Cards.Atlantis (
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosToken
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Runner hiding (RevealChaosToken)
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype Atlantis = Atlantis LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -29,7 +29,7 @@ instance HasAbilities Atlantis where
       [ mkAbility a 1 $
           ForcedAbility $
             RevealChaosToken Timing.After Anyone $
-              TokenFaceIs AutoFail
+              ChaosTokenFaceIs AutoFail
       ]
 
 instance RunMessage Atlantis where

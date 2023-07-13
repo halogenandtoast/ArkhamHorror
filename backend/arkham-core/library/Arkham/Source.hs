@@ -11,10 +11,10 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
+import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillTest.Type
-import Arkham.Token
 import Arkham.Trait
 import Data.Aeson.TH
 
@@ -50,8 +50,8 @@ data Source
   | SkillTestSource InvestigatorId SkillTestType Source (Maybe Action)
   | StorySource StoryId
   | TestSource (Set Trait)
-  | TokenEffectSource TokenFace
-  | TokenSource Token
+  | ChaosTokenSource ChaosToken
+  | ChaosTokenEffectSource ChaosTokenFace
   | TreacherySource TreacheryId
   | YouSource
   | CampaignSource

@@ -26,7 +26,7 @@ spec = describe "Oops!" $ do
     location <- testLocation (revealCluesL .~ Static 0)
 
     pushAndRunAll
-      [ SetTokens [MinusOne]
+      [ SetChaosTokens [MinusOne]
       , addToHand (toId investigator) oops
       , enemySpawn location enemy
       , enemySpawn location enemy2
@@ -69,7 +69,7 @@ spec = describe "Oops!" $ do
     location <- testLocation id
 
     pushAndRunAll
-      [ SetTokens [MinusOne]
+      [ SetChaosTokens [MinusOne]
       , addToHand (toId investigator) oops
       , enemySpawn location enemy
       , enemySpawn location enemy2
@@ -112,7 +112,7 @@ spec = describe "Oops!" $ do
     location <- testLocation id
 
     pushAndRunAll
-      [ SetTokens [MinusOne]
+      [ SetChaosTokens [MinusOne]
       , addToHand (toId investigator) oops
       , enemySpawn location enemy
       , enemySpawn location enemy2

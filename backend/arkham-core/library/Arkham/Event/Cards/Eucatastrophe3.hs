@@ -1,19 +1,19 @@
-module Arkham.Event.Cards.Eucatastrophe3
-  ( eucatastrophe3
-  , Eucatastrophe3(..)
-  )
+module Arkham.Event.Cards.Eucatastrophe3 (
+  eucatastrophe3,
+  Eucatastrophe3 (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
+import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Event.Runner
-import Arkham.Message
-import Arkham.Token
-import Arkham.Helpers.Modifiers
 import Arkham.EffectMetadata
-import Arkham.Window (Window(..))
+import Arkham.Event.Cards qualified as Cards
+import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Message
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Eucatastrophe3 = Eucatastrophe3 EventAttrs
@@ -24,14 +24,18 @@ eucatastrophe3 :: EventCard Eucatastrophe3
 eucatastrophe3 =
   event Eucatastrophe3 Cards.eucatastrophe3
 
-toWindowToken :: [Window] -> Token
-toWindowToken [] = error "Missing window"
-toWindowToken (Window _ (Window.RevealToken _ token) : _) = token
-toWindowToken (_ : xs) = toWindowToken xs
+toWindowChaosToken :: [Window] -> ChaosToken
+toWindowChaosToken [] = error "Missing window"
+toWindowChaosToken (Window _ (Window.RevealChaosToken _ token) : _) = token
+toWindowChaosToken (_ : xs) = toWindowChaosToken xs
 
 instance RunMessage Eucatastrophe3 where
   runMessage msg e@(Eucatastrophe3 attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ (toWindowToken -> token) _ | eid == toId attrs -> do
-      push $ CreateTokenEffect (EffectModifiers $ toModifiers attrs [TokenFaceModifier [ElderSign]]) (toSource attrs) token
+    InvestigatorPlayEvent _ eid _ (toWindowChaosToken -> token) _ | eid == toId attrs -> do
+      push $
+        CreateChaosTokenEffect
+          (EffectModifiers $ toModifiers attrs [ChaosTokenFaceModifier [ElderSign]])
+          (toSource attrs)
+          token
       pure e
     _ -> Eucatastrophe3 <$> runMessage msg attrs

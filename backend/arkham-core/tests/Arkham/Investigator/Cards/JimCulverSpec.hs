@@ -12,10 +12,10 @@ spec = describe "Jim Culver" $ do
   context "elder sign" $ do
     it "can be changed to a skull" $ gameTestWith Investigators.jimCulver $ \jimCulver -> do
       didResolveSkull <- createMessageChecker $ \case
-        ResolveToken _ token _ -> token == Skull
+        ResolveChaosToken _ token _ -> token == Skull
         _ -> False
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , BeginSkillTest $
             initSkillTest
               (toId jimCulver)
@@ -38,7 +38,7 @@ spec = describe "Jim Culver" $ do
       didPassTest <- didPassSkillTestBy jimCulver SkillIntellect 2
 
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , BeginSkillTest $
             initSkillTest
               (toId jimCulver)
@@ -62,7 +62,7 @@ spec = describe "Jim Culver" $ do
       didPassTest <- didPassSkillTestBy jimCulver SkillIntellect 1
 
       pushAndRunAll
-        [ SetTokens [Skull]
+        [ SetChaosTokens [Skull]
         , BeginSkillTest $
             initSkillTest
               (toId jimCulver)

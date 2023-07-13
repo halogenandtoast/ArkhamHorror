@@ -13,6 +13,7 @@ import Arkham.Attack
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
@@ -32,7 +33,6 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Scenarios.UndimensionedAndUnseen.Story
 import Arkham.SkillTest
-import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Arkham.Window (defaultWindows)
 
@@ -55,8 +55,8 @@ undimensionedAndUnseen difficulty =
     , ". coldSpringGlen ."
     ]
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -85,21 +85,21 @@ standaloneCampaignLog =
           [(SacrificedToYogSothoth, [recorded @CardCode "02040"])]
     }
 
-instance HasTokenValue UndimensionedAndUnseen where
-  getTokenValue iid tokenFace (UndimensionedAndUnseen attrs) =
-    case tokenFace of
+instance HasChaosTokenValue UndimensionedAndUnseen where
+  getChaosTokenValue iid chaosTokenFace (UndimensionedAndUnseen attrs) =
+    case chaosTokenFace of
       Skull -> do
         broodCount <- length <$> getBroodOfYogSothoth
-        pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
-      Cultist -> pure $ TokenValue Cultist NoModifier
-      Tablet -> pure $ TokenValue Tablet ZeroModifier
-      ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
-      otherFace -> getTokenValue iid otherFace attrs
+        pure $ toChaosTokenValue attrs Skull broodCount (2 * broodCount)
+      Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+      Tablet -> pure $ ChaosTokenValue Tablet ZeroModifier
+      ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 5
+      otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
-    SetTokensForScenario -> do
-      whenStandalone $ push (SetTokens standaloneTokens)
+    SetChaosTokensForScenario -> do
+      whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
       pure s
     StandaloneSetup ->
       pure
@@ -270,19 +270,18 @@ instance RunMessage UndimensionedAndUnseen where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ Cultist iid -> do
-      push $ DrawAnotherToken iid
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
       pure s
-    ResolveToken drawnToken Tablet _ ->
-      s
-        <$ push
-          ( CreateEffect
-              "02236"
-              Nothing
-              (TokenSource drawnToken)
-              (TokenTarget drawnToken)
-          )
-    ResolveToken _ ElderThing iid -> do
+    ResolveChaosToken drawnToken Tablet _ -> do
+      push $
+        CreateEffect
+          "02236"
+          Nothing
+          (ChaosTokenSource drawnToken)
+          (ChaosTokenTarget drawnToken)
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
       msource <- getSkillTestSource
       case msource of
         Just (SkillTestSource _ _ _ (Just action)) -> do
@@ -301,13 +300,13 @@ instance RunMessage UndimensionedAndUnseen where
             _ -> pure ()
         _ -> pure ()
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Cultist ->
           push $
             InvestigatorAssignDamage
               iid
-              (TokenEffectSource Cultist)
+              (ChaosTokenEffectSource Cultist)
               DamageAny
               (if isHardExpert attrs then 1 else 0)
               1

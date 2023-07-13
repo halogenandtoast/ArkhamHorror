@@ -9,6 +9,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
+import Arkham.ChaosToken qualified as ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
@@ -24,7 +25,6 @@ import Arkham.SlotType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Timing qualified as Timing
-import Arkham.Token qualified as Token
 import Arkham.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
@@ -1656,10 +1656,10 @@ counterspell2 =
     , cdFastWindow =
         Just $
           RevealChaosToken Timing.When You $
-            TokenMatchesAny $
+            ChaosTokenMatchesAny $
               map
-                TokenFaceIs
-                [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
+                ChaosTokenFaceIs
+                [ChaosToken.Skull, ChaosToken.Cultist, ChaosToken.Tablet, ChaosToken.ElderThing]
     , cdLevel = 2
     }
 
@@ -1982,10 +1982,15 @@ eldritchInspiration =
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow =
         Just $
-          WouldTriggerTokenRevealEffectOnCard
+          WouldTriggerChaosTokenRevealEffectOnCard
             You
             MysticCard
-            [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing, Token.AutoFail]
+            [ ChaosToken.Skull
+            , ChaosToken.Cultist
+            , ChaosToken.Tablet
+            , ChaosToken.ElderThing
+            , ChaosToken.AutoFail
+            ]
     , cdAlternateCardCodes = ["60420"]
     }
 
@@ -2830,7 +2835,7 @@ eldritchInspiration1 =
   (event "60420" "Eldritch Inspiration" 0 Mystic)
     { cdSkills = [#willpower, #intellect, #intellect]
     , cdCardTraits = setFromList [Spell, Spirit]
-    , cdFastWindow = Just $ WouldTriggerTokenRevealEffectOnCard You MysticCard [minBound ..]
+    , cdFastWindow = Just $ WouldTriggerChaosTokenRevealEffectOnCard You MysticCard [minBound ..]
     , cdLevel = 1
     }
 

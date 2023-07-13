@@ -22,6 +22,7 @@ export interface Location {
   modifiers: Modifier[];
   connectedLocations: string[];
   inFrontOf: string | null;
+  brazier: boolean | null;
   keys: ArkhamKey[];
 }
 
@@ -45,6 +46,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
+    brazier: JsonDecoder.nullable(JsonDecoder.boolean),
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   },
   'Location',

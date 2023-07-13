@@ -64,14 +64,14 @@ instance HasAbilities DianaStanley where
         then NoRestriction
         else Never
 
-instance HasTokenValue DianaStanley where
-  getTokenValue iid ElderSign (DianaStanley attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 2
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue DianaStanley where
+  getChaosTokenValue iid ElderSign (DianaStanley attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage DianaStanley where
   runMessage msg i@(DianaStanley attrs) = case msg of
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
       unless (null cardsUnderneath) $ do
         pushAll $

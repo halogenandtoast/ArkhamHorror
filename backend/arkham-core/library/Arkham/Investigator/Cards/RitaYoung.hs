@@ -55,10 +55,10 @@ instance HasAbilities RitaYoung where
         $ ReactionAbility (EnemyEvaded Timing.After You AnyEnemy) Free
     ]
 
-instance HasTokenValue RitaYoung where
-  getTokenValue iid ElderSign (RitaYoung attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 2
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue RitaYoung where
+  getChaosTokenValue iid ElderSign (RitaYoung attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 toEnemyId :: [Window] -> EnemyId
 toEnemyId [] = error "called outside of expected window"
@@ -68,7 +68,7 @@ toEnemyId (x : xs) = case windowType x of
 
 instance RunMessage RitaYoung where
   runMessage msg i@(RitaYoung attrs) = case msg of
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       push $ createCardEffect Cards.ritaYoung Nothing (toSource attrs) (InvestigatorTarget iid)
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> enemyId) _ ->

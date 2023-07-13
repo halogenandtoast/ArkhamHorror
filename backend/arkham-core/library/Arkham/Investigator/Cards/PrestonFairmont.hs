@@ -33,10 +33,10 @@ prestonFairmont =
       , agility = 1
       }
 
-instance HasTokenValue PrestonFairmont where
-  getTokenValue iid ElderSign (PrestonFairmont attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign $ PositiveModifier 0
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue PrestonFairmont where
+  getChaosTokenValue iid ElderSign (PrestonFairmont attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 0
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage PrestonFairmont where
   runMessage msg i@(PrestonFairmont attrs) = case msg of
@@ -60,7 +60,7 @@ instance RunMessage PrestonFairmont where
           unless cannotGainResources $ do
             push $ PlaceResources (toSource attrs) (AssetTarget familyInheritance) n
           pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       hasResources <- (> 0) <$> getSpendableResources iid
       push
         $ chooseOrRunOne

@@ -17,7 +17,7 @@ spec = describe "Rex Murphy" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ gameTestWith Investigators.rexMurphy $ \rexMurphy -> do
       location1 <- testLocation (Location.revealCluesL .~ Static 2)
       pushAndRunAll
-        [ SetTokens [Zero]
+        [ SetChaosTokens [Zero]
         , moveTo rexMurphy location1
         , beginActionSkillTest
             rexMurphy
@@ -41,7 +41,7 @@ spec = describe "Rex Murphy" $ do
     it "can autofail to draw 3 cards" $ gameTestWith Investigators.rexMurphy $ \rexMurphy -> do
       cards <- testPlayerCards 3
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , loadDeck rexMurphy cards
         , BeginSkillTest $
             initSkillTest
@@ -69,7 +69,7 @@ spec = describe "Rex Murphy" $ do
       didPassTest <- didPassSkillTestBy rexMurphy SkillIntellect 0
 
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , loadDeck rexMurphy cards
         , BeginSkillTest $
             initSkillTest

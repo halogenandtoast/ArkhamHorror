@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 
 newtype TheStrangerThePathIsMine = TheStrangerThePathIsMine ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -46,8 +46,8 @@ instance RunMessage TheStrangerThePathIsMine where
       card <- flipCard <$> genCard (toCardDef attrs)
       for_ mlid $ \lid ->
         pushAll
-          [ AddToken Tablet
-          , AddToken Tablet
+          [ AddChaosToken Tablet
+          , AddChaosToken Tablet
           , PlaceHorror (toSource attrs) (toTarget lid) 1
           , PlaceNextTo ActDeckTarget [card]
           , CreateEffect "03047b" Nothing (toSource attrs) (toTarget attrs)

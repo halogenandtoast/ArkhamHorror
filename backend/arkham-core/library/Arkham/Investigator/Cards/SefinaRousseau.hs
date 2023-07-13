@@ -27,11 +27,11 @@ sefinaRousseau = investigator
     , agility = 4
     }
 
-instance HasTokenValue SefinaRousseau where
-  getTokenValue iid ElderSign (SefinaRousseau attrs)
+instance HasChaosTokenValue SefinaRousseau where
+  getChaosTokenValue iid ElderSign (SefinaRousseau attrs)
     | iid == investigatorId attrs = pure
-    $ TokenValue ElderSign (PositiveModifier 3)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    $ ChaosTokenValue ElderSign (PositiveModifier 3)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance HasAbilities SefinaRousseau where
   getAbilities (SefinaRousseau attrs) =
@@ -49,7 +49,7 @@ instance RunMessage SefinaRousseau where
         | card <- investigatorCardsUnderneath attrs
         ]
       )
-    ResolveToken _ ElderSign iid | iid == toId attrs -> i <$ when
+    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> i <$ when
       (notNull $ investigatorCardsUnderneath attrs)
       (push
         (chooseOne

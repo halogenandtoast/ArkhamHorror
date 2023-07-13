@@ -67,7 +67,7 @@ spec = describe "Daisy Walker" $ do
     it "forces you to draw one card for each Tome you control" $ gameTestWith Investigators.daisyWalker $ \daisyWalker -> do
       deckCards <- testPlayerCards 2
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , LoadDeck (toId daisyWalker) (Deck deckCards)
         ]
       putCardIntoPlay daisyWalker Cards.oldBookOfLore

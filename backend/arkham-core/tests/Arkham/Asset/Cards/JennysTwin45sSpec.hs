@@ -41,7 +41,7 @@ spec = describe "Jenny's Twin .45s" $ do
         }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation id
-    pushAndRunAll [SetTokens [Zero], playAssetCard jennysTwin45s investigator]
+    pushAndRunAll [SetChaosTokens [Zero], playAssetCard jennysTwin45s investigator]
     activeCost <- getActiveCost
     pushAndRunAll
       [ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)

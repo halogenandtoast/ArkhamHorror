@@ -14,22 +14,22 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Game.Helpers hiding (matches)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message
 import Arkham.Projection
-import Arkham.RequestedTokenStrategy
+import Arkham.RequestedChaosTokenStrategy
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Lens (each)
@@ -43,25 +43,25 @@ calculateSkillTestResultsData s = do
   iconCount <- if cancelSkills then pure 0 else skillIconCount s
   subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
-  tokenValues <-
+  chaosTokenValues <-
     sum
       <$> for
-        (skillTestRevealedTokens s <> skillTestResolvedTokens s)
-        (getModifiedTokenValue s)
+        (skillTestRevealedChaosTokens s <> skillTestResolvedChaosTokens s)
+        (getModifiedChaosTokenValue s)
   let
     addResultModifier n (SkillTestResultValueModifier m) = n + m
     addResultModifier n _ = n
     resultValueModifiers = foldl' addResultModifier 0 modifiers'
-    totaledTokenValues = tokenValues + (skillTestValueModifier s)
+    totaledChaosTokenValues = chaosTokenValues + (skillTestValueModifier s)
     modifiedSkillValue' =
-      max 0 (currentSkillValue + totaledTokenValues + iconCount - subtractIconCount)
+      max 0 (currentSkillValue + totaledChaosTokenValues + iconCount - subtractIconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
     isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
   pure $
     SkillTestResultsData
       currentSkillValue
       (iconCount - subtractIconCount)
-      totaledTokenValues
+      totaledChaosTokenValues
       modifiedSkillTestDifficulty
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       isSuccess
@@ -69,18 +69,18 @@ calculateSkillTestResultsData s = do
 autoFailSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  tokenValues <-
+  chaosTokenValues <-
     sum
       <$> for
-        (skillTestRevealedTokens s <> skillTestResolvedTokens s)
-        (getModifiedTokenValue s)
+        (skillTestRevealedChaosTokens s <> skillTestResolvedChaosTokens s)
+        (getModifiedChaosTokenValue s)
   let
-    totaledTokenValues = tokenValues + (skillTestValueModifier s)
+    totaledChaosTokenValues = chaosTokenValues + (skillTestValueModifier s)
   pure $
     SkillTestResultsData
       0
       0
-      totaledTokenValues
+      totaledChaosTokenValues
       modifiedSkillTestDifficulty
       Nothing
       False
@@ -149,35 +149,35 @@ getModifiedSkillTestDifficulty s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedTokenValue :: (HasGame m) => SkillTest -> Token -> m Int
-getModifiedTokenValue s t = do
-  tokenModifiers' <- getModifiers (TokenTarget t)
-  modifiedTokenFaces' <- getModifiedTokenFaces [t]
+getModifiedChaosTokenValue :: (HasGame m) => SkillTest -> ChaosToken -> m Int
+getModifiedChaosTokenValue s t = do
+  tokenModifiers' <- getModifiers (ChaosTokenTarget t)
+  modifiedChaosTokenFaces' <- getModifiedChaosTokenFaces [t]
   getSum
     <$> foldMapM
-      ( \tokenFace -> do
-          baseTokenValue <- getTokenValue (skillTestInvestigator s) tokenFace ()
+      ( \chaosTokenFace -> do
+          baseChaosTokenValue <- getChaosTokenValue (skillTestInvestigator s) chaosTokenFace ()
           let
-            updatedTokenValue =
-              tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
-          pure . Sum $ fromMaybe 0 updatedTokenValue
+            updatedChaosTokenValue =
+              chaosTokenValue $ foldr applyModifier baseChaosTokenValue tokenModifiers'
+          pure . Sum $ fromMaybe 0 updatedChaosTokenValue
       )
-      modifiedTokenFaces'
+      modifiedChaosTokenFaces'
  where
-  applyModifier IgnoreToken (TokenValue token _) = TokenValue token NoModifier
-  applyModifier (ChangeTokenModifier modifier') (TokenValue token _) =
-    TokenValue token modifier'
-  applyModifier NegativeToPositive (TokenValue token (NegativeModifier n)) =
-    TokenValue token (PositiveModifier n)
-  applyModifier NegativeToPositive (TokenValue token (DoubleNegativeModifier n)) =
-    TokenValue token (PositiveModifier n)
-  applyModifier DoubleNegativeModifiersOnTokens (TokenValue token (NegativeModifier n)) =
-    TokenValue token (DoubleNegativeModifier n)
-  applyModifier (TokenValueModifier m) (TokenValue token (PositiveModifier n)) =
-    TokenValue token (PositiveModifier (max 0 (n + m)))
-  applyModifier (TokenValueModifier m) (TokenValue token (NegativeModifier n)) =
-    TokenValue token (NegativeModifier (max 0 (n - m)))
-  applyModifier _ currentTokenValue = currentTokenValue
+  applyModifier IgnoreChaosToken (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
+  applyModifier (ChangeChaosTokenModifier modifier') (ChaosTokenValue token _) =
+    ChaosTokenValue token modifier'
+  applyModifier NegativeToPositive (ChaosTokenValue token (NegativeModifier n)) =
+    ChaosTokenValue token (PositiveModifier n)
+  applyModifier NegativeToPositive (ChaosTokenValue token (DoubleNegativeModifier n)) =
+    ChaosTokenValue token (PositiveModifier n)
+  applyModifier DoubleNegativeModifiersOnChaosTokens (ChaosTokenValue token (NegativeModifier n)) =
+    ChaosTokenValue token (DoubleNegativeModifier n)
+  applyModifier (ChaosTokenValueModifier m) (ChaosTokenValue token (PositiveModifier n)) =
+    ChaosTokenValue token (PositiveModifier (max 0 (n + m)))
+  applyModifier (ChaosTokenValueModifier m) (ChaosTokenValue token (NegativeModifier n)) =
+    ChaosTokenValue token (NegativeModifier (max 0 (n - m)))
+  applyModifier _ currentChaosTokenValue = currentChaosTokenValue
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
@@ -201,16 +201,16 @@ instance RunMessage SkillTest where
         then do
           let
             tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
-              TreatRevealedTokenAs t -> Just t
+              TreatRevealedChaosTokenAs t -> Just t
               _ -> Nothing
           if null tokensTreatedAsRevealed
             then push (RunSkillTest iid)
             else do
-              pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
-              for_ tokensTreatedAsRevealed $ \tokenFace -> do
+              pushAll [RevealSkillTestChaosTokens iid, RunSkillTest iid]
+              for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
                 t <- getRandom
                 pushAll $
-                  resolve (RevealToken (toSource s) iid (Token t tokenFace))
+                  resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace))
         else
           if SkillTestAutomaticallySucceeds `elem` modifiers'
             then pushAll [PassSkillTest, UnsetActiveCard]
@@ -221,11 +221,11 @@ instance RunMessage SkillTest where
                 revealStrategy =
                   foldl' applyRevealStategyModifier (Reveal 1) modifiers'
               pushAll
-                [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
+                [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
                 , RunSkillTest iid
                 ]
       pure s
-    DrawAnotherToken iid -> do
+    DrawAnotherChaosToken iid -> do
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
@@ -239,50 +239,51 @@ instance RunMessage SkillTest where
           | skillTestInvestigator == skillTestInvestigator' -> False
         _ -> True
       pushAll
-        [ RequestTokens (toSource s) (Just iid) (Reveal 1) SetAside
+        [ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
         , RunSkillTest iid
         ]
-      pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
-    RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces ->
+      pure $ s & (resolvedChaosTokensL %~ (<> skillTestRevealedChaosTokens))
+    RequestedChaosTokens (SkillTestSource siid skillType source maction) (Just iid) chaosTokenFaces ->
       do
         skillTestModifiers' <- getModifiers SkillTestTarget
         windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
         push $
-          if RevealTokensBeforeCommittingCards `elem` skillTestModifiers'
+          if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
             then
               CommitToSkillTest
                 s
-                (Label "Done Comitting" $ [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestTokens iid])
-            else RevealSkillTestTokens iid
-        for_ tokenFaces $ \tokenFace -> do
+                ( Label "Done Comitting" $ [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid]
+                )
+            else RevealSkillTestChaosTokens iid
+        for_ chaosTokenFaces $ \chaosTokenFace -> do
           let
-            revealMsg = RevealToken (SkillTestSource siid skillType source maction) iid tokenFace
+            revealMsg = RevealChaosToken (SkillTestSource siid skillType source maction) iid chaosTokenFace
           pushAll
             [ When revealMsg
-            , CheckWindow [iid] [Window Timing.AtIf (Window.RevealToken iid tokenFace)]
+            , CheckWindow [iid] [Window Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
             , revealMsg
             , After revealMsg
             ]
-        pure $ s & (setAsideTokensL %~ (tokenFaces <>))
-    RevealToken SkillTestSource {} iid token -> do
+        pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
+    RevealChaosToken SkillTestSource {} iid token -> do
       push
-        (CheckWindow [iid] [Window Timing.After (Window.RevealToken iid token)])
-      pure $ s & revealedTokensL %~ (token :)
-    RevealSkillTestTokens iid -> do
-      revealedTokenFaces <- flip
+        (CheckWindow [iid] [Window Timing.After (Window.RevealChaosToken iid token)])
+      pure $ s & revealedChaosTokensL %~ (token :)
+    RevealSkillTestChaosTokens iid -> do
+      revealedChaosTokenFaces <- flip
         concatMapM
-        (skillTestRevealedTokens \\ skillTestResolvedTokens)
+        (skillTestRevealedChaosTokens \\ skillTestResolvedChaosTokens)
         \token -> do
-          faces <- getModifiedTokenFaces [token]
+          faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
       pushAll
-        [ ResolveToken drawnToken tokenFace iid
-        | (drawnToken, tokenFace) <- revealedTokenFaces
+        [ ResolveChaosToken drawnChaosToken chaosTokenFace iid
+        | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
         ]
       pure $
         s
           & ( subscribersL
-                %~ (nub . (<> [TokenTarget token' | token' <- skillTestRevealedTokens]))
+                %~ (nub . (<> [ChaosTokenTarget token' | token' <- skillTestRevealedChaosTokens]))
             )
     PassSkillTest -> do
       currentSkillValue <- getCurrentSkillValue s
@@ -378,15 +379,15 @@ instance RunMessage SkillTest where
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))
-    ReturnSkillTestRevealedTokens -> do
+    ReturnSkillTestRevealedChaosTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
-      push $ ResetTokens (toSource s)
+      push $ ResetChaosTokens (toSource s)
       pure $
         s
-          & (setAsideTokensL .~ mempty)
-          & (revealedTokensL .~ mempty)
-          & (resolvedTokensL .~ mempty)
+          & (setAsideChaosTokensL .~ mempty)
+          & (revealedChaosTokensL .~ mempty)
+          & (resolvedChaosTokensL .~ mempty)
           & (valueModifierL .~ 0)
     Do (SkillTestEnds _ _) -> do
       -- Skill Cards are in the environment and will be discarded normally
@@ -404,7 +405,7 @@ instance RunMessage SkillTest where
 
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
       pushAll $
-        ResetTokens (toSource s)
+        ResetChaosTokens (toSource s)
           : map (uncurry AddToDiscard) discards
             <> skillTestEndsWindows
             <> [ AfterSkillTestEnds
@@ -685,12 +686,12 @@ instance RunMessage SkillTest where
         -- doubling. However, we need to keep any existing value modifier on
         -- the stack (such as a token no longer visible who effect still
         -- persists)
-        tokenValues <-
+        chaosTokenValues <-
           sum
             <$> for
-              (skillTestRevealedTokens <> skillTestResolvedTokens)
-              (getModifiedTokenValue s)
-        pure $ s & valueModifierL %~ subtract tokenValues
+              (skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
+              (getModifiedChaosTokenValue s)
+        pure $ s & valueModifierL %~ subtract chaosTokenValues
     RecalculateSkillTestResults -> do
       results <- calculateSkillTestResultsData s
       push $ SkillTestResults results
@@ -701,21 +702,23 @@ instance RunMessage SkillTest where
       -- TODO: We should be able to get all of this from the results data, but
       -- there is a discrepancy between totaledTokenValues and the info stored
       -- in the result data, this may be incorrect, need to investigate
-      tokenValues <-
+      chaosTokenValues <-
         sum
           <$> for
-            (skillTestRevealedTokens <> skillTestResolvedTokens)
-            (getModifiedTokenValue s)
+            (skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
+            (getModifiedChaosTokenValue s)
       let
         modifiedSkillValue' =
-          max 0 (skillTestResultsSkillValue results + totaledTokenValues + skillTestResultsIconValue results)
-        totaledTokenValues = tokenValues + skillTestValueModifier
+          max
+            0
+            (skillTestResultsSkillValue results + totaledChaosTokenValues + skillTestResultsIconValue results)
+        totaledChaosTokenValues = chaosTokenValues + skillTestValueModifier
         result =
           if skillTestResultsSuccess results
             then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
             else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
 
-      pure $ s & valueModifierL .~ totaledTokenValues & resultL .~ result
+      pure $ s & valueModifierL .~ totaledChaosTokenValues & resultL .~ result
     ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->
       pure $ s & typeL .~ newSkillTestType & baseValueL .~ newSkillTestBaseValue
     _ -> pure s

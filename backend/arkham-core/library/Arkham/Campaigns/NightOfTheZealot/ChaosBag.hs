@@ -1,9 +1,9 @@
 module Arkham.Campaigns.NightOfTheZealot.ChaosBag where
 
 import Arkham.Difficulty
-import Arkham.Token
+import Arkham.ChaosToken
 
-chaosBagContents :: Difficulty -> [TokenFace]
+chaosBagContents :: Difficulty -> [ChaosTokenFace]
 chaosBagContents = \case
   Easy ->
     [ PlusOne

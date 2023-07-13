@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Effect.Window
@@ -28,7 +29,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.EchoesOfThePast.Story
-import Arkham.Token
 import Arkham.Trait (Trait (SecondFloor, ThirdFloor))
 import Arkham.Treachery.Cards qualified as Cards
 import Data.List (replicate)
@@ -49,16 +49,16 @@ echoesOfThePast difficulty =
     , "groundFloor1 entryHall   groundFloor2 . ."
     ]
 
-instance HasTokenValue EchoesOfThePast where
-  getTokenValue iid tokenFace (EchoesOfThePast attrs) = case tokenFace of
+instance HasChaosTokenValue EchoesOfThePast where
+  getChaosTokenValue iid chaosTokenFace (EchoesOfThePast attrs) = case chaosTokenFace of
     Skull -> do
       highestDoom <- fieldMax EnemyDoom AnyEnemy
       totalDoom <- selectSum EnemyDoom AnyEnemy
-      pure $ toTokenValue attrs Skull highestDoom totalDoom
-    Cultist -> pure $ toTokenValue attrs Cultist 2 4
-    Tablet -> pure $ toTokenValue attrs Tablet 2 4
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull highestDoom totalDoom
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 gatherTheMidnightMasks :: (CardGen m) => m [EncounterCard]
 gatherTheMidnightMasks =
@@ -80,8 +80,8 @@ placeAndLabelLocations prefix locations =
       , [placement, SetLocationLabel locationId (prefix <> tshow idx)]
       )
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -101,13 +101,13 @@ standaloneTokens =
 
 instance RunMessage EchoesOfThePast where
   runMessage msg s@(EchoesOfThePast attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       -- TODO: move to helper since consistent
       standalone <- getIsStandalone
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       s
         <$ if standalone
-          then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+          then push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
           else pure ()
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -255,36 +255,36 @@ instance RunMessage EchoesOfThePast where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ token iid | token `elem` [Cultist, Tablet, ElderThing] -> do
+    ResolveChaosToken _ token iid | token `elem` [Cultist, Tablet, ElderThing] -> do
       case token of
         Cultist -> do
           matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
           push $
             chooseOne
               iid
-              [targetLabel target [PlaceDoom (TokenEffectSource Cultist) target 1] | target <- matches]
+              [targetLabel target [PlaceDoom (ChaosTokenEffectSource Cultist) target 1] | target <- matches]
         Tablet ->
-          push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
+          push $ toMessage $ randomDiscard iid (ChaosTokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when triggers $ do
-            push $ InvestigatorAssignDamage iid (TokenEffectSource token) DamageAny 0 1
+            push $ InvestigatorAssignDamage iid (ChaosTokenEffectSource token) DamageAny 0 1
         _ -> pure ()
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ | isEasyStandard attrs -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | isEasyStandard attrs -> do
+      case chaosTokenFace token of
         Cultist -> do
           matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
           push $
             chooseOne
               iid
-              [targetLabel target [PlaceDoom (TokenEffectSource Cultist) target 1] | target <- matches]
+              [targetLabel target [PlaceDoom (ChaosTokenEffectSource Cultist) target 1] | target <- matches]
         Tablet ->
-          push $ toMessage $ randomDiscard iid (TokenEffectSource Tablet)
+          push $ toMessage $ randomDiscard iid (ChaosTokenEffectSource Tablet)
         ElderThing -> do
           triggers <- notNull <$> select (EnemyAt YourLocation)
           when triggers $ do
-            push $ InvestigatorAssignDamage iid (TokenEffectSource $ tokenFace token) DamageAny 0 1
+            push $ InvestigatorAssignDamage iid (ChaosTokenEffectSource $ chaosTokenFace token) DamageAny 0 1
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
@@ -308,9 +308,9 @@ instance RunMessage EchoesOfThePast where
           | sebastien <- maybeToList sebastienSlain
           ]
         removeTokens =
-          [ RemoveAllTokens Cultist
-          , RemoveAllTokens Tablet
-          , RemoveAllTokens ElderThing
+          [ RemoveAllChaosTokens Cultist
+          , RemoveAllChaosTokens Tablet
+          , RemoveAllChaosTokens ElderThing
           ]
 
       case n of
@@ -330,7 +330,7 @@ instance RunMessage EchoesOfThePast where
               <> gainXp
               <> updateSlain
               <> removeTokens
-              <> [AddToken Cultist, AddToken Cultist]
+              <> [AddChaosToken Cultist, AddChaosToken Cultist]
               <> [EndOfGame Nothing]
         2 ->
           pushAll $
@@ -341,7 +341,7 @@ instance RunMessage EchoesOfThePast where
               <> gainXp
               <> updateSlain
               <> removeTokens
-              <> [AddToken Tablet, AddToken Tablet]
+              <> [AddChaosToken Tablet, AddChaosToken Tablet]
               <> [EndOfGame Nothing]
         3 ->
           pushAll $
@@ -358,7 +358,7 @@ instance RunMessage EchoesOfThePast where
               <> gainXp
               <> updateSlain
               <> removeTokens
-              <> [AddToken Tablet, AddToken Tablet]
+              <> [AddChaosToken Tablet, AddChaosToken Tablet]
               <> [EndOfGame Nothing]
         4 ->
           pushAll $
@@ -368,7 +368,7 @@ instance RunMessage EchoesOfThePast where
               <> gainXp
               <> updateSlain
               <> removeTokens
-              <> [AddToken ElderThing, AddToken ElderThing]
+              <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
               <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
       pure s

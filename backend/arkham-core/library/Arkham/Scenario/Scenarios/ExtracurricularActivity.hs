@@ -8,6 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -21,7 +22,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ExtracurricularActivity.FlavorText
-import Arkham.Token
 
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving stock (Generic)
@@ -40,18 +40,18 @@ extracurricularActivity difficulty =
     , ".                  dormitories    facultyOffices         ."
     ]
 
-instance HasTokenValue ExtracurricularActivity where
-  getTokenValue iid tokenFace (ExtracurricularActivity attrs) =
-    case tokenFace of
-      Skull -> pure $ toTokenValue attrs Skull 1 2
+instance HasChaosTokenValue ExtracurricularActivity where
+  getChaosTokenValue iid chaosTokenFace (ExtracurricularActivity attrs) =
+    case chaosTokenFace of
+      Skull -> pure $ toChaosTokenValue attrs Skull 1 2
       Cultist -> do
         discardCount <- fieldMap InvestigatorDiscard length iid
         pure $
-          TokenValue Cultist $
+          ChaosTokenValue Cultist $
             NegativeModifier $
               if discardCount >= 10 then (if isEasyStandard attrs then 3 else 5) else 1
-      ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
-      otherFace -> getTokenValue iid otherFace attrs
+      ElderThing -> pure $ ChaosTokenValue Tablet (NegativeModifier 0) -- determined by an effect
+      otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
@@ -127,23 +127,23 @@ instance RunMessage ExtracurricularActivity where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken drawnToken ElderThing iid -> do
+    ResolveChaosToken drawnToken ElderThing iid -> do
       push $
         DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 2 else 3)
-          (TokenEffectSource ElderThing)
-          (Just $ TokenTarget drawnToken)
+          (ChaosTokenEffectSource ElderThing)
+          (Just $ ChaosTokenTarget drawnToken)
       pure s
-    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Skull)) _ _ -> do
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ -> do
       push $
         DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
-          (TokenEffectSource Skull)
+          (ChaosTokenEffectSource Skull)
           Nothing
       pure s
-    DiscardedTopOfDeck _iid cards _ target@(TokenTarget (tokenFace -> ElderThing)) ->
+    DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) ->
       do
         let
           n =
@@ -151,7 +151,7 @@ instance RunMessage ExtracurricularActivity where
               map
                 (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
                 cards
-        push $ CreateTokenValueEffect (-n) (toSource attrs) target
+        push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
         pure s
     ScenarioResolution NoResolution -> do
       iids <- allInvestigatorIds
@@ -160,7 +160,7 @@ instance RunMessage ExtracurricularActivity where
         [ story iids noResolution
         , Record ProfessorWarrenRiceWasKidnapped
         , Record TheInvestigatorsFailedToSaveTheStudents
-        , AddToken Tablet
+        , AddChaosToken Tablet
         ]
           <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
@@ -172,7 +172,7 @@ instance RunMessage ExtracurricularActivity where
       pushAll $
         [ story iids resolution1
         , Record TheInvestigatorsRescuedProfessorWarrenRice
-        , AddToken Tablet
+        , AddChaosToken Tablet
         , chooseOne
             leadInvestigatorId
             [ Label
@@ -217,7 +217,7 @@ instance RunMessage ExtracurricularActivity where
         , Record InvestigatorsWereUnconsciousForSeveralHours
         , Record ProfessorWarrenRiceWasKidnapped
         , Record TheInvestigatorsFailedToSaveTheStudents
-        , AddToken Tablet
+        , AddChaosToken Tablet
         ]
           <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
           <> [EndOfGame Nothing]

@@ -4,7 +4,7 @@ module Arkham.Investigator.Cards.ZoeySamarasSpec (
 
 import TestImport.Lifted hiding (EnemyDamage)
 
-import Arkham.Classes.HasTokenValue
+import Arkham.Classes.HasChaosTokenValue
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game ()
@@ -15,14 +15,14 @@ spec :: Spec
 spec = do
   describe "Zoey Samaras" $ do
     it "elder sign token gives +1" $ gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
-      token <- getTokenValue (toId zoeySamaras) ElderSign (toId zoeySamaras)
+      token <- getChaosTokenValue (toId zoeySamaras) ElderSign (toId zoeySamaras)
       tokenValue token `shouldBe` Just 1
 
     it "elder sign token gives +1 and does +1 damage for attacks" $ gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
       location <- testLocation id
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , enemySpawn location enemy
         , moveTo zoeySamaras location
         , fightEnemy zoeySamaras enemy

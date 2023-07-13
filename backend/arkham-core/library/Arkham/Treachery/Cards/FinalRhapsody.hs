@@ -5,8 +5,8 @@ import Arkham.Prelude
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
+import Arkham.ChaosToken
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -20,9 +20,9 @@ finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 instance RunMessage FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ push (RequestTokens source (Just iid) (Reveal 5) SetAside)
-    RequestedTokens source (Just iid) tokens | isSource attrs source -> do
-      let damageCount = count ((`elem` [Skull, AutoFail]) . tokenFace) tokens
+      t <$ push (RequestChaosTokens source (Just iid) (Reveal 5) SetAside)
+    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
+      let damageCount = count ((`elem` [Skull, AutoFail]) . chaosTokenFace) tokens
       pushAll
         [ chooseOne
           iid
@@ -36,7 +36,7 @@ instance RunMessage FinalRhapsody where
                   damageCount
               ]
           ]
-        , ResetTokens source
+        , ResetChaosTokens source
         ]
       pure t
     _ -> FinalRhapsody <$> runMessage msg attrs

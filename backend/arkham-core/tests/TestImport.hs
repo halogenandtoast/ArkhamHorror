@@ -21,7 +21,7 @@ import Arkham.Card as X
 import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
-import Arkham.Classes as X hiding (getTokenValue)
+import Arkham.Classes as X hiding (getChaosTokenValue)
 import Arkham.Cost as X hiding (PaidCost)
 import Arkham.Difficulty
 import Arkham.Enemy as X
@@ -36,7 +36,7 @@ import Arkham.GameValue as X
 import Arkham.Helpers as X
 import Arkham.Helpers.Message as X hiding (createEnemy)
 import Arkham.Id as X
-import Arkham.Investigator as X
+import Arkham.Investigator as X hiding (allInvestigators)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types hiding (assetsL)
 import Arkham.Location as X
@@ -54,7 +54,7 @@ import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Timing qualified as Timing
-import Arkham.Token as X hiding (TokenId)
+import Arkham.ChaosToken as X hiding (TokenId)
 import Arkham.Window as X (
   Window (..),
   WindowType (DuringTurn, FastPlayerWindow, NonFast),

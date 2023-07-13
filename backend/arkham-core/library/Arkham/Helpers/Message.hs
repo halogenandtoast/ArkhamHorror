@@ -192,7 +192,12 @@ findEncounterCard
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher
 
-placeLabeledLocations :: Text -> [CardDef] -> GameT [Message]
-placeLabeledLocations lbl cards = concatForM (withIndex1 cards) $ \(idx, card) -> do
+placeLabeledLocations_ :: Text -> [CardDef] -> GameT [Message]
+placeLabeledLocations_ lbl cards = concatForM (withIndex1 cards) $ \(idx, card) -> do
   (location, placement) <- placeLocationCard card
   pure [placement, SetLocationLabel location (lbl <> tshow idx)]
+
+placeLabeledLocations :: Text -> [CardDef] -> GameT ([LocationId], [Message])
+placeLabeledLocations lbl cards = fmap fold . concatForM (withIndex1 cards) $ \(idx, card) -> do
+  (location, placement) <- placeLocationCard card
+  pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]

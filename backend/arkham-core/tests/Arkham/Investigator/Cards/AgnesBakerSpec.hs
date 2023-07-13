@@ -36,7 +36,7 @@ spec = describe "Agnes Baker" $ do
       didPassTest <- didPassSkillTestBy agnesBaker SkillIntellect 0
 
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , placedLocation location
         , moveTo agnesBaker location
         , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2

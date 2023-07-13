@@ -17,7 +17,7 @@ spec = describe "Hard Knocks" $ do
 
     didPassTest <- didPassSkillTestBy investigator SkillCombat 0
 
-    pushAndRun $ SetTokens [Zero]
+    pushAndRun $ SetChaosTokens [Zero]
     pushAndRun $ beginSkillTest investigator SkillCombat 3
     chooseOptionMatching
       "use ability"
@@ -47,7 +47,7 @@ spec = describe "Hard Knocks" $ do
 
     didPassTest <- didPassSkillTestBy investigator SkillAgility 0
 
-    pushAndRun $ SetTokens [Zero]
+    pushAndRun $ SetChaosTokens [Zero]
     pushAndRun $ beginSkillTest investigator SkillAgility 3
     chooseOptionMatching
       "use ability"

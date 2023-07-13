@@ -6,6 +6,7 @@ module Arkham.Location.Cards.Pnakotus (
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosToken
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Helpers.Ability
@@ -14,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Projection
-import Arkham.Token
 
 newtype Pnakotus = Pnakotus LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -32,8 +32,8 @@ instance HasAbilities Pnakotus where
             a
             1
             ( Here
-                <> TokenCountIs
-                  (IncludeSealed $ TokenFaceIs Tablet)
+                <> ChaosTokenCountIs
+                  (IncludeSealed $ ChaosTokenFaceIs Tablet)
                   (AtLeast $ Static 3)
             )
           $ ActionAbility Nothing

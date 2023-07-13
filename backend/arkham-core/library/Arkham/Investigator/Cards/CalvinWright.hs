@@ -45,14 +45,14 @@ instance HasModifiersFor CalvinWright where
 instance HasAbilities CalvinWright where
   getAbilities (CalvinWright _) = []
 
-instance HasTokenValue CalvinWright where
-  getTokenValue iid ElderSign (CalvinWright attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign ZeroModifier
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue CalvinWright where
+  getChaosTokenValue iid ElderSign (CalvinWright attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign ZeroModifier
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage CalvinWright where
   runMessage msg i@(CalvinWright attrs) = case msg of
-    ResolveToken _ ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       mHealHorror <- getHealHorrorMessage attrs 1 iid
       canHealDamage <- canHaveDamageHealed attrs iid
       push

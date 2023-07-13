@@ -47,11 +47,11 @@ instance HasAbilities RexMurphy where
           Free
     ]
 
-instance HasTokenValue RexMurphy where
-  getTokenValue iid ElderSign (RexMurphy attrs)
+instance HasChaosTokenValue RexMurphy where
+  getChaosTokenValue iid ElderSign (RexMurphy attrs)
     | iid == toId attrs =
-        pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+        pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of
@@ -64,7 +64,7 @@ instance RunMessage RexMurphy where
           1
           Nothing
       pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       drawing <- drawCards iid attrs 3
       push $
         chooseOne

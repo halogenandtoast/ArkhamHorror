@@ -28,7 +28,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWagesOfSin.Story
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait (Trait (Spectral), toTraits)
 
 newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
@@ -56,16 +56,16 @@ theWagesOfSin difficulty =
     , ".              .             hangmansBrook .               ."
     ]
 
-instance HasTokenValue TheWagesOfSin where
-  getTokenValue iid tokenFace (TheWagesOfSin attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 3 5
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
-    otherFace -> getTokenValue iid otherFace attrs
+instance HasChaosTokenValue TheWagesOfSin where
+  getChaosTokenValue iid chaosTokenFace (TheWagesOfSin attrs) = case chaosTokenFace of
+    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
+    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -90,8 +90,8 @@ instance RunMessage TheWagesOfSin where
       iids <- allInvestigatorIds
       push $ story iids intro
       pure s
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push (SetTokens standaloneTokens)
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       -- The locations are all "single-sided" because we need to handle the

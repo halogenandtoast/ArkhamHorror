@@ -35,17 +35,17 @@ finnEdwards =
 instance HasAbilities FinnEdwards where
   getAbilities (FinnEdwards _) = []
 
-instance HasTokenValue FinnEdwards where
-  getTokenValue iid ElderSign (FinnEdwards attrs) | iid == toId attrs = do
+instance HasChaosTokenValue FinnEdwards where
+  getChaosTokenValue iid ElderSign (FinnEdwards attrs) | iid == toId attrs = do
     n <- selectCount ExhaustedEnemy
-    pure $ TokenValue ElderSign (PositiveModifier n)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    pure $ ChaosTokenValue ElderSign (PositiveModifier n)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage FinnEdwards where
   runMessage msg i@(FinnEdwards attrs) = case msg of
-    PassedSkillTest iid _ _ (TokenTarget token) _ n
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n
       | iid == toId attrs && n >= 2 -> do
-          when (tokenFace token == ElderSign) $ do
+          when (chaosTokenFace token == ElderSign) $ do
             mlid <- selectOne $ locationWithInvestigator iid
             for_ mlid $ \lid -> do
               canDiscover <- getCanDiscoverClues attrs lid

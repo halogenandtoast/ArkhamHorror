@@ -55,10 +55,10 @@ instance HasAbilities LeoAnderson where
         $ ReactionAbility (TurnBegins Timing.After You) Free
     ]
 
-instance HasTokenValue LeoAnderson where
-  getTokenValue iid ElderSign (LeoAnderson attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue LeoAnderson where
+  getChaosTokenValue iid ElderSign (LeoAnderson attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` metadata)) = case msg of
@@ -96,7 +96,7 @@ instance RunMessage LeoAnderson where
         pure . LeoAnderson $ attrs `with` Metadata (Just card)
     ResetMetadata (isTarget attrs -> True) ->
       pure . LeoAnderson $ attrs `with` Metadata Nothing
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       push $ Search
         iid
         (toSource attrs)

@@ -29,7 +29,7 @@ spec = describe "Rex's Curse" $ do
     didRunMessage <- didPassSkillTestBy investigator SkillIntellect 1
 
     pushAndRunAll
-      [ SetTokens [PlusOne]
+      [ SetChaosTokens [PlusOne]
       , loadDeck investigator [rexsCurse]
       , drawing
       , BeginSkillTest $
@@ -55,7 +55,7 @@ spec = describe "Rex's Curse" $ do
     rexsCurse <- genPlayerCard Cards.rexsCurse
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
-      [ SetTokens [MinusOne]
+      [ SetChaosTokens [MinusOne]
       , loadDeck investigator [rexsCurse]
       , drawing
       , beginSkillTest investigator SkillIntellect 4

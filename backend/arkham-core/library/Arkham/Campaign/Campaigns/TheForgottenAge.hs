@@ -11,6 +11,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Game.Helpers
@@ -23,7 +24,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Monoid (Endo (..))
 
@@ -323,7 +323,7 @@ instance RunMessage TheForgottenAge where
               Assets.alejandroVela
              | not inADeckAlready
              ]
-          <> [AddToken Tablet, CampaignStep (Just (InterludeStepPart 2 mkey 4))]
+          <> [AddChaosToken Tablet, CampaignStep (Just (InterludeStepPart 2 mkey 4))]
       pure c
     CampaignStep (Just (InterludeStepPart 2 mkey 3)) -> do
       investigatorIds <- allInvestigatorIds
@@ -540,7 +540,7 @@ instance RunMessage TheForgottenAge where
             <> [CampaignStep (Just (InterludeStepPart 3 mkey 2))]
             <> canteenMessages
             <> ( if isFaithRestored
-                  then [Record IchtacasFaithIsRestored, AddToken Cultist]
+                  then [Record IchtacasFaithIsRestored, AddChaosToken Cultist]
                   else []
                )
             <> [NextCampaignStep Nothing]
@@ -588,19 +588,19 @@ instance RunMessage TheForgottenAge where
         then do
           results <- for iids $ \iid -> do
             tokens <- sampleN (if backfired then 1 else 2) chaosBag
-            asTokens <- traverse (\face -> Token <$> getRandom <*> pure face) tokens
+            asChaosTokens <- traverse (\face -> ChaosToken <$> getRandom <*> pure face) tokens
             let
               outOfBody =
                 any
                   ( \t ->
                       t
                         `elem` [Cultist, Tablet, ElderThing, AutoFail, Skull]
-                        || (t /= PlusOne && isNumberToken t)
+                        || (t /= PlusOne && isNumberChaosToken t)
                   )
                   tokens
               stuckAsYithian =
                 any (`elem` [Cultist, Tablet, ElderThing, AutoFail]) tokens
-            pure (iid, outOfBody, stuckAsYithian, asTokens)
+            pure (iid, outOfBody, stuckAsYithian, asChaosTokens)
 
           let
             yithians =
@@ -624,9 +624,9 @@ instance RunMessage TheForgottenAge where
                             then "You gain the Out of Body Experience weakness"
                             else "You suffer no ill-effects"
                   in
-                    [ FocusTokens tokens
+                    [ FocusChaosTokens tokens
                     , Ask iid $ Read qLabel [Label "Continue" []]
-                    , UnfocusTokens
+                    , UnfocusChaosTokens
                     ]
                       <> [ AddCampaignCardToDeck iid Treacheries.outOfBodyExperience
                          | outOfBody
@@ -653,7 +653,7 @@ instance RunMessage TheForgottenAge where
           then
             [ story iids aMindRecovered
             , Record AlejandroRemembersEverything
-            , AddToken Tablet
+            , AddChaosToken Tablet
             ]
           else
             [ story iids foreverLost
@@ -813,7 +813,7 @@ instance RunMessage TheForgottenAge where
             <|> mRelicOfAgesForestallingTheFutureOwner
         readFinalDawning =
           foundTheMissingRelic && recoveredTheRelicOfAges && forgingYourOwnPath
-        newToken = case campaignDifficulty attrs of
+        newChaosToken = case campaignDifficulty attrs of
           Easy -> MinusThree
           Standard -> MinusFour
           Hard -> MinusFive
@@ -821,7 +821,7 @@ instance RunMessage TheForgottenAge where
       pushAll $
         [story iids arcaneThrumming | foundTheMissingRelic]
           <> [story iids growingConcern | not foundTheMissingRelic]
-          <> [AddToken newToken | not foundTheMissingRelic]
+          <> [AddChaosToken newChaosToken | not foundTheMissingRelic]
           <> [story iids finalDawning | readFinalDawning]
           <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
              | readFinalDawning

@@ -21,7 +21,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
-import Arkham.Token
+import Arkham.ChaosToken
 import Arkham.Trait (Trait (Ruins))
 
 newtype HuntressOfTheEztli = HuntressOfTheEztli ActAttrs
@@ -80,7 +80,7 @@ instance RunMessage HuntressOfTheEztli where
                 [ targetLabel iid [TakeControlOfSetAsideAsset iid alejandroVela]
                 | iid <- investigatorIds
                 ]
-            , AddToken Tablet
+            , AddChaosToken Tablet
             , ShuffleCardsIntoDeck
                 (Deck.ScenarioDeckByKey ExplorationDeck)
                 ruins
@@ -95,7 +95,7 @@ instance RunMessage HuntressOfTheEztli where
           pushAll
             [ AddToVictory (EnemyTarget itchtaca)
             , Remember IchtachaIsLeadingTheWay
-            , AddToken Cultist
+            , AddChaosToken Cultist
             , ShuffleCardsIntoDeck
                 (Deck.ScenarioDeckByKey ExplorationDeck)
                 ruins

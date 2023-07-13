@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Action (Action)
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTest.Type
@@ -13,7 +14,6 @@ import Arkham.SkillTestResult
 import Arkham.SkillType (SkillType)
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Data.Aeson.TH
 
 data SkillTestBaseValue
@@ -27,9 +27,9 @@ data SkillTest = SkillTest
   , skillTestType :: SkillTestType
   , skillTestBaseValue :: SkillTestBaseValue
   , skillTestDifficulty :: Int
-  , skillTestSetAsideTokens :: [Token]
-  , skillTestRevealedTokens :: [Token] -- tokens may change from physical representation
-  , skillTestResolvedTokens :: [Token]
+  , skillTestSetAsideChaosTokens :: [ChaosToken]
+  , skillTestRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
+  , skillTestResolvedChaosTokens :: [ChaosToken]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestCommittedCards :: Map InvestigatorId [Card]
@@ -41,9 +41,9 @@ data SkillTest = SkillTest
   }
   deriving stock (Show, Eq, Ord)
 
-allSkillTestTokens :: SkillTest -> [Token]
-allSkillTestTokens SkillTest {..} =
-  skillTestSetAsideTokens <> skillTestRevealedTokens <> skillTestResolvedTokens
+allSkillTestChaosTokens :: SkillTest -> [ChaosToken]
+allSkillTestChaosTokens SkillTest {..} =
+  skillTestSetAsideChaosTokens <> skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens
 
 instance Targetable SkillTest where
   toTarget _ = SkillTestTarget
@@ -63,7 +63,7 @@ instance Sourceable SkillTest where
 data SkillTestResultsData = SkillTestResultsData
   { skillTestResultsSkillValue :: Int
   , skillTestResultsIconValue :: Int
-  , skillTestResultsTokensValue :: Int
+  , skillTestResultsChaosTokensValue :: Int
   , skillTestResultsDifficulty :: Int
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
@@ -101,9 +101,9 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestType = stType
     , skillTestBaseValue = bValue
     , skillTestDifficulty = difficulty
-    , skillTestSetAsideTokens = mempty
-    , skillTestRevealedTokens = mempty
-    , skillTestResolvedTokens = mempty
+    , skillTestSetAsideChaosTokens = mempty
+    , skillTestRevealedChaosTokens = mempty
+    , skillTestResolvedChaosTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
     , skillTestCommittedCards = mempty

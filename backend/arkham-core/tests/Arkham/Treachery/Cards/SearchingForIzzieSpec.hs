@@ -33,7 +33,7 @@ spec = describe "Searching for Izzie" $ do
     location <- testLocation id
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
-      [ SetTokens [Zero]
+      [ SetChaosTokens [Zero]
       , loadDeck investigator [searchingForIzzie]
       , moveTo investigator location
       , drawing

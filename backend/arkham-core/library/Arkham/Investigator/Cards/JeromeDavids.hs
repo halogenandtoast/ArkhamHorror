@@ -78,19 +78,19 @@ instance HasAbilities JeromeDavids where
             (SkillIconCost 2 $ singleton (SkillIcon SkillIntellect))
     ]
 
-instance HasTokenValue JeromeDavids where
-  getTokenValue iid ElderSign (JeromeDavids (attrs `With` _))
+instance HasChaosTokenValue JeromeDavids where
+  getChaosTokenValue iid ElderSign (JeromeDavids (attrs `With` _))
     | iid == toId attrs = do
-        pure $ TokenValue ElderSign $ PositiveModifier 1
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JeromeDavids where
   runMessage msg i@(JeromeDavids (attrs `With` meta)) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ CancelNext (toSource attrs) RevelationMessage
       pure i
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (TokenEffectSource ElderSign) 1 Nothing
+    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
+      push $ InvestigatorDiscoverCluesAtTheirLocation iid (ChaosTokenEffectSource ElderSign) 1 Nothing
       pure i
     DrawStartingHand iid | iid == toId attrs -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do

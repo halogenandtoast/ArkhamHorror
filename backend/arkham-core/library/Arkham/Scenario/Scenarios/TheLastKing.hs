@@ -12,6 +12,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Effect.Window
@@ -35,7 +36,6 @@ import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLastKing.Story
 import Arkham.Story.Cards qualified as Story
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype TheLastKing = TheLastKing ScenarioAttrs
@@ -54,19 +54,19 @@ theLastKing difficulty =
     , ".          foyer     ."
     ]
 
-instance HasTokenValue TheLastKing where
-  getTokenValue iid tokenFace (TheLastKing attrs) = case tokenFace of
-    Skull -> pure $ TokenValue Skull NoModifier
-    Cultist -> pure $ toTokenValue attrs Cultist 2 3
-    Tablet -> pure $ TokenValue Tablet (NegativeModifier 4)
+instance HasChaosTokenValue TheLastKing where
+  getChaosTokenValue iid chaosTokenFace (TheLastKing attrs) = case chaosTokenFace of
+    Skull -> pure $ ChaosTokenValue Skull NoModifier
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 4)
     ElderThing -> do
       lid <- getJustLocation iid
       shroud <- field LocationShroud lid
-      pure $ TokenValue ElderThing (NegativeModifier shroud)
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ ChaosTokenValue ElderThing (NegativeModifier shroud)
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -95,10 +95,10 @@ interviewedToCardCode = \case
 
 instance RunMessage TheLastKing where
   runMessage msg s@(TheLastKing attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       whenStandalone $
-        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -183,18 +183,20 @@ instance RunMessage TheLastKing where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ token iid | token `elem` [Skull, Cultist, Tablet] -> do
+    ResolveChaosToken _ token iid | token `elem` [Skull, Cultist, Tablet] -> do
       case token of
-        Skull -> push $ DrawAnotherToken iid
+        Skull -> push $ DrawAnotherChaosToken iid
         Cultist | isHardExpert attrs -> do
           clueCount <- field InvestigatorClues iid
-          when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Cultist) 1)
+          when
+            (clueCount > 0)
+            (push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Cultist) 1)
         Tablet | isHardExpert attrs -> do
-          push $ InvestigatorAssignDamage iid (TokenEffectSource token) DamageAny 0 1
+          push $ InvestigatorAssignDamage iid (ChaosTokenEffectSource token) DamageAny 0 1
         _ -> pure ()
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Skull -> do
           targets <-
             selectListMap EnemyTarget $
@@ -205,14 +207,16 @@ instance RunMessage TheLastKing where
             push $
               chooseOrRunOne
                 iid
-                [targetLabel target [PlaceDoom (TokenEffectSource Skull) target 1] | target <- targets]
+                [targetLabel target [PlaceDoom (ChaosTokenEffectSource Skull) target 1] | target <- targets]
         Cultist | isEasyStandard attrs -> do
           clueCount <- field InvestigatorClues iid
-          when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Cultist) 1)
+          when
+            (clueCount > 0)
+            (push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Cultist) 1)
         Tablet | isEasyStandard attrs -> do
-          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1
+          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
         ElderThing | isHardExpert attrs -> do
-          push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0
+          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 1 0
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
@@ -259,12 +263,12 @@ instance RunMessage TheLastKing where
           <> [recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain]
           <> ( if n == 2 || n == 3
                 then
-                  [ RemoveAllTokens Cultist
-                  , RemoveAllTokens Tablet
-                  , RemoveAllTokens ElderThing
-                  , AddToken Cultist
-                  , AddToken Tablet
-                  , AddToken ElderThing
+                  [ RemoveAllChaosTokens Cultist
+                  , RemoveAllChaosTokens Tablet
+                  , RemoveAllChaosTokens ElderThing
+                  , AddChaosToken Cultist
+                  , AddChaosToken Tablet
+                  , AddChaosToken ElderThing
                   ]
                 else []
              )

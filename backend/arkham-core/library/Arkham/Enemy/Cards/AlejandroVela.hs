@@ -10,6 +10,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
@@ -18,7 +19,6 @@ import Arkham.Enemy.Runner
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
-import Arkham.Token
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -77,9 +77,9 @@ alejandroVelaEffect =
   cardEffect AlejandroVelaEffect Cards.alejandroVela
 
 instance HasModifiersFor AlejandroVelaEffect where
-  getModifiersFor (TokenTarget token) (AlejandroVelaEffect a)
-    | effectTarget a == SkillTestTarget && tokenFace token == Tablet =
-        pure $ toModifiers a [ChangeTokenModifier AutoSuccessModifier]
+  getModifiersFor (ChaosTokenTarget token) (AlejandroVelaEffect a)
+    | effectTarget a == SkillTestTarget && chaosTokenFace token == Tablet =
+        pure $ toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AlejandroVelaEffect where

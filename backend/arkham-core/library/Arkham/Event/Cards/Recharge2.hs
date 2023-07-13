@@ -13,8 +13,8 @@ import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.RequestedTokenStrategy
-import Arkham.Token
+import Arkham.RequestedChaosTokenStrategy
+import Arkham.ChaosToken
 import Arkham.Trait hiding ( Cultist )
 import Arkham.Window qualified as Window
 
@@ -44,20 +44,20 @@ instance RunMessage Recharge2 where
         ]
       pure e
     ResolveEvent iid eid (Just (AssetTarget aid)) _ | eid == toId attrs -> do
-      pushAll [RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
+      pushAll [RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
       pure $ Recharge2 $ attrs `with` Meta (Just aid)
-    RequestedTokens source _ tokens | isSource attrs source -> do
-      push $ ResetTokens (toSource attrs)
+    RequestedChaosTokens source _ tokens | isSource attrs source -> do
+      push $ ResetChaosTokens (toSource attrs)
       case chosenAsset meta of
         Nothing -> error "invalid use"
         Just aid -> do
           if any
               ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-              . tokenFace
+              . chaosTokenFace
               )
               tokens
             then push $ If
-              (Window.RevealTokenEventEffect
+              (Window.RevealChaosTokenEventEffect
                 (eventOwner attrs)
                 tokens
                 (toId attrs)

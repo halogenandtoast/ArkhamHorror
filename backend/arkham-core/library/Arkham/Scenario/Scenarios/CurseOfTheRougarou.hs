@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -23,7 +24,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Maybe (fromJust)
@@ -46,18 +46,18 @@ curseOfTheRougarou difficulty =
     , "     .       riverside1      wilderness1       ."
     ]
 
-instance HasTokenValue CurseOfTheRougarou where
-  getTokenValue iid tokenFace (CurseOfTheRougarou attrs) = case tokenFace of
+instance HasChaosTokenValue CurseOfTheRougarou where
+  getChaosTokenValue iid chaosTokenFace (CurseOfTheRougarou attrs) = case chaosTokenFace of
     Skull -> do
       isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
       pure $
         if isBayou
-          then toTokenValue attrs Skull 4 6
-          else toTokenValue attrs Skull 2 3
-    Cultist -> pure $ toTokenValue attrs Cultist 2 3
-    Tablet -> pure $ TokenValue Tablet ZeroModifier
-    ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
-    otherFace -> getTokenValue iid otherFace attrs
+          then toChaosTokenValue attrs Skull 4 6
+          else toChaosTokenValue attrs Skull 2 3
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ ChaosTokenValue Tablet ZeroModifier
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
@@ -115,7 +115,7 @@ instance RunMessage CurseOfTheRougarou where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       let
         tokens =
           if isEasyStandard attrs
@@ -173,15 +173,15 @@ instance RunMessage CurseOfTheRougarou where
               , AutoFail
               , ElderSign
               ]
-      s <$ push (SetTokens tokens)
-    ResolveToken _ Cultist iid -> do
+      s <$ push (SetChaosTokens tokens)
+    ResolveChaosToken _ Cultist iid -> do
       rougarouAtYourLocation <-
         selectAny $
           enemyIs Enemies.theRougarou
             <> EnemyAt
               (locationWithInvestigator iid)
-      s <$ when rougarouAtYourLocation (push $ DrawAnotherToken iid)
-    ResolveToken _ ElderThing iid -> do
+      s <$ when rougarouAtYourLocation (push $ DrawAnotherChaosToken iid)
+    ResolveChaosToken _ ElderThing iid -> do
       if isEasyStandard attrs
         then do
           mrougarou <- selectOne $ enemyIs Enemies.theRougarou <> EnemyAt (locationWithInvestigator iid)
@@ -195,14 +195,14 @@ instance RunMessage CurseOfTheRougarou where
                 <> EnemyAt (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
           for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when
-        (tokenFace token == Tablet)
+        (chaosTokenFace token == Tablet)
         ( push $
             CreateEffect
               "81001"
               Nothing
-              (TokenSource token)
+              (ChaosTokenSource token)
               (InvestigatorTarget iid)
         )
       pure s

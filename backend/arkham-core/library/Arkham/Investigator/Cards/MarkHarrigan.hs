@@ -48,11 +48,11 @@ instance HasAbilities MarkHarrigan where
         & (abilityLimitL .~ PlayerLimit PerPhase 1)
     ]
 
-instance HasTokenValue MarkHarrigan where
-  getTokenValue iid ElderSign (MarkHarrigan attrs) | iid == toId attrs = do
+instance HasChaosTokenValue MarkHarrigan where
+  getChaosTokenValue iid ElderSign (MarkHarrigan attrs) | iid == toId attrs = do
     let tokenValue' = PositiveModifier $ investigatorHealthDamage attrs
-    pure $ TokenValue ElderSign tokenValue'
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+    pure $ ChaosTokenValue ElderSign tokenValue'
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of

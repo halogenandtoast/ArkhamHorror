@@ -5,6 +5,7 @@ module Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken (
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Effect.Helpers
@@ -14,7 +15,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Token
 
 newtype UndimensionedAndUnseenTabletToken = UndimensionedAndUnseenTabletToken EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -26,16 +26,16 @@ undimensionedAndUnseenTabletToken =
   UndimensionedAndUnseenTabletToken . uncurry4 (baseAttrs "02236")
 
 instance HasModifiersFor UndimensionedAndUnseenTabletToken where
-  getModifiersFor (TokenTarget (Token _ Tablet)) (UndimensionedAndUnseenTabletToken attrs) =
+  getModifiersFor (ChaosTokenTarget (ChaosToken _ Tablet)) (UndimensionedAndUnseenTabletToken attrs) =
     do
       difficulty <- scenarioField ScenarioDifficulty
       pure
         [ toModifier
             attrs
-            ( if difficulty `elem` [Easy, Standard]
-                then ChangeTokenModifier (NegativeModifier 4)
-                else ChangeTokenModifier AutoFailModifier
-            )
+            $ ChangeChaosTokenModifier
+            $ if difficulty `elem` [Easy, Standard]
+              then NegativeModifier 4
+              else AutoFailModifier
         ]
   getModifiersFor _ _ = pure []
 
@@ -61,7 +61,7 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
               []
               : [ targetLabel
                   enemyId
-                  [ RemoveAllClues (TokenEffectSource Tablet) (toTarget enemyId)
+                  [ RemoveAllClues (ChaosTokenEffectSource Tablet) (toTarget enemyId)
                   , DisableEffect $ effectId attrs
                   ]
                 | enemyId <- broodOfYogSothothWithClues

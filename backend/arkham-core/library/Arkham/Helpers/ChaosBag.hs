@@ -2,29 +2,31 @@ module Arkham.Helpers.ChaosBag where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.ChaosBag.Base
+import Arkham.ChaosToken
 import Arkham.Classes.Query
-import Arkham.Enemy.Types ( Field (..) )
-import Arkham.Event.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
+import Arkham.Event.Types (Field (..))
 import Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Scenario.Types ( Field (..) )
-import Arkham.Token
+import Arkham.Scenario.Types (Field (..))
 
-getOnlyTokensInBag :: HasGame m => m [Token]
-getOnlyTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagTokens
+getOnlyChaosTokensInBag :: (HasGame m) => m [ChaosToken]
+getOnlyChaosTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
 
-getBagTokens :: HasGame m => m [Token]
-getBagTokens = scenarioFieldMap ScenarioChaosBag allChaosBagTokens
+getBagChaosTokens :: (HasGame m) => m [ChaosToken]
+getBagChaosTokens = scenarioFieldMap ScenarioChaosBag allChaosBagChaosTokens
 
-getSealedTokens :: HasGame m => m [Token]
-getSealedTokens = concat <$> sequence
-  [ selectAgg id AssetSealedTokens AnyAsset
-  , selectAgg id EnemySealedTokens AnyEnemy
-  , selectAgg id EventSealedTokens AnyEvent
-  ]
+getSealedChaosTokens :: (HasGame m) => m [ChaosToken]
+getSealedChaosTokens =
+  concat
+    <$> sequence
+      [ selectAgg id AssetSealedChaosTokens AnyAsset
+      , selectAgg id EnemySealedChaosTokens AnyEnemy
+      , selectAgg id EventSealedChaosTokens AnyEvent
+      ]
 
-getAllTokens :: HasGame m => m [Token]
-getAllTokens = concat <$> sequence [getBagTokens, getSealedTokens]
+getAllChaosTokens :: (HasGame m) => m [ChaosToken]
+getAllChaosTokens = concat <$> sequence [getBagChaosTokens, getSealedChaosTokens]

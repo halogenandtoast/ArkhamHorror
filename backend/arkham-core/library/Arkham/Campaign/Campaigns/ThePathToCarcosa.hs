@@ -10,6 +10,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
@@ -18,7 +19,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message
-import Arkham.Token
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving anyclass (IsCampaign)
@@ -56,22 +56,22 @@ instance RunMessage ThePathToCarcosa where
               [ story investigatorIds lunacysReward1
               , Record YouIntrudedOnASecretMeeting
               , RecordCount Doubt (doubt + 1)
-              , RemoveAllTokens Cultist
-              , RemoveAllTokens Tablet
-              , RemoveAllTokens ElderThing
-              , AddToken ElderThing
-              , AddToken ElderThing
+              , RemoveAllChaosTokens Cultist
+              , RemoveAllChaosTokens Tablet
+              , RemoveAllChaosTokens ElderThing
+              , AddChaosToken ElderThing
+              , AddChaosToken ElderThing
               , NextCampaignStep Nothing
               ]
           , Label
               "I don't trust this place one bit. Letbs block the door and get the hell out of here!"
               [ story investigatorIds lunacysReward2
               , Record YouFledTheDinnerParty
-              , RemoveAllTokens Cultist
-              , RemoveAllTokens Tablet
-              , RemoveAllTokens ElderThing
-              , AddToken Tablet
-              , AddToken Tablet
+              , RemoveAllChaosTokens Cultist
+              , RemoveAllChaosTokens Tablet
+              , RemoveAllChaosTokens ElderThing
+              , AddChaosToken Tablet
+              , AddChaosToken Tablet
               , NextCampaignStep Nothing
               ]
           , Label
@@ -79,11 +79,11 @@ instance RunMessage ThePathToCarcosa where
               [ story investigatorIds lunacysReward3
               , Record YouSlayedTheMonstersAtTheDinnerParty
               , RecordCount Conviction (conviction + 1)
-              , RemoveAllTokens Cultist
-              , RemoveAllTokens Tablet
-              , RemoveAllTokens ElderThing
-              , AddToken Cultist
-              , AddToken Cultist
+              , RemoveAllChaosTokens Cultist
+              , RemoveAllChaosTokens Tablet
+              , RemoveAllChaosTokens ElderThing
+              , AddChaosToken Cultist
+              , AddChaosToken Cultist
               , NextCampaignStep Nothing
               ]
           ]

@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
@@ -20,7 +21,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
@@ -51,7 +51,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignDecks :: Map InvestigatorId (Deck PlayerCard)
   , campaignStoryCards :: Map InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
-  , campaignChaosBag :: [TokenFace]
+  , campaignChaosBag :: [ChaosTokenFace]
   , campaignLog :: CampaignLog
   , campaignStep :: Maybe CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
@@ -72,7 +72,7 @@ completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
   lens campaignCompletedSteps $ \m x -> m {campaignCompletedSteps = x}
 
-chaosBagL :: Lens' CampaignAttrs [TokenFace]
+chaosBagL :: Lens' CampaignAttrs [ChaosTokenFace]
 chaosBagL = lens campaignChaosBag $ \m x -> m {campaignChaosBag = x}
 
 storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [PlayerCard])
@@ -127,7 +127,7 @@ campaignWith
   -> CampaignId
   -> Text
   -> Difficulty
-  -> [TokenFace]
+  -> [ChaosTokenFace]
   -> (CampaignAttrs -> CampaignAttrs)
   -> a
 campaignWith f campaignId' name difficulty chaosBagContents g = campaign (f . g) campaignId' name difficulty chaosBagContents
@@ -137,7 +137,7 @@ campaign
   -> CampaignId
   -> Text
   -> Difficulty
-  -> [TokenFace]
+  -> [ChaosTokenFace]
   -> a
 campaign f campaignId' name difficulty chaosBagContents =
   f $
@@ -184,5 +184,5 @@ instance HasModifiersFor Campaign where
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs
 
-chaosBagOf :: Campaign -> [TokenFace]
+chaosBagOf :: Campaign -> [ChaosTokenFace]
 chaosBagOf = campaignChaosBag . toAttrs

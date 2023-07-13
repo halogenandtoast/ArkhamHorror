@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -22,7 +23,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMidnightMasks.Story
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
@@ -43,17 +43,17 @@ theMidnightMasks difficulty =
     ]
     (decksL .~ mapFromList [(CultistDeck, [])])
 
-instance HasTokenValue TheMidnightMasks where
-  getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
+instance HasChaosTokenValue TheMidnightMasks where
+  getChaosTokenValue iid chaosTokenFace (TheMidnightMasks attrs) = case chaosTokenFace of
     Skull | isEasyStandard attrs -> do
       tokenValue' <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
-      pure $ TokenValue Skull (NegativeModifier tokenValue')
+      pure $ ChaosTokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do
       doomCount <- getDoomCount
-      pure $ TokenValue Skull (NegativeModifier doomCount)
-    Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
-    Tablet -> pure $ toTokenValue attrs Tablet 3 4
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ ChaosTokenValue Skull (NegativeModifier doomCount)
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 allCultists :: Set CardCode
 allCultists =
@@ -167,7 +167,7 @@ instance RunMessage TheMidnightMasks where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ Cultist iid | isEasyStandard attrs -> do
+    ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <-
         selectList $
           NearestEnemy $
@@ -175,24 +175,24 @@ instance RunMessage TheMidnightMasks where
               Trait.Cultist
       case closestCultists of
         [] -> pure ()
-        [x] -> push $ PlaceDoom (TokenEffectSource Cultist) (EnemyTarget x) 1
+        [x] -> push $ PlaceDoom (ChaosTokenEffectSource Cultist) (EnemyTarget x) 1
         xs ->
           push $
             chooseOne
               iid
-              [targetLabel x [PlaceDoom (TokenEffectSource Cultist) (toTarget x) 1] | x <- xs]
+              [targetLabel x [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget x) 1] | x <- xs]
       pure s
-    ResolveToken _ Cultist iid | isHardExpert attrs -> do
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- selectList $ EnemyWithTrait Trait.Cultist
       case cultists of
-        [] -> push (DrawAnotherToken iid)
-        xs -> pushAll [PlaceDoom (TokenEffectSource Cultist) (toTarget eid) 1 | eid <- xs]
+        [] -> push (DrawAnotherChaosToken iid)
+        xs -> pushAll [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget eid) 1 | eid <- xs]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget (tokenFace -> Tablet)) _ _ -> do
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       push $
         if isEasyStandard attrs
-          then InvestigatorPlaceAllCluesOnLocation iid (TokenEffectSource Tablet)
-          else InvestigatorPlaceCluesOnLocation iid (TokenEffectSource Tablet) 1
+          then InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet)
+          else InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
       pure s
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)

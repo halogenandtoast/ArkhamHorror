@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Campaign.Types
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.Query
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.Game ()
@@ -19,7 +20,6 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Target
-import Arkham.Token
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
@@ -54,9 +54,9 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
 
-toTokenValue :: ScenarioAttrs -> TokenFace -> Int -> Int -> TokenValue
-toTokenValue attrs t esVal heVal =
-  TokenValue
+toChaosTokenValue :: ScenarioAttrs -> ChaosTokenFace -> Int -> Int -> ChaosTokenValue
+toChaosTokenValue attrs t esVal heVal =
+  ChaosTokenValue
     t
     (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)
 

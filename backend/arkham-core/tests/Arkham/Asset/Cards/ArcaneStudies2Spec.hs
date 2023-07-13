@@ -15,7 +15,7 @@ spec = describe "Arcane Studies (2)" $ do
       didPassTest <- didPassSkillTestBy investigator SkillWillpower 0
       updateInvestigator investigator $
         \attrs -> attrs {investigatorWillpower = 1, investigatorResources = 2}
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       putCardIntoPlay investigator Assets.arcaneStudies2
       pushAndRun $ beginSkillTest investigator SkillWillpower 3
       chooseOptionMatching
@@ -45,7 +45,7 @@ spec = describe "Arcane Studies (2)" $ do
         attrs {investigatorIntellect = 1, investigatorResources = 2}
 
       didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
-      pushAndRun $ SetTokens [Zero]
+      pushAndRun $ SetChaosTokens [Zero]
       putCardIntoPlay investigator Assets.arcaneStudies2
       pushAndRun $ beginSkillTest investigator SkillIntellect 3
       chooseOptionMatching

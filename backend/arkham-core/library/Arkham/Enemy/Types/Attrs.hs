@@ -3,6 +3,7 @@ module Arkham.Enemy.Types.Attrs where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.GameValue
 import Arkham.Id
@@ -14,7 +15,6 @@ import Arkham.Placement
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Strategy
-import Arkham.Token
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -41,7 +41,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyMovedFromHunterKeyword :: Bool
   , enemyDamageStrategy :: DamageStrategy
   , enemyBearer :: Maybe InvestigatorId
-  , enemySealedTokens :: [Token]
+  , enemySealedChaosTokens :: [ChaosToken]
   , enemyKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)

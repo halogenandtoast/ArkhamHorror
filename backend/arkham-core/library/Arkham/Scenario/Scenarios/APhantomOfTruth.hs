@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Difficulty
@@ -29,7 +30,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Scenarios.APhantomOfTruth.Story
-import Arkham.Token
 import Arkham.Trait (Trait (Byakhee))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -54,18 +54,18 @@ aPhantomOfTruth difficulty =
     , ".            montparnasse        .                ."
     ]
 
-instance HasTokenValue APhantomOfTruth where
-  getTokenValue iid tokenFace (APhantomOfTruth attrs) = case tokenFace of
+instance HasChaosTokenValue APhantomOfTruth where
+  getChaosTokenValue iid chaosTokenFace (APhantomOfTruth attrs) = case chaosTokenFace of
     Skull -> do
       doom <- getDoomCount
-      pure $ toTokenValue attrs Skull (min 5 doom) doom
-    Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
-    Tablet -> pure $ toTokenValue attrs Tablet 3 4
-    ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
-    otherFace -> getTokenValue iid otherFace attrs
+      pure $ toChaosTokenValue attrs Skull (min 5 doom) doom
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -128,10 +128,10 @@ cultistEffect = do
 
 instance RunMessage APhantomOfTruth where
   runMessage msg s@(APhantomOfTruth attrs) = case msg of
-    SetTokensForScenario -> do
+    SetChaosTokensForScenario -> do
       whenM getIsStandalone $ do
         randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -326,24 +326,24 @@ instance RunMessage APhantomOfTruth where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken drawnToken tokenFace _ -> do
-      case tokenFace of
+    ResolveChaosToken _ chaosTokenFace _ -> do
+      case chaosTokenFace of
         Cultist | isHardExpert attrs -> cultistEffect
         Tablet ->
           pushAll
             [ CreateWindowModifierEffect
                 EffectSkillTestWindow
                 (EffectModifiers $ toModifiers attrs [CancelSkills])
-                (TokenSource drawnToken)
+                (ChaosTokenEffectSource chaosTokenFace)
                 SkillTestTarget
             , CancelSkillEffects
             ]
         _ -> pure ()
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ n -> case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> case chaosTokenFace token of
       Cultist | isEasyStandard attrs -> s <$ cultistEffect
       ElderThing ->
-        s <$ push (LoseResources iid (TokenEffectSource ElderThing) n)
+        s <$ push (LoseResources iid (ChaosTokenEffectSource ElderThing) n)
       _ -> pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds
@@ -372,11 +372,11 @@ instance RunMessage APhantomOfTruth where
       pushAll $
         [story investigatorIds storyText, Record record]
           <> sufferTrauma
-          <> [ RemoveAllTokens Cultist
-             , RemoveAllTokens Tablet
-             , RemoveAllTokens ElderThing
-             , AddToken token
-             , AddToken token
+          <> [ RemoveAllChaosTokens Cultist
+             , RemoveAllChaosTokens Tablet
+             , RemoveAllChaosTokens ElderThing
+             , AddChaosToken token
+             , AddChaosToken token
              ]
           <> updateSlain
           <> gainXp

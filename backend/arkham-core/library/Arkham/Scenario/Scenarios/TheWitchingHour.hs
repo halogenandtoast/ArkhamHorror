@@ -29,7 +29,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWitchingHour.Story
-import Arkham.Token
+import Arkham.ChaosToken
 import Data.Map.Monoidal qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 
@@ -51,12 +51,12 @@ theWitchingHour difficulty =
     , ".      wood4 .             woods5 ."
     ] -- lost and separated, do we label 4 zones, or do a different placement
 
-instance HasTokenValue TheWitchingHour where
-  getTokenValue iid tokenFace (TheWitchingHour attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 1 2
-    Tablet -> pure $ toTokenValue attrs Skull 1 2
-    ElderThing -> pure $ toTokenValue attrs Skull 3 4
-    otherFace -> getTokenValue iid otherFace attrs
+instance HasChaosTokenValue TheWitchingHour where
+  getChaosTokenValue iid chaosTokenFace (TheWitchingHour attrs) = case chaosTokenFace of
+    Skull -> pure $ toChaosTokenValue attrs Skull 1 2
+    Tablet -> pure $ toChaosTokenValue attrs Skull 1 2
+    ElderThing -> pure $ toChaosTokenValue attrs Skull 3 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheWitchingHour where
   runMessage msg s@(TheWitchingHour attrs) = case msg of
@@ -184,8 +184,8 @@ instance RunMessage TheWitchingHour where
       pushAll $
         [ story iids intro2
         , Record YouHaveAcceptedYourFate
-        , AddToken Tablet
-        , AddToken Tablet
+        , AddChaosToken Tablet
+        , AddChaosToken Tablet
         ]
           <> ( guard addCards
                 *> [ AddCampaignCardToDeck lead Assets.theTowerXVI
@@ -198,8 +198,8 @@ instance RunMessage TheWitchingHour where
       pushAll
         [ story iids intro3
         , Record YouHaveRejectedYourFate
-        , AddToken ElderThing
-        , AddToken ElderThing
+        , AddChaosToken ElderThing
+        , AddChaosToken ElderThing
         ]
       pure s
     ScenarioResolution resolution -> do

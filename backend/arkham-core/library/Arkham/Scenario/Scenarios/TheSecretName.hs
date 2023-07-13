@@ -10,6 +10,7 @@ import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Difficulty
@@ -27,7 +28,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheSecretName.Story
-import Arkham.Token
 import Arkham.Trait (Trait (Extradimensional))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -53,22 +53,22 @@ theSecretName difficulty =
     , ".              .                 .             .                        unknownPlaces5   unknownPlaces6         unknownPlaces7 ."
     ]
 
-instance HasTokenValue TheSecretName where
-  getTokenValue iid tokenFace (TheSecretName (attrs `With` _)) = case tokenFace of
+instance HasChaosTokenValue TheSecretName where
+  getChaosTokenValue iid chaosTokenFace (TheSecretName (attrs `With` _)) = case chaosTokenFace of
     Skull -> do
       atExtradimensionalLocation <-
         selectAny $ locationWithInvestigator iid <> LocationWithTrait Extradimensional
       pure $
         if atExtradimensionalLocation
-          then toTokenValue attrs Skull 3 4
-          else toTokenValue attrs Skull 1 2
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ toTokenValue attrs Tablet 2 3
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 4
-    otherFace -> getTokenValue iid otherFace attrs
+          then toChaosTokenValue attrs Skull 3 4
+          else toChaosTokenValue attrs Skull 1 2
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
+    otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneTokens :: [TokenFace]
-standaloneTokens =
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
   [ PlusOne
   , Zero
   , Zero
@@ -109,7 +109,7 @@ instance RunMessage TheSecretName where
               "Tell the Lodge of the witches in the woods."
               [ story iids intro2
               , Record TheInvestigatorsToldTheLodgeAboutTheCoven
-              , AddToken Cultist
+              , AddChaosToken Cultist
               ]
           , Label
               "Tell him you know of no possible connection. (You are lying.)"
@@ -128,8 +128,8 @@ instance RunMessage TheSecretName where
           <> [story iids intro5 | learnedNothing]
           <> [story iids intro6 | neverSeenOrHeardFromAgain]
       pure s
-    SetTokensForScenario -> do
-      whenM getIsStandalone $ push (SetTokens standaloneTokens)
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       encounterDeck <-
@@ -223,14 +223,14 @@ instance RunMessage TheSecretName where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveToken _ Cultist iid -> do
-      push $ DrawAnotherToken iid
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
       pure s
-    ResolveToken _ ElderThing _ | isHardExpert attrs -> do
+    ResolveChaosToken _ ElderThing _ | isHardExpert attrs -> do
       push HuntersMove
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
-      case tokenFace token of
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
         Cultist ->
           push $
             DiscardTopOfEncounterDeck
@@ -271,7 +271,7 @@ instance RunMessage TheSecretName where
               : [ targetLabel
                   iid
                   [ AddCampaignCardToDeck iid Assets.theBlackBook
-                  , AddToken Skull
+                  , AddChaosToken Skull
                   ]
                 | iid <- iids
                 ]

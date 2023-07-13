@@ -17,7 +17,7 @@ spec = describe "Vicious Blow" $ do
     location <- testLocation id
     viciousBlow <- genCard Skills.viciousBlow
     pushAndRunAll
-      [ SetTokens [Zero]
+      [ SetChaosTokens [Zero]
       , enemySpawn location enemy
       , moveTo investigator location
       , addToHand (toId investigator) viciousBlow

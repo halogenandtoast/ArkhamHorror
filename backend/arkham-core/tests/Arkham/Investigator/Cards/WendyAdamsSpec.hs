@@ -16,7 +16,7 @@ spec = describe "Wendy Adams" $ do
       didPassTest <- didPassSkillTestBy wendyAdams SkillWillpower 0
 
       pushAndRunAll
-        [ SetTokens [MinusOne]
+        [ SetChaosTokens [MinusOne]
         , addToHand (toId wendyAdams) (PlayerCard card)
         , beginSkillTest wendyAdams SkillWillpower 3
         ]
@@ -35,7 +35,7 @@ spec = describe "Wendy Adams" $ do
     it "gives +0" $ gameTestWith Investigators.wendyAdams $ \wendyAdams -> do
       didPassTest <- didPassSkillTestBy wendyAdams SkillWillpower 0
 
-      pushAndRunAll [SetTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
+      pushAndRunAll [SetChaosTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"
       didPassTest `refShouldBe` True
@@ -46,7 +46,7 @@ spec = describe "Wendy Adams" $ do
       didPassTest <- didPassSkillTestBy wendyAdams SkillWillpower 4
 
       pushAndRunAll
-        [ SetTokens [ElderSign]
+        [ SetChaosTokens [ElderSign]
         , beginSkillTest wendyAdams SkillWillpower 20
         ]
       chooseOnlyOption "start skill test"

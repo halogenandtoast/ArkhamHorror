@@ -44,10 +44,10 @@ instance HasAbilities WinifredHabbamock where
       $ FastAbility Free
     ]
 
-instance HasTokenValue WinifredHabbamock where
-  getTokenValue iid ElderSign (WinifredHabbamock attrs) | iid == toId attrs = do
-    pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ token _ = pure $ TokenValue token mempty
+instance HasChaosTokenValue WinifredHabbamock where
+  getChaosTokenValue iid ElderSign (WinifredHabbamock attrs) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs) = case msg of
@@ -55,7 +55,7 @@ instance RunMessage WinifredHabbamock where
       drawing <- drawCards iid (toAbilitySource attrs 1) 1
       push drawing
       pure i
-    ResolveToken _ ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       push $ createCardEffect Cards.winifredHabbamock Nothing attrs attrs
       pure i
     _ -> WinifredHabbamock <$> runMessage msg attrs

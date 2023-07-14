@@ -14,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 -- Do not remove doom from Nahab when the agenda advances.
 
@@ -42,6 +43,6 @@ instance HasAbilities Nahab where
 instance RunMessage Nahab where
   runMessage msg e@(Nahab attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceDoom (toSource attrs) (toTarget attrs) 1
+      push $ PlaceTokens (toSource attrs) (toTarget attrs) Doom 1
       pure e
     _ -> Nahab <$> runMessage msg attrs

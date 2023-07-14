@@ -12,6 +12,7 @@ import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -20,7 +21,7 @@ newtype CoverUp = CoverUp TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryCard CoverUp
-coverUp = treacheryWith CoverUp Cards.coverUp (cluesL .~ 3)
+coverUp = treacheryWith CoverUp Cards.coverUp (tokensL %~ setTokens Clue 3)
 
 instance HasAbilities CoverUp where
   getAbilities (CoverUp a) =
@@ -55,7 +56,7 @@ instance RunMessage CoverUp where
         _ -> False
       case mMsg of
         Just (Do (InvestigatorDiscoverClues _ _ _ cluesToRemove _)) ->
-          pure $ CoverUp $ attrs & cluesL %~ max 0 . subtract cluesToRemove
+          pure $ CoverUp $ attrs & tokensL %~ subtractTokens Clue cluesToRemove
         _ -> error "Do InvestigatorDiscoverClues  has to be present"
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
       withTreacheryInvestigator attrs $

@@ -31,6 +31,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.AtDeathsDoorstep.Story
+import Arkham.Token
 import Arkham.Trait (Trait (SilverTwilight, Spectral))
 
 newtype AtDeathsDoorstep = AtDeathsDoorstep ScenarioAttrs
@@ -223,16 +224,16 @@ instance RunMessage AtDeathsDoorstep where
         , MoveAllTo (toSource attrs) entryHallId
         ]
           <> otherPlacements
-          <> [ PlaceClues (toSource attrs) (toTarget entryHallId) 6
+          <> [ PlaceTokens (toSource attrs) (toTarget entryHallId) Clue 6
              | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
              ]
-          <> [ PlaceClues (toSource attrs) (toTarget officeId) 6
+          <> [ PlaceTokens (toSource attrs) (toTarget officeId) Clue 6
              | toCardCode Investigators.jeromeDavids `elem` missingPersons
              ]
-          <> [ PlaceClues (toSource attrs) (toTarget billiardsRoomId) 6
+          <> [ PlaceTokens (toSource attrs) (toTarget billiardsRoomId) Clue 6
              | toCardCode Investigators.valentinoRivas `elem` missingPersons
              ]
-          <> [ PlaceClues (toSource attrs) (toTarget balconyId) 6
+          <> [ PlaceTokens (toSource attrs) (toTarget balconyId) Clue 6
              | toCardCode Investigators.pennyWhite `elem` missingPersons
              ]
           <> removeClues

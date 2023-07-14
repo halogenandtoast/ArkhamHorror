@@ -29,6 +29,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheEssexCountyExpress.Story
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -220,17 +221,18 @@ instance RunMessage TheEssexCountyExpress where
                 Trait.Cultist
         s <$ case closestCultists of
           [] -> pure ()
-          [x] -> push $ PlaceDoom (toSource attrs) (EnemyTarget x) 1
+          [x] -> push $ PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1
           xs ->
             push $
               chooseOne
                 iid
-                [targetLabel x [PlaceDoom (toSource attrs) (EnemyTarget x) 1] | x <- xs]
+                [targetLabel x [PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1] | x <- xs]
       ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
         cultists <- selectList $ EnemyWithTrait Trait.Cultist
-        s <$ pushAll [PlaceDoom (toSource attrs) (EnemyTarget eid) 1 | eid <- cultists]
-      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n ->
-        s <$ case chaosTokenFace token of
+        pushAll [PlaceTokens (toSource attrs) (EnemyTarget eid) Doom 1 | eid <- cultists]
+        pure s
+      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+        case chaosTokenFace token of
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
           ElderThing | isEasyStandard attrs -> do
@@ -246,6 +248,7 @@ instance RunMessage TheEssexCountyExpress where
                   chooseAndDiscardCard iid $
                     ChaosTokenEffectSource ElderThing
           _ -> pure ()
+        pure s
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]
       ScenarioResolution (Resolution 1) -> do

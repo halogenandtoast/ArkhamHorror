@@ -30,6 +30,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ForTheGreaterGood.Story
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype ForTheGreaterGood = ForTheGreaterGood ScenarioAttrs
@@ -216,12 +217,13 @@ instance RunMessage ForTheGreaterGood where
             push $
               chooseOrRunOne
                 iid
-                [ targetLabel cultist [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1]
+                [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
                 | cultist <- closestCultists
                 ]
         else do
           cultists <- selectList $ EnemyWithTrait Trait.Cultist
-          pushAll [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
+          pushAll
+            [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1 | cultist <- cultists]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       if isEasyStandard attrs
@@ -248,7 +250,7 @@ instance RunMessage ForTheGreaterGood where
                   [ targetLabel
                     cultist
                     [ RemoveAllDoom (toSource attrs) (toTarget cultist)
-                    , PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget agenda) maxDoom
+                    , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
                     ]
                   | cultist <- maxDoomCultists
                   ]

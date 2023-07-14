@@ -87,6 +87,13 @@ const keys = computed(() => props.enemy.keys)
 
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
+
+const enemyDamage = computed(() => props.enemy.tokens[Arkham.TokenType.Damage] + props.enemy.assignedDamage)
+const doom = computed(() => props.enemy.tokens[Arkham.TokenType.Doom])
+const clues = computed(() => props.enemy.tokens[Arkham.TokenType.Clue])
+const resources = computed(() => props.enemy.tokens[Arkham.TokenType.Resource])
+const lostSouls = computed(() => props.enemy.tokens[Arkham.TokenType.LostSoul])
+
 </script>
 
 <template>
@@ -110,11 +117,12 @@ const debugChoose = inject('debugChoose')
       <div class="keys" v-if="keys.length > 0">
         <Key v-for="key in keys" :key="key" :name="key" />
       </div>
-      <PoolItem type="health" :amount="enemy.damage + enemy.assignedDamage" />
-      <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />
-      <PoolItem v-if="enemy.clues > 0" type="clue" :amount="enemy.clues" />
-      <PoolItem v-if="enemy.resources > 0" type="resource" :amount="enemy.resources" />
-      <Token v-for="(sealedToken, index) in enemy.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+      <PoolItem type="health" :amount="enemyDamage" />
+      <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
+      <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
+      <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
+      <PoolItem v-if="lostSouls > 0" type="resource" :amount="lostSouls" />
+      <Token v-for="(sealedToken, index) in enemy.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
     <Treachery
       v-for="treacheryId in enemy.treacheries"

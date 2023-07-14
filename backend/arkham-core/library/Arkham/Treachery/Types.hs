@@ -19,6 +19,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery.Cards
 import Data.Typeable
@@ -44,6 +45,7 @@ data instance Field (DiscardedEntity Treachery) :: Type -> Type where
   DiscardedTreacheryKeywords :: Field (DiscardedEntity Treachery) (Set Keyword)
 
 data instance Field Treachery :: Type -> Type where
+  TreacheryTokens :: Field Treachery Tokens
   TreacheryClues :: Field Treachery Int
   TreacheryResources :: Field Treachery Int
   TreacheryDoom :: Field Treachery Int
@@ -64,16 +66,25 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryCardId :: CardId
   , treacheryCardCode :: CardCode
   , treacheryOwner :: Maybe InvestigatorId
-  , treacheryDoom :: Int
+  , treacheryTokens :: Tokens
   , treacheryPlacement :: TreacheryPlacement
-  , treacheryClues :: Int
-  , treacheryHorror :: Int
-  , treacheryResources :: Int
   , treacheryCanBeCommitted :: Bool
   , treacheryDrawnBy :: InvestigatorId
   , treacheryDrawnFrom :: Maybe DeckSignifier
   }
   deriving stock (Show, Eq, Generic)
+
+treacheryDoom :: TreacheryAttrs -> Int
+treacheryDoom = countTokens Doom . treacheryTokens
+
+treacheryClues :: TreacheryAttrs -> Int
+treacheryClues = countTokens Clue . treacheryTokens
+
+treacheryHorror :: TreacheryAttrs -> Int
+treacheryHorror = countTokens Horror . treacheryTokens
+
+treacheryResources :: TreacheryAttrs -> Int
+treacheryResources = countTokens Resource . treacheryTokens
 
 treacheryAttachedTarget :: TreacheryAttrs -> Maybe Target
 treacheryAttachedTarget attrs = case treacheryPlacement attrs of
@@ -202,10 +213,7 @@ treacheryWith f cardDef g =
                   then Just iid
                   else Nothing
             , treacheryDrawnBy = iid
-            , treacheryDoom = 0
-            , treacheryClues = 0
-            , treacheryHorror = 0
-            , treacheryResources = 0
+            , treacheryTokens = mempty
             , treacheryCanBeCommitted = False
             , treacheryDrawnFrom = Nothing
             }

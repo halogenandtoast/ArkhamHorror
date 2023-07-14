@@ -31,7 +31,7 @@ export interface Asset {
   events: string[];
   assets: string[];
   cardsUnderneath: Card[];
-  sealedTokens: ChaosToken[];
+  sealedChaosTokens: ChaosToken[];
   keys: ArkhamKey[];
 }
 
@@ -52,6 +52,6 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
-  sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+  sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
 }, 'Asset');

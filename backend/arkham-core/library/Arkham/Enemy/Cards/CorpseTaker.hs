@@ -14,6 +14,7 @@ import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -43,7 +44,7 @@ instance HasAbilities CorpseTaker where
 instance RunMessage CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ pure (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
+      e <$ pure (PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Doom 1)
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation enemyId
       case enemyLocation of
@@ -58,19 +59,17 @@ instance RunMessage CorpseTaker where
                 (mRivertown <|> mMainPath)
           if loc == locationId
             then do
-              pushAll (replicate enemyDoom PlaceDoomOnAgenda)
-              pure $ CorpseTaker $ attrs & doomL .~ 0
+              pushAll $ replicate (enemyDoom attrs) PlaceDoomOnAgenda
+              pure $ CorpseTaker $ attrs & tokensL %~ removeAllTokens Doom
             else do
-              leadInvestigatorId <- getLeadInvestigatorId
-              closestLocationIds <-
-                selectList $
-                  ClosestPathLocation loc locationId
+              lead <- getLead
+              closestLocationIds <- selectList $ ClosestPathLocation loc locationId
               case closestLocationIds of
-                [lid] -> push (EnemyMove enemyId lid)
+                [lid] -> push $ EnemyMove enemyId lid
                 lids ->
                   push $
                     chooseOne
-                      leadInvestigatorId
+                      lead
                       [targetLabel lid [EnemyMove enemyId lid] | lid <- lids]
               pure e
     _ -> CorpseTaker <$> runMessage msg attrs

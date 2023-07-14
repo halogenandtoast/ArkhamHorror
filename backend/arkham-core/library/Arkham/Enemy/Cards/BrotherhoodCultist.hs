@@ -14,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype BrotherhoodCultist = BrotherhoodCultist EnemyAttrs
   deriving anyclass (IsEnemy)
@@ -47,6 +48,6 @@ instance HasAbilities BrotherhoodCultist where
 instance RunMessage BrotherhoodCultist where
   runMessage msg e@(BrotherhoodCultist attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ PlaceDoom (toSource attrs) (toTarget attrs) 1
+      push $ PlaceTokens (toSource attrs) (toTarget attrs) Doom 1
       pure e
     _ -> BrotherhoodCultist <$> runMessage msg attrs

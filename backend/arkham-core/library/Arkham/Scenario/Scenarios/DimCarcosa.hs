@@ -32,6 +32,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Story
+import Arkham.Token
 import Arkham.Trait (Trait (AncientOne, Monster))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -279,7 +280,7 @@ instance RunMessage DimCarcosa where
         hasturInPlay <- selectAny $ EnemyWithTitle "Hastur"
         when hasturInPlay $ do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceClues (toSource attrs) (LocationTarget lid) 1
+          for_ mlid $ \lid -> push $ PlaceTokens (toSource attrs) (LocationTarget lid) Clue 1
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       mskillTestSource <- getSkillTestSource

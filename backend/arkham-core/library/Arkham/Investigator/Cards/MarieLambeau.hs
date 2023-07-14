@@ -16,6 +16,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Token
 
 newtype MarieLambeau = MarieLambeau InvestigatorAttrs
   deriving anyclass (IsInvestigator)
@@ -85,13 +86,13 @@ instance RunMessage MarieLambeau where
             "Add 1 doom"
             [ chooseOrRunOne
                 iid
-                [TargetLabel target [PlaceDoom (toSource attrs) target 1] | target <- addDoomTargets]
+                [TargetLabel target [PlaceTokens (toSource attrs) target Doom 1] | target <- addDoomTargets]
             ]
             : [ Label
                 "Remove 1 doom"
                 [ chooseOrRunOne
                     iid
-                    [TargetLabel target [RemoveDoom (toSource attrs) target 1] | target <- removeDoomTargets]
+                    [TargetLabel target [RemoveTokens (toSource attrs) target Doom 1] | target <- removeDoomTargets]
                 ]
               | notNull removeDoomTargets
               ]

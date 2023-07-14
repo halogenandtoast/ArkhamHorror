@@ -13,6 +13,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
@@ -32,7 +33,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
 import Arkham.Timing qualified as Timing
-import Arkham.ChaosToken
+import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Injury))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -246,7 +247,7 @@ instance RunMessage TheDepthsOfYoth where
         startingDamage <- getRecordCount TheHarbingerIsStillAlive
         when (startingDamage > 0) $
           push $
-            PlaceDamage (toSource attrs) (toTarget harbingerId) startingDamage
+            PlaceTokens (toSource attrs) (toTarget harbingerId) Token.Damage startingDamage
       pure s
     Explore iid _ _ -> do
       windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]

@@ -29,6 +29,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
+import Arkham.Token
 import Control.Monad.Trans.Maybe
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata {sacrifices :: [Card]}
@@ -265,16 +266,16 @@ instance RunMessage BloodOnTheAltar where
         pure s
       ResolveChaosToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <- selectJust AnyAgenda
-        push $ PlaceDoom (toSource attrs) (toTarget agendaId) 1
+        push $ PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1
         pure s
       FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
         s <$ case chaosTokenFace token of
           Cultist -> do
             lid <- getJustLocation iid
-            push $ PlaceClues (toSource attrs) (toTarget lid) 1
+            push $ PlaceTokens (toSource attrs) (toTarget lid) Clue 1
           ElderThing | isEasyStandard attrs -> do
             agendaId <- selectJust AnyAgenda
-            push $ PlaceDoom (toSource attrs) (toTarget agendaId) 1
+            push $ PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1
           _ -> pure ()
       ScenarioResolution NoResolution -> do
         iids <- allInvestigatorIds

@@ -17,7 +17,7 @@ const emit = defineEmits(['choose'])
 const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
-  switch (props.token.tokenFace) {
+  switch (props.token.face) {
     case 'PlusOne':
       return `${baseUrl}/img/arkham/ct_plus1.png`;
     case 'Zero':
@@ -64,16 +64,16 @@ const revealedTokenAction = computed(() => {
 
   return choices.value.findIndex((c) => {
     if (c.tag === "TokenGroupChoice") {
-      return c.step.tokenGroups.some((g) => g.some((t) => t.tokenId === props.token.tokenId))
+      return c.step.tokenGroups.some((g) => g.some((t) => t.id === props.token.id))
     }
 
     if (c.tag === "TargetLabel") {
       if (c.target.tag === "TokenFaceTarget") {
-        return props.token.tokenFace === c.target.contents
+        return props.token.face === c.target.contents
 
       }
       if (c.target.tag === "TokenTarget") {
-        return props.token.tokenId === c.target.contents.tokenId
+        return props.token.id === c.target.contents.id
       }
     }
 

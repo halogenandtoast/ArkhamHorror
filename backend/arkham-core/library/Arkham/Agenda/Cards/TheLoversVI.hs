@@ -23,8 +23,8 @@ instance RunMessage TheLoversVI where
   runMessage msg a@(TheLoversVI attrs) =
     case msg of
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        takenByTheWatcher <- getRecordSet WasTakenByTheWatcher
-        if notNull takenByTheWatcher
+        takenByTheWatcher <- length <$> getRecordSet WasTakenByTheWatcher
+        if takenByTheWatcher > 0
           then pushAll [advanceAgendaDeck attrs]
           else pushAll [advanceAgendaDeck attrs]
         pure a

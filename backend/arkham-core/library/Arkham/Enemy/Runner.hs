@@ -53,6 +53,8 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType ()
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -753,16 +755,16 @@ instance RunMessage EnemyAttrs where
         checkWindows
           [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow
-      pure $ a & damageL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Token.Damage n
     HealAllDamage (EnemyTarget eid) source | eid == enemyId -> do
       afterWindow <-
         checkWindows
           [ Window
               Timing.After
-              (Window.Healed DamageType (toTarget a) source (a ^. damageL))
+              (Window.Healed DamageType (toTarget a) source (enemyDamage a))
           ]
       push afterWindow
-      pure $ a & damageL .~ 0
+      pure $ a & tokensL %~ removeAllTokens Token.Damage
     Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
       let
         source = damageAssignmentSource damageAssignment
@@ -871,8 +873,8 @@ instance RunMessage EnemyAttrs where
                   && maybe True (== source) mOnlyBeDefeatedByModifier
             when validDefeat $ do
               modifiedHealth <- getModifiedHealth a
-              when (a ^. damageL + amount' >= modifiedHealth) $ do
-                let excess = (a ^. damageL + amount') - modifiedHealth
+              when (enemyDamage a + amount' >= modifiedHealth) $ do
+                let excess = (enemyDamage a + amount') - modifiedHealth
                 whenMsg <-
                   checkWindows
                     [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
@@ -914,14 +916,14 @@ instance RunMessage EnemyAttrs where
                       source
                       (setToList $ toTraits a)
                   ]
-            pure $ a & damageL +~ amount' & assignedDamageL .~ mempty
+            pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiedHealth <- getModifiedHealth a
       canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
       modifiers' <- getModifiers (toTarget a)
       let
-        defeatedByDamage = a ^. damageL >= modifiedHealth
+        defeatedByDamage = enemyDamage a >= modifiedHealth
         canOnlyBeDefeatedByModifier = \case
           CanOnlyBeDefeatedBy source' -> First (Just source')
           _ -> First Nothing
@@ -942,7 +944,7 @@ instance RunMessage EnemyAttrs where
     EnemyDefeated eid _ source _ | eid == toId a -> do
       modifiedHealth <- getModifiedHealth a
       let
-        defeatedByDamage = a ^. damageL >= modifiedHealth
+        defeatedByDamage = enemyDamage a >= modifiedHealth
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       whenMsg <-
@@ -1101,45 +1103,40 @@ instance RunMessage EnemyAttrs where
             pure $ a & placementL .~ AtLocation lid
           else pure a
       _ -> pure a
-    AdvanceAgenda {} -> pure $ a & doomL .~ 0
-    RemoveAllClues _ target | isTarget a target -> pure $ a & cluesL .~ 0
-    RemoveAllDoom _ target | isTarget a target -> pure $ a & doomL .~ 0
-    PlaceDamage _ target amount | isTarget a target -> do
-      pure $ a & damageL +~ amount
-    PlaceDoom source target amount | isTarget a target -> do
+    RemoveAllClues _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Clue
+    RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
+    RemoveTokens _ target token amount | isTarget a target -> do
+      pure $ a & tokensL %~ subtractTokens token amount
+    PlaceTokens source target Doom amount | isTarget a target -> do
       modifiers' <- getModifiers (toTarget a)
       if CannotPlaceDoomOnThis `elem` modifiers'
         then pure a
         else do
           windows' <- windows [Window.PlacedDoom source (toTarget a) amount]
           pushAll windows'
-          pure $ a & doomL +~ amount
-    RemoveDoom _ target amount | isTarget a target -> do
-      pure $ a & doomL %~ max 0 . subtract amount
-    PlaceClues source target n | isTarget a target -> do
-      windows' <- windows [Window.PlacedClues source (toTarget a) n]
-      pushAll windows'
-      pure $ a & cluesL +~ n
-    PlaceResources _ target n | isTarget a target -> do
-      pure $ a & resourcesL +~ n
+          pure $ a & tokensL %~ addTokens Doom amount
+    PlaceTokens source target token n | isTarget a target -> do
+      case token of
+        Clue -> do
+          windows' <- windows [Window.PlacedClues source (toTarget a) n]
+          pushAll windows'
+        _ -> pure ()
+      pure $ a & tokensL %~ addTokens token n
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
     RemoveClues _ target n | isTarget a target -> do
-      pure $ a & cluesL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Clue n
     FlipClues target n | isTarget a target -> do
-      let flipCount = min n enemyClues
-      pure $ a & cluesL %~ max 0 . subtract n & doomL +~ flipCount
+      pure $ a & tokensL %~ flipClues n
     PlaceEnemyInVoid eid | eid == enemyId -> do
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure $
         a
-          & (damageL .~ 0)
           & (placementL .~ OutOfPlay VoidZone)
           & (exhaustedL .~ False)
-          & (doomL .~ 0)
-          & (cluesL .~ 0)
+          & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
     PlaceEnemy eid placement | eid == enemyId -> do
       push $ EnemyCheckEngagement eid
       pure $ a & placementL .~ placement

@@ -14,6 +14,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Token
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
@@ -52,13 +53,13 @@ instance RunMessage PrestonFairmont where
             else do
               cannotGainResources <- hasModifier attrs CannotGainResources
               unless cannotGainResources $ do
-                push $ PlaceResources (toSource attrs) (AssetTarget familyInheritance) n
+                push $ PlaceTokens (toSource attrs) (AssetTarget familyInheritance) Resource n
               pure i
         _ -> do
           familyInheritance <- selectJust $ assetIs Assets.familyInheritance
           cannotGainResources <- hasModifier attrs CannotGainResources
           unless cannotGainResources $ do
-            push $ PlaceResources (toSource attrs) (AssetTarget familyInheritance) n
+            push $ PlaceTokens (toSource attrs) (AssetTarget familyInheritance) Resource n
           pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       hasResources <- (> 0) <$> getSpendableResources iid
@@ -81,12 +82,12 @@ instance RunMessage PrestonFairmont where
                     familyInheritanceResources
                     ( targetLabel
                         familyInheritance
-                        [RemoveResources (toSource attrs) (AssetTarget familyInheritance) 1]
+                        [RemoveTokens (toSource attrs) (AssetTarget familyInheritance) Resource 1]
                     )
                     <> replicate
                       (investigatorResources attrs)
                       (ComponentLabel (InvestigatorComponent iid ResourceToken) [Do (SpendResources iid 1)])
-            else push $ RemoveResources (toSource attrs) (AssetTarget familyInheritance) n
+            else push $ RemoveTokens (toSource attrs) (AssetTarget familyInheritance) Resource n
           pure i
         else PrestonFairmont <$> runMessage msg attrs
     _ -> PrestonFairmont <$> runMessage msg attrs

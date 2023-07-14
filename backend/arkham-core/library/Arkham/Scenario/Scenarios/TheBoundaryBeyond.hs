@@ -40,6 +40,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheBoundaryBeyond.Story
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -311,7 +312,7 @@ instance RunMessage TheBoundaryBeyond where
         push $
           chooseOrRunOne
             iid
-            [targetLabel target [PlaceClues (toSource attrs) target 1] | target <- targets]
+            [targetLabel target [PlaceTokens (toSource attrs) target Clue 1] | target <- targets]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
@@ -323,8 +324,8 @@ instance RunMessage TheBoundaryBeyond where
                 push $
                   chooseOne
                     iid
-                    [targetLabel target [PlaceDoom (toSource attrs) target 1] | target <- targets]
-              else pushAll $ map (\t -> PlaceDoom (toSource attrs) t 1) targets
+                    [targetLabel target [PlaceTokens (toSource attrs) target Doom 1] | target <- targets]
+              else pushAll $ map (\t -> PlaceTokens (toSource attrs) t Doom 1) targets
         Tablet -> do
           serpents <-
             selectList $
@@ -352,7 +353,9 @@ instance RunMessage TheBoundaryBeyond where
             push $
               chooseOrRunOne
                 iid
-                [targetLabel target [PlaceClues (ChaosTokenEffectSource ElderThing) target 1] | target <- targets]
+                [ targetLabel target [PlaceTokens (ChaosTokenEffectSource ElderThing) target Clue 1]
+                | target <- targets
+                ]
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do

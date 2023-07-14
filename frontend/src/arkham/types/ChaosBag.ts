@@ -123,12 +123,11 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
 
 
 export interface ChaosBag {
-  tokens: ChaosToken[]
+  chaosTokens: ChaosToken[]
   choice: ChaosBagStepState | null
 }
 
 export const chaosBagDecoder = JsonDecoder.object<ChaosBag>({
-  tokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+  chaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   choice: JsonDecoder.nullable(chaosBagStepStateDecoder)
 }, 'ChaosBag');
-

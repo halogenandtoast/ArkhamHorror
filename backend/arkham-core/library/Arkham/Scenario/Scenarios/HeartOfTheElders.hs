@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -33,7 +34,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.HeartOfTheElders.Story
 import Arkham.Timing qualified as Timing
-import Arkham.ChaosToken
+import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -240,9 +241,10 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
                , SetActDeck
                , placeMouthOfKnYanTheCavernsMaw
                , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
-               , PlaceResources
+               , PlaceTokens
                   (toSource attrs)
                   (LocationTarget mouthOfKnYanTheCavernsMawId)
+                  Resource
                   pathsKnown
                ]
             <> [createTheWingedSerpent | reachedAct2 metadata]

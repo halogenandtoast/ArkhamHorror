@@ -1811,7 +1811,6 @@ library
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard
-      Arkham.Pool
       Arkham.Prelude
       Arkham.Projection
       Arkham.Query
@@ -2039,6 +2038,7 @@ library
       Arkham.Target
       Arkham.Text
       Arkham.Timing
+      Arkham.Token
       Arkham.TokenStrategy
       Arkham.Trait
       Arkham.Treachery

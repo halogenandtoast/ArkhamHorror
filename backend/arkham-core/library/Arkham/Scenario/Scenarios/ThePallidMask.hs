@@ -38,6 +38,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
 import Arkham.SkillTest
+import Arkham.Token
 import Arkham.Trait (Trait (Geist, Ghoul, Madness, Pact))
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
@@ -224,7 +225,7 @@ instance RunMessage ThePallidMask where
              , SetLocationLabel
                 startingLocationId
                 (unLabel $ positionToLabel startPosition)
-             , PlaceResources (toSource attrs) (toTarget startingLocationId) 1
+             , PlaceTokens (toSource attrs) (toTarget startingLocationId) Resource 1
              , MoveAllTo (toSource attrs) startingLocationId
              , SetupStep (toTarget attrs) 1
              , RemoveFromBearersDeckOrDiscard theManInThePallidMask

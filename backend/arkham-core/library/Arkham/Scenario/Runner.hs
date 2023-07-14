@@ -51,6 +51,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Story.Types (Field (..))
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -128,7 +129,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     agendaIds <- selectList Matcher.AnyAgenda
     case agendaIds of
       [] -> pure a
-      [x] -> a <$ push (PlaceDoom (toSource a) (AgendaTarget x) 1)
+      [x] -> a <$ push (PlaceTokens (toSource a) (AgendaTarget x) Doom 1)
       _ -> error "multiple agendas should be handled by the scenario"
   AdvanceAgendaDeck n _ -> do
     let

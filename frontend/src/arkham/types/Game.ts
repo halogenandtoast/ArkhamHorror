@@ -62,8 +62,8 @@ export interface Game {
   treacheries: Record<string, Treachery>;
   focusedCards: Card[];
   foundCards: Record<string, Card[]>;
-  focusedTokens: ChaosToken[];
-  skillTestTokens: ChaosToken[];
+  focusedChaosTokens: ChaosToken[];
+  skillTestChaosTokens: ChaosToken[];
   activeCard: Card | null;
   removedFromPlay: Card[];
   encounterDeckSize: number;
@@ -164,8 +164,8 @@ export const gameDecoder = JsonDecoder.object<Game>(
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
-    focusedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
-    skillTestTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
+    focusedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
+    skillTestChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     activeCard: JsonDecoder.nullable(cardDecoder),
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     encounterDeckSize: JsonDecoder.number,

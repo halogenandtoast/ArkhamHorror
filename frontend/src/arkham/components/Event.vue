@@ -85,7 +85,7 @@ const abilities = computed(() => {
     <div v-if="hasPool" class="pool">
       <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
     </div>
-    <Token v-for="(sealedToken, index) in event.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+    <Token v-for="(sealedToken, index) in event.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
   </div>
 </template>
 

@@ -60,6 +60,8 @@ import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Control.Exception
@@ -104,6 +106,30 @@ storyWithChooseOne lead iids flavor choices =
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
+
+pattern PlaceClues :: Source -> Target -> Int -> Message
+pattern PlaceClues source target n = PlaceTokens source target Clue n
+
+pattern PlaceDoom :: Source -> Target -> Int -> Message
+pattern PlaceDoom source target n = PlaceTokens source target Doom n
+
+pattern PlaceResources :: Source -> Target -> Int -> Message
+pattern PlaceResources source target n = PlaceTokens source target Token.Resource n
+
+pattern PlaceDamage :: Source -> Target -> Int -> Message
+pattern PlaceDamage source target n = PlaceTokens source target Token.Damage n
+
+pattern PlaceHorror :: Source -> Target -> Int -> Message
+pattern PlaceHorror source target n = PlaceTokens source target Horror n
+
+pattern RemoveClues :: Source -> Target -> Int -> Message
+pattern RemoveClues source target n = RemoveTokens source target Clue n
+
+pattern RemoveDoom :: Source -> Target -> Int -> Message
+pattern RemoveDoom source target n = RemoveTokens source target Doom n
+
+pattern RemoveResources :: Source -> Target -> Int -> Message
+pattern RemoveResources source target n = RemoveTokens source target Token.Resource n
 
 pattern CancelNext :: Source -> MessageType -> Message
 pattern CancelNext source msgType = CancelEachNext source [msgType]
@@ -517,21 +543,17 @@ data Message
   | PayCardCost InvestigatorId Card [Window]
   | PaidForCardCost InvestigatorId Card Payment
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
-  | PlaceClues Source Target Int
   | PlaceCluesUpToClueValue LocationId Source Int
   | FlipClues Target Int
   | FlipDoom Target Int
-  | PlaceDoom Source Target Int
-  | PlaceDamage Source Target Int
   | PlaceAdditionalDamage Target Source Int Int
-  | PlaceHorror Source Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId
   | PlaceEnemy EnemyId Placement
   | PlaceLocation LocationId Card
   | PlaceLocationMatching CardMatcher
-  | PlaceResources Source Target Int
-  | RemoveResources Source Target Int
+  | PlaceTokens Source Target Token Int
+  | RemoveTokens Source Target Token Int
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
   | PlaceNextTo Target [Card]
@@ -567,9 +589,7 @@ data Message
   | RemoveCampaignCardFromDeck InvestigatorId CardDef
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId
-  | RemoveClues Source Target Int
   | RemoveDiscardFromGame InvestigatorId
-  | RemoveDoom Source Target Int
   | RemoveAsset AssetId
   | RemoveEnemy EnemyId
   | RemoveEvent EventId

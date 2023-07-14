@@ -5,7 +5,7 @@ module Arkham.Investigator.Types where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action
+import Arkham.Action hiding (Resource)
 import Arkham.Action.Additional
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
@@ -31,6 +31,8 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Arkham.Trait
 import Data.Text qualified as T
 import Data.Typeable
@@ -108,17 +110,13 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorClass :: ClassSymbol
   , investigatorHealth :: Int
   , investigatorAssignedHealthDamage :: Int
-  , investigatorHealthDamage :: Int
   , investigatorSanity :: Int
   , investigatorAssignedSanityDamage :: Int
-  , investigatorSanityDamage :: Int
   , investigatorWillpower :: Int
   , investigatorIntellect :: Int
   , investigatorCombat :: Int
   , investigatorAgility :: Int
-  , investigatorClues :: Int
-  , investigatorDoom :: Int
-  , investigatorResources :: Int
+  , investigatorTokens :: Tokens
   , investigatorLocation :: LocationId
   , investigatorActionsTaken :: [Action]
   , investigatorRemainingActions :: Int
@@ -158,6 +156,21 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorDiscarding :: Maybe (HandDiscard Message)
   }
   deriving stock (Show, Eq, Generic)
+
+investigatorDoom :: InvestigatorAttrs -> Int
+investigatorDoom = countTokens Doom . investigatorTokens
+
+investigatorClues :: InvestigatorAttrs -> Int
+investigatorClues = countTokens Clue . investigatorTokens
+
+investigatorResources :: InvestigatorAttrs -> Int
+investigatorResources = countTokens Resource . investigatorTokens
+
+investigatorHealthDamage :: InvestigatorAttrs -> Int
+investigatorHealthDamage = countTokens Token.Damage . investigatorTokens
+
+investigatorSanityDamage :: InvestigatorAttrs -> Int
+investigatorSanityDamage = countTokens Horror . investigatorTokens
 
 data DrawingCards = DrawingCards Deck.DeckSignifier Int [Card]
   deriving stock (Show, Eq, Generic)

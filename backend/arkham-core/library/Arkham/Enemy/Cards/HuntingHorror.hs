@@ -17,6 +17,8 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -62,8 +64,6 @@ instance RunMessage HuntingHorror where
       pure
         . HuntingHorror
         $ attrs
-          & (damageL .~ 0)
-          & (doomL .~ 0)
-          & (cluesL .~ 0)
+          & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
           & (placementL .~ OutOfPlay VoidZone)
     _ -> HuntingHorror <$> runMessage msg attrs

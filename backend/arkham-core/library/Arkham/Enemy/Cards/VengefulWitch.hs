@@ -44,10 +44,10 @@ instance HasAbilities VengefulWitch where
 instance RunMessage VengefulWitch where
   runMessage msg e@(VengefulWitch attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      enemyDamage <- field EnemyHealthDamage (toId attrs)
-      enemyHorror <- field EnemySanityDamage (toId attrs)
+      damage <- field EnemyHealthDamage (toId attrs)
+      horror <- field EnemySanityDamage (toId attrs)
       investigators <- selectList $ InvestigatorAt $ locationWithEnemy (toId attrs)
       pushAll
-        [InvestigatorDirectDamage iid (toSource attrs) enemyDamage enemyHorror | iid <- investigators]
+        [InvestigatorDirectDamage iid (toSource attrs) damage horror | iid <- investigators]
       pure e
     _ -> VengefulWitch <$> runMessage msg attrs

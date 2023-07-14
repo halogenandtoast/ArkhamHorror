@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json'
 
-type TargetContents = string | { tokenFace: string, tokenId: string }
+type TargetContents = string | { face: string, id: string }
 
 export interface Target {
   tag: string
@@ -14,7 +14,7 @@ export const targetDecoder = JsonDecoder.object<Target>(
     contents: JsonDecoder.optional(
       JsonDecoder.oneOf<TargetContents>(
         [ JsonDecoder.string,
-          JsonDecoder.object({ tokenFace: JsonDecoder.string, tokenId: JsonDecoder.string }, 'Token')
+          JsonDecoder.object<TargetContents>({ face: JsonDecoder.string, id: JsonDecoder.string }, 'Token', { face: 'chaosTokenFace', id: 'chaosTokenId' })
         ], 'TargetContents')
     ),
   },

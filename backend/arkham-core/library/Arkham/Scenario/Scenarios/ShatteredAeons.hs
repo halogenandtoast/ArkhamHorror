@@ -37,6 +37,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.ShatteredAeons.Story
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
@@ -286,13 +287,13 @@ instance RunMessage ShatteredAeons where
               push $
                 chooseOne
                   iid
-                  [ targetLabel cultist [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1]
+                  [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
                   | cultist <- cultists
                   ]
           else do
             cultists <- selectList $ EnemyWithTrait Trait.Cultist
             pushAll $
-              [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1 | cultist <- cultists]
+              [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1 | cultist <- cultists]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (chaosTokenFace token == Cultist) $ do
@@ -303,13 +304,13 @@ instance RunMessage ShatteredAeons where
               push $
                 chooseOne
                   iid
-                  [ targetLabel cultist [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget cultist) 1]
+                  [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
                   | cultist <- cultists
                   ]
           else do
             cultists <- selectList $ EnemyWithTrait Trait.Cultist
             pushAll $
-              [PlaceDoom (ChaosTokenEffectSource Cultist) (EnemyTarget cultist) 1 | cultist <- cultists]
+              [PlaceTokens (ChaosTokenEffectSource Cultist) (EnemyTarget cultist) Doom 1 | cultist <- cultists]
       when (chaosTokenFace token == Tablet && isHardExpert attrs) $ do
         isPoisoned <- getIsPoisoned iid
         unless isPoisoned $ do

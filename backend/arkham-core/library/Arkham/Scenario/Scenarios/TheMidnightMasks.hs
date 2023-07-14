@@ -23,6 +23,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMidnightMasks.Story
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
@@ -175,18 +176,18 @@ instance RunMessage TheMidnightMasks where
               Trait.Cultist
       case closestCultists of
         [] -> pure ()
-        [x] -> push $ PlaceDoom (ChaosTokenEffectSource Cultist) (EnemyTarget x) 1
+        [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (EnemyTarget x) Doom 1
         xs ->
           push $
             chooseOne
               iid
-              [targetLabel x [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget x) 1] | x <- xs]
+              [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1] | x <- xs]
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- selectList $ EnemyWithTrait Trait.Cultist
       case cultists of
         [] -> push (DrawAnotherChaosToken iid)
-        xs -> pushAll [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget eid) 1 | eid <- xs]
+        xs -> pushAll [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget eid) Doom 1 | eid <- xs]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       push $

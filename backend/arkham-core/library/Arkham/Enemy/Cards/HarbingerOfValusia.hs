@@ -13,6 +13,8 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 
 newtype HarbingerOfValusia = HarbingerOfValusia EnemyAttrs
   deriving anyclass (IsEnemy)
@@ -58,7 +60,7 @@ instance RunMessage HarbingerOfValusia where
           let
             damage = enemyDamage attrs
             enemy' =
-              overAttrs (damageL .~ damage) $
+              overAttrs (tokensL %~ setTokens Token.Damage damage) $
                 cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
           push $ SetOutOfPlay SetAsideZone (toTarget attrs)
           pure enemy'

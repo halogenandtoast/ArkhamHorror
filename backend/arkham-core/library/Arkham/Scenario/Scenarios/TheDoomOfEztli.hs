@@ -35,6 +35,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDoomOfEztli.Story
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -238,7 +239,7 @@ instance RunMessage TheDoomOfEztli where
         , placeEntryway
         , RevealLocation Nothing entrywayId
         ]
-          <> [ PlaceDoom (toSource attrs) (LocationTarget entrywayId) (resolution4Count metadata)
+          <> [ PlaceTokens (toSource attrs) (LocationTarget entrywayId) Doom (resolution4Count metadata)
              | resolution4Count metadata > 0
              ]
           <> [MoveAllTo (toSource attrs) entrywayId]
@@ -268,13 +269,13 @@ instance RunMessage TheDoomOfEztli where
       push $ DrawAnotherChaosToken iid
       when (isHardExpert attrs) $ do
         mlid <- field InvestigatorLocation iid
-        for_ mlid $ \lid -> push $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget lid) 1
+        for_ mlid $ \lid -> push $ PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget lid) Doom 1
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         ElderThing | isEasyStandard attrs -> do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget lid) 1
+          for_ mlid $ \lid -> push $ PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget lid) Doom 1
         _ -> pure ()
       pure s
     ScenarioResolution n -> do

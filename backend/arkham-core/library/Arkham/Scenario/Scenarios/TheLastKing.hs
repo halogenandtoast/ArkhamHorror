@@ -36,6 +36,7 @@ import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLastKing.Story
 import Arkham.Story.Cards qualified as Story
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype TheLastKing = TheLastKing ScenarioAttrs
@@ -157,7 +158,7 @@ instance RunMessage TheLastKing where
             )
             bystanders
             (map AtLocation destinations)
-          <> [ PlaceClues (toSource attrs) (toTarget assetId) totalClues
+          <> [ PlaceTokens (toSource attrs) (toTarget assetId) Clue totalClues
              | (_, assetId) <- bystanders
              ]
 
@@ -207,7 +208,7 @@ instance RunMessage TheLastKing where
             push $
               chooseOrRunOne
                 iid
-                [targetLabel target [PlaceDoom (ChaosTokenEffectSource Skull) target 1] | target <- targets]
+                [targetLabel target [PlaceTokens (ChaosTokenEffectSource Skull) target Doom 1] | target <- targets]
         Cultist | isEasyStandard attrs -> do
           clueCount <- field InvestigatorClues iid
           when

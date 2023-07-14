@@ -18,6 +18,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDevourerBelow.Story
+import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
@@ -154,12 +155,12 @@ instance RunMessage TheDevourerBelow where
       closestEnemyIds <- selectList $ NearestEnemy AnyEnemy
       case closestEnemyIds of
         [] -> pure ()
-        [x] -> push $ PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget x) doom
+        [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom
         xs ->
           push $
             chooseOne
               iid
-              [targetLabel x [PlaceDoom (ChaosTokenEffectSource Cultist) (toTarget x) doom] | x <- xs]
+              [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom] | x <- xs]
       pure s
     ResolveChaosToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1

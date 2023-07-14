@@ -32,6 +32,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
+import Arkham.Token
 import Arkham.Trait
 import Data.Typeable
 
@@ -57,6 +58,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyDoom :: Field Enemy Int
   EnemyEvade :: Field Enemy (Maybe Int)
   EnemyFight :: Field Enemy Int
+  EnemyTokens :: Field Enemy Tokens
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
   EnemyHealth :: Field Enemy Int
@@ -88,6 +90,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyDoom" -> pure $ SomeField EnemyDoom
     "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
     "EnemyFight" -> pure $ SomeField Arkham.Enemy.Types.EnemyFight
+    "EnemyTokens" -> pure $ SomeField EnemyTokens
     "EnemyClues" -> pure $ SomeField EnemyClues
     "EnemyDamage" -> pure $ SomeField EnemyDamage
     "EnemyRemainingHealth" -> pure $ SomeField EnemyRemainingHealth
@@ -151,16 +154,13 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyFight = fight
             , enemyHealth = health
             , enemyEvade = Just evade
-            , enemyDamage = 0
             , enemyAssignedDamage = mempty
             , enemyHealthDamage = healthDamage
             , enemySanityDamage = sanityDamage
             , enemyPrey = Prey Anyone
             , enemyModifiers = mempty
             , enemyExhausted = False
-            , enemyDoom = 0
-            , enemyClues = 0
-            , enemyResources = 0
+            , enemyTokens = mempty
             , enemySpawnAt = Nothing
             , enemySurgeIfUnableToSpawn = False
             , enemyAsSelfLocation = Nothing

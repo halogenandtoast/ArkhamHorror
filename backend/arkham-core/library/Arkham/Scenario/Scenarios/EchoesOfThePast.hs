@@ -29,6 +29,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.EchoesOfThePast.Story
+import Arkham.Token
 import Arkham.Trait (Trait (SecondFloor, ThirdFloor))
 import Arkham.Treachery.Cards qualified as Cards
 import Data.List (replicate)
@@ -159,12 +160,8 @@ instance RunMessage EchoesOfThePast where
             ]
 
       (entryHallId, placeEntryHall) <- placeLocationCard Locations.entryHall
-      (quietHalls1Id, placeQuietHalls1) <-
-        placeLocationCard
-          Locations.quietHalls_131
-      (quietHalls2Id, placeQuietHalls2) <-
-        placeLocationCard
-          Locations.quietHalls_135
+      (quietHalls1Id, placeQuietHalls1) <- placeLocationCard Locations.quietHalls_131
+      (quietHalls2Id, placeQuietHalls2) <- placeLocationCard Locations.quietHalls_135
 
       groundFloorPlacements <-
         shuffleM =<< placeAndLabelLocations "groundloor" groundFloor
@@ -204,7 +201,7 @@ instance RunMessage EchoesOfThePast where
              , SetActDeck
              , placeEntryHall
              ]
-          <> [ PlaceClues (toSource attrs) (LocationTarget entryHallId) 1
+          <> [ PlaceTokens (toSource attrs) (LocationTarget entryHallId) Clue 1
              | sebastienInterviewed
              ]
           <> [ placeQuietHalls1
@@ -262,7 +259,8 @@ instance RunMessage EchoesOfThePast where
           push $
             chooseOne
               iid
-              [targetLabel target [PlaceDoom (ChaosTokenEffectSource Cultist) target 1] | target <- matches]
+              [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
+              ]
         Tablet ->
           push $ toMessage $ randomDiscard iid (ChaosTokenEffectSource Tablet)
         ElderThing -> do
@@ -278,7 +276,8 @@ instance RunMessage EchoesOfThePast where
           push $
             chooseOne
               iid
-              [targetLabel target [PlaceDoom (ChaosTokenEffectSource Cultist) target 1] | target <- matches]
+              [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
+              ]
         Tablet ->
           push $ toMessage $ randomDiscard iid (ChaosTokenEffectSource Tablet)
         ElderThing -> do

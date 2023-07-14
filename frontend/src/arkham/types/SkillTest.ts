@@ -15,7 +15,7 @@ export const sourceDecoder = JsonDecoder.object<Source>({
 export interface SkillTest {
   investigator: string;
   difficulty: number;
-  setAsideTokens: ChaosToken[];
+  setAsideChaosTokens: ChaosToken[];
   // result: SkillTestResult;
   committedCards: Card[]
   source: Source;
@@ -25,7 +25,7 @@ export interface SkillTest {
 export interface SkillTestResults {
   skillTestResultsSkillValue: number;
   skillTestResultsIconValue: number;
-  skillTestResultsTokensValue: number;
+  skillTestResultsChaosTokensValue: number;
   skillTestResultsDifficulty: number;
   skillTestResultsResultModifiers: number | null;
   skillTestResultsSuccess: boolean;
@@ -36,7 +36,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     investigator: JsonDecoder.string,
     action: JsonDecoder.nullable(JsonDecoder.string),
     difficulty: JsonDecoder.number,
-    setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+    setAsideChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
     committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
@@ -48,7 +48,7 @@ export const skillTestResultsDecoder = JsonDecoder.object<SkillTestResults>(
   {
     skillTestResultsSkillValue: JsonDecoder.number,
     skillTestResultsIconValue: JsonDecoder.number,
-    skillTestResultsTokensValue: JsonDecoder.number,
+    skillTestResultsChaosTokensValue: JsonDecoder.number,
     skillTestResultsDifficulty: JsonDecoder.number,
     skillTestResultsResultModifiers: JsonDecoder.nullable(JsonDecoder.number),
     skillTestResultsSuccess: JsonDecoder.boolean,

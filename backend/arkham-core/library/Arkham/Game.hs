@@ -44,7 +44,7 @@ import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.EffectMetadata
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
-import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..))
+import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -76,6 +76,11 @@ import Arkham.Investigator.Types (
   Field (..),
   Investigator,
   InvestigatorAttrs (..),
+  investigatorClues,
+  investigatorDoom,
+  investigatorHealthDamage,
+  investigatorResources,
+  investigatorSanityDamage,
  )
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
@@ -146,6 +151,9 @@ import Arkham.Treachery.Types (
   TreacheryAttrs (..),
   drawnFromL,
   treacheryAttachedTarget,
+  treacheryClues,
+  treacheryDoom,
+  treacheryResources,
  )
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -2545,14 +2553,15 @@ getEnemyField f e = do
     EnemyPlacement -> pure enemyPlacement
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
-    EnemyDoom -> pure enemyDoom
+    EnemyTokens -> pure enemyTokens
+    EnemyDoom -> pure $ enemyDoom attrs
     EnemyEvade -> pure enemyEvade
     EnemyFight -> pure enemyFight
-    EnemyClues -> pure enemyClues
-    EnemyDamage -> pure enemyDamage
+    EnemyClues -> pure $ enemyClues attrs
+    EnemyDamage -> pure $ enemyDamage attrs
     EnemyRemainingHealth -> do
       totalHealth <- getPlayerCountValue enemyHealth
-      pure (totalHealth - enemyDamage)
+      pure (totalHealth - enemyDamage attrs)
     EnemyHealth -> getPlayerCountValue enemyHealth
     EnemyHealthDamage -> pure enemyHealthDamage
     EnemySanityDamage -> pure enemySanityDamage
@@ -2579,7 +2588,7 @@ getEnemyField f e = do
 instance Projection Investigator where
   field f iid = do
     i <- getInvestigator iid
-    let InvestigatorAttrs {..} = toAttrs i
+    let attrs@InvestigatorAttrs {..} = toAttrs i
     case f of
       InvestigatorCardCode -> pure investigatorCardCode
       InvestigatorKeys -> pure investigatorKeys
@@ -2588,9 +2597,9 @@ instance Projection Investigator where
       InvestigatorAdditionalActions -> pure investigatorAdditionalActions
       InvestigatorSanity -> pure investigatorSanity
       InvestigatorRemainingSanity ->
-        pure (investigatorSanity - investigatorSanityDamage)
+        pure (investigatorSanity - investigatorSanityDamage attrs)
       InvestigatorRemainingHealth ->
-        pure (investigatorHealth - investigatorHealthDamage)
+        pure (investigatorHealth - investigatorHealthDamage attrs)
       InvestigatorLocation ->
         pure $
           if investigatorLocation == LocationId nil
@@ -2600,15 +2609,15 @@ instance Projection Investigator where
       InvestigatorIntellect -> pure investigatorIntellect
       InvestigatorCombat -> pure investigatorCombat
       InvestigatorAgility -> pure investigatorAgility
-      InvestigatorHorror -> pure investigatorSanityDamage
-      InvestigatorDamage -> pure investigatorHealthDamage
+      InvestigatorHorror -> pure $ investigatorSanityDamage attrs
+      InvestigatorDamage -> pure $ investigatorHealthDamage attrs
       InvestigatorAssignedHorror -> pure investigatorAssignedSanityDamage
       InvestigatorAssignedDamage -> pure investigatorAssignedHealthDamage
       InvestigatorMentalTrauma -> pure investigatorMentalTrauma
       InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
-      InvestigatorResources -> pure investigatorResources
-      InvestigatorDoom -> pure investigatorDoom
-      InvestigatorClues -> pure investigatorClues
+      InvestigatorResources -> pure $ investigatorResources attrs
+      InvestigatorDoom -> pure $ investigatorDoom attrs
+      InvestigatorClues -> pure $ investigatorClues attrs
       InvestigatorHand -> do
         -- Include in hand treacheries
         ts <-
@@ -3216,14 +3225,15 @@ instance Projection Treachery where
       attrs@TreacheryAttrs {..} = toAttrs t
       cdef = toCardDef attrs
     case fld of
+      TreacheryTokens -> pure treacheryTokens
       TreacheryPlacement -> pure treacheryPlacement
       TreacheryDrawnBy -> pure treacheryDrawnBy
       TreacheryDrawnFrom -> pure treacheryDrawnFrom
       TreacheryCardId -> pure treacheryCardId
       TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
-      TreacheryClues -> pure treacheryClues
-      TreacheryResources -> pure treacheryResources
-      TreacheryDoom -> pure treacheryDoom
+      TreacheryClues -> pure $ treacheryClues attrs
+      TreacheryResources -> pure $ treacheryResources attrs
+      TreacheryDoom -> pure $ treacheryDoom attrs
       TreacheryAttachedTarget -> pure $ treacheryAttachedTarget attrs
       TreacheryTraits -> pure $ cdCardTraits cdef
       TreacheryKeywords -> do

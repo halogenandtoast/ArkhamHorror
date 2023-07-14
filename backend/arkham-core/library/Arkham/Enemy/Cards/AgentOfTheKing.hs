@@ -12,6 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -45,11 +46,12 @@ instance HasAbilities AgentOfTheKing where
 instance RunMessage AgentOfTheKing where
   runMessage msg e@(AgentOfTheKing attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
+      pushAll
+        [InvestigatorSpendClues iid 1, PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Clue 1]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
-        [ RemoveClues (toAbilitySource attrs 2) (toTarget attrs) (enemyClues attrs)
+        [ RemoveTokens (toAbilitySource attrs 2) (toTarget attrs) Clue (enemyClues attrs)
         , GainClues iid (toAbilitySource attrs 2) (enemyClues attrs)
         ]
       pure e

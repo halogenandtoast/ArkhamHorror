@@ -15,6 +15,7 @@ import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Phase
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype PossessedOathspeaker = PossessedOathspeaker EnemyAttrs
   deriving anyclass (IsEnemy)
@@ -63,9 +64,9 @@ instance RunMessage PossessedOathspeaker where
               [ Label "Ready Possessed Oathspeaker" [Ready (toTarget attrs)]
               , Label
                   "Place 1 doom on Possessed Oathspeaker"
-                  [PlaceDoom (toSource attrs) (toTarget attrs) 1]
+                  [PlaceTokens (toSource attrs) (toTarget attrs) Doom 1]
               ]
-          else PlaceDoom (toSource attrs) (toTarget attrs) 1
+          else PlaceTokens (toSource attrs) (toTarget attrs) Doom 1
       pure e
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       e <$ push (ScenarioResolution $ Resolution 3)

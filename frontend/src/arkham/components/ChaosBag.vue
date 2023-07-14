@@ -60,13 +60,13 @@ function imageFor(tokenFace: string) {
   }
 }
 
-const revealedTokens = computed(() => {
-  if (props.game.focusedTokens.length > 0) {
-    return props.game.focusedTokens;
+const revealedChaosTokens = computed(() => {
+  if (props.game.focusedChaosTokens.length > 0) {
+    return props.game.focusedChaosTokens;
   }
 
-  if (props.game.skillTestTokens !== []) {
-    return props.game.skillTestTokens;
+  if (props.game.skillTestChaosTokens !== []) {
+    return props.game.skillTestChaosTokens;
   }
 
   return [];
@@ -104,7 +104,7 @@ const investigatorPortrait = computed(() => {
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
-const tokenFaces = computed(() => [...new Set(props.chaosBag.tokens.map(t => t.tokenFace))])
+const tokenFaces = computed(() => [...new Set(props.chaosBag.chaosTokens.map(t => t.face))])
 
 const choose = (idx: number) => emit('choose', idx)
 </script>
@@ -116,7 +116,7 @@ const choose = (idx: number) => emit('choose', idx)
       class="portrait"
       :src="investigatorPortrait"
     />
-    <Token v-for="(revealedToken, index) in revealedTokens" :key="index" :token="revealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+    <Token v-for="(revealedToken, index) in revealedChaosTokens" :key="index" :token="revealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     <img
       v-if="tokenAction !== -1"
       class="token token--can-draw"
@@ -124,7 +124,7 @@ const choose = (idx: number) => emit('choose', idx)
       @click="choose(tokenAction)"
     />
     <template v-if="debug && tokenAction !== -1">
-      <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debugChoose({tag: 'ForceTokenDraw', contents: tokenFace})">
+      <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debugChoose({tag: 'ForceChaosTokenDraw', contents: tokenFace})">
         <img
           class="token"
           :src="imageFor(tokenFace)"

@@ -69,6 +69,8 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -220,8 +222,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , investigatorXp = investigatorXp
         , investigatorPhysicalTrauma = investigatorPhysicalTrauma
         , investigatorMentalTrauma = investigatorMentalTrauma
-        , investigatorSanityDamage = investigatorMentalTrauma
-        , investigatorHealthDamage = investigatorPhysicalTrauma
+        , investigatorTokens =
+            addTokens Horror investigatorMentalTrauma $ addTokens Token.Damage investigatorPhysicalTrauma mempty
         , investigatorStartsWith = investigatorStartsWith
         , investigatorStartsWithInHand = investigatorStartsWithInHand
         , investigatorSupplies = investigatorSupplies
@@ -364,7 +366,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
           0
           modifiers'
-    pure $ a & resourcesL .~ startingResources & cluesL .~ startingClues
+    pure $ a & tokensL %~ (setTokens Resource startingResources . setTokens Clue startingClues)
   InvestigatorMulligan iid | iid == investigatorId -> do
     unableToMulligan <- hasModifier a CannotMulligan
     push $
@@ -382,16 +384,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 , cdCanReplace (toCardDef card)
                 ]
     pure a
-  BeginTrade iid _source (AssetTarget aid) iids
-    | iid == investigatorId ->
-        a
-          <$ push
-            ( chooseOne
-                iid
-                [ TargetLabel (InvestigatorTarget iid') [TakeControlOfAsset iid' aid]
-                | iid' <- iids
-                ]
-            )
+  BeginTrade iid _source (AssetTarget aid) iids | iid == investigatorId -> do
+    push $
+      chooseOne
+        iid
+        [ targetLabel iid' [TakeControlOfAsset iid' aid]
+        | iid' <- iids
+        ]
+    pure a
   BeginTrade iid source ResourceTarget iids
     | iid == investigatorId ->
         a
@@ -439,7 +439,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll [ShuffleDiscardBackIn iid, window]
     pure $
       a
-        & (resourcesL .~ startingResources)
+        & (tokensL %~ setTokens Resource startingResources)
         & (discardL .~ discard)
         & (handL .~ hand <> additionalHandCards)
         & (deckL .~ Deck deck)
@@ -477,17 +477,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a
     let
-      defeatedByHorror = investigatorSanityDamage >= modifiedSanity
-      defeatedByDamage = investigatorHealthDamage >= modifiedHealth
+      defeatedByHorror = investigatorSanityDamage a >= modifiedSanity
+      defeatedByDamage = investigatorHealthDamage a >= modifiedHealth
       defeatedBy = case (defeatedByHorror, defeatedByDamage) of
         (True, True) -> DefeatedByDamageAndHorror source
         (True, False) -> DefeatedByHorror source
         (False, True) -> DefeatedByDamage source
         (False, False) -> DefeatedByOther source
       physicalTrauma =
-        if investigatorHealthDamage >= modifiedHealth then 1 else 0
+        if investigatorHealthDamage a >= modifiedHealth then 1 else 0
       mentalTrauma =
-        if investigatorSanityDamage >= modifiedSanity then 1 else 0
+        if investigatorSanityDamage a >= modifiedSanity then 1 else 0
     windowMsg <-
       checkWindows
         ( (`Window` Window.InvestigatorDefeated defeatedBy iid)
@@ -514,9 +514,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     pushAll $
-      PlaceClues (toSource a) (toTarget investigatorLocation) investigatorClues
+      PlaceTokens (toSource a) (toTarget investigatorLocation) Clue (investigatorClues a)
         : [PlaceKey (toTarget investigatorLocation) k | k <- toList investigatorKeys]
-    pure $ a & cluesL .~ 0 & resourcesL .~ 0 & keysL .~ mempty
+    pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
   EnemyMove eid lid | lid /= investigatorLocation -> do
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId -> do
@@ -524,7 +524,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EnemyEngageInvestigator eid iid | iid /= investigatorId -> do
     pure $ a & engagedEnemiesL %~ deleteSet eid
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
-    pure $ a & cluesL .~ 0
+    pure $ a & tokensL %~ removeAllTokens Clue
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   RemovedFromPlay source@(AssetSource _) ->
     pure $ a & (slotsL . each %~ filter ((/= source) . slotSource))
@@ -1186,7 +1186,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 == DamageFromHastur
                 && toTarget a
                   `elem` horrorTargets
-                && investigatorSanityDamage
+                && investigatorSanityDamage a
                   > investigatorSanity
             )
             $ push
@@ -1541,14 +1541,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       checkWindows
         ((`Window` Window.GainsClues iid source n) <$> [Timing.When, Timing.After])
     pushAll
-      [window, PlaceClues source (toTarget iid) n, After (GainClues iid source n)]
+      [window, PlaceTokens source (toTarget iid) Clue n, After (GainClues iid source n)]
     pure a
-  PlaceClues _ (InvestigatorTarget iid) n | iid == investigatorId -> do
-    pure $ a & cluesL +~ n
   FlipClues target n | isTarget a target -> do
-    let flipCount = min n investigatorClues
-    let clueCount = max 0 $ subtract n investigatorClues
-    pure $ a & (cluesL .~ clueCount) & (doomL +~ flipCount)
+    pure $ a & tokensL %~ flipClues n
   DiscoverClues iid lid source n maction | iid == investigatorId -> do
     modifiers <- getModifiers lid
     let
@@ -1563,12 +1559,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Do (DiscoverClues iid _ source n _) | iid == investigatorId -> do
     send $ format a <> " discovered " <> pluralize n "clue"
     push $ After $ GainClues iid source n
-    pure $ a & cluesL +~ n
+    pure $ a & tokensL %~ addTokens Clue n
   InvestigatorDiscardAllClues _ iid | iid == investigatorId -> do
-    pure $ a & cluesL .~ 0
+    pure $ a & tokensL %~ removeAllTokens Clue
   MoveAllCluesTo source target | not (isTarget a target) -> do
-    when (investigatorClues > 0) (push $ PlaceClues source target investigatorClues)
-    pure $ a & cluesL .~ 0
+    when (investigatorClues a > 0) (push $ PlaceTokens source target Clue $ investigatorClues a)
+    pure $ a & tokensL %~ removeAllTokens Clue
   InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy windows' asAction
     | iid == investigatorId ->
         do
@@ -1723,12 +1719,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
         & (discardL %~ filter ((/= card) . PlayerCard))
         & (handL %~ filter (/= card))
-  Msg.InvestigatorDamage iid _ damage horror
-    | iid == investigatorId ->
-        pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
-  DrivenInsane iid
-    | iid == investigatorId ->
-        pure $ a & mentalTraumaL .~ investigatorSanity
+  Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId -> do
+    pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
+  DrivenInsane iid | iid == investigatorId -> do
+    pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat
@@ -1737,11 +1731,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         modifiedSanity <- getModifiedSanity a
         let
           defeatedByHorror =
-            investigatorSanityDamage
+            investigatorSanityDamage a
               + investigatorAssignedSanityDamage
               >= modifiedSanity
           defeatedByDamage =
-            investigatorHealthDamage
+            investigatorHealthDamage a
               + investigatorAssignedHealthDamage
               >= modifiedHealth
           defeatedBy = case (defeatedByHorror, defeatedByDamage) of
@@ -1769,8 +1763,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | isTarget a target ->
         pure $
           a
-            & (healthDamageL +~ investigatorAssignedHealthDamage)
-            & (sanityDamageL +~ investigatorAssignedSanityDamage)
+            & tokensL
+              %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
+                    . addTokens Horror investigatorAssignedSanityDamage
+                 )
             & (assignedHealthDamageL .~ 0)
             & (assignedSanityDamageL .~ 0)
   CancelAssignedDamage target damageReduction horrorReduction
@@ -1788,7 +1784,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (Window.Healed DamageType (toTarget a) source amount)
           ]
       push afterWindow
-      pure $ a & healthDamageL %~ max 0 . subtract amount
+      pure $ a & tokensL %~ subtractTokens Token.Damage amount
   HealHorrorWithAdditional (InvestigatorTarget iid) _ amount
     | iid == investigatorId -> do
         -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
@@ -1798,8 +1794,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else do
             pure $
               a
-                & (sanityDamageL %~ max 0 . subtract amount)
-                & (horrorHealedL .~ (min amount investigatorSanityDamage))
+                & (tokensL %~ subtractTokens Horror amount)
+                & (horrorHealedL .~ (min amount $ investigatorSanityDamage a))
   AdditionalHealHorror (InvestigatorTarget iid) source additional
     | iid == investigatorId -> do
         -- exists to have Callbacks for the total, get from investigatorHorrorHealed
@@ -1821,11 +1817,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             push afterWindow
             pure $
               a
-                & sanityDamageL
-                  %~ max 0
-                    . subtract additional
-                & horrorHealedL
-                  .~ 0
+                & tokensL %~ subtractTokens Horror additional
+                & horrorHealedL .~ 0
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId ->
     do
       cannotHealHorror <- hasModifier a CannotHealHorror
@@ -1839,25 +1832,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   (Window.Healed HorrorType (toTarget a) source amount)
               ]
           push afterWindow
-          pure $ a & sanityDamageL %~ max 0 . subtract amount
+          pure $ a & tokensL %~ subtractTokens Horror amount
   MovedHorror _ (isTarget a -> True) amount -> do
-    pure $ a & sanityDamageL +~ amount
+    pure $ a & tokensL %~ addTokens Horror amount
   MovedHorror (isSource a -> True) _ amount -> do
-    pure $ a & sanityDamageL %~ max 0 . subtract amount
-  HealHorrorDirectly (InvestigatorTarget iid) _ amount
-    | iid == investigatorId -> do
-        -- USE ONLY WHEN NO CALLBACKS
-        pure $ a & sanityDamageL %~ max 0 . subtract amount
-  HealDamageDirectly (InvestigatorTarget iid) _ amount
-    | iid == investigatorId -> do
-        -- USE ONLY WHEN NO CALLBACKS
-        pure $ a & healthDamageL %~ max 0 . subtract amount
+    pure $ a & tokensL %~ subtractTokens Horror amount
+  HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+    -- USE ONLY WHEN NO CALLBACKS
+    pure $ a & tokensL %~ subtractTokens Horror amount
+  HealDamageDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+    -- USE ONLY WHEN NO CALLBACKS
+    pure $ a & tokensL %~ subtractTokens Token.Damage amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a
     let
-      defeatedByHorror = investigatorSanityDamage >= modifiedSanity
-      defeatedByDamage = investigatorHealthDamage >= modifiedHealth
+      defeatedByHorror = investigatorSanityDamage a >= modifiedSanity
+      defeatedByDamage = investigatorHealthDamage a >= modifiedHealth
       defeatedBy = case (defeatedByHorror, defeatedByDamage) of
         (True, True) -> DefeatedByDamageAndHorror source
         (True, False) -> DefeatedByHorror source
@@ -2194,13 +2185,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)
         ]
     a <$ push windowMsg
-  InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
+  InvestigatorSpendClues iid n | iid == investigatorId -> do
+    pure $ a & tokensL %~ subtractTokens Clue n
   SpendResources iid _ | iid == investigatorId -> do
     push $ Do msg
     pure a
-  Do (SpendResources iid n)
-    | iid == investigatorId ->
-        pure $ a & resourcesL %~ max 0 . subtract n
+  Do (SpendResources iid n) | iid == investigatorId -> do
+    pure $ a & tokensL %~ subtractTokens Resource n
   LoseResources iid source n | iid == investigatorId -> do
     beforeWindowMsg <-
       checkWindows
@@ -2210,10 +2201,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [Window Timing.After (Window.LostResources iid source n)]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
-  Do (LoseResources iid _ n)
-    | iid == investigatorId ->
-        pure $ a & resourcesL %~ max 0 . subtract n
-  LoseAllResources iid | iid == investigatorId -> pure $ a & resourcesL .~ 0
+  Do (LoseResources iid _ n) | iid == investigatorId -> do
+    pure $ a & tokensL %~ subtractTokens Resource n
+  LoseAllResources iid | iid == investigatorId -> pure $ a & tokensL %~ removeAllTokens Resource
   TakeResources iid n source True | iid == investigatorId -> do
     beforeWindowMsg <-
       checkWindows
@@ -2234,9 +2224,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   TakeResources iid n _ False | iid == investigatorId -> do
     cannotGainResources <- hasModifier a CannotGainResources
-    pure $ if cannotGainResources then a else a & resourcesL +~ n
-  PlaceResources _ target n | isTarget a target -> do
-    pure $ a & resourcesL +~ n
+    pure $ if cannotGainResources then a else a & tokensL %~ addTokens Resource n
+  PlaceTokens _ (isTarget a -> True) token n -> do
+    pure $ a & tokensL %~ addTokens token n
   EmptyDeck iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     when (CardsCannotLeaveYourDiscardPile `notElem` modifiers') $
@@ -2251,18 +2241,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       elem MayChooseNotToTakeUpkeepResources
         <$> getModifiers (InvestigatorTarget investigatorId)
     if mayChooseNotToTakeResources
-      then
-        a
-          <$ push
-            ( chooseOne
-                investigatorId
-                [ Label "Do not take resource(s)" []
-                , Label
-                    "Take resource(s)"
-                    [TakeResources investigatorId 1 (toSource a) False]
-                ]
-            )
-      else pure $ a & resourcesL +~ 1
+      then do
+        push $
+          chooseOne
+            investigatorId
+            [ Label "Do not take resource(s)" []
+            , Label
+                "Take resource(s)"
+                [TakeResources investigatorId 1 (toSource a) False]
+            ]
+        pure a
+      else pure $ a & tokensL %~ incrementTokens Resource
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
       card {pcOwner = Just iid}
@@ -2383,7 +2372,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                                 (toId a)
                             pure $ (skillDifficulty - baseValue) >= n
                           ResourceSkillTest ->
-                            pure $ (skillDifficulty - investigatorResources) >= n
+                            pure $ (skillDifficulty - investigatorResources a) >= n
                     prevented = flip
                       any
                       modifiers'
@@ -2531,7 +2520,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                                 pure $ (skillDifficulty - baseValue) >= n
                               ResourceSkillTest ->
                                 pure $
-                                  (skillDifficulty - investigatorResources)
+                                  (skillDifficulty - investigatorResources a)
                                     >= n
                         prevented = flip
                           any
@@ -3066,12 +3055,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == investigatorId ->
         pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
-    let cluesToPlace = min n investigatorClues
-    push $ PlaceClues source (LocationTarget investigatorLocation) cluesToPlace
-    pure $ a & cluesL -~ cluesToPlace
+    let cluesToPlace = min n (investigatorClues a)
+    push $ PlaceTokens source (LocationTarget investigatorLocation) Clue cluesToPlace
+    pure $ a & tokensL %~ subtractTokens Clue cluesToPlace
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
-    push (PlaceClues source (LocationTarget investigatorLocation) investigatorClues)
-    pure $ a & cluesL .~ 0
+    push $ PlaceTokens source (LocationTarget investigatorLocation) Clue (investigatorClues a)
+    pure $ a & tokensL %~ removeAllTokens Clue
   RemoveFromBearersDeckOrDiscard card -> do
     if pcOwner card == Just investigatorId
       then
@@ -3455,10 +3444,10 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a
   pure $
-    investigatorHealthDamage
+    investigatorHealthDamage a
       + investigatorAssignedHealthDamage
       >= modifiedHealth
-      || ( investigatorSanityDamage
+      || ( investigatorSanityDamage a
             + investigatorAssignedSanityDamage
             >= modifiedSanity
             && not canOnlyBeDefeatedByDamage

@@ -14,13 +14,13 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 
-const focusedTokens = computed(() => props.game.focusedTokens)
+const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 </script>
 <template>
   <div class="intro-text">
     <div class="entry">
       <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
-      <Token v-for="(focusedToken, index) in focusedTokens" :key="index" :token="focusedToken" :investigatorId="investigatorId" :game="game" @choose="() => {}" />
+      <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :investigatorId="investigatorId" :game="game" @choose="() => {}" />
       <p
         v-for="(paragraph, index) in question.flavorText.body"
         :key="index"

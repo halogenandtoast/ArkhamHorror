@@ -15,6 +15,7 @@ import Arkham.Placement
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Strategy
+import Arkham.Token
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -25,16 +26,13 @@ data EnemyAttrs = EnemyAttrs
   , enemyFight :: Int
   , enemyHealth :: GameValue
   , enemyEvade :: Maybe Int
-  , enemyDamage :: Int
   , enemyAssignedDamage :: Map Source DamageAssignment
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
   , enemyPrey :: PreyMatcher
   , enemyModifiers :: Map Source [Modifier]
   , enemyExhausted :: Bool
-  , enemyDoom :: Int
-  , enemyClues :: Int
-  , enemyResources :: Int
+  , enemyTokens :: Tokens
   , enemySpawnAt :: Maybe SpawnAt
   , enemySurgeIfUnableToSpawn :: Bool
   , enemyAsSelfLocation :: Maybe Text
@@ -45,6 +43,18 @@ data EnemyAttrs = EnemyAttrs
   , enemyKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
+
+enemyDamage :: EnemyAttrs -> Int
+enemyDamage = countTokens Damage . enemyTokens
+
+enemyClues :: EnemyAttrs -> Int
+enemyClues = countTokens Clue . enemyTokens
+
+enemyDoom :: EnemyAttrs -> Int
+enemyDoom = countTokens Doom . enemyTokens
+
+enemyResources :: EnemyAttrs -> Int
+enemyResources = countTokens Resource . enemyTokens
 
 instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"

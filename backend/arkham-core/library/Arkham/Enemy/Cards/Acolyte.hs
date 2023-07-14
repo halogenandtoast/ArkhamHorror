@@ -12,6 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype Acolyte = Acolyte EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -40,5 +41,5 @@ instance HasAbilities Acolyte where
 instance RunMessage Acolyte where
   runMessage msg e@(Acolyte attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (PlaceDoom (toSource attrs) (toTarget attrs) 1)
+      e <$ push (PlaceTokens (toSource attrs) (toTarget attrs) Doom 1)
     _ -> Acolyte <$> runMessage msg attrs

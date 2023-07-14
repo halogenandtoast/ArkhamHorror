@@ -29,6 +29,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BlackStarsRise.Story
 import Arkham.SkillTest
+import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
@@ -247,19 +248,19 @@ instance RunMessage BlackStarsRise where
       push $
         chooseOne
           lead
-          [ targetLabel agendaId [PlaceDoom (toSource attrs) (toTarget agendaId) 1]
+          [ targetLabel agendaId [PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1]
           | agendaId <- agendaIds
           ]
       pure s
     PassedSkillTest _ _ _ (ChaosTokenTarget token) _ n | n < 1 -> do
       when (chaosTokenFace token == Tablet) $ do
         targets <- selectListMap AgendaTarget AnyAgenda
-        pushAll [PlaceDoom (toSource attrs) target 1 | target <- targets]
+        pushAll [PlaceTokens (toSource attrs) target Doom 1 | target <- targets]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (chaosTokenFace token == Tablet) $ do
         targets <- selectListMap AgendaTarget AnyAgenda
-        pushAll [PlaceDoom (toSource attrs) target 1 | target <- targets]
+        pushAll [PlaceTokens (toSource attrs) target Doom 1 | target <- targets]
       when (chaosTokenFace token == ElderThing) $ do
         push $
           FindAndDrawEncounterCard

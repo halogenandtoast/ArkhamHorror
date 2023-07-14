@@ -284,6 +284,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
           Action.Resource -> pure True
           Action.Explore ->
             iid <=~> Matcher.InvestigatorWithoutModifier CannotExplore
+          Action.Circle -> pure True
     ActionAbility Nothing _ -> matchWho iid iid Matcher.TurnInvestigator
     FastAbility _ -> pure True
     ReactionAbility _ _ -> pure True

@@ -2,8 +2,8 @@ import { JsonDecoder } from 'ts.data.json';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export interface ChaosToken {
-  tokenFace: TokenFace;
-  tokenId: string;
+  face: TokenFace;
+  id: string;
   modifiers?: Modifier[];
 }
 
@@ -29,8 +29,7 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
 ], 'TokenFace');
 
 export const chaosTokenDecoder = JsonDecoder.object<ChaosToken>({
-  tokenId: JsonDecoder.string,
-  tokenFace: tokenFaceDecoder,
+  id: JsonDecoder.string,
+  face: tokenFaceDecoder,
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
-}, 'ChaosToken');
-
+}, 'ChaosToken', { id: 'chaosTokenId', face: 'chaosTokenFace' });

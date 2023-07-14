@@ -19,6 +19,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Id
 import Arkham.Message
+import Arkham.Token
 
 addHiddenToHand :: InvestigatorId -> TreacheryAttrs -> Message
 addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
@@ -35,10 +36,8 @@ instance RunMessage TreacheryAttrs where
     PlaceTreachery tid placement
       | tid == treacheryId ->
           pure $ a & placementL .~ placement
-    PlaceResources _ (isTarget a -> True) n -> do
-      pure $ a & resourcesL +~ n
-    PlaceDoom _ (isTarget a -> True) n -> do
-      pure $ a & doomL +~ n
+    PlaceTokens _ (isTarget a -> True) token n -> do
+      pure $ a & tokensL %~ addTokens token n
     PlaceEnemyInVoid eid
       | EnemyTarget eid `elem` treacheryAttachedTarget a ->
           a <$ push (Discard GameSource $ toTarget a)

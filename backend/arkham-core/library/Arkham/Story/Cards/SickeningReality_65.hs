@@ -10,6 +10,7 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
+import Arkham.Token
 
 newtype SickeningReality_65 = SickeningReality_65 StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -25,14 +26,10 @@ instance RunMessage SickeningReality_65 where
         (asset, enemy) =
           (Assets.constanceDumaine, Enemies.constanceDumaine)
 
-      assetId <- fromJustNote "missing" <$> selectOne (assetIs asset)
+      assetId <- selectJust (assetIs asset)
       enemyCard <- genCard enemy
-      lid <-
-        fieldMap
-          AssetLocation
-          (fromJustNote "must be at a location")
-          assetId
-      iids <- selectList $ InvestigatorAt $ LocationWithId lid
+      lid <- fieldJust AssetLocation assetId
+      iids <- selectList $ investigatorAt lid
       clues <- field AssetClues assetId
       enemyCreation <- createEnemyAt_ enemyCard lid Nothing
       pushAll $
@@ -44,8 +41,8 @@ instance RunMessage SickeningReality_65 where
           1
         | iid <- iids
         ]
-          <> [ RemoveClues (toSource attrs) (toTarget assetId) clues
-             , PlaceClues (toSource attrs) (toTarget lid) clues
+          <> [ RemoveTokens (toSource attrs) (toTarget assetId) Clue clues
+             , PlaceTokens (toSource attrs) (toTarget lid) Clue clues
              , RemoveFromGame (toTarget assetId)
              , enemyCreation
              ]

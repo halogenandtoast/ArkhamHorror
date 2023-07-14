@@ -50,13 +50,13 @@ const cardLabels = computed(() =>
       return choice.tag === "CardLabel" ? [[choice, index]] : []
     }))
 
-const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
+const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsChaosTokensValue || 0) < 0 ? '-' : '+')
 
 const testResult = computed(() => {
   const result = skillTestResults.value
   if (result !== null) {
-    const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsTokensValue, skillTestResultsDifficulty} = result
-    return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsTokensValue - skillTestResultsDifficulty
+    const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsChaosTokensValue, skillTestResultsDifficulty} = result
+    return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsChaosTokensValue - skillTestResultsDifficulty
   } else {
     return null
   }
@@ -150,7 +150,7 @@ const label = function(body) {
             {{skillTestResults.skillTestResultsSkillValue}}
             + {{skillTestResults.skillTestResultsIconValue}}
             {{tokenOperator}}
-            {{Math.abs(skillTestResults.skillTestResultsTokensValue)}}
+            {{Math.abs(skillTestResults.skillTestResultsChaosTokensValue)}}
           </dd>
           <dt>Modified Difficulty:</dt>
           <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>

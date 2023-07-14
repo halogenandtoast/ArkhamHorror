@@ -6,7 +6,7 @@ export interface Event {
   cardCode: string;
   cardId: string;
   doom: number;
-  sealedTokens: ChaosToken[];
+  sealedChaosTokens: ChaosToken[];
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
@@ -14,5 +14,5 @@ export const eventDecoder = JsonDecoder.object<Event>({
   cardCode: JsonDecoder.string,
   cardId: JsonDecoder.string,
   doom: JsonDecoder.number,
-  sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+  sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
 }, 'Event');

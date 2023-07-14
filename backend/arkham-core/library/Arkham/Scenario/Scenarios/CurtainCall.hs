@@ -28,6 +28,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurtainCall.Story
+import Arkham.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -180,10 +181,9 @@ instance RunMessage CurtainCall where
       | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do
           lid <- getJustLocation iid
           horrorCount <- field LocationHorror lid
-          s
-            <$ push
-              ( if horrorCount > 0
-                  then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-                  else PlaceHorror (ChaosTokenEffectSource chaosTokenFace) (LocationTarget lid) 1
-              )
+          push $
+            if horrorCount > 0
+              then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+              else PlaceTokens (ChaosTokenEffectSource chaosTokenFace) (LocationTarget lid) Horror 1
+          pure s
     _ -> CurtainCall <$> runMessage msg attrs

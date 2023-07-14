@@ -14,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.ForTheGreaterGood.Helpers
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Trait (Trait (Sanctum))
 
 newtype CellKeeper = CellKeeper EnemyAttrs
@@ -50,7 +51,7 @@ instance RunMessage CellKeeper where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       mKey <- getRandomKey
       pushAll $
-        PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2
+        PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Doom 2
           : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { withDefaults, computed, inject } from 'vue'
 import { Game } from '@/arkham/types/Game'
+import { TokenType } from '@/arkham/types/Token';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -88,11 +89,11 @@ const keys = computed(() => props.enemy.keys)
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
-const enemyDamage = computed(() => props.enemy.tokens[Arkham.TokenType.Damage] + props.enemy.assignedDamage)
-const doom = computed(() => props.enemy.tokens[Arkham.TokenType.Doom])
-const clues = computed(() => props.enemy.tokens[Arkham.TokenType.Clue])
-const resources = computed(() => props.enemy.tokens[Arkham.TokenType.Resource])
-const lostSouls = computed(() => props.enemy.tokens[Arkham.TokenType.LostSoul])
+const enemyDamage = computed(() => props.enemy.tokens[TokenType.Damage] + props.enemy.assignedDamage)
+const doom = computed(() => props.enemy.tokens[TokenType.Doom])
+const clues = computed(() => props.enemy.tokens[TokenType.Clue])
+const resources = computed(() => props.enemy.tokens[TokenType.Resource])
+const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
 
 </script>
 

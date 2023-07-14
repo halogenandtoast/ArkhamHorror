@@ -2,6 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import {
   Card,
   PlayerCardContents,
@@ -49,12 +50,9 @@ export interface Investigator {
   intellect: number;
   combat: number;
   agility: number;
-  healthDamage: number;
-  sanityDamage: number;
+  tokens: Tokens;
   assignedHealthDamage: number;
   assignedSanityDamage: number;
-  clues: number;
-  resources: number;
   location: string;
   remainingActions: number;
   endedTurn: boolean;
@@ -90,12 +88,9 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   intellect: JsonDecoder.number,
   combat: JsonDecoder.number,
   agility: JsonDecoder.number,
-  healthDamage: JsonDecoder.number,
-  sanityDamage: JsonDecoder.number,
+  tokens: tokensDecoder,
   assignedHealthDamage: JsonDecoder.number,
   assignedSanityDamage: JsonDecoder.number,
-  clues: JsonDecoder.number,
-  resources: JsonDecoder.number,
   location: JsonDecoder.string,
   remainingActions: JsonDecoder.number,
   endedTurn: JsonDecoder.boolean,

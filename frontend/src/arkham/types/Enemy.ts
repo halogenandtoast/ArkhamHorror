@@ -2,36 +2,13 @@ import { JsonDecoder } from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
-
-// data Token = Resource | Damage | Horror | Clue | Doom | TokenAs Text Token
-
-export type Token = 'Doom' | 'Clue' | 'Resource' | 'Damage' | 'Horror' | 'LostSoul'
-
-export const TokenType = {
-  Doom: 'Doom',
-  Clue: 'Clue',
-  Resource: 'Resource',
-  Damage: 'Damage',
-  Horror: 'Horror',
-  LostSoul: 'LostSoul',
-} as const;
-
-export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>([
-  JsonDecoder.isExactly('Doom'),
-  JsonDecoder.isExactly('Clue'),
-  JsonDecoder.isExactly('Resource'),
-  JsonDecoder.isExactly('Damage'),
-  JsonDecoder.isExactly('Horror'),
-  JsonDecoder.isExactly('LostSoul'),
-], 'Token');
-
-
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export interface Enemy {
   id: string;
   cardCode: string;
   assignedDamage: number;
-  tokens: { [key in Token]?: number };
+  tokens: Tokens;
   exhausted: boolean;
   engagedInvestigators: string[];
   treacheries: string[];
@@ -47,10 +24,7 @@ type DamageAssignment = { damageAssignmentAmount: number }
 export const enemyDecoder = JsonDecoder.object<Enemy>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
-  tokens: JsonDecoder.array<[Token, number]>(
-    JsonDecoder.tuple([tokenDecoder, JsonDecoder.number], 'Token[]'),
-    'Token[]'
-  ).map<{ [key in Token]?: number}>(pairs => pairs.reduce((acc, v) => ({ ...acc, [v[0]]: v[1] }), {})),
+  tokens: tokensDecoder,
   assignedDamage: JsonDecoder.array<[boolean, number]>(
     JsonDecoder.tuple(
       [ JsonDecoder.constant(true),

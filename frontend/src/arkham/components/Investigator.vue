@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game'
+import { TokenType } from '@/arkham/types/Token'
 import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { Message } from '@/arkham/types/Message'
@@ -184,6 +185,13 @@ const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWi
 const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value))
 const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value))
 const agility = computed(() => calculateSkill(props.player.agility, "SkillAgility", modifiers.value))
+
+
+// const doom = computed(() => props.player.tokens[TokenType.Doom])
+const clues = computed(() => props.player.tokens[TokenType.Clue] || 0)
+const resources = computed(() => props.player.tokens[TokenType.Resource] || 0)
+const horror = computed(() => (props.player.tokens[TokenType.Horror] || 0) + props.player.assignedSanityDamage)
+const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + props.player.assignedHealthDamage)
 </script>
 
 <template>
@@ -217,7 +225,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       </div>
       <PoolItem
         type="resource"
-        :amount="player.resources"
+        :amount="resources"
         :class="{ 'resource--can-take': takeResourceAction !== -1 }"
         @choose="$emit('choose', takeResourceAction)"
       />
@@ -227,7 +235,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       </template>
       <PoolItem
         type="clue"
-        :amount="player.clues"
+        :amount="clues"
         :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
         @choose="$emit('choose', spendCluesAction)"
       />
@@ -236,7 +244,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       </template>
       <PoolItem
         type="health"
-        :amount="player.healthDamage + player.assignedHealthDamage"
+        :amount="damage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="$emit('choose', healthAction)"
       />
@@ -246,7 +254,7 @@ const agility = computed(() => calculateSkill(props.player.agility, "SkillAgilit
       </template>
       <PoolItem
         type="sanity"
-        :amount="player.sanityDamage + player.assignedSanityDamage"
+        :amount="horror"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />

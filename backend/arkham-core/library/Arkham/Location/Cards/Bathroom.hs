@@ -7,7 +7,6 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (bathroom)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner hiding (RevealChaosToken)
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

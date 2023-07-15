@@ -10,13 +10,14 @@ import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Fire Axe" $ do
   it "gives +1 damage if you have no resources" $
     gameTest $ \investigator -> do
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorResources = 0, investigatorCombat = 3}
+        \attrs -> attrs {investigatorTokens = setTokens Resource 0 mempty, investigatorCombat = 3}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemy $
@@ -35,7 +36,7 @@ spec = describe "Fire Axe" $ do
   it "allows you to spend 1 resource to get +2 combat" $
     gameTest $ \investigator -> do
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorResources = 2, investigatorCombat = 1}
+        \attrs -> attrs {investigatorTokens = setTokens Resource 2 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemy $
@@ -77,7 +78,7 @@ spec = describe "Fire Axe" $ do
   it "if you spend your resources before tokens, you still get +1 damage" $
     gameTest $ \investigator -> do
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorResources = 1, investigatorCombat = 1}
+        \attrs -> attrs {investigatorTokens = setTokens Resource 1 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemy $
@@ -108,7 +109,7 @@ spec = describe "Fire Axe" $ do
   it "limit of 3 resources can be spent" $
     gameTest $ \investigator -> do
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorResources = 4, investigatorCombat = 1}
+        \attrs -> attrs {investigatorTokens = setTokens Resource 4 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemy $

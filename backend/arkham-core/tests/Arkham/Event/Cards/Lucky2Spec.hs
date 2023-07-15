@@ -6,6 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Lucky! (2)" $ do
@@ -14,7 +15,7 @@ spec = describe "Lucky! (2)" $ do
     updateInvestigator investigator $ \attrs ->
       attrs
         { investigatorIntellect = 1
-        , investigatorResources = 1
+        , investigatorTokens = setTokens Resource 1 mempty
         , investigatorDeck = Deck [cardToDraw]
         }
     lucky2 <- genCard Cards.lucky2
@@ -43,7 +44,7 @@ spec = describe "Lucky! (2)" $ do
     updateInvestigator investigator $ \attrs ->
       attrs
         { investigatorIntellect = 1
-        , investigatorResources = 1
+        , investigatorTokens = setTokens Resource 1 mempty
         , investigatorDeck = Deck [cardToDraw]
         }
     lucky2 <- genCard Cards.lucky2

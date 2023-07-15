@@ -13,6 +13,7 @@ import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
 import Arkham.Projection
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
@@ -20,7 +21,7 @@ spec = describe "Jenny's Twin .45s" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     updateInvestigator investigator $ \attrs ->
       attrs
-        { investigatorResources = 5
+        { investigatorTokens = setTokens Resource 5 mempty
         , investigatorHand = [PlayerCard jennysTwin45s]
         }
     pushAndRun $ playCard investigator (PlayerCard jennysTwin45s)
@@ -35,7 +36,7 @@ spec = describe "Jenny's Twin .45s" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     updateInvestigator investigator $ \attrs ->
       attrs
-        { investigatorResources = 1
+        { investigatorTokens = setTokens Resource 1 mempty
         , investigatorHand = [PlayerCard jennysTwin45s]
         , investigatorCombat = 3
         }

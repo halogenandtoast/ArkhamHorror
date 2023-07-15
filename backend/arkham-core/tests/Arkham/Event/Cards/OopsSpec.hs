@@ -13,13 +13,14 @@ import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Location.Types (revealCluesL)
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Oops!" $ do
   it "deals damage that attack would have done" $ gameTest $ \investigator -> do
     updateInvestigator investigator $
       (Investigator.combatL .~ 1)
-        . (Investigator.resourcesL .~ 2)
+        . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
@@ -62,7 +63,7 @@ spec = describe "Oops!" $ do
   it "[FAQ] does not deal on success damage" $ gameTest $ \investigator -> do
     updateInvestigator investigator $
       (Investigator.combatL .~ 1)
-        . (Investigator.resourcesL .~ 2)
+        . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
@@ -105,7 +106,7 @@ spec = describe "Oops!" $ do
   it "[FAQ] shotgun only deals 1 damage" $ gameTest $ \investigator -> do
     updateInvestigator investigator $
       (Investigator.combatL .~ 1)
-        . (Investigator.resourcesL .~ 2)
+        . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)

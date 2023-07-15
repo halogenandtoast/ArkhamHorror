@@ -16,7 +16,7 @@ spec = do
   describe "Zoey Samaras" $ do
     it "elder sign token gives +1" $ gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
       token <- getChaosTokenValue (toId zoeySamaras) ElderSign (toId zoeySamaras)
-      tokenValue token `shouldBe` Just 1
+      chaosTokenValue token `shouldBe` Just 1
 
     it "elder sign token gives +1 and does +1 damage for attacks" $ gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))

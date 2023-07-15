@@ -43,11 +43,11 @@ spec = describe "Grotesque Statue (4)" $ do
       chooseOptionMatching
         "choose zero token"
         ( \case
-            TokenGroupChoice _ _ (ChooseMatch _ 1 _ _ [[Token _ Zero]] _) -> True
+            ChaosTokenGroupChoice _ _ (ChooseMatch _ 1 _ _ [[ChaosToken _ Zero]] _) -> True
             _ -> False
         )
       chooseOnlyOption "apply results"
 
       didRunMessage `refShouldBe` True
-      tokens <- scenarioFieldMap ScenarioChaosBag (map chaosTokenFace . chaosBagTokens)
+      tokens <- scenarioFieldMap ScenarioChaosBag (map chaosTokenFace . chaosBagChaosTokens)
       liftIO $ tokens `shouldMatchList` [Zero, AutoFail]

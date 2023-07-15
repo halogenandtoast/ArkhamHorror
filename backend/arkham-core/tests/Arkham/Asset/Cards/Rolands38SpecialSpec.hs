@@ -11,6 +11,7 @@ import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do
@@ -44,7 +45,7 @@ spec = describe "Roland's .39 Special" $ do
       rolands38Special <- selectJust $ assetIs Assets.rolands38Special
       enemy <- testEnemy $
         \attrs -> attrs {enemyFight = 4, enemyHealth = Static 3}
-      location <- testLocation $ \attrs -> attrs {locationClues = 1}
+      location <- testLocation $ \attrs -> attrs {locationTokens = setTokens Clue 1 mempty}
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
       pushAndRun $ enemySpawn location enemy

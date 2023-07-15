@@ -5,9 +5,9 @@ module Arkham.Investigator.Cards.JennyBarnesSpec (
 import TestImport.Lifted
 
 import Arkham.Classes.HasChaosTokenValue
-import Arkham.Game ()
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..), resourcesL)
+import Arkham.Investigator.Types (Field (..), tokensL)
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Jenny Barnes" $ do
@@ -18,6 +18,6 @@ spec = describe "Jenny Barnes" $ do
 
   context "elder sign token" $ do
     it "modifier is number of resources" $ gameTestWith Investigators.jennyBarnes $ \jennyBarnes -> do
-      updateInvestigator jennyBarnes (resourcesL .~ 15)
+      updateInvestigator jennyBarnes (tokensL %~ setTokens Resource 15)
       token <- getChaosTokenValue (toId jennyBarnes) ElderSign (toId jennyBarnes)
-      tokenValue token `shouldBe` Just 15
+      chaosTokenValue token `shouldBe` Just 15

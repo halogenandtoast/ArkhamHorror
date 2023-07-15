@@ -9,11 +9,12 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher (EnemyMatcher (AnyEnemy))
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" $ gameTest $ \investigator -> do
-    updateInvestigator investigator (Investigator.resourcesL .~ 2)
+    updateInvestigator investigator (Investigator.tokensL %~ setTokens Resource 2)
     closeCall2 <- genCard Cards.closeCall2
     enemy <- testEnemy id
     location <- testLocation id

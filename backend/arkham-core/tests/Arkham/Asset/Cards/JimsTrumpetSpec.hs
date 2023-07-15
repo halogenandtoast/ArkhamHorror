@@ -9,12 +9,13 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
     it "on yourself" $ gameTest $ \investigator -> do
-      updateInvestigator investigator (Investigator.sanityDamageL .~ 1)
+      updateInvestigator investigator (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       location <- testLocation id
       pushAndRun $ SetChaosTokens [Skull]
@@ -34,7 +35,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator2 <-
         addInvestigator
           Investigators.rolandBanks
-          (Investigator.sanityDamageL .~ 1)
+          (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       location <- testLocation id
       pushAndRun $ SetChaosTokens [Skull]
@@ -54,7 +55,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator2 <-
         addInvestigator
           Investigators.rolandBanks
-          (Investigator.sanityDamageL .~ 1)
+          (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       location <- testLocation id
       pushAndRun $ SetChaosTokens [Skull]
@@ -74,7 +75,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator2 <-
         addInvestigator
           Investigators.rolandBanks
-          (Investigator.sanityDamageL .~ 1)
+          (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
       rivertown <- testLocationWithDef Locations.rivertown id
       southside <- testLocationWithDef Locations.southsideHistoricalSociety id
@@ -98,7 +99,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator2 <-
         addInvestigator
           Investigators.rolandBanks
-          ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
+          ((Investigator.tokensL %~ setTokens Horror 1) . (Investigator.idL .~ "01001"))
       putCardIntoPlay investigator Assets.jimsTrumpet
       rivertown <- testLocationWithDef Locations.rivertown id
       downtown <- testLocationWithDef Locations.downtownArkhamAsylum id

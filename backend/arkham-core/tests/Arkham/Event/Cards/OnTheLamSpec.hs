@@ -7,6 +7,7 @@ import TestImport
 
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Types
+import Arkham.Token
 
 spec :: Spec
 spec = describe "On The Lam" $ do
@@ -14,7 +15,7 @@ spec = describe "On The Lam" $ do
     ref <- createMessageChecker \case
       EnemyAttack {} -> True
       _ -> False
-    updateInvestigator investigator $ \i -> i {investigatorResources = 1}
+    updateInvestigator investigator $ \i -> i {investigatorTokens = setTokens Resource 1 mempty}
     onTheLam <- genCard Events.onTheLam
     location <- testLocation id
     pushAndRunAll

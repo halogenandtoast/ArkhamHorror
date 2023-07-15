@@ -13,6 +13,7 @@ import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Duke" $ do
@@ -44,7 +45,7 @@ spec = describe "Duke" $ do
         duke <- selectJust $ assetIs Assets.duke
         location <-
           testLocation
-            (\attrs -> attrs {locationShroud = 4, locationClues = 1})
+            (\attrs -> attrs {locationShroud = 4, locationTokens = setTokens Clue 1 mempty})
         pushAndRun $ SetChaosTokens [Zero]
         pushAndRun $ moveTo investigator location
         [_, investigateAction] <- field AssetAbilities duke
@@ -65,7 +66,7 @@ spec = describe "Duke" $ do
         putCardIntoPlay investigator Assets.duke
         duke <- selectJust $ assetIs Assets.duke
         (location1, location2) <- testConnectedLocations id $
-          \attrs -> attrs {locationShroud = 4, locationClues = 1}
+          \attrs -> attrs {locationShroud = 4, locationTokens = setTokens Clue 1 mempty}
         pushAndRun $ placedLocation location1
         pushAndRun $ placedLocation location2
         pushAndRun $ SetChaosTokens [Zero]

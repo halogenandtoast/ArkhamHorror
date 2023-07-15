@@ -6,16 +6,17 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Types (Field (..), fightL, healthL)
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (Field (..), combatL, resourcesL)
+import Arkham.Investigator.Types (Field (..), combatL, tokensL)
 import Arkham.Location.Types (Field (..), revealCluesL)
 import Arkham.Projection
+import Arkham.Token
 
 spec :: Spec
 spec = describe
   "Evidence!"
   do
     it "discovers a clue at your location after you defeat an enemy" $ gameTest $ \investigator -> do
-      updateInvestigator investigator ((combatL .~ 1) . (resourcesL .~ 1))
+      updateInvestigator investigator ((combatL .~ 1) . (tokensL %~ setTokens Resource 1))
       enemy <- testEnemy ((healthL .~ Static 1) . (fightL .~ 1))
       location <- testLocation (revealCluesL .~ Static 1)
       evidence <- genCard Events.evidence

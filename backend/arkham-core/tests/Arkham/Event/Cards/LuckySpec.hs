@@ -6,12 +6,13 @@ import TestImport
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Lucky!" $ do
   it "adds 2 to a skill test when you would fail" $ gameTest $ \investigator -> do
     updateInvestigator investigator $ \attrs ->
-      attrs {investigatorIntellect = 1, investigatorResources = 1}
+      attrs {investigatorIntellect = 1, investigatorTokens = setTokens Resource 1 mempty}
     lucky <- genCard Cards.lucky
 
     didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
@@ -33,7 +34,7 @@ spec = describe "Lucky!" $ do
 
   it "does not cause an autofail to pass" $ gameTest $ \investigator -> do
     updateInvestigator investigator $ \attrs ->
-      attrs {investigatorIntellect = 1, investigatorResources = 1}
+      attrs {investigatorIntellect = 1, investigatorTokens = setTokens Resource 1 mempty}
     lucky <- genCard Cards.lucky
 
     didFailTest <- didFailSkillTestBy investigator SkillIntellect 2

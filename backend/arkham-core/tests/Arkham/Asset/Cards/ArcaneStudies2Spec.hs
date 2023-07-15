@@ -7,6 +7,7 @@ import TestImport.Lifted
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Arcane Studies (2)" $ do
@@ -14,7 +15,7 @@ spec = describe "Arcane Studies (2)" $ do
     gameTest $ \investigator -> do
       didPassTest <- didPassSkillTestBy investigator SkillWillpower 0
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorWillpower = 1, investigatorResources = 2}
+        \attrs -> attrs {investigatorWillpower = 1, investigatorTokens = addTokens Resource 2 mempty}
       pushAndRun $ SetChaosTokens [Zero]
       putCardIntoPlay investigator Assets.arcaneStudies2
       pushAndRun $ beginSkillTest investigator SkillWillpower 3
@@ -42,7 +43,7 @@ spec = describe "Arcane Studies (2)" $ do
   it "Adds 1 to intellect check for each resource spent" $ do
     gameTest $ \investigator -> do
       updateInvestigator investigator $ \attrs ->
-        attrs {investigatorIntellect = 1, investigatorResources = 2}
+        attrs {investigatorIntellect = 1, investigatorTokens = addTokens Resource 2 mempty}
 
       didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
       pushAndRun $ SetChaosTokens [Zero]

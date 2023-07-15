@@ -21,6 +21,7 @@ import Arkham.Card as X
 import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
+import Arkham.ChaosToken as X
 import Arkham.Classes as X hiding (getChaosTokenValue)
 import Arkham.Cost as X hiding (PaidCost)
 import Arkham.Difficulty
@@ -54,7 +55,6 @@ import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Timing qualified as Timing
-import Arkham.ChaosToken as X hiding (TokenId)
 import Arkham.Window as X (
   Window (..),
   WindowType (DuringTurn, FastPlayerWindow, NonFast),
@@ -500,7 +500,7 @@ newGame investigator = do
         , gameGameState = IsActive
         , gameFoundCards = mempty
         , gameFocusedCards = mempty
-        , gameFocusedTokens = mempty
+        , gameFocusedChaosTokens = mempty
         , gameActiveCard = Nothing
         , gameResolvingCard = Nothing
         , gamePlayerOrder = [investigatorId]

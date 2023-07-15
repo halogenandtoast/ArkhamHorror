@@ -7,13 +7,14 @@ import TestImport
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
+import Arkham.Token
 
 spec :: Spec
 spec = describe "Hard Knocks (2)" $ do
   it "Adds 1 to combat check for each resource spent" $
     gameTest $ \investigator -> do
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
+        \attrs -> attrs {investigatorCombat = 1, investigatorTokens = setTokens Resource 2 mempty}
       putCardIntoPlay investigator Assets.hardKnocks2
       didPassTest <- didPassSkillTestBy investigator SkillCombat 0
       pushAndRun $ SetChaosTokens [Zero]
@@ -42,7 +43,7 @@ spec = describe "Hard Knocks (2)" $ do
   it "Adds 1 to agility check for each resource spent" $
     gameTest $ \investigator -> do
       updateInvestigator investigator $
-        \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
+        \attrs -> attrs {investigatorAgility = 1, investigatorTokens = setTokens Resource 2 mempty}
       putCardIntoPlay investigator Assets.hardKnocks2
 
       didPassTest <- didPassSkillTestBy investigator SkillAgility 0

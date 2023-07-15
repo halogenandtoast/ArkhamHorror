@@ -2,15 +2,13 @@ import { JsonDecoder } from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export interface Location {
   cardCode: string;
   label: string;
   id: string;
-  clues: number;
-  doom: number;
-  horror: number;
-  resources: number;
+  tokens: Tokens;
   shroud: number;
   revealed: boolean;
   investigators: string[];
@@ -31,10 +29,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     cardCode: JsonDecoder.string,
     label: JsonDecoder.string,
     id: JsonDecoder.string,
-    clues: JsonDecoder.number,
-    doom: JsonDecoder.number,
-    horror: JsonDecoder.number,
-    resources: JsonDecoder.number,
+    tokens: tokensDecoder,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),

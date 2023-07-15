@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue';
+import { TokenType } from '@/arkham/types/Token';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
@@ -25,17 +26,13 @@ const hasPool = computed(() => {
   const {
     sanity,
     health,
-    damage,
-    horror,
     uses,
-    doom,
-    clues,
-    resources,
+    tokens,
     sealedChaosTokens,
     keys,
   } = props.asset;
   console.log(keys)
-  return sanity || health || damage || horror || uses || doom > 0 || clues > 0 || resources > 0 || sealedChaosTokens.length > 0 || keys.length > 0;
+  return sanity || health || tokens[TokenType.Damage] || tokens[TokenType.Horror] || uses || (tokens[TokenType.Doom] || 0) > 0 || (tokens[TokenType.Clue] || 0) > 0 || (tokens[TokenType.Resource] || 0) > 0 || sealedChaosTokens.length > 0 || keys.length > 0;
 })
 
 const exhausted = computed(() => props.asset.exhausted)
@@ -110,6 +107,13 @@ const keys = computed(() => props.asset.keys)
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
+const doom = computed(() => props.asset.tokens[TokenType.Doom])
+const clues = computed(() => props.asset.tokens[TokenType.Clue])
+const resources = computed(() => props.asset.tokens[TokenType.Resource])
+
+const damage = computed(() => props.asset.tokens[TokenType.Damage])
+const horror = computed(() => props.asset.tokens[TokenType.Horror])
+
 const choose = (idx: number) => emit('choose', idx)
 </script>
 
@@ -151,22 +155,22 @@ const choose = (idx: number) => emit('choose', idx)
         :amount="asset.uses.amount"
       />
       <PoolItem
-        v-if="asset.health !== null || asset.damage > 0"
+        v-if="asset.health !== null || (damage || 0) > 0"
         type="health"
-        :amount="asset.damage"
+        :amount="damage || 0"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="choose(healthAction)"
       />
       <PoolItem
-        v-if="asset.sanity !== null || asset.horror > 0"
+        v-if="asset.sanity !== null || (horror || 0) > 0"
         type="sanity"
-        :amount="asset.horror"
+        :amount="horror || 0"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="choose(sanityAction)"
       />
-      <PoolItem v-if="asset.doom > 0" type="doom" :amount="asset.doom" />
-      <PoolItem v-if="asset.clues > 0" type="clue" :amount="asset.clues" />
-      <PoolItem v-if="asset.resources > 0" type="resource" :amount="asset.resources" />
+      <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
+      <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
+      <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
       <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
     <Asset

@@ -12,6 +12,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
+import { TokenType } from '@/arkham/types/Token';
 
 export interface Props {
   game: Game
@@ -86,6 +87,11 @@ const blocked = computed(() => props.location.modifiers.some(modifier => modifie
 
 const keys = computed(() => props.location.keys)
 
+const clues = computed(() => props.location.tokens[TokenType.Clue])
+const doom = computed(() => props.location.tokens[TokenType.Doom])
+const resources = computed(() => props.location.tokens[TokenType.Resource])
+const horror = computed(() => props.location.tokens[TokenType.Horror])
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 </script>
@@ -155,20 +161,20 @@ const debugChoose = inject('debugChoose')
         <div class="keys" v-if="keys.length > 0">
           <Key v-for="key in keys" :key="key" :name="key" />
         </div>
-        <div v-if="location.clues > 0" class="pool">
-          <PoolItem type="clue" :amount="location.clues" />
+        <div v-if="clues > 0" class="pool">
+          <PoolItem type="clue" :amount="clues" />
         </div>
-        <div v-if="location.doom > 0" class="pool">
-          <PoolItem type="doom" :amount="location.doom" />
+        <div v-if="doom > 0" class="pool">
+          <PoolItem type="doom" :amount="doom" />
         </div>
-        <div v-if="location.horror > 0" class="pool">
-          <PoolItem type="horror" :amount="location.horror" />
+        <div v-if="horror > 0" class="pool">
+          <PoolItem type="horror" :amount="horror" />
         </div>
         <div v-if="location.cardsUnderneath.length > 0" class="pool">
           <PoolItem type="card" :amount="location.cardsUnderneath.length" />
         </div>
-        <div v-if="location.resources > 0" class="pool">
-          <PoolItem type="resource" :amount="location.resources" />
+        <div v-if="resources > 0" class="pool">
+          <PoolItem type="resource" :amount="resources" />
         </div>
       </div>
     </div>

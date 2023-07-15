@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype KeyOfYs = KeyOfYs AssetAttrs
   deriving anyclass (IsAsset)
@@ -41,7 +42,7 @@ instance RunMessage KeyOfYs where
   runMessage msg a@(KeyOfYs attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ MovedHorror source (InvestigatorTarget iid) 1
-      pure . KeyOfYs $ attrs & horrorL +~ 1
+      pure . KeyOfYs $ attrs & tokensL %~ incrementTokens Horror
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       push $ DiscardTopOfDeck iid 10 (toAbilitySource attrs 2) Nothing
       pure a

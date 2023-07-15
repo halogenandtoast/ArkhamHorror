@@ -45,6 +45,7 @@ import Arkham.Message (Message (DiscoverClues, MoveAction, RevealLocation))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -80,20 +81,16 @@ instance RunMessage LocationAttrs where
       -- TODO: we may want life cycles around this, generally this might just be a bad idea
       pure $ updateLocation [upd] a
     FlipClues target n | isTarget a target -> do
-      let flipCount = min n locationClues
-      let clueCount = max 0 $ subtract n locationClues
+      let clueCount = max 0 $ subtract n $ locationClues a
       pure $
         a
-          & (cluesL .~ clueCount)
-          & (doomL +~ flipCount)
+          & (tokensL %~ flipClues n)
           & (withoutCluesL .~ (clueCount == 0))
     FlipDoom target n | isTarget a target -> do
-      let flipCount = min n locationDoom
-      let doomCount = max 0 $ subtract n locationDoom
+      let flipCount = min n $ locationDoom a
       pure $
         a
-          & (cluesL +~ flipCount)
-          & (doomL .~ doomCount)
+          & (tokensL %~ flipDoom n)
           & (withoutCluesL .~ (flipCount >= 0))
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
@@ -228,12 +225,12 @@ instance RunMessage LocationAttrs where
           & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
           & (connectedMatchersL <>~ [LocationWithId toLid])
     DiscoverCluesAtLocation iid lid source n maction | lid == locationId -> do
-      let discoveredClues = min n locationClues
+      let discoveredClues = min n $ locationClues a
       push $ DiscoverClues iid lid source discoveredClues maction
       pure a
     Do (DiscoverClues iid lid source n _) | lid == locationId -> do
-      let lastClue = locationClues - n <= 0
-      let clueCount = max 0 $ subtract n locationClues
+      let lastClue = locationClues a - n <= 0
+      let clueCount = max 0 $ subtract n $ locationClues a
       push
         =<< checkWindows
           ( Window Timing.After (Window.DiscoverClues iid lid source n)
@@ -241,7 +238,7 @@ instance RunMessage LocationAttrs where
                 | lastClue
                 ]
           )
-      pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
+      pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
     InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
     EnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators ->
@@ -318,47 +315,45 @@ instance RunMessage LocationAttrs where
                   | lid' <- availableLocationIds
                   ]
       pure a
-    EnemySpawn _ lid eid
-      | lid == locationId ->
-          pure $ a & enemiesL %~ insertSet eid
-    EnemySpawnedAt lid eid
-      | lid == locationId ->
-          pure $ a & enemiesL %~ insertSet eid
+    EnemySpawn _ lid eid | lid == locationId -> do
+      pure $ a & enemiesL %~ insertSet eid
+    EnemySpawnedAt lid eid | lid == locationId -> do
+      pure $ a & enemiesL %~ insertSet eid
     RemoveEnemy eid -> pure $ a & enemiesL %~ deleteSet eid
     RemovedFromPlay (EnemySource eid) -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo source target | not (isTarget a target) -> do
-      when (locationClues > 0) (push $ PlaceClues source (toTarget a) locationClues)
-      pure $ a & cluesL .~ 0 & withoutCluesL .~ True
+      when (locationClues a > 0) (push $ PlaceClues source (toTarget a) (locationClues a))
+      pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
     PlaceClues source target n | isTarget a target -> do
       modifiers' <- getModifiers a
       windows' <- windows [Window.PlacedClues source (toTarget a) n]
       if CannotPlaceClues `elem` modifiers'
         then pure a
         else do
-          let clueCount = locationClues + n
+          let clueCount = locationClues a + n
           pushAll windows'
-          pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
+          pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
     PlaceCluesUpToClueValue lid source n | lid == locationId -> do
       clueValue <- getPlayerCountValue locationRevealClues
-      let n' = min n (clueValue - locationClues)
+      let n' = min n (clueValue - locationClues a)
       a <$ push (PlaceClues source (toTarget a) n')
-    PlaceDoom _ target n | isTarget a target -> pure $ a & doomL +~ n
+    PlaceDoom _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Doom n
     RemoveDoom _ target n | isTarget a target -> do
-      pure $ a & doomL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Doom n
     PlaceResources source target n | isTarget a target -> do
       windows' <- windows [Window.PlacedResources source (toTarget a) n]
       pushAll windows'
-      pure $ a & resourcesL +~ n
+      pure $ a & tokensL %~ addTokens Resource n
     RemoveResources _ target n | isTarget a target -> do
-      pure $ a & resourcesL %~ max 0 . subtract n
-    PlaceHorror _ target n | isTarget a target -> pure $ a & horrorL +~ n
+      pure $ a & tokensL %~ subtractTokens Resource n
+    PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
     RemoveClues _ (LocationTarget lid) n | lid == locationId -> do
-      let clueCount = max 0 $ subtract n locationClues
-      pure $ a & cluesL .~ clueCount & withoutCluesL .~ (clueCount == 0)
+      let clueCount = max 0 $ subtract n $ locationClues a
+      pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
     RemoveAllClues _ target | isTarget a target -> do
-      pure $ a & cluesL .~ 0 & withoutCluesL .~ True
-    RemoveAllDoom _ target | isTarget a target -> pure $ a & doomL .~ 0
+      pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
+    RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlacedLocation _ _ lid | lid == locationId -> do
       if locationRevealed
         then do

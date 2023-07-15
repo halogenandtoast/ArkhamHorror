@@ -2,9 +2,8 @@
 
 module Arkham.Token where
 
-import Arkham.Prelude
-
--- We can place tokens "AS" other things
+import Arkham.Prelude hiding (Index)
+import Control.Lens.At
 
 data Token
   = Resource
@@ -19,11 +18,25 @@ data Token
 newtype Tokens = Tokens (Map Token Int)
   deriving newtype (Show, Eq, Ord, ToJSON, FromJSON, Monoid, Semigroup)
 
+type instance Index Tokens = Token
+type instance IxValue Tokens = Int
+
+instance Ixed Tokens where
+  ix token f (Tokens tokens) = Tokens <$> ix token f tokens
+instance At Tokens where
+  at token f (Tokens tokens) = Tokens <$> at token f tokens
+
 flipClues :: Int -> Tokens -> Tokens
 flipClues n original@(Tokens tokens) =
   let clueVal = findWithDefault 0 Clue tokens
       n' = min n clueVal
   in  if clueVal == 0 then original else addTokens Doom n' (subtractTokens Clue n' original)
+
+flipDoom :: Int -> Tokens -> Tokens
+flipDoom n original@(Tokens tokens) =
+  let doomVal = findWithDefault 0 Doom tokens
+      n' = min n doomVal
+  in  if doomVal == 0 then original else addTokens Clue n' (subtractTokens Doom n' original)
 
 countTokens :: Token -> Tokens -> Int
 countTokens token (Tokens tokens) = findWithDefault 0 token tokens

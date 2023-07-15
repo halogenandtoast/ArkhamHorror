@@ -11,6 +11,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 
 newtype FamilyInheritance = FamilyInheritance AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,10 +34,10 @@ instance RunMessage FamilyInheritance where
   runMessage msg a@(FamilyInheritance attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ TakeResources iid (assetResources attrs) (toAbilitySource attrs 1) False
-      pure . FamilyInheritance $ attrs & resourcesL .~ 0
+      pure . FamilyInheritance $ attrs & tokensL %~ removeAllTokens Token.Resource
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ PlaceResources (toAbilitySource attrs 2) (toTarget attrs) 4
       pure a
     EndTurn iid | Just iid == assetController attrs -> do
-      FamilyInheritance <$> runMessage msg (attrs & resourcesL .~ 0)
+      FamilyInheritance <$> runMessage msg (attrs & tokensL %~ removeAllTokens Token.Resource)
     _ -> FamilyInheritance <$> runMessage msg attrs

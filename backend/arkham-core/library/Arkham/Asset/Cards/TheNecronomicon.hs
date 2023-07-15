@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.ChaosToken qualified as ChaosToken
+import Arkham.Token
 import Arkham.Window (defaultWindows)
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
@@ -19,7 +20,7 @@ newtype TheNecronomicon = TheNecronomicon AssetAttrs
 theNecronomicon :: AssetCard TheNecronomicon
 theNecronomicon =
   assetWith TheNecronomicon Cards.theNecronomicon $
-    (horrorL .~ 3)
+    (tokensL %~ setTokens Horror 3)
       . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomicon where

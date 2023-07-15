@@ -17,7 +17,16 @@ import Arkham.Agenda
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Agenda, AgendaAttrs (..), Field (..))
 import Arkham.Asset
-import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..))
+import Arkham.Asset.Types (
+  Asset,
+  AssetAttrs (..),
+  Field (..),
+  assetClues,
+  assetDamage,
+  assetDoom,
+  assetHorror,
+  assetResources,
+ )
 import Arkham.Asset.Uses (Uses (..), useCount, useType)
 import Arkham.Attack
 import Arkham.Campaign
@@ -90,6 +99,10 @@ import Arkham.Location.Types (
   LocationAttrs (..),
   isEmptyLocation,
   isRevealed,
+  locationClues,
+  locationDoom,
+  locationHorror,
+  locationResources,
   noEnemiesAtLocation,
   noInvestigatorsAtLocation,
   toLocationLabel,
@@ -2364,10 +2377,11 @@ instance Projection Location where
       LocationInFrontOf -> pure locationInFrontOf
       LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationLabel -> pure locationLabel
-      LocationClues -> pure locationClues
-      LocationResources -> pure locationResources
-      LocationHorror -> pure locationHorror
-      LocationDoom -> pure locationDoom
+      LocationTokens -> pure locationTokens
+      LocationClues -> pure $ locationClues attrs
+      LocationResources -> pure $ locationResources attrs
+      LocationHorror -> pure $ locationHorror attrs
+      LocationDoom -> pure $ locationDoom attrs
       LocationShroud -> pure locationShroud
       LocationBrazier -> pure locationBrazier
       LocationTraits -> do
@@ -2418,12 +2432,13 @@ instance Projection Asset where
     a <- getAsset aid
     let attrs@AssetAttrs {..} = toAttrs a
     case f of
+      AssetTokens -> pure assetTokens
       AssetName -> pure $ toName attrs
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
-      AssetClues -> pure assetClues
-      AssetResources -> pure assetResources
-      AssetHorror -> pure assetHorror
-      AssetDamage -> pure assetDamage
+      AssetClues -> pure $ assetClues attrs
+      AssetResources -> pure $ assetResources attrs
+      AssetHorror -> pure $ assetHorror attrs
+      AssetDamage -> pure $ assetDamage attrs
       AssetRemainingHealth -> case assetHealth of
         Nothing -> pure Nothing
         Just n -> do
@@ -2432,7 +2447,7 @@ instance Projection Asset where
             modifiedHealth = foldl' applyHealthModifiers n modifiers'
             applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
             applyHealthModifiers h _ = h
-          pure $ Just $ max 0 (modifiedHealth - assetDamage)
+          pure $ Just $ max 0 (modifiedHealth - assetDamage attrs)
       AssetRemainingSanity -> case assetSanity of
         Nothing -> pure Nothing
         Just n -> do
@@ -2441,8 +2456,8 @@ instance Projection Asset where
             modifiedSanity = foldl' applySanityModifiers n modifiers'
             applySanityModifiers s (SanityModifier m) = max 0 (s + m)
             applySanityModifiers s _ = s
-          pure $ Just $ max 0 (modifiedSanity - assetHorror)
-      AssetDoom -> pure assetDoom
+          pure $ Just $ max 0 (modifiedSanity - assetHorror attrs)
+      AssetDoom -> pure $ assetDoom attrs
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement
       AssetUses -> pure assetUses
@@ -3845,10 +3860,7 @@ runGameMessage msg g = case msg of
                 , locationEvents = locationEvents oldAttrs
                 , locationAssets = locationAssets oldAttrs
                 , locationTreacheries = locationTreacheries oldAttrs
-                , locationClues = locationClues oldAttrs
-                , locationDoom = locationDoom oldAttrs
-                , locationHorror = locationHorror oldAttrs
-                , locationResources = locationResources oldAttrs
+                , locationTokens = locationTokens oldAttrs
                 , locationRevealed = locationRevealed oldAttrs
                 , locationCardsUnderneath = locationCardsUnderneath oldAttrs
                 , locationWithoutClues = locationWithoutClues oldAttrs

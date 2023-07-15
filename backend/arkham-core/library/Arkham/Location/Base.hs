@@ -15,6 +15,7 @@ import Arkham.Location.Brazier
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
 import Arkham.SkillType
+import Arkham.Token
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
@@ -22,10 +23,7 @@ data LocationAttrs = LocationAttrs
   , locationCardId :: CardId
   , locationLabel :: Text
   , locationRevealClues :: GameValue
-  , locationClues :: Int
-  , locationDoom :: Int
-  , locationHorror :: Int
-  , locationResources :: Int
+  , locationTokens :: Tokens
   , locationShroud :: Int
   , locationRevealed :: Bool
   , locationInvestigators :: Set InvestigatorId
@@ -52,6 +50,18 @@ data LocationAttrs = LocationAttrs
     locationWithoutClues :: Bool
   }
   deriving stock (Show, Eq, Generic)
+
+locationClues :: LocationAttrs -> Int
+locationClues = countTokens Clue . locationTokens
+
+locationDoom :: LocationAttrs -> Int
+locationDoom = countTokens Doom . locationTokens
+
+locationHorror :: LocationAttrs -> Int
+locationHorror = countTokens Horror . locationTokens
+
+locationResources :: LocationAttrs -> Int
+locationResources = countTokens Resource . locationTokens
 
 instance ToJSON LocationAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "location"

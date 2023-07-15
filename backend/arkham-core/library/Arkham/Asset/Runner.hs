@@ -27,6 +27,8 @@ import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -60,20 +62,20 @@ instance RunMessage AssetAttrs where
           then pure a
           else a <$ push (Ready $ toTarget a)
       _ -> a <$ push (Ready $ toTarget a)
-    RemoveAllDoom _ target | isTarget a target -> pure $ a & doomL .~ 0
-    PlaceClues _ target n | isTarget a target -> pure $ a & cluesL +~ n
-    PlaceResources _ target n | isTarget a target -> pure $ a & resourcesL +~ n
+    RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
+    PlaceClues _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Clue n
+    PlaceResources _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Token.Resource n
     RemoveResources _ target n | isTarget a target -> do
-      pure $ a & resourcesL %~ max 0 . subtract n
-    PlaceDoom _ target n | isTarget a target -> pure $ a & doomL +~ n
+      pure $ a & tokensL %~ subtractTokens Token.Resource n
+    PlaceDoom _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Doom n
     RemoveDoom _ target n | isTarget a target -> do
-      pure $ a & doomL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Doom n
     RemoveClues _ target n | isTarget a target -> do
-      when (assetClues - n <= 0) $
+      when (assetClues a - n <= 0) $
         pushAll
           =<< windows
             [Window.LastClueRemovedFromAsset (toId a)]
-      pure $ a & cluesL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Clue n
     CheckDefeated source -> do
       mDefeated <- defeated a source
       for_ mDefeated $ \defeatedBy -> do
@@ -94,26 +96,26 @@ instance RunMessage AssetAttrs where
         [PlaceDamage source (toTarget a) damage | damage > 0]
           <> [PlaceHorror source (toTarget a) horror | horror > 0]
       pure a
-    PlaceDamage _ target n | isTarget a target -> pure $ a & damageL +~ n
-    PlaceHorror _ target n | isTarget a target -> pure $ a & horrorL +~ n
+    PlaceDamage _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Token.Damage n
+    PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
     MovedHorror (isSource a -> True) _ n -> do
-      pure $ a & horrorL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Horror n
     MovedHorror _ (isTarget a -> True) n -> do
-      pure $ a & horrorL +~ n
+      pure $ a & tokensL %~ addTokens Horror n
     HealDamage (isTarget a -> True) source n -> do
       afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow
-      pure $ a & damageL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Token.Damage n
     HealHorror (isTarget a -> True) source n -> do
       afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source n)]
       push afterWindow
-      pure $ a & horrorL %~ max 0 . subtract n
+      pure $ a & tokensL %~ subtractTokens Horror n
     HealHorrorDirectly target _ amount | isTarget a target -> do
       -- USE ONLY WHEN NO CALLBACKS
-      pure $ a & horrorL %~ max 0 . subtract amount
+      pure $ a & tokensL %~ subtractTokens Horror amount
     HealDamageDirectly target _ amount | isTarget a target -> do
       -- USE ONLY WHEN NO CALLBACKS
-      pure $ a & damageL %~ max 0 . subtract amount
+      pure $ a & tokensL %~ subtractTokens Token.Damage amount
     When (InvestigatorResigned iid) -> do
       let
         shouldResignWith = case assetPlacement of

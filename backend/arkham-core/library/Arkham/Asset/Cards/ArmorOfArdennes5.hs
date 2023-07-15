@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ArmorOfArdennes5
-  ( armorOfArdennes5
-  , ArmorOfArdennes5(..)
-  ) where
+module Arkham.Asset.Cards.ArmorOfArdennes5 (
+  armorOfArdennes5,
+  ArmorOfArdennes5 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
-import Arkham.Window (Window(..))
 
 newtype ArmorOfArdennes5 = ArmorOfArdennes5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,15 +25,17 @@ armorOfArdennes5 =
 
 instance HasAbilities ArmorOfArdennes5 where
   getAbilities (ArmorOfArdennes5 a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (AssetDealtDamage Timing.When (SourceIsCancelable AnySource) $ AssetWithId $ toId a)
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          (AssetDealtDamage Timing.When (SourceIsCancelable AnySource) $ AssetWithId $ toId a)
+          (ExhaustCost $ toTarget a)
     ]
 
 instance RunMessage ArmorOfArdennes5 where
   runMessage msg (ArmorOfArdennes5 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+      ignoreWindow <-
+        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       push ignoreWindow
-      pure . ArmorOfArdennes5 $ attrs & damageL -~ 1
+      pure . ArmorOfArdennes5 $ attrs & tokensL %~ decrementTokens Token.Damage
     _ -> ArmorOfArdennes5 <$> runMessage msg attrs

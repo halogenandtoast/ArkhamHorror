@@ -24,6 +24,8 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Typeable
 
@@ -93,6 +95,7 @@ data instance Field (InHandEntity Asset) :: Type -> Type where
   InHandAssetCardId :: Field (InHandEntity Asset) CardId
 
 data instance Field Asset :: Type -> Type where
+  AssetTokens :: Field Asset Tokens
   AssetName :: Field Asset Name
   AssetCost :: Field Asset Int
   AssetClues :: Field Asset Int
@@ -169,11 +172,7 @@ data AssetAttrs = AssetAttrs
   , assetSanity :: Maybe Int
   , assetUses :: Uses Int
   , assetExhausted :: Bool
-  , assetDoom :: Int
-  , assetClues :: Int
-  , assetDamage :: Int
-  , assetHorror :: Int
-  , assetResources :: Int
+  , assetTokens :: Tokens
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
@@ -182,6 +181,21 @@ data AssetAttrs = AssetAttrs
   , assetKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
+
+assetDoom :: AssetAttrs -> Int
+assetDoom = countTokens Doom . assetTokens
+
+assetClues :: AssetAttrs -> Int
+assetClues = countTokens Clue . assetTokens
+
+assetDamage :: AssetAttrs -> Int
+assetDamage = countTokens Damage . assetTokens
+
+assetHorror :: AssetAttrs -> Int
+assetHorror = countTokens Horror . assetTokens
+
+assetResources :: AssetAttrs -> Int
+assetResources = countTokens Token.Resource . assetTokens
 
 allAssetCards :: Map CardCode CardDef
 allAssetCards =
@@ -237,11 +251,7 @@ assetWith f cardDef g =
             , assetSanity = Nothing
             , assetUses = NoUses
             , assetExhausted = False
-            , assetDoom = 0
-            , assetClues = 0
-            , assetDamage = 0
-            , assetHorror = 0
-            , assetResources = 0
+            , assetTokens = mempty
             , assetCanLeavePlayByNormalMeans = True
             , assetDiscardWhenNoUses = False
             , assetIsStory = False

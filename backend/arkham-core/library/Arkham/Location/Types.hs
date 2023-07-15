@@ -30,8 +30,9 @@ import Arkham.Name
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Arkham.Trait (Trait)
-import Control.Lens (set)
+import Control.Lens (non, set)
 import Data.Text qualified as T
 import Data.Typeable
 
@@ -56,6 +57,7 @@ class
 type LocationCard a = CardBuilder LocationId a
 
 data instance Field Location :: Type -> Type where
+  LocationTokens :: Field Location Tokens
   LocationClues :: Field Location Int
   LocationResources :: Field Location Int
   LocationHorror :: Field Location Int
@@ -93,10 +95,11 @@ deriving stock instance Ord (Field Location typ)
 
 fieldLens :: Field Location typ -> Lens' LocationAttrs typ
 fieldLens = \case
-  LocationClues -> cluesL
-  LocationResources -> resourcesL
-  LocationHorror -> horrorL
-  LocationDoom -> doomL
+  LocationTokens -> tokensL
+  LocationClues -> tokensL . at Clue . non 0
+  LocationResources -> tokensL . at Resource . non 0
+  LocationHorror -> tokensL . at Horror . non 0
+  LocationDoom -> tokensL . at Doom . non 0
   LocationShroud -> shroudL
   LocationConnectedMatchers -> connectedMatchersL
   LocationRevealedConnectedMatchers -> revealedConnectedMatchersL
@@ -229,10 +232,7 @@ locationWith f def shroud' revealClues g =
             , locationCardId = cardId
             , locationLabel = nameToLabel (cdName def)
             , locationRevealClues = revealClues
-            , locationClues = 0
-            , locationHorror = 0
-            , locationDoom = 0
-            , locationResources = 0
+            , locationTokens = mempty
             , locationShroud = shroud'
             , locationRevealed = not (cdDoubleSided def)
             , locationInvestigators = mempty

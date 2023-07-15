@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Exception
 import Arkham.Matcher
+import Arkham.Token
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -48,7 +49,7 @@ instance RunMessage PowderOfIbnGhazi where
           , ZebulonWhateleySurvivedTheDunwichLegacy
           , EarlSawyerSurvivedTheDunwichLegacy
           ]
-      PowderOfIbnGhazi <$> runMessage msg (attrs & cluesL .~ survivedCount)
+      PowderOfIbnGhazi <$> runMessage msg (attrs & tokensL %~ setTokens Clue survivedCount)
     UseCardAbility you source 1 _ _ | isSource attrs source -> do
       targets <-
         selectListMap EnemyTarget $
@@ -59,5 +60,5 @@ instance RunMessage PowderOfIbnGhazi where
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"
         [x] -> push (PlaceClues (toAbilitySource attrs 1) x 1)
         xs -> push (chooseOne you [TargetLabel x [PlaceClues (toAbilitySource attrs 1) x 1] | x <- xs])
-      pure . PowderOfIbnGhazi $ attrs & cluesL %~ max 0 . subtract 1
+      pure . PowderOfIbnGhazi $ attrs & tokensL %~ decrementTokens Clue
     _ -> PowderOfIbnGhazi <$> runMessage msg attrs

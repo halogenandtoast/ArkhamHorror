@@ -571,7 +571,7 @@ instance ConvertToEntityId Investigator InvestigatorId where
   toEntityId = toId
 
 fieldAssert
-  :: (HasCallStack, Projection attrs, ConvertToEntityId a b, b ~ EntityId attrs)
+  :: (HasCallStack, Projection attrs, ConvertToEntityId a (EntityId attrs))
   => Field attrs typ
   -> (typ -> Bool)
   -> a
@@ -579,6 +579,14 @@ fieldAssert
 fieldAssert fld p a = do
   result <- fieldP fld p (toEntityId a)
   liftIO $ result `shouldBe` True
+
+fieldAssertLength
+  :: (HasCallStack, Projection attrs, ConvertToEntityId a (EntityId attrs))
+  => Field attrs [typ]
+  -> Int
+  -> a
+  -> TestAppT ()
+fieldAssertLength fld n = fieldAssert fld ((== n) . length)
 
 handIs :: [Card] -> Investigator -> TestAppT Bool
 handIs cards = fieldP InvestigatorHand (== cards) . toId

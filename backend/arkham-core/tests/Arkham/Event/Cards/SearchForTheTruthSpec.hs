@@ -25,4 +25,4 @@ spec = describe "Search for the Truth" $ do
     playerCards <- testPlayerCards 6
     pushAndRun $ loadDeck investigator playerCards
     putCardIntoPlay investigator Events.searchForTheTruth
-    fieldAssert InvestigatorHand ((== 5) . length) investigator
+    fieldAssertLength InvestigatorHand 5 investigator

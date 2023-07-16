@@ -242,7 +242,10 @@ const activeCard = computed(() => {
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
-const outOfPlay = computed(() => (props.scenario?.setAsideCards || []))
+const outOfPlayEnemies = computed(() =>
+  Object.values(props.game.outOfPlayEnemies).map(e => props.game.cards[e.cardId])
+)
+const outOfPlay = computed(() => (props.scenario?.setAsideCards || []).concat(outOfPlayEnemies.value))
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 

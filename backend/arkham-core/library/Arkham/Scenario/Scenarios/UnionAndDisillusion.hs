@@ -30,6 +30,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -37,6 +38,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Zone
 
 newtype UnionAndDisillusion = UnionAndDisillusion ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -193,12 +195,17 @@ instance RunMessage UnionAndDisillusion where
 
       let lightBrazier location = UpdateLocation location (LocationBrazier ?=. Lit)
 
+      theWatcher <- genCard Enemies.theSpectralWatcher
+
+      placeTheWatcher <- createEnemyWithPlacement_ theWatcher (OutOfPlay SetAsideZone)
+
       pushAll $
         [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
           <> replicate hereticCount PlaceDoomOnAgenda
           <> [placeMiskatonicRiver, MoveAllTo (toSource attrs) miskatonicRiver, placeForbiddingShore]
           <> placeUnvisitedIsles
-          <> if sidedWithTheCoven then map lightBrazier (forbiddingShore : unvisitedIsles) else []
+          <> (if sidedWithTheCoven then map lightBrazier (forbiddingShore : unvisitedIsles) else [])
+          <> [placeTheWatcher]
 
       let
         (act3, act4)
@@ -219,7 +226,7 @@ instance RunMessage UnionAndDisillusion where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL .~ filter (`cardMatch` NotCard (cardIs Enemies.theSpectralWatcher)) setAsideCards)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
               & (cardsUnderScenarioReferenceL .~ storyCards)

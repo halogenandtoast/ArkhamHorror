@@ -5528,6 +5528,7 @@ instance RunMessage Game where
         (\i -> runMessage (InDiscard i msg))
       >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
       >>= inSearchEntitiesL (runMessage (InSearch msg))
+      >>= (outOfPlayEntitiesL . itraversed) (runMessage (InOutOfPlay msg))
       >>= (skillTestL . traverse) (runMessage msg)
       >>= (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg

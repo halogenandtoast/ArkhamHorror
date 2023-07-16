@@ -243,7 +243,7 @@ const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
 const outOfPlayEnemies = computed(() =>
-  Object.values(props.game.outOfPlayEnemies).map(e => props.game.cards[e.cardId])
+  Object.values(props.game.outOfPlayEnemies).map(e => ({...props.game.cards[e.cardId], tokens: e.tokens}))
 )
 const outOfPlay = computed(() => (props.scenario?.setAsideCards || []).concat(outOfPlayEnemies.value))
 const removedFromPlay = computed(() => props.game.removedFromPlay)
@@ -305,6 +305,7 @@ const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
+const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
 
 const keys = computed(() => props.scenario.setAsideKeys)
 
@@ -389,6 +390,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :key="key"
             :agenda="agenda"
             :cardsUnder="cardsUnderAgenda"
+            :cardsNextTo="cardsNextToAgenda"
             :game="game"
             :investigatorId="investigatorId"
             :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"

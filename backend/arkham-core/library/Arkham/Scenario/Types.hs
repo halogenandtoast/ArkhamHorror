@@ -12,8 +12,8 @@ import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasChaosTokenValue
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
@@ -83,6 +83,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
   , scenarioCardsNextToActDeck :: [Card]
+  , scenarioCardsNextToAgendaDeck :: [Card]
   , scenarioActStack :: IntMap [Card]
   , scenarioAgendaStack :: IntMap [Card]
   , scenarioCompletedAgendaStack :: IntMap [Card]
@@ -160,6 +161,7 @@ scenario f cardCode name difficulty layout =
       , scenarioCardsUnderAgendaDeck = mempty
       , scenarioCardsUnderActDeck = mempty
       , scenarioCardsNextToActDeck = mempty
+      , scenarioCardsNextToAgendaDeck = mempty
       , scenarioLocationLayout = layout
       , scenarioDecks = mempty
       , scenarioLog = mempty

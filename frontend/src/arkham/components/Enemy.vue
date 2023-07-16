@@ -89,7 +89,7 @@ const keys = computed(() => props.enemy.keys)
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
-const enemyDamage = computed(() => props.enemy.tokens[TokenType.Damage] + props.enemy.assignedDamage)
+const enemyDamage = computed(() => (props.enemy.tokens[TokenType.Damage] || 0) + props.enemy.assignedDamage)
 const doom = computed(() => props.enemy.tokens[TokenType.Doom])
 const clues = computed(() => props.enemy.tokens[TokenType.Clue])
 const resources = computed(() => props.enemy.tokens[TokenType.Resource])

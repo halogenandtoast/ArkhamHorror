@@ -457,6 +457,7 @@ data Message
   | InDiscard InvestigatorId Message
   | InSearch Message
   | InHand InvestigatorId Message
+  | InOutOfPlay Message
   | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks

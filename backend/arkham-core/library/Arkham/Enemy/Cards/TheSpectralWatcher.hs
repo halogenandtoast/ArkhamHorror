@@ -12,6 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 
 newtype TheSpectralWatcher = TheSpectralWatcher EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -43,4 +44,6 @@ instance RunMessage TheSpectralWatcher where
         , roundModifier attrs attrs DoesNotReadyDuringUpkeep
         ]
       pure e
+    InOutOfPlay msg@(PlaceTokens _ (isTarget attrs -> True) LostSoul n) -> do
+      TheSpectralWatcher <$> runMessage msg attrs
     _ -> TheSpectralWatcher <$> runMessage msg attrs

@@ -496,6 +496,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & cardsUnderActDeckL %~ (card :)
   PlaceNextTo ActDeckTarget cards -> do
     pure $ a & cardsNextToActDeckL <>~ cards
+  PlaceNextTo AgendaDeckTarget cards -> do
+    pure $ a & cardsNextToAgendaDeckL <>~ cards
   ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
     push $ ShuffleCardsIntoDeck (Deck.EncounterDeckByKey RegularEncounterDeck) cards
     pure a
@@ -514,6 +516,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         & (cardsUnderAgendaDeckL %~ filterCards)
         & (cardsUnderActDeckL %~ filterCards)
         & (cardsNextToActDeckL %~ filterCards)
+        & (cardsNextToAgendaDeckL %~ filterCards)
         & (cardsUnderScenarioReferenceL %~ filterCards)
         & (setAsideCardsL %~ filterCards)
         & (victoryDisplayL %~ filterCards)

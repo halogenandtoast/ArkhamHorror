@@ -14,6 +14,7 @@ export interface Props {
   agenda: Arkham.Agenda
   game: Game
   cardsUnder: Card[]
+  cardsNextTo: Card[]
   investigatorId: string
 }
 
@@ -74,6 +75,13 @@ const abilities = computed(() => {
 const cardsUnder = computed(() => props.cardsUnder)
 const showCardsUnderAgenda = (e: Event) => emit('show', e, cardsUnder, 'Cards Under Agenda', false)
 
+const imageForCard = (card: Card) => {
+  const side = card.contents.isFlipped ? 'b' : ''
+  // TODO, send art with cards next to
+  const art = card.contents.art || card.contents.cardCode.replace('c', '')
+  return `${baseUrl}/img/arkham/cards/${art}${side}.jpg`
+}
+
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 </script>
@@ -85,6 +93,12 @@ const debugChoose = inject('debugChoose')
       class="card card--sideways"
       @click="$emit('choose', interactAction)"
       :src="image"
+    />
+    <img
+      v-for="(card, idx) in cardsNextTo"
+      class="card card--sideways"
+      :key="idx"
+      :src="imageForCard(card)"
     />
     <AbilityButton
       v-for="ability in abilities"
@@ -108,7 +122,7 @@ const debugChoose = inject('debugChoose')
       />
 
       <template v-if="debug">
-        <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
+        <button @click="debugChoose({tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})">+</button>
       </template>
     </div>
 

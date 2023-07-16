@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { Tokens } from '@/arkham/types/Token';
 
 export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
@@ -18,6 +19,7 @@ export interface EncounterCardContents {
   id: string;
   cardCode: string;
   isFlipped?: boolean;
+  tokens: Tokens;
 }
 
 export interface VengeanceCard {
@@ -49,6 +51,7 @@ export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardCont
     id: JsonDecoder.string,
     cardCode: JsonDecoder.string,
     isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
+    tokens: JsonDecoder.constant({}),
   },
   'EncounterCard',
 );

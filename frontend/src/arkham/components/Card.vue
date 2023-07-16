@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { withDefaults, computed, inject } from 'vue';
+import { TokenType } from '@/arkham/types/Token';
 import type { Card } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import PoolItem from '@/arkham/components/PoolItem.vue'
 
 export interface Props {
   game: Game
@@ -70,6 +72,20 @@ const abilities = computed(() => {
       return acc;
     }, []);
 })
+
+const tokens = computed(() => props.card.tokens || {})
+
+const doom = computed(() => tokens.value[TokenType.Doom])
+const clues = computed(() => tokens.value[TokenType.Clue])
+const resources = computed(() => tokens.value[TokenType.Resource])
+const damage = computed(() => tokens.value[TokenType.Damage])
+const horror = computed(() => tokens.value[TokenType.Horror])
+const lostSouls = computed(() => tokens.value[TokenType.LostSoul])
+
+const hasPool = computed(() => {
+  return doom.value || clues.value || resources.value || damage.value || horror.value || lostSouls.value
+})
+
 </script>
 
 <template>
@@ -81,6 +97,14 @@ const abilities = computed(() => {
       @click="emit('choose', cardAction)"
     />
     <span class="vengeance" v-if="card.tag === 'VengeanceCard'">Vengeance 1</span>
+    <div class="pool" v-if="hasPool">
+      <PoolItem v-if="damage" type="doom" :amount="damage" />
+      <PoolItem v-if="horror" type="horror" :amount="horror" />
+      <PoolItem v-if="doom" type="doom" :amount="doom" />
+      <PoolItem v-if="clues" type="clue" :amount="clues" />
+      <PoolItem v-if="resources" type="resource" :amount="resources" />
+      <PoolItem v-if="lostSouls" type="resource" :amount="lostSouls" />
+    </div>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability"

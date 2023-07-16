@@ -575,6 +575,7 @@ instance (ToJSON gid) => ToJSON (PublicGame gid) where
       , "gameState" .= toJSON gameGameState
       , "skillTestResults" .= toJSON gameSkillTestResults
       , "question" .= toJSON gameQuestion
+      , "cards" .= toJSON gameCards
       ]
 
 getInvestigator

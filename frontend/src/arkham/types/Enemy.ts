@@ -6,6 +6,7 @@ import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export interface Enemy {
   id: string;
+  cardId: string;
   cardCode: string;
   assignedDamage: number;
   tokens: Tokens;
@@ -23,6 +24,7 @@ type DamageAssignment = { damageAssignmentAmount: number }
 
 export const enemyDecoder = JsonDecoder.object<Enemy>({
   id: JsonDecoder.string,
+  cardId: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   tokens: tokensDecoder,
   assignedDamage: JsonDecoder.array<[boolean, number]>(

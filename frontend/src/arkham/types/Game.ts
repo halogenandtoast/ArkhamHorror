@@ -67,6 +67,7 @@ export interface Game {
   activeCard: Card | null;
   removedFromPlay: Card[];
   encounterDeckSize: number;
+  cards: Record<string, Card>;
 }
 
 export function choices(game: Game, investigatorId: string): Message[] {
@@ -169,6 +170,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     activeCard: JsonDecoder.nullable(cardDecoder),
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     encounterDeckSize: JsonDecoder.number,
+    cards: JsonDecoder.dictionary<Card>(cardDecoder, 'Dict<string, Card>'),
   },
   'Game',
   {

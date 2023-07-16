@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.CrossroadsOfFate
-  ( CrossroadsOfFate(..)
-  , crossroadsOfFate
-  ) where
+module Arkham.Agenda.Cards.CrossroadsOfFate (
+  CrossroadsOfFate (..),
+  crossroadsOfFate,
+) where
 
 import Arkham.Prelude
 
@@ -9,6 +9,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 
 newtype CrossroadsOfFate = CrossroadsOfFate AgendaAttrs
@@ -21,6 +22,12 @@ crossroadsOfFate = agenda (2, A) CrossroadsOfFate Cards.crossroadsOfFate (Static
 instance RunMessage CrossroadsOfFate where
   runMessage msg a@(CrossroadsOfFate attrs) =
     case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-        a <$ pushAll [advanceAgendaDeck attrs]
+      AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+        investigators <- selectList UneliminatedInvestigator
+
+        pushAll $
+          map (InvestigatorDefeated (toSource attrs)) investigators
+            <> [SufferTrauma investigator 1 0 | investigator <- investigators]
+            <> [scenarioResolution 5]
+        pure a
       _ -> CrossroadsOfFate <$> runMessage msg attrs

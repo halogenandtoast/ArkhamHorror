@@ -33,8 +33,7 @@ instance RunMessage TheLoversVI where
   runMessage msg a@(TheLoversVI attrs) =
     case msg of
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        -- takenByTheWatcher <- length <$> getRecordSet WasTakenByTheWatcher
-        let takenByTheWatcher = 4
+        takenByTheWatcher <- length <$> getRecordSet WasTakenByTheWatcher
         if takenByTheWatcher > 0
           then do
             card <- flipCard <$> genCard (toCardDef attrs)

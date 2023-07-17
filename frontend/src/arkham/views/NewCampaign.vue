@@ -22,7 +22,7 @@ const currentUser = computed<User | null>(() => store.getCurrentUser)
 type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
 
 const gameMode = ref<GameMode>('Campaign')
-const campaignLog = ref<CampaignLogSettings>({ keys: {}, counts: {}})
+const campaignLog = ref<CampaignLogSettings>({ keys: [], counts: {}, sets: {}, options: [] })
 
 const scenarios = computed(() => {
   return scenarioJSON.filter((s) => {
@@ -228,6 +228,7 @@ type CampaignSetting =
   { type: "ChooseKey", key: string, content: string[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[] } |
+  { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[] } |
   { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[] }
 
@@ -253,14 +254,14 @@ watch(computedCampaignSettings, (newSettings) => {
       const sets = crossOut.reduce((a, s) => {
         return { ...a, [s.key]: { recordable: s.recordable, entries: s.content.map((c) => { return { tag: "Recorded", value: c.content }}) } }}, {})
 
-      campaignLog.value = { keys: [], counts: [], sets }
+      campaignLog.value = { keys: [], counts: {}, options: [], sets }
 
       campaignSettings.value = relevantSettings
       return
     }
   }
 
-  campaignLog.value = { keys: [], counts: [], sets: {}}
+  campaignLog.value = { keys: [], counts: {}, sets: {}, options: []}
   campaignSettings.value = []
 }, { immediate: true })
 
@@ -298,8 +299,9 @@ const filterSettings = function() {
   }))
 
   const newCounts = campaignLog.value.counts
+  const newOptions = campaignLog.value.options
 
-  campaignLog.value = { keys: newKeys, sets: newSets, counts: newCounts }
+  campaignLog.value = { keys: newKeys, sets: newSets, counts: newCounts, options: newOptions }
 }
 
 const setKey = function(setting: CampaignSetting, value: string) {
@@ -380,6 +382,17 @@ const toggleKey = function(key: string) {
   filterSettings()
 }
 
+const toggleOption = function(key: string) {
+  const current = campaignLog.value
+  if (current.options.includes(key)) {
+    current.options = current.options.filter((k) => k !== key)
+  } else {
+    current.options.push(key)
+  }
+
+  filterSettings()
+}
+
 const toggleSet = function(setting) {
   if(setting.type === 'SetRecordable') {
     const current = campaignLog.value
@@ -430,6 +443,11 @@ const isRecorded = function (value: string) {
   return current.keys.includes(value)
 }
 
+const isOption = function (value: string) {
+  const current = campaignLog.value
+  return current.options.includes(value)
+}
+
 const crossedOut = function (key: string, value: string) {
   const current = campaignLog.value
   return current.sets[key]?.entries.find((e) => e.value === value)?.tag === "CrossedOut"
@@ -464,6 +482,40 @@ const toggleCrossOut = function (key: string, value: string) {
           <h2>New Game</h2>
         </header>
         <form id="new-campaign" @submit.prevent="start">
+          <p>Number of Players</p>
+          <div class="options">
+            <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
+            <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
+            <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
+            <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
+          </div>
+          <transition name="slide">
+            <div v-if="playerCount > 1" class="options">
+              <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">With Friends</label>
+              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">Multi-handed Solo</label>
+            </div>
+          </transition>
+
+
+          <div v-if="playerCount == 1 || multiplayerVariant == 'WithFriends'">
+            <p>Deck</p>
+            <select v-model="deckIds[0]">
+              <option disabled :value="null">-- Select a Deck--</option>
+              <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+            </select>
+          </div>
+          <div v-else>
+
+            <transition-group name="slide">
+              <template v-for="idx in playerCount" :key="idx">
+                <p>Deck {{idx}}</p>
+                <select v-model="deckIds[idx - 1]">
+                  <option disabled :value="null">-- Select a Deck--</option>
+                  <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+                </select>
+              </template>
+            </transition-group>
+          </div>
           <div class="options">
             <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign"> <label for="campaign">Campaign</label>
             <input type="radio" v-model="gameMode" :value="'Standalone'" id="standalone"> <label for="standalone">Standalone</label>
@@ -505,6 +557,28 @@ const toggleCrossOut = function (key: string, value: string) {
             </div>
           </div>
 
+          <p>Difficulty</p>
+          <div class="options">
+            <template v-for="difficulty in difficulties" :key="difficulty">
+              <input
+                type="radio"
+                v-model="selectedDifficulty"
+                :value="difficulty"
+                :checked="difficulty === selectedDifficulty"
+                :id="`difficulty${difficulty}`"
+              />
+              <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
+            </template>
+          </div>
+
+          <div>
+            <p>Game Name</p>
+            <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
+          </div>
+
+
+
+
           <div v-if="standaloneSettings.length > 0">
             <p>Standalone Settings</p>
             <div v-for="setting in standaloneSettings" :key="setting.key">
@@ -537,6 +611,12 @@ const toggleCrossOut = function (key: string, value: string) {
                     <div v-if="setting.type === 'SetKey'">
                       <div class="options">
                         <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleKey(setting.ckey)" :checked="isRecorded(setting.ckey)" />
+                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+                      </div>
+                    </div>
+                    <div v-if="setting.type === 'Option'">
+                      <div class="options">
+                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleOption(setting.ckey)" :checked="isOption(setting.ckey)" />
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
                       </div>
                     </div>
@@ -605,61 +685,6 @@ const toggleCrossOut = function (key: string, value: string) {
               </div>
             </div>
           </div>
-
-          <p>Difficulty</p>
-          <div class="options">
-            <template v-for="difficulty in difficulties" :key="difficulty">
-              <input
-                type="radio"
-                v-model="selectedDifficulty"
-                :value="difficulty"
-                :checked="difficulty === selectedDifficulty"
-                :id="`difficulty${difficulty}`"
-              />
-              <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
-            </template>
-          </div>
-
-          <div>
-            <p>Game Name</p>
-            <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
-          </div>
-
-          <p>Number of Players</p>
-          <div class="options">
-            <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
-            <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
-            <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
-            <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
-          </div>
-          <transition name="slide">
-            <div v-if="playerCount > 1" class="options">
-              <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">With Friends</label>
-              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">Multi-handed Solo</label>
-            </div>
-          </transition>
-
-
-          <div v-if="playerCount == 1 || multiplayerVariant == 'WithFriends'">
-            <p>Deck</p>
-            <select v-model="deckIds[0]">
-              <option disabled :value="null">-- Select a Deck--</option>
-              <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-            </select>
-          </div>
-          <div v-else>
-
-            <transition-group name="slide">
-              <template v-for="idx in playerCount" :key="idx">
-                <p>Deck {{idx}}</p>
-                <select v-model="deckIds[idx - 1]">
-                  <option disabled :value="null">-- Select a Deck--</option>
-                  <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-                </select>
-              </template>
-            </transition-group>
-          </div>
-
 
           <button type="submit" :disabled="disabled">Create</button>
         </form>

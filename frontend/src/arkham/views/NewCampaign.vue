@@ -261,7 +261,6 @@ watch(computedCampaignSettings, (newSettings) => {
       campaignLog.value = { keys: [], counts: [], sets }
 
       campaignSettings.value = relevantSettings
-
       return
     }
   }
@@ -270,11 +269,45 @@ watch(computedCampaignSettings, (newSettings) => {
   campaignSettings.value = []
 }, { immediate: true })
 
+// remove any associated recorded sets or keys for settings that are no longer valid
+const filterSettings = function() {
+  const invalidSettings = campaignSettings.value.flatMap((s) => settingActive(s) ? s.settings.filter((t) => !settingActive(t)) : s.settings)
+  const invalidKeys = invalidSettings.flatMap((s) => {
+    if (s.type === 'SetKey') {
+      return [s.ckey]
+    }
+    if (s.type === 'ForceKey') {
+      return [s.key]
+    }
+    return []
+  })
+
+  const invalidSetValues = invalidSettings.reduce((sets, s) => {
+    if (s.type === 'ChooseRecordable') {
+      const currentSet = sets[s.ckey] || []
+      const newEntries = s.content.map((c) => c.content)
+      return { ...sets, [s.ckey]: [...currentSet, ...newEntries] }
+    }
+    return sets
+  }, {})
+
+  const newKeys = campaignLog.value.keys.filter((k) => !invalidKeys.includes(k))
+
+  const newSets = Object.fromEntries(Object.entries(campaignLog.value.sets).map(([k,v]) => {
+    return [k, { ...v, entries: v.entries.filter((e) => !(invalidSetValues[k] || []).includes(e.value))}]
+  }))
+
+  const newCounts = campaignLog.value.counts
+
+  campaignLog.value = { keys: newKeys, sets: newSets, counts: newCounts }
+}
+
 const setKey = function(setting: CampaignSetting, value: string) {
   const current = campaignLog.value
   if (setting.type === 'ChooseKey') {
     const keysToRemove = setting.content.filter((k) => k !== value)
     campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k)), value] }
+    filterSettings()
   }
 }
 
@@ -295,7 +328,7 @@ const settingActive = function(setting: CampaignSetting) {
         }
       } else if (condition.type === 'inSet') {
         const set = campaignLog.value.sets[condition.key]
-        if (!set || !set.entries.find((e) => e.value === condition.content.content)) {
+        if (!set || !set.entries.find((e) => e.value === condition.content && e.tag === 'Recorded')) {
           return false
         }
       }
@@ -332,6 +365,8 @@ const toggleKey = function(key: string) {
   } else {
     current.keys.push(key)
   }
+
+  filterSettings()
 }
 
 const toggleSet = function(setting) {
@@ -350,6 +385,8 @@ const toggleSet = function(setting) {
       campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value: setting.content }]}}}
     }
   }
+
+  filterSettings()
 }
 
 const chooseRecordable = function(setting, value) {
@@ -363,6 +400,8 @@ const chooseRecordable = function(setting, value) {
       campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
     }
   }
+
+  filterSettings()
 }
 
 const inSet = function(key: string, value: string) {
@@ -480,19 +519,19 @@ const toggleCrossOut = function (key: string, value: string) {
           <div v-if="!fullCampaign && campaignSettings.length > 0">
             <p>Campaign Settings</p>
             <div v-for="setting in campaignSettings" :key="setting.key">
-              <div class="campaign-settings">
+              <div v-if="settingActive(setting)" class="campaign-settings">
                 {{setting.key}}
                 <div v-for="setting in setting.settings" :key="setting.key">
                   <template v-if="settingActive(setting)">
                     <div v-if="setting.type === 'SetKey'">
                       <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleKey(setting.ckey)" :checked="isRecorded(setting.key, setting.ckey)" />
+                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleKey(setting.ckey)" :checked="isRecorded(setting.ckey)" />
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
                       </div>
                     </div>
                     <div v-else-if="setting.type === 'ForceKey'">
                       <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" checked />
+                        <input type="checkbox" :name="setting.key" :id="setting.key" checked disabled />
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
                       </div>
                     </div>
@@ -500,7 +539,7 @@ const toggleCrossOut = function (key: string, value: string) {
                       {{toCapitalizedWords(setting.key)}}
                       <div class="options">
                         <template v-for="option in setting.content" :key="option.key">
-                          <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setKey(setting, option)" :checked="isRecorded(setting.key, option)" />
+                          <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setKey(setting, option)" :checked="isRecorded(option)" />
                           <label :for="option">{{toCapitalizedWords(option)}}</label>
                         </template>
                       </div>

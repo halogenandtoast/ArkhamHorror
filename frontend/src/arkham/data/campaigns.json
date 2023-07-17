@@ -57,7 +57,7 @@
               "key": "MementosDiscovered",
               "type": "inSet",
               "recordable": "RecordableMemento",
-              "content": { "key": "Mesmerizing Flute", "content": "MesmerizingFlute" }
+              "content": "MesmerizingFlute"
             }
           ],
           "content": [

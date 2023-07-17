@@ -4,6 +4,7 @@ import type { Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType} from '@/arkham/types/Message'
+import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 
@@ -70,15 +71,13 @@ const classObject = computed(() => {
   }
 })
 
-const baseUrl = inject('baseUrl')
-
 const cardBack = computed(() => {
-  return `${baseUrl}/img/arkham/player_back.jpg`
+  return imgsrc("player_back.jpg")
 })
 
 const image = computed(() => {
   const { cardCode } = props.card.contents;
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 })
 </script>
 

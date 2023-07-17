@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { imgsrc } from '@/arkham/helpers';
 import { ChaosBagStep } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token';
 
@@ -9,8 +10,6 @@ export interface Props {
   investigatorId: string
   choice: ChaosBagStep
 }
-
-const baseUrl = inject('baseUrl')
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
@@ -100,9 +99,9 @@ function pluralize(w, n) {
           <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :investigatorId="investigatorId" @choose="choose" />
         </template>
         <template v-else-if="tokenChoice.step && tokenChoice.step.tag === 'Draw'">
-          <img :src="`${baseUrl}/img/arkham/ct_blank.png`" class="token" v-if="tokenChoice.tag === 'Decided'" />
-          <img :src="`${baseUrl}/img/arkham/ct_blank.png`" class="token deciding" v-if="tokenChoice.tag === 'Deciding'" />
-          <img :src="`${baseUrl}/img/arkham/ct_choose.png`" class="token" v-if="tokenChoice.tag === 'Undecided'" />
+          <img :src="imgsrc('ct_blank.png')" class="token" v-if="tokenChoice.tag === 'Decided'" />
+          <img :src="imgsrc('ct_blank.png')" class="token deciding" v-if="tokenChoice.tag === 'Deciding'" />
+          <img :src="imgsrc('ct_choose.png')" class="token" v-if="tokenChoice.tag === 'Undecided'" />
         </template>
         <template v-else-if="tokenChoice.step">
           <ChaosBagChoice :choice="tokenChoice.step" :game="game" :investigatorId="investigatorId" @choose="choose" />

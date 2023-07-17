@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, inject } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
+import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import Prompt from '@/components/Prompt.vue';
 
@@ -13,7 +14,6 @@ const props = defineProps<Props>()
 const waiting = ref(false)
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
-const baseUrl = inject('baseUrl')
 const solo = inject('solo')
 const investigator = computed(() => props.game.investigators[props.investigatorId])
 const xp = computed(() => investigator.value.xp)
@@ -71,7 +71,7 @@ async function skip() {
     <div>
       <h2>Upgrade Deck ({{xp}} xp)</h2>
       <div v-if="!waiting" class="upgrade-deck">
-        <img class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigatorId.replace('c', '')}.jpg`" />
+        <img class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
         <div class="fields">
           <input
             type="url"

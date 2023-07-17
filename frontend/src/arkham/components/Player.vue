@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, inject, ComputedRef, reactive } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
@@ -32,7 +33,6 @@ const props = defineProps<Props>()
 const stories = computed(() => Object.values(props.game.stories).filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId && s.otherSide === null))
 
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
-const baseUrl = inject('baseUrl')
 
 const topOfDiscard = computed(() => discards.value[0])
 
@@ -41,9 +41,9 @@ const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.t
 const topOfDeck = computed(() => {
   const topCard = props.player.deck[0]
   if  (topOfDeckRevealed.value && topCard) {
-    return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
+    return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.jpg`)
   }
-  return `${baseUrl}/img/arkham/player_back.jpg`
+  return imgsrc("player_back.jpg")
 })
 
 const hunchDeck = computed(() => {
@@ -229,7 +229,7 @@ function beforeLeaveHand(el) {
         <img
           v-else
           class="deck card"
-          :src="`${baseUrl}/img/arkham/player_back.jpg`"
+          :src="imgsrc('player_back.jpg')"
           width="150px"
         />
         <span class="deck-size">{{hunchDeck.length}}</span>

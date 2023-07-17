@@ -9,17 +9,19 @@
       "settings": [
         {
           "key": "MissingPersons",
+          "ckey": "MissingPersons",
           "recordable": "RecordableCardCode",
           "type": "CrossOut",
           "content": [
-            { "label": "Gaveriella Mizrah", "key": "05046" },
-            { "label": "Jerome Davids", "key": "05047" },
-            { "label": "Valentino Rivas", "key": "05048" },
-            { "label": "Penny White", "key": "05049" }
+            { "key": "Gaveriella Mizrah", "content": "05046" },
+            { "key": "Jerome Davids", "content": "05047" },
+            { "key": "Valentino Rivas", "content": "05048" },
+            { "key": "Penny White", "content": "05049" }
           ]
         },
         {
           "key": "PiecesOfEvidenceWereLeftBehind",
+          "ckey": "PiecesOfEvidenceWereLeftBehind",
           "type": "ChooseNum"
         }
       ]
@@ -29,34 +31,38 @@
       "settings": [
         {
           "type": "ChooseKey",
-          "key": "_ChooseYourFate",
+          "key": "ChooseYourFate",
           "content": ["YouHaveAcceptedYourFate", "YouHaveRejectedYourFate"]
         },
         {
           "type": "ChooseKey",
-          "key": "_WitchingHourResolution",
+          "key": "WitchingHourResolution",
           "content": ["TheWitchesSpellWasBroken", "TheWitchesSpellWasCast"]
         },
         {
-          "type": "ChooseRecordable",
+          "type": "SetRecordable",
           "recordable": "RecordableMemento",
-          "key": "MementosDiscovered",
-          "value": "MesmerizingFlute"
+          "ckey": "MementosDiscovered",
+          "key": "DiscoveredMesmerizingFlute",
+          "content": "MesmerizingFlute"
         },
         {
-          "type": "ChooseBetweenRecordable",
-          "key": "_TheWitchesSpellWasBrokenMemento",
+          "type": "ChooseRecordable",
+          "key": "TheWitchesSpellWasBrokenMemento",
+          "ckey": "MementosDiscovered",
+          "recordable": "RecordableMemento",
           "ifRecorded": [
             { "key": "TheWitchesSpellWasBroken", "type": "key" },
             {
               "key": "MementosDiscovered",
               "type": "inSet",
-              "content": { "recordable": "RecordableMemento", "value": "MesmerizingFlute" }
+              "recordable": "RecordableMemento",
+              "content": { "key": "Mesmerizing Flute", "content": "MesmerizingFlute" }
             }
           ],
           "content": [
-            { "recordable": "RecordableMemento", "key": "MementosDiscovered", "value": "RitualComponents" },
-            { "recordable": "RecordableMemento", "key": "MementosDiscovered", "value": "ScrapOfTornShadow" }
+            { "key": "Ritual Components", "content": "RitualComponents" },
+            { "key": "Scrap of Torn Shadow", "content": "ScrapOfTornShadow" }
           ]
         }
       ]
@@ -67,26 +73,57 @@
         {
           "type": "SetKey",
           "key": "TheInvestigatorsAreOnGavriella'sTrail",
-          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05046" }]
+          "ckey": "TheInvestigatorsAreOnGavriella'sTrail",
+          "ifRecorded": [
+            {
+              "key": "MissingPersons",
+              "type": "inSet",
+              "recordable": "RecordableCardCode",
+              "content": "05046"
+            }]
         },
         {
           "type": "SetKey",
           "key": "TheInvestigatorsAreOnJerome'sTrail",
-          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05047" }]
+          "ckey": "TheInvestigatorsAreOnJerome'sTrail",
+          "ifRecorded": [
+            {
+              "key": "MissingPersons",
+              "type": "inSet",
+              "recordable": "RecordableCardCode",
+              "content": "05047"
+            }
+          ]
         },
         {
           "type": "SetKey",
           "key": "TheInvestigatorsAreOnPenny'sTrail",
-          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05049" }]
+          "ckey": "TheInvestigatorsAreOnPenny'sTrail",
+          "ifRecorded": [
+            {
+              "key": "MissingPersons",
+              "type": "inSet",
+              "recordable": "RecordableCardCode",
+              "content": "05049"
+            }
+          ]
         },
         {
           "type": "SetKey",
           "key": "TheInvestigatorsAreOnValentino'sTrail",
-          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05048" }]
+          "ckey": "TheInvestigatorsAreOnValentino'sTrail",
+          "ifRecorded": [
+            {
+              "key": "MissingPersons",
+              "type": "inSet",
+              "recordable": "RecordableCardCode",
+              "content": "05048"
+            }
+          ]
         },
         {
           "type": "ChooseKey",
-          "key": "_AtDeathsDoorResolution",
+          "key": "AtDeathsDoorResolution",
           "content": [
             "TheInvestigatorsEscapedTheSpectralRealm",
             "TheInvestigatorsLearnedNothingOfTheLodge'sSchemes",
@@ -101,7 +138,7 @@
       "settings": [
         {
           "type": "ChooseKey",
-          "key": "_JosefsFate",
+          "key": "JosefsFate",
           "content": [
             "JosefDisappearedIntoTheMist",
             "TheInvestigatorsRescuedJosef",
@@ -115,7 +152,7 @@
         },
         {
           "type": "ChooseKey",
-          "key": "_LodgeRelationship",
+          "key": "LodgeRelationship",
           "anyRecorded": [
             {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
             {"key": "JosefIsAliveAndWell", "type": "key" }

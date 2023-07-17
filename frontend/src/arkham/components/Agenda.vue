@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, inject, ref } from 'vue';
+import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card'
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -22,13 +23,12 @@ const props = defineProps<Props>()
 const emit = defineEmits(['show', 'choose'])
 
 const id = computed(() => props.agenda.id)
-const baseUrl = inject('baseUrl')
 const image = computed(() => {
   if (props.agenda.flipped) {
-    return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}b.jpg`;
+    return imgsrc(`cards/${id.value.replace('c', '')}b.jpg`);
   }
 
-  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${id.value.replace('c', '')}.jpg`);
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -79,7 +79,7 @@ const imageForCard = (card: Card) => {
   const side = card.contents.isFlipped ? 'b' : ''
   // TODO, send art with cards next to
   const art = card.contents.art || card.contents.cardCode.replace('c', '')
-  return `${baseUrl}/img/arkham/cards/${art}${side}.jpg`
+  return imgsrc(`cards/${art}${side}.jpg`)
 }
 
 const debug = inject('debug')

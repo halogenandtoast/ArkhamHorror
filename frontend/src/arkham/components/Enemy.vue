@@ -2,6 +2,7 @@
 import { withDefaults, computed, inject } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
+import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -21,7 +22,6 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { atLocation: false })
-const baseUrl = inject('baseUrl')
 
 const enemyStory = computed(() => {
   const { stories } = props.game
@@ -30,7 +30,7 @@ const enemyStory = computed(() => {
 
 const image = computed(() => {
   const { cardCode } = props.enemy
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 })
 
 const id = computed(() => props.enemy.id)

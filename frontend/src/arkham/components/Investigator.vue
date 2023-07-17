@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game'
+import { imgsrc } from '@/arkham/helpers'
 import { TokenType } from '@/arkham/types/Token'
 import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
@@ -120,21 +121,20 @@ const endTurnAction = computed(() => {
     .findIndex((c) => c.tag === MessageType.END_TURN_BUTTON && c.investigatorId === id.value);
 })
 
-const baseUrl = inject('baseUrl')
 const image = computed(() => {
   if (props.player.isYithian) {
-    return `${baseUrl}/img/arkham/cards/04244.jpg`;
+    return imgsrc("cards/04244.jpg");
   }
 
-  return `${baseUrl}/img/arkham/cards/${props.player.cardCode.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${props.player.cardCode.replace('c', '')}.jpg`);
 })
 
 const portraitImage = computed(() => {
   if (props.player.isYithian) {
-    return `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`
+    return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
   }
 
-  return `${baseUrl}/img/arkham/portraits/${props.player.cardCode.replace('c', '')}.jpg`
+  return imgsrc(`portraits/${props.player.cardCode.replace('c', '')}.jpg`)
 })
 
 

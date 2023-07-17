@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 
-import {inject,computed} from 'vue'
+import {computed} from 'vue'
+import {imgsrc} from '@/arkham/helpers'
 
 export interface Props {
   name: string
 }
 
 const props = defineProps<Props>()
-const baseUrl = inject('baseUrl')
 
 const keyImage = computed(() => {
   switch (props.name) {
-    case "SkullKey": return `${baseUrl}/img/arkham/ct_skull.png`
-    case "CultistKey": return `${baseUrl}/img/arkham/ct_cultist.png`
-    case "TabletKey": return `${baseUrl}/img/arkham/ct_tablet.png`
-    case "ElderThingKey": return `${baseUrl}/img/arkham/ct_elderthing.png`
+    case "SkullKey": return imgsrc("ct_skull.png")
+    case "CultistKey": return imgsrc("ct_cultist.png")
+    case "TabletKey": return imgsrc("ct_tablet.png")
+    case "ElderThingKey": return imgsrc("ct_elderthing.png")
     default: return props.name satisfies never
   }
 })

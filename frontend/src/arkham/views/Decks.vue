@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
 import { fetchDecks, deleteDeck, syncDeck } from '@/arkham/api'
 import NewDeck from '@/arkham/components/NewDeck';
+import {imgsrc} from '@/arkham/helpers';
 import { useToast } from "vue-toastification";
 
 const ready = ref(false)
 const decks = ref<Arkham.Deck[]>([])
-const baseUrl = inject('baseUrl')
 const deleteId = ref<string | null>(null)
 
 const toast = useToast()
@@ -57,7 +57,7 @@ const deckUrlToPage = (url: string): string => {
     <h2>Existing Decks</h2>
     <transition-group name="deck">
       <div v-for="deck in decks" :key="deck.id" class="deck">
-        <img class="portrait--decklist" :src="`${baseUrl}/img/arkham/cards/${deck.list.investigator_code.replace('c', '')}.jpg`" />
+        <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
         <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
         <div class="open-deck">
           <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>

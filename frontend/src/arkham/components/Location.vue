@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
@@ -21,13 +22,12 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   const { cardCode, revealed } = props.location
   const suffix = revealed ? '' : 'b'
 
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}${suffix}.jpg`
+  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.jpg`)
 })
 
 const id = computed(() => props.location.id)

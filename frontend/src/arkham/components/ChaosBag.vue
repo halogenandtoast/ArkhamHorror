@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
@@ -19,44 +20,42 @@ const props = defineProps<Props>()
 
 const emit = defineEmits(['choose'])
 
-const baseUrl = inject('baseUrl')
-
 function imageFor(tokenFace: string) {
   switch (tokenFace) {
     case 'PlusOne':
-      return `${baseUrl}/img/arkham/ct_plus1.png`;
+      return imgsrc("ct_plus1.png");
     case 'Zero':
-      return `${baseUrl}/img/arkham/ct_0.png`;
+      return imgsrc("ct_0.png");
     case 'MinusOne':
-      return `${baseUrl}/img/arkham/ct_minus1.png`;
+      return imgsrc("ct_minus1.png");
     case 'MinusTwo':
-      return `${baseUrl}/img/arkham/ct_minus2.png`;
+      return imgsrc("ct_minus2.png");
     case 'MinusThree':
-      return `${baseUrl}/img/arkham/ct_minus3.png`;
+      return imgsrc("ct_minus3.png");
     case 'MinusFour':
-      return `${baseUrl}/img/arkham/ct_minus4.png`;
+      return imgsrc("ct_minus4.png");
     case 'MinusFive':
-      return `${baseUrl}/img/arkham/ct_minus5.png`;
+      return imgsrc("ct_minus5.png");
     case 'MinusSix':
-      return `${baseUrl}/img/arkham/ct_minus6.png`;
+      return imgsrc("ct_minus6.png");
     case 'MinusSeven':
-      return `${baseUrl}/img/arkham/ct_minus7.png`;
+      return imgsrc("ct_minus7.png");
     case 'MinusEight':
-      return `${baseUrl}/img/arkham/ct_minus8.png`;
+      return imgsrc("ct_minus8.png");
     case 'AutoFail':
-      return `${baseUrl}/img/arkham/ct_autofail.png`;
+      return imgsrc("ct_autofail.png");
     case 'ElderSign':
-      return `${baseUrl}/img/arkham/ct_eldersign.png`;
+      return imgsrc("ct_eldersign.png");
     case 'Skull':
-      return `${baseUrl}/img/arkham/ct_skull.png`;
+      return imgsrc("ct_skull.png");
     case 'Cultist':
-      return `${baseUrl}/img/arkham/ct_cultist.png`;
+      return imgsrc("ct_cultist.png");
     case 'Tablet':
-      return `${baseUrl}/img/arkham/ct_tablet.png`;
+      return imgsrc("ct_tablet.png");
     case 'ElderThing':
-      return `${baseUrl}/img/arkham/ct_elderthing.png`;
+      return imgsrc("ct_elderthing.png");
     default:
-      return `${baseUrl}/img/arkham/ct_blank.png`;
+      return imgsrc("ct_blank.png");
   }
 }
 
@@ -82,20 +81,20 @@ const investigatorPortrait = computed(() => {
     const player = props.game.investigators[choice.investigatorId]
 
     if (player.isYithian) {
-      return `${baseUrl}/img/arkham/portraits/${choice.investigatorId.replace('c', '')}.jpg`
+      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
     }
 
-    return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
+    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
   }
 
   if (props.skillTest) {
     const player = props.game.investigators[props.skillTest.investigator]
 
     if (player.isYithian) {
-      return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator.replace('c', '')}.jpg`
+      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
     }
 
-    return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
+    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
   }
 
   return null;
@@ -120,7 +119,7 @@ const choose = (idx: number) => emit('choose', idx)
     <img
       v-if="tokenAction !== -1"
       class="token token--can-draw"
-      :src="`${baseUrl}/img/arkham/ct_blank.png`"
+      :src="imgsrc('ct_blank.png')"
       @click="choose(tokenAction)"
     />
     <template v-if="debug && tokenAction !== -1">

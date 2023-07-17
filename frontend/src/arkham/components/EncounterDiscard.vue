@@ -1,18 +1,17 @@
 <script lang="ts" setup>
-import { inject } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import type { EncounterCardContents } from '@/arkham/types/Card';
+import { imgsrc } from '@/arkham/helpers'
 
 export interface Props {
   game: Game
   cards: EncounterCardContents[]
 }
 
-const baseUrl = inject('baseUrl')
 const props = defineProps<Props>()
 const image = (card: EncounterCardContents) => {
   const { cardCode } = card;
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 }
 </script>
 

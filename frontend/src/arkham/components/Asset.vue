@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue';
 import { TokenType } from '@/arkham/types/Token';
+import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
@@ -37,9 +38,8 @@ const hasPool = computed(() => {
 
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
-const baseUrl = inject('baseUrl')
 const image = computed(() => {
-  return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 

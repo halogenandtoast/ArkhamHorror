@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { watch, ref, computed, inject } from 'vue';
+import { watch, ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import type { User } from '@/types';
 import { useRouter } from 'vue-router';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newGame } from '@/arkham/api';
+import { imgsrc } from '@/arkham/helpers';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
 import NewDeck from '@/arkham/components/NewDeck';
@@ -16,11 +17,19 @@ import sideStoriesJSON from '@/arkham/data/side-stories.json';
 
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
-const baseUrl = inject('baseUrl')
 
 type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
 
+type RecordableEntry =
+  { tag: "Recorded", value: string } |
+  { tag: "CrossedOut", value: string }
+
+type RecordableSet = { recordable: string, entries: RecordableEntry[] }
+
+type CampaignLogSettings = { keys: string[], counts: Record<string, number>, sets: Record<string, RecordableSet> }
+
 const gameMode = ref<GameMode>('Campaign')
+const campaignLog = ref<CampaignLogSettings>({ keys: {}, counts: {}})
 
 const scenarios = computed(() => {
   return scenarioJSON.filter((s) => {
@@ -150,10 +159,14 @@ const currentCampaignName = computed(() => {
 
 
 const scenario = computed(() => {
-  if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
     return gameMode.value === 'SideStory'
       ? sideStories.value.find((s) => s.id === selectedScenario.value)
       : scenarios.value.find((s) => s.id === selectedScenario.value)
+})
+
+const campaign = computed(() => {
+  if (gameMode.value === 'Campaign') {
+    return campaigns.value.find((c) => c.id === selectedCampaign.value)
   }
 
   return null
@@ -170,7 +183,7 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        settings.value
+        standaloneSettings.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   } else {
@@ -185,24 +198,205 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        settings.value
+        standaloneSettings.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   }
 }
 
-const settings = ref<StandaloneSetting[]>([])
+const standaloneSettings = ref<StandaloneSetting[]>([])
 
-// computed settings is a bit of a hack, because nested values change by value
-// when we change settings they are "cached" so to avoid this we deep copy the
-// settings in order to never alter its original value.
-const computedSettings = computed<StandaloneSetting[]>(() => {
-  return JSON.parse(JSON.stringify(scenario.value?.settings || []))
+// computed standaloneSettings is a bit of a hack, because nested values change by value
+// when we change standaloneSettings they are "cached" so to avoid this we deep copy the
+// standaloneSettings in order to never alter its original value.
+const computedStandaloneSettings = computed<StandaloneSetting[]>(() => {
+  if (gameMode.value === 'Standalone') {
+    return JSON.parse(JSON.stringify(scenario.value?.settings || []))
+  }
+
+  return []
 })
 
-watch(computedSettings, (newSettings) => {
-  settings.value = newSettings
+watch(computedStandaloneSettings, (newSettings) => {
+  standaloneSettings.value = newSettings
 }, { immediate: true })
+
+type SettingCondition =
+  { type: "key", key: string } |
+  { type: "inSet", key: string, recordable: string, content: Recordable }
+
+type Recordable = { key: string, content: string }
+
+type CampaignSetting =
+  { type: "CrossOut", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseKey", key: string, content: string[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
+  { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[] } |
+  { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[] }
+
+type CampaignScenario = { key: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], settings: CampaignSetting[] }
+
+const campaignSettings = ref<CampaignScenario[]>([])
+
+// computed standaloneSettings is a bit of a hack, because nested values change by value
+// when we change standaloneSettings they are "cached" so to avoid this we deep copy the
+// standaloneSettings in order to never alter its original value.
+const computedCampaignSettings = computed<CampaignScenario[]>(() => {
+  selectedScenario.value
+  return JSON.parse(JSON.stringify(campaign.value?.settings || []))
+})
+
+watch(computedCampaignSettings, (newSettings) => {
+  if (selectedScenario.value) {
+    const idx = campaignScenarios.value.findIndex((s) => s.id === selectedScenario.value)
+    if (idx !== -1) {
+      const relevantSettings = newSettings.slice(0, idx)
+
+      const crossOut = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "CrossOut"))
+      const sets = crossOut.reduce((a, s) => {
+        return { ...a, [s.key]: { recordable: s.recordable, entries: s.content.map((c) => { return { tag: "Recorded", value: c.content }}) } }}, {})
+
+      campaignLog.value = { keys: [], counts: [], sets }
+
+      campaignSettings.value = relevantSettings
+
+      return
+    }
+  }
+
+  campaignLog.value = { keys: [], counts: [], sets: {}}
+  campaignSettings.value = []
+}, { immediate: true })
+
+const setKey = function(setting: CampaignSetting, value: string) {
+  const current = campaignLog.value
+  if (setting.type === 'ChooseKey') {
+    const keysToRemove = setting.content.filter((k) => k !== value)
+    campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k)), value] }
+  }
+}
+
+const setNum = function(setting: CampaignSetting, value: number) {
+  const current = campaignLog.value
+  if (setting.type === 'ChooseNum') {
+    campaignLog.value = { ...current, counts: {...current.counts, [setting.ckey]: value}}
+  }
+}
+
+const settingActive = function(setting: CampaignSetting) {
+  const {ifRecorded, anyRecorded} = setting
+  if (ifRecorded) {
+    for (const condition of ifRecorded) {
+      if (condition.type === 'key') {
+        if (!campaignLog.value.keys.includes(condition.key)) {
+          return false
+        }
+      } else if (condition.type === 'inSet') {
+        const set = campaignLog.value.sets[condition.key]
+        if (!set || !set.entries.find((e) => e.value === condition.content.content)) {
+          return false
+        }
+      }
+    }
+  }
+
+  if (anyRecorded) {
+    let found = false
+    for (const condition of anyRecorded) {
+      if (condition.type === 'key') {
+        if (campaignLog.value.keys.includes(condition.key)) {
+          found = true
+        }
+      } else if (condition.type === 'inSet') {
+        const set = campaignLog.value.sets[condition.key]
+        if (set && set.entries.find((e) => e.value === condition.content)) {
+          found = true
+        }
+      }
+    }
+
+    if (!found) {
+      return false
+    }
+  }
+
+  return true
+}
+
+const toggleKey = function(key: string) {
+  const current = campaignLog.value
+  if (current.keys.includes(key)) {
+    current.keys = current.keys.filter((k) => k !== key)
+  } else {
+    current.keys.push(key)
+  }
+}
+
+const toggleSet = function(setting) {
+  if(setting.type === 'SetRecordable') {
+    const current = campaignLog.value
+    const set = current.sets[setting.ckey]
+    if (set) {
+      const entry = set.entries.find((e) => e.value === setting.content)
+      if (entry) {
+        set.entries = set.entries.filter((e) => e.value !== setting.content)
+      } else {
+        set.entries.push({ tag: "Recorded", value: setting.content })
+      }
+
+    } else {
+      campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value: setting.content }]}}}
+    }
+  }
+}
+
+const chooseRecordable = function(setting, value) {
+  if(setting.type === 'ChooseRecordable') {
+    const current = campaignLog.value
+    const set = current.sets[setting.ckey]
+    if (set) {
+      const keysToRemove = setting.content.filter((k) => k.content !== value).map((k) => k.content)
+      set.entries = [...set.entries.filter((e) => !keysToRemove.includes(e.value)), { tag: "Recorded", value }]
+    } else {
+      campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
+    }
+  }
+}
+
+const inSet = function(key: string, value: string) {
+  const current = campaignLog.value
+  const set = current.sets[key]
+  if (set) {
+    return set.entries.find((e) => e.value === value) !== undefined
+  }
+
+  return false
+}
+
+const isRecorded = function (value: string) {
+  const current = campaignLog.value
+  return current.keys.includes(value)
+}
+
+const crossedOut = function (key: string, value: string) {
+  const current = campaignLog.value
+  return current.sets[key]?.entries.find((e) => e.value === value)?.tag === "CrossedOut"
+}
+
+const toggleCrossOut = function (key: string, value: string) {
+  if (campaignLog.value.sets[key] === undefined) {
+    return
+  }
+
+  const {entries} = campaignLog.value.sets[key]
+
+  if (entries) {
+    entries.map((e) => e.tag = e.value === value ? (e.tag === "Recorded" ? "CrossedOut" : "Recorded") : e.tag)
+  }
+
+}
 
 </script>
 
@@ -229,7 +423,7 @@ watch(computedSettings, (newSettings) => {
           <div v-if="gameMode === 'SideStory'">
             <div class="scenarios">
               <div v-for="scenario in sideStories" :key="scenario.id">
-                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
               </div>
             </div>
           </div>
@@ -237,7 +431,7 @@ watch(computedSettings, (newSettings) => {
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
                 <div v-for="campaign in campaigns" :key="campaign.id">
-                  <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="`${baseUrl}/img/arkham/boxes/${campaign.id}.jpg`" @click="selectCampaign(campaign.id)">
+                  <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="imgsrc(`boxes/${campaign.id}.jpg`)" @click="selectCampaign(campaign.id)">
                 </div>
               </div>
             <!-- </select> -->
@@ -256,14 +450,14 @@ watch(computedSettings, (newSettings) => {
           <div v-if="(gameMode === 'Standalone' || !fullCampaign) && selectedCampaign">
             <div class="scenarios">
               <div v-for="scenario in campaignScenarios" :key="scenario.id">
-                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
               </div>
             </div>
           </div>
 
-          <div v-if="settings.length > 0">
+          <div v-if="standaloneSettings.length > 0">
             <p>Standalone Settings</p>
-            <div v-for="setting in settings" :key="setting.key">
+            <div v-for="setting in standaloneSettings" :key="setting.key">
               <div v-if="setting.type === 'ToggleKey'" class="options">
                 <input type="checkbox" v-model="setting.content" :id="setting.key"/>
                 <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
@@ -277,6 +471,72 @@ watch(computedSettings, (newSettings) => {
                       <s v-if="option.content">{{option.label}}</s>
                       <span v-else>{{option.label}}</span>
                     </label>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="!fullCampaign && campaignSettings.length > 0">
+            <p>Campaign Settings</p>
+            <div v-for="setting in campaignSettings" :key="setting.key">
+              <div class="campaign-settings">
+                {{setting.key}}
+                <div v-for="setting in setting.settings" :key="setting.key">
+                  <template v-if="settingActive(setting)">
+                    <div v-if="setting.type === 'SetKey'">
+                      <div class="options">
+                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleKey(setting.ckey)" :checked="isRecorded(setting.key, setting.ckey)" />
+                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+                      </div>
+                    </div>
+                    <div v-else-if="setting.type === 'ForceKey'">
+                      <div class="options">
+                        <input type="checkbox" :name="setting.key" :id="setting.key" checked />
+                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+                      </div>
+                    </div>
+                    <div v-else-if="setting.type === 'ChooseKey'">
+                      {{toCapitalizedWords(setting.key)}}
+                      <div class="options">
+                        <template v-for="option in setting.content" :key="option.key">
+                          <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setKey(setting, option)" :checked="isRecorded(setting.key, option)" />
+                          <label :for="option">{{toCapitalizedWords(option)}}</label>
+                        </template>
+                      </div>
+                    </div>
+                    <div v-else-if="setting.type === 'CrossOut'">
+                      {{toCapitalizedWords(setting.key)}}
+                      <div class="options">
+                        <template v-for="option in setting.content" :key="option.key">
+                          <input type="checkbox" :name="`${setting.key}${option.key}`" :id="`${setting.key}${option.key}`" class="invert" @change.prevent="toggleCrossOut(setting.key, option.content)" :checked="crossedOut(setting.key, option.content)"/>
+                          <label :for="`${setting.key}${option.key}`">
+                            <s v-if="crossedOut(setting.key, option.content)">{{toCapitalizedWords(option.key)}}</s>
+                            <span v-else>{{toCapitalizedWords(option.key)}}</span>
+                          </label>
+                        </template>
+                      </div>
+                    </div>
+                    <div v-else-if="setting.type === 'ChooseNum'">
+                      {{toCapitalizedWords(setting.key)}}
+                      <input type="number" :name="setting.key" :id="setting.key" @change.prevent="setNum(setting, parseInt($event.target.value))" />
+                    </div>
+                    <div v-else-if="setting.type === 'SetRecordable'" class="options">
+                      <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleSet(setting)" :checked="inSet(setting.ckey, setting.content)" />
+                      <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+                    </div>
+                    <div v-else-if="setting.type === 'ChooseRecordable'">
+                      {{toCapitalizedWords(setting.key)}}
+                      <div class="options">
+                        <template v-for="option in setting.content" :key="option.key">
+                          <input type="radio" :name="setting.key" :id="`${setting.key}${option.key}`" @change.prevent="chooseRecordable(setting, option.content)"/>
+                          <label :for="`${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
+                        </template>
+                      </div>
+                    </div>
+                    <div v-else>
+                      {{setting.type}}
+                    </div>
                   </template>
                 </div>
               </div>

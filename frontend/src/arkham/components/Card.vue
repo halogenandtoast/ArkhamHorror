@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { withDefaults, computed, inject } from 'vue';
+import { withDefaults, computed } from 'vue';
+import { imgsrc } from '@/arkham/helpers';
 import { TokenType } from '@/arkham/types/Token';
 import type { Card } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
@@ -18,17 +19,16 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { revealed: false })
 const emit = defineEmits(['choose'])
-const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
     const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter/back'
-    return `${baseUrl}/img/arkham/${back}.jpg`;
+    return imgsrc(`${back}.jpg`);
   }
 
   const { cardCode } = props.card.contents
   const suffix = !props.revealed && props.card.contents.isFlipped ? 'b' : ''
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`
+  return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
 })
 
 const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : props.card.contents.id)

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { watchEffect, ref, computed, inject } from 'vue';
+import { watchEffect, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
+import { imgsrc } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 
 import sets from '@/arkham/data/sets.json'
@@ -8,7 +9,6 @@ import cycles from '@/arkham/data/cycles.json'
 
 const allCards = ref<Arkham.CardDef[]>([])
 const ready = ref(false)
-const baseUrl = inject('baseUrl')
 const includeEncounter = ref(false)
 
 interface Filter {
@@ -74,7 +74,7 @@ const setCountText = (set) => {
   return ` (${implementedCount}/${total})`
 }
 
-const image = (card: Arkham.CardDef) => `${baseUrl}/img/arkham/cards/${card.art}.jpg`
+const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.jpg`)
 const view = ref(View.List)
 
 const query = ref("")

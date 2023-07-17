@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 
@@ -13,7 +14,6 @@ export interface Props {
 const isSpectral = computed(() => props.spectral !== undefined && props.spectral !== null)
 
 const props = defineProps<Props>()
-const baseUrl = inject('baseUrl')
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const usingSpectral = computed(() => {
@@ -39,10 +39,10 @@ const investigatorPortrait = computed(() => {
   const player = props.game.investigators[props.investigatorId]
 
   if (player.isYithian) {
-    return `${baseUrl}/img/arkham/portraits/${props.investigatorId.value.replace('c', '')}.jpg`
+    return imgsrc(`portraits/${props.investigatorId.value.replace('c', '')}.jpg`)
   }
 
-  return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
+  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
 })
 
 const deckLabel = computed(() => {
@@ -61,7 +61,7 @@ const debugChoose = inject('debugChoose')
     <div class="top-of-deck">
       <img
         class="deck"
-        :src="`${baseUrl}/img/arkham/back.png`"
+        :src="imgsrc('back.png')"
         :class="{ 'can-interact': deckAction !== -1 }"
         @click="$emit('choose', deckAction)"
       />

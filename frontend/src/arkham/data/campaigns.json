@@ -224,6 +224,11 @@
               "content": "Keziah'sFormula"
             }
           ]
+        },
+        {
+          "type": "Option",
+          "key": "TakeBlackBook",
+          "ckey": "TakeBlackBook"
         }
       ]
     },

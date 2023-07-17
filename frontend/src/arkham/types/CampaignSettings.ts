@@ -5,4 +5,10 @@ type RecordableEntry =
 
 type RecordableSet = { recordable: string, entries: RecordableEntry[] }
 
-export type CampaignLogSettings = { keys: string[], counts: Record<string, number>, sets: Record<string, RecordableSet> }
+export type CampaignLogSettings =
+  {
+    keys: string[],
+    counts: Record<string, number>,
+    sets: Record<string, RecordableSet>,
+    options: string[]
+  }

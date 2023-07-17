@@ -245,7 +245,7 @@ const computedCampaignSettings = computed<CampaignScenario[]>(() => {
 
 watch(computedCampaignSettings, (newSettings) => {
   if (selectedScenario.value) {
-    const idx = campaignScenarios.value.findIndex((s) => s.id === selectedScenario.value)
+    const idx = newSettings.findIndex((s) => s.scenarioId === selectedScenario.value)
     if (idx !== -1) {
       const relevantSettings = newSettings.slice(0, idx)
 
@@ -282,6 +282,11 @@ const filterSettings = function() {
       const currentSet = sets[s.ckey] || []
       const newEntries = s.content.map((c) => c.content)
       return { ...sets, [s.ckey]: [...currentSet, ...newEntries] }
+    }
+    if (s.type === 'ForceRecorded') {
+      const currentSet = sets[s.key] || []
+      const newEntries = s.content.map((c) => c.content)
+      return { ...sets, [s.key]: [...currentSet, ...newEntries] }
     }
     return sets
   }, {})
@@ -325,6 +330,17 @@ const settingActive = function(setting: CampaignSetting) {
         const set = campaignLog.value.sets[condition.key]
         if (!set || !set.entries.find((e) => e.value === condition.content && e.tag === 'Recorded')) {
           return false
+        }
+      } else if (condition.type === 'count') {
+        const count = campaignLog.value.counts[condition.key]
+        if (condition.predicate.type === 'lte') {
+          if (count === undefined || count > condition.predicate.value) {
+            return false
+          }
+        } else if (condition.predicate.type === 'gte') {
+          if (count === undefined || count < condition.predicate.value) {
+            return false
+          }
         }
       }
     }
@@ -530,6 +546,12 @@ const toggleCrossOut = function (key: string, value: string) {
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
                       </div>
                     </div>
+                    <div v-else-if="setting.type === 'ForceRecorded'">
+                      <div class="options">
+                        <input type="checkbox" :name="setting.key" :id="setting.key" checked disabled />
+                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+                      </div>
+                    </div>
                     <div v-else-if="setting.type === 'ChooseKey'">
                       {{toCapitalizedWords(setting.key)}}
                       <div class="options">
@@ -553,7 +575,14 @@ const toggleCrossOut = function (key: string, value: string) {
                     </div>
                     <div v-else-if="setting.type === 'ChooseNum'">
                       {{toCapitalizedWords(setting.key)}}
-                      <input type="number" :name="setting.key" :id="setting.key" @change.prevent="setNum(setting, parseInt($event.target.value))" />
+                      <input
+                        type="number"
+                        :name="setting.key"
+                        :id="setting.key"
+                        min="0"
+                        :max="setting.max"
+                        @change.prevent="setNum(setting, parseInt($event.target.value))"
+                      />
                     </div>
                     <div v-else-if="setting.type === 'SetRecordable'" class="options">
                       <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleSet(setting)" :checked="inSet(setting.ckey, setting.content)" />

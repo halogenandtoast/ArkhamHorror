@@ -275,13 +275,79 @@
             "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox",
             "TheGuardianOfTheTrapEmergedAndWasDefeated"
           ]
+        },
+        {
+          "type": "Option",
+          "key": "TakePuzzleBox",
+          "ckey": "TakePuzzleBox",
+          "ifRecorded": [
+            {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
+          ]
+        },
+        {
+          "type": "Option",
+          "key": "ProceedToInterlude3",
+          "ckey": "ProceedToInterlude3",
+          "ifRecorded": [
+            {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
+          ]
+        },
+        {
+          "type": "ChooseOption",
+          "key": "Interlude3",
+          "content": [
+            "GiveMrSanfordEverything",
+            "GiveMrSanfordNothing"
+          ],
+          "ifRecorded": [
+            {"key": "ProceedToInterlude3", "type": "option" }
+          ]
+        },
+        {
+          "type": "ForceKey",
+          "key": "TheInvestigatorsWereInductedIntoTheInnerCircle",
+          "ifRecorded": [
+            {"key": "ProceedToInterlude3", "type": "option" },
+            {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
+            {"key": "TheInvestigatorsToldTheLodgeAboutTheCoven", "type": "key" }
+          ]
+        },
+        {
+          "type": "ForceKey",
+          "key": "TheInvestigatorsKeptTheirMementosHidden",
+          "ifRecorded": [
+            {"key": "GiveMrSanfordNothing", "type": "option" }
+          ]
         }
       ]
     },
     {
       "key": "Union and Disillusion",
       "scenarioId": "05238",
-      "settings": []
+      "settings": [
+        {
+          "type": "ChooseOption",
+          "key": "ChooseSide",
+          "content": [
+            "SideWithTheLodge",
+            "SideWithTheCoven"
+          ]
+        },
+        {
+          "type": "ForceKey",
+          "key": "TheInvestigatorsSidedWithTheLodge",
+          "ifRecorded": [
+            {"key": "SideWithTheLodge", "type": "option" }
+          ]
+        },
+        {
+          "type": "ForceKey",
+          "key": "TheInvestigatorsSidedWithTheCoven",
+          "ifRecorded": [
+            {"key": "SideWithTheCoven", "type": "option" }
+          ]
+        }
+      ]
     },
     {
       "key": "In the Clutches of Chaos",

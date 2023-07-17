@@ -286,8 +286,7 @@ const filterSettings = function() {
     }
     if (s.type === 'ForceRecorded') {
       const currentSet = sets[s.key] || []
-      const newEntries = s.content.map((c) => c.content)
-      return { ...sets, [s.key]: [...currentSet, ...newEntries] }
+      return { ...sets, [s.key]: [...currentSet, s.content] }
     }
     return sets
   }, {})
@@ -309,6 +308,15 @@ const setKey = function(setting: CampaignSetting, value: string) {
   if (setting.type === 'ChooseKey') {
     const keysToRemove = setting.content.filter((k) => k !== value)
     campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k)), value] }
+    filterSettings()
+  }
+}
+
+const setOption = function(setting: CampaignSetting, value: string) {
+  const current = campaignLog.value
+  if (setting.type === 'ChooseOption') {
+    const keysToRemove = setting.content.filter((k) => k !== value)
+    campaignLog.value = { ...current, options: [...current.options.filter((k) => !keysToRemove.includes(k)), value] }
     filterSettings()
   }
 }
@@ -343,6 +351,10 @@ const settingActive = function(setting: CampaignSetting) {
           if (count === undefined || count < condition.predicate.value) {
             return false
           }
+        }
+      } else if(condition.type === 'option') {
+        if (!campaignLog.value.options.includes(condition.key)) {
+          return false
         }
       }
     }
@@ -614,7 +626,7 @@ const toggleCrossOut = function (key: string, value: string) {
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
                       </div>
                     </div>
-                    <div v-if="setting.type === 'Option'">
+                    <div v-else-if="setting.type === 'Option'">
                       <div class="options">
                         <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleOption(setting.ckey)" :checked="isOption(setting.ckey)" />
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
@@ -637,6 +649,15 @@ const toggleCrossOut = function (key: string, value: string) {
                       <div class="options">
                         <template v-for="option in setting.content" :key="option.key">
                           <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setKey(setting, option)" :checked="isRecorded(option)" />
+                          <label :for="option">{{toCapitalizedWords(option)}}</label>
+                        </template>
+                      </div>
+                    </div>
+                    <div v-else-if="setting.type === 'ChooseOption'">
+                      {{toCapitalizedWords(setting.key)}}
+                      <div class="options">
+                        <template v-for="option in setting.content" :key="option.key">
+                          <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setOption(setting, option)" :checked="isOption(option)" />
                           <label :for="option">{{toCapitalizedWords(option)}}</label>
                         </template>
                       </div>

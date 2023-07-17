@@ -27,7 +27,9 @@ import Data.Map.Strict qualified as Map
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
-    StartCampaign -> a <$ push (CampaignStep campaignStep)
+    StartCampaign -> do
+      pushAll $ map HandleOption (toList $ campaignLogOptions campaignLog) <> [CampaignStep campaignStep]
+      pure a
     CampaignStep Nothing -> a <$ push GameOver -- TODO: move to generic
     CampaignStep (Just (ScenarioStep sid)) -> do
       a <$ pushAll [ResetInvestigators, ResetGame, StartScenario sid]

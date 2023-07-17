@@ -97,7 +97,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
   StartCampaign -> do
     standalone <- getIsStandalone
-    a <$ when standalone (push $ StartScenario scenarioId)
+    when standalone $ do
+      pushAll $
+        map HandleOption (toList $ campaignLogOptions scenarioStandaloneCampaignLog)
+          <> [StartScenario scenarioId]
+    pure a
   InitDeck iid deck -> do
     standalone <- getIsStandalone
     if standalone
@@ -884,8 +888,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             discardedCards
         pure a
       (card : cards) -> do
+        beforeWindow <- checkWindows [Window Timing.When (Window.Discarded iid source (EncounterCard card))]
+        afterWindow <- checkWindows [Window Timing.After (Window.Discarded iid source (EncounterCard card))]
         pushAll
-          [ Discarded (CardIdTarget $ toCardId card) source (EncounterCard card)
+          [ beforeWindow
+          , Discarded (CardIdTarget $ toCardId card) source (EncounterCard card)
+          , afterWindow
           , DiscardTopOfEncounterDeckWithDiscardedCards
               iid
               (n - 1)

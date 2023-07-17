@@ -199,8 +199,8 @@
           "type": "SetRecordable",
           "recordable": "RecordableMemento",
           "ckey": "MementosDiscovered",
-          "key": "DiscoveredKeziahsFormula",
-          "content": "Keziah'sFormula",
+          "key": "DiscoveredKeziahsFormulae",
+          "content": "Keziah'sFormulae",
           "ifRecorded": [
             {
               "key": "MementosDiscovered",
@@ -221,7 +221,7 @@
               "key": "MementosDiscovered",
               "type": "inSet",
               "recordable": "RecordableMemento",
-              "content": "Keziah'sFormula"
+              "content": "Keziah'sFormulae"
             }
           ]
         },
@@ -287,27 +287,29 @@
         {
           "type": "Option",
           "key": "ProceedToInterlude3",
-          "ckey": "ProceedToInterlude3",
           "ifRecorded": [
             {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "key": "Interlude III: The Price of Progress",
+      "ifRecorded": [{"key": "ProceedToInterlude3", "type": "option" }],
+      "settings": [
         {
           "type": "ChooseOption",
           "key": "Interlude3",
           "content": [
-            "GiveMrSanfordEverything",
-            "GiveMrSanfordNothing"
-          ],
-          "ifRecorded": [
-            {"key": "ProceedToInterlude3", "type": "option" }
+            { "key": "GiveMrSanfordEverything" },
+            { "key": "GiveMrSanfordNothing" }
           ]
         },
         {
           "type": "ForceKey",
           "key": "TheInvestigatorsWereInductedIntoTheInnerCircle",
           "ifRecorded": [
-            {"key": "ProceedToInterlude3", "type": "option" },
+            {"key": "GiveMrSanfordEverything", "type": "option" },
             {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
             {"key": "TheInvestigatorsToldTheLodgeAboutTheCoven", "type": "key" }
           ]
@@ -329,8 +331,8 @@
           "type": "ChooseOption",
           "key": "ChooseSide",
           "content": [
-            "SideWithTheLodge",
-            "SideWithTheCoven"
+            { "key": "SideWithTheLodge" },
+            { "key": "SideWithTheCoven" }
           ]
         },
         {

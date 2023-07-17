@@ -5,21 +5,24 @@ module Arkham.Campaign.Campaigns.TheCircleUndone (
 
 import Arkham.Prelude
 
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.Campaign.Runner
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Import
 import Arkham.Campaigns.TheCircleUndone.Memento
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Helpers
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.ChaosToken
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype Metadata = Metadata
@@ -154,7 +157,8 @@ instance RunMessage TheCircleUndone where
       pushAll [Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing]
       pure c
     CampaignStep (Just (InterludeStepPart 2 _ 8)) -> do
-      pushAll [Record TheInvestigatorsAreMembersOfTheLodge, AddChaosToken Cultist, NextCampaignStep Nothing]
+      pushAll
+        [Record TheInvestigatorsAreMembersOfTheLodge, AddChaosToken Cultist, NextCampaignStep Nothing]
       pure c
     CampaignStep (Just (InterludeStepPart 2 _ 9)) -> do
       pushAll
@@ -257,4 +261,12 @@ instance RunMessage TheCircleUndone where
         xs -> do
           for_ xs $ \(iid, _) -> push $ LoadDeck iid $ Deck []
           pure c
+    HandleOption option -> do
+      lead <- getLead
+      investigators <- allInvestigators
+      case option of
+        TakeBlackBook -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.theBlackBook
+        TakePuzzleBox -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.puzzleBox
+        _ -> error $ "Unhandled option: " <> show option
+      pure c
     _ -> TheCircleUndone . (`with` metadata) <$> runMessage msg attrs

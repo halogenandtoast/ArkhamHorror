@@ -19,6 +19,7 @@ import Arkham.Action.Additional
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
 import Arkham.Attack
+import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -293,6 +294,7 @@ data Message
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
   | Blanked Message
+  | HandleOption CampaignOption
   | CampaignStep (Maybe CampaignStep)
   | CancelEachNext Source [MessageType]
   | CancelSkillEffects
@@ -794,7 +796,10 @@ chooseOrRunOne _ [x] = uiToRun x
 chooseOrRunOne iid msgs = chooseOne iid msgs
 
 questionLabel :: Text -> InvestigatorId -> Question Message -> Message
-questionLabel lbl iid q = Ask iid (QuestionLabel lbl q)
+questionLabel lbl iid q = Ask iid (QuestionLabel lbl Nothing q)
+
+questionLabelWithCard :: Text -> CardCode -> InvestigatorId -> Question Message -> Message
+questionLabelWithCard lbl cCode iid q = Ask iid (QuestionLabel lbl (Just cCode) q)
 
 chooseOne :: InvestigatorId -> [UI Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"

@@ -117,15 +117,14 @@ instance RunMessage JoeDiamond where
           pushAll
             [ FocusCards $ map PlayerCard remainingInsights
             , ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard unsolvedCase]
-            , Ask (toId attrs) $
-                QuestionLabel "Choose 10 more cards for hunch deck" $
-                  ChooseN
-                    10
-                    [ TargetLabel
-                      (CardIdTarget $ toCardId insight)
-                      [ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard insight]]
-                    | insight <- remainingInsights
-                    ]
+            , questionLabel "Choose 10 more cards for hunch deck" (toId attrs) $
+                ChooseN
+                  10
+                  [ TargetLabel
+                    (CardIdTarget $ toCardId insight)
+                    [ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard insight]]
+                  | insight <- remainingInsights
+                  ]
             , UnfocusCards
             ]
           pure $ JoeDiamond (attrs' `with` meta)

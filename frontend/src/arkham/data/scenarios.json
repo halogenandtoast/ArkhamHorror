@@ -1,4 +1,36 @@
 [
+
+  { "id": "01104", "name": "The Gathering", "campaign": "01" },
+  {
+    "id": "01120",
+    "name": "The Midnight Masks",
+    "campaign": "01",
+    "settings": [
+      { "key": "LitaWasForcedToFindOthersToHelpHerCause", "type": "ToggleKey", "content": false },
+      { "key": "HouseStatus", "keys": ["YourHouseHasBurnedToTheGround", "YourHouseIsStillStanding"], "type": "PickKey", "content": "YourHouseHasBurnedToTheGround" },
+      { "key": "GhoulPriestIsStillAlive", "type": "ToggleKey", "content": false },
+      { "key": "AddLitaChantler", "type": "ToggleOption", "content": false }
+    ]
+  },
+  {
+    "id": "01142",
+    "name": "The Devourer Below",
+    "campaign": "01",
+    "settings": [
+      { "key": "ItIsPastMidnight", "type": "ToggleKey", "content": false },
+      { "key": "GhoulPriestIsStillAlive", "type": "ToggleKey", "content": false },
+      { "key": "CultistsWhoGotAway", "recordable": "RecordableCardCode", "type": "ToggleCrossedOut", "content": [
+        { "label": "\"Wolf-Man\" Drew", "key": "01137", "content": false },
+        { "label": "Herman Collins", "key": "01138", "content": false },
+        { "label": "Peter Warren", "key": "01139", "content": false },
+        { "label": "Victoria Devereux", "key": "01140", "content": false },
+        { "label": "Ruth Turner", "key": "01141", "content": false },
+        { "label": "The Masked Hunter", "key": "01121b", "content": false }
+      ] },
+      { "key": "AddLitaChantler", "type": "ToggleOption", "content": false }
+    ]
+  },
+
   { "id": "02041", "name": "Extracurricular Activity", "campaign": "02" },
   { "id": "02062", "name": "The House Always Wins", "campaign": "02" },
   { "id": "02118", "name": "The Miskatonic Museum", "campaign": "02" },

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.MouthOfKnYanTheCavernsMaw
-  ( mouthOfKnYanTheCavernsMaw
-  , MouthOfKnYanTheCavernsMaw(..)
-  ) where
+module Arkham.Location.Cards.MouthOfKnYanTheCavernsMaw (
+  mouthOfKnYanTheCavernsMaw,
+  MouthOfKnYanTheCavernsMaw (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,18 +26,19 @@ mouthOfKnYanTheCavernsMaw = location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYa
 
 instance HasAbilities MouthOfKnYanTheCavernsMaw where
   getAbilities (MouthOfKnYanTheCavernsMaw attrs) =
-    withBaseAbilities attrs $ if locationRevealed attrs
-      then
-        [ withTooltip
-          "Let's make camp and solve this puzzle tomorrow"
-          (locationResignAction attrs)
-        , restrictedAbility
-          attrs
-          2
-          (Here <> HasSupply Compass)
-          (ActionAbility Nothing $ ActionCost 1)
-        ]
-      else []
+    withBaseAbilities attrs $
+      if locationRevealed attrs
+        then
+          [ withTooltip
+              "Let's make camp and solve this puzzle tomorrow"
+              (locationResignAction attrs)
+          , restrictedAbility
+              attrs
+              2
+              (Here <> HasSupply Compass)
+              (ActionAbility Nothing $ ActionCost 1)
+          ]
+        else []
 
 instance RunMessage MouthOfKnYanTheCavernsMaw where
   runMessage msg l@(MouthOfKnYanTheCavernsMaw attrs) = case msg of
@@ -49,31 +50,29 @@ instance RunMessage MouthOfKnYanTheCavernsMaw where
       pushAll
         [ FocusCards viewing
         , SetScenarioDeck ExplorationDeck rest
-        , Ask iid
-        $ QuestionLabel "Place one card on bottom of exploration deck"
-        $ ChooseOne
-            [ TargetLabel
-                (CardIdTarget $ toCardId c)
+        , questionLabel "Place one card on bottom of exploration deck" iid $
+            ChooseOne
+              [ targetLabel
+                (toCardId c)
                 [ PutCardOnBottomOfDeck
-                  iid
-                  (Deck.ScenarioDeckByKey ExplorationDeck)
-                  c
+                    iid
+                    (Deck.ScenarioDeckByKey ExplorationDeck)
+                    c
                 , FocusCards remaining
-                , Ask iid
-                $ QuestionLabel "Place card on top of exploration deck"
-                $ ChooseOneAtATime
-                    [ TargetLabel
-                        (CardIdTarget $ toCardId r)
+                , questionLabel "Place card on top of exploration deck" iid $
+                    ChooseOneAtATime
+                      [ targetLabel
+                        (toCardId r)
                         [ PutCardOnTopOfDeck
                             iid
                             (Deck.ScenarioDeckByKey ExplorationDeck)
                             r
                         ]
-                    | r <- remaining
-                    ]
+                      | r <- remaining
+                      ]
                 ]
-            | (c, remaining) <- cardPairs
-            ]
+              | (c, remaining) <- cardPairs
+              ]
         , UnfocusCards
         ]
       pure l

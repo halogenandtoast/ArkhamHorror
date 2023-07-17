@@ -118,7 +118,7 @@ export const newGame = (
     campaignName,
     multiplayerVariant,
     settings,
-    campaignLog: campaignLog !== null ? {...campaignLog, counts: Object.entries(campaignLog.counts), sets: Object.entries(campaignLog.sets) } : null
+    campaignLog: campaignLog !== null ? {...campaignLog, counts: Object.entries(campaignLog.counts), sets: Object.entries(campaignLog.sets), options: campaignLog.options.flatMap((o) => o.ckey ? [o.ckey] : []) } : null
   })
   .then((resp) => gameDecoder.decodeToPromise(resp.data));
 

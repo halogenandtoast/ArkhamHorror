@@ -4,6 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
@@ -217,5 +219,13 @@ instance RunMessage TheMidnightMasks where
           <> [CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated]
           <> [GainXP iid (toSource attrs) x | (iid, x) <- xp]
           <> [EndOfGame Nothing]
+      pure s
+    HandleOption option -> do
+      whenM getIsStandalone $ do
+        lead <- getLead
+        investigators <- allInvestigators
+        case option of
+          AddLitaChantler -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.litaChantler
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheMidnightMasks <$> runMessage msg attrs

@@ -320,7 +320,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty mCampai
     , game'
     )
  where
-  withCampaignLog = case traceShowId mCampaignLog of
+  withCampaignLog = case mCampaignLog of
     Nothing -> id
     Just cl -> overAttrs (Arkham.Campaign.Types.logL .~ cl)
   withStandaloneCampaignLog = case mCampaignLog of

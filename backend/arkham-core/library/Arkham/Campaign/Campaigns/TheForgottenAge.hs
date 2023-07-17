@@ -218,9 +218,9 @@ instance RunMessage TheForgottenAge where
             )
             withoutBlanket
           <> map (uncurry UseSupply) useProvisions
-          <> [ Ask leadInvestigatorId
-              $ QuestionLabel
-                "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+          <> [ questionLabel
+              "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+              leadInvestigatorId
               $ ChooseN
                 lowOnRationsCount
                 [ CardLabel
@@ -235,9 +235,9 @@ instance RunMessage TheForgottenAge where
                 ]
              | lowOnRationsCount > 0
              ]
-          <> [ Ask leadInvestigatorId
-                $ QuestionLabel
-                  "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
+          <> [ questionLabel
+                "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
+                leadInvestigatorId
                 $ ChooseOne
                   [ CardLabel
                     (unInvestigatorId iid)
@@ -248,9 +248,9 @@ instance RunMessage TheForgottenAge where
                   | (iid, hasBinoculars) <- investigatorsWithBinocularsPairs
                   ]
              ]
-          <> [ Ask leadInvestigatorId
-              $ QuestionLabel
-                "Choose an investigator to removed poisoned by using a medicine"
+          <> [ questionLabel
+              "Choose an investigator to removed poisoned by using a medicine"
+              leadInvestigatorId
               $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
               $ Done "Do not use medicine"
                 : [ CardLabel
@@ -506,9 +506,9 @@ instance RunMessage TheForgottenAge where
           : gasMessages
             <> mapMessages
             <> map (uncurry UseSupply) useProvisions
-            <> [ Ask leadInvestigatorId
-                $ QuestionLabel
-                  "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+            <> [ questionLabel
+                "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+                leadInvestigatorId
                 $ ChooseN
                   lowOnRationsCount
                   [ CardLabel
@@ -523,9 +523,9 @@ instance RunMessage TheForgottenAge where
                   ]
                | lowOnRationsCount > 0
                ]
-            <> [ Ask leadInvestigatorId
-                $ QuestionLabel
-                  "Choose an investigator to removed poisoned by using a medicine"
+            <> [ questionLabel
+                "Choose an investigator to removed poisoned by using a medicine"
+                leadInvestigatorId
                 $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
                 $ Done "Do not use medicine"
                   : [ CardLabel
@@ -699,9 +699,9 @@ instance RunMessage TheForgottenAge where
         useProvisions = take (length investigatorIds) provisions
       pushAll $
         map (uncurry UseSupply) useProvisions
-          <> [ Ask leadInvestigatorId
-              $ QuestionLabel
-                "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+          <> [ questionLabel
+              "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+              leadInvestigatorId
               $ ChooseN
                 lowOnRationsCount
                 [ CardLabel
@@ -731,9 +731,9 @@ instance RunMessage TheForgottenAge where
                 then Just iid
                 else Nothing
       pushAll $
-        [ Ask leadInvestigatorId
-          $ QuestionLabel
-            "Choose an investigator to removed poisoned by using a medicine"
+        [ questionLabel
+          "Choose an investigator to removed poisoned by using a medicine"
+          leadInvestigatorId
           $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
           $ Done "Do not use medicine"
             : [ CardLabel

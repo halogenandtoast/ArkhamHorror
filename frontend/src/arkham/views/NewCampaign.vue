@@ -588,9 +588,6 @@ const toggleCrossOut = function (key: string, value: string) {
             <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
           </div>
 
-
-
-
           <div v-if="standaloneSettings.length > 0">
             <p>Standalone Settings</p>
             <div v-for="setting in standaloneSettings" :key="setting.key">

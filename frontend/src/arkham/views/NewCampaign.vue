@@ -8,6 +8,7 @@ import { fetchDecks, newGame } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
+import { CampaignLogSettings } from '@/arkham/types/CampaignSettings'
 import NewDeck from '@/arkham/components/NewDeck';
 import { toCapitalizedWords } from '@/arkham/helpers';
 
@@ -19,14 +20,6 @@ const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
 
 type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
-
-type RecordableEntry =
-  { tag: "Recorded", value: string } |
-  { tag: "CrossedOut", value: string }
-
-type RecordableSet = { recordable: string, entries: RecordableEntry[] }
-
-type CampaignLogSettings = { keys: string[], counts: Record<string, number>, sets: Record<string, RecordableSet> }
 
 const gameMode = ref<GameMode>('Campaign')
 const campaignLog = ref<CampaignLogSettings>({ keys: {}, counts: {}})
@@ -183,7 +176,8 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        standaloneSettings.value
+        standaloneSettings.value,
+        campaignLog.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   } else {
@@ -194,11 +188,12 @@ async function start() {
         deckIds.value,
         playerCount.value,
         campaignId,
-        null,
+        fullCampaign.value ? null : selectedScenario.value,
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        standaloneSettings.value
+        standaloneSettings.value,
+        campaignLog.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   }

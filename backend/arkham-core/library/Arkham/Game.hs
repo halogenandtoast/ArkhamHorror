@@ -31,6 +31,7 @@ import Arkham.Asset.Uses (Uses (..), useCount, useType)
 import Arkham.Attack
 import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
+import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.PlayerCard
@@ -209,6 +210,7 @@ newCampaign
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
+  -> (Maybe CampaignLog)
   -> m (Queue Message, Game)
 newCampaign = newGame . Right
 
@@ -219,6 +221,7 @@ newScenario
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
+  -> (Maybe CampaignLog)
   -> m (Queue Message, Game)
 newScenario = newGame . Left
 
@@ -229,8 +232,9 @@ newGame
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
+  -> (Maybe CampaignLog)
   -> m (Queue Message, Game)
-newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
+newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty mCampaignLog = do
   let
     initialInvestigatorId = decklistInvestigatorId deck
     state =
@@ -314,9 +318,12 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
     , game'
     )
  where
+  setCampaignLog = case mCampaignLog of
+    Nothing -> id
+    Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
   mode =
     either
-      (That . (`lookupScenario` difficulty))
+      (That . traceShowId . setCampaignLog . (`lookupScenario` difficulty))
       (This . (`lookupCampaign` difficulty))
       scenarioOrCampaignId
 
@@ -3612,6 +3619,8 @@ runGameMessage msg g = case msg of
         & (activeAbilitiesL .~ mempty)
         & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
   StartScenario sid -> do
+    -- NOTE: The campaign log needs to be copied over for standalones because
+    -- we effectively reset it here when we `setScenario`.
     let
       difficulty =
         these
@@ -3619,6 +3628,15 @@ runGameMessage msg g = case msg of
           difficultyOfScenario
           (const . difficultyOf)
           (g ^. modeL)
+      mCampaignLog =
+        these
+          (const Nothing)
+          (Just . scenarioStandaloneCampaignLog . toAttrs)
+          (\_ _ -> Nothing)
+          (g ^. modeL)
+      setCampaignLog = case mCampaignLog of
+        Nothing -> id
+        Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
       standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll $
       PreScenarioSetup
@@ -3633,7 +3651,7 @@ runGameMessage msg g = case msg of
              ]
     pure $
       g
-        & (modeL %~ setScenario (lookupScenario sid difficulty))
+        & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
         & (phaseL .~ InvestigationPhase)
   RestartScenario -> do
     let standalone = isNothing $ modeCampaign $ g ^. modeL

@@ -6,7 +6,9 @@ import { useRouter } from 'vue-router';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newGame } from '@/arkham/api';
 import type { Difficulty } from '@/arkham/types/Difficulty';
+import type { StandaloneSetting } from '@/types/StandaloneSetting'
 import NewDeck from '@/arkham/components/NewDeck';
+import { toCapitalizedWords } from '@/arkham/helpers';
 
 import campaignJSON from '@/arkham/data/campaigns.json';
 import scenarioJSON from '@/arkham/data/scenarios.json';
@@ -15,6 +17,10 @@ import sideStoriesJSON from '@/arkham/data/side-stories.json';
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
 const baseUrl = inject('baseUrl')
+
+type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
+
+const gameMode = ref<GameMode>('Campaign')
 
 const scenarios = computed(() => {
   return scenarioJSON.filter((s) => {
@@ -44,7 +50,7 @@ const campaigns = computed(() => {
 })
 
 const difficulties: Difficulty[] = computed(() => {
-  if(sideStory.value) {
+  if(gameMode.value === 'SideStory') {
     const sideStoryScenario = sideStories.value.find((c) => c.id === selectedScenario.value)
     if (sideStoryScenario.standaloneDifficulties) {
       return sideStoryScenario.standaloneDifficulties
@@ -61,8 +67,7 @@ const playerCount = ref(1)
 
 const selectedDifficulty = ref<Difficulty>('Easy')
 const deckIds = ref<(string | null)[]>([null, null, null, null])
-const standalone = ref(false)
-const sideStory = ref(false)
+const fullCampaign = ref(true)
 const selectedCampaign = ref('01')
 const selectedScenario = ref('81001')
 const campaignName = ref<string | null>(null)
@@ -77,12 +82,7 @@ const campaignScenarios = computed(() => {
   return []
 })
 
-const selectCampaign = (campaignId) => {
-  selectedCampaign.value = campaignId
-  if(standalone.value && campaignScenarios.value.length == 0) {
-    standalone.value = false
-  }
-}
+const selectCampaign = (campaignId) => { selectedCampaign.value = campaignId }
 
 watch(difficulties, async (newDifficulties) => selectedDifficulty.value = newDifficulties[0])
 
@@ -106,7 +106,7 @@ const selectedCampaignReturnToId = computed(() => {
 })
 
 const validStandalone = computed(() => {
-  if (standalone.value) {
+  if (gameMode.value === 'Standalone') {
     return campaignScenarios.value.some((s) => s.id == selectedScenario.value)
   }
 
@@ -123,21 +123,18 @@ const disabled = computed(() => {
 
 const defaultCampaignName = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-  const scenario = sideStory.value
-    ? sideStories.value.find((c) => c.id === selectedScenario.value)
-    : scenarios.value.find((c) => c.id === selectedScenario.value)
 
-  if (!standalone.value && !sideStory.value && campaign) {
+  if (gameMode.value === 'Campaign') {
     const returnToPrefix = returnTo.value ? "Return to " : ""
     return `${returnToPrefix}${campaign.name}`;
   }
 
-  if (standalone.value && scenario) {
-    return `${scenario.name}`;
+  if (gameMode.value === 'Standalone' && scenario.value) {
+    return `${scenario.value.name}`;
   }
 
-  if (sideStory.value && scenario) {
-    return `${scenario.name}`;
+  if (gameMode.value === 'SideStory' && scenario.value) {
+    return `${scenario.value.name}`;
   }
 
   return '';
@@ -151,20 +148,29 @@ const currentCampaignName = computed(() => {
   return defaultCampaignName.value;
 })
 
+
+const scenario = computed(() => {
+  if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
+    return gameMode.value === 'SideStory'
+      ? sideStories.value.find((s) => s.id === selectedScenario.value)
+      : scenarios.value.find((s) => s.id === selectedScenario.value)
+  }
+
+  return null
+})
+
 async function start() {
-  if (standalone.value || sideStory.value) {
-    const mscenario = sideStory.value
-      ? sideStories.value.find((scenario) => scenario.id === selectedScenario.value)
-      : scenarios.value.find((scenario) => scenario.id === selectedScenario.value)
-    if (mscenario && currentCampaignName.value) {
+  if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
+    if (scenario.value && currentCampaignName.value) {
       newGame(
         deckIds.value,
         playerCount.value,
         null,
-        mscenario.id,
+        scenario.value.id,
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
+        settings.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   } else {
@@ -179,10 +185,25 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
+        settings.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   }
 }
+
+const settings = ref<StandaloneSetting[]>([])
+
+// computed settings is a bit of a hack, because nested values change by value
+// when we change settings they are "cached" so to avoid this we deep copy the
+// settings in order to never alter its original value.
+const computedSettings = computed<StandaloneSetting[]>(() => {
+  return JSON.parse(JSON.stringify(scenario.value?.settings || []))
+})
+
+watch(computedSettings, (newSettings) => {
+  settings.value = newSettings
+}, { immediate: true })
+
 </script>
 
 <template>
@@ -200,11 +221,12 @@ async function start() {
         </header>
         <form id="new-campaign" @submit.prevent="start">
           <div class="options">
-            <input type="radio" v-model="sideStory" :value="false" id="campaign"> <label for="campaign">Campaign</label>
-            <input type="radio" v-model="sideStory" :value="true" id="sideStory"> <label for="sideStory">Side Story</label>
+            <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign"> <label for="campaign">Campaign</label>
+            <input type="radio" v-model="gameMode" :value="'Standalone'" id="standalone"> <label for="standalone">Standalone</label>
+            <input type="radio" v-model="gameMode" :value="'SideStory'" id="sideStory"> <label for="sideStory">Side Story</label>
           </div>
 
-          <div v-if="sideStory">
+          <div v-if="gameMode === 'SideStory'">
             <div class="scenarios">
               <div v-for="scenario in sideStories" :key="scenario.id">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
@@ -221,20 +243,42 @@ async function start() {
             <!-- </select> -->
           </div>
 
-          <div v-if="!sideStory && selectedCampaign && selectedCampaignReturnToId" class="options">
+          <div v-if="gameMode === 'Campaign' && selectedCampaign && selectedCampaignReturnToId" class="options">
             <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
             <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
           </div>
 
-          <div v-if="!sideStory && selectedCampaign && campaignScenarios.length > 0" class="options">
-            <input type="radio" v-model="standalone" :value="false" id="fullCampaign"> <label for="fullCampaign">Full Campaign</label>
-            <input type="radio" v-model="standalone" :value="true" id="standalone"> <label for="standalone">Standalone</label>
+          <div v-if="gameMode === 'Campaign' && selectedCampaign && campaignScenarios.length > 0" class="options">
+            <input type="radio" v-model="fullCampaign" :value="true" id="full"> <label for="full">Full Campaign</label>
+            <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">Partial Campaign</label>
           </div>
 
-          <div v-if="!sideStory && standalone && selectedCampaign">
+          <div v-if="(gameMode === 'Standalone' || !fullCampaign) && selectedCampaign">
             <div class="scenarios">
               <div v-for="scenario in campaignScenarios" :key="scenario.id">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="`${baseUrl}/img/arkham/boxes/${scenario.id}.jpg`" @click="selectedScenario = scenario.id">
+              </div>
+            </div>
+          </div>
+
+          <div v-if="settings.length > 0">
+            <p>Standalone Settings</p>
+            <div v-for="setting in settings" :key="setting.key">
+              <div v-if="setting.type === 'ToggleKey'" class="options">
+                <input type="checkbox" v-model="setting.content" :id="setting.key"/>
+                <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
+              </div>
+              <div v-else>
+                {{toCapitalizedWords(setting.key)}}
+                <div class="options">
+                  <template v-for="option in setting.content" :key="option.key">
+                    <input type="checkbox" v-model="option.content" :id="`${option.key}${option.value}`" class="invert" />
+                    <label :for="`${option.key}${option.value}`">
+                      <s v-if="option.content">{{option.label}}</s>
+                      <span v-else>{{option.label}}</span>
+                    </label>
+                  </template>
+                </div>
               </div>
             </div>
           </div>
@@ -409,6 +453,46 @@ input[type=radio]:checked + label {
   background: #6E8640;
 }
 
+input[type=checkbox] {
+  display: none;
+  /* margin: 10px; */
+}
+
+input[type=checkbox] + label {
+  display:inline-block;
+  padding: 4px 12px;
+  background-color: desaturate(#6E8640, 30%);
+  &:hover {
+    background-color: desaturate(#6E8640, 20%);
+  }
+
+  &.invert {
+    background: #6E8640;
+    &:hover {
+      background: #6E8640;
+    }
+  }
+  border-color: #ddd;
+}
+
+input[type=checkbox]:checked + label {
+  background: #6E8640;
+  &.invert {
+    background-color: desaturate(#6E8640, 30%);
+  }
+}
+
+.invert[type=checkbox] + label {
+    background: #6E8640;
+    &:hover {
+      background: #6E8640;
+    }
+}
+
+.invert[type=checkbox]:checked + label {
+  background-color: desaturate(#6E8640, 30%);
+}
+
 header {
   display: flex;
   align-items: center;
@@ -454,6 +538,7 @@ header {
 .scenarios {
   display: grid;
   grid-template-columns: repeat(auto-fill, calc(1 / 8 * 100%));
+  gap: 2px;
 
   img {
     width: 100%;

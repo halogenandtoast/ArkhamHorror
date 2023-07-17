@@ -3,5 +3,134 @@
   { "id": "02", "name": "The Dunwich Legacy" },
   { "id": "03", "name": "The Path to Carcosa" },
   { "id": "04", "name": "The Forgotten Age" },
-  { "id": "05", "name": "The Circle Undone", "beta": true }
+  { "id": "05", "name": "The Circle Undone", "beta": true, "settings": [
+    {
+      "key": "Disappearance at the Twilight Estate",
+      "settings": [
+        {
+          "key": "MissingPersons",
+          "recordable": "RecordableCardCode",
+          "type": "CrossOut",
+          "content": [
+            { "label": "Gaveriella Mizrah", "key": "05046" },
+            { "label": "Jerome Davids", "key": "05047" },
+            { "label": "Valentino Rivas", "key": "05048" },
+            { "label": "Penny White", "key": "05049" }
+          ]
+        },
+        {
+          "key": "PiecesOfEvidenceWereLeftBehind",
+          "type": "ChooseNum"
+        }
+      ]
+    },
+    {
+      "key": "The Witching Hour",
+      "settings": [
+        {
+          "type": "ChooseKey",
+          "key": "_ChooseYourFate",
+          "content": ["YouHaveAcceptedYourFate", "YouHaveRejectedYourFate"]
+        },
+        {
+          "type": "ChooseKey",
+          "key": "_WitchingHourResolution",
+          "content": ["TheWitchesSpellWasBroken", "TheWitchesSpellWasCast"]
+        },
+        {
+          "type": "ChooseRecordable",
+          "recordable": "RecordableMemento",
+          "key": "MementosDiscovered",
+          "value": "MesmerizingFlute"
+        },
+        {
+          "type": "ChooseBetweenRecordable",
+          "key": "_TheWitchesSpellWasBrokenMemento",
+          "ifRecorded": [
+            { "key": "TheWitchesSpellWasBroken", "type": "key" },
+            {
+              "key": "MementosDiscovered",
+              "type": "inSet",
+              "content": { "recordable": "RecordableMemento", "value": "MesmerizingFlute" }
+            }
+          ],
+          "content": [
+            { "recordable": "RecordableMemento", "key": "MementosDiscovered", "value": "RitualComponents" },
+            { "recordable": "RecordableMemento", "key": "MementosDiscovered", "value": "ScrapOfTornShadow" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "At Death's Doorstep",
+      "settings": [
+        {
+          "type": "SetKey",
+          "key": "TheInvestigatorsAreOnGavriella'sTrail",
+          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05046" }]
+        },
+        {
+          "type": "SetKey",
+          "key": "TheInvestigatorsAreOnJerome'sTrail",
+          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05047" }]
+        },
+        {
+          "type": "SetKey",
+          "key": "TheInvestigatorsAreOnPenny'sTrail",
+          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05049" }]
+        },
+        {
+          "type": "SetKey",
+          "key": "TheInvestigatorsAreOnValentino'sTrail",
+          "ifRecorded": [{"key": "MissingPersons", "type": "inSet", "value": "05048" }]
+        },
+        {
+          "type": "ChooseKey",
+          "key": "_AtDeathsDoorResolution",
+          "content": [
+            "TheInvestigatorsEscapedTheSpectralRealm",
+            "TheInvestigatorsLearnedNothingOfTheLodge'sSchemes",
+            "TheInvestigatorsAreNeverSeenOrHeardFromAgain"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "Interlude II: The Price of Progress",
+      "ifRecorded": [{"key": "TheInvestigatorsEscapedTheSpectralRealm", "type": "key" }],
+      "settings": [
+        {
+          "type": "ChooseKey",
+          "key": "_JosefsFate",
+          "content": [
+            "JosefDisappearedIntoTheMist",
+            "TheInvestigatorsRescuedJosef",
+            "JosefIsAliveAndWell"
+          ]
+        },
+        {
+          "type": "ForceKey",
+          "ifRecorded": [ {"key": "JosefDisappearedIntoTheMist", "type": "key" }],
+          "key": "TheInvestigatorsAreEnemiesOfTheLodge"
+        },
+        {
+          "type": "ChooseKey",
+          "key": "_LodgeRelationship",
+          "anyRecorded": [
+            {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
+            {"key": "JosefIsAliveAndWell", "type": "key" }
+          ],
+          "content": [
+            "TheInvestigatorsAreEnemiesOfTheLodge",
+            "TheInvestigatorsAreMembersOfTheLodge"
+          ]
+        },
+        {
+          "type": "SetKey",
+          "key": "TheInvestigatorsAreDeceivingTheLodge",
+          "ifRecorded": [{"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }]
+        }
+      ]
+    }
+  ]}
 ]

@@ -8,7 +8,7 @@ import { fetchDecks, newGame } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
-import { CampaignLogSettings } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, CampaignOption } from '@/arkham/types/CampaignSettings'
 import NewDeck from '@/arkham/components/NewDeck';
 import { toCapitalizedWords } from '@/arkham/helpers';
 
@@ -117,9 +117,9 @@ const validStandalone = computed(() => {
 
 const disabled = computed(() => {
   if (multiplayerVariant.value == 'WithFriends') {
-    return !deckIds.value[0] || !validStandalone.value
+    return !deckIds.value[0] || !validStandalone.value || !completedCampaignSettings.value
   } else {
-    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n]) || !validStandalone.value
+    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n]) || !validStandalone.value || !completedCampaignSettings.value
   }
 })
 
@@ -244,6 +244,38 @@ const computedCampaignSettings = computed<CampaignScenario[]>(() => {
   return JSON.parse(JSON.stringify(campaign.value?.settings || []))
 })
 
+const completedCampaignScenarioSetting = (setting: CampaignSetting) => {
+  const settings = campaignLog.value
+  return setting.settings.every((s) => {
+    if(!settingActive(s)) {
+      return true
+    }
+
+    if (s.type === "ChooseNum") {
+      return settings.counts[s.key] !== undefined
+    }
+
+    if (s.type === "ChooseKey") {
+      return s.content.some((k) => settings.keys.includes(k))
+    }
+
+    return true
+  })
+}
+
+const completedCampaignSettings = computed(() => {
+  if(gameMode.value !== 'Campaign' || fullCampaign.value === true) {
+    return true
+  }
+  return campaignSettings.value.every((s) => {
+    if (settingActive(s)) {
+      return completedCampaignScenarioSetting(s)
+    }
+
+    return true
+  })
+})
+
 watch(computedCampaignSettings, (newSettings) => {
   if (selectedScenario.value) {
     const idx = newSettings.findIndex((s) => s.scenarioId === selectedScenario.value)
@@ -254,7 +286,9 @@ watch(computedCampaignSettings, (newSettings) => {
       const sets = crossOut.reduce((a, s) => {
         return { ...a, [s.key]: { recordable: s.recordable, entries: s.content.map((c) => { return { tag: "Recorded", value: c.content }}) } }}, {})
 
-      campaignLog.value = { keys: [], counts: {}, options: [], sets }
+      const counts = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "ChooseNum")).reduce((a, s) => { return { ...a, [s.key]: 0 }}, {})
+
+      campaignLog.value = { keys: [], counts, options: [], sets }
 
       campaignSettings.value = relevantSettings
       return
@@ -312,11 +346,11 @@ const setKey = function(setting: CampaignSetting, value: string) {
   }
 }
 
-const setOption = function(setting: CampaignSetting, value: string) {
+const setOption = function(setting: CampaignSetting, option: CampaignOption) {
   const current = campaignLog.value
   if (setting.type === 'ChooseOption') {
-    const keysToRemove = setting.content.filter((k) => k !== value)
-    campaignLog.value = { ...current, options: [...current.options.filter((k) => !keysToRemove.includes(k)), value] }
+    const keysToRemove = setting.content.filter((o) => o.key !== option.key).map((o) => o.key)
+    campaignLog.value = { ...current, options: [...current.options.filter((o) => !keysToRemove.includes(o.key)), option] }
     filterSettings()
   }
 }
@@ -353,7 +387,7 @@ const settingActive = function(setting: CampaignSetting) {
           }
         }
       } else if(condition.type === 'option') {
-        if (!campaignLog.value.options.includes(condition.key)) {
+        if (!campaignLog.value.options.map((o) => o.key).includes(condition.key)) {
           return false
         }
       }
@@ -394,12 +428,16 @@ const toggleKey = function(key: string) {
   filterSettings()
 }
 
-const toggleOption = function(key: string) {
+const toggleOption = function(setting: CampaignSetting) {
+  if (setting.type !== 'Option') {
+    return
+  }
   const current = campaignLog.value
-  if (current.options.includes(key)) {
-    current.options = current.options.filter((k) => k !== key)
+  if (current.options.map((o) => o.key).includes(setting.key)) {
+    current.options = current.options.filter((o) => o.key !== setting.key)
   } else {
-    current.options.push(key)
+    const option = setting.ckey ? { key: setting.key, ckey: setting.ckey } : { key: setting.key }
+    current.options.push(option)
   }
 
   filterSettings()
@@ -455,9 +493,14 @@ const isRecorded = function (value: string) {
   return current.keys.includes(value)
 }
 
-const isOption = function (value: string) {
+const isOption = function (option: CampaignOption) {
   const current = campaignLog.value
-  return current.options.includes(value)
+  return current.options.includes(option)
+}
+
+const chosenNum = function (option: CampaignOption) {
+  const current = campaignLog.value
+  return current.counts[option.key]
 }
 
 const crossedOut = function (key: string, value: string) {
@@ -556,7 +599,7 @@ const toggleCrossOut = function (key: string, value: string) {
             <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
           </div>
 
-          <div v-if="gameMode === 'Campaign' && selectedCampaign && campaignScenarios.length > 0" class="options">
+          <div v-if="gameMode === 'Campaign' && campaign && campaign.settings" class="options">
             <input type="radio" v-model="fullCampaign" :value="true" id="full"> <label for="full">Full Campaign</label>
             <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">Partial Campaign</label>
           </div>
@@ -595,11 +638,34 @@ const toggleCrossOut = function (key: string, value: string) {
                 <input type="checkbox" v-model="setting.content" :id="setting.key"/>
                 <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
               </div>
-              <div v-else>
+              <div v-else-if="setting.type === 'ToggleOption'" class="options">
+                <input type="checkbox" v-model="setting.content" :id="setting.key"/>
+                <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
+              </div>
+              <div v-else-if="setting.type === 'PickKey'" class="options">
+                <template v-for="key in setting.keys" :key="`${setting.key}${key}`">
+                  <input
+                    type="radio"
+                    v-model="setting.content"
+                    :value="key"
+                    :name="setting.key"
+                    :id="`${setting.key}${key}`"
+                    :checked="key === setting.content"
+                  />
+                  <label :for="`${setting.key}${key}`"> {{toCapitalizedWords(key)}}</label>
+                </template>
+              </div>
+              <div v-else-if="setting.type === 'ToggleCrossedOut'">
                 {{toCapitalizedWords(setting.key)}}
                 <div class="options">
                   <template v-for="option in setting.content" :key="option.key">
-                    <input type="checkbox" v-model="option.content" :id="`${option.key}${option.value}`" class="invert" />
+                    <input
+                      type="checkbox"
+                      v-model="option.content"
+                      :id="`${option.key}${option.value}`"
+                      class="invert"
+                      :checked="option.content"
+                    />
                     <label :for="`${option.key}${option.value}`">
                       <s v-if="option.content">{{option.label}}</s>
                       <span v-else>{{option.label}}</span>
@@ -612,9 +678,9 @@ const toggleCrossOut = function (key: string, value: string) {
 
           <div v-if="!fullCampaign && campaignSettings.length > 0">
             <p>Campaign Settings</p>
-            <div v-for="setting in campaignSettings" :key="setting.key">
-              <div v-if="settingActive(setting)" class="campaign-settings">
-                {{setting.key}}
+            <template v-for="setting in campaignSettings" :key="setting.key">
+              <div v-if="settingActive(setting)" class="settings-group">
+                <header><h3>{{setting.key}}</h3></header>
                 <div v-for="setting in setting.settings" :key="setting.key">
                   <template v-if="settingActive(setting)">
                     <div v-if="setting.type === 'SetKey'">
@@ -625,7 +691,7 @@ const toggleCrossOut = function (key: string, value: string) {
                     </div>
                     <div v-else-if="setting.type === 'Option'">
                       <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleOption(setting.ckey)" :checked="isOption(setting.ckey)" />
+                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleOption(setting)" :checked="isOption(setting.ckey)" />
                         <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
                       </div>
                     </div>
@@ -654,8 +720,8 @@ const toggleCrossOut = function (key: string, value: string) {
                       {{toCapitalizedWords(setting.key)}}
                       <div class="options">
                         <template v-for="option in setting.content" :key="option.key">
-                          <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setOption(setting, option)" :checked="isOption(option)" />
-                          <label :for="option">{{toCapitalizedWords(option)}}</label>
+                          <input type="radio" :value="option.key" :name="setting.key" :id="option.key" @change.prevent="setOption(setting, option)" :checked="isOption(option)" />
+                          <label :for="option.key">{{toCapitalizedWords(option.key)}}</label>
                         </template>
                       </div>
                     </div>
@@ -679,6 +745,7 @@ const toggleCrossOut = function (key: string, value: string) {
                         :id="setting.key"
                         min="0"
                         :max="setting.max"
+                        :value="chosenNum(setting)"
                         @change.prevent="setNum(setting, parseInt($event.target.value))"
                       />
                     </div>
@@ -701,7 +768,7 @@ const toggleCrossOut = function (key: string, value: string) {
                   </template>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
 
           <button type="submit" :disabled="disabled">Create</button>
@@ -938,5 +1005,20 @@ header {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
+}
+
+.settings-group {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  header {
+    h3 {
+      padding: 0;
+      margin: 0;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.3) !important;
+    }
+  }
 }
 </style>

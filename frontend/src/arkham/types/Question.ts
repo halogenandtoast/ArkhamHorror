@@ -26,6 +26,7 @@ export interface ChooseOne {
 
 export interface QuestionLabel {
   tag: QuestionType.QUESTION_LABEL
+  card: string | null
   label: string
   question: Question
 }
@@ -192,6 +193,7 @@ export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDeco
   {
     tag: JsonDecoder.isExactly(QuestionType.QUESTION_LABEL),
     label: JsonDecoder.string,
+    card: JsonDecoder.nullable(JsonDecoder.string),
     question: JsonDecoder.lazy(() => questionDecoder)
   },
   'QuestionLabel',

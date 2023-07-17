@@ -98,11 +98,11 @@ instance RunMessage TheDepthsOfYoth where
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       push
-        $ Ask leadInvestigatorId
-        $ QuestionLabel
+        $ questionLabel
           "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
+          lead
         $ ChooseAmounts
           "Fury"
           (MaxAmountTarget 9000)

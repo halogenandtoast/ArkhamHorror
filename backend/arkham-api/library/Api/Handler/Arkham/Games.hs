@@ -17,6 +17,7 @@ module Api.Handler.Arkham.Games (
 import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
@@ -147,6 +148,7 @@ data SetRecordedEntry
 data StandaloneSetting
   = SetKey CampaignLogKey Bool
   | SetRecorded CampaignLogKey SomeRecordableType [SetRecordedEntry]
+  | SetOption CampaignOption Bool
   deriving stock (Show)
 
 makeStandaloneCampaignLog :: [StandaloneSetting] -> CampaignLog
@@ -155,6 +157,8 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting :: CampaignLog -> StandaloneSetting -> CampaignLog
   applySetting cl (SetKey k True) = setCampaignLogKey k cl
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
+  applySetting cl (SetOption k True) = setCampaignLogOption k cl
+  applySetting cl (SetOption _ False) = cl
   applySetting cl (SetRecorded k rt vs) =
     case rt of
       (SomeRecordableType RecordableCardCode) ->
@@ -179,6 +183,13 @@ instance FromJSON StandaloneSetting where
         k <- o .: "key"
         v <- o .: "content"
         pure $ SetKey k v
+      "ToggleOption" -> do
+        k <- o .: "key"
+        v <- o .: "content"
+        pure $ SetOption k v
+      "PickKey" -> do
+        k <- o .: "content"
+        pure $ SetKey k True
       "ToggleCrossedOut" -> do
         k <- o .: "key"
         rt <- o .: "recordable"
@@ -194,35 +205,6 @@ instance FromJSON SetRecordedEntry where
       True -> SetAsCrossedOut k
       False -> SetAsRecorded k
 
--- {
---   "keys": [],
---   "counts": {
---     "PiecesOfEvidenceWereLeftBehind": 6
---   },
---   "sets": {
---     "MissingPersons": {
---       "recordable": "RecordableCardCode",
---       "entries": [
---         {
---           "tag": "CrossedOut",
---           "value": "05046"
---         },
---         {
---           "tag": "CrossedOut",
---           "value": "05047"
---         },
---         {
---           "tag": "Recorded",
---           "value": "05048"
---         },
---         {
---           "tag": "Recorded",
---           "value": "05049"
---         }
---       ]
---     }
---   }
--- }
 data CampaignRecorded = CampaignRecorded
   { recordable :: SomeRecordableType
   , entries :: [CampaignRecordedEntry]
@@ -244,6 +226,7 @@ data CampaignSettings = CampaignSettings
   { keys :: [CampaignLogKey]
   , counts :: Map CampaignLogKey Int
   , sets :: Map CampaignLogKey CampaignRecorded
+  , options :: [CampaignOption]
   }
   deriving stock (Show)
 
@@ -252,7 +235,8 @@ instance FromJSON CampaignSettings where
     keys <- o .: "keys"
     counts <- o .: "counts"
     sets <- o .: "sets"
-    pure $ CampaignSettings keys counts sets
+    options <- o .: "options"
+    pure $ CampaignSettings keys counts sets options
 
 instance FromJSON CampaignRecorded where
   parseJSON = withObject "CampaignRecorded" $ \o -> do
@@ -267,6 +251,7 @@ makeCampaignLog settings =
     , campaignLogRecordedCounts = counts settings
     , campaignLogRecordedSets = fmap toSomeRecorded $ sets settings
     , campaignLogOrderedKeys = keys settings
+    , campaignLogOptions = Set.fromList (options settings)
     }
  where
   toSomeRecorded :: CampaignRecorded -> [SomeRecorded]
@@ -373,7 +358,7 @@ postApiV1ArkhamGamesR = do
   now <- liftIO getCurrentTime
   case campaignId of
     Just cid -> do
-      let campaignLog' = makeCampaignLog <$> traceShowId campaignLog
+      let campaignLog' = makeCampaignLog <$> campaignLog
       (queueRef, game) <-
         liftIO $
           newCampaign cid scenarioId newGameSeed playerCount decks difficulty campaignLog'
@@ -601,7 +586,7 @@ handleAnswer Game {..} investigatorId = \case
           (Map.toList $ arAmounts response)
           target
       ]
-    Just (QuestionLabel _ (ChooseAmounts _ _ _ target)) ->
+    Just (QuestionLabel _ _ (ChooseAmounts _ _ _ target)) ->
       [ ResolveAmounts
           investigatorId
           (Map.toList $ arAmounts response)
@@ -637,7 +622,7 @@ handleAnswer Game {..} investigatorId = \case
     -> QuestionResponse
     -> [Message]
   go f q response = case q of
-    QuestionLabel lbl q' -> go (QuestionLabel lbl) q' response
+    QuestionLabel lbl mCard q' -> go (QuestionLabel lbl mCard) q' response
     Read t qs -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ f $ Read t qs]
       Just msg -> [uiToRun msg]

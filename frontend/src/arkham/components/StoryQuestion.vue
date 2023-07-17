@@ -21,6 +21,41 @@ const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 }
 
+const portraitLabelImage = (investigatorId: string) => {
+  const player = props.game.investigators[investigatorId]
+
+  if (player.isYithian) {
+    return imgsrc(`portraits/${investigatorId.value.replace('c', '')}.jpg`)
+  }
+
+  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+}
+
+const portraitChoices = computed(() => {
+  if (!question.value) {
+    return []
+  }
+
+  return question.value.question.choices.flatMap((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
+})
+
+const labelChoices = computed(() => {
+  if (!question.value) {
+    return []
+  }
+
+  return question.value.question.choices.flatMap((c, idx) => c.tag !== MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
+})
+
+const questionImage = computed(() => {
+
+  if(question.value.card) {
+    return cardLabelImage(question.value.card)
+  }
+
+  return null
+})
+
 const choose = (idx: number) => emit('choose', idx)
 </script>
 
@@ -34,10 +69,21 @@ const choose = (idx: number) => emit('choose', idx)
     />
   </template>
   <div class="question-label" v-else-if="question && question.tag === 'QuestionLabel'">
+    <img :src="questionImage" v-if="questionImage" class="card" />
     <p>{{question.label}}</p>
 
-    <div class="label-choices">
-      <template v-for="(choice, index) in question.question.choices" :key="index">
+    <div class="portrait-choices" v-if="portraitChoices.length > 0">
+      <template v-for="[choice, index] in portraitChoices" :key="index">
+        <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
+          <a href='#' @click.prevent="choose(index)">
+            <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
+          </a>
+        </template>
+      </template>
+    </div>
+
+    <div class="label-choices" v-if="labelChoices.length > 0">
+      <template v-for="[choice, index] in labelChoices" :key="index">
         <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
           <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
         </template>
@@ -107,5 +153,9 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.card {
+  width: $card-width * 2;
 }
 </style>

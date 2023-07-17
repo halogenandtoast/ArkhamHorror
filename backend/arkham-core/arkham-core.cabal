@@ -720,6 +720,7 @@ library
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.ThePathToCarcosa
+      Arkham.Campaign.Option
       Arkham.Campaign.Runner
       Arkham.Campaign.Types
       Arkham.CampaignLog

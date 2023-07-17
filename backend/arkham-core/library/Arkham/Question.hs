@@ -90,7 +90,7 @@ data Question msg
       , target :: Target
       }
   | ChooseUpgradeDeck
-  | QuestionLabel {label :: Text, question :: (Question msg)}
+  | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: (Question msg)}
   | Read {flavorText :: FlavorText, readChoices :: [UI msg]}
   | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg]}
   | DropDown {options :: [(Text, msg)]}

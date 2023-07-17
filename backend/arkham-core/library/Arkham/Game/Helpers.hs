@@ -822,26 +822,6 @@ sourceToTarget = \case
   CardCostSource _ -> error "not converted"
   BothSource s1 s2 -> BothTarget (sourceToTarget s1) (sourceToTarget s2)
 
-addCampaignCardToDeckChoice
-  :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
-addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
-  chooseOne
-    leadInvestigatorId
-    [ Label
-        ("Add " <> display name <> " to a deck")
-        [ chooseOne
-            leadInvestigatorId
-            [ TargetLabel
-              (InvestigatorTarget iid)
-              [AddCampaignCardToDeck iid cardDef]
-            | iid <- investigatorIds
-            ]
-        ]
-    , Label ("Do not add " <> display name <> " to any deck") []
-    ]
- where
-  name = cdName cardDef
-
 hasFightActions
   :: (HasGame m)
   => InvestigatorId
@@ -2628,7 +2608,10 @@ targetTraits = \case
   EnemyTarget eid -> field EnemyTraits eid
   EventTarget eid -> field EventTraits eid
   InvestigatorTarget iid -> field InvestigatorTraits iid
-  LocationTarget lid -> field LocationTraits lid
+  LocationTarget lid ->
+    selectOne (Matcher.LocationWithId lid) >>= \case
+      Nothing -> pure mempty
+      Just _ -> field LocationTraits lid
   ProxyTarget t _ -> targetTraits t
   ResourceTarget -> pure mempty
   ScenarioTarget -> pure mempty

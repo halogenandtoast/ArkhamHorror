@@ -123,11 +123,11 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
     pure s
   StandaloneSetup -> do
-    leadInvestigatorId <- getLeadInvestigatorId
+    lead <- getLead
     push
-      $ Ask leadInvestigatorId
-      $ QuestionLabel
+      $ questionLabel
         "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
+        lead
       $ ChooseOne
         [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
     pure s

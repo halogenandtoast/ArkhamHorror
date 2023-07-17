@@ -2,6 +2,7 @@ module Arkham.CampaignLog where
 
 import Arkham.Prelude
 
+import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
 import Arkham.Json
 
@@ -11,6 +12,7 @@ data CampaignLog = CampaignLog
   , campaignLogRecordedCounts :: Map CampaignLogKey Int
   , campaignLogRecordedSets :: Map CampaignLogKey [SomeRecorded]
   , campaignLogOrderedKeys :: [CampaignLogKey]
+  , campaignLogOptions :: Set CampaignOption
   }
   deriving stock (Show, Generic, Eq)
 
@@ -21,9 +23,13 @@ emptyCampaignLog CampaignLog {..} =
     && null campaignLogRecordedCounts
     && null campaignLogRecordedSets
     && null campaignLogOrderedKeys
+    && null campaignLogOptions
 
 recordedL :: Lens' CampaignLog (Set CampaignLogKey)
 recordedL = lens campaignLogRecorded $ \m x -> m {campaignLogRecorded = x}
+
+optionsL :: Lens' CampaignLog (Set CampaignOption)
+optionsL = lens campaignLogOptions $ \m x -> m {campaignLogOptions = x}
 
 crossedOutL :: Lens' CampaignLog (Set CampaignLogKey)
 crossedOutL =
@@ -56,6 +62,7 @@ mkCampaignLog =
     , campaignLogRecordedCounts = mempty
     , campaignLogRecordedSets = mempty
     , campaignLogOrderedKeys = mempty
+    , campaignLogOptions = mempty
     }
 
 setCampaignLogKey :: CampaignLogKey -> CampaignLog -> CampaignLog
@@ -66,3 +73,6 @@ deleteCampaignLogKey key = recordedL %~ deleteSet key
 
 setCampaignLogRecorded :: CampaignLogKey -> [SomeRecorded] -> CampaignLog -> CampaignLog
 setCampaignLogRecorded key entries = recordedSetsL %~ insertMap key entries
+
+setCampaignLogOption :: CampaignOption -> CampaignLog -> CampaignLog
+setCampaignLogOption key = optionsL %~ insertSet key

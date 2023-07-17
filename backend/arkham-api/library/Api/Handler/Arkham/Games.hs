@@ -36,6 +36,7 @@ import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.List.NonEmpty qualified as NonEmpty
 import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.Text qualified as T
 import Data.Time.Clock
 import Data.Traversable (for)
@@ -193,6 +194,94 @@ instance FromJSON SetRecordedEntry where
       True -> SetAsCrossedOut k
       False -> SetAsRecorded k
 
+-- {
+--   "keys": [],
+--   "counts": {
+--     "PiecesOfEvidenceWereLeftBehind": 6
+--   },
+--   "sets": {
+--     "MissingPersons": {
+--       "recordable": "RecordableCardCode",
+--       "entries": [
+--         {
+--           "tag": "CrossedOut",
+--           "value": "05046"
+--         },
+--         {
+--           "tag": "CrossedOut",
+--           "value": "05047"
+--         },
+--         {
+--           "tag": "Recorded",
+--           "value": "05048"
+--         },
+--         {
+--           "tag": "Recorded",
+--           "value": "05049"
+--         }
+--       ]
+--     }
+--   }
+-- }
+data CampaignRecorded = CampaignRecorded
+  { recordable :: SomeRecordableType
+  , entries :: [CampaignRecordedEntry]
+  }
+  deriving stock (Show)
+
+data CampaignRecordedEntry = CampaignEntryRecorded Json.Value | CampaignEntryCrossedOut Json.Value
+  deriving stock (Show)
+
+instance FromJSON CampaignRecordedEntry where
+  parseJSON = withObject "CampaignRecordedEntry" $ \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "CrossedOut" -> CampaignEntryCrossedOut <$> o .: "value"
+      "Recorded" -> CampaignEntryRecorded <$> o .: "value"
+      _ -> fail $ "Invalid key" <> T.unpack t
+
+data CampaignSettings = CampaignSettings
+  { keys :: [CampaignLogKey]
+  , counts :: Map CampaignLogKey Int
+  , sets :: Map CampaignLogKey CampaignRecorded
+  }
+  deriving stock (Show)
+
+instance FromJSON CampaignSettings where
+  parseJSON = withObject "CampaignSettings" $ \o -> do
+    keys <- o .: "keys"
+    counts <- o .: "counts"
+    sets <- o .: "sets"
+    pure $ CampaignSettings keys counts sets
+
+instance FromJSON CampaignRecorded where
+  parseJSON = withObject "CampaignRecorded" $ \o -> do
+    rt <- o .: "recordable"
+    entries <- o .: "entries"
+    pure $ CampaignRecorded rt entries
+
+makeCampaignLog :: CampaignSettings -> CampaignLog
+makeCampaignLog settings =
+  mkCampaignLog
+    { campaignLogRecorded = Set.fromList (keys settings)
+    , campaignLogRecordedCounts = counts settings
+    , campaignLogRecordedSets = fmap toSomeRecorded $ sets settings
+    , campaignLogOrderedKeys = keys settings
+    }
+ where
+  toSomeRecorded :: CampaignRecorded -> [SomeRecorded]
+  toSomeRecorded (CampaignRecorded rt entries) =
+    case rt of
+      (SomeRecordableType RecordableCardCode) -> map (toEntry @CardCode) entries
+      (SomeRecordableType RecordableMemento) -> map (toEntry @Memento) entries
+  toEntry :: forall a. (Recordable a) => CampaignRecordedEntry -> SomeRecorded
+  toEntry (CampaignEntryRecorded e) = case fromJSON @a e of
+    Success a -> recorded a
+    Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
+  toEntry (CampaignEntryCrossedOut e) = case fromJSON @a e of
+    Success a -> crossedOut a
+    Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
+
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
   , playerCount :: Int
@@ -202,6 +291,7 @@ data CreateGamePost = CreateGamePost
   , campaignName :: Text
   , multiplayerVariant :: MultiplayerVariant
   , settings :: [StandaloneSetting]
+  , campaignLog :: Maybe CampaignSettings
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -283,9 +373,10 @@ postApiV1ArkhamGamesR = do
   now <- liftIO getCurrentTime
   case campaignId of
     Just cid -> do
+      let campaignLog' = makeCampaignLog <$> traceShowId campaignLog
       (queueRef, game) <-
         liftIO $
-          newCampaign cid newGameSeed playerCount decks difficulty Nothing
+          newCampaign cid scenarioId newGameSeed playerCount decks difficulty campaignLog'
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())

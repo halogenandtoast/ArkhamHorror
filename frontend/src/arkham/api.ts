@@ -4,6 +4,7 @@ import { Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
+import { CampaignLogSettings } from '@/arkham/types/CampaignSettings'
 import { JsonDecoder } from 'ts.data.json';
 
 interface FetchData {
@@ -105,7 +106,8 @@ export const newGame = (
   difficulty: Difficulty,
   campaignName: string,
   multiplayerVariant: string,
-  settings: StandaloneSetting[]
+  settings: StandaloneSetting[],
+  campaignLog: CampaignLogSettings | null
 ): Promise<Game> => api
   .post('arkham/games', {
     deckIds,
@@ -116,6 +118,7 @@ export const newGame = (
     campaignName,
     multiplayerVariant,
     settings,
+    campaignLog: campaignLog !== null ? {...campaignLog, counts: Object.entries(campaignLog.counts), sets: Object.entries(campaignLog.sets) } : null
   })
   .then((resp) => gameDecoder.decodeToPromise(resp.data));
 

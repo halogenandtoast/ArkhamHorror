@@ -32,6 +32,7 @@ import Arkham.Attack
 import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.PlayerCard
@@ -206,13 +207,14 @@ class HasStdGen a where
 newCampaign
   :: (MonadIO m)
   => CampaignId
+  -> Maybe ScenarioId
   -> Int
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> (Maybe CampaignLog)
   -> m (Queue Message, Game)
-newCampaign = newGame . Right
+newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)
 
 newScenario
   :: (MonadIO m)
@@ -223,11 +225,11 @@ newScenario
   -> Difficulty
   -> (Maybe CampaignLog)
   -> m (Queue Message, Game)
-newScenario = newGame . Left
+newScenario = newGame . That
 
 newGame
   :: (MonadIO m)
-  => Either ScenarioId CampaignId
+  => These CampaignId ScenarioId
   -> Int
   -> Int
   -> NonEmpty ArkhamDBDecklist
@@ -318,14 +320,16 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty mCampai
     , game'
     )
  where
-  setCampaignLog = case mCampaignLog of
+  withCampaignLog = case traceShowId mCampaignLog of
+    Nothing -> id
+    Just cl -> overAttrs (Arkham.Campaign.Types.logL .~ cl)
+  withStandaloneCampaignLog = case mCampaignLog of
     Nothing -> id
     Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
-  mode =
-    either
-      (That . traceShowId . setCampaignLog . (`lookupScenario` difficulty))
-      (This . (`lookupCampaign` difficulty))
-      scenarioOrCampaignId
+  mode = case scenarioOrCampaignId of
+    This cid -> This $ withCampaignLog $ lookupCampaign cid difficulty
+    That sid -> That $ withStandaloneCampaignLog $ lookupScenario sid difficulty
+    These cid sid -> This $ overAttrs (stepL ?~ ScenarioStep sid) $ withCampaignLog $ lookupCampaign cid difficulty
 
 addInvestigator
   :: (MonadReader env m, HasQueue Message m, HasGameRef env, HasGame m)

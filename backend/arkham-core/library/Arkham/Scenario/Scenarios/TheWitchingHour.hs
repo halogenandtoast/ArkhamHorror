@@ -13,6 +13,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -29,7 +30,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheWitchingHour.Story
-import Arkham.ChaosToken
 import Data.Map.Monoidal qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 
@@ -230,7 +230,7 @@ instance RunMessage TheWitchingHour where
             , Record TheWitches'SpellWasBroken
             , recordSetInsert
                 MementosDiscovered
-                [MesmerizingFlute, ScrapOfTownShadow]
+                [MesmerizingFlute, ScrapOfTornShadow]
             ]
               <> gainXp
               <> [EndOfGame Nothing]

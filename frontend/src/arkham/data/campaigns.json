@@ -37,7 +37,7 @@
         {
           "type": "ChooseKey",
           "key": "WitchingHourResolution",
-          "content": ["TheWitchesSpellWasBroken", "TheWitchesSpellWasCast"]
+          "content": ["TheWitches'SpellWasBroken", "TheWitches'SpellWasCast"]
         },
         {
           "type": "SetRecordable",
@@ -48,11 +48,11 @@
         },
         {
           "type": "ChooseRecordable",
-          "key": "TheWitchesSpellWasBrokenMemento",
+          "key": "TheWitches'SpellWasBrokenMemento",
           "ckey": "MementosDiscovered",
           "recordable": "RecordableMemento",
           "ifRecorded": [
-            { "key": "TheWitchesSpellWasBroken", "type": "key" },
+            { "key": "TheWitches'SpellWasBroken", "type": "key" },
             {
               "key": "MementosDiscovered",
               "type": "inSet",
@@ -165,6 +165,7 @@
         {
           "type": "SetKey",
           "key": "TheInvestigatorsAreDeceivingTheLodge",
+          "ckey": "TheInvestigatorsAreDeceivingTheLodge",
           "ifRecorded": [{"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }]
         }
       ]

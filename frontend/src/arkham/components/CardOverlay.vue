@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
+import { imgsrc } from '@/arkham/helpers'
 
 const card = ref<string | null>(null);
-const baseUrl = inject('baseUrl')
 
 document.addEventListener('mouseover', (event) => {
   if (event.target instanceof HTMLImageElement) {
@@ -15,7 +15,7 @@ document.addEventListener('mouseover', (event) => {
     }
   } else if (event.target instanceof HTMLElement) {
     if(event.target.dataset.imageId) {
-      card.value = `${baseUrl}/img/arkham/cards/${event.target.dataset.imageId}.jpg`
+      card.value = imgsrc(`cards/${event.target.dataset.imageId}.jpg`)
     }
     if(event.target.dataset.image) {
       card.value = event.target.dataset.image

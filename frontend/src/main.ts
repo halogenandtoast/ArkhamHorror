@@ -25,6 +25,4 @@ const app = createApp(App).
   use(vfm).
   component("font-awesome-icon", FontAwesomeIcon)
 
-app.provide('baseUrl', process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '')
-
 app.mount('#app')

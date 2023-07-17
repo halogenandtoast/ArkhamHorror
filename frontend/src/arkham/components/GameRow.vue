@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { Campaign } from '@/arkham/types/Campaign';
 import type { Scenario } from '@/arkham/types/Scenario';
+import { imgsrc } from '@/arkham/helpers';
 
 export interface Props {
   game: Game
@@ -12,8 +13,6 @@ export interface Props {
 const props = defineProps<Props>()
 const campaign = computed<Campaign | null>(() => props.game.campaign)
 const scenario = computed<Scenario | null>(() => props.game.scenario)
-
-const baseUrl = inject('baseUrl')
 
 const difficulty = computed<Difficulty>(() => {
   if (campaign.value) {
@@ -31,14 +30,14 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
     <div class="game-details">
       <div class="game-title">
         <div class="campaign-icon-container" v-if="campaign">
-          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${campaign.id}.png`" />
+          <img class="campaign-icon" :src="imgsrc(`sets/${campaign.id}.png`)" />
         </div>
         <div class="campaign-icon-container" v-else-if="scenario">
-          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.id.replace('c', '').slice(0,2)}.png`" />
+          <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '').slice(0,2)}.png`)" />
         </div>
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="game.scenario" class="scenario-details">
-          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.id.replace('c', '')}.png`" />
+          <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           <span>{{scenario.name.title}}</span>
         </div>
 
@@ -53,7 +52,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           class="investigator"
         >
           <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
-            <img :src="`${baseUrl}/img/arkham/cards/${investigator.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
+            <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
           </div>
         </div>
         <div class="game-difficulty">{{difficulty}}</div>

@@ -6,11 +6,11 @@ import {
   ref,
   ComputedRef,
   reactive,
-  inject
 } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Scenario } from '@/arkham/types/Scenario';
 import type { Card } from '@/arkham/types/Card';
+import { imgsrc } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -177,7 +177,6 @@ interface RefWrapper<T> {
   ref: ComputedRef<T>
 }
 
-const baseUrl = inject('baseUrl')
 const locationMap = ref<Element | null>(null)
 
 const requestId = ref(undefined)
@@ -197,7 +196,7 @@ const scenarioGuide = computed(() => {
     ? 'b'
     : '';
 
-  return `${baseUrl}/img/arkham/cards/${reference.replace('c', '')}${difficultySuffix}.jpg`;
+  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.jpg`);
 })
 
 const scenarioDecks = computed(() => {
@@ -233,7 +232,7 @@ const scenarioDeckStyles = computed(() => {
 const activeCard = computed(() => {
   if (props.game.activeCard) {
     const { cardCode } = props.game.activeCard.contents;
-    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+    return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
   }
 
   return null;
@@ -271,7 +270,7 @@ const topOfEncounterDiscard = computed(() => {
   if (props.scenario.discard[0]) {
     const { cardCode } = props.scenario.discard[0];
 
-    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+    return imgsrc(`/cards/${cardCode.replace('c', '')}.jpg`);
   }
 
   return null;
@@ -285,7 +284,7 @@ const topOfSpectralDiscard = computed(() => {
   if (spectralDiscard.value && spectralDiscard.value[0]) {
     const { cardCode } = spectralDiscard.value[0];
 
-    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+    return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
   }
 
   return null;

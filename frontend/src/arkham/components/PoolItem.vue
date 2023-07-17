@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
+import { imgsrc } from '@/arkham/helpers'
 
 export interface Props {
   type: string
   amount: number
 }
 const props = defineProps<Props>()
-const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
-  return `${baseUrl}/img/arkham/${props.type}.png`
+  return imgsrc(`${props.type}.png`)
 })
 </script>
 

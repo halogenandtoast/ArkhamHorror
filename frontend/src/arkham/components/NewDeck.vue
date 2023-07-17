@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 import * as Investigator from '@/arkham/types/Investigator';
+import {imgsrc} from '@/arkham/helpers';
 import { fetchInvestigators, newDeck } from '@/arkham/api'
 
 const ready = ref(false)
@@ -24,7 +25,6 @@ interface ArkhamDBCard {
 
 
 const errors = ref([])
-const baseUrl = inject('baseUrl')
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
 const investigators = ref<Investigator.Investigator[]>([])
@@ -108,7 +108,7 @@ async function createDeck() {
 <template>
   <div v-if="ready" class="new-deck">
     <div class="form-body">
-      <img v-if="investigator" class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigator.replace('c', '')}.jpg`" />
+      <img v-if="investigator" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <div class="fields">
         <input
           type="url"

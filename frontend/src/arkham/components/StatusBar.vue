@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
+import { imgsrc } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable';
@@ -29,19 +30,18 @@ const applyResultsAction = computed(() => {
 
 const skillTestResults = computed(() => props.game.skillTestResults)
 
-const baseUrl = inject('baseUrl')
 const cardLabelImage = (cardCode: string) => {
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 }
 
 const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
 
   if (player.isYithian) {
-    return `${baseUrl}/img/arkham/portraits/${investigatorId.value.replace('c', '')}.jpg`
+    return imgsrc(`portraits/${investigatorId.value.replace('c', '')}.jpg`)
   }
 
-  return `${baseUrl}/img/arkham/portraits/${player.cardCode.replace('c', '')}.jpg`
+  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
 }
 
 const cardLabels = computed(() =>

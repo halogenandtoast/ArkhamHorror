@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { withDefaults, computed, inject } from 'vue';
+import { withDefaults, computed } from 'vue';
+import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
@@ -16,10 +17,8 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
 
-const baseUrl = inject('baseUrl')
-
 const image = computed(() => {
-  return `${baseUrl}/img/arkham/cards/${props.treachery.cardCode.replace('c', '')}.jpg`
+  return imgsrc(`cards/${props.treachery.cardCode.replace('c', '')}.jpg`)
 })
 const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

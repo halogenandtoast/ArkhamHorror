@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
+import { imgsrc } from '@/arkham/helpers';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token';
@@ -23,9 +24,8 @@ const hasPool = computed(() => {
 })
 
 const cardCode = computed(() => props.event.cardCode)
-const baseUrl = inject('baseUrl')
 const image = computed(() => {
-  return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 

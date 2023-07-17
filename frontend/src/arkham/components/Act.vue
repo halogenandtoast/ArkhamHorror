@@ -8,6 +8,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
+import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Act'
 
 export interface Props {
@@ -20,7 +21,6 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['show', 'choose'])
-const baseUrl = inject('baseUrl')
 
 const id = computed(() => props.act.id)
 const image = computed(() => {
@@ -37,14 +37,14 @@ const image = computed(() => {
     newId = newId.replace(/e$/, '')
   }
 
-  return `${baseUrl}/img/arkham/cards/${newId}${sidePart}.jpg`
+  return imgsrc(`cards/${newId}${sidePart}.jpg`)
 })
 
 const imageForCard = (card: Card) => {
   const side = card.contents.isFlipped ? 'b' : ''
   // TODO, send art with cards next to
   const art = card.contents.art || card.contents.cardCode.replace('c', '')
-  return `${baseUrl}/img/arkham/cards/${art}${side}.jpg`
+  return imgsrc(`cards/${art}${side}.jpg`)
 }
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
 import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
+import { imgsrc } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
 import Prompt from '@/components/Prompt.vue'
@@ -20,7 +21,6 @@ const allCards = ref<Arkham.CardDef[]>([])
 const ready = ref(false)
 const deleting = ref(false)
 const deck = ref<Deck | null>(null)
-const baseUrl = inject('baseUrl')
 
 enum View {
   Image = "IMAGE",
@@ -45,7 +45,7 @@ fetchCards(true).then((response) => {
   })
 })
 
-const image = (card: Arkham.CardDef) => `${baseUrl}/img/arkham/cards/${card.art}.jpg`
+const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.jpg`)
 const view = ref(View.List)
 
 const cards = computed(() => {
@@ -169,7 +169,7 @@ const deckUrlToPage = (url: string): string => {
   <div class="container">
     <div class="results">
       <header class="deck" v-if="deck">
-        <img class="portrait--decklist" :src="`${baseUrl}/img/arkham/cards/${deck.list.investigator_code.replace('c', '')}.jpg`" />
+        <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
         <div class="deck--details">
           <h1 class="deck-title">{{deck.name}}</h1>
           <div class="deck--actions">

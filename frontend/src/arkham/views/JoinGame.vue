@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchDecks, joinGame, fetchGame } from '@/arkham/api'
+import { imgsrc } from '@/arkham/helpers'
 import * as Decks from '@/arkham/types/Deck'
 import * as Arkham from '@/arkham/types/Game'
 
@@ -16,8 +17,6 @@ const game = ref<Arkham.Game | null>(null)
 
 const deckId = ref<string | null>(null)
 const ready = ref(false)
-
-const baseUrl = inject('baseUrl')
 
 fetchDecks().then((result) => {
   decks.value = result
@@ -50,7 +49,7 @@ const investigators = computed(() => Object.keys(game.value?.investigators || {}
         <h2>Join Game</h2>
       </header>
 
-      <img v-for="investigator in investigators" :key="investigator" :src="`${baseUrl}/img/arkham/portraits/${investigator.replace('c', '')}.jpg`" />
+      <img v-for="investigator in investigators" :key="investigator" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <form id="join-game" @submit.prevent="join">
         <div>
           <p>Deck</p>

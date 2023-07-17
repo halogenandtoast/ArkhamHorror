@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import type { Card } from '@/arkham/types/Card';
+import { imgsrc } from '@/arkham/helpers';
 
 export interface Props {
   deck: [string, Card[]]
@@ -8,18 +9,16 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const baseUrl = inject('baseUrl')
-
 const deckImage = computed(() => {
   switch(props.deck[0]) {
     case 'UnknownPlacesDeck':
-      return `${baseUrl}/img/arkham/cards/05134b.jpg`;
+      return imgsrc("cards/05134b.jpg");
     case 'ExhibitDeck':
-      return `${baseUrl}/img/arkham/cards/02132b.jpg`;
+      return imgsrc("cards/02132b.jpg");
     case 'CatacombsDeck':
-      return `${baseUrl}/img/arkham/cards/03247b.jpg`;
+      return imgsrc("cards/03247b.jpg");
     default:
-      return `${baseUrl}/img/arkham/back.png`;
+      return imgsrc("back.png");
   }
 })
 

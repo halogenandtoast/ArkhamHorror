@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ChaosToken } from '@/arkham/types/ChaosToken';
-import { withDefaults, computed, inject } from 'vue';
+import { withDefaults, computed } from 'vue';
+import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 
@@ -14,44 +15,43 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { cancelled: false, selected: false })
 const emit = defineEmits(['choose'])
-const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   switch (props.token.face) {
     case 'PlusOne':
-      return `${baseUrl}/img/arkham/ct_plus1.png`;
+      return imgsrc("ct_plus1.png");
     case 'Zero':
-      return `${baseUrl}/img/arkham/ct_0.png`;
+      return imgsrc("ct_0.png");
     case 'MinusOne':
-      return `${baseUrl}/img/arkham/ct_minus1.png`;
+      return imgsrc("ct_minus1.png");
     case 'MinusTwo':
-      return `${baseUrl}/img/arkham/ct_minus2.png`;
+      return imgsrc("ct_minus2.png");
     case 'MinusThree':
-      return `${baseUrl}/img/arkham/ct_minus3.png`;
+      return imgsrc("ct_minus3.png");
     case 'MinusFour':
-      return `${baseUrl}/img/arkham/ct_minus4.png`;
+      return imgsrc("ct_minus4.png");
     case 'MinusFive':
-      return `${baseUrl}/img/arkham/ct_minus5.png`;
+      return imgsrc("ct_minus5.png");
     case 'MinusSix':
-      return `${baseUrl}/img/arkham/ct_minus6.png`;
+      return imgsrc("ct_minus6.png");
     case 'MinusSeven':
-      return `${baseUrl}/img/arkham/ct_minus7.png`;
+      return imgsrc("ct_minus7.png");
     case 'MinusEight':
-      return `${baseUrl}/img/arkham/ct_minus8.png`;
+      return imgsrc("ct_minus8.png");
     case 'AutoFail':
-      return `${baseUrl}/img/arkham/ct_autofail.png`;
+      return imgsrc("ct_autofail.png");
     case 'ElderSign':
-      return `${baseUrl}/img/arkham/ct_eldersign.png`;
+      return imgsrc("ct_eldersign.png");
     case 'Skull':
-      return `${baseUrl}/img/arkham/ct_skull.png`;
+      return imgsrc("ct_skull.png");
     case 'Cultist':
-      return `${baseUrl}/img/arkham/ct_cultist.png`;
+      return imgsrc("ct_cultist.png");
     case 'Tablet':
-      return `${baseUrl}/img/arkham/ct_tablet.png`;
+      return imgsrc("ct_tablet.png");
     case 'ElderThing':
-      return `${baseUrl}/img/arkham/ct_elderthing.png`;
+      return imgsrc("ct_elderthing.png");
     default:
-      return `${baseUrl}/img/arkham/ct_blank.png`;
+      return imgsrc("ct_blank.png");
   }
 })
 

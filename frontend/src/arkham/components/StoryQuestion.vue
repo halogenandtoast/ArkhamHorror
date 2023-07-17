@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
+import { imgsrc } from '@/arkham/helpers';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -16,9 +17,8 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const question = computed(() => props.game.question[props.investigatorId])
-const baseUrl = inject('baseUrl')
 const cardLabelImage = (cardCode: string) => {
-  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 }
 
 const choose = (idx: number) => emit('choose', idx)

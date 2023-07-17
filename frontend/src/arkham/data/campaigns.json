@@ -6,6 +6,7 @@
   { "id": "05", "name": "The Circle Undone", "beta": true, "settings": [
     {
       "key": "Disappearance at the Twilight Estate",
+      "scenarioId": "05043",
       "settings": [
         {
           "key": "MissingPersons",
@@ -28,6 +29,7 @@
     },
     {
       "key": "The Witching Hour",
+      "scenarioId": "05050",
       "settings": [
         {
           "type": "ChooseKey",
@@ -69,6 +71,7 @@
     },
     {
       "key": "At Death's Doorstep",
+      "scenarioId": "05065",
       "settings": [
         {
           "type": "SetKey",
@@ -169,6 +172,121 @@
           "ifRecorded": [{"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }]
         }
       ]
+    },
+    {
+      "key": "The Secret Name",
+      "scenarioId": "05120",
+      "settings": [
+        {
+          "type": "ChooseKey",
+          "key": "TellTheLodge",
+          "ifRecorded": [
+            {"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }
+          ],
+          "content": [
+            "TheInvestigatorsToldTheLodgeAboutTheCoven",
+            "TheInvestigatorsHidTheirKnowledgeOfTheCoven"
+          ]
+        },
+        {
+          "type": "SetRecordable",
+          "recordable": "RecordableMemento",
+          "ckey": "MementosDiscovered",
+          "key": "DiscoveredGilmansJournal",
+          "content": "Gilman'sJournal"
+        },
+        {
+          "type": "SetRecordable",
+          "recordable": "RecordableMemento",
+          "ckey": "MementosDiscovered",
+          "key": "DiscoveredKeziahsFormula",
+          "content": "Keziah'sFormula",
+          "ifRecorded": [
+            {
+              "key": "MementosDiscovered",
+              "type": "inSet",
+              "recordable": "RecordableMemento",
+              "content": "Gilman'sJournal"
+            }
+          ]
+        },
+        {
+          "type": "SetRecordable",
+          "recordable": "RecordableMemento",
+          "ckey": "MementosDiscovered",
+          "key": "DiscoveredWornCrucifix",
+          "content": "WornCrucifix",
+          "ifRecorded": [
+            {
+              "key": "MementosDiscovered",
+              "type": "inSet",
+              "recordable": "RecordableMemento",
+              "content": "Keziah'sFormula"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "The Wages of Sin",
+      "scenarioId": "05161",
+      "settings": [
+        {
+          "key": "HereticsWereUnleashedUntoArkham",
+          "ckey": "HereticsWereUnleashedUntoArkham",
+          "type": "ChooseNum",
+          "max": 4
+        },
+        {
+          "type": "ForceRecorded",
+          "ifRecorded": [
+            {
+              "key": "HereticsWereUnleashedUntoArkham",
+              "type": "count",
+              "predicate": { "type": "lte", "value": 3 }
+            }
+          ],
+          "recordable": "RecordableMemento",
+          "ckey": "MementosDiscovered",
+          "key": "DiscoveredWispOfSpectralMist",
+          "content": "WispOfSpectralMist"
+        },
+        {
+          "type": "SetKey",
+          "key": "TheInvestigatorsSurvivedTheWatchersEmbrace",
+          "ckey": "TheInvestigatorsSurvivedTheWatchersEmbrace"
+        }
+      ]
+    },
+    {
+      "key": "For the Greater Good",
+      "scenarioId": "05197",
+      "settings": [
+        {
+          "type": "ChooseKey",
+          "key": "ForTheGreaterGoodResolution",
+          "content": [
+            "TheGuardianOfTheTrapEmerged",
+            "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox",
+            "TheGuardianOfTheTrapEmergedAndWasDefeated"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "Union and Disillusion",
+      "scenarioId": "05238",
+      "settings": []
+    },
+    {
+      "key": "In the Clutches of Chaos",
+      "scenarioId": "05284",
+      "settings": []
+    },
+    {
+      "key": "Before the Black Throne",
+      "scenarioId": "05325",
+      "settings": []
     }
   ]}
 ]

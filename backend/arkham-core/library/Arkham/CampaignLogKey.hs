@@ -269,6 +269,8 @@ data SomeRecordableType where
 deriving stock instance Show (RecordableType a)
 deriving stock instance Eq (RecordableType a)
 
+deriving stock instance Show SomeRecordableType
+
 instance ToJSON (RecordableType a) where
   toJSON = toJSON . show
 

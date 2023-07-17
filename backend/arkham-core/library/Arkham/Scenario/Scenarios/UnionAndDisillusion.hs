@@ -129,11 +129,7 @@ instance RunMessage UnionAndDisillusion where
         ]
       pure s
     StandaloneSetup -> do
-      pure
-        . UnionAndDisillusion
-        $ attrs
-          & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+      pure $ overAttrs (setStandaloneCampaignLog standaloneCampaignLog) s
     Setup -> do
       encounterDeck <-
         buildEncounterDeckExcluding

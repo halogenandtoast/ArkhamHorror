@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -16,6 +17,9 @@ module Api.Handler.Arkham.Games (
 import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card.CardCode
 import Arkham.Classes.HasQueue
 import Arkham.Decklist
@@ -134,6 +138,61 @@ getApiV1ArkhamGamesR = do
     pure games
   pure $ map (`toPublicGame` mempty) games
 
+data SetRecordedEntry
+  = SetAsCrossedOut Json.Value
+  | SetAsRecorded Json.Value
+  deriving stock (Show)
+
+data StandaloneSetting
+  = SetKey CampaignLogKey Bool
+  | SetRecorded CampaignLogKey SomeRecordableType [SetRecordedEntry]
+  deriving stock (Show)
+
+makeStandaloneCampaignLog :: [StandaloneSetting] -> CampaignLog
+makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
+ where
+  applySetting :: CampaignLog -> StandaloneSetting -> CampaignLog
+  applySetting cl (SetKey k True) = setCampaignLogKey k cl
+  applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
+  applySetting cl (SetRecorded k rt vs) =
+    case rt of
+      (SomeRecordableType RecordableCardCode) ->
+        let entries = map (toEntry @CardCode) vs
+        in  setCampaignLogRecorded k entries cl
+      (SomeRecordableType RecordableMemento) ->
+        let entries = map (toEntry @Memento) vs
+        in  setCampaignLogRecorded k entries cl
+  toEntry :: forall a. (Recordable a) => SetRecordedEntry -> SomeRecorded
+  toEntry (SetAsRecorded e) = case fromJSON @a e of
+    Success a -> recorded a
+    Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
+  toEntry (SetAsCrossedOut e) = case fromJSON @a e of
+    Success a -> crossedOut a
+    Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
+
+instance FromJSON StandaloneSetting where
+  parseJSON = withObject "StandaloneSetting" $ \o -> do
+    t <- o .: "type"
+    case t of
+      "ToggleKey" -> do
+        k <- o .: "key"
+        v <- o .: "content"
+        pure $ SetKey k v
+      "ToggleCrossedOut" -> do
+        k <- o .: "key"
+        rt <- o .: "recordable"
+        v <- o .: "content"
+        pure $ SetRecorded k rt v
+      _ -> fail $ "No such standalone setting" <> t
+
+instance FromJSON SetRecordedEntry where
+  parseJSON = withObject "SetRecordedEntry" $ \o -> do
+    k <- o .: "key"
+    v <- o .: "content"
+    pure $ case v of
+      True -> SetAsCrossedOut k
+      False -> SetAsRecorded k
+
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
   , playerCount :: Int
@@ -142,6 +201,7 @@ data CreateGamePost = CreateGamePost
   , difficulty :: Difficulty
   , campaignName :: Text
   , multiplayerVariant :: MultiplayerVariant
+  , settings :: [StandaloneSetting]
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -225,7 +285,7 @@ postApiV1ArkhamGamesR = do
     Just cid -> do
       (queueRef, game) <-
         liftIO $
-          newCampaign cid newGameSeed playerCount decks difficulty
+          newCampaign cid newGameSeed playerCount decks difficulty Nothing
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())
@@ -245,9 +305,10 @@ postApiV1ArkhamGamesR = do
           mempty
     Nothing -> case scenarioId of
       Just sid -> do
+        let standaloneCampaignLog = makeStandaloneCampaignLog settings
         (queueRef, game) <-
           liftIO $
-            newScenario sid newGameSeed playerCount decks difficulty
+            newScenario sid newGameSeed playerCount decks difficulty (Just standaloneCampaignLog)
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())

@@ -32,5 +32,21 @@
   { "id": "05120", "name": "The Secret Name", "campaign": "05", "beta": true },
   { "id": "05161", "name": "The Wages of Sin", "campaign": "05", "beta": true },
   { "id": "05197", "name": "For the Greater Good", "campaign": "05", "beta": true },
-  { "id": "05238", "name": "Union and Disillusion", "campaign": "05", "beta": true }
+  {
+    "id": "05238",
+    "name": "Union and Disillusion",
+    "campaign": "05",
+    "beta": true,
+    "settings": [
+      { "key": "MissingPersons", "recordable": "RecordableCardCode", "type": "ToggleCrossedOut", "content": [
+        { "label": "Gaveriella Mizrah", "key": "05046", "content": true },
+        { "label": "Jerome Davids", "key": "05047", "content": true },
+        { "label": "Valentino Rivas", "key": "05048", "content": true },
+        { "label": "Penny White", "key": "05049", "content": true }
+      ] },
+      { "key": "TheInvestigatorsWereInductedIntoTheInnerCircle", "type": "ToggleKey", "content": false },
+      { "key": "TheInvestigatorsAreDeceivingTheLodge", "type": "ToggleKey", "content": false },
+      { "key": "JosefIsAliveAndWell", "type": "ToggleKey", "content": true }
+    ]
+  }
 ]

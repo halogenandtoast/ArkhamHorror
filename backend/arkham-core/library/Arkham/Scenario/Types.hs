@@ -16,7 +16,6 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Json
@@ -113,21 +112,11 @@ data ScenarioAttrs = ScenarioAttrs
   }
   deriving stock (Show, Eq)
 
-newtype ScenarioBehaviors = ScenarioBehaviors
-  { scenarioHandleDiscard
-      :: forall m
-       . (HasGame m, MonadIO m)
-      => EncounterCard
-      -> ScenarioAttrs
-      -> m ScenarioAttrs
-  }
-
-defaultScenarioBehaviors :: ScenarioBehaviors
-defaultScenarioBehaviors =
-  ScenarioBehaviors
-    { scenarioHandleDiscard = \c attrs -> do
-        pure $ attrs {scenarioDiscard = c : scenarioDiscard attrs}
-    }
+setStandaloneCampaignLog :: CampaignLog -> ScenarioAttrs -> ScenarioAttrs
+setStandaloneCampaignLog standaloneCampaignLog attrs =
+  if emptyCampaignLog (scenarioStandaloneCampaignLog attrs)
+    then attrs {scenarioStandaloneCampaignLog = standaloneCampaignLog}
+    else attrs
 
 scenarioWith
   :: (ScenarioAttrs -> a)

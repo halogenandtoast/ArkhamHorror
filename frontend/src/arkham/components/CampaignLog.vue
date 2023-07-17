@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
 import Supplies from '@/arkham/components/Supplies.vue';
+import { toCapitalizedWords } from '@/arkham/helpers';
 
 export interface Props {
   game: Arkham.Game
@@ -16,18 +17,6 @@ const campaignLog = props.game.campaign?.log || props.game.scenario?.standaloneC
 const { recorded, recordedSets, recordedCounts } = campaignLog
 const hasSupplies = computed(() => Object.values(props.game.investigators).some((i) => i.supplies.length > 0))
 
-function toCapitalizedWords(name) {
-  const words = name.match(/[A-Za-z][a-z']*/g) || [];
-  return capitalize(words.map(lowercase).join(" "));
-}
-
-function capitalize(word) {
-  return word.charAt(0).toUpperCase() + word.substring(1);
-}
-
-function lowercase(word) {
-  return word.charAt(0).toLowerCase() + word.substring(1);
-}
 
 const findCard = (cardCode: string): CardDef => {
   return props.cards.find((c) => c.cardCode == cardCode)

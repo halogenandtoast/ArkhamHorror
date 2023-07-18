@@ -8,7 +8,7 @@ import { fetchDecks, newGame } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
-import { CampaignLogSettings, CampaignOption, CampaignScenario, CampaignSetting, settingActive } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, CampaignOption, CampaignScenario, CampaignSetting, settingActive, completedCampaignScenarioSetting } from '@/arkham/types/CampaignSettings'
 import NewDeck from '@/arkham/components/NewDeck';
 import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting';
 import { toCapitalizedWords } from '@/arkham/helpers';
@@ -219,7 +219,16 @@ watch(computedStandaloneSettings, (newSettings) => {
 
 const campaignSettings = ref<CampaignScenario[]>([])
 
-const activeSettings = computed(() => campaignSettings.value.filter((s) => settingActive(campaignLog.value, s)))
+const activeSettings = computed(() => {
+  const allActive = campaignSettings.value.filter((s) => settingActive(campaignLog.value, s))
+  const firstNotCompleted = allActive.findIndex((s) => !completedCampaignScenarioSetting(campaignLog.value, s))
+
+  if (firstNotCompleted === -1) {
+    return allActive
+  }
+
+  return campaignSettings.value.filter((s) => settingActive(campaignLog.value, s)).slice(0, firstNotCompleted + 1)
+})
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
@@ -229,32 +238,13 @@ const computedCampaignSettings = computed<CampaignScenario[]>(() => {
   return JSON.parse(JSON.stringify(campaign.value?.settings || []))
 })
 
-const completedCampaignScenarioSetting = (setting: CampaignSetting) => {
-  const settings = campaignLog.value
-  return setting.settings.every((s) => {
-    if(!settingActive(s)) {
-      return true
-    }
-
-    if (s.type === "ChooseNum") {
-      return settings.counts[s.key] !== undefined
-    }
-
-    if (s.type === "ChooseKey") {
-      return s.content.some((k) => settings.keys.includes(k))
-    }
-
-    return true
-  })
-}
-
 const completedCampaignSettings = computed(() => {
   if(gameMode.value !== 'Campaign' || fullCampaign.value === true) {
     return true
   }
   return campaignSettings.value.every((s) => {
     if (settingActive(s)) {
-      return completedCampaignScenarioSetting(s)
+      return completedCampaignScenarioSetting(campaignLog.value, s)
     }
 
     return true

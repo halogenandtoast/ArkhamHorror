@@ -17,9 +17,15 @@ export type CampaignLogSettings =
     options: CampaignOption[]
   }
 
+type Predicate =
+  { type: "lte", value: number } |
+  { type: "gte", value: number }
+
 type SettingCondition =
   { type: "key", key: string } |
-  { type: "inSet", key: string, recordable: string, content: Recordable }
+  { type: "inSet", key: string, recordable: string, content: string } |
+  { type: "count", key: string, predicate: Predicate } |
+  { type: "option", key: string }
 
 export type Recordable = { key: string, content: string }
 
@@ -34,6 +40,9 @@ export type CampaignSetting =
   { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
 
 export const settingActive = function(campaignLog: CampaignLogSettings, setting: CampaignSetting | CampaignScenario) {
+  if (setting === undefined) {
+    return false
+  }
   const {ifRecorded, anyRecorded} = setting
   if (ifRecorded) {
     for (const condition of ifRecorded) {
@@ -86,4 +95,22 @@ export const settingActive = function(campaignLog: CampaignLogSettings, setting:
   }
 
   return true
+}
+
+export const completedCampaignScenarioSetting = (campaignLog: CampaignLogSettings, setting: CampaignScenario) => {
+  return setting.settings.every((s) => {
+    if(!settingActive(campaignLog, s)) {
+      return true
+    }
+
+    if (s.type === "ChooseNum") {
+      return campaignLog.counts[s.key] !== undefined
+    }
+
+    if (s.type === "ChooseKey") {
+      return s.content.some((k) => campaignLog.keys.includes(k))
+    }
+
+    return true
+  })
 }

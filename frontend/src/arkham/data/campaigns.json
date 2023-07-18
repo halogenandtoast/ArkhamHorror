@@ -1,6 +1,9 @@
 [
   { "id": "01", "name": "The Night of the Zealot", "returnToId": "50" },
-  { "id": "02", "name": "The Dunwich Legacy" },
+  {
+    "id": "02",
+    "name": "The Dunwich Legacy"
+  },
   { "id": "03", "name": "The Path to Carcosa" },
   { "id": "04", "name": "The Forgotten Age" },
   { "id": "05", "name": "The Circle Undone", "beta": true, "settings": [
@@ -24,6 +27,17 @@
           "key": "PiecesOfEvidenceWereLeftBehind",
           "ckey": "PiecesOfEvidenceWereLeftBehind",
           "type": "ChooseNum"
+        }
+      ],
+      "resolutions": [
+        { "resolution": "No Resolution", "settings":
+          [
+            {
+              "key": "PiecesOfEvidenceWereLeftBehind",
+              "ckey": "PiecesOfEvidenceWereLeftBehind",
+              "type": "ChooseNum"
+            }
+          ]
         }
       ]
     },

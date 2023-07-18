@@ -8,8 +8,9 @@ import { fetchDecks, newGame } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
-import { CampaignLogSettings, CampaignOption } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, CampaignOption, CampaignScenario, CampaignSetting, settingActive } from '@/arkham/types/CampaignSettings'
 import NewDeck from '@/arkham/components/NewDeck';
+import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting';
 import { toCapitalizedWords } from '@/arkham/helpers';
 
 import campaignJSON from '@/arkham/data/campaigns.json';
@@ -216,25 +217,9 @@ watch(computedStandaloneSettings, (newSettings) => {
   standaloneSettings.value = newSettings
 }, { immediate: true })
 
-type SettingCondition =
-  { type: "key", key: string } |
-  { type: "inSet", key: string, recordable: string, content: Recordable }
-
-type Recordable = { key: string, content: string }
-
-type CampaignSetting =
-  { type: "CrossOut", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseKey", key: string, content: string[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
-  { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[] } |
-  { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[] } |
-  { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[] }
-
-type CampaignScenario = { key: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], settings: CampaignSetting[] }
-
 const campaignSettings = ref<CampaignScenario[]>([])
+
+const activeSettings = computed(() => campaignSettings.value.filter((s) => settingActive(campaignLog.value, s)))
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
@@ -362,61 +347,6 @@ const setNum = function(setting: CampaignSetting, value: number) {
   }
 }
 
-const settingActive = function(setting: CampaignSetting) {
-  const {ifRecorded, anyRecorded} = setting
-  if (ifRecorded) {
-    for (const condition of ifRecorded) {
-      if (condition.type === 'key') {
-        if (!campaignLog.value.keys.includes(condition.key)) {
-          return false
-        }
-      } else if (condition.type === 'inSet') {
-        const set = campaignLog.value.sets[condition.key]
-        if (!set || !set.entries.find((e) => e.value === condition.content && e.tag === 'Recorded')) {
-          return false
-        }
-      } else if (condition.type === 'count') {
-        const count = campaignLog.value.counts[condition.key]
-        if (condition.predicate.type === 'lte') {
-          if (count === undefined || count > condition.predicate.value) {
-            return false
-          }
-        } else if (condition.predicate.type === 'gte') {
-          if (count === undefined || count < condition.predicate.value) {
-            return false
-          }
-        }
-      } else if(condition.type === 'option') {
-        if (!campaignLog.value.options.map((o) => o.key).includes(condition.key)) {
-          return false
-        }
-      }
-    }
-  }
-
-  if (anyRecorded) {
-    let found = false
-    for (const condition of anyRecorded) {
-      if (condition.type === 'key') {
-        if (campaignLog.value.keys.includes(condition.key)) {
-          found = true
-        }
-      } else if (condition.type === 'inSet') {
-        const set = campaignLog.value.sets[condition.key]
-        if (set && set.entries.find((e) => e.value === condition.content)) {
-          found = true
-        }
-      }
-    }
-
-    if (!found) {
-      return false
-    }
-  }
-
-  return true
-}
-
 const toggleKey = function(key: string) {
   const current = campaignLog.value
   if (current.keys.includes(key)) {
@@ -478,34 +408,11 @@ const chooseRecordable = function(setting, value) {
   filterSettings()
 }
 
-const inSet = function(key: string, value: string) {
-  const current = campaignLog.value
-  const set = current.sets[key]
-  if (set) {
-    return set.entries.find((e) => e.value === value) !== undefined
+const inResolution = function (setting: CampaignScenario) {
+  if (setting.resolutions.length === 1) {
+    return true
   }
-
   return false
-}
-
-const isRecorded = function (value: string) {
-  const current = campaignLog.value
-  return current.keys.includes(value)
-}
-
-const isOption = function (option: CampaignOption) {
-  const current = campaignLog.value
-  return current.options.includes(option)
-}
-
-const chosenNum = function (option: CampaignOption) {
-  const current = campaignLog.value
-  return current.counts[option.key]
-}
-
-const crossedOut = function (key: string, value: string) {
-  const current = campaignLog.value
-  return current.sets[key]?.entries.find((e) => e.value === value)?.tag === "CrossedOut"
 }
 
 const toggleCrossOut = function (key: string, value: string) {
@@ -678,97 +585,20 @@ const toggleCrossOut = function (key: string, value: string) {
 
           <div v-if="!fullCampaign && campaignSettings.length > 0">
             <p>Campaign Settings</p>
-            <template v-for="setting in campaignSettings" :key="setting.key">
-              <div v-if="settingActive(setting)" class="settings-group">
-                <header><h3>{{setting.key}}</h3></header>
-                <div v-for="setting in setting.settings" :key="setting.key">
-                  <template v-if="settingActive(setting)">
-                    <div v-if="setting.type === 'SetKey'">
-                      <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleKey(setting.ckey)" :checked="isRecorded(setting.ckey)" />
-                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'Option'">
-                      <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleOption(setting)" :checked="isOption(setting.ckey)" />
-                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'ForceKey'">
-                      <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" checked disabled />
-                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'ForceRecorded'">
-                      <div class="options">
-                        <input type="checkbox" :name="setting.key" :id="setting.key" checked disabled />
-                        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'ChooseKey'">
-                      {{toCapitalizedWords(setting.key)}}
-                      <div class="options">
-                        <template v-for="option in setting.content" :key="option.key">
-                          <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="setKey(setting, option)" :checked="isRecorded(option)" />
-                          <label :for="option">{{toCapitalizedWords(option)}}</label>
-                        </template>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'ChooseOption'">
-                      {{toCapitalizedWords(setting.key)}}
-                      <div class="options">
-                        <template v-for="option in setting.content" :key="option.key">
-                          <input type="radio" :value="option.key" :name="setting.key" :id="option.key" @change.prevent="setOption(setting, option)" :checked="isOption(option)" />
-                          <label :for="option.key">{{toCapitalizedWords(option.key)}}</label>
-                        </template>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'CrossOut'">
-                      {{toCapitalizedWords(setting.key)}}
-                      <div class="options">
-                        <template v-for="option in setting.content" :key="option.key">
-                          <input type="checkbox" :name="`${setting.key}${option.key}`" :id="`${setting.key}${option.key}`" class="invert" @change.prevent="toggleCrossOut(setting.key, option.content)" :checked="crossedOut(setting.key, option.content)"/>
-                          <label :for="`${setting.key}${option.key}`">
-                            <s v-if="crossedOut(setting.key, option.content)">{{toCapitalizedWords(option.key)}}</s>
-                            <span v-else>{{toCapitalizedWords(option.key)}}</span>
-                          </label>
-                        </template>
-                      </div>
-                    </div>
-                    <div v-else-if="setting.type === 'ChooseNum'">
-                      {{toCapitalizedWords(setting.key)}}
-                      <input
-                        type="number"
-                        :name="setting.key"
-                        :id="setting.key"
-                        min="0"
-                        :max="setting.max"
-                        :value="chosenNum(setting)"
-                        @change.prevent="setNum(setting, parseInt($event.target.value))"
-                      />
-                    </div>
-                    <div v-else-if="setting.type === 'SetRecordable'" class="options">
-                      <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="toggleSet(setting)" :checked="inSet(setting.ckey, setting.content)" />
-                      <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
-                    </div>
-                    <div v-else-if="setting.type === 'ChooseRecordable'">
-                      {{toCapitalizedWords(setting.key)}}
-                      <div class="options">
-                        <template v-for="option in setting.content" :key="option.key">
-                          <input type="radio" :name="setting.key" :id="`${setting.key}${option.key}`" @change.prevent="chooseRecordable(setting, option.content)"/>
-                          <label :for="`${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
-                        </template>
-                      </div>
-                    </div>
-                    <div v-else>
-                      {{setting.type}}
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </template>
+            <CampaignScenarioSetting
+              v-for="setting in activeSettings"
+              :setting="setting"
+              :campaignLog="campaignLog"
+              :key="setting.key"
+              @toggle:key="toggleKey"
+              @toggle:option="toggleOption"
+              @toggle:set="toggleSet"
+              @set:key="setKey"
+              @toggle:crossout="toggleCrossOut"
+              @set:num="setNum"
+              @set:record="chooseRecordable"
+              @set:option="setOption"
+            />
           </div>
 
           <button type="submit" :disabled="disabled">Create</button>
@@ -1007,18 +837,4 @@ header {
   opacity: 0;
 }
 
-.settings-group {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  header {
-    h3 {
-      padding: 0;
-      margin: 0;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.3) !important;
-    }
-  }
-}
 </style>

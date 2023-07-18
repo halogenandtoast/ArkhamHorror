@@ -13,7 +13,6 @@ defineEmits(['toggle:key', 'toggle:option', 'toggle:set', 'set:key', 'set:option
 
 const activeSettings = computed(() => {
   return props.setting.settings.filter((s) => {
-    console.log(s)
     return settingActive(props.campaignLog, s)
   })
 })

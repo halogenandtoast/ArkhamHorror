@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { CampaignLogSettings, CampaignScenario, CampaignOption, settingActive } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, CampaignScenario, CampaignOption, settingActive, anyForced, isForcedKey } from '@/arkham/types/CampaignSettings'
 import { toCapitalizedWords } from '@/arkham/helpers'
 
 export interface Props {
@@ -29,6 +29,11 @@ const inSet = function(key: string, value: string) {
 
   return false
 }
+
+const forceDisabled = (setting, option) => {
+  return anyForced(setting) && !isForcedKey(option)
+}
+
 </script>
 
 <template>
@@ -63,8 +68,8 @@ const inSet = function(key: string, value: string) {
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
           <template v-for="option in setting.content" :key="option.key">
-            <input type="radio" :value="option" :name="setting.key" :id="option" @change.prevent="$emit('set:key', setting, option)" :checked="isRecorded(option)" />
-            <label :for="option">{{toCapitalizedWords(option)}}</label>
+            <input type="radio" :value="option.key" :name="setting.key" :id="option.key" @change.prevent="$emit('set:key', setting, option.key)" :checked="isRecorded(option.key)" :disabled="forceDisabled(setting, option)" />
+            <label :for="option.key">{{toCapitalizedWords(option.key)}}</label>
           </template>
         </div>
       </div>
@@ -155,6 +160,11 @@ input[type=radio] + label {
 input[type=radio]:checked + label {
   background: #6E8640;
 }
+
+input[type=radio]:disabled + label {
+  background: #FF0000;
+}
+
 
 input[type=checkbox] {
   display: none;

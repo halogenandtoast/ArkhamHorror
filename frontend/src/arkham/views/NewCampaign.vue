@@ -243,7 +243,7 @@ const completedCampaignSettings = computed(() => {
     return true
   }
   return campaignSettings.value.every((s) => {
-    if (settingActive(s)) {
+    if (settingActive(campaignLog.value, s)) {
       return completedCampaignScenarioSetting(campaignLog.value, s)
     }
 
@@ -251,23 +251,23 @@ const completedCampaignSettings = computed(() => {
   })
 })
 
+const isForced = (s) => s.scenarioId == selectedScenario.value
+
 watch(computedCampaignSettings, (newSettings) => {
-  if (selectedScenario.value) {
+  if (scenario.value?.campaign == selectedCampaign.value) {
     const idx = newSettings.findIndex((s) => s.scenarioId === selectedScenario.value)
-    if (idx !== -1) {
-      const relevantSettings = newSettings.slice(0, idx)
+    const relevantSettings = newSettings.filter((s, i) => i < idx || s.force && isForced(s.force))
 
-      const crossOut = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "CrossOut"))
-      const sets = crossOut.reduce((a, s) => {
-        return { ...a, [s.key]: { recordable: s.recordable, entries: s.content.map((c) => { return { tag: "Recorded", value: c.content }}) } }}, {})
+    const crossOut = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "CrossOut"))
+    const sets = crossOut.reduce((a, s) => {
+      return { ...a, [s.key]: { recordable: s.recordable, entries: s.content.map((c) => { return { tag: "Recorded", value: c.content }}) } }}, {})
 
-      const counts = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "ChooseNum")).reduce((a, s) => { return { ...a, [s.key]: 0 }}, {})
+    const counts = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "ChooseNum")).reduce((a, s) => { return { ...a, [s.key]: 0 }}, {})
 
-      campaignLog.value = { keys: [], counts, options: [], sets }
+    campaignLog.value = { keys: [], counts, options: [], sets }
 
-      campaignSettings.value = relevantSettings
-      return
-    }
+    campaignSettings.value = relevantSettings
+    return
   }
 
   campaignLog.value = { keys: [], counts: {}, sets: {}, options: []}
@@ -276,7 +276,8 @@ watch(computedCampaignSettings, (newSettings) => {
 
 // remove any associated recorded sets or keys for settings that are no longer valid
 const filterSettings = function() {
-  const invalidSettings = campaignSettings.value.flatMap((s) => settingActive(s) ? s.settings.filter((t) => !settingActive(t)) : s.settings)
+  const invalidSettings = campaignSettings.value.flatMap((s) => settingActive(campaignLog.value, s) ? s.settings.filter((t) => !settingActive(campaignLog.value, t)) : s.settings)
+
   const invalidKeys = invalidSettings.flatMap((s) => {
     if (s.type === 'SetKey') {
       return [s.ckey]
@@ -284,8 +285,23 @@ const filterSettings = function() {
     if (s.type === 'ForceKey') {
       return [s.key]
     }
+    if (s.type === 'ChooseKey') {
+      return s.content.map((c) => c.key)
+    }
     return []
   })
+
+  const forcedKeys = campaignSettings.value.reduce(
+    (ks, s) => {
+      if (settingActive(campaignLog.value, s)) {
+        const innerActive = s.settings.filter((t) => settingActive(campaignLog.value, t))
+        const forced = innerActive.filter((t) => t.type === 'ForceKey').map((t) => t.key)
+        // const forcedChoice = innerActive.flatMap((t) => t.type === 'ChooseKey' ? : [])
+        return [...ks, ...forced]
+      }
+
+      return ks
+    }, [])
 
   const invalidSetValues = invalidSettings.reduce((sets, s) => {
     if (s.type === 'ChooseRecordable') {
@@ -309,13 +325,13 @@ const filterSettings = function() {
   const newCounts = campaignLog.value.counts
   const newOptions = campaignLog.value.options
 
-  campaignLog.value = { keys: newKeys, sets: newSets, counts: newCounts, options: newOptions }
+  campaignLog.value = { keys: [...newKeys, ...forcedKeys], sets: newSets, counts: newCounts, options: newOptions }
 }
 
 const setKey = function(setting: CampaignSetting, value: string) {
   const current = campaignLog.value
   if (setting.type === 'ChooseKey') {
-    const keysToRemove = setting.content.filter((k) => k !== value)
+    const keysToRemove = setting.content.filter((k) => k.key !== value).map((k) => k.key)
     campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k)), value] }
     filterSettings()
   }

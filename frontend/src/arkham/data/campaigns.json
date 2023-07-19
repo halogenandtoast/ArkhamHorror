@@ -2,7 +2,89 @@
   { "id": "01", "name": "The Night of the Zealot", "returnToId": "50" },
   {
     "id": "02",
-    "name": "The Dunwich Legacy"
+    "name": "The Dunwich Legacy",
+    "settings": [
+      {
+        "key": "Extracurricular Activity",
+        "scenarioId": "02041",
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "ProfessorRice",
+            "content": [
+              { "key": "ProfessorWarrenRiceWasKidnapped" },
+              { "key": "TheInvestigatorsRescuedProfessorWarrenRice" }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "TakeWarenRice",
+            "ckey": "TakeWarenRice",
+            "ifRecorded": [
+              {
+                "type": "key",
+                "key": "TheInvestigatorsRescuedProfessorWarrenRice"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsWereUnconsciousForSeveralHours",
+            "ckey": "TheInvestigatorsWereUnconsciousForSeveralHours",
+            "ifRecorded": [{"type": "key", "key": "ProfessorWarrenRiceWasKidnapped"}]
+          },
+          {
+            "type": "ChooseKey",
+            "key": "SchoolResolution",
+            "content": [
+              {
+                "key": "TheInvestigatorsFailedToSaveTheStudents",
+                "forceWhen": {
+                  "type": "or",
+                  "content": [
+                    { "type": "key", "key": "TheInvestigatorsRescuedProfessorWarrenRice" },
+                    { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours" }
+                  ]
+                }
+              },
+              { "key": "TheStudentsWereRescued" },
+              { "key": "TheExperimentWasDefeated" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "The House Always Wins",
+        "scenarioId": "02062",
+        "force": { "scenarioId": "02041" },
+        "settings": []
+      },
+      {
+        "key": "The Miskatonic Museum",
+        "scenarioId": "02118",
+        "settings": []
+      },
+      {
+        "key": "The Essex County Express",
+        "scenarioId": "02159",
+        "settings": []
+      },
+      {
+        "key": "Blood on the Altar",
+        "scenarioId": "02195",
+        "settings": []
+      },
+      {
+        "key": "Undimensioned and Unseen",
+        "scenarioId": "02236",
+        "settings": []
+      },
+      {
+        "key": "Where Doom Awaits",
+        "scenarioId": "02274",
+        "settings": []
+      }
+    ]
   },
   { "id": "03", "name": "The Path to Carcosa" },
   { "id": "04", "name": "The Forgotten Age" },
@@ -48,12 +130,12 @@
         {
           "type": "ChooseKey",
           "key": "ChooseYourFate",
-          "content": ["YouHaveAcceptedYourFate", "YouHaveRejectedYourFate"]
+          "content": [{ "key": "YouHaveAcceptedYourFate" }, { "key": "YouHaveRejectedYourFate" }]
         },
         {
           "type": "ChooseKey",
           "key": "WitchingHourResolution",
-          "content": ["TheWitches'SpellWasBroken", "TheWitches'SpellWasCast"]
+          "content": [{ "key": "TheWitches'SpellWasBroken" }, { "key": "TheWitches'SpellWasCast" }]
         },
         {
           "type": "SetRecordable",
@@ -142,9 +224,9 @@
           "type": "ChooseKey",
           "key": "AtDeathsDoorResolution",
           "content": [
-            "TheInvestigatorsEscapedTheSpectralRealm",
-            "TheInvestigatorsLearnedNothingOfTheLodge'sSchemes",
-            "TheInvestigatorsAreNeverSeenOrHeardFromAgain"
+            { "key": "TheInvestigatorsEscapedTheSpectralRealm" },
+            { "key": "TheInvestigatorsLearnedNothingOfTheLodge'sSchemes" },
+            { "key": "TheInvestigatorsAreNeverSeenOrHeardFromAgain" }
           ]
         }
       ]
@@ -157,9 +239,9 @@
           "type": "ChooseKey",
           "key": "JosefsFate",
           "content": [
-            "JosefDisappearedIntoTheMist",
-            "TheInvestigatorsRescuedJosef",
-            "JosefIsAliveAndWell"
+            { "key": "JosefDisappearedIntoTheMist" },
+            { "key": "TheInvestigatorsRescuedJosef" },
+            { "key": "JosefIsAliveAndWell" }
           ]
         },
         {
@@ -175,8 +257,8 @@
             {"key": "JosefIsAliveAndWell", "type": "key" }
           ],
           "content": [
-            "TheInvestigatorsAreEnemiesOfTheLodge",
-            "TheInvestigatorsAreMembersOfTheLodge"
+            { "key": "TheInvestigatorsAreEnemiesOfTheLodge" },
+            { "key": "TheInvestigatorsAreMembersOfTheLodge" }
           ]
         },
         {
@@ -198,8 +280,8 @@
             {"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }
           ],
           "content": [
-            "TheInvestigatorsToldTheLodgeAboutTheCoven",
-            "TheInvestigatorsHidTheirKnowledgeOfTheCoven"
+            { "key": "TheInvestigatorsToldTheLodgeAboutTheCoven" },
+            { "key": "TheInvestigatorsHidTheirKnowledgeOfTheCoven" }
           ]
         },
         {
@@ -285,9 +367,9 @@
           "type": "ChooseKey",
           "key": "ForTheGreaterGoodResolution",
           "content": [
-            "TheGuardianOfTheTrapEmerged",
-            "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox",
-            "TheGuardianOfTheTrapEmergedAndWasDefeated"
+            { "key": "TheGuardianOfTheTrapEmerged" },
+            { "key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox" },
+            { "key": "TheGuardianOfTheTrapEmergedAndWasDefeated" }
           ]
         },
         {

@@ -29,10 +29,15 @@ type SettingCondition =
 
 export type Recordable = { key: string, content: string }
 
+export type ForceKey = { type: "key", key: string } | { type: "or", content: ForceKey[] } | { type: "and", content: ForceKey[] }
+
+
+export type ChooseKey = { key: string, forceWhen?: ForceKey }
+
 export type CampaignSetting =
   { type: "CrossOut", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseKey", key: string, content: string[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseKey", key: string, content: ChooseKey[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
@@ -108,9 +113,41 @@ export const completedCampaignScenarioSetting = (campaignLog: CampaignLogSetting
     }
 
     if (s.type === "ChooseKey") {
-      return s.content.some((k) => campaignLog.keys.includes(k))
+      return s.content.some((k) => campaignLog.keys.includes(k.key))
     }
 
     return true
   })
+}
+
+const forcedWhen = (campaignLog: CampaignLogSettings, forceWhen: ForceKey): boolean => {
+  if (forceWhen.type === "key") {
+    return campaignLog.keys.includes(forceWhen.key)
+  }
+
+  if (forceWhen.type === "or") {
+    return forceWhen.content.some((f) => forcedWhen(campaignLog, f))
+  }
+
+  if (forceWhen.type === "and") {
+    return forceWhen.content.every((f) => forcedWhen(campaignLog, f))
+  }
+
+  return false
+}
+
+export const isForcedKey = (campaignLog: CampaignLogSettings, option: ChooseKey) => {
+  const {forceWhen} = option
+  if (forceWhen) {
+    return forcedWhen(campaignLog, forceWhen)
+  }
+  return false
+}
+
+export const anyForced = (campaignLog: CampaignLogSettings, option : CampaignSetting) => {
+  if (option.type === "ChooseKey") {
+    return option.content.some((o) => isForcedKey(campaignLog, o))
+  }
+
+  return false
 }

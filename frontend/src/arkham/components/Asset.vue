@@ -32,7 +32,6 @@ const hasPool = computed(() => {
     sealedChaosTokens,
     keys,
   } = props.asset;
-  console.log(keys)
   return sanity || health || tokens[TokenType.Damage] || tokens[TokenType.Horror] || uses || (tokens[TokenType.Doom] || 0) > 0 || (tokens[TokenType.Clue] || 0) > 0 || (tokens[TokenType.Resource] || 0) > 0 || sealedChaosTokens.length > 0 || keys.length > 0;
 })
 

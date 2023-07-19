@@ -31,7 +31,7 @@ const inSet = function(key: string, value: string) {
 }
 
 const forceDisabled = (setting, option) => {
-  return anyForced(setting) && !isForcedKey(option)
+  return anyForced(props.campaignLog, setting) && !isForcedKey(props.campaignLog, option)
 }
 
 </script>
@@ -162,7 +162,9 @@ input[type=radio]:checked + label {
 }
 
 input[type=radio]:disabled + label {
-  background: #FF0000;
+  background: #999;
+  color: #333;
+  text-decoration: line-through;
 }
 
 

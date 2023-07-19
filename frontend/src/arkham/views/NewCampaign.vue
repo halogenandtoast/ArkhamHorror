@@ -8,7 +8,7 @@ import { fetchDecks, newGame } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
-import { CampaignLogSettings, CampaignOption, CampaignScenario, CampaignSetting, settingActive, completedCampaignScenarioSetting } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, CampaignOption, CampaignScenario, CampaignSetting, settingActive, completedCampaignScenarioSetting, isForcedKey, anyForced } from '@/arkham/types/CampaignSettings'
 import NewDeck from '@/arkham/components/NewDeck';
 import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting';
 import { toCapitalizedWords } from '@/arkham/helpers';
@@ -291,13 +291,36 @@ const filterSettings = function() {
     return []
   })
 
+  const unchoosableKey = campaignSettings.value.reduce(
+    (ks, s) => {
+      if (settingActive(campaignLog.value, s)) {
+        const innerActive = s.settings.filter((t) => settingActive(campaignLog.value, t))
+        const forcedChoice = innerActive.flatMap((t) => {
+          if (t.type === 'ChooseKey' && anyForced(campaignLog.value, t)) {
+            return t.content.filter((c) => !isForcedKey(campaignLog.value, c)).map((c) => c.key)
+          }
+          return []
+        })
+
+        return [...ks, ...forcedChoice]
+      }
+
+      return ks
+    }, [])
+
   const forcedKeys = campaignSettings.value.reduce(
     (ks, s) => {
       if (settingActive(campaignLog.value, s)) {
         const innerActive = s.settings.filter((t) => settingActive(campaignLog.value, t))
         const forced = innerActive.filter((t) => t.type === 'ForceKey').map((t) => t.key)
-        // const forcedChoice = innerActive.flatMap((t) => t.type === 'ChooseKey' ? : [])
-        return [...ks, ...forced]
+        const forcedChoice = innerActive.flatMap((t) => {
+          if (t.type === 'ChooseKey') {
+            return t.content.filter((c) => isForcedKey(campaignLog.value, c)).map((c) => c.key)
+          }
+          return []
+        })
+
+        return [...ks, ...forced, ...forcedChoice]
       }
 
       return ks
@@ -325,7 +348,14 @@ const filterSettings = function() {
   const newCounts = campaignLog.value.counts
   const newOptions = campaignLog.value.options
 
-  campaignLog.value = { keys: [...newKeys, ...forcedKeys], sets: newSets, counts: newCounts, options: newOptions }
+  const keys = [...newKeys, ...forcedKeys].filter((k) => !unchoosableKey.includes(k))
+
+  campaignLog.value = {
+    keys: [...new Set(keys)],
+    sets: newSets,
+    counts: newCounts,
+    options: newOptions
+  }
 }
 
 const setKey = function(setting: CampaignSetting, value: string) {

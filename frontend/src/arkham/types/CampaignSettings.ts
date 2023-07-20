@@ -9,9 +9,11 @@ type RecordableSet = { recordable: string, entries: RecordableEntry[] }
 
 export type CampaignOption = { key: string, ckey?: string }
 
+export type Key = { key: string, scope: string }
+
 export type CampaignLogSettings =
   {
-    keys: string[],
+    keys: Key[],
     counts: Record<string, number>,
     sets: Record<string, RecordableSet>,
     options: CampaignOption[]
@@ -25,11 +27,15 @@ type SettingCondition =
   { type: "key", key: string } |
   { type: "inSet", key: string, recordable: string, content: string } |
   { type: "count", key: string, predicate: Predicate } |
-  { type: "option", key: string }
+  { type: "option", key: string } |
+  { type: "and", content: SettingCondition[] } |
+  { type: "or", content: SettingCondition[] } |
+  { type: "not", content: SettingCondition } |
+  { type: "nor", content: SettingCondition[] }
 
 export type Recordable = { key: string, content: string }
 
-export type ForceKey = { type: "key", key: string } | { type: "or", content: ForceKey[] } | { type: "and", content: ForceKey[] }
+export type ForceKey = { type: "key", key: string, scope?: string } | { type: "or", content: ForceKey[] } | { type: "and", content: ForceKey[] } | { type: "always" }
 
 
 export type ChooseKey = { key: string, forceWhen?: ForceKey }
@@ -37,12 +43,58 @@ export type ChooseKey = { key: string, forceWhen?: ForceKey }
 export type CampaignSetting =
   { type: "CrossOut", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseKey", key: string, content: ChooseKey[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseKey", key: string, content: ChooseKey[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], max?: number, min?: number } |
   { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
+  { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "Record", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ForceRecorded", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
+
+const inactiveCondition = (campaignLog: CampaignLogSettings, condition: SettingCondition): boolean => {
+  if (condition.type === 'key') {
+    return !campaignLog.keys.some((c) => c.key === condition.key)
+  }
+
+  if (condition.type === 'inSet') {
+    const set = campaignLog.sets[condition.key]
+    return !set || !set.entries.find((e) => e.value === condition.content && e.tag === 'Recorded')
+  }
+
+  if (condition.type === 'count') {
+    const count = campaignLog.counts[condition.key]
+    if (condition.predicate.type === 'lte') {
+      return count === undefined || count > condition.predicate.value
+    }
+
+    if (condition.predicate.type === 'gte') {
+      return count === undefined || count < condition.predicate.value
+    }
+  }
+
+  if(condition.type === 'option') {
+    return !campaignLog.options.map((o) => o.key).includes(condition.key)
+  }
+
+  if(condition.type === 'and') {
+    return condition.content.some((c) => inactiveCondition(campaignLog, c))
+  }
+
+  if(condition.type === 'or') {
+    return condition.content.every((c) => inactiveCondition(campaignLog, c))
+  }
+
+  if(condition.type === 'not') {
+    return !inactiveCondition(campaignLog, condition.content)
+  }
+
+  if(condition.type === 'nor') {
+    return !condition.content.every((c) => inactiveCondition(campaignLog, c))
+  }
+
+  throw new Error(`Unknown condition type ${condition}`)
+}
 
 export const settingActive = function(campaignLog: CampaignLogSettings, setting: CampaignSetting | CampaignScenario) {
   if (setting === undefined) {
@@ -50,32 +102,8 @@ export const settingActive = function(campaignLog: CampaignLogSettings, setting:
   }
   const {ifRecorded, anyRecorded} = setting
   if (ifRecorded) {
-    for (const condition of ifRecorded) {
-      if (condition.type === 'key') {
-        if (!campaignLog.keys.includes(condition.key)) {
-          return false
-        }
-      } else if (condition.type === 'inSet') {
-        const set = campaignLog.sets[condition.key]
-        if (!set || !set.entries.find((e) => e.value === condition.content && e.tag === 'Recorded')) {
-          return false
-        }
-      } else if (condition.type === 'count') {
-        const count = campaignLog.counts[condition.key]
-        if (condition.predicate.type === 'lte') {
-          if (count === undefined || count > condition.predicate.value) {
-            return false
-          }
-        } else if (condition.predicate.type === 'gte') {
-          if (count === undefined || count < condition.predicate.value) {
-            return false
-          }
-        }
-      } else if(condition.type === 'option') {
-        if (!campaignLog.options.map((o) => o.key).includes(condition.key)) {
-          return false
-        }
-      }
+    if (ifRecorded.some((cond) => inactiveCondition(campaignLog, cond))) {
+      return false
     }
   }
 
@@ -83,7 +111,7 @@ export const settingActive = function(campaignLog: CampaignLogSettings, setting:
     let found = false
     for (const condition of anyRecorded) {
       if (condition.type === 'key') {
-        if (campaignLog.keys.includes(condition.key)) {
+        if (campaignLog.keys.some((c) => c.key === condition.key)) {
           found = true
         }
       } else if (condition.type === 'inSet') {
@@ -113,7 +141,7 @@ export const completedCampaignScenarioSetting = (campaignLog: CampaignLogSetting
     }
 
     if (s.type === "ChooseKey") {
-      return s.content.some((k) => campaignLog.keys.includes(k.key))
+      return s.content.some((k) => campaignLog.keys.some((c) => c.key === k.key))
     }
 
     return true
@@ -122,7 +150,13 @@ export const completedCampaignScenarioSetting = (campaignLog: CampaignLogSetting
 
 const forcedWhen = (campaignLog: CampaignLogSettings, forceWhen: ForceKey): boolean => {
   if (forceWhen.type === "key") {
-    return campaignLog.keys.includes(forceWhen.key)
+    return campaignLog.keys.some((c) => {
+      if (forceWhen.scope) {
+        return c.key === forceWhen.key && c.scope === forceWhen.scope
+      } else {
+        return c.key === forceWhen.key
+      }
+    })
   }
 
   if (forceWhen.type === "or") {
@@ -131,6 +165,10 @@ const forcedWhen = (campaignLog: CampaignLogSettings, forceWhen: ForceKey): bool
 
   if (forceWhen.type === "and") {
     return forceWhen.content.every((f) => forcedWhen(campaignLog, f))
+  }
+
+  if (forceWhen.type === "always") {
+    return true
   }
 
   return false

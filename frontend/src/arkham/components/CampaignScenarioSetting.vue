@@ -4,20 +4,20 @@ import { CampaignLogSettings, CampaignScenario, CampaignOption, settingActive, a
 import { toCapitalizedWords } from '@/arkham/helpers'
 
 export interface Props {
-  setting: CampaignScenario,
+  step: CampaignScenario,
   campaignLog: CampaignLogSettings
 }
 
 const props = defineProps<Props>()
-defineEmits(['toggle:key', 'toggle:option', 'toggle:set', 'set:key', 'set:option', 'toggle:crossout', 'set:num', 'set:recordable'])
+defineEmits(['toggle:key', 'toggle:option', 'toggle:set', 'set:key', 'set:option', 'toggle:crossout', 'set:num', 'set:record', 'toggle:record'])
 
 const activeSettings = computed(() => {
-  return props.setting.settings.filter((s) => {
+  return props.step.settings.filter((s) => {
     return settingActive(props.campaignLog, s)
   })
 })
 
-const isRecorded = (value: string) => props.campaignLog.keys.includes(value)
+const isRecorded = (value: string) => props.campaignLog.keys.some((c) => c.key === value && c.scope === props.step.key)
 const isOption = (option: CampaignOption) => props.campaignLog.options.includes(option)
 const crossedOut = (key: string, value: string) => props.campaignLog.sets[key]?.entries.find((e) => e.value === value)?.tag === "CrossedOut"
 const chosenNum = (option: CampaignOption) => props.campaignLog.counts[option.key]
@@ -38,38 +38,38 @@ const forceDisabled = (setting, option) => {
 
 <template>
   <div class="settings-group">
-    <header><h3>{{setting.key}}</h3></header>
+    <header><h3>{{step.key}}</h3></header>
     <div v-for="setting in activeSettings" :key="setting.key">
       <div v-if="setting.type === 'SetKey'">
         <div class="options">
-          <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="$emit('toggle:key', setting.ckey)" :checked="isRecorded(setting.ckey)" />
-          <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+          <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" @change.prevent="$emit('toggle:key', step, setting)" :checked="isRecorded(setting.ckey)" />
+          <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
         </div>
       </div>
       <div v-else-if="setting.type === 'Option'">
         <div class="options">
-          <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="$emit('toggle:option', setting)" :checked="isOption(setting.ckey)" />
-          <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+          <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" @change.prevent="$emit('toggle:option', setting)" :checked="isOption(setting.ckey)" />
+          <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
         </div>
       </div>
       <div v-else-if="setting.type === 'ForceKey'">
         <div class="options">
-          <input type="checkbox" :name="setting.key" :id="setting.key" checked disabled />
-          <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+          <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" checked disabled />
+          <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
         </div>
       </div>
       <div v-else-if="setting.type === 'ForceRecorded'">
         <div class="options">
-          <input type="checkbox" :name="setting.key" :id="setting.key" checked disabled />
-          <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+          <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" checked disabled />
+          <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
         </div>
       </div>
       <div v-else-if="setting.type === 'ChooseKey'">
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
           <template v-for="option in setting.content" :key="option.key">
-            <input type="radio" :value="option.key" :name="setting.key" :id="option.key" @change.prevent="$emit('set:key', setting, option.key)" :checked="isRecorded(option.key)" :disabled="forceDisabled(setting, option)" />
-            <label :for="option.key">{{toCapitalizedWords(option.key)}}</label>
+            <input type="radio" :value="option.key" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}${option.key}`" @change.prevent="$emit('set:key', step, setting, option.key)" :checked="isRecorded(option.key)" :disabled="forceDisabled(setting, option)" />
+            <label :for="`${step.key}${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
           </template>
         </div>
       </div>
@@ -77,8 +77,19 @@ const forceDisabled = (setting, option) => {
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
           <template v-for="option in setting.content" :key="option.key">
-            <input type="radio" :value="option.key" :name="setting.key" :id="option.key" @change.prevent="$emit('set:option', setting, option)" :checked="isOption(option)" />
-            <label :for="option.key">{{toCapitalizedWords(option.key)}}</label>
+            <input type="radio" :value="option.key" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}${option.key}`" @change.prevent="$emit('set:option', setting, option)" :checked="isOption(option)" />
+            <label :for="`${step.key}${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
+          </template>
+        </div>
+      </div>
+      <div v-else-if="setting.type === 'Record'">
+        {{toCapitalizedWords(setting.key)}}
+        <div class="options">
+          <template v-for="option in setting.content" :key="option.key">
+            <input type="checkbox" :name="`${step.key}${setting.key}${option.key}`" :id="`${step.key}${setting.key}${option.key}`" @change.prevent="$emit('toggle:record', setting, option.content)" :checked="inSet(setting.key, option.content)"/>
+            <label :for="`${step.key}${setting.key}${option.key}`">
+              {{toCapitalizedWords(option.key)}}
+            </label>
           </template>
         </div>
       </div>
@@ -86,8 +97,8 @@ const forceDisabled = (setting, option) => {
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
           <template v-for="option in setting.content" :key="option.key">
-            <input type="checkbox" :name="`${setting.key}${option.key}`" :id="`${setting.key}${option.key}`" class="invert" @change.prevent="$emit('toggle:crossout', setting.key, option.content)" :checked="crossedOut(setting.key, option.content)"/>
-            <label :for="`${setting.key}${option.key}`">
+            <input type="checkbox" :name="`${step.key}${setting.key}${option.key}`" :id="`${step.key}${setting.key}${option.key}`" class="invert" @change.prevent="$emit('toggle:crossout', setting.key, option.content)" :checked="crossedOut(setting.key, option.content)"/>
+            <label :for="`${step.key}${setting.key}${option.key}`">
               <s v-if="crossedOut(setting.key, option.content)">{{toCapitalizedWords(option.key)}}</s>
               <span v-else>{{toCapitalizedWords(option.key)}}</span>
             </label>
@@ -98,24 +109,24 @@ const forceDisabled = (setting, option) => {
         {{toCapitalizedWords(setting.key)}}
         <input
           type="number"
-          :name="setting.key"
-          :id="setting.key"
-          min="0"
+          :name="`${step.key}${setting.key}`"
+          :id="`${step.key}${setting.key}`"
+          :min="setting.min ? setting.min : 0"
           :max="setting.max"
           :value="chosenNum(setting)"
           @change.prevent="$emit('set:num', setting, parseInt($event.target.value))"
         />
       </div>
       <div v-else-if="setting.type === 'SetRecordable'" class="options">
-        <input type="checkbox" :name="setting.key" :id="setting.key" @change.prevent="$emit('toggle:set', setting)" :checked="inSet(setting.ckey, setting.content)" />
-        <label :for="setting.key">{{toCapitalizedWords(setting.key)}}</label>
+        <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" @change.prevent="$emit('toggle:set', setting)" :checked="inSet(setting.ckey, setting.content)" />
+        <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
       </div>
       <div v-else-if="setting.type === 'ChooseRecordable'">
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
           <template v-for="option in setting.content" :key="option.key">
-            <input type="radio" :name="setting.key" :id="`${setting.key}${option.key}`" @change.prevent="$emit('set:recordable', setting, option.content)" :checked="inSet(setting.ckey, option.key)"/>
-            <label :for="`${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
+            <input type="radio" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}${option.key}`" @change.prevent="$emit('set:record', setting, option.content)" :checked="inSet(setting.ckey, option.key)"/>
+            <label :for="`${step.key}${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
           </template>
         </div>
       </div>

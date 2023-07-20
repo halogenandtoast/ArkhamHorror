@@ -70,6 +70,7 @@ instance RunMessage TheDunwichLegacy where
         else
           pushAll
             [ story investigatorIds armitagesFate2
+            , Record TheInvestigatorsRescuedDrHenryArmitage
             , addCampaignCardToDeckChoice
                 leadInvestigatorId
                 investigatorIds

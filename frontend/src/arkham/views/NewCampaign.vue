@@ -276,93 +276,83 @@ watch(computedCampaignSettings, (newSettings) => {
 
 // remove any associated recorded sets or keys for settings that are no longer valid
 const filterSettings = function() {
-  const invalidSettings = campaignSettings.value.flatMap((s) => settingActive(campaignLog.value, s) ? s.settings.filter((t) => !settingActive(campaignLog.value, t)) : s.settings)
-
-  const invalidKeys = invalidSettings.flatMap((s) => {
-    if (s.type === 'SetKey') {
-      return [s.ckey]
-    }
-    if (s.type === 'ForceKey') {
-      return [s.key]
-    }
-    if (s.type === 'ChooseKey') {
-      return s.content.map((c) => c.key)
-    }
-    return []
-  })
-
-  const unchoosableKey = campaignSettings.value.reduce(
-    (ks, s) => {
-      if (settingActive(campaignLog.value, s)) {
-        const innerActive = s.settings.filter((t) => settingActive(campaignLog.value, t))
-        const forcedChoice = innerActive.flatMap((t) => {
-          if (t.type === 'ChooseKey' && anyForced(campaignLog.value, t)) {
-            return t.content.filter((c) => !isForcedKey(campaignLog.value, c)).map((c) => c.key)
-          }
-          return []
-        })
-
-        return [...ks, ...forcedChoice]
+  const active = activeSettings.value.reduce((a, s) => {
+    s.settings.forEach((t) => {
+      if(settingActive(campaignLog.value, t)) {
+        if (t.type === 'ChooseRecordable') {
+          a.sets.push(t.ckey)
+        }
+        if (t.type === 'Record') {
+          a.sets.push(t.key)
+        }
+        if (t.type === 'ForceRecorded') {
+          a.sets.push(t.key)
+          a.forcedSets[t.key] = { recordable: t.recordable, entries: [t.content] }
+        }
+        if (t.type === 'SetRecordable') {
+          a.sets.push(t.ckey)
+        }
+        if (t.type === 'SetKey') {
+          a.keys.push({ key: t.ckey, scope: s.key })
+        }
+        if (t.type === 'ForceKey') {
+          a.keys.push({ key: t.key, scope: s.key })
+          a.forcedKeys.push({ key: t.key, scope: s.key })
+        }
+        if (t.type === 'ChooseKey') {
+          t.content.forEach((c) => {
+            if(anyForced(campaignLog.value, t)) {
+              if (isForcedKey(campaignLog.value, c)) {
+                a.keys.push({ key: c.key, scope: s.key })
+                a.forcedKeys.push({ key: c.key, scope: s.key })
+              }
+            } else {
+              a.keys.push({ key: c.key, scope: s.key })
+            }
+          })
+        }
+        if (t.type === 'Option') {
+          a.options.push(t.key)
+        }
+        if (t.type === 'ChooseNum') {
+          a.counts.push(t.key)
+        }
+        if (t.type === 'ChooseOption') {
+          t.content.forEach((o) => a.options.push(o.key))
+        }
       }
+    })
+    return a
+  }, { keys: [], sets: [], options: [], counts: [], forcedKeys: [], forcedSets: {} })
 
-      return ks
-    }, [])
-
-  const forcedKeys = campaignSettings.value.reduce(
-    (ks, s) => {
-      if (settingActive(campaignLog.value, s)) {
-        const innerActive = s.settings.filter((t) => settingActive(campaignLog.value, t))
-        const forced = innerActive.filter((t) => t.type === 'ForceKey').map((t) => t.key)
-        const forcedChoice = innerActive.flatMap((t) => {
-          if (t.type === 'ChooseKey') {
-            return t.content.filter((c) => isForcedKey(campaignLog.value, c)).map((c) => c.key)
-          }
-          return []
-        })
-
-        return [...ks, ...forced, ...forcedChoice]
+  const onlyUnique = (value, index, self) => {
+    const idx = self.findIndex((s) => {
+      if(s.scope && value.scope) {
+        return s.key === value.key && s.scope === value.scope
       }
+      return s.key === value.key
+    })
+    return idx === index
+  }
 
-      return ks
-    }, [])
-
-  const invalidSetValues = invalidSettings.reduce((sets, s) => {
-    if (s.type === 'ChooseRecordable') {
-      const currentSet = sets[s.ckey] || []
-      const newEntries = s.content.map((c) => c.content)
-      return { ...sets, [s.ckey]: [...currentSet, ...newEntries] }
-    }
-    if (s.type === 'ForceRecorded') {
-      const currentSet = sets[s.key] || []
-      return { ...sets, [s.key]: [...currentSet, s.content] }
-    }
-    return sets
-  }, {})
-
-  const newKeys = campaignLog.value.keys.filter((k) => !invalidKeys.includes(k))
-
-  const newSets = Object.fromEntries(Object.entries(campaignLog.value.sets).map(([k,v]) => {
-    return [k, { ...v, entries: v.entries.filter((e) => !(invalidSetValues[k] || []).includes(e.value))}]
-  }))
-
-  const newCounts = campaignLog.value.counts
-  const newOptions = campaignLog.value.options
-
-  const keys = [...newKeys, ...forcedKeys].filter((k) => !unchoosableKey.includes(k))
+  const keys = [...campaignLog.value.keys, ...active.forcedKeys].filter((k) => active.keys.some((a) => a.key === k.key && a.scope == k.scope))
+  const options = campaignLog.value.options.filter((k) => active.options.includes(k.key))
+  const counts = {...Object.fromEntries(Object.entries(campaignLog.value.counts).filter(([k]) => active.counts.includes(k)))}
+  const sets = {...Object.fromEntries(Object.entries(campaignLog.value.sets).filter(([k]) => active.sets.includes(k))), ...active.forcedSets}
 
   campaignLog.value = {
-    keys: [...new Set(keys)],
-    sets: newSets,
-    counts: newCounts,
-    options: newOptions
+    keys: keys.filter(onlyUnique),
+    sets,
+    counts,
+    options: options.filter(onlyUnique)
   }
 }
 
-const setKey = function(setting: CampaignSetting, value: string) {
+const setKey = function(step: CampaignScenario, setting: CampaignSetting, key: string) {
   const current = campaignLog.value
   if (setting.type === 'ChooseKey') {
-    const keysToRemove = setting.content.filter((k) => k.key !== value).map((k) => k.key)
-    campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k)), value] }
+    const keysToRemove = setting.content.filter((k) => k.key !== key).map((k) => k.key)
+    campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k.key)), {key, scope: step.key }] }
     filterSettings()
   }
 }
@@ -381,14 +371,16 @@ const setNum = function(setting: CampaignSetting, value: number) {
   if (setting.type === 'ChooseNum') {
     campaignLog.value = { ...current, counts: {...current.counts, [setting.ckey]: value}}
   }
+
+  filterSettings()
 }
 
-const toggleKey = function(key: string) {
+const toggleKey = function(step: CampaignScenario, setting: CampaignSetting) {
   const current = campaignLog.value
-  if (current.keys.includes(key)) {
-    current.keys = current.keys.filter((k) => k !== key)
+  if (current.keys.some((k) => k.key === setting.ckey)) {
+    current.keys = current.keys.filter((k) => k.key !== setting.ckey)
   } else {
-    current.keys.push(key)
+    current.keys.push({ key: setting.ckey, scope: step.key })
   }
 
   filterSettings()
@@ -438,6 +430,23 @@ const chooseRecordable = function(setting, value) {
       set.entries = [...set.entries.filter((e) => !keysToRemove.includes(e.value)), { tag: "Recorded", value }]
     } else {
       campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
+    }
+  }
+
+  filterSettings()
+}
+
+const toggleRecordable = function(setting, value) {
+  if(setting.type === 'Record') {
+    const current = campaignLog.value
+    const set = current.sets[setting.key]
+    if (set) {
+      const hasEntry = set.entries.some((e) => e.value === value)
+      set.entries = hasEntry ? set.entries.filter((e) => e.value !== value) : [...set.entries, { tag: "Recorded", value }]
+
+      campaignLog.value = { ...current, sets: {...current.sets, [setting.key]: set}}
+    } else {
+      campaignLog.value = { ...current, sets: {...current.sets, [setting.key]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
     }
   }
 
@@ -623,7 +632,7 @@ const toggleCrossOut = function (key: string, value: string) {
             <p>Campaign Settings</p>
             <CampaignScenarioSetting
               v-for="setting in activeSettings"
-              :setting="setting"
+              :step="setting"
               :campaignLog="campaignLog"
               :key="setting.key"
               @toggle:key="toggleKey"
@@ -633,6 +642,7 @@ const toggleCrossOut = function (key: string, value: string) {
               @toggle:crossout="toggleCrossOut"
               @set:num="setNum"
               @set:record="chooseRecordable"
+              @toggle:record="toggleRecordable"
               @set:option="setOption"
             />
           </div>

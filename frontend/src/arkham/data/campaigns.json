@@ -31,7 +31,9 @@
             "type": "SetKey",
             "key": "TheInvestigatorsWereUnconsciousForSeveralHours",
             "ckey": "TheInvestigatorsWereUnconsciousForSeveralHours",
-            "ifRecorded": [{"type": "key", "key": "ProfessorWarrenRiceWasKidnapped"}]
+            "ifRecorded": [
+              {"type": "key", "key": "ProfessorWarrenRiceWasKidnapped"}
+            ]
           },
           {
             "type": "ChooseKey",
@@ -43,7 +45,7 @@
                   "type": "or",
                   "content": [
                     { "type": "key", "key": "TheInvestigatorsRescuedProfessorWarrenRice" },
-                    { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours" }
+                    { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours", "scope": "Extracurricular Activity" }
                   ]
                 }
               },
@@ -57,31 +59,333 @@
         "key": "The House Always Wins",
         "scenarioId": "02062",
         "force": { "scenarioId": "02041" },
-        "settings": []
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "ProfessorMorgan",
+            "content": [
+              { "key": "DrFrancisMorganWasKidnapped" },
+              { "key": "TheInvestigatorsRescuedDrFrancisMorgan" }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "TakeFrancisMorgan",
+            "ckey": "TakeFrancisMorgan",
+            "ifRecorded": [
+              {
+                "type": "key",
+                "key": "TheInvestigatorsRescuedDrFrancisMorgan"
+              }
+            ]
+          },
+          {
+            "type": "ChooseKey",
+            "key": "SchoolResolution",
+            "content": [
+              {
+                "key": "OBannionGangHasABoneToPickWithTheInvestigators",
+                "forceWhen": {
+                    "type": "key", "key": "TheInvestigatorsRescuedDrFrancisMorgan"
+                }
+              },
+              { "key": "NaomiHasTheInvestigatorsBacks" }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsWereUnconsciousForSeveralHours",
+            "ckey": "TheInvestigatorsWereUnconsciousForSeveralHours",
+            "ifRecorded": [{
+              "type": "nor",
+              "content": [
+                { "type": "key", "key": "NaomiHasTheInvestigatorsBacks" },
+                { "type": "key", "key": "TheInvestigatorsRescuedDrFrancisMorgan" }
+              ]
+            }]
+          },
+          {
+            "type": "Option",
+            "key": "Cheated",
+            "ckey": "Cheated"
+          }
+        ]
+      },
+      {
+        "key": "Interlude I: Armitage's Fate",
+        "settings": [
+          {
+            "type": "ForceKey",
+            "key": "DrHenryArmitageWasKidnapped",
+            "ifRecorded": [
+              { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours" }
+            ]
+          },
+          {
+            "type": "ForceKey",
+            "key": "TheInvestigatorsRescuedDrHenryArmitage",
+            "ifRecorded": [
+              { "type": "not", "content": { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours" } }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "TakeArmitage",
+            "ckey": "TakeArmitage",
+            "ifRecorded": [
+              {
+                "type": "key",
+                "key": "TheInvestigatorsRescuedDrHenryArmitage"
+              }
+            ]
+          }
+        ]
       },
       {
         "key": "The Miskatonic Museum",
         "scenarioId": "02118",
-        "settings": []
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "NecronomiconStatus",
+            "content": [
+              { "key": "TheInvestigatorsFailedToRecoverTheNecronomicon" },
+              { "key": "TheInvestigatorsDestroyedTheNecronomicon" },
+              { "key": "TheInvestigatorsTookCustodyOfTheNecronomicon" }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "TakeTheNecronomicon",
+            "ckey": "TakeTheNecronomicon",
+            "ifRecorded": [
+              {
+                "type": "key",
+                "key": "TheInvestigatorsTookCustodyOfTheNecronomicon"
+              }
+            ]
+          }
+        ]
       },
       {
         "key": "The Essex County Express",
         "scenarioId": "02159",
-        "settings": []
+        "settings": [
+          {
+            "type": "Option",
+            "key": "AddAcrossSpaceAndTime",
+            "ckey": "AddAcrossSpaceAndTime"
+          },
+          {
+            "type": "SetKey",
+            "key": "TheNecronomiconWasStolen",
+            "ckey": "TheNecronomiconWasStolen",
+            "ifRecorded": [
+              {
+                "type": "option",
+                "key": "TakeTheNecronomicon"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "DrHenryArmitageWasKidnapped",
+            "ckey": "DrHenryArmitageWasKidnapped",
+            "ifRecorded": [
+              {
+                "type": "option",
+                "key": "TakeArmitage"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "WarrenRiceWasKidnapped",
+            "ckey": "WarrenRiceWasKidnapped",
+            "ifRecorded": [
+              {
+                "type": "option",
+                "key": "TakeWarrenRice"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "DrFrancisMorganWasKidnapped",
+            "ckey": "DrFrancisMorganWasKidnapped",
+            "ifRecorded": [
+              {
+                "type": "option",
+                "key": "TakeFrancisMorgan"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsWereDelayedOnTheirWayToDunwich",
+            "ckey": "TheInvestigatorsWereDelayedOnTheirWayToDunwich"
+          }
+        ]
       },
       {
         "key": "Blood on the Altar",
         "scenarioId": "02195",
-        "settings": []
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "ChooseYourFate",
+            "content": [
+              { "key": "TheRitualWasCompleted" },
+              { "key": "TheInvestigatorsPutSilasBishopOutOfHisMisery" },
+              { "key": "TheInvestigatorsRestoredSilasBishop" },
+              { "key": "TheInvestigatorsBanishedSilasBishop" }
+            ]
+          },
+          {
+            "type": "Record",
+            "key": "SacrificedToYogSothoth",
+            "recordable": "RecordableCardCode",
+            "content": [
+              { "key": "Dr Henry Armitage", "content": "02040" },
+              { "key": "Professor Warren Rice", "content": "02061" },
+              { "key": "Dr. Francis Morgan", "content": "02080" },
+              { "key": "Zebulon Whately", "content": "02217" },
+              { "key": "Earl Sawyer", "content": "02218" }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheNecronomiconWasStolen",
+            "ckey": "TheNecronomiconWasStolen",
+            "ifRecorded": [
+              { "type": "option", "key": "TakeNecronomicon" },
+              { "type": "not", "content": { "type": "key", "key": "TheNecronomiconWasStolen" } },
+              { "type": "not", "content": { "type": "key", "key": "TheInvestigatorsRestoredSilasBishop" } }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "Interlude II: The Survivors",
+        "scenarioId": "02236",
+        "ifRecorded": [
+          { "type": "not", "content": { "type": "key", "key": "TheRitualWasCompleted" } },
+          { "type": "or", "content": [
+            { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02040" } },
+            { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02061" } },
+            { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02080" } },
+            { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02217" } },
+            { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02218" } }
+          ]}
+        ],
+        "settings": [
+          {
+            "type": "ForceKey",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02040" } } ],
+            "key": "DrHenryArmitageSurvivedTheDunwichLegacy"
+          },
+          {
+            "type": "Option",
+            "key": "TakeArmitage",
+            "ckey": "TakeArmitage",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02040" } }]
+          },
+          {
+            "type": "ForceKey",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02061" } } ],
+            "key": "ProfessorWarrenRiceSurvivedTheDunwichLegacy"
+          },
+          {
+            "type": "Option",
+            "key": "TakeWarenRice",
+            "ckey": "TakeWarenRice",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02061" } }]
+          },
+          {
+            "type": "ForceKey",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02080" } } ],
+            "key": "DrFrancisMorganSurvivedTheDunwichLegacy"
+          },
+          {
+            "type": "Option",
+            "key": "TakeFrancisMorgan",
+            "ckey": "TakeFrancisMorgan",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02080" } }]
+          },
+          {
+            "type": "ForceKey",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02217" } } ],
+            "key": "ZebulonWhateleySurvivedTheDunwichLegacy"
+          },
+          {
+            "type": "Option",
+            "key": "TakeZebulonWhateley",
+            "ckey": "TakeZebulonWhateley",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02217" } }]
+          },
+          {
+            "type": "ForceKey",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02218" } } ],
+            "key": "EarlSawyerSurvivedTheDunwichLegacy"
+          },
+          {
+            "type": "Option",
+            "key": "TakeEarlSawyer",
+            "ckey": "TakeEarlSawyer",
+            "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02218" } }]
+          },
+          {
+            "type": "Option",
+            "key": "TakePowderOfIbnGhazi",
+            "ckey": "TakePowderOfIbnGhazi",
+            "ifRecorded": [
+              { "type": "or", "content": [
+                { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02040" } },
+                { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02061" } },
+                { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02080" } }
+              ]}
+            ]
+          }
+        ]
       },
       {
         "key": "Undimensioned and Unseen",
         "scenarioId": "02236",
-        "settings": []
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "Townsfolk",
+            "content": [{ "key": "YouCalmedTheTownsfolk" }, { "key": "YouWarnedTheTownsfolk" }]
+          },
+          {
+            "type": "SetKey",
+            "key": "NoBroodEscaped",
+            "ckey": "NoBroodEscaped"
+          },
+          {
+            "type": "ChooseNum",
+            "key": "BroodEscapedIntoTheWild",
+            "ckey": "BroodEscapedIntoTheWild",
+            "min": 1,
+            "max": 6,
+            "ifRecorded": [ { "type": "not", "content": { "type": "key", "key": "NoBroodEscaped" } } ]
+          }
+        ]
       },
       {
         "key": "Where Doom Awaits",
         "scenarioId": "02274",
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "WhereDoomAwaitsResolution",
+            "content": [{ "key": "TheInvestigatorsEnteredTheGate", "forceWhen": { "type": "always" } }, { "key": "YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality" }]
+          }
+        ]
+      },
+      {
+        "key": "Lost in Time and Space",
+        "scenarioId": "02311",
         "settings": []
       }
     ]
@@ -383,6 +687,7 @@
         {
           "type": "Option",
           "key": "ProceedToInterlude3",
+          "ckey": "ProceedToInterlude3",
           "ifRecorded": [
             {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
           ]

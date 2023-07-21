@@ -295,7 +295,7 @@ data Message
   | BeginTurn InvestigatorId
   | Blanked Message
   | HandleOption CampaignOption
-  | CampaignStep (Maybe CampaignStep)
+  | CampaignStep CampaignStep
   | CancelEachNext Source [MessageType]
   | CancelSkillEffects
   | CancelHorror InvestigatorId Int

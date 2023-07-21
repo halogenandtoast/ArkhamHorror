@@ -38,6 +38,8 @@ class
   , EntityAttrs a ~ CampaignAttrs
   ) =>
   IsCampaign a
+  where
+  nextStep :: a -> Maybe CampaignStep
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -53,7 +55,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [ChaosTokenFace]
   , campaignLog :: CampaignLog
-  , campaignStep :: Maybe CampaignStep
+  , campaignStep :: CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: Map ScenarioId Resolution
   , campaignModifiers :: Map InvestigatorId [Modifier]
@@ -84,15 +86,14 @@ decksL = lens campaignDecks $ \m x -> m {campaignDecks = x}
 logL :: Lens' CampaignAttrs CampaignLog
 logL = lens campaignLog $ \m x -> m {campaignLog = x}
 
-stepL :: Lens' CampaignAttrs (Maybe CampaignStep)
+stepL :: Lens' CampaignAttrs CampaignStep
 stepL = lens campaignStep $ \m x -> m {campaignStep = x}
 
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
 
-completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
-completeStep (Just step') steps = step' : steps
-completeStep Nothing steps = steps
+completeStep :: CampaignStep -> [CampaignStep] -> [CampaignStep]
+completeStep step' steps = step' : steps
 
 modifiersL :: Lens' CampaignAttrs (Map InvestigatorId [Modifier])
 modifiersL = lens campaignModifiers $ \m x -> m {campaignModifiers = x}
@@ -149,7 +150,7 @@ campaign f campaignId' name difficulty chaosBagContents =
       , campaignDifficulty = difficulty
       , campaignChaosBag = chaosBagContents
       , campaignLog = mkCampaignLog
-      , campaignStep = Just PrologueStep
+      , campaignStep = PrologueStep
       , campaignCompletedSteps = []
       , campaignResolutions = mempty
       , campaignModifiers = mempty

@@ -331,7 +331,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty mCampai
   mode = case scenarioOrCampaignId of
     This cid -> This $ withCampaignLog $ lookupCampaign cid difficulty
     That sid -> That $ withStandaloneCampaignLog $ lookupScenario sid difficulty
-    These cid sid -> This $ overAttrs (stepL ?~ ScenarioStep sid) $ withCampaignLog $ lookupCampaign cid difficulty
+    These cid sid -> This $ overAttrs (stepL .~ ScenarioStep sid) $ withCampaignLog $ lookupCampaign cid difficulty
 
 addInvestigator
   :: (MonadReader env m, HasQueue Message m, HasGameRef env, HasGame m)

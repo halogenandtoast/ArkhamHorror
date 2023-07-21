@@ -32,8 +32,26 @@ newtype Metadata = Metadata
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheCircleUndone = TheCircleUndone (CampaignAttrs `With` Metadata)
-  deriving anyclass (IsCampaign)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
+
+instance IsCampaign TheCircleUndone where
+  nextStep a = case campaignStep (toAttrs a) of
+    PrologueStep -> Just DisappearanceAtTheTwilightEstate
+    DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
+    TheWitchingHour -> Just (UpgradeDeckStep AtDeathsDoorstep)
+    AtDeathsDoorstep -> Just (UpgradeDeckStep TheSecretName)
+    InterludeStep 2 _ -> Just TheSecretName
+    TheSecretName -> Just (UpgradeDeckStep TheWagesOfSin)
+    TheWagesOfSin -> Just (UpgradeDeckStep ForTheGreaterGood)
+    ForTheGreaterGood -> Just UnionAndDisillusion
+    InterludeStep 3 _ -> Just UnionAndDisillusion
+    UnionAndDisillusion -> Just (UpgradeDeckStep InTheClutchesOfChaos)
+    InTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
+    InterludeStep 4 _ -> Just BeforeTheBlackThrone
+    BeforeTheBlackThrone -> Nothing
+    EpilogueStep -> Nothing
+    UpgradeDeckStep nextStep' -> Just nextStep'
+    _ -> Nothing
 
 theCircleUndone :: Difficulty -> TheCircleUndone
 theCircleUndone difficulty =
@@ -55,19 +73,19 @@ allPrologueInvestigators = ["05046", "05047", "05048", "05049"]
 
 instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone (attrs `With` metadata)) = case msg of
-    CampaignStep (Just PrologueStep) -> do
+    CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
       pushAll $
         story investigatorIds prologue
-          : [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
+          : [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
             | iid <- investigatorIds
             ]
             <> [ story investigatorIds intro
-               , CampaignStep (Just $ PrologueStepPart 2)
+               , CampaignStep (PrologueStepPart 2)
                , NextCampaignStep Nothing
                ]
       pure c
-    CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep)) -> do
+    CampaignStep (InvestigatorCampaignStep iid PrologueStep) -> do
       let
         availablePrologueInvestigators =
           filter
@@ -94,7 +112,7 @@ instance RunMessage TheCircleUndone where
                   pId
                   (prologueInvestigators metadata)
             }
-    CampaignStep (Just (PrologueStepPart 2)) -> do
+    CampaignStep (PrologueStepPart 2) -> do
       let
         prologueInvestigatorsNotTaken =
           map unInvestigatorId $
@@ -113,7 +131,7 @@ instance RunMessage TheCircleUndone where
         crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
           : map (story investigatorIds) readings
       pure c
-    CampaignStep (Just (InterludeStep 2 mInterludeKey)) -> do
+    CampaignStep (InterludeStep 2 mInterludeKey) -> do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
       iids <- allInvestigatorIds
       lead <- getLead
@@ -123,44 +141,39 @@ instance RunMessage TheCircleUndone where
         showThePriceOfProgress6 = mInterludeKey == Just ThePriceOfProgress6
         gainXp = map (\i -> GainXP i (toSource attrs) 2) iids
         lodgeChoices =
-          [ Label "\"I refuse to be part of this\"" [CampaignStep (Just (InterludeStepPart 2 mInterludeKey 7))]
-          , Label "\"I agree\"" [CampaignStep (Just (InterludeStepPart 2 mInterludeKey 8))]
-          , Label "\"I agree\" (You are lying)" [CampaignStep (Just (InterludeStepPart 2 mInterludeKey 9))]
+          [ Label "\"I refuse to be part of this\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 7)]
+          , Label "\"I agree\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 8)]
+          , Label "\"I agree\" (You are lying)" [CampaignStep (InterludeStepPart 2 mInterludeKey 9)]
           ]
       pushAll $
         [ story iids (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
         , story iids thePriceOfProgress3
         ]
-          <> ( if showThePriceOfProgress4
-                then
-                  [ story iids thePriceOfProgress4
-                  , Record JosefDisappearedIntoTheMist
-                  , Record TheInvestigatorsAreEnemiesOfTheLodge
-                  , NextCampaignStep Nothing
-                  ]
-                else []
+          <> ( guard showThePriceOfProgress4
+                *> [ story iids thePriceOfProgress4
+                   , Record JosefDisappearedIntoTheMist
+                   , Record TheInvestigatorsAreEnemiesOfTheLodge
+                   , NextCampaignStep Nothing
+                   ]
              )
-          <> ( if showThePriceOfProgress5
-                then
-                  [ Record TheInvestigatorsRescuedJosef
-                  , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices
-                  ]
-                    <> gainXp
-                else []
+          <> ( guard showThePriceOfProgress5
+                *> [ Record TheInvestigatorsRescuedJosef
+                   , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices
+                   ]
+                  <> gainXp
              )
-          <> ( if showThePriceOfProgress6
-                then [Record JosefIsAliveAndWell, storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
-                else []
+          <> ( guard showThePriceOfProgress6
+                *> [Record JosefIsAliveAndWell, storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
              )
       pure c
-    CampaignStep (Just (InterludeStepPart 2 _ 7)) -> do
+    CampaignStep (InterludeStepPart 2 _ 7) -> do
       pushAll [Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just (InterludeStepPart 2 _ 8)) -> do
+    CampaignStep (InterludeStepPart 2 _ 8) -> do
       pushAll
         [Record TheInvestigatorsAreMembersOfTheLodge, AddChaosToken Cultist, NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just (InterludeStepPart 2 _ 9)) -> do
+    CampaignStep (InterludeStepPart 2 _ 9) -> do
       pushAll
         [ Record TheInvestigatorsAreMembersOfTheLodge
         , AddChaosToken Cultist
@@ -168,19 +181,19 @@ instance RunMessage TheCircleUndone where
         , NextCampaignStep Nothing
         ]
       pure c
-    CampaignStep (Just (InterludeStep 3 mInterludeKey)) -> do
+    CampaignStep (InterludeStep 3 mInterludeKey) -> do
       iids <- allInvestigatorIds
       lead <- getLead
       pushAll
         [ story iids theInnerCircle1
         , chooseOne
             lead
-            [ Label "" [CampaignStep (Just (InterludeStepPart 3 mInterludeKey 2))]
-            , Label "" [CampaignStep (Just (InterludeStepPart 3 mInterludeKey 3))]
+            [ Label "" [CampaignStep (InterludeStepPart 3 mInterludeKey 2)]
+            , Label "" [CampaignStep (InterludeStepPart 3 mInterludeKey 3)]
             ]
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 3 mInterludeKey 2)) -> do
+    CampaignStep (InterludeStepPart 3 mInterludeKey 2) -> do
       iids <- allInvestigatorIds
       rescuedJosef <- getHasRecord TheInvestigatorsRescuedJosef
       toldLodgeAboutCoven <- getHasRecord TheInvestigatorsToldTheLodgeAboutTheCoven
@@ -190,10 +203,10 @@ instance RunMessage TheCircleUndone where
         [ story iids theInnerCircle2
         , crossOutRecordSetEntries MementosDiscovered (toList mementos)
         , CampaignStep
-            (Just (InterludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5))
+            (InterludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5)
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 3 _ 3)) -> do
+    CampaignStep (InterludeStepPart 3 _ 3) -> do
       iids <- allInvestigatorIds
       pushAll
         [ story iids theInnerCircle3
@@ -201,7 +214,7 @@ instance RunMessage TheCircleUndone where
         , NextCampaignStep Nothing
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 3 mInterludeKey 4)) -> do
+    CampaignStep (InterludeStepPart 3 mInterludeKey 4) -> do
       iids <- allInvestigatorIds
       lead <- getLead
       pushAll
@@ -220,14 +233,14 @@ instance RunMessage TheCircleUndone where
                 "Where are the four missing people from the charity gala?"
                 [story iids whereAreTheFourMissingPeopleFromTheCharityGala]
             ]
-        , CampaignStep (Just (InterludeStepPart 3 mInterludeKey 6))
+        , CampaignStep (InterludeStepPart 3 mInterludeKey 6)
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 3 _ 5)) -> do
+    CampaignStep (InterludeStepPart 3 _ 5) -> do
       iids <- allInvestigatorIds
       pushAll [story iids theInnerCircle5, NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just (InterludeStepPart 3 _ 6)) -> do
+    CampaignStep (InterludeStepPart 3 _ 6) -> do
       iids <- allInvestigatorIds
       pushAll
         [ story iids theInnerCircle6
@@ -235,15 +248,6 @@ instance RunMessage TheCircleUndone where
         , NextCampaignStep Nothing
         ]
       pure c
-    NextCampaignStep mOverrideStep -> do
-      let step = mOverrideStep <|> nextStep attrs
-      push $ CampaignStep step
-      pure
-        . TheCircleUndone
-        . (`with` metadata)
-        $ attrs
-          & (stepL .~ step)
-          & (completedStepsL %~ completeStep (campaignStep attrs))
     PreScenarioSetup -> do
       case mapToList (prologueInvestigators metadata) of
         [] -> pure ()
@@ -257,7 +261,7 @@ instance RunMessage TheCircleUndone where
             }
     ResetGame -> do
       case mapToList (prologueInvestigators metadata) of
-        [] -> TheCircleUndone . (`with` metadata) <$> runMessage msg attrs
+        [] -> defaultCampaignRunner msg c
         xs -> do
           for_ xs $ \(iid, _) -> push $ LoadDeck iid $ Deck []
           pure c
@@ -269,4 +273,4 @@ instance RunMessage TheCircleUndone where
         TakePuzzleBox -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.puzzleBox
         _ -> error $ "Unhandled option: " <> show option
       pure c
-    _ -> TheCircleUndone . (`with` metadata) <$> runMessage msg attrs
+    _ -> defaultCampaignRunner msg c

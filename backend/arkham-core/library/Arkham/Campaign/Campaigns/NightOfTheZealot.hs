@@ -11,29 +11,29 @@ import Arkham.Helpers.Query
 import Arkham.Message
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
-  deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
+instance IsCampaign NightOfTheZealot where
+  nextStep a = case campaignStep (toAttrs a) of
+    PrologueStep -> Just TheGathering
+    TheGathering -> Just (UpgradeDeckStep TheMidnightMasks)
+    TheMidnightMasks -> Just (UpgradeDeckStep TheDevourerBelow)
+    UpgradeDeckStep nextStep' -> Just nextStep'
+    _ -> Nothing
+
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
-nightOfTheZealot difficulty = campaign
-  NightOfTheZealot
-  "01"
-  "Night of the Zealot"
-  difficulty
-  (chaosBagContents difficulty)
+nightOfTheZealot difficulty =
+  campaign
+    NightOfTheZealot
+    "01"
+    "Night of the Zealot"
+    difficulty
+    (chaosBagContents difficulty)
 
 instance RunMessage NightOfTheZealot where
-  runMessage msg c@(NightOfTheZealot attrs@CampaignAttrs {..}) = case msg of
-    CampaignStep (Just PrologueStep) -> do
+  runMessage msg c = case msg of
+    CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
       pushAll [story investigatorIds prologue, NextCampaignStep Nothing]
       pure c
-    NextCampaignStep _ -> do
-      let step = nextStep attrs
-      push $ CampaignStep step
-      pure
-        . NightOfTheZealot
-        $ attrs
-        & (stepL .~ step)
-        & (completedStepsL %~ completeStep campaignStep)
-    _ -> NightOfTheZealot <$> runMessage msg attrs
+    _ -> defaultCampaignRunner msg c

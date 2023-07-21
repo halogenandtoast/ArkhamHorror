@@ -5,25 +5,6 @@ import Arkham.Prelude
 import Arkham.Campaign.Types
 import Arkham.CampaignStep
 
-nextStep :: CampaignAttrs -> Maybe CampaignStep
-nextStep a = case campaignStep a of
-  Just PrologueStep -> Just DisappearanceAtTheTwilightEstate
-  Just DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
-  Just TheWitchingHour -> Just (UpgradeDeckStep AtDeathsDoorstep)
-  Just AtDeathsDoorstep -> Just (UpgradeDeckStep TheSecretName)
-  Just (InterludeStep 2 _) -> Just TheSecretName
-  Just TheSecretName -> Just (UpgradeDeckStep TheWagesOfSin)
-  Just TheWagesOfSin -> Just (UpgradeDeckStep ForTheGreaterGood)
-  Just ForTheGreaterGood -> Just UnionAndDisillusion
-  Just (InterludeStep 3 _) -> Just UnionAndDisillusion
-  Just UnionAndDisillusion -> Just (UpgradeDeckStep InTheClutchesOfChaos)
-  Just InTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-  Just (InterludeStep 4 _) -> Just BeforeTheBlackThrone
-  Just BeforeTheBlackThrone -> Nothing
-  Just EpilogueStep -> Nothing
-  Just (UpgradeDeckStep nextStep') -> Just nextStep'
-  _ -> Nothing
-
 pattern DisappearanceAtTheTwilightEstate :: CampaignStep
 pattern DisappearanceAtTheTwilightEstate <- ScenarioStep "05043"
   where

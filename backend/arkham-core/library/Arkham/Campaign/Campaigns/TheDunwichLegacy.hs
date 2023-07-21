@@ -15,10 +15,35 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Id
 import Arkham.Message
+import Arkham.Resolution
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
-  deriving anyclass (IsCampaign)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
+
+instance IsCampaign TheDunwichLegacy where
+  nextStep a = case campaignStep (toAttrs a) of
+    PrologueStep -> error $ "Unhandled campaign step: " <> show a
+    ExtracurricularActivity ->
+      if TheHouseAlwaysWins `elem` campaignCompletedSteps (toAttrs a)
+        then Just $ InterludeStep 1 Nothing
+        else Just (UpgradeDeckStep TheHouseAlwaysWins)
+    TheHouseAlwaysWins ->
+      if ExtracurricularActivity `elem` campaignCompletedSteps (toAttrs a)
+        then Just $ InterludeStep 1 Nothing
+        else Just (UpgradeDeckStep ExtracurricularActivity)
+    InterludeStep 1 _ -> Just (UpgradeDeckStep TheMiskatonicMuseum)
+    TheMiskatonicMuseum -> Just (UpgradeDeckStep TheEssexCountyExpress)
+    TheEssexCountyExpress -> Just (UpgradeDeckStep BloodOnTheAltar)
+    BloodOnTheAltar ->
+      case lookup "02195" (campaignResolutions $ toAttrs a) of
+        Just NoResolution -> Just (UpgradeDeckStep UndimensionedAndUnseen)
+        _ -> Just $ InterludeStep 2 Nothing
+    InterludeStep 2 _ -> Just (UpgradeDeckStep UndimensionedAndUnseen)
+    UndimensionedAndUnseen -> Just (UpgradeDeckStep WhereDoomAwaits)
+    WhereDoomAwaits -> Just (UpgradeDeckStep LostInTimeAndSpace)
+    LostInTimeAndSpace -> Nothing
+    UpgradeDeckStep nextStep' -> Just nextStep'
+    _ -> Nothing
 
 findOwner :: (HasGame m) => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do
@@ -35,8 +60,8 @@ theDunwichLegacy difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage TheDunwichLegacy where
-  runMessage msg c@(TheDunwichLegacy attrs@CampaignAttrs {..}) = case msg of
-    CampaignStep (Just PrologueStep) -> do
+  runMessage msg c = case msg of
+    CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
@@ -46,14 +71,14 @@ instance RunMessage TheDunwichLegacy where
             prologue
             [ Label
                 "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
-                [NextCampaignStep (Just $ ScenarioStep "02041")]
+                [NextCampaignStep (Just ExtracurricularActivity)]
             , Label
                 "Dr. Francis Morgan was last seen gambling at the Clover Club, an upscale speakeasy and gambling joint located downtown.  Let’s go talk to him.  Proceed with “Scenario I–B: The House Always Wins” if you wish to find Dr. Francis Morgan first."
-                [NextCampaignStep (Just $ ScenarioStep "02062")]
+                [NextCampaignStep (Just TheHouseAlwaysWins)]
             ]
         ]
       pure c
-    CampaignStep (Just (InterludeStep 1 _)) -> do
+    CampaignStep (InterludeStep 1 _) -> do
       unconsciousForSeveralHours <-
         getHasRecord
           InvestigatorsWereUnconsciousForSeveralHours
@@ -78,7 +103,7 @@ instance RunMessage TheDunwichLegacy where
             , NextCampaignStep Nothing
             ]
       pure c
-    CampaignStep (Just (InterludeStep 2 _)) -> do
+    CampaignStep (InterludeStep 2 _) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
@@ -147,38 +172,29 @@ instance RunMessage TheDunwichLegacy where
               ( recorded (toCardCode Assets.earlSawyer)
                   `notElem` sacrificedToYogSothoth
               )
-      c
-        <$ pushAll
-          ( [story investigatorIds interlude2]
-              <> [ story investigatorIds interlude2DrHenryArmitage
-                 | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
-                 ]
-              <> addDrHenryArmitage
-              <> [ story investigatorIds interlude2ProfessorWarrenRice
-                 | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
-                 ]
-              <> addProfessorWarrenRice
-              <> [ story investigatorIds interlude2DrFrancisMorgan
-                 | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
-                 ]
-              <> addDrFrancisMorgan
-              <> [ story investigatorIds interlude2ZebulonWhateley
-                 | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
-                 ]
-              <> addZebulonWhateley
-              <> [ story investigatorIds interlude2EarlSawyer
-                 | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
-                 ]
-              <> addEarlSawyer
-              <> addPowderOfIbnGhazi
-              <> [NextCampaignStep Nothing]
-          )
-    NextCampaignStep mOverrideStep -> do
-      let step = mOverrideStep <|> nextStep attrs
-      pushAll [CampaignStep step]
-      pure
-        . TheDunwichLegacy
-        $ attrs
-          & (stepL .~ step)
-          & (completedStepsL %~ completeStep campaignStep)
-    _ -> TheDunwichLegacy <$> runMessage msg attrs
+      pushAll $
+        [story investigatorIds interlude2]
+          <> [ story investigatorIds interlude2DrHenryArmitage
+             | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
+             ]
+          <> addDrHenryArmitage
+          <> [ story investigatorIds interlude2ProfessorWarrenRice
+             | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
+             ]
+          <> addProfessorWarrenRice
+          <> [ story investigatorIds interlude2DrFrancisMorgan
+             | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
+             ]
+          <> addDrFrancisMorgan
+          <> [ story investigatorIds interlude2ZebulonWhateley
+             | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
+             ]
+          <> addZebulonWhateley
+          <> [ story investigatorIds interlude2EarlSawyer
+             | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
+             ]
+          <> addEarlSawyer
+          <> addPowderOfIbnGhazi
+          <> [NextCampaignStep Nothing]
+      pure c
+    _ -> defaultCampaignRunner msg c

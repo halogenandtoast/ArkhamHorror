@@ -21,8 +21,23 @@ import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
-  deriving anyclass (IsCampaign)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
+
+instance IsCampaign ThePathToCarcosa where
+  nextStep a = case campaignStep (toAttrs a) of
+    PrologueStep -> Just CurtainCall
+    CurtainCall -> Just (UpgradeDeckStep TheLastKing)
+    TheLastKing -> Just (UpgradeDeckStep EchoesOfThePast)
+    InterludeStep 1 _ -> Just (UpgradeDeckStep EchoesOfThePast)
+    EchoesOfThePast -> Just (UpgradeDeckStep TheUnspeakableOath)
+    TheUnspeakableOath -> Just (UpgradeDeckStep APhantomOfTruth)
+    InterludeStep 2 _ -> Just (UpgradeDeckStep APhantomOfTruth)
+    APhantomOfTruth -> Just (UpgradeDeckStep ThePallidMask)
+    ThePallidMask -> Just (UpgradeDeckStep BlackStarsRise)
+    BlackStarsRise -> Just (UpgradeDeckStep DimCarcosa)
+    DimCarcosa -> Just EpilogueStep
+    UpgradeDeckStep nextStep' -> Just nextStep'
+    _ -> Nothing
 
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa
 thePathToCarcosa difficulty =
@@ -34,8 +49,8 @@ thePathToCarcosa difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage ThePathToCarcosa where
-  runMessage msg c@(ThePathToCarcosa a) = case msg of
-    CampaignStep (Just PrologueStep) -> do
+  runMessage msg c = case msg of
+    CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
       lolaHayesChosen <- selectAny (InvestigatorWithTitle "Lola Hayes")
       pushAll $
@@ -43,7 +58,7 @@ instance RunMessage ThePathToCarcosa where
           <> [story investigatorIds lolaPrologue | lolaHayesChosen]
           <> [NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just (InterludeStep 1 _)) -> do
+    CampaignStep (InterludeStep 1 _) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- allInvestigatorIds
       doubt <- getRecordCount Doubt
@@ -88,7 +103,7 @@ instance RunMessage ThePathToCarcosa where
               ]
           ]
       pure c
-    CampaignStep (Just (InterludeStep 2 mInterludeKey)) -> do
+    CampaignStep (InterludeStep 2 mInterludeKey) -> do
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       conviction <- getRecordCount Conviction
@@ -129,7 +144,7 @@ instance RunMessage ThePathToCarcosa where
             [story investigatorIds danielWasPossessed, respondToWarning]
         Just _ -> error "Invalid key for The Unspeakable Oath"
       pure c
-    CampaignStep (Just EpilogueStep) -> do
+    CampaignStep EpilogueStep -> do
       possessed <- getRecordSet Possessed
       let
         investigatorIds = flip mapMaybe possessed $ \case
@@ -139,18 +154,10 @@ instance RunMessage ThePathToCarcosa where
         [story investigatorIds epilogue | notNull investigatorIds]
           <> [EndOfGame Nothing]
       pure c
-    NextCampaignStep _ -> do
-      let step = nextStep a
-      push (CampaignStep step)
-      pure
-        . ThePathToCarcosa
-        $ a
-          & (stepL .~ step)
-          & (completedStepsL %~ completeStep (campaignStep a))
     EnemyDefeated _ cardId _ _ -> do
       card <- getCard cardId
       when (card `cardMatch` cardIs Enemies.theManInThePallidMask) $ do
         n <- getRecordCount ChasingTheStranger
         push (RecordCount ChasingTheStranger (n + 1))
       pure c
-    _ -> ThePathToCarcosa <$> runMessage msg a
+    _ -> defaultCampaignRunner msg c

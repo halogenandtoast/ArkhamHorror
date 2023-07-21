@@ -16,6 +16,9 @@ class Entity a where
   toAttrs :: a -> EntityAttrs a
   overAttrs :: (EntityAttrs a -> EntityAttrs a) -> a -> a
 
+updateAttrs :: (Entity a) => a -> (EntityAttrs a -> EntityAttrs a) -> a
+updateAttrs a f = overAttrs f a
+
 patchEntity :: (Entity a) => a -> EntityAttrs a -> a
 patchEntity a attrs = overAttrs (const attrs) a
 

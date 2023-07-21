@@ -41,8 +41,29 @@ instance Monoid Metadata where
   mempty = Metadata mempty mempty
 
 newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Metadata)
-  deriving anyclass (IsCampaign)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
+
+instance IsCampaign TheForgottenAge where
+  nextStep a = case campaignStep (toAttrs a) of
+    PrologueStep -> Just TheUntamedWilds
+    TheUntamedWilds -> Just (InterludeStep 1 Nothing)
+    InterludeStep 1 _ -> Just (UpgradeDeckStep TheDoomOfEztli)
+    TheDoomOfEztli -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
+    InterludeStep 2 _ -> Just ThreadsOfFate
+    ThreadsOfFate -> Just ResupplyPoint
+    ResupplyPoint -> Just (UpgradeDeckStep TheBoundaryBeyond)
+    TheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
+    InterludeStep 3 _ -> Just HeartOfTheElders
+    HeartOfTheElders -> Just (UpgradeDeckStep TheCityOfArchives)
+    TheCityOfArchives -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
+    InterludeStep 4 _ -> Just TheDepthsOfYoth
+    TheDepthsOfYoth -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
+    InterludeStep 5 _ -> Just ShatteredAeons
+    ShatteredAeons -> Nothing
+    EpilogueStep -> Just (UpgradeDeckStep TurnBackTime)
+    TurnBackTime -> Nothing
+    UpgradeDeckStep nextStep' -> Just nextStep'
+    _ -> Nothing
 
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge difficulty =
@@ -125,13 +146,13 @@ supplyLabel s = case s of
 
 instance RunMessage TheForgottenAge where
   runMessage msg c@(TheForgottenAge (attrs `With` metadata)) = case msg of
-    CampaignStep (Just PrologueStep) -> do
+    CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
       totalSupplyPoints <- initialSupplyPoints
       let supplyMap = mapFromList $ map (,totalSupplyPoints) investigatorIds
       pushAll $
         [story investigatorIds prologue]
-          <> [ CampaignStep (Just (InvestigatorCampaignStep iid PrologueStep))
+          <> [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
              | iid <- investigatorIds
              ]
           <> [NextCampaignStep Nothing]
@@ -140,7 +161,7 @@ instance RunMessage TheForgottenAge where
           `with` Metadata
             supplyMap
             (yithians metadata)
-    CampaignStep (Just (InvestigatorCampaignStep investigatorId PrologueStep)) ->
+    CampaignStep (InvestigatorCampaignStep investigatorId PrologueStep) ->
       do
         let
           remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
@@ -165,15 +186,14 @@ instance RunMessage TheForgottenAge where
                         supplyLabel
                           s
                           [ PickSupply investigatorId s
-                          , CampaignStep
-                              ( Just $ InvestigatorCampaignStep investigatorId PrologueStep
-                              )
+                          , CampaignStep $
+                              InvestigatorCampaignStep investigatorId PrologueStep
                           ]
                     )
                     availableSupplies
 
         pure c
-    CampaignStep (Just (InterludeStep 1 mkey)) -> do
+    CampaignStep (InterludeStep 1 mkey) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- allInvestigatorIds
       withBlanket <- getInvestigatorsWithSupply Blanket
@@ -262,10 +282,10 @@ instance RunMessage TheForgottenAge where
                   ]
              | notNull withMedicine && notNull withPoisoned
              ]
-          <> [CampaignStep (Just (InterludeStepPart 1 mkey 2))]
+          <> [CampaignStep (InterludeStepPart 1 mkey 2)]
           <> [NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just (InterludeStepPart 1 _ 2)) -> do
+    CampaignStep (InterludeStepPart 1 _ 2) -> do
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs) $
@@ -280,14 +300,14 @@ instance RunMessage TheForgottenAge where
               : [SufferTrauma iid 1 0 | iid <- withPoisoned]
           else []
       pure c
-    CampaignStep (Just (InterludeStep 2 mkey)) -> do
+    CampaignStep (InterludeStep 2 mkey) -> do
       recoveredTheRelicOfAges <-
         getHasRecord
           TheInvestigatorsRecoveredTheRelicOfAges
       let expeditionsEndStep = if recoveredTheRelicOfAges then 1 else 5
-      push $ CampaignStep (Just (InterludeStepPart 2 mkey expeditionsEndStep))
+      push $ CampaignStep (InterludeStepPart 2 mkey expeditionsEndStep)
       pure c
-    CampaignStep (Just (InterludeStepPart 2 mkey 1)) -> do
+    CampaignStep (InterludeStepPart 2 mkey 1) -> do
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
@@ -296,14 +316,14 @@ instance RunMessage TheForgottenAge where
             leadInvestigatorId
             [ Label
                 "It belongs in a museum. Alejandro and the museum staff will be able to study it and learn more about its purpose. - Proceed to Expedition’s End 2."
-                [CampaignStep (Just (InterludeStepPart 2 mkey 2))]
+                [CampaignStep (InterludeStepPart 2 mkey 2)]
             , Label
                 "It is too dangerous to be on display. We should keep it hidden and safe until we know more about it. - Skip to Expedition's End 3."
-                [CampaignStep (Just (InterludeStepPart 2 mkey 3))]
+                [CampaignStep (InterludeStepPart 2 mkey 3)]
             ]
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 2 mkey 2)) -> do
+    CampaignStep (InterludeStepPart 2 mkey 2) -> do
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       let
@@ -323,26 +343,26 @@ instance RunMessage TheForgottenAge where
               Assets.alejandroVela
              | not inADeckAlready
              ]
-          <> [AddChaosToken Tablet, CampaignStep (Just (InterludeStepPart 2 mkey 4))]
+          <> [AddChaosToken Tablet, CampaignStep (InterludeStepPart 2 mkey 4)]
       pure c
-    CampaignStep (Just (InterludeStepPart 2 mkey 3)) -> do
+    CampaignStep (InterludeStepPart 2 mkey 3) -> do
       investigatorIds <- allInvestigatorIds
       pushAll
         [ story investigatorIds expeditionsEnd3
         , Record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
         , Record AlejandroIsContinuingHisResearchOnHisOwn
-        , CampaignStep (Just (InterludeStepPart 2 mkey 4))
+        , CampaignStep (InterludeStepPart 2 mkey 4)
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 2 _ 4)) -> do
+    CampaignStep (InterludeStepPart 2 _ 4) -> do
       investigatorIds <- allInvestigatorIds
       pushAll [story investigatorIds expeditionsEnd4, NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just (InterludeStepPart 2 _ 5)) -> do
+    CampaignStep (InterludeStepPart 2 _ 5) -> do
       investigatorIds <- allInvestigatorIds
       pushAll [story investigatorIds expeditionsEnd5, NextCampaignStep Nothing]
       pure c
-    CampaignStep (Just ResupplyPoint) -> do
+    CampaignStep ResupplyPoint -> do
       investigatorIds <- allInvestigatorIds
       totalResupplyPoints <- initialResupplyPoints
       poisonedInvestigators <- filterM getIsPoisoned investigatorIds
@@ -391,7 +411,7 @@ instance RunMessage TheForgottenAge where
                 <> [Label "Do not remove trauma" []]
              | (iid, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
              ]
-          <> [ CampaignStep (Just (InvestigatorCampaignStep iid ResupplyPoint))
+          <> [ CampaignStep (InvestigatorCampaignStep iid ResupplyPoint)
              | iid <- investigatorIds
              ]
           <> [NextCampaignStep Nothing]
@@ -400,7 +420,7 @@ instance RunMessage TheForgottenAge where
           `with` Metadata
             resupplyMap
             (yithians metadata)
-    CampaignStep (Just (InvestigatorCampaignStep investigatorId ResupplyPoint)) ->
+    CampaignStep (InvestigatorCampaignStep investigatorId ResupplyPoint) ->
       do
         let
           remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
@@ -424,16 +444,14 @@ instance RunMessage TheForgottenAge where
                         supplyLabel
                           s
                           [ PickSupply investigatorId s
-                          , CampaignStep
-                              ( Just $
-                                  InvestigatorCampaignStep investigatorId ResupplyPoint
-                              )
+                          , CampaignStep $
+                              InvestigatorCampaignStep investigatorId ResupplyPoint
                           ]
                     )
                     availableSupplies
 
         pure c
-    CampaignStep (Just (InterludeStep 3 mkey)) -> do
+    CampaignStep (InterludeStep 3 mkey) -> do
       iids <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       withGasoline <- getInvestigatorsWithSupply Gasoline
@@ -537,11 +555,10 @@ instance RunMessage TheForgottenAge where
                     ]
                | notNull withMedicine && notNull withPoisoned
                ]
-            <> [CampaignStep (Just (InterludeStepPart 3 mkey 2))]
+            <> [CampaignStep (InterludeStepPart 3 mkey 2)]
             <> canteenMessages
-            <> ( if isFaithRestored
-                  then [Record IchtacasFaithIsRestored, AddChaosToken Cultist]
-                  else []
+            <> ( guard isFaithRestored
+                  *> [Record IchtacasFaithIsRestored, AddChaosToken Cultist]
                )
             <> [NextCampaignStep Nothing]
       pure
@@ -550,7 +567,7 @@ instance RunMessage TheForgottenAge where
         $ attrs
           & gasUpdate
           & canteenUpdate
-    CampaignStep (Just (InterludeStepPart 3 _ 2)) -> do
+    CampaignStep (InterludeStepPart 3 _ 2) -> do
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs) $
@@ -559,24 +576,22 @@ instance RunMessage TheForgottenAge where
                 then Just iid
                 else Nothing
       pushAll $
-        if notNull withPoisoned
-          then
-            story withPoisoned thePoisonSpreadsInterlude3
-              : [SufferTrauma iid 1 0 | iid <- withPoisoned]
-          else []
+        guard (notNull withPoisoned)
+          *> story withPoisoned thePoisonSpreadsInterlude3
+            : [SufferTrauma iid 1 0 | iid <- withPoisoned]
       pure c
-    CampaignStep (Just (InterludeStep 4 mkey)) -> do
+    CampaignStep (InterludeStep 4 mkey) -> do
       pushAll
-        [ CampaignStep (Just (InterludeStepPart 4 mkey 1))
-        , CampaignStep (Just (InterludeStepPart 4 mkey 2))
-        , CampaignStep (Just (InterludeStepPart 4 mkey 3))
-        , CampaignStep (Just (InterludeStepPart 4 mkey 4))
-        , CampaignStep (Just (InterludeStepPart 4 mkey 5))
-        , CampaignStep (Just (InterludeStepPart 4 mkey 6))
+        [ CampaignStep (InterludeStepPart 4 mkey 1)
+        , CampaignStep (InterludeStepPart 4 mkey 2)
+        , CampaignStep (InterludeStepPart 4 mkey 3)
+        , CampaignStep (InterludeStepPart 4 mkey 4)
+        , CampaignStep (InterludeStepPart 4 mkey 5)
+        , CampaignStep (InterludeStepPart 4 mkey 6)
         , NextCampaignStep Nothing
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 4 _ 1)) -> do
+    CampaignStep (InterludeStepPart 4 _ 1) -> do
       backfired <- getHasRecord TheProcessBackfired
       backfiredSpectacularly <- getHasRecord TheProcessBackfiredSpectacularly
       iids <- allInvestigatorIds
@@ -638,7 +653,7 @@ instance RunMessage TheForgottenAge where
             $ attrs
               `With` Metadata (supplyPoints metadata) yithians
         else pure c
-    CampaignStep (Just (InterludeStepPart 4 mkey 2)) -> do
+    CampaignStep (InterludeStepPart 4 mkey 2) -> do
       iids <- allInvestigatorIds
       rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
       let
@@ -661,7 +676,7 @@ instance RunMessage TheForgottenAge where
             , RemoveCampaignCard Assets.alejandroVela
             ]
       pure c
-    CampaignStep (Just (InterludeStepPart 4 _ 3)) -> do
+    CampaignStep (InterludeStepPart 4 _ 3) -> do
       hasChalk <- getAnyHasSupply Chalk
       iids <- allInvestigatorIds
       let storyEntry = if hasChalk then theWayIsOpen else theWayIsShut
@@ -681,7 +696,7 @@ instance RunMessage TheForgottenAge where
                 | iid <- iids
                 ]
       pure . TheForgottenAge . (`with` metadata) $ attrs & update
-    CampaignStep (Just (InterludeStepPart 4 _ 4)) -> do
+    CampaignStep (InterludeStepPart 4 _ 4) -> do
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       provisions <-
@@ -717,7 +732,7 @@ instance RunMessage TheForgottenAge where
              | lowOnRationsCount > 0
              ]
       pure c
-    CampaignStep (Just (InterludeStepPart 4 mkey 5)) -> do
+    CampaignStep (InterludeStepPart 4 mkey 5) -> do
       investigatorIds <- allInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       withMedicine <- flip concatMapM investigatorIds $ \iid -> do
@@ -745,9 +760,9 @@ instance RunMessage TheForgottenAge where
               ]
         | notNull withMedicine && notNull withPoisoned
         ]
-          <> [CampaignStep (Just (InterludeStepPart 4 mkey 51))]
+          <> [CampaignStep (InterludeStepPart 4 mkey 51)]
       pure c
-    CampaignStep (Just (InterludeStepPart 4 _ 51)) -> do
+    CampaignStep (InterludeStepPart 4 _ 51) -> do
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs) $
@@ -762,7 +777,7 @@ instance RunMessage TheForgottenAge where
               : [SufferTrauma iid 1 0 | iid <- withPoisoned]
           else []
       pure c
-    CampaignStep (Just (InterludeStepPart 4 _ 6)) -> do
+    CampaignStep (InterludeStepPart 4 _ 6) -> do
       withBlanket <- getInvestigatorsWithSupply Blanket
       withoutBlanket <- getInvestigatorsWithoutSupply Blanket
       pushAll $
@@ -779,20 +794,20 @@ instance RunMessage TheForgottenAge where
             )
             withoutBlanket
       pure c
-    CampaignStep (Just (InterludeStep 5 mkey)) -> do
+    CampaignStep (InterludeStep 5 mkey) -> do
       iids <- allInvestigatorIds
       fellIntoTheDepths <- getHasRecord TheInvestigatorsFellIntoTheDepths
       pushAll $
         [story iids theDarkness1 | fellIntoTheDepths]
           <> [ story iids theDarkness2
-             , CampaignStep (Just (InterludeStepPart 5 mkey 1))
-             , CampaignStep (Just (InterludeStepPart 5 mkey 2))
-             , CampaignStep (Just (InterludeStepPart 5 mkey 3))
-             , CampaignStep (Just (InterludeStepPart 5 mkey 4))
+             , CampaignStep (InterludeStepPart 5 mkey 1)
+             , CampaignStep (InterludeStepPart 5 mkey 2)
+             , CampaignStep (InterludeStepPart 5 mkey 3)
+             , CampaignStep (InterludeStepPart 5 mkey 4)
              , NextCampaignStep Nothing
              ]
       pure c
-    CampaignStep (Just (InterludeStepPart 5 _ 1)) -> do
+    CampaignStep (InterludeStepPart 5 _ 1) -> do
       iids <- allInvestigatorIds
       foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
       recoveredTheRelicOfAges <-
@@ -834,7 +849,7 @@ instance RunMessage TheForgottenAge where
              , iid <- maybeToList mRelicOfAgesOwner
              ]
       pure c
-    CampaignStep (Just (InterludeStepPart 5 _ 2)) -> do
+    CampaignStep (InterludeStepPart 5 _ 2) -> do
       iids <- allInvestigatorIds
       hasTorches <- getAnyHasSupply Torches
       pushAll $
@@ -843,14 +858,14 @@ instance RunMessage TheForgottenAge where
             if hasTorches then TheBraziersAreLit else TheBraziersRemainUnlit
         ]
       pure c
-    CampaignStep (Just (InterludeStepPart 5 _ 3)) -> do
+    CampaignStep (InterludeStepPart 5 _ 3) -> do
       theBraziersAreLit <- getHasRecord TheBraziersAreLit
       hasMap <- selectList $ InvestigatorWithSupply Map
       when (theBraziersAreLit && notNull hasMap) $ do
         iids <- allInvestigatorIds
         pushAll $ story iids readingSigns : map (\iid -> GainXP iid CampaignSource 2) hasMap
       pure c
-    CampaignStep (Just (InterludeStepPart 5 _ 4)) -> do
+    CampaignStep (InterludeStepPart 5 _ 4) -> do
       iids <- allInvestigatorIds
       for_ iids $ \iid -> do
         supplies <- field InvestigatorSupplies iid
@@ -859,19 +874,10 @@ instance RunMessage TheForgottenAge where
           Provisions -> push $ UseSupply iid Provisions
           _ -> pure ()
       pure c
-    CampaignStep (Just EpilogueStep) -> do
+    CampaignStep EpilogueStep -> do
       -- We can only get here if we've turned back time, but may want to check
       push $ NextCampaignStep (Just $ ScenarioStep "04344")
       pure c
-    NextCampaignStep mOverrideStep -> do
-      let step = mOverrideStep <|> nextStep attrs
-      push (CampaignStep step)
-      pure
-        . TheForgottenAge
-        . (`with` metadata)
-        $ attrs
-          & (stepL .~ step)
-          & (completedStepsL %~ completeStep (campaignStep attrs))
     HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
       pure
         . TheForgottenAge
@@ -901,4 +907,4 @@ instance RunMessage TheForgottenAge where
     PreScenarioSetup -> do
       pushAll $ map BecomeYithian $ toList $ yithians metadata
       pure c
-    _ -> TheForgottenAge . (`with` metadata) <$> runMessage msg attrs
+    _ -> defaultCampaignRunner msg c

@@ -1,2 +1,2 @@
-roots = [ "^Main.main$" ]
+roots = ["^Main.main$", "^Arkham.Game.newCampaign$", "^Arkham.Game.newScenario$", "^Arkham.Game.addInvestigator$", "^Arkham.Game.toExternalGame$", "^Arkham.Game.replayChoices$", "^Arkham.Game.runMessages$", "runMessage"]
 type-class-roots = true

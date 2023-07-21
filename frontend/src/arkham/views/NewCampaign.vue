@@ -85,7 +85,7 @@ const campaignScenarios = computed(() => {
   return []
 })
 
-const selectCampaign = (campaignId) => { selectedCampaign.value = campaignId }
+const selectCampaign = (campaignId) => { selectedCampaign.value = campaignId, selectedScenario.value = null }
 
 watch(difficulties, async (newDifficulties) => selectedDifficulty.value = newDifficulties[0])
 

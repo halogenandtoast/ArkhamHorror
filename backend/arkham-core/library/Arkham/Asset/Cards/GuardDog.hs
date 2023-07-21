@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.GuardDog
-  ( GuardDog(..)
-  , guardDog
-  ) where
+module Arkham.Asset.Cards.GuardDog (
+  GuardDog (..),
+  guardDog,
+) where
 
 import Arkham.Prelude
 
@@ -10,9 +10,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Id
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype GuardDog = GuardDog AssetAttrs
@@ -24,13 +24,14 @@ guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
-    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
-        (AssetDealtDamage
-          Timing.When
-          (SourceIsEnemyAttack AnyEnemy)
-          (AssetWithId (toId x))
-        )
-        Free
+    [ restrictedAbility x 1 ControlsThis $
+        ReactionAbility
+          ( AssetDealtDamage
+              Timing.When
+              (SourceIsEnemyAttack AnyEnemy)
+              (AssetWithId (toId x))
+          )
+          Free
     ]
 
 toEnemyId :: [Window] -> EnemyId

@@ -32,7 +32,7 @@ import Arkham.Token qualified as Token
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-defeated :: (HasGame m) => AssetAttrs -> Source -> m (Maybe DefeatedBy)
+defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId} source = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId

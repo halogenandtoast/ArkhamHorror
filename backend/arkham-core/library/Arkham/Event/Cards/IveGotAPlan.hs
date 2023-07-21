@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.IveGotAPlan
-  ( iveGotAPlan
-  , IveGotAPlan(..)
-  ) where
+module Arkham.Event.Cards.IveGotAPlan (
+  iveGotAPlan,
+  IveGotAPlan (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -37,12 +37,12 @@ instance RunMessage IveGotAPlan where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       pushAll
         [ ChooseFightEnemy
-          iid
-          (EventSource eid)
-          Nothing
-          SkillIntellect
-          mempty
-          False
+            iid
+            (EventSource eid)
+            Nothing
+            SkillIntellect
+            mempty
+            False
         ]
       pure e
     _ -> IveGotAPlan <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.CheapShot
-  ( cheapShot
-  , CheapShot(..)
-  ) where
+module Arkham.Event.Cards.CheapShot (
+  cheapShot,
+  CheapShot (..),
+) where
 
 import Arkham.Prelude
 
@@ -28,11 +28,11 @@ instance RunMessage CheapShot where
         ]
       pure e
     PassedSkillTest iid _ _ (SkillTestInitiatorTarget (InvestigatorTarget _)) _ n
-      | n >= 2
-      -> do
-        mSkillTestTarget <- getSkillTestTarget
-        case mSkillTestTarget of
-          Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid
-          _ -> pure ()
-        pure e
+      | n >= 2 ->
+          do
+            mSkillTestTarget <- getSkillTestTarget
+            case mSkillTestTarget of
+              Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid
+              _ -> pure ()
+            pure e
     _ -> CheapShot <$> runMessage msg attrs

@@ -18,11 +18,12 @@ newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 investigatingTheTrail :: ActCard InvestigatingTheTrail
-investigatingTheTrail = act
-  (1, A)
-  InvestigatingTheTrail
-  Cards.investigatingTheTrail
-  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+investigatingTheTrail =
+  act
+    (1, A)
+    InvestigatingTheTrail
+    Cards.investigatingTheTrail
+    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance RunMessage InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
@@ -32,10 +33,11 @@ instance RunMessage InvestigatingTheTrail where
       when (isNothing mRitualSiteId) $ do
         placeRitualSite <- placeSetAsideLocation_ Locations.ritualSite
         push placeRitualSite
-      cultistsWhoGotAway <- traverse (genCard . lookupEncounterCardDef)
-        =<< getRecordedCardCodes CultistsWhoGotAway
-      createEnemies <- for cultistsWhoGotAway
-        $ \card -> createEnemyAt_ card mainPathId Nothing
+      cultistsWhoGotAway <-
+        traverse (genCard . lookupEncounterCardDef)
+          =<< getRecordedCardCodes CultistsWhoGotAway
+      createEnemies <- for cultistsWhoGotAway $
+        \card -> createEnemyAt_ card mainPathId Nothing
 
       pushAll $ createEnemies <> [AdvanceActDeck actDeckId (toSource attrs)]
       pure a

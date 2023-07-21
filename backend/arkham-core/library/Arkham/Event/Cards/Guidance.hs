@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Guidance
-  ( guidance
-  , Guidance(..)
-  ) where
+module Arkham.Event.Cards.Guidance (
+  guidance,
+  Guidance (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,12 +25,12 @@ instance RunMessage Guidance where
         selectList $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
       pushAll
         [ chooseOne
-          iid
-          [ targetLabel
+            iid
+            [ targetLabel
               investigator
               [GainActions investigator (toSource attrs) 1]
-          | investigator <- investigators
-          ]
+            | investigator <- investigators
+            ]
         ]
       pure e
     _ -> Guidance <$> runMessage msg attrs

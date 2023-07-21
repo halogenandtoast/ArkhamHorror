@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( deepBelowYourHouse )
+import Arkham.Location.Cards qualified as Cards (deepBelowYourHouse)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -22,33 +22,33 @@ deepBelowYourHouse =
 
 instance HasAbilities DeepBelowYourHouse where
   getAbilities (DeepBelowYourHouse attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          RevealLocation Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        (beginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillAgility
-          3
+        ( beginSkillTest
+            iid
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            SkillAgility
+            3
         )
       DeepBelowYourHouse <$> runMessage msg attrs
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source
-      -> l
-        <$ pushAll
-             (replicate
-               n
-               (FindAndDrawEncounterCard iid (CardWithCardCode "01159") True)
-             )
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
+      | isSource attrs source ->
+          l
+            <$ pushAll
+              ( replicate
+                  n
+                  (FindAndDrawEncounterCard iid (CardWithCardCode "01159") True)
+              )
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

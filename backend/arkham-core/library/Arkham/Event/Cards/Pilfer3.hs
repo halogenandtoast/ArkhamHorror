@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.Pilfer3
-  ( pilfer3
-  , pilfer3Effect
-  , Pilfer3(..)
-  )
+module Arkham.Event.Cards.Pilfer3 (
+  pilfer3,
+  pilfer3Effect,
+  Pilfer3 (..),
+)
 where
 
 import Arkham.Prelude
@@ -15,7 +15,7 @@ import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types ( Field (InvestigatorLocation) )
+import Arkham.Investigator.Types (Field (InvestigatorLocation))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -36,8 +36,9 @@ instance RunMessage Pilfer3 where
         , Investigate iid lid (toSource attrs) Nothing SkillAgility False
         ]
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n | n >= 2 -> do
-      push $ createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+      push $
+        createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       pure e
     _ -> Pilfer3 <$> runMessage msg attrs
 

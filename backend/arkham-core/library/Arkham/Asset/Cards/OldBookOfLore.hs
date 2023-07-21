@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.OldBookOfLore
-  ( OldBookOfLore(..)
-  , oldBookOfLore
-  ) where
+module Arkham.Asset.Cards.OldBookOfLore (
+  OldBookOfLore (..),
+  oldBookOfLore,
+) where
 
 import Arkham.Prelude
 
@@ -20,13 +20,14 @@ oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore
 instance HasAbilities OldBookOfLore where
   getAbilities (OldBookOfLore a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> InvestigatorExists
-            (InvestigatorAt YourLocation
-            <> InvestigatorWithoutModifier CannotManipulateDeck
-            )
-          )
+        a
+        1
+        ( ControlsThis
+            <> InvestigatorExists
+              ( InvestigatorAt YourLocation
+                  <> InvestigatorWithoutModifier CannotManipulateDeck
+              )
+        )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, ExhaustCost $ toTarget a]
     ]
@@ -35,9 +36,10 @@ instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorIds <- selectList $ colocatedWith iid
-      push $ chooseOne
-        iid
-        [ targetLabel
+      push $
+        chooseOne
+          iid
+          [ targetLabel
             iid'
             [ Search
                 iid'
@@ -47,7 +49,7 @@ instance RunMessage OldBookOfLore where
                 AnyCard
                 (DrawFound iid' 1)
             ]
-        | iid' <- investigatorIds
-        ]
+          | iid' <- investigatorIds
+          ]
       pure a
     _ -> OldBookOfLore <$> runMessage msg attrs

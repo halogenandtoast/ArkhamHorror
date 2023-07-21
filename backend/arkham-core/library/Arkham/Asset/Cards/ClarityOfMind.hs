@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ClarityOfMind
-  ( clarityOfMind
-  , ClarityOfMind(..)
-  ) where
+module Arkham.Asset.Cards.ClarityOfMind (
+  clarityOfMind,
+  ClarityOfMind (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,11 +21,12 @@ clarityOfMind = asset ClarityOfMind Cards.clarityOfMind
 instance HasAbilities ClarityOfMind where
   getAbilities (ClarityOfMind a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> InvestigatorExists
-            (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-          )
+        a
+        1
+        ( ControlsThis
+            <> InvestigatorExists
+              (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+        )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
@@ -34,8 +35,10 @@ instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
-      push $ chooseOrRunOne iid $ map
-        (uncurry targetLabel . second pure)
-        iidsWithHeal
+      push $
+        chooseOrRunOne iid $
+          map
+            (uncurry targetLabel . second pure)
+            iidsWithHeal
       pure a
     _ -> ClarityOfMind <$> runMessage msg attrs

@@ -61,7 +61,7 @@ instance HasChaosTokenValue EchoesOfThePast where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-gatherTheMidnightMasks :: (CardGen m) => m [EncounterCard]
+gatherTheMidnightMasks :: CardGen m => m [EncounterCard]
 gatherTheMidnightMasks =
   traverse
     genEncounterCard

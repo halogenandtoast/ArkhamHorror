@@ -129,7 +129,7 @@ skill f cardDef =
             }
     }
 
-data Skill = forall a. (IsSkill a) => Skill a
+data Skill = forall a. IsSkill a => Skill a
 
 instance Eq Skill where
   Skill (a :: a) == Skill (b :: b) = case eqT @a @b of
@@ -177,7 +177,7 @@ instance IsCard Skill where
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
 
-data SomeSkillCard = forall a. (IsSkill a) => SomeSkillCard (SkillCard a)
+data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
 
 liftSomeSkillCard :: (forall a. SkillCard a -> b) -> SomeSkillCard -> b
 liftSomeSkillCard f (SomeSkillCard a) = f a

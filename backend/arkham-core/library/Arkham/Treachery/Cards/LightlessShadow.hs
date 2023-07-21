@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.LightlessShadow
-  ( lightlessShadow
-  , LightlessShadow(..)
-  ) where
+module Arkham.Treachery.Cards.LightlessShadow (
+  lightlessShadow,
+  LightlessShadow (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -25,8 +25,8 @@ instance RunMessage LightlessShadow where
       n <- getCurrentDepth
       push $ RevelationSkillTest iid source SkillAgility (1 + n)
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
         pure t
     _ -> LightlessShadow <$> runMessage msg attrs

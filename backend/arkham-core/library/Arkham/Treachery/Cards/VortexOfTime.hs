@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.VortexOfTime
-  ( vortexOfTime
-  , VortexOfTime(..)
-  ) where
+module Arkham.Treachery.Cards.VortexOfTime (
+  vortexOfTime,
+  VortexOfTime (..),
+) where
 
 import Arkham.Prelude
 
@@ -30,8 +30,8 @@ instance RunMessage VortexOfTime where
         | iid <- investigatorsAtSentinelHills
         ]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ InvestigatorAssignDamage iid source DamageAny 2 0
-        pure t
+          push $ InvestigatorAssignDamage iid source DamageAny 2 0
+          pure t
     _ -> VortexOfTime <$> runMessage msg attrs

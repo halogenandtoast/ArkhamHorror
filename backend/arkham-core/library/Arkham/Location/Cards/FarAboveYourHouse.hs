@@ -22,27 +22,29 @@ farAboveYourHouse =
 
 instance HasAbilities FarAboveYourHouse where
   getAbilities (FarAboveYourHouse attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          RevealLocation Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ beginSkillTest iid attrs iid SkillWillpower 4
       pure l
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
-        investigatorIds <- getInvestigatorIds
-        pushAll $ concat $ replicate @[[Message]]
-          n
-          [ toMessage $ randomDiscard iid' (toAbilitySource attrs 1)
-          | iid' <- investigatorIds
-          ]
-        pure l
+          investigatorIds <- getInvestigatorIds
+          pushAll $
+            concat $
+              replicate @[[Message]]
+                n
+                [ toMessage $ randomDiscard iid' (toAbilitySource attrs 1)
+                | iid' <- investigatorIds
+                ]
+          pure l
     _ -> FarAboveYourHouse <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TheGeistTrap
-  ( theGeistTrap
-  , TheGeistTrap(..)
-  )
+module Arkham.Location.Cards.TheGeistTrap (
+  theGeistTrap,
+  TheGeistTrap (..),
+)
 where
 
 import Arkham.Prelude
@@ -20,7 +20,8 @@ theGeistTrap = location TheGeistTrap Cards.theGeistTrap 4 (PerPlayer 1)
 instance HasAbilities TheGeistTrap where
   getAbilities (TheGeistTrap attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage TheGeistTrap where
   runMessage msg (TheGeistTrap attrs) =

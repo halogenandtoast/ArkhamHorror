@@ -24,7 +24,7 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON, ToJSON)
 
-loadDecklist :: (CardGen m) => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard])
+loadDecklist :: CardGen m => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard])
 loadDecklist decklist = (investigatorId,) <$> loadDecklistCards decklist
  where
   investigatorId = case meta decklist of
@@ -46,7 +46,7 @@ decklistInvestigatorId decklist = case meta decklist of
         then investigator_code decklist
         else alternate_front
 
-loadDecklistCards :: (CardGen m) => ArkhamDBDecklist -> m [PlayerCard]
+loadDecklistCards :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
 loadDecklistCards decklist = do
   results <- forM (Map.toList $ slots decklist) $ \(cardCode, count') ->
     replicateM count' (applyCustomizations decklist <$> genPlayerCard (lookupPlayerCardDef cardCode))

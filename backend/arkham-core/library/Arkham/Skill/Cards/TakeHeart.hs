@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.TakeHeart
-  ( takeHeart
-  , TakeHeart(..)
-  ) where
+module Arkham.Skill.Cards.TakeHeart (
+  takeHeart,
+  TakeHeart (..),
+) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.TheStrangerACityAflame
-  ( TheStrangerACityAflame(..)
-  , theStrangerACityAflame
-  ) where
+module Arkham.Effect.Effects.TheStrangerACityAflame (
+  TheStrangerACityAflame (..),
+  theStrangerACityAflame,
+) where
 
 import Arkham.Prelude
 
@@ -23,16 +23,17 @@ theStrangerACityAflame = TheStrangerACityAflame . uncurry4 (baseAttrs "03047a")
 instance HasAbilities TheStrangerACityAflame where
   getAbilities (TheStrangerACityAflame attrs) =
     [ mkAbility
-          (ProxySource
+        ( ProxySource
             (LocationMatcherSource LocationWithAnyHorror)
             (toSource attrs)
-          )
-          1
-          (ForcedAbility $ OrWindowMatcher
-            [ Enters Timing.After You ThisLocation
-            , TurnEnds Timing.When (You <> InvestigatorAt ThisLocation)
-            ]
-          )
+        )
+        1
+        ( ForcedAbility $
+            OrWindowMatcher
+              [ Enters Timing.After You ThisLocation
+              , TurnEnds Timing.When (You <> InvestigatorAt ThisLocation)
+              ]
+        )
         & abilityLimitL
         .~ PlayerLimit PerRound 1
     ]
@@ -43,6 +44,6 @@ instance RunMessage TheStrangerACityAflame where
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillAgility 3
       pure e
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
-      | isSource attrs source
-      -> e <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
+      | isSource attrs source ->
+          e <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> TheStrangerACityAflame <$> runMessage msg attrs

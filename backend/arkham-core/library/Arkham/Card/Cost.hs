@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Card.Cost
-  ( CardCost(..)
-  , toPrintedCost
-  ) where
+
+module Arkham.Card.Cost (
+  CardCost (..),
+  toPrintedCost,
+) where
 
 import Arkham.Prelude
 

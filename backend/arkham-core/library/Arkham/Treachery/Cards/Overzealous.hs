@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.Overzealous
-  ( overzealous
-  , Overzealous(..)
-  ) where
+module Arkham.Treachery.Cards.Overzealous (
+  overzealous,
+  Overzealous (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,13 +20,16 @@ overzealous = treachery Overzealous Cards.overzealous
 
 instance RunMessage Overzealous where
   runMessage msg t@(Overzealous attrs) = case msg of
-    Revelation _iid source | isSource attrs source ->
-      t <$ push (DrawEncounterCards (toTarget attrs) 1)
+    Revelation _iid source
+      | isSource attrs source ->
+          t <$ push (DrawEncounterCards (toTarget attrs) 1)
     RequestedEncounterCards target [card] | isTarget attrs target ->
       withTreacheryOwner
         attrs
-        \iid -> t <$ pushAll
-          [ GainSurge (toSource attrs) (toTarget $ toCardId card)
-          , InvestigatorDrewEncounterCard iid card
-          ]
+        \iid ->
+          t
+            <$ pushAll
+              [ GainSurge (toSource attrs) (toTarget $ toCardId card)
+              , InvestigatorDrewEncounterCard iid card
+              ]
     _ -> Overzealous <$> runMessage msg attrs

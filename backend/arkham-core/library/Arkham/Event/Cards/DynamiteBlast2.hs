@@ -6,8 +6,8 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.Projection
 
@@ -22,27 +22,32 @@ instance RunMessage DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
   runMessage msg e@(DynamiteBlast2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- fieldMap
-        InvestigatorLocation
-        (fromJustNote "must be at a location")
-        iid
-      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
-        currentLocationId
+      currentLocationId <-
+        fieldMap
+          InvestigatorLocation
+          (fromJustNote "must be at a location")
+          iid
+      connectedLocationIds <-
+        selectList $
+          AccessibleFrom $
+            LocationWithId
+              currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- selectList $ EnemyAt $ LocationWithId lid
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
         pure
           ( lid
           , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
-            <> map
-                 (\iid' -> InvestigatorAssignDamage
-                   iid'
-                   (EventSource eid)
-                   DamageAny
-                   3
-                   0
-                 )
-                 investigatorIds
+              <> map
+                ( \iid' ->
+                    InvestigatorAssignDamage
+                      iid'
+                      (EventSource eid)
+                      DamageAny
+                      3
+                      0
+                )
+                investigatorIds
           )
       let
         availableChoices =

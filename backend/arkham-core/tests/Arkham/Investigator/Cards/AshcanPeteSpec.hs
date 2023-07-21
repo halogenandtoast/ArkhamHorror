@@ -1,21 +1,20 @@
-module Arkham.Investigator.Cards.AshcanPeteSpec
-  ( spec
-  ) where
+module Arkham.Investigator.Cards.AshcanPeteSpec (
+  spec,
+) where
 
 import TestImport.Lifted
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Events
-import Arkham.Asset.Types (Field(..))
-import Arkham.Matcher (assetIs)
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Matcher (assetIs)
 
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
   it "starts with Duke in play" $ gameTestWith Investigators.ashcanPete $ \ashcanPete -> do
     duke <- genPlayerCard Assets.duke
     placeholders <- replicateM 5 (genPlayerCard Events.emergencyCache) -- need to fill deck for setup
-
     pushAndRunAll [loadDeck ashcanPete (duke : placeholders), SetupInvestigators]
     assert $ selectAny (assetIs Assets.duke)
 
@@ -33,9 +32,9 @@ spec = describe "\"Ashcan\" Pete" $ do
         ]
       chooseOptionMatching
         "activate ability"
-        (\case
-          AbilityLabel{} -> True
-          _ -> False
+        ( \case
+            AbilityLabel {} -> True
+            _ -> False
         )
       chooseOnlyOption "discard card"
       chooseOnlyOption "ready asset"
@@ -49,10 +48,10 @@ spec = describe "\"Ashcan\" Pete" $ do
       duke <- selectJust $ assetIs Assets.duke
 
       pushAndRunAll
-          [ SetChaosTokens [ElderSign]
-          , Exhaust (toTarget duke)
-          , beginSkillTest ashcanPete SkillIntellect 2
-          ]
+        [ SetChaosTokens [ElderSign]
+        , Exhaust (toTarget duke)
+        , beginSkillTest ashcanPete SkillIntellect 2
+        ]
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"
       fieldAssert AssetExhausted (== False) duke

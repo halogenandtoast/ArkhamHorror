@@ -1,13 +1,13 @@
-module Arkham.Agenda.Cards.WhatsGoingOn
-  ( WhatsGoingOn(..)
-  , whatsGoingOn
-  ) where
+module Arkham.Agenda.Cards.WhatsGoingOn (
+  WhatsGoingOn (..),
+  whatsGoingOn,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
@@ -26,18 +26,19 @@ instance RunMessage WhatsGoingOn where
       iid <- getLeadInvestigatorId
       -- The lead investigator can choose the first option even if one of the
       -- investigators has no cards in hand (but at least one does).
-      canChooseDiscardOption <- selectAny
-        (HandWith $ LengthIs $ GreaterThan $ Static 0)
+      canChooseDiscardOption <-
+        selectAny
+          (HandWith $ LengthIs $ GreaterThan $ Static 0)
       pushAll
-        [ chooseOne iid
-        $ Label
-            "The lead investigator takes 2 horror"
-            [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
-        : [ Label
-              "Each investigator discards 1 card at random from his or her hand"
-              [AllRandomDiscard (toSource attrs) AnyCard]
-          | canChooseDiscardOption
-          ]
+        [ chooseOne iid $
+            Label
+              "The lead investigator takes 2 horror"
+              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
+              : [ Label
+                  "Each investigator discards 1 card at random from his or her hand"
+                  [AllRandomDiscard (toSource attrs) AnyCard]
+                | canChooseDiscardOption
+                ]
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
       pure a

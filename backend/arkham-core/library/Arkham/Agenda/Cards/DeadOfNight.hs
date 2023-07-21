@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.DeadOfNight
-  ( DeadOfNight(..)
-  , deadOfNight
-  ) where
+module Arkham.Agenda.Cards.DeadOfNight (
+  DeadOfNight (..),
+  deadOfNight,
+) where
 
 import Arkham.Prelude
 
@@ -34,18 +34,19 @@ instance RunMessage DeadOfNight where
       mExperimentId <- selectOne $ enemyIs Enemies.theExperiment
       theExperiment <- genCard Enemies.theExperiment
       scienceBuildingId <- selectJust $ LocationWithTitle "Science Building"
-      createTheExperiment <- createEnemyAt_
-        theExperiment
-        scienceBuildingId
-        Nothing
-      pushAll
-        $ [ PlaceLocationMatching (CardWithTitle "Dormitories")
-          | not dormitoriesInPlay
-          ]
-        <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
-           | eid <- maybeToList mExperimentId
-           ]
-        <> [ createTheExperiment | isNothing mExperimentId ]
-        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      createTheExperiment <-
+        createEnemyAt_
+          theExperiment
+          scienceBuildingId
+          Nothing
+      pushAll $
+        [ PlaceLocationMatching (CardWithTitle "Dormitories")
+        | not dormitoriesInPlay
+        ]
+          <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
+             | eid <- maybeToList mExperimentId
+             ]
+          <> [createTheExperiment | isNothing mExperimentId]
+          <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
     _ -> DeadOfNight <$> runMessage msg attrs

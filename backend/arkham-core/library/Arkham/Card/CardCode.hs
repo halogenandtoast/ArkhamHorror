@@ -4,7 +4,7 @@ import Arkham.Prelude
 import Data.Aeson.Types
 import Data.Text qualified as T
 
-newtype CardCode = CardCode { unCardCode :: Text }
+newtype CardCode = CardCode {unCardCode :: Text}
   deriving newtype (Show, Ord, Hashable, IsString)
 
 instance Eq CardCode where

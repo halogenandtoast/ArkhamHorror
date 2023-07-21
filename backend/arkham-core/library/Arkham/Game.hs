@@ -206,7 +206,7 @@ class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
 
 newCampaign
-  :: (MonadIO m)
+  :: MonadIO m
   => CampaignId
   -> Maybe ScenarioId
   -> Int
@@ -218,7 +218,7 @@ newCampaign
 newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)
 
 newScenario
-  :: (MonadIO m)
+  :: MonadIO m
   => ScenarioId
   -> Int
   -> Int
@@ -229,7 +229,7 @@ newScenario
 newScenario = newGame . That
 
 newGame
-  :: (MonadIO m)
+  :: MonadIO m
   => These CampaignId ScenarioId
   -> Int
   -> Int
@@ -372,7 +372,7 @@ addInvestigator i d = do
 
 -- TODO: Rename this
 toExternalGame
-  :: (MonadRandom m)
+  :: MonadRandom m
   => Game
   -> Map InvestigatorId (Question Message)
   -> m Game
@@ -398,10 +398,10 @@ modeCampaign = \case
   These c _ -> Just c
   This c -> Just c
 
-getScenario :: (HasGame m) => m (Maybe Scenario)
+getScenario :: HasGame m => m (Maybe Scenario)
 getScenario = modeScenario . view modeL <$> getGame
 
-getCampaign :: (HasGame m) => m (Maybe Campaign)
+getCampaign :: HasGame m => m (Maybe Campaign)
 getCampaign = modeCampaign . view modeL <$> getGame
 
 withModifiers :: (HasGame m, Targetable a) => a -> m (With a ModifierData)
@@ -409,7 +409,7 @@ withModifiers a = do
   modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'
 
-withEnemyMetadata :: (HasGame m) => Enemy -> m (With Enemy EnemyMetadata)
+withEnemyMetadata :: HasGame m => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
   emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
@@ -418,7 +418,7 @@ withEnemyMetadata a = do
   pure $ a `with` EnemyMetadata {..}
 
 withLocationConnectionData
-  :: (HasGame m)
+  :: HasGame m
   => With Location ModifierData
   -> m (With (With Location ModifierData) LocationMetadata)
 withLocationConnectionData inner@(With target _) = do
@@ -431,7 +431,7 @@ withLocationConnectionData inner@(With target _) = do
   lmTreacheries <- select (treacheryAt $ toId target)
   pure $ inner `with` LocationMetadata {..}
 
-withAssetMetadata :: (HasGame m) => Asset -> m (With Asset AssetMetadata)
+withAssetMetadata :: HasGame m => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
   amModifiers <- getModifiers' (toTarget a)
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
@@ -439,7 +439,7 @@ withAssetMetadata a = do
   pure $ a `with` AssetMetadata {..}
 
 withInvestigatorConnectionData
-  :: (HasGame m)
+  :: HasGame m
   => With WithDeckSize ModifierData
   -> m (With (With WithDeckSize ModifierData) ConnectionData)
 withInvestigatorConnectionData inner@(With target _) = case target of
@@ -504,10 +504,10 @@ gameTreacheries = entitiesTreacheries . gameEntities
 data PublicGame gid = PublicGame gid Text [Text] Game
   deriving stock (Show)
 
-getConnectedMatcher :: (HasGame m) => Location -> m LocationMatcher
+getConnectedMatcher :: HasGame m => Location -> m LocationMatcher
 getConnectedMatcher = Helpers.getConnectedMatcher . toId
 
-instance (ToJSON gid) => ToJSON (PublicGame gid) where
+instance ToJSON gid => ToJSON (PublicGame gid) where
   toJSON (PublicGame gid name glog g@Game {..}) =
     object
       [ "name" .= toJSON name
@@ -617,7 +617,7 @@ getLocation lid =
   missingLocation =
     throw $ MissingLocation ("Unknown location: " <> tshow lid) callStack
 
-getEffectsMatching :: (HasGame m) => EffectMatcher -> m [Effect]
+getEffectsMatching :: HasGame m => EffectMatcher -> m [Effect]
 getEffectsMatching matcher = do
   effects <- toList . view (entitiesL . effectsL) <$> getGame
   filterM (go matcher) effects
@@ -625,7 +625,7 @@ getEffectsMatching matcher = do
   go = \case
     AnyEffect -> pure . const True
 
-getCampaignsMatching :: (HasGame m) => CampaignMatcher -> m [Campaign]
+getCampaignsMatching :: HasGame m => CampaignMatcher -> m [Campaign]
 getCampaignsMatching matcher = do
   campaigns <- maybeToList . modeCampaign . view modeL <$> getGame
   filterM (go matcher) campaigns
@@ -634,7 +634,7 @@ getCampaignsMatching matcher = do
     TheCampaign -> pure . const True
 
 getInvestigatorsMatching
-  :: (HasGame m) => InvestigatorMatcher -> m [Investigator]
+  :: HasGame m => InvestigatorMatcher -> m [Investigator]
 getInvestigatorsMatching matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   investigators' <-
@@ -750,7 +750,10 @@ getInvestigatorsMatching matcher = do
     NearestToLocation locationMatcher -> \i -> do
       let
         getLocationDistance start =
-          Distance . fromJustNote "error" . minimumMay . keys
+          Distance
+            . fromJustNote "error"
+            . minimumMay
+            . keys
             <$> evalStateT
               (markDistances start (<=~> locationMatcher) mempty)
               (LPState (pure start) (singleton start) mempty)
@@ -775,7 +778,10 @@ getInvestigatorsMatching matcher = do
         hasMatchingEnemy lid =
           selectAny $ enemyAt lid <> enemyMatcher
         getEnemyDistance start =
-          Distance . fromJustNote "error" . minimumMay . keys
+          Distance
+            . fromJustNote "error"
+            . minimumMay
+            . keys
             <$> evalStateT
               (markDistances start hasMatchingEnemy mempty)
               (LPState (pure start) (singleton start) mempty)
@@ -964,7 +970,7 @@ getInvestigatorsMatching matcher = do
       pure $ key `elem` investigatorKeys (toAttrs i)
 
 isHighestAmongst
-  :: (HasGame m)
+  :: HasGame m
   => InvestigatorId
   -> InvestigatorMatcher
   -> (InvestigatorId -> m Int)
@@ -979,7 +985,7 @@ isHighestAmongst iid matcher f = do
     else pure False
 
 isLowestAmongst
-  :: (HasGame m)
+  :: HasGame m
   => InvestigatorId
   -> InvestigatorMatcher
   -> (InvestigatorId -> m Int)
@@ -993,14 +999,14 @@ isLowestAmongst iid matcher f = do
       pure $ highestCount == thisCount
     else pure False
 
-getCardsInPlayCount :: (HasGame m) => InvestigatorId -> m Int
+getCardsInPlayCount :: HasGame m => InvestigatorId -> m Int
 getCardsInPlayCount i = do
   assets <- Sum <$> selectCount (AssetWithPlacement $ InPlayArea i)
   events <- Sum <$> selectCount (EventWithPlacement $ InPlayArea i)
   skills <- Sum <$> selectCount (SkillWithPlacement $ InPlayArea i)
   pure . getSum $ assets <> events <> skills
 
-getAgendasMatching :: (HasGame m) => AgendaMatcher -> m [Agenda]
+getAgendasMatching :: HasGame m => AgendaMatcher -> m [Agenda]
 getAgendasMatching matcher = do
   allGameAgendas <- toList . view (entitiesL . agendasL) <$> getGame
   filterM (matcherFilter matcher) allGameAgendas
@@ -1020,7 +1026,7 @@ getAgendasMatching matcher = do
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
     AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
 
-getActsMatching :: (HasGame m) => ActMatcher -> m [Act]
+getActsMatching :: HasGame m => ActMatcher -> m [Act]
 getActsMatching matcher = do
   allGameActs <- toList . view (entitiesL . actsL) <$> getGame
   filterM (matcherFilter matcher) allGameActs
@@ -1036,7 +1042,7 @@ getActsMatching matcher = do
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
-getRemainingActsMatching :: (HasGame m) => RemainingActMatcher -> m [Card]
+getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [Card]
 getRemainingActsMatching matcher = do
   acts <-
     scenarioActs
@@ -1063,7 +1069,7 @@ getRemainingActsMatching matcher = do
     ActWithDeckId _ -> error "Can't check side, since not on def"
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
-getTreacheriesMatching :: (HasGame m) => TreacheryMatcher -> m [Treachery]
+getTreacheriesMatching :: HasGame m => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
   allGameTreacheries <- toList . view (entitiesL . treacheriesL) <$> getGame
   filterM (matcherFilter matcher) allGameTreacheries
@@ -1110,7 +1116,7 @@ getTreacheriesMatching matcher = do
     TreacheryOneOf matchers ->
       \treachery -> anyM (`matcherFilter` treachery) matchers
 
-getScenariosMatching :: (HasGame m) => ScenarioMatcher -> m [Scenario]
+getScenariosMatching :: HasGame m => ScenarioMatcher -> m [Scenario]
 getScenariosMatching matcher = do
   scenarios <- maybeToList . modeScenario . view modeL <$> getGame
   filterM (go matcher) scenarios
@@ -1118,7 +1124,7 @@ getScenariosMatching matcher = do
   go = \case
     TheScenario -> pure . const True
 
-abilityMatches :: (HasGame m) => Ability -> AbilityMatcher -> m Bool
+abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
   AnyAbility -> pure True
   HauntedAbility -> pure $ abilityType == Haunted
@@ -1160,12 +1166,12 @@ abilityMatches a@Ability {..} = \case
     if result then pure True else abilityMatches a (AbilityOneOf xs)
   AbilityOnEncounterCard -> abilitySource `sourceMatches` M.EncounterCardSource
 
-getAbilitiesMatching :: (HasGame m) => AbilityMatcher -> m [Ability]
+getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
   filterM (`abilityMatches` matcher) abilities
 
-getGameAbilities :: (HasGame m) => m [Ability]
+getGameAbilities :: HasGame m => m [Ability]
 getGameAbilities = do
   g <- getGame
   let
@@ -1219,7 +1225,8 @@ getGameAbilities = do
     concatMap getAbilities
       <$> filterM unblanked (toList $ g ^. entitiesL . investigatorsL)
   inHandEventAbilities <-
-    filter inHandAbility . concatMap getAbilities
+    filter inHandAbility
+      . concatMap getAbilities
       <$> filterM
         unblanked
         (toList $ g ^. inHandEntitiesL . each . eventsL)
@@ -1239,7 +1246,7 @@ getGameAbilities = do
       <> storyAbilities
       <> skillAbilities
 
-replaceMatcherSources :: (HasGame m) => Ability -> m [Ability]
+replaceMatcherSources :: HasGame m => Ability -> m [Ability]
 replaceMatcherSources ability = case abilitySource ability of
   ProxySource (AgendaMatcherSource m) base -> do
     sources <- selectListMap AgendaSource m
@@ -1597,14 +1604,14 @@ getLocationsMatching lmatcher = do
     SameLocation -> pure []
     ThisLocation -> pure []
 
-guardYourLocation :: (HasGame m) => (LocationId -> m [a]) -> m [a]
+guardYourLocation :: HasGame m => (LocationId -> m [a]) -> m [a]
 guardYourLocation body = do
   mlid <- field InvestigatorLocation . view activeInvestigatorIdL =<< getGame
   case mlid of
     Nothing -> pure []
     Just lid -> body lid
 
-getAssetsMatching :: (HasGame m) => AssetMatcher -> m [Asset]
+getAssetsMatching :: HasGame m => AssetMatcher -> m [Asset]
 getAssetsMatching matcher = do
   assets <- toList . view (entitiesL . assetsL) <$> getGame
   filterMatcher assets matcher
@@ -1834,11 +1841,11 @@ getAssetsMatching matcher = do
               _ -> pure []
             _ -> filterMatcher as (matcher' <> AssetWithHorror)
 
-getActiveInvestigatorModifiers :: (HasGame m) => m [ModifierType]
+getActiveInvestigatorModifiers :: HasGame m => m [ModifierType]
 getActiveInvestigatorModifiers =
   getModifiers . toTarget =<< getActiveInvestigator
 
-getEventsMatching :: (HasGame m) => EventMatcher -> m [Event]
+getEventsMatching :: HasGame m => EventMatcher -> m [Event]
 getEventsMatching matcher = do
   events <- toList . view (entitiesL . eventsL) <$> getGame
   filterMatcher events matcher
@@ -1886,7 +1893,7 @@ getEventsMatching matcher = do
           as
     EventWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
 
-getSkillsMatching :: (HasGame m) => SkillMatcher -> m [Skill]
+getSkillsMatching :: HasGame m => SkillMatcher -> m [Skill]
 getSkillsMatching matcher = do
   skills <- toList . view (entitiesL . skillsL) <$> getGame
   filterMatcher skills matcher
@@ -1932,7 +1939,7 @@ getStory sid = do
  where
   missingStory = "Unknown story: " <> show sid
 
-getStoriesMatching :: (HasGame m) => StoryMatcher -> m [Story]
+getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]
 getStoriesMatching matcher = do
   stories <- toList . view (entitiesL . storiesL) <$> getGame
   filterMatcher stories matcher
@@ -1951,7 +1958,7 @@ getEnemy eid =
  where
   missingEnemy = "Unknown enemy: " <> show eid
 
-getOutOfPlayEnemy :: (HasGame m) => OutOfPlayZone -> EnemyId -> m Enemy
+getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
 getOutOfPlayEnemy outOfPlayZone eid =
   fromJustNote missingEnemy
     . preview (outOfPlayEntitiesL . ix outOfPlayZone . enemiesL . ix eid)
@@ -1959,17 +1966,18 @@ getOutOfPlayEnemy outOfPlayZone eid =
  where
   missingEnemy = "Unknown out of play enemy: " <> show eid
 
-getVoidEnemy :: (HasGame m) => EnemyId -> m Enemy
+getVoidEnemy :: HasGame m => EnemyId -> m Enemy
 getVoidEnemy eid =
-  fromJustNote missingEnemy . preview (outOfPlayEntitiesL . ix VoidZone . enemiesL . ix eid)
+  fromJustNote missingEnemy
+    . preview (outOfPlayEntitiesL . ix VoidZone . enemiesL . ix eid)
     <$> getGame
  where
   missingEnemy = "Unknown out of playenemy: " <> show eid
 
-getEnemyMatching :: (HasGame m) => EnemyMatcher -> m (Maybe Enemy)
+getEnemyMatching :: HasGame m => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
-getEnemiesMatching :: (HasGame m) => EnemyMatcher -> m [Enemy]
+getEnemiesMatching :: HasGame m => EnemyMatcher -> m [Enemy]
 getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
   allGameEnemies <-
     toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
@@ -1978,7 +1986,7 @@ getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter matcher) allGameEnemies
 
-enemyMatcherFilter :: (HasGame m) => EnemyMatcher -> Enemy -> m Bool
+enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId . toAttrs
@@ -2095,7 +2103,8 @@ enemyMatcherFilter = \case
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <-
       setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
-    notNull . intersection iids
+    notNull
+      . intersection iids
       <$> select
         (investigatorEngagedWith $ toId $ toAttrs enemy)
   EnemyEngagedWithYou -> \enemy -> do
@@ -2312,7 +2321,7 @@ getAct aid =
  where
   missingAct = "Unknown act: " <> show aid
 
-getAgenda :: (HasGame m) => AgendaId -> m Agenda
+getAgenda :: HasGame m => AgendaId -> m Agenda
 getAgenda aid =
   fromJustNote missingAgenda
     . preview (entitiesL . agendasL . ix aid)
@@ -2336,7 +2345,7 @@ getAsset aid = fromMaybe (throw missingAsset) <$> maybeAsset aid
         <> T.pack
           (prettyCallStack callStack)
 
-maybeAsset :: (HasGame m) => AssetId -> m (Maybe Asset)
+maybeAsset :: HasGame m => AssetId -> m (Maybe Asset)
 maybeAsset aid = do
   g <- getGame
   pure $
@@ -2344,7 +2353,7 @@ maybeAsset aid = do
       <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
       <|> getInDiscardEntity assetsL aid g
 
-getTreachery :: (HasGame m) => TreacheryId -> m Treachery
+getTreachery :: HasGame m => TreacheryId -> m Treachery
 getTreachery tid =
   fromJustNote missingTreachery
     . preview (entitiesL . treacheriesL . ix tid)
@@ -2369,14 +2378,14 @@ getEvent eid = fromJustNote missingEvent <$> getEventMaybe eid
  where
   missingEvent = "Unknown event: " <> show eid
 
-getEventMaybe :: (HasGame m) => EventId -> m (Maybe Event)
+getEventMaybe :: HasGame m => EventId -> m (Maybe Event)
 getEventMaybe eid = do
   g <- getGame
   pure $
     preview (entitiesL . eventsL . ix eid) g
       <|> getInDiscardEntity eventsL eid g
 
-getEffect :: (HasGame m) => EffectId -> m Effect
+getEffect :: HasGame m => EffectId -> m Effect
 getEffect eid =
   fromJustNote missingEffect
     . preview (entitiesL . effectsL . ix eid)
@@ -2569,7 +2578,7 @@ instance Projection (OutOfPlayEntity Enemy) where
 instance Projection Enemy where
   field f = getEnemyField f <=< getEnemy
 
-getEnemyField :: (HasGame m) => Field Enemy typ -> Enemy -> m typ
+getEnemyField :: HasGame m => Field Enemy typ -> Enemy -> m typ
 getEnemyField f e = do
   let attrs@EnemyAttrs {..} = toAttrs e
   case f of
@@ -2743,7 +2752,7 @@ instance Query ExtendedCardMatcher where
     g <- getGame
     setFromList <$> filterM (`matches'` matcher) (Map.elems $ gameCards g)
    where
-    matches' :: (HasGame m) => Card -> ExtendedCardMatcher -> m Bool
+    matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
       CanCancelRevelationEffect matcher' -> do
         cardIsMatch <- matches' c matcher'
@@ -2756,7 +2765,7 @@ instance Query ExtendedCardMatcher where
       CardWithPerformableAbility abilityMatcher modifiers' -> do
         iid <- view activeInvestigatorIdL <$> getGame
         let
-          setAssetPlacement :: forall a. (Typeable a) => a -> a
+          setAssetPlacement :: forall a. Typeable a => a -> a
           setAssetPlacement a = case eqT @a @Asset of
             Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand iid, assetController = Just iid}) a
             Nothing -> a
@@ -2888,7 +2897,7 @@ instance Query ExtendedCardMatcher where
                         && ( any (`member` skillIcons) (cdSkills (toCardDef card))
                               || ( null (cdSkills $ toCardDef card)
                                     && toCardType card
-                                      == SkillType
+                                    == SkillType
                                  )
                            )
                         && passesCommitRestrictions
@@ -2978,7 +2987,7 @@ instance HasModifiersFor Entities where
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location
 getShortestPath
-  :: (HasGame m)
+  :: HasGame m
   => LocationId
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
@@ -3006,7 +3015,7 @@ data LPState = LPState
   }
 
 getLongestPath
-  :: (HasGame m) => LocationId -> (LocationId -> m Bool) -> m [LocationId]
+  :: HasGame m => LocationId -> (LocationId -> m Bool) -> m [LocationId]
 getLongestPath !initialLocation !target = do
   let
     !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
@@ -3020,7 +3029,7 @@ getLongestPath !initialLocation !target = do
     $ result
 
 markDistances
-  :: (HasGame m)
+  :: HasGame m
   => LocationId
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
@@ -3037,7 +3046,8 @@ markDistances initialLocation target extraConnectionsMap = do
         newVisitedSet = insertSet nextLoc visitedSet
         extraConnections = findWithDefault [] nextLoc extraConnectionsMap
       adjacentCells <-
-        nub . (<> extraConnections)
+        nub
+          . (<> extraConnections)
           <$> lift
             (fieldMap LocationConnectedLocations setToList nextLoc)
       let
@@ -3145,7 +3155,7 @@ instance Projection Effect where
       EffectAbilities -> pure $ getAbilities e
       EffectCardCode -> pure $ effectCardCode $ toAttrs e
 
-eventField :: (HasGame m) => Event -> Field Event a -> m a
+eventField :: HasGame m => Event -> Field Event a -> m a
 eventField e fld = do
   let
     attrs@EventAttrs {..} = toAttrs e
@@ -3449,10 +3459,10 @@ runPreGameMessage msg g = case msg of
   EndSetup -> pure $ g & inSetupL .~ False
   _ -> pure g
 
-getActiveInvestigator :: (HasGame m) => m Investigator
+getActiveInvestigator :: HasGame m => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
-getPlacementLocation :: (HasGame m) => Placement -> m (Maybe LocationId)
+getPlacementLocation :: HasGame m => Placement -> m (Maybe LocationId)
 getPlacementLocation = \case
   AtLocation location -> pure $ Just location
   AttachedToLocation location -> pure $ Just location
@@ -3469,7 +3479,7 @@ getPlacementLocation = \case
   Global -> pure Nothing
   OutOfPlay _ -> pure Nothing
 
-getTurnInvestigator :: (HasGame m) => m (Maybe Investigator)
+getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator =
   getGame
     >>= maybe (pure Nothing) (fmap Just . getInvestigator)
@@ -3761,17 +3771,27 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure $
       g
-        & focusedCardsL %~ filter (/= c)
-        & foundCardsL . each %~ filter (/= c)
-        & entitiesL . skillsL %~ skillsF
+        & focusedCardsL
+        %~ filter (/= c)
+        & foundCardsL
+        . each
+        %~ filter (/= c)
+        & entitiesL
+        . skillsL
+        %~ skillsF
   PutCardOnBottomOfDeck _ _ c -> do
     mSkillId <- selectOne $ SkillWithCardId (toCardId c)
     let skillsF = maybe id deleteMap mSkillId
     pure $
       g
-        & focusedCardsL %~ filter (/= c)
-        & foundCardsL . each %~ filter (/= c)
-        & entitiesL . skillsL %~ skillsF
+        & focusedCardsL
+        %~ filter (/= c)
+        & foundCardsL
+        . each
+        %~ filter (/= c)
+        & entitiesL
+        . skillsL
+        %~ skillsF
   ShuffleCardsIntoDeck _ cards ->
     pure $
       g & focusedCardsL %~ filter (`notElem` cards) & foundCardsL . each %~ filter (`notElem` cards)
@@ -3960,7 +3980,7 @@ runGameMessage msg g = case msg of
               mapToList $
                 g
                   ^. entitiesL
-                    . investigatorsL
+                  . investigatorsL
           )
           (\(iid, i) -> (iid,) <$> getSpendableClueCount (toAttrs i))
     case investigatorsWithClues of
@@ -4046,7 +4066,8 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $
       g
-        & ( entitiesL . skillsL
+        & ( entitiesL
+              . skillsL
               %~ Map.filterWithKey
                 (\k _ -> k `notElem` skillsToRemove)
           )
@@ -4107,7 +4128,7 @@ runGameMessage msg g = case msg of
     pure $
       g
         & (focusedCardsL %~ filter (/= EncounterCard card))
-          . (foundCardsL . each %~ filter (/= EncounterCard card))
+        . (foundCardsL . each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
     push $ addToHand iid card
@@ -4209,7 +4230,7 @@ runGameMessage msg g = case msg of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc)
             || BecomesFast
-              `elem` allModifiers
+            `elem` allModifiers
         _ -> False
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
       actions = case cdActions (toCardDef card) of
@@ -5146,7 +5167,8 @@ runGameMessage msg g = case msg of
     modifiers' <- getModifiers (toCardId card)
     push $ After msg
     when
-      ( NoSurge `notElem` modifiers'
+      ( NoSurge
+          `notElem` modifiers'
           && (AddKeyword Keyword.Surge `elem` modifiers' || Keyword.Surge `elem` cdKeywords (toCardDef card))
       )
       $ push
@@ -5280,7 +5302,7 @@ runGameMessage msg g = case msg of
   AddCardEntity card -> do
     let
       iid = view activeInvestigatorIdL g
-      setAssetPlacement :: forall a. (Typeable a) => a -> a
+      setAssetPlacement :: forall a. Typeable a => a -> a
       setAssetPlacement a = case eqT @a @Asset of
         Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand iid, assetController = Just iid}) a
         Nothing -> a
@@ -5342,8 +5364,8 @@ runGameMessage msg g = case msg of
     pure $
       g
         & inDiscardEntitiesL
-          . at iid
-          ?~ (dEntities & eventsL . at (toId event') ?~ event')
+        . at iid
+        ?~ (dEntities & eventsL . at (toId event') ?~ event')
   Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid
     pure g
@@ -5388,8 +5410,8 @@ runGameMessage msg g = case msg of
     pure $
       g
         & entitiesL
-          . treacheriesL
-          %~ deleteMap tid
+        . treacheriesL
+        %~ deleteMap tid
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -5414,7 +5436,7 @@ preloadEntities g = do
     preloadHandEntities entities investigator' = do
       asIfInHandCards <- getAsIfInHandCards (toId investigator')
       let
-        setAssetPlacement :: forall a. (Typeable a) => a -> a
+        setAssetPlacement :: forall a. Typeable a => a -> a
         setAssetPlacement a = case eqT @a @Asset of
           Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand (toId investigator')}) a
           Nothing -> a
@@ -5452,7 +5474,7 @@ We only preload modifiers while the scenario is active in order to prevent
 scenario specific modifiers from causing an exception. For instance when we
 need to call `getVengeanceInVictoryDisplay`
 -}
-preloadModifiers :: (Monad m) => Game -> m Game
+preloadModifiers :: Monad m => Game -> m Game
 preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
@@ -5498,7 +5520,7 @@ preloadModifiers g = case gameMode g of
   toTargetModifiers target =
     foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)
 
-handleTraitRestrictedModifiers :: (MonadUnliftIO m) => Game -> m Game
+handleTraitRestrictedModifiers :: MonadUnliftIO m => Game -> m Game
 handleTraitRestrictedModifiers g = do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
@@ -5515,7 +5537,7 @@ handleTraitRestrictedModifiers g = do
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
-handleBlanked :: (Monad m) => Game -> m Game
+handleBlanked :: Monad m => Game -> m Game
 handleBlanked g = do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
@@ -5525,7 +5547,7 @@ handleBlanked g = do
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
-applyBlank :: (Monad m) => Source -> StateT (Map Target [Modifier]) m ()
+applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()
 applyBlank s = do
   current <- get
   for_ (mapToList current) $ \(target, targetModifiers) -> do
@@ -5555,9 +5577,9 @@ instance RunMessage Game where
       >>= (skillTestL . traverse) (runMessage msg)
       >>= (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg
-      <&> handleActionDiff g
-      <&> set enemyMovingL Nothing
-      <&> set enemyEvadingL Nothing
+        <&> handleActionDiff g
+        <&> set enemyMovingL Nothing
+        <&> set enemyEvadingL Nothing
 
 handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new

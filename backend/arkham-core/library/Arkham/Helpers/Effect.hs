@@ -6,9 +6,9 @@ import Arkham.Effect.Window as X
 import Arkham.EffectMetadata as X
 
 import Arkham.Card
-import Arkham.Effect.Types (Field(..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Effect.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Projection
 

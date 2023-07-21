@@ -1,13 +1,13 @@
-module Arkham.Event.Cards.BindMonster2
-  ( bindMonster2
-  , BindMonster2(..)
-  ) where
+module Arkham.Event.Cards.BindMonster2 (
+  bindMonster2,
+  BindMonster2 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Event.Runner
 import Arkham.Exception
 import Arkham.Matcher
@@ -25,33 +25,36 @@ bindMonster2 = event BindMonster2 Cards.bindMonster2
 instance HasAbilities BindMonster2 where
   getAbilities (BindMonster2 x) = case eventAttachedTarget x of
     Just (EnemyTarget eid) ->
-      [ restrictedAbility x 1 ControlsThis
-          $ ReactionAbility (EnemyWouldReady Timing.When $ EnemyWithId eid) Free
+      [ restrictedAbility x 1 ControlsThis $
+          ReactionAbility (EnemyWouldReady Timing.When $ EnemyWithId eid) Free
       ]
     _ -> []
 
 instance RunMessage BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
-      [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
-      , ChooseEvadeEnemy
-        iid
-        (EventSource eid)
-        Nothing
-        SkillWillpower
-        AnyEnemy
-        False
-      ]
+    InvestigatorPlayEvent iid eid _ _ _
+      | eid == eventId ->
+          e
+            <$ pushAll
+              [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
+              , ChooseEvadeEnemy
+                  iid
+                  (EventSource eid)
+                  Nothing
+                  SkillWillpower
+                  AnyEnemy
+                  False
+              ]
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       case eventAttachedTarget attrs of
         Just target ->
           e <$ push (beginSkillTest iid source target SkillWillpower 3)
         Nothing -> throwIO $ InvalidState "must be attached"
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> case eventAttachedTarget attrs of
-        Just target@(EnemyTarget _) ->
-          e <$ withQueue_ (filter (/= Ready target))
-        _ -> error "invalid target"
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+          Just target@(EnemyTarget _) ->
+            e <$ withQueue_ (filter (/= Ready target))
+          _ -> error "invalid target"
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> BindMonster2 <$> runMessage msg attrs

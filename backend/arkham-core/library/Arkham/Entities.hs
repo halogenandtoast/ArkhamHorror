@@ -117,7 +117,7 @@ instance Targetable SomeEntity where
 instance HasModifiersFor SomeEntity where
   getModifiersFor target (SomeEntity e) = getModifiersFor target e
 
-overEntities :: (Monoid a) => (SomeEntity -> a) -> Entities -> a
+overEntities :: Monoid a => (SomeEntity -> a) -> Entities -> a
 overEntities f e = runIdentity $ overEntitiesM (Identity . f) e
 
 overEntitiesM :: (Monoid a, Monad m) => (SomeEntity -> m a) -> Entities -> m a
@@ -141,7 +141,7 @@ makeLensesWith suffixedFields ''Entities
 
 -- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
 addCardEntityWith
-  :: InvestigatorId -> (forall a. (Typeable a) => a -> a) -> Entities -> Card -> Entities
+  :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
 addCardEntityWith i f e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType ->

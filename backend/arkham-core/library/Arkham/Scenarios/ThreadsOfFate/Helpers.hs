@@ -6,12 +6,12 @@ import Arkham.Act.Sequence qualified as Act
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Helpers.Scenario
 import Arkham.Name
+import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
-import Arkham.Scenario.Types (Field(..))
 
 getActDecksInPlayCount :: HasGame m => m Int
 getActDecksInPlayCount = do

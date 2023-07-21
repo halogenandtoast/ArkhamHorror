@@ -1,18 +1,18 @@
 module Base.Api.Handler.PasswordReset (postApiV1PasswordResetsR, putApiV1PasswordResetR) where
 
-import Import
 import Crypto.BCrypt
-import Data.Time.Clock
-import Data.Text.Encoding qualified as TE
 import Data.Aeson (withObject)
+import Data.Text.Encoding qualified as TE
+import Data.Time.Clock
+import Import
 
-newtype PasswordResetRequest = PasswordResetRequest { resetEmail :: Text }
+newtype PasswordResetRequest = PasswordResetRequest {resetEmail :: Text}
 
 instance FromJSON PasswordResetRequest where
   parseJSON = withObject "PasswordResetRequest" $ \o ->
     PasswordResetRequest <$> o .: "email"
 
-data PasswordResetPassword = PasswordResetPassword { resetPassword :: Text }
+data PasswordResetPassword = PasswordResetPassword {resetPassword :: Text}
 
 instance FromJSON PasswordResetPassword where
   parseJSON = withObject "PasswordResetPassword" $ \o ->
@@ -30,9 +30,11 @@ postApiV1PasswordResetsR = do
 putApiV1PasswordResetR :: PasswordResetId -> Handler ()
 putApiV1PasswordResetR resetId = do
   payload <- requireCheckJsonBody
-  mdigest <- liftIO $ hashPasswordUsingPolicy
-    slowerBcryptHashingPolicy
-    (TE.encodeUtf8 $ resetPassword payload)
+  mdigest <-
+    liftIO $
+      hashPasswordUsingPolicy
+        slowerBcryptHashingPolicy
+        (TE.encodeUtf8 $ resetPassword payload)
   now <- liftIO getCurrentTime
 
   runDB $ do

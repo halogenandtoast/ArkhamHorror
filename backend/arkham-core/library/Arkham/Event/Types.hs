@@ -151,7 +151,7 @@ instance Sourceable EventAttrs where
   isSource EventAttrs {eventId} (EventSource eid) = eventId == eid
   isSource _ _ = False
 
-data Event = forall a. (IsEvent a) => Event a
+data Event = forall a. IsEvent a => Event a
 
 instance Eq Event where
   (Event (a :: a)) == (Event (b :: b)) = case eqT @a @b of
@@ -202,7 +202,7 @@ getEventId = eventId . toAttrs
 ownerOfEvent :: Event -> InvestigatorId
 ownerOfEvent = eventOwner . toAttrs
 
-data SomeEventCard = forall a. (IsEvent a) => SomeEventCard (EventCard a)
+data SomeEventCard = forall a. IsEvent a => SomeEventCard (EventCard a)
 
 liftSomeEventCard :: (forall a. EventCard a -> b) -> SomeEventCard -> b
 liftSomeEventCard f (SomeEventCard a) = f a

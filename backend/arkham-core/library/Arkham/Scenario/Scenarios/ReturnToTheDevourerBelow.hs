@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -18,7 +19,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Scenarios.TheDevourerBelow.Story
-import Arkham.ChaosToken
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
@@ -137,7 +137,8 @@ instance RunMessage ReturnToTheDevourerBelow where
         agendas <- genCards agendaDeck
         acts <- genCards actDeck
 
-        ReturnToTheDevourerBelow . TheDevourerBelow
+        ReturnToTheDevourerBelow
+          . TheDevourerBelow
           <$> runMessage
             msg
             ( attrs

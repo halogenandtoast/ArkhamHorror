@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TemperanceXIV
-  ( TemperanceXIV(..)
-  , temperanceXIV
-  ) where
+module Arkham.Agenda.Cards.TemperanceXIV (
+  TemperanceXIV (..),
+  temperanceXIV,
+) where
 
 import Arkham.Prelude
 
@@ -13,8 +13,8 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Types ( Field (..) )
-import Arkham.Trait (Trait(Witch))
+import Arkham.Scenario.Types (Field (..))
+import Arkham.Trait (Trait (Witch))
 
 newtype TemperanceXIV = TemperanceXIV AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -31,10 +31,10 @@ instance RunMessage TemperanceXIV where
       lead <- getLeadInvestigatorId
       pushAll
         [ DiscardTopOfEncounterDeck
-          lead
-          discardAmount
-          (toSource attrs)
-          (Just $ toTarget attrs)
+            lead
+            discardAmount
+            (toSource attrs)
+            (Just $ toTarget attrs)
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
       pure a
@@ -44,12 +44,13 @@ instance RunMessage TemperanceXIV where
       lead <- getLeadInvestigatorId
       for_ mWitch $ \witch -> do
         investigators <- selectList InvestigatorWithMostCardsInPlayArea
-        push $ chooseOrRunOne
-          lead
-          [ targetLabel
+        push $
+          chooseOrRunOne
+            lead
+            [ targetLabel
               investigator
               [InvestigatorDrewEncounterCard investigator witch]
-          | investigator <- investigators
-          ]
+            | investigator <- investigators
+            ]
       pure a
     _ -> TemperanceXIV <$> runMessage msg attrs

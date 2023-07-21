@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AnotherDayAnotherDollar3
-  ( anotherDayAnotherDollar3
-  , AnotherDayAnotherDollar3(..)
-  )
+module Arkham.Asset.Cards.AnotherDayAnotherDollar3 (
+  anotherDayAnotherDollar3,
+  AnotherDayAnotherDollar3 (..),
+)
 where
 
 import Arkham.Prelude
@@ -19,10 +19,11 @@ anotherDayAnotherDollar3 =
 
 instance HasModifiersFor AnotherDayAnotherDollar3 where
   getModifiersFor (InvestigatorTarget iid) (AnotherDayAnotherDollar3 attrs) =
-    pure $ toModifiersWith
-      attrs
-      setActiveDuringSetup
-      [ StartingResources 2 | controlledBy attrs iid ]
+    pure $
+      toModifiersWith
+        attrs
+        setActiveDuringSetup
+        [StartingResources 2 | controlledBy attrs iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AnotherDayAnotherDollar3 where

@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Pilfer
-  ( pilfer
-  , Pilfer(..)
-  )
+module Arkham.Event.Cards.Pilfer (
+  pilfer,
+  Pilfer (..),
+)
 where
 
 import Arkham.Prelude
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types ( Field (InvestigatorLocation) )
+import Arkham.Investigator.Types (Field (InvestigatorLocation))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType

@@ -88,7 +88,7 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-getRemoveNecronomicon :: (HasGame m) => m [Message]
+getRemoveNecronomicon :: HasGame m => m [Message]
 getRemoveNecronomicon = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
@@ -248,7 +248,8 @@ instance RunMessage BloodOnTheAltar where
             ]
         acts <- genCards [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
 
-        BloodOnTheAltar . (`with` metadata)
+        BloodOnTheAltar
+          . (`with` metadata)
           <$> runMessage
             msg
             ( attrs

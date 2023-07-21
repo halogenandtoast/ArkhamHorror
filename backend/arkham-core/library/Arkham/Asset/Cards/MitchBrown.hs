@@ -1,13 +1,13 @@
-module Arkham.Asset.Cards.MitchBrown
-  ( mitchBrown
-  , MitchBrown(..)
-  ) where
+module Arkham.Asset.Cards.MitchBrown (
+  mitchBrown,
+  MitchBrown (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Matcher
 
 newtype MitchBrown = MitchBrown AssetAttrs

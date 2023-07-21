@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.NoTurningBack
-  ( noTurningBack
-  , NoTurningBack(..)
-  ) where
+module Arkham.Treachery.Cards.NoTurningBack (
+  noTurningBack,
+  NoTurningBack (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,7 +17,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype NoTurningBack = NoTurningBack TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 noTurningBack :: TreacheryCard NoTurningBack
@@ -28,22 +28,24 @@ instance HasModifiersFor NoTurningBack where
     case treacheryPlacement attrs of
       TreacheryAttachedTo (LocationTarget lid) -> do
         onNoTurningBack <- iid <=~> investigatorAt lid
-        pure $ toModifiers
-          attrs
-          [if onNoTurningBack then CannotMove else CannotEnter lid]
+        pure $
+          toModifiers
+            attrs
+            [if onNoTurningBack then CannotMove else CannotEnter lid]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities NoTurningBack where
   getAbilities (NoTurningBack a) =
     [ restrictedAbility
-          a
-          1
-          (OnLocation $ LocationMatchAny
-            [ LocationWithTreachery (TreacheryWithId $ toId a)
-            , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
-            ]
-          )
+        a
+        1
+        ( OnLocation $
+            LocationMatchAny
+              [ LocationWithTreachery (TreacheryWithId $ toId a)
+              , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
+              ]
+        )
         $ ActionAbility Nothing
         $ ActionCost 1
     ]
@@ -52,32 +54,33 @@ instance RunMessage NoTurningBack where
   runMessage msg t@(NoTurningBack attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-
-        selectList
-        $ LocationMatchAny
+        selectList $
+          LocationMatchAny
             [ locationWithInvestigator iid
             , ConnectedFrom (locationWithInvestigator iid)
             ]
-        <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
+            <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
       unless (null targets) $ do
-        push $ chooseOrRunOne
-          iid
-          [ targetLabel x [AttachTreachery (toId attrs) (LocationTarget x)]
-          | x <- targets
-          ]
+        push $
+          chooseOrRunOne
+            iid
+            [ targetLabel x [AttachTreachery (toId attrs) (LocationTarget x)]
+            | x <- targets
+            ]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasPickaxe <- getHasSupply iid Pickaxe
-      push
-        $ chooseOrRunOne iid
-        $ Label
+      push $
+        chooseOrRunOne iid $
+          Label
             "Test {combat} (3)"
-            [ beginSkillTest iid (toSource attrs) (toTarget attrs) SkillCombat 3 ]
-        : [ Label "Check your supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
-          | hasPickaxe
-          ]
+            [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillCombat 3]
+            : [ Label "Check your supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+              | hasPickaxe
+              ]
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
         pure t
     _ -> NoTurningBack <$> runMessage msg attrs

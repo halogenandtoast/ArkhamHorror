@@ -1,16 +1,16 @@
-module Arkham.Treachery.Cards.Indebted
-  ( Indebted(..)
-  , indebted
-  ) where
+module Arkham.Treachery.Cards.Indebted (
+  Indebted (..),
+  indebted,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
+import Arkham.Treachery.Runner
 
 newtype Indebted = Indebted TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -21,10 +21,11 @@ indebted = treachery Indebted Cards.indebted
 
 instance HasModifiersFor Indebted where
   getModifiersFor (InvestigatorTarget iid) (Indebted attrs) =
-    pure $ toModifiersWith
-      attrs
-      setActiveDuringSetup
-      [ StartingResources (-2) | treacheryOnInvestigator iid attrs ]
+    pure $
+      toModifiersWith
+        attrs
+        setActiveDuringSetup
+        [StartingResources (-2) | treacheryOnInvestigator iid attrs]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Indebted where

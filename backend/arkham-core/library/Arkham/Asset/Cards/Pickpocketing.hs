@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Pickpocketing
-  ( Pickpocketing(..)
-  , pickpocketing
-  ) where
+module Arkham.Asset.Cards.Pickpocketing (
+  Pickpocketing (..),
+  pickpocketing,
+) where
 
 import Arkham.Prelude
 
@@ -21,9 +21,10 @@ pickpocketing = asset Pickpocketing Cards.pickpocketing
 
 instance HasAbilities Pickpocketing where
   getAbilities (Pickpocketing a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (Matcher.EnemyEvaded Timing.After You AnyEnemy)
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          (Matcher.EnemyEvaded Timing.After You AnyEnemy)
+          (ExhaustCost $ toTarget a)
     ]
 
 instance RunMessage Pickpocketing where

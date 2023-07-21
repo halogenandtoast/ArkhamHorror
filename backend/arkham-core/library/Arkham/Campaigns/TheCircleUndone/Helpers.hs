@@ -13,7 +13,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 
-getHauntedAbilities :: (HasGame m) => InvestigatorId -> m [Ability]
+getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
 getHauntedAbilities iid =
   selectList $
     HauntedAbility
@@ -29,5 +29,5 @@ runHauntedAbilities iid = do
         iid
         [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
 
-getMementosDiscoveredCount :: (HasGame m) => m Int
+getMementosDiscoveredCount :: HasGame m => m Int
 getMementosDiscoveredCount = length <$> getRecordSet MementosDiscovered

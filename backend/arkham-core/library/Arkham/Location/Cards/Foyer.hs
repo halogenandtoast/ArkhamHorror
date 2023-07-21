@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Foyer
-  ( foyer
-  , Foyer(..)
-  ) where
+module Arkham.Location.Cards.Foyer (
+  foyer,
+  Foyer (..),
+) where
 
 import Arkham.Prelude
 

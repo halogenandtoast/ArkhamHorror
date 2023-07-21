@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Streetwise3
-  ( streetwise3
-  , Streetwise3(..)
-  ) where
+module Arkham.Asset.Cards.Streetwise3 (
+  streetwise3,
+  Streetwise3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,14 +22,14 @@ instance HasAbilities Streetwise3 where
   getAbilities (Streetwise3 a) =
     [ withTooltip
         "{fast} Spend 2 resources: You get +3 {intellect} for this skill test."
-      $ restrictedAbility
+        $ restrictedAbility
           a
           1
           (ControlsThis <> DuringSkillTest AnySkillTest)
           (FastAbility $ ResourceCost 2)
     , withTooltip
         "{fast} Spend 2 resources: You get +3 {agility} for this skill test."
-      $ restrictedAbility
+        $ restrictedAbility
           a
           2
           (ControlsThis <> DuringSkillTest AnySkillTest)
@@ -38,16 +38,22 @@ instance HasAbilities Streetwise3 where
 
 instance RunMessage Streetwise3 where
   runMessage msg a@(Streetwise3 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (skillTestModifier
-        source
-        (InvestigatorTarget iid)
-        (SkillModifier SkillIntellect 3)
-      )
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ push
-      (skillTestModifier
-        source
-        (InvestigatorTarget iid)
-        (SkillModifier SkillAgility 3)
-      )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              ( skillTestModifier
+                  source
+                  (InvestigatorTarget iid)
+                  (SkillModifier SkillIntellect 3)
+              )
+    UseCardAbility iid source 2 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              ( skillTestModifier
+                  source
+                  (InvestigatorTarget iid)
+                  (SkillModifier SkillAgility 3)
+              )
     _ -> Streetwise3 <$> runMessage msg attrs

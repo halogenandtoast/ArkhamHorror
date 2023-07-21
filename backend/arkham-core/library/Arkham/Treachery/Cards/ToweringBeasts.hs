@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ToweringBeasts
-  ( toweringBeasts
-  , ToweringBeasts(..)
-  ) where
+module Arkham.Treachery.Cards.ToweringBeasts (
+  toweringBeasts,
+  ToweringBeasts (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,8 +23,9 @@ toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts
 
 instance HasModifiersFor ToweringBeasts where
   getModifiersFor (EnemyTarget eid) (ToweringBeasts attrs)
-    | treacheryOnEnemy eid attrs = pure
-    $ toModifiers attrs [EnemyFight 1, HealthModifier 1]
+    | treacheryOnEnemy eid attrs =
+        pure $
+          toModifiers attrs [EnemyFight 1, HealthModifier 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ToweringBeasts where
@@ -33,18 +34,19 @@ instance RunMessage ToweringBeasts where
       broodOfYogSothoth <- getBroodOfYogSothoth
       unless (null broodOfYogSothoth) $ do
         locationId <- getJustLocation iid
-        broodWithLocationIds <- for broodOfYogSothoth
-          $ \x -> (x, ) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
-        push $ chooseOne
-          iid
-          [ targetLabel
+        broodWithLocationIds <- for broodOfYogSothoth $
+          \x -> (x,) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
+        push $
+          chooseOne
+            iid
+            [ targetLabel
               eid
-              ([AttachTreachery (toId attrs) (EnemyTarget eid)]
-              <> [ InvestigatorAssignDamage iid source DamageAny 1 0
-                 | lid == locationId
-                 ]
+              ( [AttachTreachery (toId attrs) (EnemyTarget eid)]
+                  <> [ InvestigatorAssignDamage iid source DamageAny 1 0
+                     | lid == locationId
+                     ]
               )
-          | (eid, lid) <- broodWithLocationIds
-          ]
+            | (eid, lid) <- broodWithLocationIds
+            ]
       pure t
     _ -> ToweringBeasts <$> runMessage msg attrs

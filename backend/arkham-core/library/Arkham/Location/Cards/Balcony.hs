@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Balcony
-  ( balcony
-  , Balcony(..)
-  ) where
+module Arkham.Location.Cards.Balcony (
+  balcony,
+  Balcony (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,14 +21,17 @@ balcony :: LocationCard Balcony
 balcony = location Balcony Cards.balcony 2 (PerPlayer 1)
 
 instance HasAbilities Balcony where
-  getAbilities (Balcony attrs) = withRevealedAbilities
-    attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ MoveAction
-        Timing.After
-        You
-        (LocationWithId $ toId attrs)
-        (locationIs Cards.theatre)
-    ]
+  getAbilities (Balcony attrs) =
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1 $
+          ForcedAbility $
+            MoveAction
+              Timing.After
+              You
+              (LocationWithId $ toId attrs)
+              (locationIs Cards.theatre)
+      ]
 
 instance RunMessage Balcony where
   runMessage msg l@(Balcony attrs) = case msg of

@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheChamberOfStillRemains
-  ( TheChamberOfStillRemains(..)
-  , theChamberOfStillRemains
-  ) where
+module Arkham.Act.Cards.TheChamberOfStillRemains (
+  TheChamberOfStillRemains (..),
+  theChamberOfStillRemains,
+) where
 
 import Arkham.Prelude
 
@@ -27,28 +27,31 @@ newtype TheChamberOfStillRemains = TheChamberOfStillRemains ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasAbilities TheChamberOfStillRemains where
-  getAbilities (TheChamberOfStillRemains a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-      $ ActionAbility (Just Action.Explore)
-      $ ActionCost 1
-    ]
+  getAbilities (TheChamberOfStillRemains a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
+          ActionAbility (Just Action.Explore) $
+            ActionCost 1
+      ]
 
 theChamberOfStillRemains :: ActCard TheChamberOfStillRemains
-theChamberOfStillRemains = act
-  (2, A)
-  TheChamberOfStillRemains
-  Cards.theChamberOfStillRemains
-  (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Chamber of Time"))
+theChamberOfStillRemains =
+  act
+    (2, A)
+    TheChamberOfStillRemains
+    Cards.theChamberOfStillRemains
+    (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Chamber of Time"))
 
 instance RunMessage TheChamberOfStillRemains where
   runMessage msg a@(TheChamberOfStillRemains attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore
-        iid
-        source
-        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $
+        Explore
+          iid
+          source
+          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -57,15 +60,15 @@ instance RunMessage TheChamberOfStillRemains where
       investigators <- selectList $ investigatorAt chamberOfTime
       yig <- genCard Enemies.yig
       createYig <- createEnemyAt_ yig chamberOfTime Nothing
-      pushAll
-        $ [ chooseOrRunOne
+      pushAll $
+        [ chooseOrRunOne
             leadInvestigatorId
             [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
             | iid <- investigators
             ]
-          , createYig
-          , AddToVictory (toTarget attrs)
-          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-          ]
+        , createYig
+        , AddToVictory (toTarget attrs)
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
       pure a
     _ -> TheChamberOfStillRemains <$> runMessage msg attrs

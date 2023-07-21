@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.ConglomerationOfSpheres
-  ( conglomerationOfSpheres
-  , ConglomerationOfSpheres(..)
-  ) where
+module Arkham.Enemy.Cards.ConglomerationOfSpheres (
+  conglomerationOfSpheres,
+  ConglomerationOfSpheres (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
@@ -22,22 +22,24 @@ newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
-conglomerationOfSpheres = enemyWith
-  ConglomerationOfSpheres
-  Cards.conglomerationOfSpheres
-  (1, Static 6, 4)
-  (1, 1)
-  (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
+conglomerationOfSpheres =
+  enemyWith
+    ConglomerationOfSpheres
+    Cards.conglomerationOfSpheres
+    (1, Static 6, 4)
+    (1, 1)
+    (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
 
 instance HasAbilities ConglomerationOfSpheres where
-  getAbilities (ConglomerationOfSpheres x) = withBaseAbilities
-    x
-    [ mkAbility x 1
-      $ ForcedAbility
-      $ EnemyAttacked Timing.After You (SourceWithTrait Melee)
-      $ EnemyWithId
-      $ toId x
-    ]
+  getAbilities (ConglomerationOfSpheres x) =
+    withBaseAbilities
+      x
+      [ mkAbility x 1 $
+          ForcedAbility $
+            EnemyAttacked Timing.After You (SourceWithTrait Melee) $
+              EnemyWithId $
+                toId x
+      ]
 
 instance RunMessage ConglomerationOfSpheres where
   runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of

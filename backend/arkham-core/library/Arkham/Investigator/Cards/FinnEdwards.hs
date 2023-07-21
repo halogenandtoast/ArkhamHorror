@@ -66,7 +66,7 @@ instance RunMessage FinnEdwards where
           msg
           ( attrs
               & additionalActionsL
-                %~ (ActionRestrictedAdditionalAction Action.Evade :)
+              %~ (ActionRestrictedAdditionalAction Action.Evade :)
           )
     BeginRound ->
       FinnEdwards
@@ -74,6 +74,6 @@ instance RunMessage FinnEdwards where
           msg
           ( attrs
               & additionalActionsL
-                %~ (ActionRestrictedAdditionalAction Action.Evade :)
+              %~ (ActionRestrictedAdditionalAction Action.Evade :)
           )
     _ -> FinnEdwards <$> runMessage msg attrs

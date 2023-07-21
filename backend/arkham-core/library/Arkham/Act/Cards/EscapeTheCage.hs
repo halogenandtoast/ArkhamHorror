@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.EscapeTheCage
-  ( EscapeTheCage(..)
-  , escapeTheCage
-  ) where
+module Arkham.Act.Cards.EscapeTheCage (
+  EscapeTheCage (..),
+  escapeTheCage,
+) where
 
 import Arkham.Prelude
 
@@ -12,10 +12,10 @@ import Arkham.Classes
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
 import Arkham.Helpers.Query
-import Arkham.Matcher hiding ( PlaceUnderneath )
+import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (SilverTwilight) )
+import Arkham.Trait (Trait (SilverTwilight))
 
 newtype EscapeTheCage = EscapeTheCage ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -25,14 +25,16 @@ escapeTheCage :: ActCard EscapeTheCage
 escapeTheCage = act (3, A) EscapeTheCage Cards.escapeTheCage Nothing
 
 instance HasAbilities EscapeTheCage where
-  getAbilities (EscapeTheCage x) = withBaseAbilities x $ if onSide A x
-    then
-      [ mkAbility x 1 $ ForcedAbility $ RoundEnds Timing.When
-      , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
-      $ Objective
-      $ ForcedAbility AnyWindow
-      ]
-    else []
+  getAbilities (EscapeTheCage x) =
+    withBaseAbilities x $
+      if onSide A x
+        then
+          [ mkAbility x 1 $ ForcedAbility $ RoundEnds Timing.When
+          , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned $
+              Objective $
+                ForcedAbility AnyWindow
+          ]
+        else []
 
 instance RunMessage EscapeTheCage where
   runMessage msg a@(EscapeTheCage attrs) = case msg of
@@ -44,22 +46,25 @@ instance RunMessage EscapeTheCage where
       entryHallSilverTwilight <-
         selectList $ enemyAt entryHall <> EnemyWithTrait SilverTwilight
       enemiesToMove <-
-        selectList $ ReadyEnemy <> EnemyWithTrait SilverTwilight <> NotEnemy
-          (enemyAt entryHall)
+        selectList $
+          ReadyEnemy
+            <> EnemyWithTrait SilverTwilight
+            <> NotEnemy
+              (enemyAt entryHall)
       enemyCards <- traverse convertToCard entryHallSilverTwilight
       lead <- getLead
-      pushAll
-        $ map RemoveEnemy entryHallSilverTwilight
-        <> [PlaceUnderneath (LocationTarget entryHall) enemyCards]
-        <> [ chooseOneAtATime
-               lead
-               [ targetLabel
-                   enemy
-                   [MoveToward (toTarget enemy) (LocationWithId entryHall)]
-               | enemy <- enemiesToMove
-               ]
-           | notNull enemiesToMove
-           ]
+      pushAll $
+        map RemoveEnemy entryHallSilverTwilight
+          <> [PlaceUnderneath (LocationTarget entryHall) enemyCards]
+          <> [ chooseOneAtATime
+              lead
+              [ targetLabel
+                enemy
+                [MoveToward (toTarget enemy) (LocationWithId entryHall)]
+              | enemy <- enemiesToMove
+              ]
+             | notNull enemiesToMove
+             ]
 
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do

@@ -11,11 +11,11 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
 
-getCurrentAgendaStep :: (HasGame m) => m Int
+getCurrentAgendaStep :: HasGame m => m Int
 getCurrentAgendaStep = getCurrentAgenda >>= getAgendaStep
 
-getAgendaStep :: (HasGame m) => AgendaId -> m Int
+getAgendaStep :: HasGame m => AgendaId -> m Int
 getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)
 
-getCurrentAgenda :: (HasGame m) => m AgendaId
+getCurrentAgenda :: HasGame m => m AgendaId
 getCurrentAgenda = selectOnlyOne AnyAgenda

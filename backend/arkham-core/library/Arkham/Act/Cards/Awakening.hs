@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.Awakening
-  ( Awakening(..)
-  , awakening
-  ) where
+module Arkham.Act.Cards.Awakening (
+  Awakening (..),
+  awakening,
+) where
 
 import Arkham.Prelude
 
@@ -19,11 +19,12 @@ newtype Awakening = Awakening ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 awakening :: ActCard Awakening
-awakening = act
-  (1, A)
-  Awakening
-  Cards.awakening
-  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+awakening =
+  act
+    (1, A)
+    Awakening
+    Cards.awakening
+    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance RunMessage Awakening where
   runMessage msg a@(Awakening attrs) = case msg of
@@ -38,7 +39,9 @@ instance RunMessage Awakening where
       theManInThePallidMask <- getSetAsideCard Cards.theManInThePallidMask
 
       -- Advance to one of the 3 copies of act 2a, at random
-      nextAct <- sample $ Cards.theStrangerACityAflame :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
+      nextAct <-
+        sample $
+          Cards.theStrangerACityAflame :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
 
       createTheManInThePallidMask <-
         createEnemyAt_ theManInThePallidMask locationId Nothing

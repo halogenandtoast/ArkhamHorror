@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.ExhibitHallMedusaExhibit
-  ( exhibitHallMedusaExhibit
-  , ExhibitHallMedusaExhibit(..)
-  ) where
+module Arkham.Location.Cards.ExhibitHallMedusaExhibit (
+  exhibitHallMedusaExhibit,
+  ExhibitHallMedusaExhibit (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( exhibitHallMedusaExhibit )
+import Arkham.Location.Cards qualified as Cards (exhibitHallMedusaExhibit)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -19,27 +19,30 @@ newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallMedusaExhibit :: LocationCard ExhibitHallMedusaExhibit
-exhibitHallMedusaExhibit = location
-  ExhibitHallMedusaExhibit
-  Cards.exhibitHallMedusaExhibit
-  2
-  (PerPlayer 1)
+exhibitHallMedusaExhibit =
+  location
+    ExhibitHallMedusaExhibit
+    Cards.exhibitHallMedusaExhibit
+    2
+    (PerPlayer 1)
 
 instance HasAbilities ExhibitHallMedusaExhibit where
-  getAbilities (ExhibitHallMedusaExhibit x) = withBaseAbilities
-    x
-    [ mkAbility x 1
-      $ ForcedAbility
-      $ SkillTestResult
+  getAbilities (ExhibitHallMedusaExhibit x) =
+    withBaseAbilities
+      x
+      [ mkAbility x 1
+        $ ForcedAbility
+        $ SkillTestResult
           Timing.After
           You
           (WhileInvestigating $ LocationWithId $ toId x)
-      $ FailureResult AnyValue
-    | locationRevealed x
-    ]
+        $ FailureResult AnyValue
+      | locationRevealed x
+      ]
 
 instance RunMessage ExhibitHallMedusaExhibit where
   runMessage msg l@(ExhibitHallMedusaExhibit attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (ChooseAndDiscardAsset iid (toAbilitySource attrs 1) AnyAsset)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l <$ push (ChooseAndDiscardAsset iid (toAbilitySource attrs 1) AnyAsset)
     _ -> ExhibitHallMedusaExhibit <$> runMessage msg attrs

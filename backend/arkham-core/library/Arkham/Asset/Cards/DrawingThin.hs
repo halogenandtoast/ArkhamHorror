@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DrawingThin
-  ( drawingThin
-  , DrawingThin(..)
-  ) where
+module Arkham.Asset.Cards.DrawingThin (
+  drawingThin,
+  DrawingThin (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,7 +24,7 @@ instance HasAbilities DrawingThin where
   getAbilities (DrawingThin a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue)
+          (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue)
         $ ExhaustCost (toTarget a)
     ]
 
@@ -34,15 +34,15 @@ instance RunMessage DrawingThin where
       drawing <- drawCards iid attrs 1
       pushAll
         [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [Difficulty 2])
-          source
-          SkillTestTarget
+            EffectSkillTestWindow
+            (EffectModifiers $ toModifiers attrs [Difficulty 2])
+            source
+            SkillTestTarget
         , chooseOne
-          iid
-          [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
-          , Label "Draw 1 card" [drawing]
-          ]
+            iid
+            [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
+            , Label "Draw 1 card" [drawing]
+            ]
         ]
       pure a
     _ -> DrawingThin <$> runMessage msg attrs

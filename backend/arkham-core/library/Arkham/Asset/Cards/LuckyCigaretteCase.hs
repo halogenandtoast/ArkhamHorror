@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LuckyCigaretteCase
-  ( luckyCigaretteCase
-  , LuckyCigaretteCase(..)
-  ) where
+module Arkham.Asset.Cards.LuckyCigaretteCase (
+  luckyCigaretteCase,
+  LuckyCigaretteCase (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,14 +20,15 @@ luckyCigaretteCase = asset LuckyCigaretteCase Cards.luckyCigaretteCase
 
 instance HasAbilities LuckyCigaretteCase where
   getAbilities (LuckyCigaretteCase a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (SkillTestResult
-          Timing.After
-          You
-          AnySkillTest
-          (SuccessResult $ AtLeast $ Static 2)
-        )
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          ( SkillTestResult
+              Timing.After
+              You
+              AnySkillTest
+              (SuccessResult $ AtLeast $ Static 2)
+          )
+          (ExhaustCost $ toTarget a)
     ]
 
 instance RunMessage LuckyCigaretteCase where

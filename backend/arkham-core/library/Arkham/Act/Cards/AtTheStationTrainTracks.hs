@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.AtTheStationTrainTracks
-  ( AtTheStationTrainTracks(..)
-  , atTheStationTrainTracks
-  ) where
+module Arkham.Act.Cards.AtTheStationTrainTracks (
+  AtTheStationTrainTracks (..),
+  atTheStationTrainTracks,
+) where
 
 import Arkham.Prelude
 
@@ -23,10 +23,10 @@ newtype AtTheStationTrainTracks = AtTheStationTrainTracks ActAttrs
 
 atTheStationTrainTracks :: ActCard AtTheStationTrainTracks
 atTheStationTrainTracks =
-  act (2, C) AtTheStationTrainTracks Cards.atTheStationTrainTracks
-    $ Just
-    $ GroupClueCost (PerPlayer 2)
-    $ LocationWithTitle "Arkham Police Station"
+  act (2, C) AtTheStationTrainTracks Cards.atTheStationTrainTracks $
+    Just $
+      GroupClueCost (PerPlayer 2) $
+        LocationWithTitle "Arkham Police Station"
 
 instance RunMessage AtTheStationTrainTracks where
   runMessage msg a@(AtTheStationTrainTracks attrs) = case msg of

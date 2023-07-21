@@ -112,7 +112,7 @@ instance FromJSON CampaignAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
 
 addRandomBasicWeaknessIfNeeded
-  :: (MonadRandom m) => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
@@ -166,7 +166,7 @@ instance Entity Campaign where
 instance Targetable Campaign where
   toTarget _ = CampaignTarget
 
-data Campaign = forall a. (IsCampaign a) => Campaign a
+data Campaign = forall a. IsCampaign a => Campaign a
 
 instance Eq Campaign where
   (Campaign (a :: a)) == (Campaign (b :: b)) = case eqT @a @b of

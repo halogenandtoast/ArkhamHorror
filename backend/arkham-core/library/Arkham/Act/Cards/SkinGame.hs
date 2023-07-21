@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SkinGame
-  ( SkinGame(..)
-  , skinGame
-  ) where
+module Arkham.Act.Cards.SkinGame (
+  SkinGame (..),
+  skinGame,
+) where
 
 import Arkham.Prelude
 
@@ -24,10 +24,10 @@ newtype SkinGame = SkinGame ActAttrs
 
 skinGame :: ActCard SkinGame
 skinGame =
-  act (2, A) SkinGame Cards.skinGame
-    $ Just
-    $ GroupClueCost (PerPlayer 2)
-    $ LocationWithTitle "VIP Area"
+  act (2, A) SkinGame Cards.skinGame $
+    Just $
+      GroupClueCost (PerPlayer 2) $
+        LocationWithTitle "VIP Area"
 
 instance RunMessage SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
@@ -39,20 +39,21 @@ instance RunMessage SkinGame where
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
       vipAreaId <- getJustLocationIdByName "VIP Area"
       assetId <- getRandom
-      pushAll $ if completedExtracurricularActivity
-        then
-          [ CreateAssetAt assetId peterClover (AtLocation cloverClubBarId)
-          , FindEncounterCard
-            lead
-            (toTarget attrs)
-            (FromEncounterDeck : allOutOfPlayZones)
-            (CardWithType EnemyType <> CardWithTrait Abomination)
-          , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
-          ]
-        else
-          [ CreateAssetAt assetId drFrancisMorgan (AtLocation vipAreaId)
-          , AdvanceToAct (actDeckId attrs) Acts.allIn A (toSource attrs)
-          ]
+      pushAll $
+        if completedExtracurricularActivity
+          then
+            [ CreateAssetAt assetId peterClover (AtLocation cloverClubBarId)
+            , FindEncounterCard
+                lead
+                (toTarget attrs)
+                (FromEncounterDeck : allOutOfPlayZones)
+                (CardWithType EnemyType <> CardWithTrait Abomination)
+            , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
+            ]
+          else
+            [ CreateAssetAt assetId drFrancisMorgan (AtLocation vipAreaId)
+            , AdvanceToAct (actDeckId attrs) Acts.allIn A (toSource attrs)
+            ]
       pure a
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"

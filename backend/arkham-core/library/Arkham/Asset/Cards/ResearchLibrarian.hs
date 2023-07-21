@@ -22,21 +22,24 @@ instance HasAbilities ResearchLibrarian where
         x
         1
         (ControlsThis <> CanSearchDeck <> CanShuffleDeck)
-        (ReactionAbility
-          (AssetEntersPlay Timing.When $ AssetWithId (toId x))
-          Free
+        ( ReactionAbility
+            (AssetEntersPlay Timing.When $ AssetWithId (toId x))
+            Free
         )
     ]
 
 instance RunMessage ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (Search
-          iid
-          source
-          (InvestigatorTarget iid)
-          [(FromDeck, ShuffleBackIn)]
-          (CardWithTrait Tome)
-      $ DrawFound iid 1
-      )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              ( Search
+                  iid
+                  source
+                  (InvestigatorTarget iid)
+                  [(FromDeck, ShuffleBackIn)]
+                  (CardWithTrait Tome)
+                  $ DrawFound iid 1
+              )
     _ -> ResearchLibrarian <$> runMessage msg attrs

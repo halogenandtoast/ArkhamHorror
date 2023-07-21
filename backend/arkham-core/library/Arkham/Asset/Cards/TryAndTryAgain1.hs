@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.TryAndTryAgain1
-  ( tryAndTryAgain1
-  , TryAndTryAgain1(..)
-  ) where
+module Arkham.Asset.Cards.TryAndTryAgain1 (
+  tryAndTryAgain1,
+  TryAndTryAgain1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher hiding (SkillCard)
 import Arkham.Projection
-import Arkham.Skill.Types ( Field (..) )
+import Arkham.Skill.Types (Field (..))
 import Arkham.Timing qualified as Timing
 
 newtype TryAndTryAgain1 = TryAndTryAgain1 AssetAttrs
@@ -24,30 +24,32 @@ tryAndTryAgain1 =
 
 instance HasAbilities TryAndTryAgain1 where
   getAbilities (TryAndTryAgain1 a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (SkillTestResult
-          Timing.After
-          Anyone
-          (SkillTestWithSkill YourSkill)
-          (FailureResult AnyValue)
-        )
-        (ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Try 1)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          ( SkillTestResult
+              Timing.After
+              Anyone
+              (SkillTestWithSkill YourSkill)
+              (FailureResult AnyValue)
+          )
+          (ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Try 1)
     ]
 
 instance RunMessage TryAndTryAgain1 where
   runMessage msg a@(TryAndTryAgain1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      committedSkillCards <- selectListMapM (field SkillCard)
-        $ skillControlledBy iid
+      committedSkillCards <-
+        selectListMapM (field SkillCard) $
+          skillControlledBy iid
       pushAll
         [ FocusCards committedSkillCards
         , chooseOne
-          iid
-          [ targetLabel
+            iid
+            [ targetLabel
               (toCardId skillCard)
               [ReturnToHand iid (toTarget $ toCardId skillCard)]
-          | skillCard <- committedSkillCards
-          ]
+            | skillCard <- committedSkillCards
+            ]
         , UnfocusCards
         ]
       pure a

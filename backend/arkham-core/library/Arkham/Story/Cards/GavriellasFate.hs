@@ -1,7 +1,7 @@
-module Arkham.Story.Cards.GavriellasFate
-  ( GavriellasFate(..)
-  , gavriellasFate
-  ) where
+module Arkham.Story.Cards.GavriellasFate (
+  GavriellasFate (..),
+  gavriellasFate,
+) where
 
 import Arkham.Prelude
 

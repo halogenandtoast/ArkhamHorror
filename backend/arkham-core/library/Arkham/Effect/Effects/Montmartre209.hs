@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.Montmartre209
-  ( Montmartre209(..)
-  , montmartre209
-  ) where
+module Arkham.Effect.Effects.Montmartre209 (
+  Montmartre209 (..),
+  montmartre209,
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Montmartre209 = Montmartre209 EffectAttrs
@@ -32,30 +32,30 @@ instance RunMessage Montmartre209 where
   runMessage msg e@(Montmartre209 attrs) = case msg of
     CreatedEffect eid _ source (InvestigatorTarget iid)
       | eid == effectId attrs -> do
-        cards <-
-          filterM
-              (getIsPlayable
-                iid
-                source
-                UnpaidCost
-                [Window Timing.When (Window.DuringTurn iid)]
+          cards <-
+            filterM
+              ( getIsPlayable
+                  iid
+                  source
+                  UnpaidCost
+                  [Window Timing.When (Window.DuringTurn iid)]
               )
-          =<< selectList (TopOfDeckOf UneliminatedInvestigator)
-        pushAll
-          [ chooseOne iid
-          $ Label "Play no cards" []
-          : [ TargetLabel
-                (CardIdTarget $ toCardId card)
-                [ InitiatePlayCard
-                    iid
-                    card
-                    Nothing
-                    (Window.defaultWindows iid)
-                    False
-                ]
-            | card <- cards
+              =<< selectList (TopOfDeckOf UneliminatedInvestigator)
+          pushAll
+            [ chooseOne iid $
+                Label "Play no cards" []
+                  : [ TargetLabel
+                      (CardIdTarget $ toCardId card)
+                      [ InitiatePlayCard
+                          iid
+                          card
+                          Nothing
+                          (Window.defaultWindows iid)
+                          False
+                      ]
+                    | card <- cards
+                    ]
+            , DisableEffect eid
             ]
-          , DisableEffect eid
-          ]
-        pure e
+          pure e
     _ -> Montmartre209 <$> runMessage msg attrs

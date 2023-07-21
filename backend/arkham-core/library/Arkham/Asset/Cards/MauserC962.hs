@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MauserC962
-  ( mauserC962
-  , MauserC962(..)
-  )
+module Arkham.Asset.Cards.MauserC962 (
+  mauserC962,
+  MauserC962 (..),
+)
 where
 
 import Arkham.Prelude
@@ -22,9 +22,9 @@ mauserC962 = asset MauserC962 Cards.mauserC962
 
 instance HasAbilities MauserC962 where
   getAbilities (MauserC962 a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ActionAbility (Just Action.Fight)
-      $ ActionCost 1 <> ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1 <> ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage MauserC962 where
@@ -35,17 +35,23 @@ instance RunMessage MauserC962 where
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n | n >= 2 -> do
-      canReady <- andM
-        [ toId a <=~> AssetWithoutModifier CannotReady
-        , iid <=~> InvestigatorWithoutModifier ControlledAssetsCannotReady
-        ]
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+      canReady <-
+        andM
+          [ toId a <=~> AssetWithoutModifier CannotReady
+          , iid <=~> InvestigatorWithoutModifier ControlledAssetsCannotReady
+          ]
       canGainResources <- iid <=~> InvestigatorWithoutModifier CannotGainResources
-      when (canReady || canGainResources) $ if n >= 4
-        then pushAll $ [Ready (toTarget attrs) | canReady ] <> [TakeResources iid 1 (toSource attrs) False | canGainResources]
-        else push
-          $ chooseOrRunOne iid
-          $ [Label "Ready Mauser C962" [Ready (toTarget attrs)] | canReady ]
-          <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
+      when (canReady || canGainResources) $
+        if n >= 4
+          then
+            pushAll $
+              [Ready (toTarget attrs) | canReady]
+                <> [TakeResources iid 1 (toSource attrs) False | canGainResources]
+          else
+            push $
+              chooseOrRunOne iid $
+                [Label "Ready Mauser C962" [Ready (toTarget attrs)] | canReady]
+                  <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
       pure a
     _ -> MauserC962 <$> runMessage msg attrs

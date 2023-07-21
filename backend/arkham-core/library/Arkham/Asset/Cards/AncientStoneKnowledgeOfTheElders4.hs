@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AncientStoneKnowledgeOfTheElders4
-  ( ancientStoneKnowledgeOfTheElders4
-  , AncientStoneKnowledgeOfTheElders4(..)
-  ) where
+module Arkham.Asset.Cards.AncientStoneKnowledgeOfTheElders4 (
+  ancientStoneKnowledgeOfTheElders4,
+  AncientStoneKnowledgeOfTheElders4 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.DamageEffect
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Timing qualified as Timing
 
 newtype AncientStoneKnowledgeOfTheElders4 = AncientStoneKnowledgeOfTheElders4 AssetAttrs
@@ -19,19 +19,20 @@ newtype AncientStoneKnowledgeOfTheElders4 = AncientStoneKnowledgeOfTheElders4 As
 
 ancientStoneKnowledgeOfTheElders4
   :: AssetCard AncientStoneKnowledgeOfTheElders4
-ancientStoneKnowledgeOfTheElders4 = asset
-  AncientStoneKnowledgeOfTheElders4
-  Cards.ancientStoneKnowledgeOfTheElders4
+ancientStoneKnowledgeOfTheElders4 =
+  asset
+    AncientStoneKnowledgeOfTheElders4
+    Cards.ancientStoneKnowledgeOfTheElders4
 
 instance HasAbilities AncientStoneKnowledgeOfTheElders4 where
   getAbilities (AncientStoneKnowledgeOfTheElders4 a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        a
+        1
+        (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
         $ ReactionAbility
-            (DrawsCards Timing.When You AnyValue)
-            (DynamicUseCost (AssetWithId $ toId a) Secret DrawnCardsValue)
+          (DrawsCards Timing.When You AnyValue)
+          (DynamicUseCost (AssetWithId $ toId a) Secret DrawnCardsValue)
     ]
 
 getDamage :: Payment -> Int
@@ -44,12 +45,12 @@ instance RunMessage AncientStoneKnowledgeOfTheElders4 where
     InvestigatorPlayedAsset _ aid | aid == toId attrs -> do
       n <- getRecordCount YouHaveIdentifiedTheStone
       AncientStoneKnowledgeOfTheElders4
-        <$> runMessage msg (attrs { assetUses = Uses Secret n })
+        <$> runMessage msg (attrs {assetUses = Uses Secret n})
     UseCardAbility iid (isSource attrs -> True) 1 _ (getDamage -> damage) -> do
       enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
-      push
-        $ chooseOrRunOne iid
-        $ [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damage]
+      push $
+        chooseOrRunOne iid $
+          [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damage]
           | enemy <- enemies
           ]
       pure a

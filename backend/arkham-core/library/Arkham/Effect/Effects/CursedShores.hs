@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.CursedShores
-  ( cursedShores
-  , CursedShores(..)
-  ) where
+module Arkham.Effect.Effects.CursedShores (
+  cursedShores,
+  CursedShores (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,13 +20,14 @@ cursedShores = CursedShores . uncurry4 (baseAttrs "81007")
 instance HasModifiersFor CursedShores where
   getModifiersFor target (CursedShores a@EffectAttrs {..})
     | target == effectTarget = do
-      mSkillTestSource <- getSkillTestSource
-      pure [ toModifier a (AnySkillValue 2) | isJust mSkillTestSource ]
+        mSkillTestSource <- getSkillTestSource
+        pure [toModifier a (AnySkillValue 2) | isJust mSkillTestSource]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CursedShores where
   runMessage msg e@(CursedShores attrs) = case msg of
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
-    EndTurn iid | InvestigatorTarget iid == effectTarget attrs ->
-      e <$ push (DisableEffect $ effectId attrs)
+    EndTurn iid
+      | InvestigatorTarget iid == effectTarget attrs ->
+          e <$ push (DisableEffect $ effectId attrs)
     _ -> CursedShores <$> runMessage msg attrs

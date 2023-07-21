@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.FourOfCups1
-  ( fourOfCups1
-  , FourOfCups1(..)
-  )
+module Arkham.Asset.Cards.FourOfCups1 (
+  fourOfCups1,
+  FourOfCups1 (..),
+)
 where
 
 import Arkham.Prelude
@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype FourOfCups1 = FourOfCups1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fourOfCups1 :: AssetCard FourOfCups1

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AnnaKaslow4
-  ( annaKaslow4
-  , AnnaKaslow4(..)
-  ) where
+module Arkham.Asset.Cards.AnnaKaslow4 (
+  annaKaslow4,
+  AnnaKaslow4 (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,8 +11,8 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (Tarot) )
-import Arkham.Window ( defaultWindows )
+import Arkham.Trait (Trait (Tarot))
+import Arkham.Window (defaultWindows)
 
 newtype AnnaKaslow4 = AnnaKaslow4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -26,14 +26,14 @@ slot attrs = Slot (toSource attrs) Nothing
 
 instance HasAbilities AnnaKaslow4 where
   getAbilities (AnnaKaslow4 a) =
-    [ restrictedAbility a 1 InYourHand
-      $ ReactionAbility (GameBegins Timing.When) Free
+    [ restrictedAbility a 1 InYourHand $
+        ReactionAbility (GameBegins Timing.When) Free
     , restrictedAbility
-      a
-      2
-      (ControlsThis <> CanSearchDeck <> CanShuffleDeck)
-      (ReactionAbility (AssetEntersPlay Timing.When $ AssetWithId (toId a)) Free
-      )
+        a
+        2
+        (ControlsThis <> CanSearchDeck <> CanShuffleDeck)
+        ( ReactionAbility (AssetEntersPlay Timing.When $ AssetWithId (toId a)) Free
+        )
     ]
 
 instance RunMessage AnnaKaslow4 where
@@ -47,11 +47,11 @@ instance RunMessage AnnaKaslow4 where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push
         $ Search
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            [(FromDeck, ShuffleBackIn)]
-            (CardWithTrait Tarot <> CardWithType AssetType)
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          [(FromDeck, ShuffleBackIn)]
+          (CardWithTrait Tarot <> CardWithType AssetType)
         $ PlayFound iid 1
       pure a
     _ -> AnnaKaslow4 <$> runMessage msg attrs

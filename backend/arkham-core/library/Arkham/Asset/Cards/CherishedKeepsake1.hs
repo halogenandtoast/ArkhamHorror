@@ -1,13 +1,13 @@
-module Arkham.Asset.Cards.CherishedKeepsake1
-  ( cherishedKeepsake1
-  , CherishedKeepsake1(..)
-  ) where
+module Arkham.Asset.Cards.CherishedKeepsake1 (
+  cherishedKeepsake1,
+  CherishedKeepsake1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding ( AssetDefeated )
+import Arkham.Asset.Runner hiding (AssetDefeated)
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -21,11 +21,11 @@ cherishedKeepsake1 =
 
 instance HasAbilities CherishedKeepsake1 where
   getAbilities (CherishedKeepsake1 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ForcedAbility
-        $ AssetDefeated Timing.When ByHorror
-        $ AssetWithId
-        $ toId a
+    [ restrictedAbility a 1 ControlsThis $
+        ForcedAbility $
+          AssetDefeated Timing.When ByHorror $
+            AssetWithId $
+              toId a
     ]
 
 instance RunMessage CherishedKeepsake1 where

@@ -3,8 +3,8 @@ module Arkham.Helpers.Doom where
 import Arkham.Prelude
 
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Target
 
@@ -19,10 +19,10 @@ targetsWithDoom = do
   -- acts <- selectListMap ActTarget ActWithAnyDoom
   -- events <- selectListMap EventTarget EventWithAnyDoom
   -- skills <- selectListMap SkillTarget SkillWithAnyDoom
-  pure
-    $ locations
-    <> investigators
-    <> enemies
-    <> assets
-    <> agendas
-    <> treacheries
+  pure $
+    locations
+      <> investigators
+      <> enemies
+      <> assets
+      <> agendas
+      <> treacheries

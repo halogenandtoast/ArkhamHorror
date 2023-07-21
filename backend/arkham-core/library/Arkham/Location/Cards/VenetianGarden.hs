@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.VenetianGarden
-  ( venetianGarden
-  , VenetianGarden(..)
-  ) where
+module Arkham.Location.Cards.VenetianGarden (
+  venetianGarden,
+  VenetianGarden (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,27 +21,30 @@ newtype VenetianGarden = VenetianGarden LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 venetianGarden :: LocationCard VenetianGarden
-venetianGarden = locationWith
-  VenetianGarden
-  Cards.venetianGarden
-  3
-  (PerPlayer 1)
-  (connectsToL .~ singleton RightOf)
+venetianGarden =
+  locationWith
+    VenetianGarden
+    Cards.venetianGarden
+    3
+    (PerPlayer 1)
+    (connectsToL .~ singleton RightOf)
 
 instance HasAbilities VenetianGarden where
-  getAbilities (VenetianGarden attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (PlayerLimit PerGame 1)
-      $ restrictedAbility
+  getAbilities (VenetianGarden attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (PlayerLimit PerGame 1)
+        $ restrictedAbility
           attrs
           1
-          (Here <> InvestigatorExists
-            (HealableInvestigator (toSource attrs) HorrorType You)
+          ( Here
+              <> InvestigatorExists
+                (HealableInvestigator (toSource attrs) HorrorType You)
           )
-      $ ActionAbility Nothing
-      $ Costs [ActionCost 2, ResourceCost 2]
-    | locationRevealed attrs
-    ]
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 2, ResourceCost 2]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage VenetianGarden where
   runMessage msg l@(VenetianGarden attrs) = case msg of

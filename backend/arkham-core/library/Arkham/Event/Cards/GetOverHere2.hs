@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.GetOverHere2
-  ( getOverHere2
-  , GetOverHere2(..)
-  )
+module Arkham.Event.Cards.GetOverHere2 (
+  getOverHere2,
+  GetOverHere2 (..),
+)
 where
 
 import Arkham.Prelude
@@ -28,14 +28,15 @@ instance RunMessage GetOverHere2 where
       lid <- getJustLocation iid
       let m = LocationWithId lid
       enemies <- selectList $ NonEliteEnemy <> EnemyAt (LocationMatchAny [m, ConnectedFrom m])
-      push $ chooseOne
-        iid
-        [ targetLabel
+      push $
+        chooseOne
+          iid
+          [ targetLabel
             enemy
             [ EnemyEngageInvestigator enemy iid
             , FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
             ]
-        | enemy <- enemies
-        ]
+          | enemy <- enemies
+          ]
       pure e
     _ -> GetOverHere2 <$> runMessage msg attrs

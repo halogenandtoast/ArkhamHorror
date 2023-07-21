@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.CircuitousTrail
-  ( circuitousTrail
-  , CircuitousTrail(..)
-  ) where
+module Arkham.Location.Cards.CircuitousTrail (
+  circuitousTrail,
+  CircuitousTrail (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,7 @@ import Arkham.Matcher
 import Data.Semigroup
 
 newtype CircuitousTrail = CircuitousTrail LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 circuitousTrail :: LocationCard CircuitousTrail
@@ -28,18 +28,24 @@ circuitousTrail =
 instance HasModifiersFor CircuitousTrail where
   getModifiersFor (AbilityTarget iid ab) (CircuitousTrail attrs)
     | iid `elem` locationInvestigators attrs = do
-      anyWithCompass <- getAny <$> selectAgg
-        (Any . elem Compass)
-        InvestigatorSupplies
-        (colocatedWith iid)
-      case abilityAction ab of
-        Just Action.Investigate -> pure $ toModifiers
-          attrs
-          [ AdditionalCost (ResourceCost 3) | not anyWithCompass ]
-        Just Action.Explore -> pure $ toModifiers
-          attrs
-          [ AdditionalCost (ResourceCost 3) | not anyWithCompass ]
-        _ -> pure []
+        anyWithCompass <-
+          getAny
+            <$> selectAgg
+              (Any . elem Compass)
+              InvestigatorSupplies
+              (colocatedWith iid)
+        case abilityAction ab of
+          Just Action.Investigate ->
+            pure $
+              toModifiers
+                attrs
+                [AdditionalCost (ResourceCost 3) | not anyWithCompass]
+          Just Action.Explore ->
+            pure $
+              toModifiers
+                attrs
+                [AdditionalCost (ResourceCost 3) | not anyWithCompass]
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage CircuitousTrail where

@@ -100,7 +100,8 @@ instance RunMessage RationalThought where
               . RationalThought
               . (`with` meta)
               $ attrs
-                & tokensL %~ subtractTokens Horror amount
+                & tokensL
+                %~ subtractTokens Horror amount
     HealHorrorDirectly (InvestigatorTarget iid) _ amount
       | unCardCode (unInvestigatorId iid)
           == UUID.toText (unTreacheryId $ toId attrs) ->
@@ -110,5 +111,6 @@ instance RunMessage RationalThought where
               . RationalThought
               . (`with` meta)
               $ attrs
-                & tokensL %~ subtractTokens Horror amount
+                & tokensL
+                %~ subtractTokens Horror amount
     _ -> RationalThought . (`with` meta) <$> runMessage msg attrs

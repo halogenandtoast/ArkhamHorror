@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.InLostCarcosa
-  ( InLostCarcosa(..)
-  , inLostCarcosa
-  ) where
+module Arkham.Act.Cards.InLostCarcosa (
+  InLostCarcosa (..),
+  inLostCarcosa,
+) where
 
 import Arkham.Prelude
 
@@ -23,13 +23,16 @@ inLostCarcosa :: ActCard InLostCarcosa
 inLostCarcosa = act (1, A) InLostCarcosa Cards.inLostCarcosa Nothing
 
 instance HasAbilities InLostCarcosa where
-  getAbilities (InLostCarcosa x) = withBaseAbilities
-    x
-    [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
-        AnyWindow
-        (GroupClueCost (PerPlayer 2) Anywhere)
-    | onSide A x
-    ]
+  getAbilities (InLostCarcosa x) =
+    withBaseAbilities
+      x
+      [ mkAbility x 1 $
+        Objective $
+          ForcedAbilityWithCost
+            AnyWindow
+            (GroupClueCost (PerPlayer 2) Anywhere)
+      | onSide A x
+      ]
 
 instance RunMessage InLostCarcosa where
   runMessage msg a@(InLostCarcosa attrs) = case msg of
@@ -40,10 +43,11 @@ instance RunMessage InLostCarcosa where
       theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
 
-      createTheManInThePallidMask <- createEnemyAt_
-        theManInThePallidMask
-        palaceOfTheKing
-        Nothing
+      createTheManInThePallidMask <-
+        createEnemyAt_
+          theManInThePallidMask
+          palaceOfTheKing
+          Nothing
 
       pushAll
         [ createTheManInThePallidMask

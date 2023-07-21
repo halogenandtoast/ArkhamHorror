@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.BodyOfAYithian
-  ( BodyOfAYithian(..)
-  , YithianMetadata(..)
-  ) where
+module Arkham.Investigator.Cards.BodyOfAYithian (
+  BodyOfAYithian (..),
+  YithianMetadata (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,18 +10,18 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 
-newtype YithianMetadata = YithianMetadata { originalBody :: Value }
+newtype YithianMetadata = YithianMetadata {originalBody :: Value}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BodyOfAYithian = BodyOfAYithian (InvestigatorAttrs `With` YithianMetadata)
-  deriving anyclass IsInvestigator
+  deriving anyclass (IsInvestigator)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor BodyOfAYithian where
   getModifiersFor (AssetTarget aid) (BodyOfAYithian (a `With` _)) = do
     isYithian <- aid <=~> (assetControlledBy (toId a) <> AllyAsset)
-    pure $ toModifiers a [ AddTrait Yithian | isYithian ]
+    pure $ toModifiers a [AddTrait Yithian | isYithian]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BodyOfAYithian where
@@ -30,7 +30,7 @@ instance HasAbilities BodyOfAYithian where
 instance HasChaosTokenValue BodyOfAYithian where
   getChaosTokenValue iid ElderSign (BodyOfAYithian (attrs `With` _))
     | iid == toId attrs = do
-      pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
+        pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage BodyOfAYithian where

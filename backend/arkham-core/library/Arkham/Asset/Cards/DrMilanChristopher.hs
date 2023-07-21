@@ -10,7 +10,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drMilanChristopher :: AssetCard DrMilanChristopher
@@ -18,16 +18,17 @@ drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)
 
 instance HasModifiersFor DrMilanChristopher where
   getModifiersFor (InvestigatorTarget iid) (DrMilanChristopher a) =
-    pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
+    pure [toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
-    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
-        (SkillTestResult Timing.After You (WhileInvestigating Anywhere)
-        $ SuccessResult AnyValue
-        )
-        Free
+    [ restrictedAbility x 1 ControlsThis $
+        ReactionAbility
+          ( SkillTestResult Timing.After You (WhileInvestigating Anywhere) $
+              SuccessResult AnyValue
+          )
+          Free
     ]
 
 instance RunMessage DrMilanChristopher where

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TearThroughTime
-  ( tearThroughTime
-  , TearThroughTime(..)
-  ) where
+module Arkham.Location.Cards.TearThroughTime (
+  tearThroughTime,
+  TearThroughTime (..),
+) where
 
 import Arkham.Prelude
 

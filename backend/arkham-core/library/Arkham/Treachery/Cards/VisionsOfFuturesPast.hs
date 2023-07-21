@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.VisionsOfFuturesPast
-  ( VisionsOfFuturesPast(..)
-  , visionsOfFuturesPast
-  ) where
+module Arkham.Treachery.Cards.VisionsOfFuturesPast (
+  VisionsOfFuturesPast (..),
+  visionsOfFuturesPast,
+) where
 
 import Arkham.Prelude
 
@@ -23,10 +23,11 @@ visionsOfFuturesPast =
 instance RunMessage VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
     case msg of
-      Revelation iid source | isSource attrs source ->
-        t <$ push (RevelationSkillTest iid source SkillWillpower 5)
-      FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
+      Revelation iid source
+        | isSource attrs source ->
+            t <$ push (RevelationSkillTest iid source SkillWillpower 5)
+      FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n
         | tid == treacheryId -> do
-          push (DiscardTopOfDeck iid n (toSource attrs) Nothing)
-          pure t
+            push (DiscardTopOfDeck iid n (toSource attrs) Nothing)
+            pure t
       _ -> VisionsOfFuturesPast <$> runMessage msg attrs

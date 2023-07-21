@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Courage
-  ( courage
-  , Courage(..)
-  ) where
+module Arkham.Asset.Cards.Courage (
+  courage,
+  Courage (..),
+) where
 
 import Arkham.Prelude
 

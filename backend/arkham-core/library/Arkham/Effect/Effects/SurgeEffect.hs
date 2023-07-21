@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.SurgeEffect
-  ( SurgeEffect(..)
-  , surgeEffect
-  ) where
+module Arkham.Effect.Effects.SurgeEffect (
+  SurgeEffect (..),
+  surgeEffect,
+) where
 
 import Arkham.Prelude
 
@@ -21,8 +21,9 @@ surgeEffect = SurgeEffect . uncurry4 (baseAttrs "surge")
 
 instance HasModifiersFor SurgeEffect where
   getModifiersFor target (SurgeEffect EffectAttrs {..})
-    | target == effectTarget = pure
-    $ toModifiers effectSource [AddKeyword Keyword.Surge]
+    | target == effectTarget =
+        pure $
+          toModifiers effectSource [AddKeyword Keyword.Surge]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SurgeEffect where

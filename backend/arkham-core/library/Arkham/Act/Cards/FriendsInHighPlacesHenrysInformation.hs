@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.FriendsInHighPlacesHenrysInformation
-  ( FriendsInHighPlacesHenrysInformation(..)
-  , friendsInHighPlacesHenrysInformation
-  ) where
+module Arkham.Act.Cards.FriendsInHighPlacesHenrysInformation (
+  FriendsInHighPlacesHenrysInformation (..),
+  friendsInHighPlacesHenrysInformation,
+) where
 
 import Arkham.Prelude
 
@@ -24,22 +24,25 @@ newtype FriendsInHighPlacesHenrysInformation = FriendsInHighPlacesHenrysInformat
 
 friendsInHighPlacesHenrysInformation
   :: ActCard FriendsInHighPlacesHenrysInformation
-friendsInHighPlacesHenrysInformation = act
-  (2, C)
-  FriendsInHighPlacesHenrysInformation
-  Cards.friendsInHighPlacesHenrysInformation
-  Nothing
+friendsInHighPlacesHenrysInformation =
+  act
+    (2, C)
+    FriendsInHighPlacesHenrysInformation
+    Cards.friendsInHighPlacesHenrysInformation
+    Nothing
 
 instance HasAbilities FriendsInHighPlacesHenrysInformation where
   getAbilities (FriendsInHighPlacesHenrysInformation a) =
     [ restrictedAbility
-          a
-          1
-          (AssetExists $ assetIs Assets.henryDeveau <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( AssetExists $
+          assetIs Assets.henryDeveau
+            <> AssetWithClues
+              (AtLeast $ PerPlayer 1)
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide C a
     ]
 
@@ -59,10 +62,10 @@ instance RunMessage FriendsInHighPlacesHenrysInformation where
           townHall <- genCard Locations.townHall
           (townHallId, placeTownHall) <- placeLocation townHall
           assetId <- getRandom
-          pure [placeTownHall , CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
+          pure [placeTownHall, CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
 
-      pushAll
-        $ createAssetMessages
-        <> [AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)]
+      pushAll $
+        createAssetMessages
+          <> [AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)]
       pure a
     _ -> FriendsInHighPlacesHenrysInformation <$> runMessage msg attrs

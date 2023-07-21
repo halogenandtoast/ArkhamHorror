@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.LostSoul
-  ( lostSoul
-  , LostSoul(..)
-  ) where
+module Arkham.Treachery.Cards.LostSoul (
+  lostSoul,
+  LostSoul (..),
+) where
 
 import Arkham.Prelude
 
@@ -32,8 +32,8 @@ instance RunMessage LostSoul where
           willpower <- getSkillValue SkillWillpower iid
           push $ RevelationSkillTest iid source SkillIntellect willpower
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
         pure t
     _ -> LostSoul <$> runMessage msg attrs

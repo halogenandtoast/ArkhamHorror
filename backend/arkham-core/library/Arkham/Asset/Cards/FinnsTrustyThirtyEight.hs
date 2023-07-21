@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.FinnsTrustyThirtyEight
-  ( finnsTrustyThirtyEight
-  , FinnsTrustyThirtyEight(..)
-  )
+module Arkham.Asset.Cards.FinnsTrustyThirtyEight (
+  finnsTrustyThirtyEight,
+  FinnsTrustyThirtyEight (..),
+)
 where
 
 import Arkham.Prelude
@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.SkillType
 
 newtype FinnsTrustyThirtyEight = FinnsTrustyThirtyEight AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finnsTrustyThirtyEight :: AssetCard FinnsTrustyThirtyEight
@@ -28,27 +28,31 @@ instance HasModifiersFor FinnsTrustyThirtyEight where
     case (mSkillTestTarget, mSkillTestSource) of
       (Just (EnemyTarget eid), Just (SkillTestSource iid' _ source _))
         | isSource attrs source && iid == iid' -> do
-          engagedEnemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId
-            iid
-          pure $ toModifiers attrs [ DamageDealt 1 | eid `notElem` engagedEnemies ]
+            engagedEnemies <-
+              selectList $
+                EnemyIsEngagedWith $
+                  InvestigatorWithId
+                    iid
+            pure $ toModifiers attrs [DamageDealt 1 | eid `notElem` engagedEnemies]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FinnsTrustyThirtyEight where
   getAbilities (FinnsTrustyThirtyEight a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1 <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1 <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage FinnsTrustyThirtyEight where
   runMessage msg a@(FinnsTrustyThirtyEight attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ pushAll
-        [ skillTestModifier
-          attrs
-          (InvestigatorTarget iid)
-          (SkillModifier SkillCombat 2)
-        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-        ]
+      a
+        <$ pushAll
+          [ skillTestModifier
+              attrs
+              (InvestigatorTarget iid)
+              (SkillModifier SkillCombat 2)
+          , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+          ]
     _ -> FinnsTrustyThirtyEight <$> runMessage msg attrs

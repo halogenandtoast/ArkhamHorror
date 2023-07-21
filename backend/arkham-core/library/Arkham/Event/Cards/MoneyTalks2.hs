@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.MoneyTalks2
-  ( moneyTalks2
-  , MoneyTalks2(..)
-  )
+module Arkham.Event.Cards.MoneyTalks2 (
+  moneyTalks2,
+  MoneyTalks2 (..),
+)
 where
 
 import Arkham.Prelude

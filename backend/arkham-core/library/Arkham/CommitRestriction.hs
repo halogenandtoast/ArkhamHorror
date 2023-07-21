@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.CommitRestriction where
 
 import Arkham.Prelude
 
-import Arkham.Matcher
 import Arkham.Action (Action)
+import Arkham.Matcher
 import Data.Aeson.TH
 
 data CommitRestriction

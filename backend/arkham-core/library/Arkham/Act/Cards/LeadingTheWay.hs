@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.LeadingTheWay
-  ( LeadingTheWay(..)
-  , leadingTheWay
-  ) where
+module Arkham.Act.Cards.LeadingTheWay (
+  LeadingTheWay (..),
+  leadingTheWay,
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype LeadingTheWay = LeadingTheWay ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leadingTheWay :: ActCard LeadingTheWay
@@ -24,22 +24,26 @@ leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 
 instance HasModifiersFor LeadingTheWay where
   getModifiersFor (LocationTarget lid) (LeadingTheWay attrs) = do
-    isBlockedPassage <- member lid
-      <$> select (locationIs Locations.blockedPassage)
-    pure $ toModifiers attrs [ Blank | isBlockedPassage ]
+    isBlockedPassage <-
+      member lid
+        <$> select (locationIs Locations.blockedPassage)
+    pure $ toModifiers attrs [Blank | isBlockedPassage]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LeadingTheWay where
-  getAbilities (LeadingTheWay a) | onSide A a =
-    [ restrictedAbility
-          a
-          1
-          (EachUndefeatedInvestigator $ InvestigatorAt $ locationIs
-            Locations.blockedPassage
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
-    ]
+  getAbilities (LeadingTheWay a)
+    | onSide A a =
+        [ restrictedAbility
+            a
+            1
+            ( EachUndefeatedInvestigator $
+                InvestigatorAt $
+                  locationIs
+                    Locations.blockedPassage
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage LeadingTheWay where

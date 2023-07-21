@@ -1,11 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Act.Sequence where
 
 import Arkham.Prelude
 import Data.Aeson.TH
 
-newtype ActStep = ActStep { unActStep :: Int }
-  deriving newtype Eq
+newtype ActStep = ActStep {unActStep :: Int}
+  deriving newtype (Eq)
 
 actStep :: ActSequence -> ActStep
 actStep (Sequence num _) = ActStep num

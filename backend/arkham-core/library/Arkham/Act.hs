@@ -22,7 +22,7 @@ instance FromJSON Act where
     cCode <- o .: "id"
     withActCardCode cCode $ \(_ :: ActCard a) -> Act <$> parseJSON @a (Object o)
 
-withActCardCode :: CardCode -> (forall a. (IsAct a) => ActCard a -> r) -> r
+withActCardCode :: CardCode -> (forall a. IsAct a => ActCard a -> r) -> r
 withActCardCode cCode f = case lookup cCode allActs of
   Nothing -> error $ "Unknown act: " <> show cCode
   Just (SomeActCard a) -> f a

@@ -7,7 +7,7 @@ import Data.Typeable
 
 data family Field a :: Type -> Type
 
-instance (Show (Field a typ)) => Eq (Field a typ) where
+instance Show (Field a typ) => Eq (Field a typ) where
   a == b = show a == show b
 
 data SomeField a where
@@ -53,7 +53,7 @@ instance Eq (Update a) where
 instance ToJSON (Update a) where
   toJSON (Update f v) = object ["field" .= f, "value" .= v]
 
-instance (FromJSON (SomeField a)) => FromJSON (Update a) where
+instance FromJSON (SomeField a) => FromJSON (Update a) where
   parseJSON = withObject "Update" $ \o -> do
     someField <- o .: "field"
     case someField of

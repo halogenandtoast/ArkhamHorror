@@ -28,7 +28,7 @@ advanceActDeck :: ActAttrs -> Message
 advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
 
 advanceActSideA
-  :: (HasGame m) => ActAttrs -> AdvancementMethod -> m [Message]
+  :: HasGame m => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure

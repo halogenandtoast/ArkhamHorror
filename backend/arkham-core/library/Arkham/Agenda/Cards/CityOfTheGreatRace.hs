@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.CityOfTheGreatRace
-  ( CityOfTheGreatRace(..)
-  , cityOfTheGreatRace
-  ) where
+module Arkham.Agenda.Cards.CityOfTheGreatRace (
+  CityOfTheGreatRace (..),
+  cityOfTheGreatRace,
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Trait ( Trait (Item) )
+import Arkham.Trait (Trait (Item))
 
 newtype CityOfTheGreatRace = CityOfTheGreatRace AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
@@ -24,8 +24,9 @@ cityOfTheGreatRace =
   agenda (1, A) CityOfTheGreatRace Cards.cityOfTheGreatRace (Static 5)
 
 instance HasModifiersFor CityOfTheGreatRace where
-  getModifiersFor (InvestigatorTarget _) (CityOfTheGreatRace attrs) | onSide A attrs =
-    pure $ toModifiers attrs [CannotPlay $ CardWithTrait Item]
+  getModifiersFor (InvestigatorTarget _) (CityOfTheGreatRace attrs)
+    | onSide A attrs =
+        pure $ toModifiers attrs [CannotPlay $ CardWithTrait Item]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CityOfTheGreatRace where
@@ -35,32 +36,33 @@ instance RunMessage CityOfTheGreatRace where
       shouldMoveCustodian <-
         selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
 
-      custodianMessages <- if shouldMoveCustodian
-        then do
-          lead <- getLeadInvestigatorId
-          custodian <- selectJust $ assetIs Assets.theCustodian
-          locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
-          pure
-            $ [ chooseOrRunOne
+      custodianMessages <-
+        if shouldMoveCustodian
+          then do
+            lead <- getLeadInvestigatorId
+            custodian <- selectJust $ assetIs Assets.theCustodian
+            locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
+            pure $
+              [ chooseOrRunOne
                   lead
                   [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
                   | lid <- locationWithMostClues
                   ]
               ]
-        else pure []
+          else pure []
 
-      pushAll
-        $ [ Search
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              [fromTopOfDeck 9]
-              (CardWithTrait Item)
-              (DrawFoundUpTo iid 2)
-          | iid <- iids
-          ]
-        <> [ShuffleEncounterDiscardBackIn]
-        <> custodianMessages
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll $
+        [ Search
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          [fromTopOfDeck 9]
+          (CardWithTrait Item)
+          (DrawFoundUpTo iid 2)
+        | iid <- iids
+        ]
+          <> [ShuffleEncounterDiscardBackIn]
+          <> custodianMessages
+          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> CityOfTheGreatRace <$> runMessage msg attrs

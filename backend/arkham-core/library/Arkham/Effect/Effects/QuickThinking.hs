@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.QuickThinking
-  ( QuickThinking(..)
-  , quickThinking
-  ) where
+module Arkham.Effect.Effects.QuickThinking (
+  QuickThinking (..),
+  quickThinking,
+) where
 
 import Arkham.Prelude
 
@@ -18,9 +18,8 @@ quickThinking = QuickThinking . uncurry4 (baseAttrs "02229")
 
 instance RunMessage QuickThinking where
   runMessage msg e@(QuickThinking attrs) = case msg of
-    AfterSkillTestEnds{} -> case effectTarget attrs of
+    AfterSkillTestEnds {} -> case effectTarget attrs of
       InvestigatorTarget iid ->
         e <$ pushAll [DisableEffect (toId attrs), PlayerWindow iid [] True]
       _ -> error "wrong target"
     _ -> QuickThinking <$> runMessage msg attrs
-

@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.Lockpicks
-  ( Lockpicks(..)
-  , lockpicks
-  ) where
+module Arkham.Effect.Effects.Lockpicks (
+  Lockpicks (..),
+  lockpicks,
+) where
 
 import Arkham.Prelude
 
@@ -27,12 +27,12 @@ instance HasModifiersFor Lockpicks where
 instance RunMessage Lockpicks where
   runMessage msg e@(Lockpicks attrs) = case msg of
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
-    PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
+    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ n | n < 2 ->
       case effectSource attrs of
         AssetSource aid ->
           e <$ pushAll [Discard (effectSource attrs) $ AssetTarget aid, DisableEffect $ toId attrs]
         _ -> error "lockpicks is an asset"
-    FailedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
+    FailedSkillTest _ _ _ SkillTestInitiatorTarget {} _ n | n < 2 ->
       case effectSource attrs of
         AssetSource aid ->
           e <$ pushAll [Discard (effectSource attrs) $ AssetTarget aid, DisableEffect $ toId attrs]

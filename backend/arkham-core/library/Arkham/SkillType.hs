@@ -3,7 +3,7 @@ module Arkham.SkillType where
 import Arkham.Prelude
 import GHC.OverloadedLabels
 
-newtype CommittedSkillIcon = CommittedSkillIcon { unCommittedSkillIcon :: SkillIcon }
+newtype CommittedSkillIcon = CommittedSkillIcon {unCommittedSkillIcon :: SkillIcon}
   deriving newtype (Show, Eq, Generic, Ord, ToJSON, FromJSON, Hashable)
 
 data SkillType

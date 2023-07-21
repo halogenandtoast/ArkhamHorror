@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.EighteenDerringer2
-  ( eighteenDerringer2
-  , EighteenDerringer2(..)
-  ) where
+module Arkham.Asset.Cards.EighteenDerringer2 (
+  eighteenDerringer2,
+  EighteenDerringer2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.SkillType
 
-newtype Metadata = Metadata { givesBonus :: Bool }
+newtype Metadata = Metadata {givesBonus :: Bool}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -26,9 +26,9 @@ eighteenDerringer2 =
 
 instance HasAbilities EighteenDerringer2 where
   getAbilities (EighteenDerringer2 (attrs `With` _)) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Ammo 1]
+    [ restrictedAbility attrs 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Ammo 1]
     ]
 
 instance RunMessage EighteenDerringer2 where
@@ -37,15 +37,15 @@ instance RunMessage EighteenDerringer2 where
       let amount = if givesBonus metadata then 3 else 2
       pushAll
         [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [DamageDealt 1, SkillModifier SkillCombat amount]
+            attrs
+            (InvestigatorTarget iid)
+            [DamageDealt 1, SkillModifier SkillCombat amount]
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
       pure . EighteenDerringer2 $ attrs `with` Metadata False
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        pushAll [AddUses (toId attrs) Ammo 1]
-        pure . EighteenDerringer2 $ attrs `with` Metadata True
+          pushAll [AddUses (toId attrs) Ammo 1]
+          pure . EighteenDerringer2 $ attrs `with` Metadata True
     EndRound -> pure . EighteenDerringer2 $ attrs `with` Metadata False
     _ -> EighteenDerringer2 . (`with` metadata) <$> runMessage msg attrs

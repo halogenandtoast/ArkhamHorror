@@ -7,11 +7,12 @@ import Arkham.EncounterCard
 import Arkham.EncounterSet
 
 gatherEncounterSet :: CardGen m => EncounterSet -> m [EncounterCard]
-gatherEncounterSet encounterSet = concat <$> for
-  defs
-  \def -> traverse genEncounterCard
-    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
+gatherEncounterSet encounterSet =
+  concat <$> for
+    defs
+    \def ->
+      traverse genEncounterCard $
+        replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
  where
   defs =
     filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards
-

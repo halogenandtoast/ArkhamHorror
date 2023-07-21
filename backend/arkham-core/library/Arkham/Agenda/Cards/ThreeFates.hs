@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.ThreeFates
-  ( ThreeFates(..)
-  , threeFates
-  ) where
+module Arkham.Agenda.Cards.ThreeFates (
+  ThreeFates (..),
+  threeFates,
+) where
 
 import Arkham.Prelude
 
@@ -33,10 +33,10 @@ instance RunMessage ThreeFates where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       deckCount <- getActDecksInPlayCount
 
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-          ]
-        <> [ PlaceDoomOnAgenda | deckCount == 2 ]
+      pushAll $
+        [ ShuffleEncounterDiscardBackIn
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        ]
+          <> [PlaceDoomOnAgenda | deckCount == 2]
       pure a
     _ -> ThreeFates <$> runMessage msg attrs

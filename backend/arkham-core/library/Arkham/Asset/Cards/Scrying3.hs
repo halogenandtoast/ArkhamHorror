@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Scrying3
-  ( Scrying3(..)
-  , scrying3
-  ) where
+module Arkham.Asset.Cards.Scrying3 (
+  Scrying3 (..),
+  scrying3,
+) where
 
 import Arkham.Prelude
 
@@ -20,17 +20,20 @@ scrying3 = asset Scrying3 Cards.scrying3
 
 instance HasAbilities Scrying3 where
   getAbilities (Scrying3 a) =
-    [ restrictedAbility a 1 ControlsThis $ FastAbility $ Costs
-        [UseCost (AssetWithId $ toId a) Charge 1, ExhaustCost $ toTarget a]
+    [ restrictedAbility a 1 ControlsThis $
+        FastAbility $
+          Costs
+            [UseCost (AssetWithId $ toId a) Charge 1, ExhaustCost $ toTarget a]
     ]
 
 instance RunMessage Scrying3 where
   runMessage msg a@(Scrying3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds
-      push $ chooseOne
-        iid
-        [ TargetLabel
+      push $
+        chooseOne
+          iid
+          [ TargetLabel
             target
             [ Search
                 iid
@@ -40,12 +43,12 @@ instance RunMessage Scrying3 where
                 AnyCard
                 (DeferSearchedToTarget $ toTarget attrs)
             ]
-        | target <- EncounterDeckTarget : targets
-        ]
+          | target <- EncounterDeckTarget : targets
+          ]
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      when (any (\c -> any (`elem` toTraits c) [Omen, Terror]) cards)
-        $ push
-        $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+      when (any (\c -> any (`elem` toTraits c) [Omen, Terror]) cards) $
+        push $
+          InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure a
     _ -> Scrying3 <$> runMessage msg attrs

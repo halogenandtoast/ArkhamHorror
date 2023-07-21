@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.ChaosBag.RevealStrategy where
 
 import Arkham.Prelude

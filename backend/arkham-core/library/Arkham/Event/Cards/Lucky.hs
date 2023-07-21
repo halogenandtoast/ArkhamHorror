@@ -20,9 +20,9 @@ instance RunMessage Lucky where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
       pushAll
         [ skillTestModifier
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          (AnySkillValue 2)
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            (AnySkillValue 2)
         , RerunSkillTest
         ]
       pure e

@@ -45,23 +45,23 @@ instance CardGen GameT where
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId card (gameCards g)}, ())
 
-class (Monad m) => HasGame m where
+class Monad m => HasGame m where
   getGame :: m Game
 
-getCard :: (HasGame m) => CardId -> m Card
+getCard :: HasGame m => CardId -> m Card
 getCard cardId = do
   g <- getGame
   case lookup cardId (gameCards g) of
     Nothing -> error $ "Unregistered card id: " <> show cardId
     Just card -> pure card
 
-findCard :: (HasGame m) => (Card -> Bool) -> m (Maybe Card)
+findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 findCard cardPred = find cardPred . toList . gameCards <$> getGame
 
-instance (Monad m) => HasGame (ReaderT Game m) where
+instance Monad m => HasGame (ReaderT Game m) where
   getGame = ask
 
-runGameEnvT :: (MonadIO m) => GameEnv -> GameT a -> m a
+runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 
 data GameEnv = GameEnv
@@ -130,16 +130,16 @@ instance MonadRandom GameT where
     gen <- atomicModifyIORef' ref split
     pure $ randoms gen
 
-getSkillTest :: (HasGame m) => m (Maybe SkillTest)
+getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 
-getActiveCosts :: (HasGame m) => m [ActiveCost]
+getActiveCosts :: HasGame m => m [ActiveCost]
 getActiveCosts = toList . gameActiveCost <$> getGame
 
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 getJustSkillTest = fromJustNote "must be called during a skill test" . gameSkillTest <$> getGame
 
-getHistory :: (HasGame m) => HistoryType -> InvestigatorId -> m History
+getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 getHistory TurnHistory iid =
   findWithDefault mempty iid . gameTurnHistory <$> getGame
 getHistory PhaseHistory iid =
@@ -149,34 +149,34 @@ getHistory RoundHistory iid = do
   phaseH <- getHistory PhaseHistory iid
   pure $ roundH <> phaseH
 
-getDistance :: (HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
+getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame
   getDistance' game l1 l2
 
-getPhase :: (HasGame m) => m Phase
+getPhase :: HasGame m => m Phase
 getPhase = gamePhase <$> getGame
 
-getWindowDepth :: (HasGame m) => m Int
+getWindowDepth :: HasGame m => m Int
 getWindowDepth = gameWindowDepth <$> getGame
 
-getDepthLock :: (HasGame m) => m Int
+getDepthLock :: HasGame m => m Int
 getDepthLock = gameDepthLock <$> getGame
 
-getAllAbilities :: (HasGame m) => m [Ability]
+getAllAbilities :: HasGame m => m [Ability]
 getAllAbilities = getAbilities <$> getGame
 
-getAllModifiers :: (HasGame m) => m (Map Target [Modifier])
+getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame
 
-getActiveAbilities :: (HasGame m) => m [Ability]
+getActiveAbilities :: HasGame m => m [Ability]
 getActiveAbilities = gameActiveAbilities <$> getGame
 
-getActionCanBeUndone :: (HasGame m) => m Bool
+getActionCanBeUndone :: HasGame m => m Bool
 getActionCanBeUndone = gameActionCanBeUndone <$> getGame
 
-getGameInAction :: (HasGame m) => m Bool
+getGameInAction :: HasGame m => m Bool
 getGameInAction = gameInAction <$> getGame
 
-getIgnoreCanModifiers :: (HasGame m) => m Bool
+getIgnoreCanModifiers :: HasGame m => m Bool
 getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame

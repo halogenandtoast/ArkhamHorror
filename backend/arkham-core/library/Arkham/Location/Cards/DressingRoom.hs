@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DressingRoom
-  ( dressingRoom
-  , DressingRoom(..)
-  ) where
+module Arkham.Location.Cards.DressingRoom (
+  dressingRoom,
+  DressingRoom (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,18 +23,20 @@ dressingRoom :: LocationCard DressingRoom
 dressingRoom = location DressingRoom Cards.dressingRoom 4 (Static 0)
 
 instance HasAbilities DressingRoom where
-  getAbilities (DressingRoom attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (DressingRoom attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
-        (Here <> InvestigatorExists
-          (HealableInvestigator (toSource attrs) HorrorType You)
+        ( Here
+            <> InvestigatorExists
+              (HealableInvestigator (toSource attrs) HorrorType You)
         )
-      $ ActionAbility Nothing
-      $ ActionCost 3
-    | locationRevealed attrs
-    ]
+        $ ActionAbility Nothing
+        $ ActionCost 3
+      | locationRevealed attrs
+      ]
 
 instance RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = case msg of

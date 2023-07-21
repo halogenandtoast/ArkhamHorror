@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Cornered2
-  ( cornered2
-  , Cornered2(..)
-  ) where
+module Arkham.Asset.Cards.Cornered2 (
+  cornered2,
+  Cornered2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,10 +19,10 @@ cornered2 = asset Cornered2 Cards.cornered2
 
 instance HasAbilities Cornered2 where
   getAbilities (Cornered2 a) =
-    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
-        $ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ HandDiscardCost 1 AnyCard
+    [ limitedAbility (PlayerLimit PerTestOrAbility 1) $
+        restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
+          FastAbility $
+            HandDiscardCost 1 AnyCard
     ]
 
 instance RunMessage Cornered2 where

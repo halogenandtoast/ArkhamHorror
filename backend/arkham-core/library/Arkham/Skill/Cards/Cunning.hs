@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Cunning
-  ( cunning
-  , Cunning(..)
-  )
+module Arkham.Skill.Cards.Cunning (
+  cunning,
+  Cunning (..),
+)
 where
 
 import Arkham.Prelude
@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
@@ -27,18 +27,20 @@ instance HasModifiersFor Cunning where
   getModifiersFor (CardIdTarget cid) (Cunning attrs) | toCardId attrs == cid =
     do
       resources <- field InvestigatorResources (skillOwner attrs)
-      pure $ toModifiers
-        attrs
-        [ AddSkillIcons $ if resources >= 10
-            then
-              [ SkillIcon SkillIntellect
-              , SkillIcon SkillIntellect
-              , SkillIcon SkillAgility
-              , SkillIcon SkillAgility
-              ]
-            else [SkillIcon SkillIntellect, SkillIcon SkillAgility]
-        | resources >= 5
-        ]
+      pure $
+        toModifiers
+          attrs
+          [ AddSkillIcons $
+            if resources >= 10
+              then
+                [ SkillIcon SkillIntellect
+                , SkillIcon SkillIntellect
+                , SkillIcon SkillAgility
+                , SkillIcon SkillAgility
+                ]
+              else [SkillIcon SkillIntellect, SkillIcon SkillAgility]
+          | resources >= 5
+          ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Cunning where

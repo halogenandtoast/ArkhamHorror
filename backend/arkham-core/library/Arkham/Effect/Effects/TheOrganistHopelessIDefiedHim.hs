@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.TheOrganistHopelessIDefiedHim
-  ( TheOrganistHopelessIDefiedHim(..)
-  , theOrganistHopelessIDefiedHim
-  ) where
+module Arkham.Effect.Effects.TheOrganistHopelessIDefiedHim (
+  TheOrganistHopelessIDefiedHim (..),
+  theOrganistHopelessIDefiedHim,
+) where
 
 import Arkham.Prelude
 

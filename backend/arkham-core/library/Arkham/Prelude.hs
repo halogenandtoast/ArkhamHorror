@@ -87,20 +87,20 @@ suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 
-mapSet :: (Ord b) => (a -> b) -> Set a -> Set b
+mapSet :: Ord b => (a -> b) -> Set a -> Set b
 mapSet = Set.map
 
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
 
 mapFrom
-  :: (IsMap map) => (MapValue map -> ContainerKey map) -> [MapValue map] -> map
+  :: IsMap map => (MapValue map -> ContainerKey map) -> [MapValue map] -> map
 mapFrom f = mapFromList . map (toFst f)
 
 toSnd :: (a -> b) -> a -> (a, b)
 toSnd f a = (a, f a)
 
-traverseToSnd :: (Functor m) => (a -> m b) -> a -> m (a, b)
+traverseToSnd :: Functor m => (a -> m b) -> a -> m (a, b)
 traverseToSnd f a = (a,) <$> f a
 
 traverseToSndM :: (Functor f, Functor m) => (a -> m (f b)) -> a -> m (f (a, b))
@@ -130,23 +130,23 @@ concatMapM' f xs = concatMapM f (toList xs)
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter
 
-countM :: (Monad m) => (a -> m Bool) -> [a] -> m Int
+countM :: Monad m => (a -> m Bool) -> [a] -> m Int
 countM = (fmap length .) . filterM
 
-none :: (MonoFoldable mono) => (Element mono -> Bool) -> mono -> Bool
+none :: MonoFoldable mono => (Element mono -> Bool) -> mono -> Bool
 none = (not .) . any
 
 noneM
   :: (Monad m, MonoFoldable mono) => (Element mono -> m Bool) -> mono -> m Bool
 noneM f xs = not <$> anyM f (otoList xs)
 
-notNull :: (MonoFoldable mono) => mono -> Bool
+notNull :: MonoFoldable mono => mono -> Bool
 notNull = not . null
 
 unlessNull :: (Monad m, MonoFoldable mono) => mono -> m () -> m ()
 unlessNull xs = unless (null xs)
 
-sample :: (MonadRandom m) => NonEmpty a -> m a
+sample :: MonadRandom m => NonEmpty a -> m a
 sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)
   pure $ xs NE.!! idx
@@ -180,13 +180,13 @@ infix 9 !!?
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d
 
-eachWithRest :: (Eq a) => [a] -> [(a, [a])]
+eachWithRest :: Eq a => [a] -> [(a, [a])]
 eachWithRest xs = [(x, deleteFirst x xs) | x <- xs]
 
 cycleN :: Int -> [a] -> [a]
 cycleN n as = take (length as * n) $ L.cycle as
 
-deleteFirst :: (Eq a) => a -> [a] -> [a]
+deleteFirst :: Eq a => a -> [a] -> [a]
 deleteFirst a = deleteFirstMatch (== a)
 
 deleteFirstMatch :: (a -> Bool) -> [a] -> [a]
@@ -227,7 +227,7 @@ with = With
 withBase :: a `With` b -> a
 withBase (a `With` _) = a
 
-findKey :: (Ord k) => (v -> Bool) -> Map k v -> Maybe k
+findKey :: Ord k => (v -> Bool) -> Map k v -> Maybe k
 findKey p = fmap fst . find (p . snd) . mapToList
 
 foldMapM :: (Monad m, Monoid w, Foldable t) => (a -> m w) -> t a -> m w
@@ -239,7 +239,7 @@ foldMapM f =
     )
     mempty
 
-frequencies :: (Ord a) => [a] -> Map a Int
+frequencies :: Ord a => [a] -> Map a Int
 frequencies as =
   Map.map getSum $
     foldr (unionWith (<>)) mempty $
@@ -247,7 +247,7 @@ frequencies as =
         (`Map.singleton` (Sum 1))
         as
 
-breakM :: (Monad m) => (a -> m Bool) -> [a] -> m ([a], [a])
+breakM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
 breakM _ xs@[] = pure (xs, xs)
 breakM p xs@(x : xs') = do
   b <- p x

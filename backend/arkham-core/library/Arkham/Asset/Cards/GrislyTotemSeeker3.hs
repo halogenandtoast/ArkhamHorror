@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.GrislyTotemSeeker3
-  ( grislyTotemSeeker3
-  , grislyTotemSeeker3Effect
-  , GrislyTotemSeeker3(..)
-  ) where
+module Arkham.Asset.Cards.GrislyTotemSeeker3 (
+  grislyTotemSeeker3,
+  grislyTotemSeeker3Effect,
+  GrislyTotemSeeker3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Effect.Types
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype GrislyTotemSeeker3 = GrislyTotemSeeker3 AssetAttrs
@@ -27,9 +27,10 @@ grislyTotemSeeker3 = asset GrislyTotemSeeker3 Cards.grislyTotemSeeker3
 
 instance HasAbilities GrislyTotemSeeker3 where
   getAbilities (GrislyTotemSeeker3 a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (CommittedCard Timing.After You AnyCard)
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          (CommittedCard Timing.After You AnyCard)
+          (ExhaustCost $ toTarget a)
     ]
 
 getCard :: [Window] -> Card
@@ -52,12 +53,12 @@ instance RunMessage GrislyTotemSeeker3 where
       icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
       pushAll
         [ chooseOrRunOne
-          iid
-          [ Label
+            iid
+            [ Label
               (toSkillLabel icon)
               [skillTestModifier attrs (toCardId card) (AddSkillIcons [icon])]
-          | icon <- setToList icons
-          ]
+            | icon <- setToList icons
+            ]
         , createCardEffect Cards.grislyTotemSeeker3 Nothing attrs (toTarget iid)
         ]
       pure a

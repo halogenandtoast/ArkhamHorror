@@ -62,7 +62,7 @@ lookupScenario scenarioId =
     Nothing -> error $ "Unknown scenario: " <> show scenarioId
     Just (SomeScenario f) -> Scenario . f
 
-data SomeScenario = forall a. (IsScenario a) => SomeScenario (Difficulty -> a)
+data SomeScenario = forall a. IsScenario a => SomeScenario (Difficulty -> a)
 
 scenarioCard :: CardCode -> Name -> EncounterSet -> CardDef
 scenarioCard cCode name ecSet =

@@ -7,7 +7,7 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 
 newtype SneakAttack = SneakAttack EventAttrs
@@ -21,7 +21,7 @@ instance RunMessage SneakAttack where
   runMessage msg e@(SneakAttack attrs) = case msg of
     InvestigatorPlayEvent you eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ ExhaustedEnemy <> enemiesColocatedWith you
-      pushAll
-        $ [ EnemyDamage enemy $ nonAttack attrs 2 | enemy <- enemies ]
+      pushAll $
+        [EnemyDamage enemy $ nonAttack attrs 2 | enemy <- enemies]
       pure e
     _ -> SneakAttack <$> runMessage msg attrs

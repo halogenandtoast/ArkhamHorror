@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.PossessionTraitorous
-  ( possessionTraitorous
-  , PossessionTraitorous(..)
-  ) where
+module Arkham.Treachery.Cards.PossessionTraitorous (
+  possessionTraitorous,
+  PossessionTraitorous (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,10 +18,11 @@ newtype PossessionTraitorous = PossessionTraitorous TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 possessionTraitorous :: TreacheryCard PossessionTraitorous
-possessionTraitorous = treacheryWith
-  PossessionTraitorous
-  Cards.possessionTraitorous
-  (canBeCommittedL .~ True)
+possessionTraitorous =
+  treacheryWith
+    PossessionTraitorous
+    Cards.possessionTraitorous
+    (canBeCommittedL .~ True)
 
 instance RunMessage PossessionTraitorous where
   runMessage msg t@(PossessionTraitorous attrs) = case msg of

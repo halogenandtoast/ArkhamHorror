@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.VoiceOfTheMessenger
-  ( voiceOfTheMessenger
-  , VoiceOfTheMessenger(..)
-  ) where
+module Arkham.Treachery.Cards.VoiceOfTheMessenger (
+  voiceOfTheMessenger,
+  VoiceOfTheMessenger (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,11 +24,11 @@ instance RunMessage VoiceOfTheMessenger where
         chooseOne
           iid
           [ Label
-            "Take 1 direct damage and suffer 1 physical trauma"
-            [InvestigatorDirectDamage iid source 1 0, SufferTrauma iid 1 0]
+              "Take 1 direct damage and suffer 1 physical trauma"
+              [InvestigatorDirectDamage iid source 1 0, SufferTrauma iid 1 0]
           , Label
-            "Take 1 direct horror and suffer 1 mental trauma"
-            [InvestigatorDirectDamage iid source 0 1, SufferTrauma iid 0 1]
+              "Take 1 direct horror and suffer 1 mental trauma"
+              [InvestigatorDirectDamage iid source 0 1, SufferTrauma iid 0 1]
           ]
       pure t
     _ -> VoiceOfTheMessenger <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LivingRoom
-  ( livingRoom
-  , LivingRoom(..)
-  ) where
+module Arkham.Location.Cards.LivingRoom (
+  livingRoom,
+  LivingRoom (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,15 +23,16 @@ livingRoom :: LocationCard LivingRoom
 livingRoom = location LivingRoom Cards.livingRoom 3 (Static 0)
 
 instance HasAbilities LivingRoom where
-  getAbilities (LivingRoom attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerPhase 1)
-      $ restrictedAbility attrs 1 Here
-      $ ReactionAbility
-          (PerformAction Timing.After You $ ActionIs Action.Parley)
-          Free
-    | locationRevealed attrs
-    ]
+  getAbilities (LivingRoom attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerPhase 1) $
+        restrictedAbility attrs 1 Here $
+          ReactionAbility
+            (PerformAction Timing.After You $ ActionIs Action.Parley)
+            Free
+      | locationRevealed attrs
+      ]
 
 instance RunMessage LivingRoom where
   runMessage msg l@(LivingRoom attrs) = case msg of

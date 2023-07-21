@@ -13,12 +13,13 @@ newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsTangledThicket :: LocationCard ArkhamWoodsTangledThicket
-arkhamWoodsTangledThicket = locationWith
-  ArkhamWoodsTangledThicket
-  Cards.arkhamWoodsTangledThicket
-  2
-  (PerPlayer 1)
-  (investigateSkillL .~ SkillCombat)
+arkhamWoodsTangledThicket =
+  locationWith
+    ArkhamWoodsTangledThicket
+    Cards.arkhamWoodsTangledThicket
+    2
+    (PerPlayer 1)
+    (investigateSkillL .~ SkillCombat)
 
 instance RunMessage ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs) =

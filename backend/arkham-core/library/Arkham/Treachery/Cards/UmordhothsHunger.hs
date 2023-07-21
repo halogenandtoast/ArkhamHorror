@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -24,11 +24,12 @@ instance RunMessage UmordhothsHunger where
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
         handCount <- fieldMap InvestigatorHand length iid
-        pure $ if handCount == 0
-          then InvestigatorKilled (toSource attrs) iid
-          else toMessage $ randomDiscard iid attrs
+        pure $
+          if handCount == 0
+            then InvestigatorKilled (toSource attrs) iid
+            else toMessage $ randomDiscard iid attrs
       targets <- selectListMap EnemyTarget AnyEnemy
       pushAll
-        (msgs <> [ HealDamage target (toSource attrs) 1 | target <- targets ])
+        (msgs <> [HealDamage target (toSource attrs) 1 | target <- targets])
       pure t
     _ -> UmordhothsHunger <$> runMessage msg attrs

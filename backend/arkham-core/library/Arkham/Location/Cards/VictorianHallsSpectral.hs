@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.VictorianHallsSpectral
-  ( victorianHallsSpectral
-  , VictorianHallsSpectral(..)
-  ) where
+module Arkham.Location.Cards.VictorianHallsSpectral (
+  victorianHallsSpectral,
+  VictorianHallsSpectral (..),
+) where
 
 import Arkham.Prelude
 

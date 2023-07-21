@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.EnchantedBladeMystic3
-  ( enchantedBladeMystic3
-  , EnchantedBladeMystic3(..)
-  ) where
+module Arkham.Asset.Cards.EnchantedBladeMystic3 (
+  enchantedBladeMystic3,
+  EnchantedBladeMystic3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,30 +26,30 @@ getUsesPaid _ = 0
 
 instance HasAbilities EnchantedBladeMystic3 where
   getAbilities (EnchantedBladeMystic3 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ Costs
+    [ restrictedAbility attrs 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          Costs
             [ActionCost 1, UpTo 2 (UseCost (AssetWithId $ toId attrs) Charge 1)]
     ]
 
 instance RunMessage EnchantedBladeMystic3 where
   runMessage msg a@(EnchantedBladeMystic3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (getUsesPaid -> usesPaid)
-      -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (getUsesPaid -> usesPaid) ->
+      do
         pushAll
           [ skillTestModifiers
-            attrs
-            (InvestigatorTarget iid)
-            ([SkillModifier SkillCombat (2 + usesPaid)]
-            <> [ DamageDealt usesPaid | usesPaid > 0 ]
-            )
+              attrs
+              (InvestigatorTarget iid)
+              ( [SkillModifier SkillCombat (2 + usesPaid)]
+                  <> [DamageDealt usesPaid | usesPaid > 0]
+              )
           , ChooseFightEnemy
-            iid
-            (toSource attrs)
-            Nothing
-            SkillCombat
-            mempty
-            False
+              iid
+              (toSource attrs)
+              Nothing
+              SkillCombat
+              mempty
+              False
           ]
         pure a
     _ -> EnchantedBladeMystic3 <$> runMessage msg attrs

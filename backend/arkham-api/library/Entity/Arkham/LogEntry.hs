@@ -8,11 +8,11 @@ module Entity.Arkham.LogEntry (
 
 import Relude
 
-import Entity.Arkham.Game
 import Data.Aeson.Types
 import Data.Time.Clock
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH
+import Entity.Arkham.Game
 import Json
 import Orphans ()
 

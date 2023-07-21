@@ -1,13 +1,13 @@
-module Arkham.Location.Cards.MainPath
-  ( MainPath(..)
-  , mainPath
-  ) where
+module Arkham.Location.Cards.MainPath (
+  MainPath (..),
+  mainPath,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( mainPath )
+import Arkham.Location.Cards qualified as Cards (mainPath)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -17,12 +17,13 @@ newtype MainPath = MainPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mainPath :: LocationCard MainPath
-mainPath = locationWith
-  MainPath
-  Cards.mainPath
-  2
-  (Static 0)
-  (revealedConnectedMatchersL <>~ [LocationWithTrait Woods])
+mainPath =
+  locationWith
+    MainPath
+    Cards.mainPath
+    2
+    (Static 0)
+    (revealedConnectedMatchersL <>~ [LocationWithTrait Woods])
 
 instance HasAbilities MainPath where
   getAbilities (MainPath a) = withResignAction a []

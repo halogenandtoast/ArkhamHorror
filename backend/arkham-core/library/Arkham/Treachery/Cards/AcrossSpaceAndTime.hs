@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.AcrossSpaceAndTime
-  ( acrossSpaceAndTime
-  , AcrossSpaceAndTime(..)
-  ) where
+module Arkham.Treachery.Cards.AcrossSpaceAndTime (
+  acrossSpaceAndTime,
+  AcrossSpaceAndTime (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards (acrossSpaceAndTime)
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Treachery.Cards qualified as Cards (acrossSpaceAndTime)
 import Arkham.Treachery.Runner
 
 newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
@@ -19,6 +19,7 @@ acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
 
 instance RunMessage AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (DiscardTopOfDeck iid 3 (toSource attrs) Nothing)
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (DiscardTopOfDeck iid 3 (toSource attrs) Nothing)
     _ -> AcrossSpaceAndTime <$> runMessage msg attrs

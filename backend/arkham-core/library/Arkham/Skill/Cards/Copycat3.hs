@@ -1,8 +1,8 @@
-module Arkham.Skill.Cards.Copycat3
-  ( copycat3
-  , copycat3Effect
-  , Copycat3(..)
-  ) where
+module Arkham.Skill.Cards.Copycat3 (
+  copycat3,
+  copycat3Effect,
+  Copycat3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -32,31 +32,33 @@ instance RunMessage Copycat3 where
       iids <- selectList $ NotInvestigator $ InvestigatorWithId iid
       iidsWithCommittableCards <- flip mapMaybeM iids $ \iid' -> do
         committableCards <-
-          selectList
-          $ CommittableCard iid
-          $ InDiscardOf (InvestigatorWithId iid')
-          <> BasicCardMatch Matcher.SkillCard
-        pure $ if null committableCards
-          then Nothing
-          else Just (iid', committableCards)
-      unless (null iidsWithCommittableCards) $ pushAll
-        [ FocusCards (concatMap snd iidsWithCommittableCards)
-        , chooseOne
-          iid
-          [ targetLabel
-              (toCardId card)
-              [ CommitCard iid card
-              , createCardEffect
-                Cards.copycat3
-                (Just $ EffectMetaTarget (toTarget $ toCardId card))
-                attrs
-                iid'
+          selectList $
+            CommittableCard iid $
+              InDiscardOf (InvestigatorWithId iid')
+                <> BasicCardMatch Matcher.SkillCard
+        pure $
+          if null committableCards
+            then Nothing
+            else Just (iid', committableCards)
+      unless (null iidsWithCommittableCards) $
+        pushAll
+          [ FocusCards (concatMap snd iidsWithCommittableCards)
+          , chooseOne
+              iid
+              [ targetLabel
+                (toCardId card)
+                [ CommitCard iid card
+                , createCardEffect
+                    Cards.copycat3
+                    (Just $ EffectMetaTarget (toTarget $ toCardId card))
+                    attrs
+                    iid'
+                ]
+              | (iid', cards) <- iidsWithCommittableCards
+              , card <- cards
               ]
-          | (iid', cards) <- iidsWithCommittableCards
-          , card <- cards
+          , UnfocusCards
           ]
-        , UnfocusCards
-        ]
       pure s
     _ -> Copycat3 <$> runMessage msg attrs
 
@@ -71,8 +73,8 @@ instance RunMessage Copycat3Effect where
   runMessage msg e@(Copycat3Effect attrs@EffectAttrs {..}) = case msg of
     SkillTestEnds _ _ -> do
       case (effectMetadata, effectTarget) of
-        (Just (EffectMetaTarget (CardIdTarget cardId)), InvestigatorTarget iid)
-          -> do
+        (Just (EffectMetaTarget (CardIdTarget cardId)), InvestigatorTarget iid) ->
+          do
             card <- getCard cardId
             pushAll
               [ DisableEffect effectId

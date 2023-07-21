@@ -23,11 +23,11 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 
-getSpectralDiscards :: (HasGame m) => m [EncounterCard]
+getSpectralDiscards :: HasGame m => m [EncounterCard]
 getSpectralDiscards =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
 
-getSpectralDeck :: (HasGame m) => m (Deck EncounterCard)
+getSpectralDeck :: HasGame m => m (Deck EncounterCard)
 getSpectralDeck =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _1))
 

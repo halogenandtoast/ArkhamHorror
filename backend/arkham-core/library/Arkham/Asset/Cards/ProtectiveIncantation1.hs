@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ProtectiveIncantation1
-  ( protectiveIncantation1
-  , ProtectiveIncantation1(..)
-  ) where
+module Arkham.Asset.Cards.ProtectiveIncantation1 (
+  protectiveIncantation1,
+  ProtectiveIncantation1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,21 +21,21 @@ protectiveIncantation1 =
 
 instance HasAbilities ProtectiveIncantation1 where
   getAbilities (ProtectiveIncantation1 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ForcedAbility
-        $ TurnEnds Timing.When
-        $ HasMatchingAsset
-        $ AssetWithId
-        $ toId a
+    [ restrictedAbility a 1 ControlsThis $
+        ForcedAbility $
+          TurnEnds Timing.When $
+            HasMatchingAsset $
+              AssetWithId $
+                toId a
     ]
 
 instance RunMessage ProtectiveIncantation1 where
   runMessage msg a@(ProtectiveIncantation1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasResources <- (> 0) <$> getSpendableResources iid
-      push
-        $ chooseOrRunOne iid
-        $ Label "Discard Protective Incantation" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
-        : [ Label "Spend 1 resource" [SpendResources iid 1] | hasResources ]
+      push $
+        chooseOrRunOne iid $
+          Label "Discard Protective Incantation" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+            : [Label "Spend 1 resource" [SpendResources iid 1] | hasResources]
       pure a
     _ -> ProtectiveIncantation1 <$> runMessage msg attrs

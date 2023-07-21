@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.StMarysHospital
-  ( StMarysHospital(..)
-  , stMarysHospital
-  ) where
+module Arkham.Location.Cards.StMarysHospital (
+  StMarysHospital (..),
+  stMarysHospital,
+) where
 
 import Arkham.Prelude
 
@@ -23,18 +23,21 @@ stMarysHospital =
   location StMarysHospital Cards.stMarysHospital 2 (PerPlayer 1)
 
 instance HasAbilities StMarysHospital where
-  getAbilities (StMarysHospital x) | locationRevealed x = withBaseAbilities
-    x
-    [ limitedAbility (PlayerLimit PerGame 1)
-      $ restrictedAbility
+  getAbilities (StMarysHospital x)
+    | locationRevealed x =
+        withBaseAbilities
           x
-          1
-          (Here <> InvestigatorExists
-            (HealableInvestigator (toSource x) DamageType You)
-          )
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    ]
+          [ limitedAbility (PlayerLimit PerGame 1)
+              $ restrictedAbility
+                x
+                1
+                ( Here
+                    <> InvestigatorExists
+                      (HealableInvestigator (toSource x) DamageType You)
+                )
+              $ ActionAbility Nothing
+              $ ActionCost 1
+          ]
   getAbilities (StMarysHospital attrs) = getAbilities attrs
 
 instance RunMessage StMarysHospital where

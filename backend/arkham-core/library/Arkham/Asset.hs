@@ -9,7 +9,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Id
 
-createAsset :: (IsCard a) => a -> AssetId -> Asset
+createAsset :: IsCard a => a -> AssetId -> Asset
 createAsset a aId =
   lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
 
@@ -25,7 +25,7 @@ instance FromJSON Asset where
       \(_ :: AssetCard a) -> Asset <$> parseJSON @a (Object o)
 
 withAssetCardCode
-  :: CardCode -> (forall a. (IsAsset a) => AssetCard a -> r) -> r
+  :: CardCode -> (forall a. IsAsset a => AssetCard a -> r) -> r
 withAssetCardCode cCode f = case lookup cCode allAssets of
   Nothing -> error "invalid assets"
   Just (SomeAssetCard a) -> f a

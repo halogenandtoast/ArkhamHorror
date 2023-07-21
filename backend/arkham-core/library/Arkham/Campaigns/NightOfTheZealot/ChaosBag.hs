@@ -1,7 +1,7 @@
 module Arkham.Campaigns.NightOfTheZealot.ChaosBag where
 
-import Arkham.Difficulty
 import Arkham.ChaosToken
+import Arkham.Difficulty
 
 chaosBagContents :: Difficulty -> [ChaosTokenFace]
 chaosBagContents = \case
@@ -80,4 +80,3 @@ chaosBagContents = \case
     , AutoFail
     , ElderSign
     ]
-

@@ -1,14 +1,14 @@
-module Arkham.Event.Cards.DaringManeuver
-  ( daringManeuver
-  , DaringManeuver(..)
-  ) where
+module Arkham.Event.Cards.DaringManeuver (
+  daringManeuver,
+  DaringManeuver (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Runner
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
+import Arkham.Event.Runner
 import Arkham.Message
 
 newtype DaringManeuver = DaringManeuver EventAttrs

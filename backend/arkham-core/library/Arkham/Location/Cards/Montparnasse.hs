@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Montparnasse
-  ( montparnasse
-  , Montparnasse(..)
-  ) where
+module Arkham.Location.Cards.Montparnasse (
+  montparnasse,
+  Montparnasse (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,21 +22,22 @@ montparnasse :: LocationCard Montparnasse
 montparnasse = location Montparnasse Cards.montparnasse 2 (PerPlayer 1)
 
 instance HasAbilities Montparnasse where
-  getAbilities (Montparnasse attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (PlayerLimit PerRound 1)
-      $ restrictedAbility attrs 1 Here
-      $ FastAbility
-      $ HandDiscardCost 1 AnyCard
-    | locationRevealed attrs
-    ]
+  getAbilities (Montparnasse attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (PlayerLimit PerRound 1) $
+        restrictedAbility attrs 1 Here $
+          FastAbility $
+            HandDiscardCost 1 AnyCard
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Montparnasse where
   runMessage msg a@(Montparnasse attrs) = case msg of
     UseCardAbility iid source 1 _ (DiscardCardPayment cards)
       | isSource attrs source -> do
-        let
-          countWillpower = count (== SkillIcon SkillWillpower) . cdSkills . toCardDef
-          totalWillpower = sum $ map countWillpower cards
-        a <$ push (TakeResources iid totalWillpower (toAbilitySource attrs 1) False)
+          let
+            countWillpower = count (== SkillIcon SkillWillpower) . cdSkills . toCardDef
+            totalWillpower = sum $ map countWillpower cards
+          a <$ push (TakeResources iid totalWillpower (toAbilitySource attrs 1) False)
     _ -> Montparnasse <$> runMessage msg attrs

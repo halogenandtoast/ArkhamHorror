@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.OpenThePathAbove
-  ( OpenThePathAbove(..)
-  , openThePathAbove
-  ) where
+module Arkham.Act.Cards.OpenThePathAbove (
+  OpenThePathAbove (..),
+  openThePathAbove,
+) where
 
 import Arkham.Prelude
 
@@ -21,18 +21,19 @@ openThePathAbove :: ActCard OpenThePathAbove
 openThePathAbove = act (3, A) OpenThePathAbove Cards.openThePathAbove Nothing
 
 instance HasAbilities OpenThePathAbove where
-  getAbilities (OpenThePathAbove x) | onSide A x =
-    [ restrictedAbility
-          x
-          1
-          (EachUndefeatedInvestigator
-          $ InvestigatorAt
-          $ LocationWithTitle "Abbey Tower"
-          <> LocationWithoutClues
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
-    ]
+  getAbilities (OpenThePathAbove x)
+    | onSide A x =
+        [ restrictedAbility
+            x
+            1
+            ( EachUndefeatedInvestigator $
+                InvestigatorAt $
+                  LocationWithTitle "Abbey Tower"
+                    <> LocationWithoutClues
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage OpenThePathAbove where

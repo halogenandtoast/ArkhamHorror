@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.UntilTheEndOfTime
-  ( untilTheEndOfTime
-  , UntilTheEndOfTime(..)
-  ) where
+module Arkham.Asset.Cards.UntilTheEndOfTime (
+  untilTheEndOfTime,
+  UntilTheEndOfTime (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,16 +13,18 @@ newtype UntilTheEndOfTime = UntilTheEndOfTime AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 untilTheEndOfTime :: AssetCard UntilTheEndOfTime
-untilTheEndOfTime = assetWith
-  UntilTheEndOfTime
-  Cards.untilTheEndOfTime
-  ( (healthL ?~ 2)
-  . (sanityL ?~ 2)
-  )
+untilTheEndOfTime =
+  assetWith
+    UntilTheEndOfTime
+    Cards.untilTheEndOfTime
+    ( (healthL ?~ 2)
+        . (sanityL ?~ 2)
+    )
 
 instance HasModifiersFor UntilTheEndOfTime where
-  getModifiersFor (AssetTarget aid) (UntilTheEndOfTime a) | aid == toId a =
-    pure $ toModifiers a [CanBeAssignedDirectDamage]
+  getModifiersFor (AssetTarget aid) (UntilTheEndOfTime a)
+    | aid == toId a =
+        pure $ toModifiers a [CanBeAssignedDirectDamage]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UntilTheEndOfTime where

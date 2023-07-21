@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.FiveOfPentacles1
-  ( fiveOfPentacles1
-  , FiveOfPentacles1(..)
-  )
+module Arkham.Asset.Cards.FiveOfPentacles1 (
+  fiveOfPentacles1,
+  FiveOfPentacles1 (..),
+)
 where
 
 import Arkham.Prelude
@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype FiveOfPentacles1 = FiveOfPentacles1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fiveOfPentacles1 :: AssetCard FiveOfPentacles1
@@ -23,9 +23,10 @@ fiveOfPentacles1 =
   asset FiveOfPentacles1 Cards.fiveOfPentacles1
 
 instance HasModifiersFor FiveOfPentacles1 where
-  getModifiersFor (InvestigatorTarget iid) (FiveOfPentacles1 a) | controlledBy a iid=
-    pure $
-      toModifiers a [HealthModifier 1, SanityModifier 1]
+  getModifiersFor (InvestigatorTarget iid) (FiveOfPentacles1 a)
+    | controlledBy a iid =
+        pure $
+          toModifiers a [HealthModifier 1, SanityModifier 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FiveOfPentacles1 where

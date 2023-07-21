@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.MomentOfRespite3
-  ( momentOfRespite3
-  , MomentOfRespite3(..)
-  ) where
+module Arkham.Event.Cards.MomentOfRespite3 (
+  momentOfRespite3,
+  MomentOfRespite3 (..),
+) where
 
 import Arkham.Prelude
 

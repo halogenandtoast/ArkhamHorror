@@ -1,13 +1,13 @@
-module Arkham.Effect.Effects.SureGamble3
-  ( sureGamble3
-  , SureGamble3(..)
-  ) where
+module Arkham.Effect.Effects.SureGamble3 (
+  sureGamble3,
+  SureGamble3 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
+import Arkham.Effect.Runner
 import Arkham.Message
 
 newtype SureGamble3 = SureGamble3 EffectAttrs

@@ -29,7 +29,14 @@ instance HasAbilities StrangeGeometry where
     withRevealedAbilities
       a
       [ mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.After $ PhaseIs InvestigationPhase
-      , restrictedAbility a 2 (Here <> CluesOnThis (EqualTo $ Static 0) <> LocationExists (RevealedLocation <> NotLocation (LocationWithId $ toId a))) $ FastAbility Free
+      , restrictedAbility
+          a
+          2
+          ( Here
+              <> CluesOnThis (EqualTo $ Static 0)
+              <> LocationExists (RevealedLocation <> NotLocation (LocationWithId $ toId a))
+          ) $
+          FastAbility Free
       ]
 
 instance RunMessage StrangeGeometry where
@@ -42,7 +49,8 @@ instance RunMessage StrangeGeometry where
         Just label -> pure . StrangeGeometry $ attrs & labelL .~ label
         Nothing -> error "could not find label"
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      locationsWithMostClues <- selectList $ LocationWithMostClues $ NotLocation $ LocationWithId $ toId attrs
+      locationsWithMostClues <-
+        selectList $ LocationWithMostClues $ NotLocation $ LocationWithId $ toId attrs
       investigatorIds <- selectList $ investigatorAt $ toId attrs
       enemyIds <- selectList $ UnengagedEnemy <> enemyAt (toId attrs)
       lead <- getLead
@@ -51,14 +59,16 @@ instance RunMessage StrangeGeometry where
           lead
           [ targetLabel lid $
             concatMap
-              (\iid -> [Move $ move attrs iid lid, InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny 1 1])
+              ( \iid ->
+                  [Move $ move attrs iid lid, InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny 1 1]
+              )
               investigatorIds
               <> [Move $ move attrs eid lid | eid <- enemyIds]
           | lid <- locationsWithMostClues
           ]
         | notNull investigatorIds || notNull enemyIds
         ]
-        <> [Discard (toSource attrs) (toTarget attrs)]
+          <> [Discard (toSource attrs) (toTarget attrs)]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ Move $ moveToMatch attrs iid $ RevealedLocation <> NotLocation (LocationWithId $ toId attrs)

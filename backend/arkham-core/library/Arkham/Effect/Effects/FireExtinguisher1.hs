@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.FireExtinguisher1
-  ( fireExtinguisher1
-  , FireExtinguisher1(..)
-  ) where
+module Arkham.Effect.Effects.FireExtinguisher1 (
+  fireExtinguisher1,
+  FireExtinguisher1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,12 +21,12 @@ fireExtinguisher1 = FireExtinguisher1 . uncurry4 (baseAttrs "02114")
 instance RunMessage FireExtinguisher1 where
   runMessage msg e@(FireExtinguisher1 attrs@EffectAttrs {..}) = case msg of
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget _)) _ _
-      | SkillTestTarget == effectTarget
-      -> do
-        evasions <-
-          selectListMap (EnemyEvaded iid)
-          $ EnemyIsEngagedWith
-          $ InvestigatorWithId iid
-        e <$ pushAll (evasions <> [DisableEffect effectId])
+      | SkillTestTarget == effectTarget ->
+          do
+            evasions <-
+              selectListMap (EnemyEvaded iid) $
+                EnemyIsEngagedWith $
+                  InvestigatorWithId iid
+            e <$ pushAll (evasions <> [DisableEffect effectId])
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> FireExtinguisher1 <$> runMessage msg attrs

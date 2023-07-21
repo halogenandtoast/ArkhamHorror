@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.AscendingTheHillV2
-  ( AscendingTheHillV2(..)
-  , ascendingTheHillV2
-  ) where
+module Arkham.Act.Cards.AscendingTheHillV2 (
+  AscendingTheHillV2 (..),
+  ascendingTheHillV2,
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype AscendingTheHillV2 = AscendingTheHillV2 ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingTheHillV2 :: ActCard AscendingTheHillV2
@@ -32,8 +32,11 @@ instance HasModifiersFor AscendingTheHillV2 where
 
 instance HasAbilities AscendingTheHillV2 where
   getAbilities (AscendingTheHillV2 x) =
-    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
-        "Sentinel Peak"
+    [ mkAbility x 1 $
+        ForcedAbility $
+          Enters Timing.When You $
+            LocationWithTitle
+              "Sentinel Peak"
     ]
 
 instance RunMessage AscendingTheHillV2 where

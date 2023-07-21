@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LeatherJacket
-  ( leatherJacket
-  , LeatherJacket(..)
-  )
+module Arkham.Asset.Cards.LeatherJacket (
+  leatherJacket,
+  LeatherJacket (..),
+)
 where
 
 import Arkham.Prelude

@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.Reliable1
-  ( reliable1
-  , Reliable1(..)
-  ) where
+module Arkham.Event.Cards.Reliable1 (
+  reliable1,
+  Reliable1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -34,13 +34,14 @@ instance HasModifiersFor Reliable1 where
           then do
             abilities <- getActiveAbilities
             let isAttachedTargetAbility = (== AssetSource aid) . abilitySource
-            pure $ toModifiers
-              a
-              [ AnySkillValue 1
-              | any
-                (and . sequence [isAttachedTargetAbility, isTriggeredAbility])
-                abilities
-              ]
+            pure $
+              toModifiers
+                a
+                [ AnySkillValue 1
+                | any
+                    (and . sequence [isAttachedTargetAbility, isTriggeredAbility])
+                    abilities
+                ]
           else pure []
       _ -> pure []
   getModifiersFor _ _ = pure []
@@ -49,10 +50,11 @@ instance RunMessage Reliable1 where
   runMessage msg e@(Reliable1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
-      push $ chooseOne
-        iid
-        [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
-        | asset <- assets
-        ]
+      push $
+        chooseOne
+          iid
+          [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
+          | asset <- assets
+          ]
       pure e
     _ -> Reliable1 <$> runMessage msg attrs

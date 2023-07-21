@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.BookOfShadows3
-  ( BookOfShadows3(..)
-  , bookOfShadows3
-  ) where
+module Arkham.Asset.Cards.BookOfShadows3 (
+  BookOfShadows3 (..),
+  bookOfShadows3,
+) where
 
 import Arkham.Prelude
 
@@ -25,11 +25,11 @@ slot attrs = Slot (toSource attrs) Nothing
 instance HasAbilities BookOfShadows3 where
   getAbilities (BookOfShadows3 a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis
-          <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell)
-          )
+        a
+        1
+        ( ControlsThis
+            <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell)
+        )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
@@ -41,12 +41,15 @@ instance RunMessage BookOfShadows3 where
       push (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      spellAssetIds <- selectList
-        (AssetControlledBy You <> AssetWithTrait Spell)
-      unless (null spellAssetIds) $ push $ chooseOne
-        iid
-        [ targetLabel aid' [AddUses aid' Charge 1]
-        | aid' <- spellAssetIds
-        ]
+      spellAssetIds <-
+        selectList
+          (AssetControlledBy You <> AssetWithTrait Spell)
+      unless (null spellAssetIds) $
+        push $
+          chooseOne
+            iid
+            [ targetLabel aid' [AddUses aid' Charge 1]
+            | aid' <- spellAssetIds
+            ]
       pure a
     _ -> BookOfShadows3 <$> runMessage msg attrs

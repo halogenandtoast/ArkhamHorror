@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TheGateToHell
-  ( theGateToHell
-  , TheGateToHell(..)
-  ) where
+module Arkham.Location.Cards.TheGateToHell (
+  theGateToHell,
+  TheGateToHell (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,37 +22,39 @@ newtype TheGateToHell = TheGateToHell LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGateToHell :: LocationCard TheGateToHell
-theGateToHell = locationWith
-  TheGateToHell
-  Cards.theGateToHell
-  1
-  (PerPlayer 2)
-  ((connectsToL .~ adjacentLocations)
-  . (costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+theGateToHell =
+  locationWith
+    TheGateToHell
+    Cards.theGateToHell
+    1
+    (PerPlayer 2)
+    ( (connectsToL .~ adjacentLocations)
+        . ( costToEnterUnrevealedL
+              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+          )
     )
-  )
 
 instance HasAbilities TheGateToHell where
-  getAbilities (TheGateToHell attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (TheGateToHell attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
-        (AnyCriterion
-          [ Negate
-              (LocationExists
-              $ LocationInDirection dir (LocationWithId $ toId attrs)
+        ( AnyCriterion
+            [ Negate
+              ( LocationExists $
+                  LocationInDirection dir (LocationWithId $ toId attrs)
               )
-          | dir <- [Above, Below]
-          ]
+            | dir <- [Above, Below]
+            ]
         )
-      $ ForcedAbility
-      $ RevealLocation Timing.When Anyone
-      $ LocationWithId
-      $ toId attrs
-    | locationRevealed attrs
-    ]
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage TheGateToHell where
   runMessage msg l@(TheGateToHell attrs) = case msg of

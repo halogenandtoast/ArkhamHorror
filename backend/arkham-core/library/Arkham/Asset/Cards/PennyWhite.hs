@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.PennyWhite
-  ( pennyWhite
-  , PennyWhite(..)
-  )
+module Arkham.Asset.Cards.PennyWhite (
+  pennyWhite,
+  PennyWhite (..),
+)
 where
 
 import Arkham.Prelude

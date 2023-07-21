@@ -1,21 +1,30 @@
 <script lang="ts" setup>
-import { watch, ref, computed } from 'vue';
-import { useUserStore } from '@/stores/user';
-import type { User } from '@/types';
-import { useRouter } from 'vue-router';
-import * as Arkham from '@/arkham/types/Deck';
-import { fetchDecks, newGame } from '@/arkham/api';
-import { imgsrc } from '@/arkham/helpers';
-import type { Difficulty } from '@/arkham/types/Difficulty';
+import { watch, ref, computed } from 'vue'
+import { useUserStore } from '@/stores/user'
+import type { User } from '@/types'
+import { useRouter } from 'vue-router'
+import * as Arkham from '@/arkham/types/Deck'
+import { fetchDecks, newGame } from '@/arkham/api'
+import { imgsrc } from '@/arkham/helpers'
+import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { StandaloneSetting } from '@/types/StandaloneSetting'
-import { CampaignLogSettings, CampaignOption, CampaignScenario, CampaignSetting, settingActive, completedCampaignScenarioSetting, isForcedKey, anyForced } from '@/arkham/types/CampaignSettings'
-import NewDeck from '@/arkham/components/NewDeck';
-import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting';
-import { toCapitalizedWords } from '@/arkham/helpers';
+import {
+  CampaignLogSettings,
+  CampaignOption,
+  CampaignScenario,
+  CampaignSetting,
+  settingActive,
+  completedCampaignScenarioSetting,
+  isForcedKey,
+  anyForced
+} from '@/arkham/types/CampaignSettings'
+import NewDeck from '@/arkham/components/NewDeck'
+import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting'
+import { toCapitalizedWords } from '@/arkham/helpers'
 
-import campaignJSON from '@/arkham/data/campaigns.json';
-import scenarioJSON from '@/arkham/data/scenarios.json';
-import sideStoriesJSON from '@/arkham/data/side-stories.json';
+import campaignJSON from '@/arkham/data/campaigns.json'
+import scenarioJSON from '@/arkham/data/scenarios.json'
+import sideStoriesJSON from '@/arkham/data/side-stories.json'
 
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
@@ -23,44 +32,41 @@ const currentUser = computed<User | null>(() => store.getCurrentUser)
 type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
 
 const gameMode = ref<GameMode>('Campaign')
-const campaignLog = ref<CampaignLogSettings>({ keys: [], counts: {}, sets: {}, options: [] })
-
-const scenarios = computed(() => {
-  return scenarioJSON.filter((s) => {
-    if (s.beta) {
-      return currentUser.value && currentUser.value.beta
-    }
-    return true
-  })
+const campaignLog = ref<CampaignLogSettings>({
+  keys: [],
+  counts: {},
+  sets: {},
+  options: []
 })
 
-const sideStories = computed(() => {
-  return sideStoriesJSON.filter((s) => {
-    if (s.beta) {
-      return currentUser.value && currentUser.value.beta
-    }
-    return true
-  })
-})
+const scenarios = computed(() => scenarioJSON.filter((s) =>
+  s.beta
+    ? currentUser.value && currentUser.value.beta
+    : true
+))
 
-const campaigns = computed(() => {
-  return campaignJSON.filter((c) => {
-    if (c.beta) {
-      return currentUser.value && currentUser.value.beta
-    }
-    return true
-  })
-})
+const sideStories = computed(() => sideStoriesJSON.filter((s) =>
+  s.beta
+    ? currentUser.value && currentUser.value.beta
+    : true
+))
+
+const campaigns = computed(() => campaignJSON.filter((c) =>
+  c.beta
+    ? currentUser.value && currentUser.value.beta
+    : true
+))
 
 const difficulties: Difficulty[] = computed(() => {
   if(gameMode.value === 'SideStory') {
     const sideStoryScenario = sideStories.value.find((c) => c.id === selectedScenario.value)
+
     if (sideStoryScenario.standaloneDifficulties) {
       return sideStoryScenario.standaloneDifficulties
     }
   }
 
-  return['Easy', 'Standard', 'Hard', 'Expert']
+  return ['Easy', 'Standard', 'Hard', 'Expert']
 })
 
 const router = useRouter()
@@ -77,17 +83,20 @@ const campaignName = ref<string | null>(null)
 const multiplayerVariant = ref('WithFriends')
 const returnTo = ref(false)
 
-const campaignScenarios = computed(() => {
-  if (selectedCampaign.value) {
-    return scenarios.value.filter((s) => s.campaign == selectedCampaign.value)
-  }
+const campaignScenarios = computed(() => selectedCampaign.value
+  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value)
+  : []
+)
 
-  return []
-})
+const selectCampaign = (campaignId) => {
+  selectedCampaign.value = campaignId,
+  selectedScenario.value = null
+}
 
-const selectCampaign = (campaignId) => { selectedCampaign.value = campaignId, selectedScenario.value = null }
-
-watch(difficulties, async (newDifficulties) => selectedDifficulty.value = newDifficulties[0])
+watch(
+  difficulties,
+  async (newDifficulties) => selectedDifficulty.value = newDifficulties[0]
+)
 
 fetchDecks().then((result) => {
   decks.value = result;
@@ -101,11 +110,7 @@ async function addDeck(d) {
 
 const selectedCampaignReturnToId = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-  if (campaign) {
-    return campaign.returnToId;
-  }
-
-  return null;
+  return campaign?.returnToId
 })
 
 const validStandalone = computed(() => {
@@ -143,28 +148,24 @@ const defaultCampaignName = computed(() => {
   return '';
 })
 
-const currentCampaignName = computed(() => {
-  if (campaignName.value !== '' && campaignName.value !== null) {
-    return campaignName.value;
-  }
-
-  return defaultCampaignName.value;
-})
+const currentCampaignName = computed(() =>
+  campaignName.value !== '' && campaignName.value !== null
+    ? campaignName.value
+    : defaultCampaignName.value
+)
 
 
-const scenario = computed(() => {
-    return gameMode.value === 'SideStory'
-      ? sideStories.value.find((s) => s.id === selectedScenario.value)
-      : scenarios.value.find((s) => s.id === selectedScenario.value)
-})
+const scenario = computed(() =>
+  gameMode.value === 'SideStory'
+    ? sideStories.value.find((s) => s.id === selectedScenario.value)
+    : scenarios.value.find((s) => s.id === selectedScenario.value)
+)
 
-const campaign = computed(() => {
-  if (gameMode.value === 'Campaign') {
-    return campaigns.value.find((c) => c.id === selectedCampaign.value)
-  }
-
-  return null
-})
+const campaign = computed(() =>
+  gameMode.value === 'Campaign'
+    ? campaigns.value.find((c) => c.id === selectedCampaign.value)
+    : null
+)
 
 async function start() {
   if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
@@ -205,13 +206,11 @@ const standaloneSettings = ref<StandaloneSetting[]>([])
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
 // standaloneSettings in order to never alter its original value.
-const computedStandaloneSettings = computed<StandaloneSetting[]>(() => {
-  if (gameMode.value === 'Standalone') {
-    return JSON.parse(JSON.stringify(scenario.value?.settings || []))
-  }
-
-  return []
-})
+const computedStandaloneSettings = computed<StandaloneSetting[]>(() =>
+  gameMode.value === 'Standalone'
+    ? JSON.parse(JSON.stringify(scenario.value?.settings || []))
+    : []
+)
 
 watch(computedStandaloneSettings, (newSettings) => {
   standaloneSettings.value = newSettings
@@ -223,11 +222,9 @@ const activeSettings = computed(() => {
   const allActive = campaignSettings.value.filter((s) => settingActive(campaignLog.value, s))
   const firstNotCompleted = allActive.findIndex((s) => !completedCampaignScenarioSetting(campaignLog.value, s))
 
-  if (firstNotCompleted === -1) {
-    return allActive
-  }
-
-  return campaignSettings.value.filter((s) => settingActive(campaignLog.value, s)).slice(0, firstNotCompleted + 1)
+  return firstNotCompleted === -1
+    ? allActive
+    : campaignSettings.value.filter((s) => settingActive(campaignLog.value, s)).slice(0, firstNotCompleted + 1)
 })
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
@@ -242,27 +239,38 @@ const completedCampaignSettings = computed(() => {
   if(gameMode.value !== 'Campaign' || fullCampaign.value === true) {
     return true
   }
-  return campaignSettings.value.every((s) => {
-    if (settingActive(campaignLog.value, s)) {
-      return completedCampaignScenarioSetting(campaignLog.value, s)
-    }
-
-    return true
-  })
+  return campaignSettings.value.every((s) =>
+    settingActive(campaignLog.value, s)
+      ? completedCampaignScenarioSetting(campaignLog.value, s)
+      : true
+  )
 })
 
 const isForced = (s) => s.scenarioId == selectedScenario.value
 
 watch(computedCampaignSettings, (newSettings) => {
   if (scenario.value?.campaign == selectedCampaign.value) {
-    const idx = newSettings.findIndex((s) => s.scenarioId === selectedScenario.value)
-    const relevantSettings = newSettings.filter((s, i) => i < idx || s.force && isForced(s.force))
+    const idx = newSettings.
+      findIndex((s) => s.scenarioId === selectedScenario.value)
 
-    const crossOut = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "CrossOut"))
-    const sets = crossOut.reduce((a, s) => {
-      return { ...a, [s.key]: { recordable: s.recordable, entries: s.content.map((c) => { return { tag: "Recorded", value: c.content }}) } }}, {})
+    const relevantSettings = newSettings.
+      filter((s, i) => i < idx || s.force && isForced(s.force))
 
-    const counts = relevantSettings.flatMap((s) => s.settings.filter(s => s.type === "ChooseNum")).reduce((a, s) => { return { ...a, [s.key]: 0 }}, {})
+    const crossOut = relevantSettings.
+      flatMap((s) => s.settings.
+      filter(s => s.type === "CrossOut"))
+
+    const sets = crossOut.reduce((a, s) => ({
+      ...a,
+      [s.key]: {
+        recordable: s.recordable,
+        entries: s.content.map((c) => ({ tag: "Recorded", value: c.content }))
+      }
+    }), {})
+
+    const counts = relevantSettings.
+      flatMap((s) => s.settings.filter(s => s.type === "ChooseNum")).
+      reduce((a, s) => ({ ...a, [s.key]: 0 }), {})
 
     campaignLog.value = { keys: [], counts, options: [], sets }
 
@@ -326,17 +334,20 @@ const filterSettings = function() {
   }, { keys: [], sets: [], options: [], counts: [], forcedKeys: [], forcedSets: {} })
 
   const onlyUnique = (value, index, self) => {
-    const idx = self.findIndex((s) => {
-      if(s.scope && value.scope) {
-        return s.key === value.key && s.scope === value.scope
-      }
-      return s.key === value.key
-    })
+    const idx = self.findIndex((s) =>
+      s.scope && value.scope
+        ? s.key === value.key && s.scope === value.scope
+        : s.key === value.key
+    )
     return idx === index
   }
 
-  const keys = [...campaignLog.value.keys, ...active.forcedKeys].filter((k) => active.keys.some((a) => a.key === k.key && a.scope == k.scope))
-  const options = campaignLog.value.options.filter((k) => active.options.includes(k.key))
+  const keys = [...campaignLog.value.keys, ...active.forcedKeys].
+    filter((k) => active.keys.some((a) => a.key === k.key && a.scope == k.scope))
+
+  const options = campaignLog.value.options.
+    filter((k) => active.options.includes(k.key))
+
   const counts = {...Object.fromEntries(Object.entries(campaignLog.value.counts).filter(([k]) => active.counts.includes(k)))}
   const sets = {...Object.fromEntries(Object.entries(campaignLog.value.sets).filter(([k]) => active.sets.includes(k))), ...active.forcedSets}
 

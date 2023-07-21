@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BetweenWorlds
-  ( betweenWorlds
-  , BetweenWorlds(..)
-  ) where
+module Arkham.Location.Cards.BetweenWorlds (
+  betweenWorlds,
+  BetweenWorlds (..),
+) where
 
 import Arkham.Prelude
 
@@ -37,12 +37,13 @@ instance RunMessage BetweenWorlds where
             asTreachery =
               lookupEncounterCard Treacheries.betweenWorlds (toCardId attrs)
           enemies <- selectList $ enemyAt (toId attrs)
+          pushAll $
+            [EnemyMove enemy (toId attrs) | enemy <- enemies]
+              <> [RemoveLocation (toId attrs), AddToEncounterDiscard asTreachery]
+        else
           pushAll
-            $ [ EnemyMove enemy (toId attrs) | enemy <- enemies ]
-            <> [RemoveLocation (toId attrs), AddToEncounterDiscard asTreachery]
-        else pushAll
-          [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
-          | iid <- iids
-          ]
+            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
+            | iid <- iids
+            ]
       pure l
     _ -> BetweenWorlds <$> runMessage msg attrs

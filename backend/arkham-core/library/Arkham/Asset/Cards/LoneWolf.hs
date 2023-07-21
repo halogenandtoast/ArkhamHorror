@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LoneWolf
-  ( loneWolf
-  , LoneWolf(..)
-  ) where
+module Arkham.Asset.Cards.LoneWolf (
+  loneWolf,
+  LoneWolf (..),
+) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BalconySpectral
-  ( balconySpectral
-  , BalconySpectral(..)
-  ) where
+module Arkham.Location.Cards.BalconySpectral (
+  balconySpectral,
+  BalconySpectral (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,19 +21,20 @@ balconySpectral =
   location BalconySpectral Cards.balconySpectral 1 (PerPlayer 1)
 
 instance HasAbilities BalconySpectral where
-  getAbilities (BalconySpectral attrs) = withBaseAbilities
-    attrs
-    [haunted "Each of your cards with health takes 1 direct damage." attrs 1]
+  getAbilities (BalconySpectral attrs) =
+    withBaseAbilities
+      attrs
+      [haunted "Each of your cards with health takes 1 direct damage." attrs 1]
 
 instance RunMessage BalconySpectral where
   runMessage msg l@(BalconySpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       assets <- selectList $ assetControlledBy iid <> AssetWithHealth
-      push
-        $ chooseOneAtATime iid
-        $ targetLabel iid [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-        : [ targetLabel asset [AssetDamage asset (toSource attrs) 1 0]
-          | asset <- assets
-          ]
+      push $
+        chooseOneAtATime iid $
+          targetLabel iid [InvestigatorDirectDamage iid (toSource attrs) 1 0]
+            : [ targetLabel asset [AssetDamage asset (toSource attrs) 1 0]
+              | asset <- assets
+              ]
       pure l
     _ -> BalconySpectral <$> runMessage msg attrs

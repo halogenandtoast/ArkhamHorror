@@ -2,9 +2,9 @@ module Arkham.Classes.HasModifiersFor where
 
 import Arkham.Prelude
 
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Modifier
 import Arkham.Target
-import {-# SOURCE #-} Arkham.GameEnv
 
 class HasModifiersFor a where
   getModifiersFor :: (HasCallStack, HasGame m) => Target -> a -> m [Modifier]

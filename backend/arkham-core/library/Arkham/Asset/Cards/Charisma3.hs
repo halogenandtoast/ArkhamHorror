@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Charisma3
-  ( charisma3
-  , Charisma3(..)
-  ) where
+module Arkham.Asset.Cards.Charisma3 (
+  charisma3,
+  Charisma3 (..),
+) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TheBellTolls
-  ( theBellTolls
-  , TheBellTolls(..)
-  ) where
+module Arkham.Treachery.Cards.TheBellTolls (
+  theBellTolls,
+  TheBellTolls (..),
+) where
 
 import Arkham.Prelude
 

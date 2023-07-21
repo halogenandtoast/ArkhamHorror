@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.LostInTheWilds
-  ( lostInTheWilds
-  , LostInTheWilds(..)
-  ) where
+module Arkham.Treachery.Cards.LostInTheWilds (
+  lostInTheWilds,
+  LostInTheWilds (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype LostInTheWilds = LostInTheWilds TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostInTheWilds :: TreacheryCard LostInTheWilds
@@ -24,16 +24,19 @@ lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds
 
 instance HasModifiersFor LostInTheWilds where
   getModifiersFor (InvestigatorTarget iid) (LostInTheWilds attrs) =
-    pure $ if treacheryOnInvestigator iid attrs
-      then toModifiers attrs [CannotMove, CannotExplore]
-      else []
+    pure $
+      if treacheryOnInvestigator iid attrs
+        then toModifiers attrs [CannotMove, CannotExplore]
+        else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWilds where
   getAbilities (LostInTheWilds a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds
-        Timing.When
-        You
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ForcedAbility $
+          TurnEnds
+            Timing.When
+            You
     ]
 
 instance RunMessage LostInTheWilds where
@@ -41,7 +44,7 @@ instance RunMessage LostInTheWilds where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillWillpower 3
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n -> do
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n -> do
       pushAll
         [ InvestigatorAssignDamage iid source DamageAny n 0
         , AttachTreachery (toId attrs) $ InvestigatorTarget iid

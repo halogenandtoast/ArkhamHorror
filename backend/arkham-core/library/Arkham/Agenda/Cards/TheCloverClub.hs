@@ -1,14 +1,14 @@
-module Arkham.Agenda.Cards.TheCloverClub
-  ( TheCloverClub(..)
-  , theCloverClub
-  ) where
+module Arkham.Agenda.Cards.TheCloverClub (
+  TheCloverClub (..),
+  theCloverClub,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCloverClub :: AgendaCard TheCloverClub
@@ -29,23 +29,26 @@ instance HasModifiersFor TheCloverClub where
   getModifiersFor (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
       isCriminal <- member eid <$> select (EnemyWithTrait Criminal)
-      pure $ toModifiers attrs [ AddKeyword Aloof | isCriminal ]
+      pure $ toModifiers attrs [AddKeyword Aloof | isCriminal]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheCloverClub where
   getAbilities (TheCloverClub x) =
-    [ mkAbility x 1 $ ForcedAbility $ EnemyDealtDamage
-        Timing.When
-        AnyDamageEffect
-        (EnemyWithTrait Criminal)
-        AnySource
+    [ mkAbility x 1 $
+      ForcedAbility $
+        EnemyDealtDamage
+          Timing.When
+          AnyDamageEffect
+          (EnemyWithTrait Criminal)
+          AnySource
     | onSide A x
     ]
 
 instance RunMessage TheCloverClub where
   runMessage msg a@(TheCloverClub attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAgenda $ toId attrs)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       completedExtracurricularActivity <-
@@ -55,12 +58,13 @@ instance RunMessage TheCloverClub where
       let
         continueMessages =
           [ ShuffleEncounterDiscardBackIn
-            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-            ]
-            <> [ AdvanceCurrentAgenda | completedExtracurricularActivity ]
+          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+          ]
+            <> [AdvanceCurrentAgenda | completedExtracurricularActivity]
 
-      a <$ pushAll
-        (map EnemyCheckEngagement enemyIds
-        <> [chooseOne leadInvestigatorId [Label "Continue" continueMessages]]
-        )
+      a
+        <$ pushAll
+          ( map EnemyCheckEngagement enemyIds
+              <> [chooseOne leadInvestigatorId [Label "Continue" continueMessages]]
+          )
     _ -> TheCloverClub <$> runMessage msg attrs

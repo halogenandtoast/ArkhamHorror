@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.WhispersInYourHeadDismay
-  ( whispersInYourHeadDismay
-  , WhispersInYourHeadDismay(..)
-  ) where
+module Arkham.Treachery.Cards.WhispersInYourHeadDismay (
+  whispersInYourHeadDismay,
+  WhispersInYourHeadDismay (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype WhispersInYourHeadDismay = WhispersInYourHeadDismay TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whispersInYourHeadDismay :: TreacheryCard WhispersInYourHeadDismay
@@ -25,11 +25,12 @@ whispersInYourHeadDismay =
 
 instance HasModifiersFor WhispersInYourHeadDismay where
   getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDismay a) =
-    pure $ toModifiers
-      a
-      [ CannotCommitCards $ CardWithType SkillType
-      | treacheryInHandOf a == Just iid
-      ]
+    pure $
+      toModifiers
+        a
+        [ CannotCommitCards $ CardWithType SkillType
+        | treacheryInHandOf a == Just iid
+        ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadDismay where
@@ -38,8 +39,10 @@ instance HasAbilities WhispersInYourHeadDismay where
 
 instance RunMessage WhispersInYourHeadDismay where
   runMessage msg t@(WhispersInYourHeadDismay attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (addHiddenToHand iid attrs)
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (addHiddenToHand iid attrs)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> WhispersInYourHeadDismay <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MrPeabody
-  ( mrPeabody
-  , MrPeabody(..)
-  ) where
+module Arkham.Asset.Cards.MrPeabody (
+  mrPeabody,
+  MrPeabody (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,21 +20,24 @@ mrPeabody = ally MrPeabody Cards.mrPeabody (2, 2)
 
 instance HasAbilities MrPeabody where
   getAbilities (MrPeabody attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, ExhaustCost $ toTarget attrs]
+    [ restrictedAbility attrs 1 ControlsThis $
+        ActionAbility Nothing $
+          Costs
+            [ActionCost 1, ExhaustCost $ toTarget attrs]
     ]
 
 instance RunMessage MrPeabody where
   runMessage msg a@(MrPeabody attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locations <- selectListMap LocationTarget Anywhere
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              target
-              [CreateEffect (toCardCode attrs) Nothing source target]
-          | target <- locations
-          ]
-        )
+      a
+        <$ push
+          ( chooseOne
+              iid
+              [ TargetLabel
+                target
+                [CreateEffect (toCardCode attrs) Nothing source target]
+              | target <- locations
+              ]
+          )
     _ -> MrPeabody <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheyMustBeDestroyed
-  ( TheyMustBeDestroyed(..)
-  , theyMustBeDestroyed
-  ) where
+module Arkham.Act.Cards.TheyMustBeDestroyed (
+  TheyMustBeDestroyed (..),
+  theyMustBeDestroyed,
+) where
 
 import Arkham.Prelude
 
@@ -22,24 +22,30 @@ theyMustBeDestroyed =
   act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed Nothing
 
 instance HasAbilities TheyMustBeDestroyed where
-  getAbilities (TheyMustBeDestroyed x) | onSide A x =
-    [ restrictedAbility
-          x
-          1
-          (Negate $ AnyCriterion
-            [ EnemyCriteria $ EnemyExists $ EnemyWithTitle
-              "Brood of Yog-Sothoth"
-            , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
-            ]
-          )
-        $ ForcedAbility AnyWindow
-    ]
+  getAbilities (TheyMustBeDestroyed x)
+    | onSide A x =
+        [ restrictedAbility
+            x
+            1
+            ( Negate $
+                AnyCriterion
+                  [ EnemyCriteria $
+                      EnemyExists $
+                        EnemyWithTitle
+                          "Brood of Yog-Sothoth"
+                  , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
+                  ]
+            )
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 2)
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _
+      | aid == toId attrs && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 2)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> TheyMustBeDestroyed <$> runMessage msg attrs

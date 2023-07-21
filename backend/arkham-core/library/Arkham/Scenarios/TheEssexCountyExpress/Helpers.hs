@@ -4,9 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Direction
-import Arkham.Matcher
 import Arkham.GameEnv
 import Arkham.Id
+import Arkham.Matcher
 
 leftmostLocation :: HasGame m => LocationId -> m LocationId
 leftmostLocation lid = do

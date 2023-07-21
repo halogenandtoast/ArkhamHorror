@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.MadnessDrowns
-  ( MadnessDrowns(..)
-  , madnessDrowns
-  ) where
+module Arkham.Agenda.Cards.MadnessDrowns (
+  MadnessDrowns (..),
+  madnessDrowns,
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype MadnessDrowns = MadnessDrowns AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 madnessDrowns :: AgendaCard MadnessDrowns
@@ -24,23 +24,24 @@ madnessDrowns = agenda (2, A) MadnessDrowns Cards.madnessDrowns (Static 7)
 instance HasModifiersFor MadnessDrowns where
   getModifiersFor (EnemyTarget eid) (MadnessDrowns a) = do
     isHastur <- eid `isMatch` EnemyWithTitle "Hastur"
-    pure $ toModifiers a [ EnemyFight 1 | isHastur ]
+    pure $ toModifiers a [EnemyFight 1 | isHastur]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MadnessDrowns where
-  getAbilities (MadnessDrowns a) | onSide A a =
-    [ restrictedAbility
-          a
-          1
-          (EnemyCriteria
-          $ EnemyExists
-              (EnemyWithTitle "Hastur"
-              <> EnemyWithDamage (AtLeast $ PerPlayer 5)
-              )
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
-    ]
+  getAbilities (MadnessDrowns a)
+    | onSide A a =
+        [ restrictedAbility
+            a
+            1
+            ( EnemyCriteria $
+                EnemyExists
+                  ( EnemyWithTitle "Hastur"
+                      <> EnemyWithDamage (AtLeast $ PerPlayer 5)
+                  )
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage MadnessDrowns where
@@ -48,10 +49,11 @@ instance RunMessage MadnessDrowns where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
       beastOfAldebaran <- getSetAsideCard Enemies.beastOfAldebaran
-      createBeastOfAldebaran <- createEnemyAt_
-        beastOfAldebaran
-        palaceOfTheKing
-        Nothing
+      createBeastOfAldebaran <-
+        createEnemyAt_
+          beastOfAldebaran
+          palaceOfTheKing
+          Nothing
       pushAll
         [ createBeastOfAldebaran
         , ShuffleEncounterDiscardBackIn

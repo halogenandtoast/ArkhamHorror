@@ -1,12 +1,12 @@
-module Arkham.Location.Cards.NorthTower_288
-  ( northTower_288
-  , NorthTower_288(..)
-  ) where
+module Arkham.Location.Cards.NorthTower_288 (
+  northTower_288,
+  NorthTower_288 (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Sequence ( AgendaSide (A, C) )
-import Arkham.Agenda.Types ( Field (AgendaDoom) )
+import Arkham.Agenda.Sequence (AgendaSide (A, C))
+import Arkham.Agenda.Types (Field (AgendaDoom))
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype NorthTower_288 = NorthTower_288 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 northTower_288 :: LocationCard NorthTower_288
@@ -35,9 +35,10 @@ instance HasModifiersFor NorthTower_288 where
             aDoom <- field AgendaDoom agendaA
             cDoom <- field AgendaDoom agendaC
             let atOuterWall = iid `member` locationInvestigators a
-            pure $ toModifiers
-              a
-              [ Difficulty (-1) | atOuterWall && aDoom > cDoom ]
+            pure $
+              toModifiers
+                a
+                [Difficulty (-1) | atOuterWall && aDoom > cDoom]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []

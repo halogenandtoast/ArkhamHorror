@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LeMarais217
-  ( leMarais217
-  , LeMarais217(..)
-  ) where
+module Arkham.Location.Cards.LeMarais217 (
+  leMarais217,
+  LeMarais217 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,15 +22,17 @@ leMarais217 :: LocationCard LeMarais217
 leMarais217 = location LeMarais217 Cards.leMarais217 3 (PerPlayer 1)
 
 instance HasAbilities LeMarais217 where
-  getAbilities (LeMarais217 attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerRound 1) $ restrictedAbility
-        attrs
-        1
-        Here
-        (ReactionAbility (TurnBegins Timing.When You) Free)
-    | locationRevealed attrs
-    ]
+  getAbilities (LeMarais217 attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerRound 1) $
+        restrictedAbility
+          attrs
+          1
+          Here
+          (ReactionAbility (TurnBegins Timing.When You) Free)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage LeMarais217 where
   runMessage msg l@(LeMarais217 attrs) = case msg of

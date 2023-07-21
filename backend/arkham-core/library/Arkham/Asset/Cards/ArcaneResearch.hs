@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ArcaneResearch
-  ( arcaneResearch
-  , ArcaneResearch(..)
-  ) where
+module Arkham.Asset.Cards.ArcaneResearch (
+  arcaneResearch,
+  ArcaneResearch (..),
+) where
 
 import Arkham.Prelude
 

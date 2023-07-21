@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.RehearsalRoom
-  ( rehearsalRoom
-  , RehearsalRoom(..)
-  ) where
+module Arkham.Location.Cards.RehearsalRoom (
+  rehearsalRoom,
+  RehearsalRoom (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,18 +22,22 @@ rehearsalRoom :: LocationCard RehearsalRoom
 rehearsalRoom = location RehearsalRoom Cards.rehearsalRoom 1 (PerPlayer 1)
 
 instance HasAbilities RehearsalRoom where
-  getAbilities (RehearsalRoom attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ SkillTestResult
-        Timing.After
-        You
-        (WhileInvestigating $ LocationWithId $ toId attrs)
-        (SuccessResult $ AtLeast $ Static 2)
-    | locationRevealed attrs
-    ]
+  getAbilities (RehearsalRoom attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+            (SuccessResult $ AtLeast $ Static 2)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage RehearsalRoom where
   runMessage msg l@(RehearsalRoom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> RehearsalRoom <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.BetweenWorlds
-  ( betweenWorlds
-  , BetweenWorlds(..)
-  ) where
+module Arkham.Treachery.Cards.BetweenWorlds (
+  betweenWorlds,
+  BetweenWorlds (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding ( Discarded )
+import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Treachery.Cards qualified as Cards
@@ -35,8 +35,8 @@ instance RunMessage BetweenWorlds where
       pushAll
         [ PlaceLocation locationId (EncounterCard asLocation)
         , SetLocationLabel
-          locationId
-          (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
+            locationId
+            (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
         , AddDirectConnection locationId nexus
         , AddDirectConnection nexus locationId
         , MoveTo $ move (toSource attrs) iid locationId

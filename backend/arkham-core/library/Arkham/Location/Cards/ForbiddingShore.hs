@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.ForbiddingShore
-  ( forbiddingShore
-  , ForbiddingShore(..)
-  )
+module Arkham.Location.Cards.ForbiddingShore (
+  forbiddingShore,
+  ForbiddingShore (..),
+)
 where
 
 import Arkham.Prelude
@@ -20,7 +20,8 @@ forbiddingShore = location ForbiddingShore Cards.forbiddingShore 3 (PerPlayer 1)
 instance HasAbilities ForbiddingShore where
   getAbilities (ForbiddingShore attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage ForbiddingShore where
   runMessage msg (ForbiddingShore attrs) =

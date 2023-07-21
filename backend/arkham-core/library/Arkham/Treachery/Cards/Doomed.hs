@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.Doomed
-  ( doomed
-  , Doomed(..)
-  ) where
+module Arkham.Treachery.Cards.Doomed (
+  doomed,
+  Doomed (..),
+) where
 
 import Arkham.Prelude
 
@@ -31,21 +31,22 @@ instance RunMessage Doomed where
           case toCard attrs of
             VengeanceCard _ -> error "not a vengeance card"
             EncounterCard _ -> error "not an encounter card"
-            PlayerCard pc -> pushAll
-              [ InvestigatorAssignDamage iid source DamageAny 0 1
-              , RemoveCardFromDeckForCampaign iid pc
-              , AddCardToDeckForCampaign iid accursedFate
-              , PutCardOnBottomOfDeck
-                iid
-                (Deck.InvestigatorDeck iid)
-                (toCard accursedFate)
-              , RemoveTreachery (toId attrs)
-              ]
+            PlayerCard pc ->
+              pushAll
+                [ InvestigatorAssignDamage iid source DamageAny 0 1
+                , RemoveCardFromDeckForCampaign iid pc
+                , AddCardToDeckForCampaign iid accursedFate
+                , PutCardOnBottomOfDeck
+                    iid
+                    (Deck.InvestigatorDeck iid)
+                    (toCard accursedFate)
+                , RemoveTreachery (toId attrs)
+                ]
         else do
-          pushAll
-            $ [ InvestigatorAssignDamage iid source DamageAny 0 1
-              , Record DoomApproaches
-              ]
+          pushAll $
+            [ InvestigatorAssignDamage iid source DamageAny 0 1
+            , Record DoomApproaches
+            ]
 
       pure t
     _ -> Doomed <$> runMessage msg attrs

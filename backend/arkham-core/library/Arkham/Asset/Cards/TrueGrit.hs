@@ -1,13 +1,13 @@
-module Arkham.Asset.Cards.TrueGrit
-  ( trueGrit
-  , TrueGrit(..)
-  ) where
+module Arkham.Asset.Cards.TrueGrit (
+  trueGrit,
+  TrueGrit (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 
 newtype TrueGrit = TrueGrit AssetAttrs
@@ -20,12 +20,12 @@ trueGrit = assetWith TrueGrit Cards.trueGrit (healthL ?~ 3)
 instance HasModifiersFor TrueGrit where
   getModifiersFor (InvestigatorTarget iid) (TrueGrit a)
     | not (controlledBy a iid) = do
-      locationId <- field InvestigatorLocation iid
-      assetLocationId <- field AssetLocation (toId a)
-      pure
-        [ toModifier a (CanAssignDamageToAsset $ toId a)
-        | (locationId == assetLocationId) && isJust locationId
-        ]
+        locationId <- field InvestigatorLocation iid
+        assetLocationId <- field AssetLocation (toId a)
+        pure
+          [ toModifier a (CanAssignDamageToAsset $ toId a)
+          | (locationId == assetLocationId) && isJust locationId
+          ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TrueGrit where

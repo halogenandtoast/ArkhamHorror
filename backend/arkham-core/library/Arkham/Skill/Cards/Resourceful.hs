@@ -1,16 +1,16 @@
-module Arkham.Skill.Cards.Resourceful
-  ( resourceful
-  , Resourceful(..)
-  ) where
+module Arkham.Skill.Cards.Resourceful (
+  resourceful,
+  Resourceful (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype Resourceful = Resourceful SkillAttrs
@@ -23,20 +23,24 @@ resourceful = skill Resourceful Cards.resourceful
 instance RunMessage Resourceful where
   runMessage msg s@(Resourceful attrs) = case msg of
     PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
-      targets <- selectList
-        (InDiscardOf (InvestigatorWithId $ skillOwner attrs) <> BasicCardMatch
-          (CardWithClass Survivor <> NotCard (CardWithTitle "Resourceful"))
-        )
-      s <$ when
-        (notNull targets)
-        (push $ chooseOne
-          (skillOwner attrs)
-          [ TargetLabel
-              (CardIdTarget $ toCardId card)
-              [ RemoveFromDiscard (skillOwner attrs) (toCardId card)
-              , addToHand (skillOwner attrs) card
-              ]
-          | card <- targets
-          ]
-        )
+      targets <-
+        selectList
+          ( InDiscardOf (InvestigatorWithId $ skillOwner attrs)
+              <> BasicCardMatch
+                (CardWithClass Survivor <> NotCard (CardWithTitle "Resourceful"))
+          )
+      s
+        <$ when
+          (notNull targets)
+          ( push $
+              chooseOne
+                (skillOwner attrs)
+                [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ RemoveFromDiscard (skillOwner attrs) (toCardId card)
+                  , addToHand (skillOwner attrs) card
+                  ]
+                | card <- targets
+                ]
+          )
     _ -> Resourceful <$> runMessage msg attrs

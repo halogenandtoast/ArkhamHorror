@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.TrialByFire
-  ( trialByFire
-  , TrialByFire(..)
-  ) where
+module Arkham.Event.Cards.TrialByFire (
+  trialByFire,
+  TrialByFire (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,9 +24,10 @@ trialByFire = event TrialByFire Cards.trialByFire
 instance RunMessage TrialByFire where
   runMessage msg e@(TrialByFire attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ chooseOne
-        iid
-        [ SkillLabel
+      push $
+        chooseOne
+          iid
+          [ SkillLabel
             skill
             [ CreateWindowModifierEffect
                 EffectTurnWindow
@@ -34,7 +35,7 @@ instance RunMessage TrialByFire where
                 (toSource attrs)
                 (InvestigatorTarget iid)
             ]
-        | skill <- allSkills
-        ]
+          | skill <- allSkills
+          ]
       pure e
     _ -> TrialByFire <$> runMessage msg attrs

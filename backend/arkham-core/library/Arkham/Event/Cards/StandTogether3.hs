@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.StandTogether3
-  ( standTogether3
-  , StandTogether3(..)
-  ) where
+module Arkham.Event.Cards.StandTogether3 (
+  standTogether3,
+  StandTogether3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -29,16 +29,16 @@ instance RunMessage StandTogether3 where
           investigators <- forToSnd xs $ \x -> drawCards x attrs 2
           pushAll
             [ chooseOrRunOne
-              iid
-              [ TargetLabel
+                iid
+                [ TargetLabel
                   (InvestigatorTarget x)
                   [ TakeResources iid 2 (toSource attrs) False
                   , TakeResources x 2 (toSource attrs) False
                   , drawing1
                   , drawing2
                   ]
-              | (x, drawing2) <- investigators
-              ]
+                | (x, drawing2) <- investigators
+                ]
             ]
       pure e
     _ -> StandTogether3 <$> runMessage msg attrs

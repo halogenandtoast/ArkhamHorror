@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.ForkedPath
-  ( forkedPath
-  , ForkedPath(..)
-  ) where
+module Arkham.Location.Cards.ForkedPath (
+  forkedPath,
+  ForkedPath (..),
+) where
 
 import Arkham.Prelude
 
@@ -28,21 +28,22 @@ forkedPath = symbolLabel $ location ForkedPath Cards.forkedPath 2 (PerPlayer 2)
 -- and choose 1 to move to
 
 instance HasAbilities ForkedPath where
-  getAbilities (ForkedPath attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
-        attrs
-        1
-        (Here <> InvestigatorExists (You <> InvestigatorWithSupply Map))
-      $ ForcedAbility
-      $ AttemptExplore Timing.When You
-    ]
+  getAbilities (ForkedPath attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
+          attrs
+          1
+          (Here <> InvestigatorExists (You <> InvestigatorWithSupply Map))
+          $ ForcedAbility
+          $ AttemptExplore Timing.When You
+      ]
 
 instance RunMessage ForkedPath where
   runMessage msg l@(ForkedPath attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       popMessageMatching_ $ \case
-        Do (Explore{}) -> True
+        Do (Explore {}) -> True
         _ -> False
       explore
         iid

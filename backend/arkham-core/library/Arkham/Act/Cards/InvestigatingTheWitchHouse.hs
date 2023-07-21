@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.InvestigatingTheWitchHouse
-  ( InvestigatingTheWitchHouse(..)
-  , investigatingTheWitchHouse
-  ) where
+module Arkham.Act.Cards.InvestigatingTheWitchHouse (
+  InvestigatingTheWitchHouse (..),
+  investigatingTheWitchHouse,
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Classes
 import Arkham.Constants
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations 
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message
 
@@ -28,16 +28,16 @@ investigatingTheWitchHouse =
 instance HasAbilities InvestigatingTheWitchHouse where
   getAbilities (InvestigatingTheWitchHouse a) =
     [ restrictedAbility
-      a
-      ActAdvancement
-      ( DuringTurn Anyone
-      <> EachUndefeatedInvestigator (InvestigatorAt $ locationIs Locations.walterGilmansRoom)
-      )
-      ( Objective
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 3)
-        $ locationIs Locations.walterGilmansRoom
-      )
+        a
+        ActAdvancement
+        ( DuringTurn Anyone
+            <> EachUndefeatedInvestigator (InvestigatorAt $ locationIs Locations.walterGilmansRoom)
+        )
+        ( Objective $
+            FastAbility $
+              GroupClueCost (PerPlayer 3) $
+                locationIs Locations.walterGilmansRoom
+        )
     ]
 
 instance RunMessage InvestigatingTheWitchHouse where
@@ -50,16 +50,18 @@ instance RunMessage InvestigatingTheWitchHouse where
       otherLocations <- selectList $ NotLocation $ LocationWithId lid
       theBlackBook <- getSetAsideCard Assets.theBlackBook
       strangeGeometries <- getSetAsideCardsMatching (CardWithTitle "Strange Geometry")
-      pushAll $ ReplaceLocation lid keziahsRoom Swap : map RemoveLocation otherLocations <>
-        [ chooseOne
-            lead
-            [ targetLabel
-                iid
-                [TakeControlOfSetAsideAsset iid theBlackBook]
-            | iid <- iids
-            ]
-        , ShuffleCardsIntoDeck Deck.EncounterDeck strangeGeometries
-        , advanceActDeck attrs
-        ]
+      pushAll $
+        ReplaceLocation lid keziahsRoom Swap
+          : map RemoveLocation otherLocations
+            <> [ chooseOne
+                  lead
+                  [ targetLabel
+                    iid
+                    [TakeControlOfSetAsideAsset iid theBlackBook]
+                  | iid <- iids
+                  ]
+               , ShuffleCardsIntoDeck Deck.EncounterDeck strangeGeometries
+               , advanceActDeck attrs
+               ]
       pure a
     _ -> InvestigatingTheWitchHouse <$> runMessage msg attrs

@@ -1,15 +1,15 @@
-module Arkham.Treachery.Cards.TheCreaturesTracks
-  ( theCreaturesTracks
-  , TheCreaturesTracks(..)
-  ) where
+module Arkham.Treachery.Cards.TheCreaturesTracks (
+  theCreaturesTracks,
+  TheCreaturesTracks (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Message
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
@@ -25,16 +25,17 @@ instance RunMessage TheCreaturesTracks where
       anyBroodOfYogSothoth <- selectAny $ SetAsideCardMatch $ CardWithTitle broodTitle
       if anyBroodOfYogSothoth
         then push $ InvestigatorAssignDamage iid source DamageAny 0 2
-        else push
-          $ chooseOne
-            iid
-            [ Label
-              "Take 2 horror"
-              [InvestigatorAssignDamage iid source DamageAny 0 2]
-            , Label
-              "Spawn a set aside Brood of Yog-Sothoth at a random location"
-              [ChooseRandomLocation (toTarget attrs) mempty]
-            ]
+        else
+          push $
+            chooseOne
+              iid
+              [ Label
+                  "Take 2 horror"
+                  [InvestigatorAssignDamage iid source DamageAny 0 2]
+              , Label
+                  "Spawn a set aside Brood of Yog-Sothoth at a random location"
+                  [ChooseRandomLocation (toTarget attrs) mempty]
+              ]
       pure t
     ChosenRandomLocation target lid | isTarget attrs target -> do
       setAsideBroodOfYogSothoth <- getSetAsideBroodOfYogSothoth

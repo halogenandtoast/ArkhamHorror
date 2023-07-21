@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.WitchesCircle
-  ( witchesCircle
-  , WitchesCircle(..)
-  ) where
+module Arkham.Location.Cards.WitchesCircle (
+  witchesCircle,
+  WitchesCircle (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (Witch) )
+import Arkham.Trait (Trait (Witch))
 
 newtype WitchesCircle = WitchesCircle LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,22 +25,23 @@ witchesCircle :: LocationCard WitchesCircle
 witchesCircle = location WitchesCircle Cards.witchesCircle 3 (PerPlayer 3)
 
 instance HasAbilities WitchesCircle where
-  getAbilities (WitchesCircle a) = withBaseAbilities
-    a
-    [ restrictedAbility
-        a
-        1
-        (EnemyCriteria
-        $ EnemyExists
-        $ UnengagedEnemy
-        <> ReadyEnemy
-        <> EnemyWithTrait Witch
-        <> NotEnemy (EnemyAt $ LocationWithId $ toId a)
-        )
-      $ ForcedAbility
-      $ PhaseBegins Timing.After
-      $ PhaseIs EnemyPhase
-    ]
+  getAbilities (WitchesCircle a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility
+          a
+          1
+          ( EnemyCriteria $
+              EnemyExists $
+                UnengagedEnemy
+                  <> ReadyEnemy
+                  <> EnemyWithTrait Witch
+                  <> NotEnemy (EnemyAt $ LocationWithId $ toId a)
+          )
+          $ ForcedAbility
+          $ PhaseBegins Timing.After
+          $ PhaseIs EnemyPhase
+      ]
 
 instance RunMessage WitchesCircle where
   runMessage msg l@(WitchesCircle attrs) = case msg of
@@ -51,18 +52,20 @@ instance RunMessage WitchesCircle where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       lead <- getLead
       enemiesToMove <-
-        selectList
-        $ UnengagedEnemy
-        <> ReadyEnemy
-        <> EnemyWithTrait Witch
-        <> NotEnemy (EnemyAt $ LocationWithId $ toId attrs)
+        selectList $
+          UnengagedEnemy
+            <> ReadyEnemy
+            <> EnemyWithTrait Witch
+            <> NotEnemy (EnemyAt $ LocationWithId $ toId attrs)
 
-      unless (null enemiesToMove) $ push $ chooseOneAtATime
-        lead
-        [ targetLabel
-            enemy
-            [MoveToward (toTarget enemy) (LocationWithId $ toId attrs)]
-        | enemy <- enemiesToMove
-        ]
+      unless (null enemiesToMove) $
+        push $
+          chooseOneAtATime
+            lead
+            [ targetLabel
+              enemy
+              [MoveToward (toTarget enemy) (LocationWithId $ toId attrs)]
+            | enemy <- enemiesToMove
+            ]
       pure l
     _ -> WitchesCircle <$> runMessage msg attrs

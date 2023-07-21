@@ -1,13 +1,13 @@
-module Arkham.Asset.Cards.LeatherCoat1
-  ( leatherCoat1
-  , LeatherCoat1(..)
-  ) where
+module Arkham.Asset.Cards.LeatherCoat1 (
+  leatherCoat1,
+  LeatherCoat1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding ( AssetDefeated )
+import Arkham.Asset.Runner hiding (AssetDefeated)
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -20,11 +20,11 @@ leatherCoat1 = assetWith LeatherCoat1 Cards.leatherCoat1 (healthL ?~ 4)
 
 instance HasAbilities LeatherCoat1 where
   getAbilities (LeatherCoat1 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ForcedAbility
-        $ AssetDefeated Timing.When ByDamage
-        $ AssetWithId
-        $ toId a
+    [ restrictedAbility a 1 ControlsThis $
+        ForcedAbility $
+          AssetDefeated Timing.When ByDamage $
+            AssetWithId $
+              toId a
     ]
 
 instance RunMessage LeatherCoat1 where

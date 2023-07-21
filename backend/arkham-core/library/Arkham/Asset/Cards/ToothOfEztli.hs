@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ToothOfEztli
-  ( toothOfEztli
-  , ToothOfEztli(..)
-  ) where
+module Arkham.Asset.Cards.ToothOfEztli (
+  toothOfEztli,
+  ToothOfEztli (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ToothOfEztli = ToothOfEztli AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toothOfEztli :: AssetCard ToothOfEztli
@@ -22,24 +22,27 @@ toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 instance HasModifiersFor ToothOfEztli where
   getModifiersFor (InvestigatorTarget iid) (ToothOfEztli a)
     | controlledBy a iid = do
-      mSkillTestSource <- getSkillTestSource
-      case mSkillTestSource of
-        Just (SkillTestSource _ _ (TreacherySource _) _) -> pure $ toModifiers
-          a
-          [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
-        _ -> pure []
+        mSkillTestSource <- getSkillTestSource
+        case mSkillTestSource of
+          Just (SkillTestSource _ _ (TreacherySource _) _) ->
+            pure $
+              toModifiers
+                a
+                [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ToothOfEztli where
   getAbilities (ToothOfEztli x) =
-    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
-        (SkillTestResult
-          Timing.After
-          You
-          (SkillTestOnTreachery AnyTreachery)
-          (SuccessResult AnyValue)
-        )
-        (ExhaustCost $ toTarget x)
+    [ restrictedAbility x 1 ControlsThis $
+        ReactionAbility
+          ( SkillTestResult
+              Timing.After
+              You
+              (SkillTestOnTreachery AnyTreachery)
+              (SuccessResult AnyValue)
+          )
+          (ExhaustCost $ toTarget x)
     ]
 
 instance RunMessage ToothOfEztli where

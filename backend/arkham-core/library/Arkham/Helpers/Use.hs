@@ -16,4 +16,3 @@ toStartingUses (UsesWithLimit uType gameValue limitValue) = do
   limit <- getPlayerCountValue limitValue
   pure $ UsesWithLimit uType value limit
 toStartingUses NoUses = pure NoUses
-

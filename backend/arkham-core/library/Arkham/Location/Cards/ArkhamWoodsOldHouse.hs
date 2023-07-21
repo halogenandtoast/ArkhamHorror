@@ -13,12 +13,13 @@ newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse
-arkhamWoodsOldHouse = locationWith
-  ArkhamWoodsOldHouse
-  Cards.arkhamWoodsOldHouse
-  2
-  (PerPlayer 1)
-  (investigateSkillL .~ SkillWillpower)
+arkhamWoodsOldHouse =
+  locationWith
+    ArkhamWoodsOldHouse
+    Cards.arkhamWoodsOldHouse
+    2
+    (PerPlayer 1)
+    (investigateSkillL .~ SkillWillpower)
 
 instance RunMessage ArkhamWoodsOldHouse where
   runMessage msg (ArkhamWoodsOldHouse attrs) =

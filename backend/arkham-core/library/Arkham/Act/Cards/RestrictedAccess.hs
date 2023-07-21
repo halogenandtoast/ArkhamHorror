@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.RestrictedAccess
-  ( RestrictedAccess(..)
-  , restrictedAccess
-  ) where
+module Arkham.Act.Cards.RestrictedAccess (
+  RestrictedAccess (..),
+  restrictedAccess,
+) where
 
 import Arkham.Prelude
 
@@ -24,20 +24,20 @@ restrictedAccess = act (2, A) RestrictedAccess Cards.restrictedAccess Nothing
 instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess a) =
     [ restrictedAbility
-          a
-          1
-          (AtLeastNCriteriaMet
-            3
-            [ AssetExists (assetIs Assets.theCustodian <> ControlledAsset)
-            , Remembered FoundTheProcess
-            , Remembered DissectedAnOrgan
-            , Remembered InterviewedASubject
-            , Remembered RealizedWhatYearItIs
-            , Remembered ActivatedTheDevice
-            ]
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( AtLeastNCriteriaMet
+          3
+          [ AssetExists (assetIs Assets.theCustodian <> ControlledAsset)
+          , Remembered FoundTheProcess
+          , Remembered DissectedAnOrgan
+          , Remembered InterviewedASubject
+          , Remembered RealizedWhatYearItIs
+          , Remembered ActivatedTheDevice
+          ]
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide A a
     ]
 

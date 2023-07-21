@@ -196,7 +196,7 @@ instance Sourceable ScenarioAttrs where
   isSource _ _ = False
 
 data Scenario where
-  Scenario :: (IsScenario a) => a -> Scenario
+  Scenario :: IsScenario a => a -> Scenario
 
 instance Targetable Scenario where
   toTarget _ = ScenarioTarget

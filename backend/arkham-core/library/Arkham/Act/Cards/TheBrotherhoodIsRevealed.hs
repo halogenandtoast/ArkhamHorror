@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheBrotherhoodIsRevealed
-  ( TheBrotherhoodIsRevealed(..)
-  , theBrotherhoodIsRevealed
-  ) where
+module Arkham.Act.Cards.TheBrotherhoodIsRevealed (
+  TheBrotherhoodIsRevealed (..),
+  theBrotherhoodIsRevealed,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types ( Field (EnemyLocation) )
+import Arkham.Enemy.Types (Field (EnemyLocation))
 import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -21,20 +21,21 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
-newtype Metadata = Metadata { mariaDeSilvasLocation :: Maybe LocationId }
+newtype Metadata = Metadata {mariaDeSilvasLocation :: Maybe LocationId}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheBrotherhoodIsRevealed = TheBrotherhoodIsRevealed (ActAttrs `With` Metadata)
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBrotherhoodIsRevealed :: ActCard TheBrotherhoodIsRevealed
-theBrotherhoodIsRevealed = act
-  (3, E)
-  (TheBrotherhoodIsRevealed . (`with` Metadata Nothing))
-  Cards.theBrotherhoodIsRevealed
-  Nothing
+theBrotherhoodIsRevealed =
+  act
+    (3, E)
+    (TheBrotherhoodIsRevealed . (`with` Metadata Nothing))
+    Cards.theBrotherhoodIsRevealed
+    Nothing
 
 instance HasModifiersFor TheBrotherhoodIsRevealed where
   getModifiersFor (EnemyTarget eid) (TheBrotherhoodIsRevealed (a `With` _)) =
@@ -43,20 +44,22 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
       atLocationWithoutClues <-
         selectAny $ locationWithEnemy eid <> LocationWithoutClues
       n <- getPlayerCountValue (PerPlayer 1)
-      pure $ if isPrey && atLocationWithoutClues
-        then toModifiers a [EnemyFight 1, HealthModifier n, EnemyEvade 1]
-        else []
+      pure $
+        if isPrey && atLocationWithoutClues
+          then toModifiers a [EnemyFight 1, HealthModifier n, EnemyEvade 1]
+          else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBrotherhoodIsRevealed where
-  getAbilities (TheBrotherhoodIsRevealed (a `With` _)) | onSide E a =
-    [ restrictedAbility
-          a
-          1
-          (Negate $ EnemyCriteria $ EnemyExists $ IsIchtacasPrey)
-        $ Objective
-        $ ForcedAbility AnyWindow
-    ]
+  getAbilities (TheBrotherhoodIsRevealed (a `With` _))
+    | onSide E a =
+        [ restrictedAbility
+            a
+            1
+            (Negate $ EnemyCriteria $ EnemyExists $ IsIchtacasPrey)
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage TheBrotherhoodIsRevealed where
@@ -69,33 +72,40 @@ instance RunMessage TheBrotherhoodIsRevealed where
         leadInvestigatorId <- getLeadInvestigatorId
         deckCount <- getActDecksInPlayCount
         ichtaca <- getSetAsideCard Assets.ichtacaTheForgottenGuardian
-        lid <- maybe
-          (selectJust $ locationIs Locations.blackCave)
-          pure
-          (mariaDeSilvasLocation metadata)
+        lid <-
+          maybe
+            (selectJust $ locationIs Locations.blackCave)
+            pure
+            (mariaDeSilvasLocation metadata)
         iids <- selectList $ NearestToLocation $ LocationWithId lid
         -- TODO: we need to know the prey details
         let
-          takeControlMessage = chooseOrRunOne
-            leadInvestigatorId
-            [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca] | iid <- iids ]
-          nextMessage = if deckCount <= 1
-            then ScenarioResolution $ Resolution 1
-            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
+          takeControlMessage =
+            chooseOrRunOne
+              leadInvestigatorId
+              [targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca] | iid <- iids]
+          nextMessage =
+            if deckCount <= 1
+              then ScenarioResolution $ Resolution 1
+              else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
         pushAll [takeControlMessage, nextMessage]
         pure a
       RemoveEnemy eid -> do
         isPrey <- isIchtacasPrey eid
-        isMariaDeSilva <- eid
-          <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
+        isMariaDeSilva <-
+          eid
+            <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
         if isPrey && isMariaDeSilva
           then do
-            location <- fieldMap
-              EnemyLocation
-              (fromJustNote "missing locatioN")
-              eid
-            pure . TheBrotherhoodIsRevealed $ attrs `with` Metadata
-              (Just location)
+            location <-
+              fieldMap
+                EnemyLocation
+                (fromJustNote "missing locatioN")
+                eid
+            pure . TheBrotherhoodIsRevealed $
+              attrs
+                `with` Metadata
+                  (Just location)
           else pure a
       _ ->
         TheBrotherhoodIsRevealed . (`with` metadata) <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.Ants
-  ( ants
-  , Ants(..)
-  ) where
+module Arkham.Treachery.Cards.Ants (
+  ants,
+  Ants (..),
+) where
 
 import Arkham.Prelude
 
@@ -28,20 +28,20 @@ instance RunMessage Ants where
     Revelation iid (isSource attrs -> True) -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillAgility 3
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+      do
         push $ RevelationChoice iid (toSource attrs) n
         pure t
     RevelationChoice iid (isSource attrs -> True) n | n > 0 -> do
       hasDiscardableAssets <-
         selectAny $ DiscardableAsset <> assetControlledBy iid
-      push
-        $ chooseOrRunOne iid
-        $ Label "Discard hand card" [toMessage $ chooseAndDiscardCard iid attrs]
-        : [ Label
-              "Discard a card from your play area"
-              [ChooseAndDiscardAsset iid (toSource attrs) DiscardableAsset]
-          | hasDiscardableAssets
-          ]
+      push $
+        chooseOrRunOne iid $
+          Label "Discard hand card" [toMessage $ chooseAndDiscardCard iid attrs]
+            : [ Label
+                "Discard a card from your play area"
+                [ChooseAndDiscardAsset iid (toSource attrs) DiscardableAsset]
+              | hasDiscardableAssets
+              ]
       pure t
     _ -> Ants <$> runMessage msg attrs

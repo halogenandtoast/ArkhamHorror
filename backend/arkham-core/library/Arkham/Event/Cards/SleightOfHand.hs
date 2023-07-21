@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.SleightOfHand
-  ( sleightOfHand
-  , SleightOfHand(..)
-  ) where
+module Arkham.Event.Cards.SleightOfHand (
+  sleightOfHand,
+  SleightOfHand (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,21 +24,23 @@ sleightOfHand = event SleightOfHand Cards.sleightOfHand
 instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      cards <- selectList
-        $ PlayableCard Cost.PaidCost
-        $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (CardWithTrait Item)
-      push $ chooseOne
-        iid
-        [ targetLabel
-          (toCardId card)
-          [ PutCardIntoPlay iid card (Just $ toTarget attrs) windows'
-          , CreateEffect
-            (toCardCode attrs)
-            Nothing
-            (toSource attrs)
-            (toTarget $ toCardId card)
+      cards <-
+        selectList $
+          PlayableCard Cost.PaidCost $
+            InHandOf (InvestigatorWithId iid) <> BasicCardMatch (CardWithTrait Item)
+      push $
+        chooseOne
+          iid
+          [ targetLabel
+            (toCardId card)
+            [ PutCardIntoPlay iid card (Just $ toTarget attrs) windows'
+            , CreateEffect
+                (toCardCode attrs)
+                Nothing
+                (toSource attrs)
+                (toTarget $ toCardId card)
+            ]
+          | card <- cards
           ]
-        | card <- cards
-        ]
       pure e
     _ -> SleightOfHand <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ColtVestPocket2
-  ( coltVestPocket2
-  , ColtVestPocket2(..)
-  ) where
+module Arkham.Asset.Cards.ColtVestPocket2 (
+  coltVestPocket2,
+  ColtVestPocket2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
-newtype Metadata = Metadata { abilityTriggered :: Bool }
+newtype Metadata = Metadata {abilityTriggered :: Bool}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -28,16 +28,20 @@ coltVestPocket2 =
 instance HasAbilities ColtVestPocket2 where
   getAbilities (ColtVestPocket2 (a `With` meta)) =
     restrictedAbility
-        a
-        1
-        ControlsThis
-        (ActionAbility (Just Action.Fight) $ ActionCost 1 <> UseCost
-          (AssetWithId $ toId a)
-          Ammo
-          1
-        )
-      : [ restrictedAbility a 2 ControlsThis $ ForcedAbility $ RoundEnds
-            Timing.When
+      a
+      1
+      ControlsThis
+      ( ActionAbility (Just Action.Fight) $
+          ActionCost 1
+            <> UseCost
+              (AssetWithId $ toId a)
+              Ammo
+              1
+      )
+      : [ restrictedAbility a 2 ControlsThis $
+          ForcedAbility $
+            RoundEnds
+              Timing.When
         | abilityTriggered meta
         ]
 
@@ -46,9 +50,9 @@ instance RunMessage ColtVestPocket2 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ skillTestModifiers
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          [SkillModifier SkillCombat 2, DamageDealt 1]
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            [SkillModifier SkillCombat 2, DamageDealt 1]
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure . ColtVestPocket2 $ attrs `with` Metadata True

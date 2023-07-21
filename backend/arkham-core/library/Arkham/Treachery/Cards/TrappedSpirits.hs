@@ -1,14 +1,14 @@
-module Arkham.Treachery.Cards.TrappedSpirits
-  ( trappedSpirits
-  , TrappedSpirits(..)
-  ) where
+module Arkham.Treachery.Cards.TrappedSpirits (
+  trappedSpirits,
+  TrappedSpirits (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -33,7 +33,7 @@ instance HasModifiersFor TrappedSpirits where
         case mlid of
           Just lid -> do
             isHaunted <- lid <=~> HauntedLocation
-            pure $ [ CommitCost (ResolveEachHauntedAbility lid) | isHaunted ]
+            pure $ [CommitCost (ResolveEachHauntedAbility lid) | isHaunted]
           Nothing -> pure []
       _ -> pure []
     pure $ toModifiers a modifiers
@@ -44,8 +44,8 @@ instance RunMessage TrappedSpirits where
     Revelation iid (isSource attrs -> True) -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillAgility 3
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+      do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny n 0
         pure t
     _ -> TrappedSpirits <$> runMessage msg attrs

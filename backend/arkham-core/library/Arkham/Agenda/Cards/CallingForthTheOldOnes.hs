@@ -1,13 +1,13 @@
-module Arkham.Agenda.Cards.CallingForthTheOldOnes
-  ( CallingForthTheOldOnes(..)
-  , callingForthTheOldOnes
-  ) where
+module Arkham.Agenda.Cards.CallingForthTheOldOnes (
+  CallingForthTheOldOnes (..),
+  callingForthTheOldOnes,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
@@ -23,9 +23,11 @@ callingForthTheOldOnes =
 instance RunMessage CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =
     case msg of
-      AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
-        a <$ pushAll
-          [ ShuffleEncounterDiscardBackIn
-          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-          ]
+      AdvanceAgenda aid
+        | aid == agendaId && onSide B attrs ->
+            a
+              <$ pushAll
+                [ ShuffleEncounterDiscardBackIn
+                , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+                ]
       _ -> CallingForthTheOldOnes <$> runMessage msg attrs

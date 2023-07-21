@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.CrypticWritings
-  ( crypticWritings
-  , CrypticWritings(..)
-  ) where
+module Arkham.Event.Cards.CrypticWritings (
+  crypticWritings,
+  CrypticWritings (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Matcher hiding ( DuringTurn )
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 
@@ -23,14 +23,15 @@ crypticWritings = event CrypticWritings Cards.crypticWritings
 
 instance HasAbilities CrypticWritings where
   getAbilities (CrypticWritings x) =
-    [ restrictedAbility x 1 (InYourHand <> DuringTurn You) $ ReactionAbility
-        (DrawCard
-          Timing.After
-          You
-          (BasicCardMatch $ CardWithId $ toCardId x)
-          AnyDeck
-        )
-        Free
+    [ restrictedAbility x 1 (InYourHand <> DuringTurn You) $
+        ReactionAbility
+          ( DrawCard
+              Timing.After
+              You
+              (BasicCardMatch $ CardWithId $ toCardId x)
+              AnyDeck
+          )
+          Free
     ]
 
 instance RunMessage CrypticWritings where
@@ -40,6 +41,6 @@ instance RunMessage CrypticWritings where
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _)
       | iid' == iid -> do
-        push $ InitiatePlayCard iid (toCard attrs) Nothing windows' False
-        pure e
+          push $ InitiatePlayCard iid (toCard attrs) Nothing windows' False
+          pure e
     _ -> CrypticWritings <$> runMessage msg attrs

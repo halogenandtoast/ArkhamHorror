@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.NarrowShaft
-  ( narrowShaft
-  , NarrowShaft(..)
-  ) where
+module Arkham.Location.Cards.NarrowShaft (
+  narrowShaft,
+  NarrowShaft (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,44 +25,48 @@ newtype NarrowShaft = NarrowShaft LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narrowShaft :: LocationCard NarrowShaft
-narrowShaft = locationWith
-  NarrowShaft
-  Cards.narrowShaft
-  2
-  (PerPlayer 1)
-  ((connectsToL .~ adjacentLocations)
-  . (costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+narrowShaft =
+  locationWith
+    NarrowShaft
+    Cards.narrowShaft
+    2
+    (PerPlayer 1)
+    ( (connectsToL .~ adjacentLocations)
+        . ( costToEnterUnrevealedL
+              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+          )
     )
-  )
 
 instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =
-    withBaseAbilities attrs $ if locationRevealed attrs
-      then
-        [ mkAbility attrs 1 $ ForcedAbility $ Moves
-          Timing.When
-          You
-          AnySource
-          (LocationWithId $ toId attrs)
-          UnrevealedLocation
-        , restrictedAbility
-          attrs
-          2
-          (AnyCriterion
-            [ Negate
-                (LocationExists
-                $ LocationInDirection dir (LocationWithId $ toId attrs)
-                )
-            | dir <- [Above, Below, RightOf]
-            ]
-          )
-        $ ForcedAbility
-        $ RevealLocation Timing.When Anyone
-        $ LocationWithId
-        $ toId attrs
-        ]
-      else []
+    withBaseAbilities attrs $
+      if locationRevealed attrs
+        then
+          [ mkAbility attrs 1 $
+              ForcedAbility $
+                Moves
+                  Timing.When
+                  You
+                  AnySource
+                  (LocationWithId $ toId attrs)
+                  UnrevealedLocation
+          , restrictedAbility
+              attrs
+              2
+              ( AnyCriterion
+                  [ Negate
+                    ( LocationExists $
+                        LocationInDirection dir (LocationWithId $ toId attrs)
+                    )
+                  | dir <- [Above, Below, RightOf]
+                  ]
+              )
+              $ ForcedAbility
+              $ RevealLocation Timing.When Anyone
+              $ LocationWithId
+              $ toId attrs
+          ]
+        else []
 
 instance RunMessage NarrowShaft where
   runMessage msg l@(NarrowShaft attrs) = case msg of
@@ -91,10 +95,10 @@ instance RunMessage NarrowShaft where
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
-          push
-            $ chooseOrRunOne iid
-            $ [ Label "Place Above" placeAbove | aboveEmpty ]
-            <> [ Label "Place to the Right" placeRight | rightEmpty ]
+          push $
+            chooseOrRunOne iid $
+              [Label "Place Above" placeAbove | aboveEmpty]
+                <> [Label "Place to the Right" placeRight | rightEmpty]
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

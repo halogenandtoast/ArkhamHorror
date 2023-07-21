@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TorturousDescent
-  ( TorturousDescent(..)
-  , torturousDescent
-  ) where
+module Arkham.Agenda.Cards.TorturousDescent (
+  TorturousDescent (..),
+  torturousDescent,
+) where
 
 import Arkham.Prelude
 
@@ -34,14 +34,15 @@ instance RunMessage TorturousDescent where
       spawnConstanceDumaineMessages <- do
         spawnConstanceDumaine <- not <$> slain Enemies.constanceDumaine
         card <- genCard Enemies.constanceDumaine
-        createConstanceDumaine <- createEnemyAtLocationMatching_ card
-          $ LocationWithTitle "Garden"
-        pure [ createConstanceDumaine | spawnConstanceDumaine ]
+        createConstanceDumaine <-
+          createEnemyAtLocationMatching_ card $
+            LocationWithTitle "Garden"
+        pure [createConstanceDumaine | spawnConstanceDumaine]
 
-      pushAll
-        $ [DrawRandomFromScenarioDeck lead MonstersDeck (toTarget attrs) 1]
-        <> spawnConstanceDumaineMessages
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll $
+        [DrawRandomFromScenarioDeck lead MonstersDeck (toTarget attrs) 1]
+          <> spawnConstanceDumaineMessages
+          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
       push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards

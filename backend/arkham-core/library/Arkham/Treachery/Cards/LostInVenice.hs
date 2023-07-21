@@ -1,18 +1,18 @@
-module Arkham.Treachery.Cards.LostInVenice
-  ( lostInVenice
-  , LostInVenice(..)
-  ) where
+module Arkham.Treachery.Cards.LostInVenice (
+  lostInVenice,
+  LostInVenice (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype LostInVenice = LostInVenice TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -30,12 +30,13 @@ instance RunMessage LostInVenice where
         Nothing -> push take2damage
         Just lid -> do
           acrossLocationId <- getAcrossLocation lid
-          push $ chooseOne
-            iid
-            [ Label "Take 2 damage" [take2damage]
-            , Label
-              "Move to the location across from you"
-              [Move $ move source iid acrossLocationId]
-            ]
+          push $
+            chooseOne
+              iid
+              [ Label "Take 2 damage" [take2damage]
+              , Label
+                  "Move to the location across from you"
+                  [Move $ move source iid acrossLocationId]
+              ]
       pure t
     _ -> LostInVenice <$> runMessage msg attrs

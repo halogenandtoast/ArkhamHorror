@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.LostHumanity
-  ( lostHumanity
-  , LostHumanity(..)
-  ) where
+module Arkham.Treachery.Cards.LostHumanity (
+  lostHumanity,
+  LostHumanity (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -34,8 +34,8 @@ instance RunMessage LostHumanity where
       discardCount <- fieldMap InvestigatorDiscard length iid
       when (handCount + deckCount + discardCount < 10) $ push $ DrivenInsane iid
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+      do
         push $ DiscardTopOfDeck iid n (toSource attrs) Nothing
         pure t
     _ -> LostHumanity <$> runMessage msg attrs

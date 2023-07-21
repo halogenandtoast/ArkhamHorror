@@ -32,7 +32,8 @@ instance RunMessage RitualSite where
   runMessage msg l@(RitualSite attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       cluesToAdd <-
-        max 0 . subtract (locationClues attrs)
+        max 0
+          . subtract (locationClues attrs)
           <$> perPlayer 2
       push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) cluesToAdd
       pure l

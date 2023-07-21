@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.HiddenEntanglements
-  ( HiddenEntanglements(..)
-  , hiddenEntanglements
-  ) where
+module Arkham.Agenda.Cards.HiddenEntanglements (
+  HiddenEntanglements (..),
+  hiddenEntanglements,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Matcher hiding ( WindowMatcher (InvestigatorDefeated) )
+import Arkham.Matcher hiding (WindowMatcher (InvestigatorDefeated))
 import Arkham.Message
 
 newtype HiddenEntanglements = HiddenEntanglements AgendaAttrs
@@ -33,11 +33,12 @@ instance RunMessage HiddenEntanglements where
       HiddenEntanglements <$> runMessage msg attrs
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- selectList UneliminatedInvestigator
-      a <$ pushAll
-        (concatMap
-          (\iid ->
-            [SufferTrauma iid 0 1, InvestigatorDefeated (toSource attrs) iid]
+      a
+        <$ pushAll
+          ( concatMap
+              ( \iid ->
+                  [SufferTrauma iid 0 1, InvestigatorDefeated (toSource attrs) iid]
+              )
+              iids
           )
-          iids
-        )
     _ -> HiddenEntanglements <$> runMessage msg attrs

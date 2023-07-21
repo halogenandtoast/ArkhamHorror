@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.APocketInTime
-  ( aPocketInTime
-  , APocketInTime(..)
-  ) where
+module Arkham.Location.Cards.APocketInTime (
+  aPocketInTime,
+  APocketInTime (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,8 +18,8 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (Shattered) )
-import Arkham.Window ( Window (..) )
+import Arkham.Trait (Trait (Shattered))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype APocketInTime = APocketInTime LocationAttrs
@@ -30,26 +30,29 @@ aPocketInTime :: LocationCard APocketInTime
 aPocketInTime = location APocketInTime Cards.aPocketInTime 5 (PerPlayer 1)
 
 instance HasAbilities APocketInTime where
-  getAbilities (APocketInTime attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ OrWindowMatcher
-      [ Moves
-        Timing.After
-        You
-        (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
-        (LocationWithId $ toId attrs)
-        (LocationWithTrait Shattered <> LocationWithAnyClues)
-      , Moves
-        Timing.After
-        You
-        (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
-        (LocationWithTrait Shattered <> LocationWithAnyClues)
-        (LocationWithId $ toId attrs)
+  getAbilities (APocketInTime attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1 $
+          ForcedAbility $
+            OrWindowMatcher
+              [ Moves
+                  Timing.After
+                  You
+                  (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
+                  (LocationWithId $ toId attrs)
+                  (LocationWithTrait Shattered <> LocationWithAnyClues)
+              , Moves
+                  Timing.After
+                  You
+                  (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
+                  (LocationWithTrait Shattered <> LocationWithAnyClues)
+                  (LocationWithId $ toId attrs)
+              ]
+      , restrictedAbility attrs 2 (Here <> ScenarioDeckWithCard ExplorationDeck) $
+          ActionAbility (Just Action.Explore) $
+            ActionCost 1
       ]
-    , restrictedAbility attrs 2 (Here <> ScenarioDeckWithCard ExplorationDeck)
-    $ ActionAbility (Just Action.Explore)
-    $ ActionCost 1
-    ]
 
 getShatteredLocation :: LocationAttrs -> [Window] -> LocationId
 getShatteredLocation _ [] = error "wrong window"
@@ -61,16 +64,17 @@ getShatteredLocation attrs (_ : xs) = getShatteredLocation attrs xs
 
 instance RunMessage APocketInTime where
   runMessage msg l@(APocketInTime attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getShatteredLocation attrs -> lid) _
-      -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getShatteredLocation attrs -> lid) _ ->
+      do
         clues <- field LocationClues lid
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny clues 0
         pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore
-        iid
-        (toAbilitySource attrs 2)
-        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $
+        Explore
+          iid
+          (toAbilitySource attrs 2)
+          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure l
     _ -> APocketInTime <$> runMessage msg attrs

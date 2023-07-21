@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ChildrenOfValusia
-  ( childrenOfValusia
-  , ChildrenOfValusia(..)
-  ) where
+module Arkham.Treachery.Cards.ChildrenOfValusia (
+  childrenOfValusia,
+  ChildrenOfValusia (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,12 +11,12 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (Serpent) )
+import Arkham.Trait (Trait (Serpent))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype ChildrenOfValusia = ChildrenOfValusia TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 childrenOfValusia :: TreacheryCard ChildrenOfValusia
@@ -32,10 +32,10 @@ instance HasModifiersFor ChildrenOfValusia where
 
 instance HasAbilities ChildrenOfValusia where
   getAbilities (ChildrenOfValusia a) =
-    [ limitedAbility (PerCopyLimit Cards.childrenOfValusia PerRound 1)
-        $ mkAbility a 1
-        $ ForcedAbility
-        $ RoundEnds Timing.When
+    [ limitedAbility (PerCopyLimit Cards.childrenOfValusia PerRound 1) $
+        mkAbility a 1 $
+          ForcedAbility $
+            RoundEnds Timing.When
     ]
 
 instance RunMessage ChildrenOfValusia where

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.QuickLearner4
-  ( quickLearner4
-  , QuickLearner4(..)
-  )
+module Arkham.Asset.Cards.QuickLearner4 (
+  quickLearner4,
+  QuickLearner4 (..),
+)
 where
 
 import Arkham.Prelude
@@ -9,9 +9,9 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.SkillTest.Base
-import Arkham.Investigator.Types (Field(..))
 
 newtype QuickLearner4 = QuickLearner4 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

@@ -1,13 +1,13 @@
-module Arkham.Agenda.Cards.EmpireOfTheUndead
-  ( EmpireOfTheUndead(..)
-  , empireOfTheUndead
-  ) where
+module Arkham.Agenda.Cards.EmpireOfTheUndead (
+  EmpireOfTheUndead (..),
+  empireOfTheUndead,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding (InvestigatorDefeated)
@@ -25,8 +25,9 @@ instance RunMessage EmpireOfTheUndead where
   runMessage msg a@(EmpireOfTheUndead attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- selectList UneliminatedInvestigator
-      a <$ pushAll
-        ([ InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds ]
-        <> [ SufferTrauma iid 1 0 | iid <- investigatorIds ]
-        )
+      a
+        <$ pushAll
+          ( [InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds]
+              <> [SufferTrauma iid 1 0 | iid <- investigatorIds]
+          )
     _ -> EmpireOfTheUndead <$> runMessage msg attrs

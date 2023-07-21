@@ -4,14 +4,14 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Direction
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Label
+import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message hiding (Label)
-import Arkham.Direction
-import Arkham.Location.Types
 import Control.Monad (zipWithM)
 
 posLabelToPosition :: Label -> (Int, Int)
@@ -45,7 +45,6 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | n < 10 = "0" <> show n
     | otherwise = show n
 
-
 placeAtDirection :: Direction -> LocationAttrs -> GameT (Card -> GameT [Message])
 placeAtDirection direction attrs = do
   -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
@@ -62,24 +61,24 @@ placeAtDirection direction attrs = do
       [ placement
       , SetLocationLabel locationId (unLabel $ positionToLabel placedPosition)
       ]
-      <> case mLeftLocation of
-           Just lid -> [ PlacedLocationDirection locationId LeftOf lid]
-           Nothing -> []
-      <> case mRightLocation of
-           Just lid -> [ PlacedLocationDirection locationId RightOf lid]
-           Nothing -> []
-      <> case mAboveLocation of
-           Just lid -> [ PlacedLocationDirection locationId Above lid]
-           Nothing -> []
-      <> case mBelowLocation of
-           Just lid -> [ PlacedLocationDirection locationId Below lid]
-           Nothing -> []
+        <> case mLeftLocation of
+          Just lid -> [PlacedLocationDirection locationId LeftOf lid]
+          Nothing -> []
+        <> case mRightLocation of
+          Just lid -> [PlacedLocationDirection locationId RightOf lid]
+          Nothing -> []
+        <> case mAboveLocation of
+          Just lid -> [PlacedLocationDirection locationId Above lid]
+          Nothing -> []
+        <> case mBelowLocation of
+          Just lid -> [PlacedLocationDirection locationId Below lid]
+          Nothing -> []
  where
-   newPos dir (x, y) = case dir of
-              Above -> (x, y + 1)
-              Below -> (x, y - 1)
-              LeftOf -> (x - 1, y)
-              RightOf -> (x + 1, y)
+  newPos dir (x, y) = case dir of
+    Above -> (x, y + 1)
+    Below -> (x, y - 1)
+    LeftOf -> (x - 1, y)
+    RightOf -> (x + 1, y)
 
 directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
 directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)

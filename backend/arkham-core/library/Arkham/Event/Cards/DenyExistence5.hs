@@ -1,14 +1,14 @@
-module Arkham.Event.Cards.DenyExistence5
-  ( denyExistence5
-  , DenyExistence5(..)
-  ) where
+module Arkham.Event.Cards.DenyExistence5 (
+  denyExistence5,
+  DenyExistence5 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message hiding ( Discarded )
+import Arkham.Message hiding (Discarded)
 import Arkham.Window
 
 newtype DenyExistence5 = DenyExistence5 EventAttrs
@@ -32,11 +32,11 @@ instance RunMessage DenyExistence5 where
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
         choices = flip mapMaybe windows $ \w -> case windowType w of
-          Discarded{} -> Just $ go "discard cards" w
-          LostResources{} -> Just $ go "lose resources" w
-          LostActions{} -> Just $ go "lose actions" w
-          WouldTakeDamage{} -> Just $ go "take damage" w
-          WouldTakeHorror{} -> Just $ go "take horror" w
+          Discarded {} -> Just $ go "discard cards" w
+          LostResources {} -> Just $ go "lose resources" w
+          LostActions {} -> Just $ go "lose actions" w
+          WouldTakeDamage {} -> Just $ go "take damage" w
+          WouldTakeHorror {} -> Just $ go "take horror" w
           _ -> Nothing
       push $ chooseOrRunOne iid choices
       pure e
@@ -44,14 +44,14 @@ instance RunMessage DenyExistence5 where
       case windowType w of
         Discarded iid source c -> do
           drawing <- drawCards iid source 1
-          replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
-            $ \_ -> [drawing]
+          replaceMessageMatching (== Do (toMessage $ discardCard iid source c)) $
+            \_ -> [drawing]
         LostResources iid source n -> do
-          replaceMessageMatching (== Do (LoseResources iid source n))
-            $ \_ -> [TakeResources iid n source False]
+          replaceMessageMatching (== Do (LoseResources iid source n)) $
+            \_ -> [TakeResources iid n source False]
         LostActions iid source n -> do
-          replaceMessageMatching (== Do (LoseActions iid source n))
-            $ \_ -> [GainActions iid source n]
+          replaceMessageMatching (== Do (LoseActions iid source n)) $
+            \_ -> [GainActions iid source n]
         WouldTakeDamage source (InvestigatorTarget iid) n -> do
           pushAll
             [CancelDamage iid n, HealDamage (InvestigatorTarget iid) source n]

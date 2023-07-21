@@ -19,14 +19,14 @@ import Arkham.Helpers.Scenario
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 
-afterStoryResolution :: (HasQueue Message m) => StoryAttrs -> [Message] -> m ()
+afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
 afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . reverse
  where
   isResolution = \case
     ResolvedStory _ story' | story' == storyId -> True
     _ -> False
 
-getAlreadyResolved :: (HasGame m) => StoryAttrs -> m Bool
+getAlreadyResolved :: HasGame m => StoryAttrs -> m Bool
 getAlreadyResolved (toId -> storyId) = scenarioFieldMap ScenarioResolvedStories (elem storyId)
 
 instance RunMessage Story where

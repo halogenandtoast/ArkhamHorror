@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TheGuardian
-  ( theGuardian
-  , TheGuardian(..)
-  ) where
+module Arkham.Location.Cards.TheGuardian (
+  theGuardian,
+  TheGuardian (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,22 +20,23 @@ newtype TheGuardian = TheGuardian LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGuardian :: LocationCard TheGuardian
-theGuardian = locationWith
-  TheGuardian
-  Cards.theGuardian
-  3
-  (PerPlayer 2)
-  (connectsToL .~ singleton RightOf)
+theGuardian =
+  locationWith
+    TheGuardian
+    Cards.theGuardian
+    3
+    (PerPlayer 2)
+    (connectsToL .~ singleton RightOf)
 
 instance HasAbilities TheGuardian where
   getAbilities (TheGuardian attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ReactionAbility
-                (Enters Timing.After You $ LocationWithId $ toId attrs)
-                Free
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ReactionAbility
+          (Enters Timing.After You $ LocationWithId $ toId attrs)
+          Free
+      | locationRevealed attrs
+      ]
 
 instance RunMessage TheGuardian where
   runMessage msg l@(TheGuardian attrs) = case msg of

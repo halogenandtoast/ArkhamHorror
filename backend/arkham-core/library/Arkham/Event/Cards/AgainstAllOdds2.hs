@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.AgainstAllOdds2
-  ( againstAllOdds2
-  , AgainstAllOdds2(..)
-  ) where
+module Arkham.Event.Cards.AgainstAllOdds2 (
+  againstAllOdds2,
+  AgainstAllOdds2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Helpers.Window
 import Arkham.Message
 import Arkham.SkillTest
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype AgainstAllOdds2 = AgainstAllOdds2 EventAttrs
@@ -29,20 +29,21 @@ againstAllOdds2 = event AgainstAllOdds2 Cards.againstAllOdds2
 instance RunMessage AgainstAllOdds2 where
   runMessage msg e@(AgainstAllOdds2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window _ (Window.InitiatedSkillTest st)] _
-      | eid == toId attrs
-      -> do
-        base <- getBaseValueForSkillTestType iid (skillTestAction st) (skillTestType st)
-        let n = skillTestDifficulty st - base
-        ignoreWindow <- checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-        pushAll $
-          [ CreateWindowModifierEffect
-            EffectSkillTestWindow
-            (EffectModifiers
-            $ toModifiers attrs [ChangeRevealStrategy $ RevealAndChoose n 1]
-            )
-            (toSource attrs)
-            (InvestigatorTarget iid)
-          ]
-          <> [ ignoreWindow | n > 1 ]
-        pure e
+      | eid == toId attrs ->
+          do
+            base <- getBaseValueForSkillTestType iid (skillTestAction st) (skillTestType st)
+            let n = skillTestDifficulty st - base
+            ignoreWindow <-
+              checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+            pushAll $
+              [ CreateWindowModifierEffect
+                  EffectSkillTestWindow
+                  ( EffectModifiers $
+                      toModifiers attrs [ChangeRevealStrategy $ RevealAndChoose n 1]
+                  )
+                  (toSource attrs)
+                  (InvestigatorTarget iid)
+              ]
+                <> [ignoreWindow | n > 1]
+            pure e
     _ -> AgainstAllOdds2 <$> runMessage msg attrs

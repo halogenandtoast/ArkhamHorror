@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ToughCrowd
-  ( toughCrowd
-  , ToughCrowd(..)
-  ) where
+module Arkham.Treachery.Cards.ToughCrowd (
+  toughCrowd,
+  ToughCrowd (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,7 +17,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype ToughCrowd = ToughCrowd TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toughCrowd :: TreacheryCard ToughCrowd
@@ -37,6 +37,7 @@ instance RunMessage ToughCrowd where
     Revelation _ source | isSource attrs source -> do
       agendaId <- selectJust AnyAgenda
       t <$ push (AttachTreachery (toId attrs) (AgendaTarget agendaId))
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> ToughCrowd <$> runMessage msg attrs

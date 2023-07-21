@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.KnightsHall
-  ( knightsHall
-  , KnightsHall(..)
-  ) where
+module Arkham.Location.Cards.KnightsHall (
+  knightsHall,
+  KnightsHall (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,25 +23,29 @@ knightsHall :: LocationCard KnightsHall
 knightsHall = location KnightsHall Cards.knightsHall 2 (PerPlayer 1)
 
 instance HasAbilities KnightsHall where
-  getAbilities (KnightsHall a) = withBaseAbilities
-    a
-    [ withTooltip
-        "{action} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {intellect}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
-      $ restrictedAbility a 1 (Here <> NoCluesOnThis)
-      $ ActionAbility (Just Action.Investigate) Free
-    ]
+  getAbilities (KnightsHall a) =
+    withBaseAbilities
+      a
+      [ withTooltip
+          "{action} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {intellect}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
+          $ restrictedAbility a 1 (Here <> NoCluesOnThis)
+          $ ActionAbility (Just Action.Investigate) Free
+      ]
 
 instance RunMessage KnightsHall where
   runMessage msg l@(KnightsHall attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (Investigate
-        iid
-        (toId attrs)
-        (AbilitySource source 1)
-        Nothing
-        SkillAgility
-        False
-      )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l
+            <$ push
+              ( Investigate
+                  iid
+                  (toId attrs)
+                  (AbilitySource source 1)
+                  Nothing
+                  SkillAgility
+                  False
+              )
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _
       | isSource attrs source -> l <$ push (Remember FoundTheTowerKey)
     _ -> KnightsHall <$> runMessage msg attrs

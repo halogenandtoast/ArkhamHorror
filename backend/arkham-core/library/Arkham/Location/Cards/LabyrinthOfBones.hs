@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LabyrinthOfBones
-  ( labyrinthOfBones
-  , LabyrinthOfBones(..)
-  ) where
+module Arkham.Location.Cards.LabyrinthOfBones (
+  labyrinthOfBones,
+  LabyrinthOfBones (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,37 +22,39 @@ newtype LabyrinthOfBones = LabyrinthOfBones LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 labyrinthOfBones :: LocationCard LabyrinthOfBones
-labyrinthOfBones = locationWith
-  LabyrinthOfBones
-  Cards.labyrinthOfBones
-  2
-  (PerPlayer 2)
-  ((connectsToL .~ adjacentLocations)
-  . (costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+labyrinthOfBones =
+  locationWith
+    LabyrinthOfBones
+    Cards.labyrinthOfBones
+    2
+    (PerPlayer 2)
+    ( (connectsToL .~ adjacentLocations)
+        . ( costToEnterUnrevealedL
+              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+          )
     )
-  )
 
 instance HasAbilities LabyrinthOfBones where
-  getAbilities (LabyrinthOfBones attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (LabyrinthOfBones attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
-        (AnyCriterion
-          [ Negate
-              (LocationExists
-              $ LocationInDirection dir (LocationWithId $ toId attrs)
+        ( AnyCriterion
+            [ Negate
+              ( LocationExists $
+                  LocationInDirection dir (LocationWithId $ toId attrs)
               )
-          | dir <- [Above, Below, RightOf]
-          ]
+            | dir <- [Above, Below, RightOf]
+            ]
         )
-      $ ForcedAbility
-      $ RevealLocation Timing.When Anyone
-      $ LocationWithId
-      $ toId attrs
-    | locationRevealed attrs
-    ]
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage LabyrinthOfBones where
   runMessage msg l@(LabyrinthOfBones attrs) = case msg of

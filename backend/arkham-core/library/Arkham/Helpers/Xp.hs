@@ -17,7 +17,7 @@ import Arkham.Source
 toGainXp :: (HasGame m, Sourceable source) => source -> m [(InvestigatorId, Int)] -> m [Message]
 toGainXp (toSource -> source) f = map (\(iid, n) -> GainXP iid source n) <$> f
 
-getXp :: (HasGame m) => m [(InvestigatorId, Int)]
+getXp :: HasGame m => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
 getXpWithBonus :: (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]

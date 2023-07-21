@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.RiteOfSeeking
-  ( riteOfSeeking
-  , RiteOfSeeking(..)
-  ) where
+module Arkham.Asset.Cards.RiteOfSeeking (
+  riteOfSeeking,
+  RiteOfSeeking (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
@@ -24,9 +24,9 @@ riteOfSeeking = asset RiteOfSeeking Cards.riteOfSeeking
 
 instance HasAbilities RiteOfSeeking where
   getAbilities (RiteOfSeeking a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Investigate) $
+          Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 instance RunMessage RiteOfSeeking where
@@ -36,17 +36,17 @@ instance RunMessage RiteOfSeeking where
       skillType <- field LocationInvestigateSkill lid
       pushAll
         [ createCardEffect
-          Cards.riteOfSeeking
-          Nothing
-          source
-          (InvestigationTarget iid lid)
+            Cards.riteOfSeeking
+            Nothing
+            source
+            (InvestigationTarget iid lid)
         , Investigate
-          iid
-          lid
-          source
-          Nothing
-          (if skillType == SkillIntellect then SkillWillpower else skillType)
-          False
+            iid
+            lid
+            source
+            Nothing
+            (if skillType == SkillIntellect then SkillWillpower else skillType)
+            False
         ]
       pure a
     _ -> RiteOfSeeking <$> runMessage msg attrs

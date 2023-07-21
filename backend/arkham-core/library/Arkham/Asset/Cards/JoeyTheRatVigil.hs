@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.JoeyTheRatVigil
-  ( joeyTheRatVigil
-  , JoeyTheRatVigil(..)
-  ) where
+module Arkham.Asset.Cards.JoeyTheRatVigil (
+  joeyTheRatVigil,
+  JoeyTheRatVigil (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,8 +9,8 @@ import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -29,8 +29,10 @@ instance HasAbilities JoeyTheRatVigil where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> PlayableCardExists UnpaidCost
-          (InHandOf You <> BasicCardMatch (CardWithTrait Item))
+        ( ControlsThis
+            <> PlayableCardExists
+              UnpaidCost
+              (InHandOf You <> BasicCardMatch (CardWithTrait Item))
         )
         (FastAbility $ ResourceCost 1)
     ]
@@ -40,22 +42,26 @@ instance RunMessage JoeyTheRatVigil where
     UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       handCards <- field InvestigatorHand iid
       let items = filter (member Item . toTraits) handCards
-          windows'' = nub $ windows' <>
-            [ Window Timing.When (DuringTurn iid)
-            , Window Timing.When FastPlayerWindow
-            ]
-      playableItems <- filterM
-        (getIsPlayable
+          windows'' =
+            nub $
+              windows'
+                <> [ Window Timing.When (DuringTurn iid)
+                   , Window Timing.When FastPlayerWindow
+                   ]
+      playableItems <-
+        filterM
+          ( getIsPlayable
+              iid
+              source
+              UnpaidCost
+              windows''
+          )
+          items
+      push $
+        chooseOne
           iid
-          source
-          UnpaidCost
-          windows''
-        )
-        items
-      push $ chooseOne
-        iid
-        [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item windows'']
-        | item <- playableItems
-        ]
+          [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item windows'']
+          | item <- playableItems
+          ]
       pure a
     _ -> JoeyTheRatVigil <$> runMessage msg attrs

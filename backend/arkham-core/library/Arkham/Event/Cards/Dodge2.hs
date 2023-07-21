@@ -11,7 +11,7 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.SkillType
 
-newtype Metadata = Metadata { selectedEnemy :: Maybe EnemyId }
+newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -31,10 +31,13 @@ instance RunMessage Dodge2 where
       enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
         PerformEnemyAttack details : _ -> attackEnemy details
         _ -> error "unhandled"
-      pushAll [CancelNext (toSource attrs) AttackMessage, beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillAgility 1]
+      pushAll
+        [ CancelNext (toSource attrs) AttackMessage
+        , beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillAgility 1
+        ]
       pure $ Dodge2 (attrs `with` Metadata (Just enemyId))
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _ -> do
-      for_ (selectedEnemy meta) $ \enemyId -> 
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      for_ (selectedEnemy meta) $ \enemyId ->
         push $ EnemyDamage enemyId $ nonAttack (toSource attrs) 1
       pure e
     _ -> Dodge2 . (`with` meta) <$> runMessage msg attrs

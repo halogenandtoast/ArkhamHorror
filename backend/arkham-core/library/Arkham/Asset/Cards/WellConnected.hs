@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.WellConnected
-  ( wellConnected
-  , wellConnectedEffect
-  , WellConnected(..)
-  )
+module Arkham.Asset.Cards.WellConnected (
+  wellConnected,
+  wellConnectedEffect,
+  WellConnected (..),
+)
 where
 
 import Arkham.Prelude
@@ -12,8 +12,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Investigator.Types (Field(..))
 import Arkham.Projection
 
 newtype WellConnected = WellConnected AssetAttrs
@@ -25,7 +25,12 @@ wellConnected =
   asset WellConnected Cards.wellConnected
 
 instance HasAbilities WellConnected where
-  getAbilities (WellConnected a) = [restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $ FastAbility $ ExhaustCost $ toTarget a]
+  getAbilities (WellConnected a) =
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
+        FastAbility $
+          ExhaustCost $
+            toTarget a
+    ]
 
 instance RunMessage WellConnected where
   runMessage msg a@(WellConnected attrs) = case msg of
@@ -43,8 +48,8 @@ wellConnectedEffect = cardEffect WellConnectedEffect Cards.wellConnected
 
 instance HasModifiersFor WellConnectedEffect where
   getModifiersFor target@(InvestigatorTarget iid) (WellConnectedEffect a) | effectTarget a == target = do
-      resources <- field InvestigatorResources iid
-      pure $ toModifiers a [ AnySkillValue (resources `div` 5) ]
+    resources <- field InvestigatorResources iid
+    pure $ toModifiers a [AnySkillValue (resources `div` 5)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WellConnectedEffect where

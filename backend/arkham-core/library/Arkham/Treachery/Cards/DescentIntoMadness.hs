@@ -1,16 +1,16 @@
-module Arkham.Treachery.Cards.DescentIntoMadness
-  ( descentIntoMadness
-  , DescentIntoMadness(..)
-  ) where
+module Arkham.Treachery.Cards.DescentIntoMadness (
+  descentIntoMadness,
+  DescentIntoMadness (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype DescentIntoMadness = DescentIntoMadness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

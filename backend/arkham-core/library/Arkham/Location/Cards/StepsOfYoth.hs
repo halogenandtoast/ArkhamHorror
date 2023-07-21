@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.StepsOfYoth
-  ( stepsOfYoth
-  , StepsOfYoth(..)
-  ) where
+module Arkham.Location.Cards.StepsOfYoth (
+  stepsOfYoth,
+  StepsOfYoth (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,13 +22,14 @@ stepsOfYoth :: LocationCard StepsOfYoth
 stepsOfYoth = symbolLabel $ location StepsOfYoth Cards.stepsOfYoth 3 (Static 0)
 
 instance HasAbilities StepsOfYoth where
-  getAbilities (StepsOfYoth attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerGame 1)
-      $ restrictedAbility attrs 1 Here
-      $ ReactionAbility AddingToCurrentDepth
-      $ SupplyCost (LocationWithId $ toId attrs) Rope
-    ]
+  getAbilities (StepsOfYoth attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerGame 1) $
+          restrictedAbility attrs 1 Here $
+            ReactionAbility AddingToCurrentDepth $
+              SupplyCost (LocationWithId $ toId attrs) Rope
+      ]
 
 instance RunMessage StepsOfYoth where
   runMessage msg l@(StepsOfYoth attrs) = case msg of

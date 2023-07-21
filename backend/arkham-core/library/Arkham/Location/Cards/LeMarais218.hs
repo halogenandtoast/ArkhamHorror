@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LeMarais218
-  ( leMarais218
-  , LeMarais218(..)
-  ) where
+module Arkham.Location.Cards.LeMarais218 (
+  leMarais218,
+  LeMarais218 (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,23 +23,25 @@ leMarais218 :: LocationCard LeMarais218
 leMarais218 = location LeMarais218 Cards.leMarais218 1 (PerPlayer 1)
 
 instance HasAbilities LeMarais218 where
-  getAbilities (LeMarais218 attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (LeMarais218 attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
         Here
         (ForcedAbility $ Enters Timing.After You $ LocationWithId $ toId attrs)
-    | locationRevealed attrs
-    ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage LeMarais218 where
   runMessage msg l@(LeMarais218 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ CreateEffect
-        (toCardCode attrs)
-        Nothing
-        source
-        (InvestigatorTarget iid)
+      push $
+        CreateEffect
+          (toCardCode attrs)
+          Nothing
+          source
+          (InvestigatorTarget iid)
       pure l
     _ -> LeMarais218 <$> runMessage msg attrs

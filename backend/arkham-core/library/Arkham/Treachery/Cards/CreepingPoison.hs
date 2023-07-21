@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.CreepingPoison
-  ( creepingPoison
-  , CreepingPoison(..)
-  ) where
+module Arkham.Treachery.Cards.CreepingPoison (
+  creepingPoison,
+  CreepingPoison (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,9 +22,12 @@ creepingPoison = treachery CreepingPoison Cards.creepingPoison
 instance RunMessage CreepingPoison where
   runMessage msg t@(CreepingPoison attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      iids <- selectList $ HasMatchingTreachery $ treacheryIs
-        Treacheries.poisoned
+      iids <-
+        selectList $
+          HasMatchingTreachery $
+            treacheryIs
+              Treacheries.poisoned
       pushAll
-        [ InvestigatorAssignDamage iid source DamageAny 1 0 | iid <- iids ]
+        [InvestigatorAssignDamage iid source DamageAny 1 0 | iid <- iids]
       pure t
     _ -> CreepingPoison <$> runMessage msg attrs

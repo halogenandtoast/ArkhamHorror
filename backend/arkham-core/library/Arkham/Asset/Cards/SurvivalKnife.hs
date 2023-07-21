@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.SurvivalKnife
-  ( survivalKnife
-  , SurvivalKnife(..)
-  ) where
+module Arkham.Asset.Cards.SurvivalKnife (
+  survivalKnife,
+  SurvivalKnife (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Phase
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( WindowType )
+import Arkham.Window (WindowType)
 import Arkham.Window qualified as Window
 
 newtype SurvivalKnife = SurvivalKnife AssetAttrs
@@ -26,10 +26,10 @@ survivalKnife = asset SurvivalKnife Cards.survivalKnife
 
 instance HasAbilities SurvivalKnife where
   getAbilities (SurvivalKnife a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ActionAbility (Just Action.Fight) (ActionCost 1)
-    , restrictedAbility a 2 (ControlsThis <> DuringPhase (PhaseIs EnemyPhase))
-      $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) (ActionCost 1)
+    , restrictedAbility a 2 (ControlsThis <> DuringPhase (PhaseIs EnemyPhase)) $
+        ReactionAbility
           (DealtDamage Timing.After (SourceIsEnemyAttack AnyEnemy) You)
           (ExhaustCost $ toTarget a)
     ]
@@ -44,21 +44,21 @@ instance RunMessage SurvivalKnife where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
         [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [SkillModifier SkillCombat 1]
+            attrs
+            (InvestigatorTarget iid)
+            [SkillModifier SkillCombat 1]
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
       pure a
     UseCardAbility iid source 2 windows' _
-      | isSource attrs source
-      -> do
-        pushAll
-          [ skillTestModifiers
-            attrs
-            (InvestigatorTarget iid)
-            [SkillModifier SkillCombat 2, DamageDealt 1]
-          , FightEnemy iid (toEnemy $ map Window.windowType windows') source Nothing SkillCombat False
-          ]
-        pure a
+      | isSource attrs source ->
+          do
+            pushAll
+              [ skillTestModifiers
+                  attrs
+                  (InvestigatorTarget iid)
+                  [SkillModifier SkillCombat 2, DamageDealt 1]
+              , FightEnemy iid (toEnemy $ map Window.windowType windows') source Nothing SkillCombat False
+              ]
+            pure a
     _ -> SurvivalKnife <$> runMessage msg attrs

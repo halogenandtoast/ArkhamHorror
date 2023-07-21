@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LiquidCourage
-  ( liquidCourage
-  , LiquidCourage(..)
-  ) where
+module Arkham.Asset.Cards.LiquidCourage (
+  liquidCourage,
+  LiquidCourage (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,13 +22,14 @@ liquidCourage = asset LiquidCourage Cards.liquidCourage
 instance HasAbilities LiquidCourage where
   getAbilities (LiquidCourage x) =
     [ restrictedAbility
-          x
-          1
-          (ControlsThis <> InvestigatorExists
-            (HealableInvestigator (toSource x) HorrorType
-            $ InvestigatorAt YourLocation
-            )
-          )
+        x
+        1
+        ( ControlsThis
+            <> InvestigatorExists
+              ( HealableInvestigator (toSource x) HorrorType $
+                  InvestigatorAt YourLocation
+              )
+        )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
@@ -37,25 +38,27 @@ instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       iids <-
-        selectList
-        $ HealableInvestigator (toSource attrs) HorrorType
-        $ colocatedWith iid
-      when (notNull iids) $ push $ chooseOrRunOne
-        iid
-        [ targetLabel
-            iid'
-            [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
-            , beginSkillTest iid' source iid' SkillWillpower 2
+        selectList $
+          HealableInvestigator (toSource attrs) HorrorType $
+            colocatedWith iid
+      when (notNull iids) $
+        push $
+          chooseOrRunOne
+            iid
+            [ targetLabel
+              iid'
+              [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
+              , beginSkillTest iid' source iid' SkillWillpower 2
+              ]
+            | iid' <- iids
             ]
-        | iid' <- iids
-        ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
         pure a
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         pushAll
           [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
           , toMessage $ randomDiscard iid (toSource attrs)

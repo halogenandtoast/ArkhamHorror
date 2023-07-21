@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AlchemicalTransmutation
-  ( alchemicalTransmutation
-  , AlchemicalTransmutation(..)
-  ) where
+module Arkham.Asset.Cards.AlchemicalTransmutation (
+  alchemicalTransmutation,
+  AlchemicalTransmutation (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,17 +21,22 @@ alchemicalTransmutation =
 
 instance HasAbilities AlchemicalTransmutation where
   getAbilities (AlchemicalTransmutation a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ Costs
-        [ExhaustCost (toTarget a), UseCost (AssetWithId $ toId a) Charge 1]
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility Nothing $
+          Costs
+            [ExhaustCost (toTarget a), UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 instance RunMessage AlchemicalTransmutation where
   runMessage msg a@(AlchemicalTransmutation attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
-      [ CreateEffect "03032" Nothing source (InvestigatorTarget iid)
-      , beginSkillTest iid source (toTarget attrs) SkillWillpower 1
-      ]
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n -> do
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ pushAll
+              [ CreateEffect "03032" Nothing source (InvestigatorTarget iid)
+              , beginSkillTest iid source (toTarget attrs) SkillWillpower 1
+              ]
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ TakeResources iid (min n 3) (toAbilitySource attrs 1) False
       pure a
     _ -> AlchemicalTransmutation <$> runMessage msg attrs

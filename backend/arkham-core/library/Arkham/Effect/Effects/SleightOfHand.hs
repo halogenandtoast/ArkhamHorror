@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.SleightOfHand
-  ( SleightOfHand(..)
-  , sleightOfHand
-  ) where
+module Arkham.Effect.Effects.SleightOfHand (
+  SleightOfHand (..),
+  sleightOfHand,
+) where
 
 import Arkham.Prelude
 

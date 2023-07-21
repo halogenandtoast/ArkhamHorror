@@ -1,17 +1,17 @@
-module Arkham.Agenda.Cards.QuietHalls
-  ( QuietHalls(..)
-  , quietHalls
-  ) where
+module Arkham.Agenda.Cards.QuietHalls (
+  QuietHalls (..),
+  quietHalls,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 
@@ -30,23 +30,26 @@ instance RunMessage QuietHalls where
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
         discardCount <- fieldMap InvestigatorDiscard length iid
         if discardCount >= 5
-          then pure $ Just
-            (InvestigatorAssignDamage
-              iid
-              (toSource attrs)
-              DamageAny
-              0
-              (if discardCount >= 10 then 2 else 1)
-            )
+          then
+            pure $
+              Just
+                ( InvestigatorAssignDamage
+                    iid
+                    (toSource attrs)
+                    DamageAny
+                    0
+                    (if discardCount >= 10 then 2 else 1)
+                )
           else pure Nothing
 
       let
-        continueMessages = if completedTheHouseAlwaysWins
-          then
-            [ AdvanceAgendaDeck agendaDeckId (toSource attrs)
-            , AdvanceCurrentAgenda
-            ]
-          else [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+        continueMessages =
+          if completedTheHouseAlwaysWins
+            then
+              [ AdvanceAgendaDeck agendaDeckId (toSource attrs)
+              , AdvanceCurrentAgenda
+              ]
+            else [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
 
       pushAll $ messages <> continueMessages
       pure a

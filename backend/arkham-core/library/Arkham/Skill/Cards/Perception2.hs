@@ -1,14 +1,14 @@
-module Arkham.Skill.Cards.Perception2
-  ( perception2
-  , Perception2(..)
-  )
+module Arkham.Skill.Cards.Perception2 (
+  perception2,
+  Perception2 (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype Perception2 = Perception2 SkillAttrs

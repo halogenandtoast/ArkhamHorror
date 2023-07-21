@@ -1,11 +1,11 @@
-module Arkham.Treachery.Cards.PushedIntoTheBeyond
-  ( PushedIntoTheBeyond(..)
-  , pushedIntoTheBeyond
-  ) where
+module Arkham.Treachery.Cards.PushedIntoTheBeyond (
+  PushedIntoTheBeyond (..),
+  pushedIntoTheBeyond,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -27,18 +27,20 @@ instance RunMessage PushedIntoTheBeyond where
     Revelation iid source | isSource attrs source -> do
       targets <-
         selectWithField AssetCardCode $ AssetControlledBy You <> AssetNonStory
-      when (notNull targets) $ push $ chooseOne
-        iid
-        [ targetLabel
-            aid
-            [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
-            , CreateEffect
-              (CardCode "02100")
-              (Just (EffectCardCodes [cardCode]))
-              (toSource attrs)
-              (InvestigatorTarget iid)
+      when (notNull targets) $
+        push $
+          chooseOne
+            iid
+            [ targetLabel
+              aid
+              [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
+              , CreateEffect
+                  (CardCode "02100")
+                  (Just (EffectCardCodes [cardCode]))
+                  (toSource attrs)
+                  (InvestigatorTarget iid)
+              ]
+            | (aid, cardCode) <- targets
             ]
-        | (aid, cardCode) <- targets
-        ]
       pure t
     _ -> PushedIntoTheBeyond <$> runMessage msg attrs

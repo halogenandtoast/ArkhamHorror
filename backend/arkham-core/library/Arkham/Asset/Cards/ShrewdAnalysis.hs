@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ShrewdAnalysis
-  ( shrewdAnalysis
-  , ShrewdAnalysis(..)
-  ) where
+module Arkham.Asset.Cards.ShrewdAnalysis (
+  shrewdAnalysis,
+  ShrewdAnalysis (..),
+) where
 
 import Arkham.Prelude
 

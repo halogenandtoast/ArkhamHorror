@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.DescentIntoDark
-  ( DescentIntoDark(..)
-  , descentIntoDark
-  ) where
+module Arkham.Act.Cards.DescentIntoDark (
+  DescentIntoDark (..),
+  descentIntoDark,
+) where
 
 import Arkham.Prelude
 
@@ -25,15 +25,18 @@ descentIntoDark = act (2, A) DescentIntoDark Cards.descentIntoDark Nothing
 instance HasAbilities DescentIntoDark where
   getAbilities (DescentIntoDark a) =
     [ restrictedAbility
-          a
-          1
-          (Negate
-              (InvestigatorExists $ InvestigatorAt $ NotLocation $ locationIs
-                Locations.descentToYoth
-              )
-          <> LocationExists
-               (locationIs Locations.descentToYoth <> LocationWithoutDoom)
-          )
+        a
+        1
+        ( Negate
+            ( InvestigatorExists $
+                InvestigatorAt $
+                  NotLocation $
+                    locationIs
+                      Locations.descentToYoth
+            )
+            <> LocationExists
+              (locationIs Locations.descentToYoth <> LocationWithoutDoom)
+        )
         $ Objective
         $ FastAbility Free
     ]

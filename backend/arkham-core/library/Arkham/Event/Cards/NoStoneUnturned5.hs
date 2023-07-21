@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.NoStoneUnturned5
-  ( noStoneUnturned5
-  , NoStoneUnturned5(..)
-  ) where
+module Arkham.Event.Cards.NoStoneUnturned5 (
+  noStoneUnturned5,
+  NoStoneUnturned5 (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,14 +23,14 @@ instance RunMessage NoStoneUnturned5 where
   runMessage msg e@(NoStoneUnturned5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <-
-        selectList
-        $ colocatedWith iid
-        <> InvestigatorWithoutModifier CannotManipulateDeck
+        selectList $
+          colocatedWith iid
+            <> InvestigatorWithoutModifier CannotManipulateDeck
 
       pushAll
         [ chooseOne
-          iid
-          [ targetLabel
+            iid
+            [ targetLabel
               iid'
               [ Search
                   iid'
@@ -40,8 +40,8 @@ instance RunMessage NoStoneUnturned5 where
                   AnyCard
                   (DrawFound iid' 1)
               ]
-          | iid' <- iids
-          ]
+            | iid' <- iids
+            ]
         ]
       pure e
     _ -> NoStoneUnturned5 <$> runMessage msg attrs

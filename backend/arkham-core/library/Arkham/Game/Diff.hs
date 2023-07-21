@@ -2,10 +2,10 @@ module Arkham.Game.Diff where
 
 import Arkham.Prelude
 
-import Data.Aeson
-import Data.Aeson.Diff qualified as Diff
 import Arkham.Game.Base
 import Arkham.Game.Json ()
+import Data.Aeson
+import Data.Aeson.Diff qualified as Diff
 
 diff :: Game -> Game -> Diff.Patch
 diff a b = Diff.diff (toJSON a) (toJSON b)

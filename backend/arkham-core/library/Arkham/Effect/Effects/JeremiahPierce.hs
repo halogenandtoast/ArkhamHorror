@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.JeremiahPierce
-  ( jeremiahPierce
-  , JeremiahPierce(..)
-  ) where
+module Arkham.Effect.Effects.JeremiahPierce (
+  jeremiahPierce,
+  JeremiahPierce (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,15 +22,17 @@ instance RunMessage JeremiahPierce where
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       pushAll
         [ parley
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillWillpower
-          4
+            iid
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            SkillWillpower
+            4
         , DisableEffect $ effectId attrs
         ]
       pure e
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> e <$ pushAll
-        (replicate n PlaceDoomOnAgenda <> [AdvanceAgendaIfThresholdSatisfied])
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ n
+      | isSource attrs source ->
+          e
+            <$ pushAll
+              (replicate n PlaceDoomOnAgenda <> [AdvanceAgendaIfThresholdSatisfied])
     _ -> JeremiahPierce <$> runMessage msg attrs

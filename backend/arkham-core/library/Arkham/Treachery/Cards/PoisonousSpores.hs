@@ -1,14 +1,14 @@
-module Arkham.Treachery.Cards.PoisonousSpores
-  ( poisonousSpores
-  , PoisonousSpores(..)
-  ) where
+module Arkham.Treachery.Cards.PoisonousSpores (
+  poisonousSpores,
+  PoisonousSpores (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -32,25 +32,31 @@ instance RunMessage PoisonousSpores where
   runMessage msg t@(PoisonousSpores attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid
-        $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
+      for_ mlid $
+        \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       case treacheryPlacement attrs of
         TreacheryAttachedTo (LocationTarget lid) -> do
-          takesHorror <- selectList $ investigatorAt lid <> HasMatchingTreachery
-            (treacheryIs Treacheries.poisoned)
-          gainsPoisoned <- selectList $ investigatorAt lid <> NotInvestigator
-            (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
+          takesHorror <-
+            selectList $
+              investigatorAt lid
+                <> HasMatchingTreachery
+                  (treacheryIs Treacheries.poisoned)
+          gainsPoisoned <-
+            selectList $
+              investigatorAt lid
+                <> NotInvestigator
+                  (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
           gainsPoisonedMessages <- for gainsPoisoned $ \iid -> do
             poisoned <- getSetAsidePoisoned
             pure $ CreateWeaknessInThreatArea poisoned iid
-          pushAll
-            $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-              | iid <- takesHorror
-              ]
-            <> gainsPoisonedMessages
-            <> [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+          pushAll $
+            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+            | iid <- takesHorror
+            ]
+              <> gainsPoisonedMessages
+              <> [Discard (toAbilitySource attrs 1) (toTarget attrs)]
           pure t
         _ -> error "invalid attachment of treachery, expected location"
     _ -> PoisonousSpores <$> runMessage msg attrs

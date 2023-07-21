@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.TwilightBlade
-  ( twilightBlade
-  , twilightBladeEffect
-  , TwilightBlade(..)
-  )
+module Arkham.Asset.Cards.TwilightBlade (
+  twilightBlade,
+  twilightBladeEffect,
+  TwilightBlade (..),
+)
 where
 
 import Arkham.Prelude
@@ -14,14 +14,14 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
 
 newtype TwilightBlade = TwilightBlade AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twilightBlade :: AssetCard TwilightBlade
@@ -35,7 +35,7 @@ instance HasModifiersFor TwilightBlade where
       case find ((== cid) . toCardId) underDiana of
         Just card -> do
           let isAffected = card `cardMatch` CardWithOneOf [CardWithType EventType, CardWithType SkillType]
-          pure $ toModifiers a [ AdditionalCost (ExhaustCost $ toTarget a) | isAffected ]
+          pure $ toModifiers a [AdditionalCost (ExhaustCost $ toTarget a) | isAffected]
         _ -> pure []
     _ -> pure []
   getModifiersFor (InvestigatorTarget iid) (TwilightBlade a) | a `controlledBy` iid = do
@@ -66,10 +66,12 @@ twilightBladeEffect = cardEffect TwilightBladeEffect Cards.twilightBlade
 
 instance HasModifiersFor TwilightBladeEffect where
   getModifiersFor target (TwilightBladeEffect a@EffectAttrs {..})
-    | target == effectTarget = pure $ toModifiers
-      a
-      [ UseSkillInPlaceOf SkillCombat SkillWillpower
-      ]
+    | target == effectTarget =
+        pure $
+          toModifiers
+            a
+            [ UseSkillInPlaceOf SkillCombat SkillWillpower
+            ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TwilightBladeEffect where

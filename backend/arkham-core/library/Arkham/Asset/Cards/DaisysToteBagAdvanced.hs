@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DaisysToteBagAdvanced
-  ( daisysToteBagAdvanced
-  , DaisysToteBagAdvanced(..)
-  ) where
+module Arkham.Asset.Cards.DaisysToteBagAdvanced (
+  daisysToteBagAdvanced,
+  DaisysToteBagAdvanced (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,11 +13,11 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
@@ -27,18 +27,19 @@ instance HasAbilities DaisysToteBagAdvanced where
   getAbilities (DaisysToteBagAdvanced a) =
     [ restrictedAbility a 1 (ControlsThis <> DuringTurn You)
         $ ReactionAbility
-            (Matcher.PlayCard
+          ( Matcher.PlayCard
               Timing.When
               You
               (BasicCardMatch $ CardWithTrait Tome)
-            )
+          )
         $ ExhaustCost (toTarget a)
     ]
 
 instance HasModifiersFor DaisysToteBagAdvanced where
   getModifiersFor (InvestigatorTarget iid) (DaisysToteBagAdvanced a)
-    | controlledBy a iid = pure
-      [toModifier a $ CanBecomeFast $ CardWithType AssetType <> CardWithTrait Tome]
+    | controlledBy a iid =
+        pure
+          [toModifier a $ CanBecomeFast $ CardWithType AssetType <> CardWithTrait Tome]
   getModifiersFor _ _ = pure []
 
 slot :: AssetAttrs -> Slot
@@ -51,7 +52,8 @@ instance RunMessage DaisysToteBagAdvanced where
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
     UseCardAbility _ source 1 [Window Timing.When (Window.PlayCard _ card)] _
-      | isSource attrs source
-      -> a <$ push
-        (CreateEffect "90002" Nothing source (CardIdTarget $ toCardId card))
+      | isSource attrs source ->
+          a
+            <$ push
+              (CreateEffect "90002" Nothing source (CardIdTarget $ toCardId card))
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

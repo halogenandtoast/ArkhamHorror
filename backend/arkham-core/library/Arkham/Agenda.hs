@@ -27,7 +27,7 @@ instance FromJSON Agenda where
       \(_ :: AgendaCard a) -> Agenda <$> parseJSON @a (Object o)
 
 withAgendaCardCode
-  :: CardCode -> (forall a. (IsAgenda a) => AgendaCard a -> r) -> r
+  :: CardCode -> (forall a. IsAgenda a => AgendaCard a -> r) -> r
 withAgendaCardCode cCode f = case lookup cCode allAgendas of
   Nothing -> error $ "Unknown agenda: " <> show cCode
   Just (SomeAgendaCard a) -> f a

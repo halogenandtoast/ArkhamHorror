@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SearchForTheRuins
-  ( SearchForTheRuins(..)
-  , searchForTheRuins
-  ) where
+module Arkham.Act.Cards.SearchForTheRuins (
+  SearchForTheRuins (..),
+  searchForTheRuins,
+) where
 
 import Arkham.Prelude
 
@@ -15,26 +15,27 @@ import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SearchForTheRuins = SearchForTheRuins ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 searchForTheRuins :: ActCard SearchForTheRuins
-searchForTheRuins = act
-  (3, A)
-  SearchForTheRuins
-  Cards.searchForTheRuins
-  (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Ruins of Eztli"))
+searchForTheRuins =
+  act
+    (3, A)
+    SearchForTheRuins
+    Cards.searchForTheRuins
+    (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Ruins of Eztli"))
 
 instance HasModifiersFor SearchForTheRuins where
   getModifiersFor (EnemyTarget eid) (SearchForTheRuins a) = do
     isEztliGuardian <- eid <=~> EnemyWithTitle "Eztli Guardian"
-    pure
-      $ toModifiers a
-      $ guard isEztliGuardian
-      *> [CannotAttack, CannotBeAttacked]
+    pure $
+      toModifiers a $
+        guard isEztliGuardian
+          *> [CannotAttack, CannotBeAttacked]
   getModifiersFor (TreacheryTarget tid) (SearchForTheRuins a) = do
     isArrowsFromTheTrees <- tid <=~> treacheryIs Treacheries.arrowsFromTheTrees
-    pure $ toModifiers a [ IgnoreRevelation | isArrowsFromTheTrees ]
+    pure $ toModifiers a [IgnoreRevelation | isArrowsFromTheTrees]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SearchForTheRuins where

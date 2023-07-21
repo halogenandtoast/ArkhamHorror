@@ -1,18 +1,18 @@
-module Arkham.Location.Cards.BurnedRuins_204
-  ( burnedRuins_204
-  , BurnedRuins_204(..)
-  ) where
+module Arkham.Location.Cards.BurnedRuins_204 (
+  burnedRuins_204,
+  BurnedRuins_204 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( burnedRuins_204 )
+import Arkham.Location.Cards qualified as Cards (burnedRuins_204)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_204 :: LocationCard BurnedRuins_204

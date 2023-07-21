@@ -19,7 +19,20 @@ import Arkham.Source
 import Arkham.Target
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ ActId, EntityAttrs a ~ ActAttrs) => IsAct a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ ActId
+  , EntityAttrs a ~ ActAttrs
+  ) =>
+  IsAct a
 
 type ActCard a = CardBuilder (Int, ActId) a
 
@@ -42,13 +55,13 @@ data ActAttrs = ActAttrs
   deriving stock (Show, Eq, Generic)
 
 sequenceL :: Lens' ActAttrs AS.ActSequence
-sequenceL = lens actSequence $ \m x -> m { actSequence = x }
+sequenceL = lens actSequence $ \m x -> m {actSequence = x}
 
 cluesL :: Lens' ActAttrs Int
-cluesL = lens actClues $ \m x -> m { actClues = x }
+cluesL = lens actClues $ \m x -> m {actClues = x}
 
 treacheriesL :: Lens' ActAttrs (Set TreacheryId)
-treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
+treacheriesL = lens actTreacheries $ \m x -> m {actTreacheries = x}
 
 actWith
   :: (Int, AS.ActSide)
@@ -57,18 +70,21 @@ actWith
   -> Maybe Cost
   -> (ActAttrs -> ActAttrs)
   -> CardBuilder (Int, ActId) a
-actWith (n, side) f cardDef mCost g = CardBuilder
-  { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \cardId (deckId, aid) -> f . g $ ActAttrs
-    { actId = aid
-    , actCardId = cardId
-    , actSequence = AS.Sequence n side
-    , actClues = 0
-    , actAdvanceCost = mCost
-    , actTreacheries = mempty
-    , actDeckId = deckId
+actWith (n, side) f cardDef mCost g =
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \cardId (deckId, aid) ->
+        f . g $
+          ActAttrs
+            { actId = aid
+            , actCardId = cardId
+            , actSequence = AS.Sequence n side
+            , actClues = 0
+            , actAdvanceCost = mCost
+            , actTreacheries = mempty
+            , actDeckId = deckId
+            }
     }
-  }
 
 act
   :: (Int, AS.ActSide)
@@ -102,12 +118,12 @@ instance Named ActAttrs where
 
 instance Targetable ActAttrs where
   toTarget = ActTarget . toId
-  isTarget ActAttrs { actId } (ActTarget aid) = actId == aid
+  isTarget ActAttrs {actId} (ActTarget aid) = actId == aid
   isTarget _ _ = False
 
 instance Sourceable ActAttrs where
   toSource = ActSource . toId
-  isSource ActAttrs { actId } (ActSource aid) = actId == aid
+  isSource ActAttrs {actId} (ActSource aid) = actId == aid
   isSource _ _ = False
 
 onSide :: AS.ActSide -> ActAttrs -> Bool

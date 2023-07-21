@@ -8,4 +8,4 @@ import Arkham.Message
 type Runner a = Message -> a -> GameT a
 
 class RunMessage a where
-  runMessage :: (HasCallStack) => Message -> a -> GameT a
+  runMessage :: HasCallStack => Message -> a -> GameT a

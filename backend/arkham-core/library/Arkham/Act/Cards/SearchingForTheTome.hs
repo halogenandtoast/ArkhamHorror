@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SearchingForTheTome
-  ( SearchingForTheTome(..)
-  , searchingForTheTome
-  ) where
+module Arkham.Act.Cards.SearchingForTheTome (
+  SearchingForTheTome (..),
+  searchingForTheTome,
+) where
 
 import Arkham.Prelude
 
@@ -24,34 +24,37 @@ searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
 instance HasAbilities SearchingForTheTome where
-  getAbilities (SearchingForTheTome x) | onSide A x =
-    [ restrictedAbility
-        x
-        1
-        (LocationExists
-        $ locationIs Cards.exhibitHallRestrictedHall
-        <> LocationWithoutClues
-        )
-      $ Objective
-      $ ForcedAbility AnyWindow
-    ]
+  getAbilities (SearchingForTheTome x)
+    | onSide A x =
+        [ restrictedAbility
+            x
+            1
+            ( LocationExists $
+                locationIs Cards.exhibitHallRestrictedHall
+                  <> LocationWithoutClues
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Label
-            "It's too dangerous to keep around. We have to destroy it. (-> R1)"
-            [ScenarioResolution $ Resolution 1]
-          , Label
-            "It's too valuable to destroy. We have to keep it safe. (-> R2)"
-            [ScenarioResolution $ Resolution 2]
-          ]
-        )
+      a
+        <$ push
+          ( chooseOne
+              leadInvestigatorId
+              [ Label
+                  "It's too dangerous to keep around. We have to destroy it. (-> R1)"
+                  [ScenarioResolution $ Resolution 1]
+              , Label
+                  "It's too valuable to destroy. We have to keep it safe. (-> R2)"
+                  [ScenarioResolution $ Resolution 2]
+              ]
+          )
     _ -> SearchingForTheTome <$> runMessage msg attrs

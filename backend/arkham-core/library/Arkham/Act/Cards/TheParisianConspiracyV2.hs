@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheParisianConspiracyV2
-  ( TheParisianConspiracyV2(..)
-  , theParisianConspiracyV2
-  ) where
+module Arkham.Act.Cards.TheParisianConspiracyV2 (
+  TheParisianConspiracyV2 (..),
+  theParisianConspiracyV2,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message hiding ( When )
+import Arkham.Message hiding (When)
 import Arkham.Timing
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
@@ -20,26 +20,27 @@ newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
 
 theParisianConspiracyV2 :: ActCard TheParisianConspiracyV2
 theParisianConspiracyV2 =
-  act (1, A) TheParisianConspiracyV2 Cards.theParisianConspiracyV2
-    $ Just
-    $ GroupClueCost (PerPlayer 2) Anywhere
+  act (1, A) TheParisianConspiracyV2 Cards.theParisianConspiracyV2 $
+    Just $
+      GroupClueCost (PerPlayer 2) Anywhere
 
 instance HasAbilities TheParisianConspiracyV2 where
-  getAbilities (TheParisianConspiracyV2 a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
-      $ Objective
-      $ ForcedAbility
-      $ RoundEnds When
-    ]
+  getAbilities (TheParisianConspiracyV2 a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3) $
+          Objective $
+            ForcedAbility $
+              RoundEnds When
+      ]
 
 instance RunMessage TheParisianConspiracyV2 where
   runMessage msg a@(TheParisianConspiracyV2 attrs) = case msg of
     AdvanceAct aid _ advanceMode | aid == actId attrs && onSide B attrs -> do
       theOrganist <-
         fromJustNote "The Organist was not set aside"
-        . listToMaybe
-        <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
+          . listToMaybe
+          <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
       case advanceMode of
         AdvancedWithClues -> do
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
@@ -56,12 +57,12 @@ instance RunMessage TheParisianConspiracyV2 where
           investigatorIds <- getInvestigatorIds
           locationId <- selectJust LeadInvestigatorLocation
           createTheOrganist <- createEnemyAt_ theOrganist locationId Nothing
-          pushAll
-            $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-              | iid <- investigatorIds
-              ]
-            <> [ createTheOrganist
-               , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-               ]
+          pushAll $
+            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+            | iid <- investigatorIds
+            ]
+              <> [ createTheOrganist
+                 , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+                 ]
       pure a
     _ -> TheParisianConspiracyV2 <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.RuinsOfNewYork
-  ( ruinsOfNewYork
-  , RuinsOfNewYork(..)
-  ) where
+module Arkham.Location.Cards.RuinsOfNewYork (
+  ruinsOfNewYork,
+  RuinsOfNewYork (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -27,14 +27,15 @@ ruinsOfNewYork :: LocationCard RuinsOfNewYork
 ruinsOfNewYork = location RuinsOfNewYork Cards.ruinsOfNewYork 1 (Static 3)
 
 instance HasAbilities RuinsOfNewYork where
-  getAbilities (RuinsOfNewYork a) = withBaseAbilities
-    a
-    [ mkAbility a 1
-      $ ForcedAbility
-      $ PutLocationIntoPlay Timing.After Anyone
-      $ LocationWithId
-      $ toId a
-    ]
+  getAbilities (RuinsOfNewYork a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            PutLocationIntoPlay Timing.After Anyone $
+              LocationWithId $
+                toId a
+      ]
 
 instance RunMessage RuinsOfNewYork where
   runMessage msg l@(RuinsOfNewYork attrs) = case msg of
@@ -44,11 +45,11 @@ instance RunMessage RuinsOfNewYork where
       deck <- fieldMap InvestigatorDeck unDeck lead
       let
         (cards, _) = splitAt (if playerCount >= 3 then 2 else 1) deck
-        polyps = map (\card -> PlayerCard $ card { pcCardCode = "xpolyp" }) cards
+        polyps = map (\card -> PlayerCard $ card {pcCardCode = "xpolyp"}) cards
       placements <- for polyps $ \polyp -> do
         createEnemyWithPlacement_ polyp (AtLocation $ toId attrs)
-      pushAll
-        $ map (RemovePlayerCardFromGame False . PlayerCard) cards
-        <> placements
+      pushAll $
+        map (RemovePlayerCardFromGame False . PlayerCard) cards
+          <> placements
       pure l
     _ -> RuinsOfNewYork <$> runMessage msg attrs

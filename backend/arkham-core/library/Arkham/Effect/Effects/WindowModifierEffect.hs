@@ -1,8 +1,8 @@
-module Arkham.Effect.Effects.WindowModifierEffect
-  ( windowModifierEffect
-  , windowModifierEffect'
-  , WindowModifierEffect(..)
-  ) where
+module Arkham.Effect.Effects.WindowModifierEffect (
+  windowModifierEffect,
+  windowModifierEffect',
+  WindowModifierEffect (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Window ( Window )
+import Arkham.Window (Window)
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -28,25 +28,26 @@ windowModifierEffect'
   -> Target
   -> WindowModifierEffect
 windowModifierEffect' eid metadata effectWindow source target =
-  WindowModifierEffect $ EffectAttrs
-    { effectId = eid
-    , effectSource = source
-    , effectTarget = target
-    , effectCardCode = "wmode"
-    , effectMetadata = Just metadata
-    , effectTraits = mempty
-    , effectWindow = Just effectWindow
-    , effectFinished = False
-    }
+  WindowModifierEffect $
+    EffectAttrs
+      { effectId = eid
+      , effectSource = source
+      , effectTarget = target
+      , effectCardCode = "wmode"
+      , effectMetadata = Just metadata
+      , effectTraits = mempty
+      , effectWindow = Just effectWindow
+      , effectFinished = False
+      }
 
 instance HasModifiersFor WindowModifierEffect where
   getModifiersFor target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
-      Just (EffectModifiers modifiers) -> case effectWindow of
-        Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
-        _ -> pure modifiers
-      Just (FailedByEffectModifiers modifiers) -> pure modifiers
-      _ -> pure []
+        Just (EffectModifiers modifiers) -> case effectWindow of
+          Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
+          _ -> pure modifiers
+        Just (FailedByEffectModifiers modifiers) -> pure modifiers
+        _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage WindowModifierEffect where

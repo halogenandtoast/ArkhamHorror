@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.HighRoller2
-  ( highRoller2
-  , highRoller2Effect
-  , HighRoller2(..)
-  ) where
+module Arkham.Asset.Cards.HighRoller2 (
+  highRoller2,
+  highRoller2Effect,
+  HighRoller2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,10 +22,10 @@ highRoller2 = asset HighRoller2 Cards.highRoller2
 
 instance HasAbilities HighRoller2 where
   getAbilities (HighRoller2 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ ResourceCost 3
-        <> ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
+        FastAbility $
+          ResourceCost 3
+            <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage HighRoller2 where
@@ -47,7 +47,7 @@ highRoller2Effect = cardEffect HighRoller2Effect Cards.highRoller2
 
 instance RunMessage HighRoller2Effect where
   runMessage msg e@(HighRoller2Effect attrs@EffectAttrs {..}) = case msg of
-    PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _ | InvestigatorTarget iid == effectTarget -> do
+    PassedSkillTest iid _ _ SkillTestInitiatorTarget {} _ _ | InvestigatorTarget iid == effectTarget -> do
       pushAll [TakeResources iid 3 (AbilitySource effectSource 1) False, DisableEffect effectId]
       pure e
     SkillTestEnds _ _ -> do

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.GrannyOrne
-  ( grannyOrne
-  , GrannyOrne(..)
-  ) where
+module Arkham.Asset.Cards.GrannyOrne (
+  grannyOrne,
+  GrannyOrne (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype GrannyOrne = GrannyOrne AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grannyOrne :: AssetCard GrannyOrne
@@ -26,37 +26,39 @@ instance HasModifiersFor GrannyOrne where
 
 instance HasAbilities GrannyOrne where
   getAbilities (GrannyOrne a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (WouldHaveSkillTestResult
-          Timing.When
-          (InvestigatorAt YourLocation)
-          AnySkillTest
-          (FailureResult AnyValue)
-        )
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          ( WouldHaveSkillTestResult
+              Timing.When
+              (InvestigatorAt YourLocation)
+              AnySkillTest
+              (FailureResult AnyValue)
+          )
+          (ExhaustCost $ toTarget a)
     ]
 
 instance RunMessage GrannyOrne where
   runMessage msg a@(GrannyOrne attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ chooseOne
-        iid
-        [ Label
-          "Fail by 1 less"
-          [ skillTestModifier
-            (toSource attrs)
-            SkillTestTarget
-            (SkillTestResultValueModifier (-1))
-          , RecalculateSkillTestResults
+      push $
+        chooseOne
+          iid
+          [ Label
+              "Fail by 1 less"
+              [ skillTestModifier
+                  (toSource attrs)
+                  SkillTestTarget
+                  (SkillTestResultValueModifier (-1))
+              , RecalculateSkillTestResults
+              ]
+          , Label
+              "Fail by 1 more"
+              [ skillTestModifier
+                  (toSource attrs)
+                  SkillTestTarget
+                  (SkillTestResultValueModifier 1)
+              , RecalculateSkillTestResults
+              ]
           ]
-        , Label
-          "Fail by 1 more"
-          [ skillTestModifier
-            (toSource attrs)
-            SkillTestTarget
-            (SkillTestResultValueModifier 1)
-          , RecalculateSkillTestResults
-          ]
-        ]
       pure a
     _ -> GrannyOrne <$> runMessage msg attrs

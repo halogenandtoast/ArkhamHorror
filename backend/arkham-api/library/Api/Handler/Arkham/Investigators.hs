@@ -1,6 +1,6 @@
-module Api.Handler.Arkham.Investigators
-  ( getApiV1ArkhamInvestigatorsR
-  ) where
+module Api.Handler.Arkham.Investigators (
+  getApiV1ArkhamInvestigatorsR,
+) where
 
 import Import
 

@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.VillageCommons
-  ( villageCommons
-  , VillageCommons(..)
-  ) where
+module Arkham.Location.Cards.VillageCommons (
+  villageCommons,
+  VillageCommons (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( villageCommons )
+import Arkham.Location.Cards qualified as Cards (villageCommons)
 import Arkham.Location.Runner
 
 newtype VillageCommons = VillageCommons LocationAttrs

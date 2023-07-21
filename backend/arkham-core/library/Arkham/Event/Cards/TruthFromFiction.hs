@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.TruthFromFiction
-  ( truthFromFiction
-  , TruthFromFiction(..)
-  ) where
+module Arkham.Event.Cards.TruthFromFiction (
+  truthFromFiction,
+  TruthFromFiction (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,11 +24,12 @@ instance RunMessage TruthFromFiction where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <-
         selectList $ assetControlledBy iid <> AssetWithUseType Uses.Secret
-      e <$ pushAll
-        [ chooseOne
-          iid
-          [ targetLabel aid [AddUses aid Uses.Secret 2]
-          | aid <- assets
+      e
+        <$ pushAll
+          [ chooseOne
+              iid
+              [ targetLabel aid [AddUses aid Uses.Secret 2]
+              | aid <- assets
+              ]
           ]
-        ]
     _ -> TruthFromFiction <$> runMessage msg attrs

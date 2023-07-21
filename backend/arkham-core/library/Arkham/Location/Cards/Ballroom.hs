@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Ballroom
-  ( ballroom
-  , Ballroom(..)
-  ) where
+module Arkham.Location.Cards.Ballroom (
+  ballroom,
+  Ballroom (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,18 +23,20 @@ ballroom :: LocationCard Ballroom
 ballroom = location Ballroom Cards.ballroom 4 (Static 0)
 
 instance HasAbilities Ballroom where
-  getAbilities (Ballroom attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerPhase 1)
-      $ restrictedAbility attrs 1 Here
-      $ ReactionAbility
-          (PerformAction Timing.After You $ ActionIs Action.Parley)
-          Free
-    | locationRevealed attrs
-    ]
+  getAbilities (Ballroom attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerPhase 1) $
+        restrictedAbility attrs 1 Here $
+          ReactionAbility
+            (PerformAction Timing.After You $ ActionIs Action.Parley)
+            Free
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Ballroom where
   runMessage msg l@(Ballroom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (TakeResources iid 2 (toAbilitySource attrs 1) False)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l <$ push (TakeResources iid 2 (toAbilitySource attrs 1) False)
     _ -> Ballroom <$> runMessage msg attrs

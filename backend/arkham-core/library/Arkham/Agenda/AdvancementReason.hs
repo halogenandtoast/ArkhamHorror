@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Agenda.AdvancementReason where
 
 import Arkham.Prelude

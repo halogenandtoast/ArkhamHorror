@@ -38,13 +38,13 @@ withoutModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
-toModifier :: (Sourceable a) => a -> ModifierType -> Modifier
+toModifier :: Sourceable a => a -> ModifierType -> Modifier
 toModifier a mType = Modifier (toSource a) mType False
 
-toModifiers :: (Sourceable a) => a -> [ModifierType] -> [Modifier]
+toModifiers :: Sourceable a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
-toModifiersWith :: (Sourceable a) => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
+toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
 toModifiersWith a f xs = map (f . toModifier a) xs
 
 skillTestModifier
@@ -69,7 +69,7 @@ skillTestModifiers source target modifiers =
     (toSource source)
     (toTarget target)
 
-effectModifiers :: (Sourceable a) => a -> [ModifierType] -> EffectMetadata Window Message
+effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source
 
 createWindowModifierEffect

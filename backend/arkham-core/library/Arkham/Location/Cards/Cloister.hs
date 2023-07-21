@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Cloister
-  ( cloister
-  , Cloister(..)
-  ) where
+module Arkham.Location.Cards.Cloister (
+  cloister,
+  Cloister (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,22 +23,26 @@ cloister :: LocationCard Cloister
 cloister = location Cloister Cards.cloister 2 (PerPlayer 1)
 
 instance HasAbilities Cloister where
-  getAbilities (Cloister a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (Here <> NoCluesOnThis)
-        $ ActionAbility (Just Action.Parley) Free
-    ]
+  getAbilities (Cloister a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (Here <> NoCluesOnThis) $
+          ActionAbility (Just Action.Parley) Free
+      ]
 
 instance RunMessage Cloister where
   runMessage msg l@(Cloister attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (parley
-        iid
-        source
-        (InvestigatorTarget iid)
-        SkillWillpower
-        3
-      )
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l
+            <$ push
+              ( parley
+                  iid
+                  source
+                  (InvestigatorTarget iid)
+                  SkillWillpower
+                  3
+              )
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> l <$ push (Remember FoundAGuide)
     _ -> Cloister <$> runMessage msg attrs

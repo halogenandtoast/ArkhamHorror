@@ -10,6 +10,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
@@ -21,7 +22,6 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
-import Arkham.ChaosToken
 import Arkham.Trait (Trait (Ruins))
 
 newtype HuntressOfTheEztli = HuntressOfTheEztli ActAttrs

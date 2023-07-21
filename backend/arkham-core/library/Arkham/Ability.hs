@@ -71,7 +71,7 @@ withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 
 restrictedAbility
-  :: (Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
+  :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') {abilityCriteria = Just restriction}
 
@@ -80,20 +80,20 @@ withCriteria c ab = case abilityCriteria ab of
   Nothing -> ab {abilityCriteria = Just c}
   Just c' -> ab {abilityCriteria = Just (c <> c')}
 
-haunted :: (Sourceable a) => Text -> a -> Int -> Ability
+haunted :: Sourceable a => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 
 reaction
-  :: (Sourceable a) => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
+  :: Sourceable a => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
 reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
 
 uncancellable :: Ability -> Ability
 uncancellable ab = ab {abilityCanBeCancelled = False}
 
-abilityEffect :: (Sourceable a) => a -> Cost -> Ability
+abilityEffect :: Sourceable a => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
-mkAbility :: (Sourceable a) => a -> Int -> AbilityType -> Ability
+mkAbility :: Sourceable a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
     { abilitySource = toSource entity

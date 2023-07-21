@@ -2,8 +2,8 @@ module Arkham.Event.Cards.HotStreak2 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 
@@ -16,6 +16,7 @@ hotStreak2 = event HotStreak2 Cards.hotStreak2
 
 instance RunMessage HotStreak2 where
   runMessage msg e@(HotStreak2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
-      e <$ pushAll [TakeResources iid 10 (toSource attrs) False]
+    InvestigatorPlayEvent iid eid _ _ _
+      | eid == eventId ->
+          e <$ pushAll [TakeResources iid 10 (toSource attrs) False]
     _ -> HotStreak2 <$> runMessage msg attrs

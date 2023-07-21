@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Criteria.Override where
 
 import Arkham.Prelude

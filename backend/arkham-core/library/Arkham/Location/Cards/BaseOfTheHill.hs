@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BaseOfTheHill
-  ( baseOfTheHill
-  , BaseOfTheHill(..)
-  ) where
+module Arkham.Location.Cards.BaseOfTheHill (
+  baseOfTheHill,
+  BaseOfTheHill (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,45 +20,51 @@ newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationCard BaseOfTheHill
-baseOfTheHill = locationWith
-  BaseOfTheHill
-  Cards.baseOfTheHill
-  3
-  (Static 0)
-  (revealedConnectedMatchersL <>~ [LocationWithTitle "Diverging Path"])
+baseOfTheHill =
+  locationWith
+    BaseOfTheHill
+    Cards.baseOfTheHill
+    3
+    (Static 0)
+    (revealedConnectedMatchersL <>~ [LocationWithTitle "Diverging Path"])
 
 instance HasAbilities BaseOfTheHill where
-  getAbilities (BaseOfTheHill attrs) = withResignAction
-    attrs
-    [ withTooltip
+  getAbilities (BaseOfTheHill attrs) =
+    withResignAction
+      attrs
+      [ withTooltip
         "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Diverging Path into play. (Limit once per round.)"
-      $ limitedAbility (PlayerLimit PerRound 1)
-      $ restrictedAbility
+        $ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility
           attrs
           1
           Here
           (ActionAbility (Just Action.Investigate) (ActionCost 1))
-    | locationRevealed attrs
-    ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (Investigate
-        iid
-        (toId attrs)
-        (AbilitySource source 1)
-        Nothing
-        SkillIntellect
-        False
-      )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l
+            <$ push
+              ( Investigate
+                  iid
+                  (toId attrs)
+                  (AbilitySource source 1)
+                  Nothing
+                  SkillIntellect
+                  False
+              )
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _
       | isSource attrs source -> do
-        divergingPaths <- getSetAsideCardsMatching
-          $ CardWithTitle "Diverging Path"
-        for_ (nonEmpty divergingPaths) $ \ne -> do
-          card <- sample ne
-          placement <- placeLocation_ card
-          push placement
-        pure l
+          divergingPaths <-
+            getSetAsideCardsMatching $
+              CardWithTitle "Diverging Path"
+          for_ (nonEmpty divergingPaths) $ \ne -> do
+            card <- sample ne
+            placement <- placeLocation_ card
+            push placement
+          pure l
     _ -> BaseOfTheHill <$> runMessage msg attrs

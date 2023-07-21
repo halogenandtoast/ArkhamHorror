@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.MiskatonicQuad
-  ( MiskatonicQuad(..)
-  , miskatonicQuad
-  ) where
+module Arkham.Location.Cards.MiskatonicQuad (
+  MiskatonicQuad (..),
+  miskatonicQuad,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( miskatonicQuad )
+import Arkham.Location.Cards qualified as Cards (miskatonicQuad)
 import Arkham.Location.Runner
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs

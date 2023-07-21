@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper
-  ( henryDeveauAlejandrosKidnapper
-  , HenryDeveauAlejandrosKidnapper(..)
-  ) where
+module Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper (
+  henryDeveauAlejandrosKidnapper,
+  HenryDeveauAlejandrosKidnapper (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,11 +14,12 @@ newtype HenryDeveauAlejandrosKidnapper = HenryDeveauAlejandrosKidnapper EnemyAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 henryDeveauAlejandrosKidnapper :: EnemyCard HenryDeveauAlejandrosKidnapper
-henryDeveauAlejandrosKidnapper = enemy
-  HenryDeveauAlejandrosKidnapper
-  Cards.henryDeveauAlejandrosKidnapper
-  (4, Static 3, 2)
-  (1, 1)
+henryDeveauAlejandrosKidnapper =
+  enemy
+    HenryDeveauAlejandrosKidnapper
+    Cards.henryDeveauAlejandrosKidnapper
+    (4, Static 3, 2)
+    (1, 1)
 
 instance RunMessage HenryDeveauAlejandrosKidnapper where
   runMessage msg (HenryDeveauAlejandrosKidnapper attrs) =

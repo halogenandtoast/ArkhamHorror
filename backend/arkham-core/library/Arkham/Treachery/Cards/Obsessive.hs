@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.Obsessive
-  ( obsessive
-  , Obsessive(..)
-  ) where
+module Arkham.Treachery.Cards.Obsessive (
+  obsessive,
+  Obsessive (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,12 +24,14 @@ obsessive = treachery Obsessive Cards.obsessive
 
 instance HasAbilities Obsessive where
   getAbilities (Obsessive a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ TurnBegins
-      Timing.When
-      You
-    , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
-      $ ActionAbility Nothing
-      $ ActionCost 2
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ForcedAbility $
+          TurnBegins
+            Timing.When
+            You
+    , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation) $
+        ActionAbility Nothing $
+          ActionCost 2
     ]
 
 instance RunMessage Obsessive where
@@ -38,8 +40,11 @@ instance RunMessage Obsessive where
       push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      cards <- selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch
-        (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
+      cards <-
+        selectList $
+          InHandOf (InvestigatorWithId iid)
+            <> BasicCardMatch
+              (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
       for_ (nonEmpty cards) $ \cards' -> do
         card <- sample cards'
         push $ DiscardCard iid (toAbilitySource attrs 1) (toCardId card)

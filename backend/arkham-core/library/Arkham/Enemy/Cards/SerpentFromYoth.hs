@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.SerpentFromYoth
-  ( serpentFromYoth
-  , SerpentFromYoth(..)
-  ) where
+module Arkham.Enemy.Cards.SerpentFromYoth (
+  serpentFromYoth,
+  SerpentFromYoth (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Keyword qualified as Keyword
 
 newtype SerpentFromYoth = SerpentFromYoth EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 serpentFromYoth :: EnemyCard SerpentFromYoth
@@ -22,13 +22,12 @@ serpentFromYoth =
 instance HasModifiersFor SerpentFromYoth where
   getModifiersFor (EnemyTarget eid) (SerpentFromYoth a) | toId a == eid = do
     vengeance <- getVengeanceInVictoryDisplay
-    pure
-      $ toModifiers a
-      $ [ AddKeyword Keyword.Retaliate | vengeance >= 1 ]
-      <> [ AddKeyword Keyword.Hunter | vengeance >= 2 ]
-      <> [ DamageTaken (-1) | vengeance >= 3 ]
+    pure $
+      toModifiers a $
+        [AddKeyword Keyword.Retaliate | vengeance >= 1]
+          <> [AddKeyword Keyword.Hunter | vengeance >= 2]
+          <> [DamageTaken (-1) | vengeance >= 3]
   getModifiersFor _ _ = pure []
-
 
 instance RunMessage SerpentFromYoth where
   runMessage msg (SerpentFromYoth attrs) =

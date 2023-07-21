@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.StrangeSolutionRestorativeConcoction4
-  ( strangeSolutionRestorativeConcoction4
-  , StrangeSolutionRestorativeConcoction4(..)
-  ) where
+module Arkham.Asset.Cards.StrangeSolutionRestorativeConcoction4 (
+  strangeSolutionRestorativeConcoction4,
+  StrangeSolutionRestorativeConcoction4 (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,20 +17,22 @@ newtype StrangeSolutionRestorativeConcoction4 = StrangeSolutionRestorativeConcoc
 
 strangeSolutionRestorativeConcoction4
   :: AssetCard StrangeSolutionRestorativeConcoction4
-strangeSolutionRestorativeConcoction4 = asset
-  StrangeSolutionRestorativeConcoction4
-  Cards.strangeSolutionRestorativeConcoction4
+strangeSolutionRestorativeConcoction4 =
+  asset
+    StrangeSolutionRestorativeConcoction4
+    Cards.strangeSolutionRestorativeConcoction4
 
 instance HasAbilities StrangeSolutionRestorativeConcoction4 where
   getAbilities (StrangeSolutionRestorativeConcoction4 x) =
     [ restrictedAbility
-          x
-          1
-          (ControlsThis <> InvestigatorExists
-            (HealableInvestigator (toSource x) DamageType
-            $ InvestigatorAt YourLocation
-            )
-          )
+        x
+        1
+        ( ControlsThis
+            <> InvestigatorExists
+              ( HealableInvestigator (toSource x) DamageType $
+                  InvestigatorAt YourLocation
+              )
+        )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
@@ -39,13 +41,14 @@ instance RunMessage StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap InvestigatorTarget
-        $ HealableInvestigator (toSource attrs) DamageType
-        $ colocatedWith iid
-      push $ chooseOne
-        iid
-        [ TargetLabel target [HealDamage target (toSource attrs) 2]
-        | target <- targets
-        ]
+        selectListMap InvestigatorTarget $
+          HealableInvestigator (toSource attrs) DamageType $
+            colocatedWith iid
+      push $
+        chooseOne
+          iid
+          [ TargetLabel target [HealDamage target (toSource attrs) 2]
+          | target <- targets
+          ]
       pure a
     _ -> StrangeSolutionRestorativeConcoction4 <$> runMessage msg attrs

@@ -13,7 +13,7 @@ respectful: true
 fixities: []
 unicode: never
 column-limit: 100
-single-contraint-parens: never
+single-constraint-parens: never
 fixities:
   - infixr 9  .
   - infixr 5  ++

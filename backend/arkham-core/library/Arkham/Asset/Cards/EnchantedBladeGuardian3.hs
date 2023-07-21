@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.EnchantedBladeGuardian3
-  ( enchantedBladeGuardian3
-  , EnchantedBladeGuardian3(..)
-  ) where
+module Arkham.Asset.Cards.EnchantedBladeGuardian3 (
+  enchantedBladeGuardian3,
+  EnchantedBladeGuardian3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.SkillType
 
-newtype Metadata = Metadata { empowered :: Bool }
+newtype Metadata = Metadata {empowered :: Bool}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -20,15 +20,16 @@ newtype EnchantedBladeGuardian3 = EnchantedBladeGuardian3 (AssetAttrs `With` Met
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 enchantedBladeGuardian3 :: AssetCard EnchantedBladeGuardian3
-enchantedBladeGuardian3 = asset
-  (EnchantedBladeGuardian3 . (`with` Metadata False))
-  Cards.enchantedBladeGuardian3
+enchantedBladeGuardian3 =
+  asset
+    (EnchantedBladeGuardian3 . (`with` Metadata False))
+    Cards.enchantedBladeGuardian3
 
 instance HasAbilities EnchantedBladeGuardian3 where
   getAbilities (EnchantedBladeGuardian3 (attrs `With` _)) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1
+    [ restrictedAbility attrs 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1
     ]
 
 instance RunMessage EnchantedBladeGuardian3 where
@@ -39,20 +40,21 @@ instance RunMessage EnchantedBladeGuardian3 where
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         when (useCount (assetUses attrs) > 0) $ do
-          push $ chooseOne
-            iid
-            [ Label
-              "Spend 1 use to empower"
-              [DoStep 1 (SpendUses (toTarget attrs) Charge 1)]
-            , Label "Do not spend use" []
-            ]
+          push $
+            chooseOne
+              iid
+              [ Label
+                  "Spend 1 use to empower"
+                  [DoStep 1 (SpendUses (toTarget attrs) Charge 1)]
+              , Label "Do not spend use" []
+              ]
         pure a
     DoStep 1 msg'@(SpendUses (isTarget attrs -> True) _ _) -> do
-      for_ (assetController attrs)
-        $ \iid -> pushAll [msg', skillTestModifier attrs iid (DamageDealt 1)]
+      for_ (assetController attrs) $
+        \iid -> pushAll [msg', skillTestModifier attrs iid (DamageDealt 1)]
       pure . EnchantedBladeGuardian3 $ attrs `with` Metadata True
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       when (empowered meta) $ for_ (assetController attrs) $ \iid -> do

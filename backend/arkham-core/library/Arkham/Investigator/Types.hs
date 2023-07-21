@@ -223,7 +223,7 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
-data Investigator = forall a. (IsInvestigator a) => Investigator a
+data Investigator = forall a. IsInvestigator a => Investigator a
 
 instance Eq Investigator where
   Investigator (a :: a) == Investigator (b :: b) = case eqT @a @b of
@@ -274,7 +274,7 @@ instance ToGameLoggerFormat Investigator where
   format = format . toAttrs
 
 data SomeInvestigatorCard
-  = forall a. (IsInvestigator a) => SomeInvestigatorCard (InvestigatorCard a)
+  = forall a. IsInvestigator a => SomeInvestigatorCard (InvestigatorCard a)
 
 instance HasCardCode Investigator where
   toCardCode = investigatorCardCode . toAttrs

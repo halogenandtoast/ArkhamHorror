@@ -30,9 +30,9 @@ instance RunMessage Lucky3 where
           pushAll
             [ drawing
             , skillTestModifier
-              (toSource attrs)
-              (InvestigatorTarget iid')
-              (AnySkillValue 3)
+                (toSource attrs)
+                (InvestigatorTarget iid')
+                (AnySkillValue 3)
             , RerunSkillTest
             ]
       pure e

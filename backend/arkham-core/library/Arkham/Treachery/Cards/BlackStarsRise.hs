@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.BlackStarsRise
-  ( blackStarsRise
-  , BlackStarsRise(..)
-  ) where
+module Arkham.Treachery.Cards.BlackStarsRise (
+  blackStarsRise,
+  BlackStarsRise (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,20 +21,22 @@ blackStarsRise = treachery BlackStarsRise Cards.blackStarsRise
 
 instance RunMessage BlackStarsRise where
   runMessage msg t@(BlackStarsRise attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (RevelationSkillTest iid source SkillIntellect 4)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (RevelationSkillTest iid source SkillIntellect 4)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
-        hasAgenda <- selectAny AnyAgenda
-        push $ chooseOrRunOne iid
-          $ [ Label
+          hasAgenda <- selectAny AnyAgenda
+          push $
+            chooseOrRunOne iid $
+              [ Label
                 "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
                 [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
-            | hasAgenda
-            ]
-          <> [ Label
-                 ("Take " <> tshow n <> " horror")
-                 [InvestigatorAssignDamage iid source DamageAny 0 n]
-             ]
-        pure t
+              | hasAgenda
+              ]
+                <> [ Label
+                      ("Take " <> tshow n <> " horror")
+                      [InvestigatorAssignDamage iid source DamageAny 0 n]
+                   ]
+          pure t
     _ -> BlackStarsRise <$> runMessage msg attrs

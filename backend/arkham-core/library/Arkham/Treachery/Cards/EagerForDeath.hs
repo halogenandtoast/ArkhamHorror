@@ -1,17 +1,17 @@
-module Arkham.Treachery.Cards.EagerForDeath
-  ( EagerForDeath(..)
-  , eagerForDeath
-  ) where
+module Arkham.Treachery.Cards.EagerForDeath (
+  EagerForDeath (..),
+  eagerForDeath,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype EagerForDeath = EagerForDeath TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -25,7 +25,8 @@ instance RunMessage EagerForDeath where
     Revelation iid source | isSource attrs source -> do
       difficulty <- fieldMap InvestigatorDamage (+ 2) iid
       t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t
-      <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
+      | isSource attrs source ->
+          t
+            <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
     _ -> EagerForDeath <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BridgeOverNKai
-  ( bridgeOverNKai
-  , BridgeOverNKai(..)
-  ) where
+module Arkham.Location.Cards.BridgeOverNKai (
+  bridgeOverNKai,
+  BridgeOverNKai (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype BridgeOverNKai = BridgeOverNKai LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bridgeOverNKai :: LocationCard BridgeOverNKai

@@ -1,17 +1,17 @@
-module Arkham.Agenda.Cards.RampagingCreatures
-  ( RampagingCreatures(..)
-  , rampagingCreatures
-  ) where
+module Arkham.Agenda.Cards.RampagingCreatures (
+  RampagingCreatures (..),
+  rampagingCreatures,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Matcher hiding ( ChosenRandomLocation )
+import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
@@ -33,11 +33,13 @@ instance RunMessage RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       lead <- getLead
-      broodOfYogSothoth <- selectTargets
-        $ EnemyWithTitle "Brood of Yog-Sothoth"
+      broodOfYogSothoth <-
+        selectTargets $
+          EnemyWithTitle "Brood of Yog-Sothoth"
       when
         (notNull broodOfYogSothoth)
-        $ push $ chooseOneAtATime
+        $ push
+        $ chooseOneAtATime
           lead
           [ TargetLabel target [ChooseRandomLocation target mempty]
           | target <- broodOfYogSothoth
@@ -52,9 +54,12 @@ instance RunMessage RampagingCreatures where
         for_ (nonEmpty setAsideBroodOfYogSothoth) $ \(x :| _) ->
           pushM $ createEnemyAt_ x lid Nothing
         pure a
-    AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> a <$ pushAll
-      [ ShuffleEncounterDiscardBackIn
-      , ChooseRandomLocation (toTarget attrs) mempty
-      , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-      ]
+    AdvanceAgenda aid
+      | aid == agendaId attrs && onSide B attrs ->
+          a
+            <$ pushAll
+              [ ShuffleEncounterDiscardBackIn
+              , ChooseRandomLocation (toTarget attrs) mempty
+              , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+              ]
     _ -> RampagingCreatures <$> runMessage msg attrs

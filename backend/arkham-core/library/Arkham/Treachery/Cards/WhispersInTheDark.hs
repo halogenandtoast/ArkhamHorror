@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.WhispersInTheDark
-  ( whispersInTheDark
-  , WhispersInTheDark(..)
-  ) where
+module Arkham.Treachery.Cards.WhispersInTheDark (
+  whispersInTheDark,
+  WhispersInTheDark (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,9 +24,9 @@ whispersInTheDark = treachery WhispersInTheDark Cards.whispersInTheDark
 instance HasAbilities WhispersInTheDark where
   getAbilities (WhispersInTheDark a) =
     [ haunted
-      "Take 1 horror"
-      (ProxySource (LocationMatcherSource Anywhere) (toSource a))
-      1
+        "Take 1 horror"
+        (ProxySource (LocationMatcherSource Anywhere) (toSource a))
+        1
     , mkAbility a 2 $ ForcedAbility $ RoundEnds Timing.When
     ]
 

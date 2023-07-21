@@ -37,7 +37,7 @@ import Arkham.Window qualified as Window
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
 
-getModifiedHealth :: (HasGame m) => EnemyAttrs -> m Int
+getModifiedHealth :: HasGame m => EnemyAttrs -> m Int
 getModifiedHealth EnemyAttrs {..} = do
   playerCount <- getPlayerCount
   modifiers' <- getModifiers (EnemyTarget enemyId)
@@ -93,7 +93,7 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
             <> resolve
               (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
 
-modifiedEnemyFight :: (HasGame m) => InvestigatorId -> EnemyAttrs -> m Int
+modifiedEnemyFight :: HasGame m => InvestigatorId -> EnemyAttrs -> m Int
 modifiedEnemyFight iid EnemyAttrs {..} = do
   investigatorModifiers <- getModifiers iid
   modifiers' <- getModifiers (EnemyTarget enemyId)
@@ -113,7 +113,7 @@ modifiedEnemyFight iid EnemyAttrs {..} = do
   applyAfterModifier (Modifier.AsIfEnemyFight m) _ = m
   applyAfterModifier _ n = n
 
-modifiedEnemyEvade :: (HasGame m) => EnemyAttrs -> m (Maybe Int)
+modifiedEnemyEvade :: HasGame m => EnemyAttrs -> m (Maybe Int)
 modifiedEnemyEvade EnemyAttrs {..} = case enemyEvade of
   Just x -> do
     modifiers' <- getModifiers (EnemyTarget enemyId)
@@ -125,7 +125,7 @@ modifiedEnemyEvade EnemyAttrs {..} = case enemyEvade of
   applyPreModifier (Modifier.EnemyEvadeWithMin m (Min minVal)) n = max (min n minVal) (n + m)
   applyPreModifier _ n = n
 
-getModifiedDamageAmount :: (HasGame m) => EnemyAttrs -> Bool -> Int -> m Int
+getModifiedDamageAmount :: HasGame m => EnemyAttrs -> Bool -> Int -> m Int
 getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
   let updatedAmount = foldr applyModifier baseAmount modifiers'
@@ -136,7 +136,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords :: (HasGame m) => EnemyAttrs -> m (Set Keyword)
+getModifiedKeywords :: HasGame m => EnemyAttrs -> m (Set Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
   pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
@@ -144,7 +144,7 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   applyModifier (Modifier.AddKeyword k) n = insertSet k n
   applyModifier _ n = n
 
-canEnterLocation :: (HasGame m) => EnemyId -> LocationId -> m Bool
+canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits <- field EnemyTraits eid
   modifiers' <- getModifiers (LocationTarget lid)
@@ -152,7 +152,7 @@ canEnterLocation eid lid = do
     Modifier.CannotBeEnteredByNonElite {} -> Elite `notMember` traits
     _ -> False
 
-getFightableEnemyIds :: (HasGame m) => InvestigatorId -> Source -> m [EnemyId]
+getFightableEnemyIds :: HasGame m => InvestigatorId -> Source -> m [EnemyId]
 getFightableEnemyIds iid source = do
   fightAnywhereEnemyIds <-
     selectList AnyEnemy >>= filterM \eid -> do
@@ -181,7 +181,7 @@ getFightableEnemyIds iid source = do
         )
         modifiers'
 
-getEnemyAccessibleLocations :: (HasGame m) => EnemyId -> m [LocationId]
+getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location
@@ -193,16 +193,16 @@ getEnemyAccessibleLocations eid = do
       pure $
         enemyIsElite
           || Modifier.CannotBeEnteredByNonElite
-            `notElem` modifiers'
+          `notElem` modifiers'
   filterM unblocked connectedLocationIds
 
-getUniqueEnemy :: (HasGame m) => CardDef -> m EnemyId
+getUniqueEnemy :: HasGame m => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs
 
-getUniqueEnemyMaybe :: (HasGame m) => CardDef -> m (Maybe EnemyId)
+getUniqueEnemyMaybe :: HasGame m => CardDef -> m (Maybe EnemyId)
 getUniqueEnemyMaybe = selectOne . enemyIs
 
-getEnemyIsInPlay :: (HasGame m) => CardDef -> m Bool
+getEnemyIsInPlay :: HasGame m => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
 
 defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m [Message]

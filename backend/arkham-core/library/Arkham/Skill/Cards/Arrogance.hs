@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Arrogance
-  ( arrogance
-  , Arrogance(..)
-  )
+module Arkham.Skill.Cards.Arrogance (
+  arrogance,
+  Arrogance (..),
+)
 where
 
 import Arkham.Prelude
@@ -21,7 +21,7 @@ arrogance =
 
 instance RunMessage Arrogance where
   runMessage msg s@(Arrogance attrs) = case msg of
-    PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ _ -> do
+    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ -> do
       push $ ReturnToHand (skillOwner attrs) (toTarget attrs)
       pure s
     _ -> Arrogance <$> runMessage msg attrs

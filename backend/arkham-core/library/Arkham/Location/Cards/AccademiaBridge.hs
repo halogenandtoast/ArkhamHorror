@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.AccademiaBridge
-  ( accademiaBridge
-  , AccademiaBridge(..)
-  ) where
+module Arkham.Location.Cards.AccademiaBridge (
+  accademiaBridge,
+  AccademiaBridge (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,23 +20,24 @@ newtype AccademiaBridge = AccademiaBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 accademiaBridge :: LocationCard AccademiaBridge
-accademiaBridge = locationWith
-  AccademiaBridge
-  Cards.accademiaBridge
-  2
-  (PerPlayer 1)
-  (connectsToL .~ singleton RightOf)
+accademiaBridge =
+  locationWith
+    AccademiaBridge
+    Cards.accademiaBridge
+    2
+    (PerPlayer 1)
+    (connectsToL .~ singleton RightOf)
 
 instance HasAbilities AccademiaBridge where
   getAbilities (AccademiaBridge attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ Leaves Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          Leaves Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of

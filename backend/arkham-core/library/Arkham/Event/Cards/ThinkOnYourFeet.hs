@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.ThinkOnYourFeet
-  ( thinkOnYourFeet
-  , ThinkOnYourFeet(..)
-  ) where
+module Arkham.Event.Cards.ThinkOnYourFeet (
+  thinkOnYourFeet,
+  ThinkOnYourFeet (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,12 +23,13 @@ instance RunMessage ThinkOnYourFeet where
   runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       connectedLocationIds <- selectList AccessibleLocation
-      unless (null connectedLocationIds) $ pushAll
-        [ chooseOne
-            iid
-            [ targetLabel lid' [Move $ move attrs iid lid']
-            | lid' <- connectedLocationIds
-            ]
-        ]
+      unless (null connectedLocationIds) $
+        pushAll
+          [ chooseOne
+              iid
+              [ targetLabel lid' [Move $ move attrs iid lid']
+              | lid' <- connectedLocationIds
+              ]
+          ]
       pure e
     _ -> ThinkOnYourFeet <$> runMessage msg attrs

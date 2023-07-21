@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.IntoTheRuinsOnceAgain
-  ( IntoTheRuinsOnceAgain(..)
-  , intoTheRuinsOnceAgain
-  ) where
+module Arkham.Act.Cards.IntoTheRuinsOnceAgain (
+  IntoTheRuinsOnceAgain (..),
+  intoTheRuinsOnceAgain,
+) where
 
 import Arkham.Prelude
 
@@ -25,35 +25,38 @@ newtype IntoTheRuinsOnceAgain = IntoTheRuinsOnceAgain ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 intoTheRuinsOnceAgain :: ActCard IntoTheRuinsOnceAgain
-intoTheRuinsOnceAgain = act
-  (1, A)
-  IntoTheRuinsOnceAgain
-  Cards.intoTheRuinsOnceAgain
-  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+intoTheRuinsOnceAgain =
+  act
+    (1, A)
+    IntoTheRuinsOnceAgain
+    Cards.intoTheRuinsOnceAgain
+    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance HasAbilities IntoTheRuinsOnceAgain where
-  getAbilities (IntoTheRuinsOnceAgain a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-      $ ActionAbility (Just Action.Explore)
-      $ ActionCost 1
-    ]
+  getAbilities (IntoTheRuinsOnceAgain a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
+          ActionAbility (Just Action.Explore) $
+            ActionCost 1
+      ]
 
 instance RunMessage IntoTheRuinsOnceAgain where
   runMessage msg a@(IntoTheRuinsOnceAgain attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore
-        iid
-        source
-        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $
+        Explore
+          iid
+          source
+          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       chamberOfTime <- getSetAsideCard Locations.chamberOfTime
       pushAll
         [ ShuffleCardsIntoDeck
-          (Deck.ScenarioDeckByKey ExplorationDeck)
-          [chamberOfTime]
+            (Deck.ScenarioDeckByKey ExplorationDeck)
+            [chamberOfTime]
         , AddToVictory (toTarget attrs)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]

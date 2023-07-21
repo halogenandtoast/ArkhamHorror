@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.ImDoneRunnin
-  ( imDoneRunnin
-  , imDoneRunninEffect
-  , ImDoneRunnin(..)
-  ) where
+module Arkham.Event.Cards.ImDoneRunnin (
+  imDoneRunnin,
+  imDoneRunninEffect,
+  ImDoneRunnin (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Matcher hiding ( EnemyEvaded )
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 
 newtype ImDoneRunnin = ImDoneRunnin EventAttrs
@@ -27,10 +27,10 @@ instance RunMessage ImDoneRunnin where
   runMessage msg e@(ImDoneRunnin attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ EnemyAt (locationWithInvestigator iid)
-      pushAll
-        $ map (Ready . EnemyTarget) enemies
-        <> [ EngageEnemy iid enemy False | enemy <- enemies ]
-        <> [ createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid) ]
+      pushAll $
+        map (Ready . EnemyTarget) enemies
+          <> [EngageEnemy iid enemy False | enemy <- enemies]
+          <> [createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid)]
       pure e
     _ -> ImDoneRunnin <$> runMessage msg attrs
 
@@ -50,11 +50,13 @@ instance RunMessage ImDoneRunninEffect where
   runMessage msg e@(ImDoneRunninEffect attrs@EffectAttrs {..}) = case msg of
     EnemyEvaded iid eid | InvestigatorTarget iid == effectTarget -> do
       canDamage <- eid <=~> EnemyCanBeDamagedBySource effectSource
-      when canDamage $ push $ chooseOne
-        iid
-        [ Label "Do not damage enemy" []
-        , Label "Damage enemy" [EnemyDamage eid $ nonAttack effectSource 1]
-        ]
+      when canDamage $
+        push $
+          chooseOne
+            iid
+            [ Label "Do not damage enemy" []
+            , Label "Damage enemy" [EnemyDamage eid $ nonAttack effectSource 1]
+            ]
       pure e
     EndTurn _ -> do
       push (DisableEffect effectId)

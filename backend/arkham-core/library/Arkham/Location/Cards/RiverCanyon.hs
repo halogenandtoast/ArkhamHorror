@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.RiverCanyon
-  ( riverCanyon
-  , RiverCanyon(..)
-  ) where
+module Arkham.Location.Cards.RiverCanyon (
+  riverCanyon,
+  RiverCanyon (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,16 +24,17 @@ riverCanyon :: LocationCard RiverCanyon
 riverCanyon = location RiverCanyon Cards.riverCanyon 4 (PerPlayer 1)
 
 instance HasAbilities RiverCanyon where
-  getAbilities (RiverCanyon attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (PlayerLimit PerGame 1)
-      $ restrictedAbility
-          attrs
-          1
-          (Here <> InvestigatorExists (HealableInvestigator (toSource attrs) DamageType You))
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    ]
+  getAbilities (RiverCanyon attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility
+            attrs
+            1
+            (Here <> InvestigatorExists (HealableInvestigator (toSource attrs) DamageType You))
+          $ ActionAbility Nothing
+          $ ActionCost 1
+      ]
 
 instance RunMessage RiverCanyon where
   runMessage msg l@(RiverCanyon attrs) = case msg of

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ArrowsFromTheTrees
-  ( arrowsFromTheTrees
-  , ArrowsFromTheTrees(..)
-  ) where
+module Arkham.Treachery.Cards.ArrowsFromTheTrees (
+  arrowsFromTheTrees,
+  ArrowsFromTheTrees (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,14 +26,14 @@ instance RunMessage ArrowsFromTheTrees where
       allyCount <- countAllies iid
       investigatorAssetPairs <- do
         others <-
-          selectList
-          $ NotInvestigator (InvestigatorWithId iid)
-          <> InvestigatorAt (LocationWithTrait Ancient)
+          selectList $
+            NotInvestigator (InvestigatorWithId iid)
+              <> InvestigatorAt (LocationWithTrait Ancient)
         forToSnd others countAllies
-      pushAll
-        $ InvestigatorAssignDamage iid source DamageAny (allyCount + 1) 0
-        : [ InvestigatorAssignDamage iid' source DamageAny (allyCount' + 1) 0
-          | (iid', allyCount') <- investigatorAssetPairs
-          ]
+      pushAll $
+        InvestigatorAssignDamage iid source DamageAny (allyCount + 1) 0
+          : [ InvestigatorAssignDamage iid' source DamageAny (allyCount' + 1) 0
+            | (iid', allyCount') <- investigatorAssetPairs
+            ]
       pure t
     _ -> ArrowsFromTheTrees <$> runMessage msg attrs

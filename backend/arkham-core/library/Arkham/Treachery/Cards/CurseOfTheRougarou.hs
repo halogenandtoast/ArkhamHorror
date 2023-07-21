@@ -1,16 +1,16 @@
-module Arkham.Treachery.Cards.CurseOfTheRougarou
-  ( CurseOfTheRougarou(..)
-  , curseOfTheRougarou
-  ) where
+module Arkham.Treachery.Cards.CurseOfTheRougarou (
+  CurseOfTheRougarou (..),
+  curseOfTheRougarou,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou TreacheryAttrs
@@ -25,10 +25,10 @@ instance HasAbilities CurseOfTheRougarou where
     [ restrictedAbility
         x
         1
-        (InThreatAreaOf You <> InvestigatorExists (You <> NoDamageDealtThisTurn)
+        ( InThreatAreaOf You <> InvestigatorExists (You <> NoDamageDealtThisTurn)
         )
-      $ ForcedAbility
-      $ TurnEnds Timing.When You
+        $ ForcedAbility
+        $ TurnEnds Timing.When You
     ]
 
 instance RunMessage CurseOfTheRougarou where

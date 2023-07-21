@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.IcyGhoul
-  ( icyGhoul
-  , IcyGhoul(..)
-  ) where
+module Arkham.Enemy.Cards.IcyGhoul (
+  icyGhoul,
+  IcyGhoul (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,12 +15,13 @@ newtype IcyGhoul = IcyGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 icyGhoul :: EnemyCard IcyGhoul
-icyGhoul = enemyWith
-  IcyGhoul
-  Cards.icyGhoul
-  (3, Static 4, 4)
-  (2, 1)
-  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Cellar"))
+icyGhoul =
+  enemyWith
+    IcyGhoul
+    Cards.icyGhoul
+    (3, Static 4, 4)
+    (2, 1)
+    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Cellar"))
 
 instance RunMessage IcyGhoul where
   runMessage msg (IcyGhoul attrs) = IcyGhoul <$> runMessage msg attrs

@@ -64,7 +64,7 @@ instance RunMessage HasturTheKingInYellow where
       | eid
           == toId attrs
           && damageAssignmentDamageEffect assignment
-            == StoryCardDamageEffect ->
+          == StoryCardDamageEffect ->
           HasturTheKingInYellow <$> runMessage msg attrs
     Msg.EnemyDamage eid _ | eid == toId attrs -> pure e
     _ -> HasturTheKingInYellow <$> runMessage msg attrs

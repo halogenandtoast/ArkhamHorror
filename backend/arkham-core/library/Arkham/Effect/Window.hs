@@ -1,9 +1,9 @@
-module Arkham.Effect.Window
-  ( module Arkham.Effect.Window
-  ) where
+module Arkham.Effect.Window (
+  module Arkham.Effect.Window,
+) where
 
-import Arkham.Prelude
 import Arkham.Card.Id
+import Arkham.Prelude
 
 data EffectWindow
   = EffectPhaseWindow

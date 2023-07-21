@@ -253,7 +253,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         acts <- genCards [Acts.searchForThePattern, Acts.openingTheMaw]
         agendas <- genCards [Agendas.theJunglesHeart, Agendas.settingSun]
 
-        HeartOfTheElders . (`with` metadata)
+        HeartOfTheElders
+          . (`with` metadata)
           <$> runMessage
             msg
             ( attrs
@@ -366,7 +367,8 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       genCards
         [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
 
-    HeartOfTheElders . (`with` metadata)
+    HeartOfTheElders
+      . (`with` metadata)
       <$> runMessage
         msg
         ( attrs

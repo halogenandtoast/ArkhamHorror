@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.SlipAway
-  ( slipAway
-  , slipAwayEffect
-  , SlipAway(..)
-  ) where
+module Arkham.Event.Cards.SlipAway (
+  slipAway,
+  slipAwayEffect,
+  SlipAway (..),
+) where
 
 import Arkham.Prelude
 
@@ -33,15 +33,15 @@ instance RunMessage SlipAway where
         , ChooseEvadeEnemy iid (toSource attrs) Nothing SkillAgility AnyEnemy False
         ]
       pure e
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n
       | n >= 2 -> do
-        mTarget <- getSkillTestTarget
-        case mTarget of
-          Just target@(EnemyTarget enemyId) -> do
-            nonElite <- enemyId <=~> NonEliteEnemy
-            when nonElite $ push $ createCardEffect Cards.slipAway Nothing attrs target
-          _ -> error "Invalid call, expected enemy skill test target"
-        pure e
+          mTarget <- getSkillTestTarget
+          case mTarget of
+            Just target@(EnemyTarget enemyId) -> do
+              nonElite <- enemyId <=~> NonEliteEnemy
+              when nonElite $ push $ createCardEffect Cards.slipAway Nothing attrs target
+            _ -> error "Invalid call, expected enemy skill test target"
+          pure e
     _ -> SlipAway <$> runMessage msg attrs
 
 newtype SlipAwayEffect = SlipAwayEffect EffectAttrs
@@ -54,7 +54,7 @@ slipAwayEffect = cardEffect SlipAwayEffect Cards.slipAway
 instance HasModifiersFor SlipAwayEffect where
   getModifiersFor target (SlipAwayEffect a) | effectTarget a == target = do
     phase <- getPhase
-    pure $ toModifiers a [ DoesNotReadyDuringUpkeep | phase == UpkeepPhase ]
+    pure $ toModifiers a [DoesNotReadyDuringUpkeep | phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SlipAwayEffect where

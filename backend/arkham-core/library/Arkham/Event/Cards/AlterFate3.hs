@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.AlterFate3
-  ( alterFate3
-  , AlterFate3(..)
-  ) where
+module Arkham.Event.Cards.AlterFate3 (
+  alterFate3,
+  AlterFate3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,15 +22,15 @@ instance RunMessage AlterFate3 where
   runMessage msg e@(AlterFate3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       treacheries <-
-        selectList
-        $ NotTreachery (TreacheryOnEnemy EliteEnemy)
-        <> TreacheryIsNonWeakness
+        selectList $
+          NotTreachery (TreacheryOnEnemy EliteEnemy)
+            <> TreacheryIsNonWeakness
       pushAll
         [ chooseOne
-          iid
-          [ targetLabel treachery [Discard (toSource attrs) (TreacheryTarget treachery)]
-          | treachery <- treacheries
-          ]
+            iid
+            [ targetLabel treachery [Discard (toSource attrs) (TreacheryTarget treachery)]
+            | treachery <- treacheries
+            ]
         ]
       pure e
     _ -> AlterFate3 <$> runMessage msg attrs

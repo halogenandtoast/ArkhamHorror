@@ -155,7 +155,8 @@ instance RunMessage ReturnToTheMidnightMasks where
         agendas <- genCards [predatorOrPrey, Agendas.timeIsRunningShort]
         acts <- genCards [Acts.uncoveringTheConspiracy]
 
-        ReturnToTheMidnightMasks . TheMidnightMasks
+        ReturnToTheMidnightMasks
+          . TheMidnightMasks
           <$> runMessage
             msg
             ( attrs

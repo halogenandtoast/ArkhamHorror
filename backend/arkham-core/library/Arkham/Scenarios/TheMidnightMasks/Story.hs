@@ -30,41 +30,44 @@ introPart1 version = FlavorText (Just "Part II: The MidnightMasks") body
       ]
 
 introPart2 :: FlavorText
-introPart2 = FlavorText
-  (Just "Part II: The MidnightMasks")
-  [ "“These creatures feed on the corpses of humans, and they are served\
-    \ by a dark cult within Arkham whose members have inexplicably come to\
-    \ worship the ancient master of the ghouls. This cult has been killing innocent\
-    \ people and feeding them to the ghouls, satiating a monstrous hunger. A dark\
-    \ balance was maintained. Until now. Recently,” Lita continues, “one of their\
-    \ lairs, where the corpses were stored, was destroyed. Since then, the ghouls have\
-    \ been more active than usual. I have tracked their movements and tried my\
-    \ best to stop them from running amok throughout the city. But I think there\
-    \ is something worse going on. The cult has been planning something darker,\
-    \ and more ominous, than anything I have yet observed. Indications are that\
-    \ this plan shall come to fruition tonight, shortly after midnight. Beyond that, I\
-    \ cannot fathom what to expect."
-  , "“Many of the cultists,” Lita continues, “will seem like everyday people, despite\
-    \ their foul intentions. Whenever the cult meets, its members don masks shaped\
-    \ like the skulls of various animals to protect their identities from one another.\
-    \ These masks are our mark. Symbols of death and decay. We must unmask the\
-    \ cultists to expose and derail their plans. We have but a few hours. The more\
-    \ cultists we find before midnight, the better.”"
-  ]
+introPart2 =
+  FlavorText
+    (Just "Part II: The MidnightMasks")
+    [ "“These creatures feed on the corpses of humans, and they are served\
+      \ by a dark cult within Arkham whose members have inexplicably come to\
+      \ worship the ancient master of the ghouls. This cult has been killing innocent\
+      \ people and feeding them to the ghouls, satiating a monstrous hunger. A dark\
+      \ balance was maintained. Until now. Recently,” Lita continues, “one of their\
+      \ lairs, where the corpses were stored, was destroyed. Since then, the ghouls have\
+      \ been more active than usual. I have tracked their movements and tried my\
+      \ best to stop them from running amok throughout the city. But I think there\
+      \ is something worse going on. The cult has been planning something darker,\
+      \ and more ominous, than anything I have yet observed. Indications are that\
+      \ this plan shall come to fruition tonight, shortly after midnight. Beyond that, I\
+      \ cannot fathom what to expect."
+    , "“Many of the cultists,” Lita continues, “will seem like everyday people, despite\
+      \ their foul intentions. Whenever the cult meets, its members don masks shaped\
+      \ like the skulls of various animals to protect their identities from one another.\
+      \ These masks are our mark. Symbols of death and decay. We must unmask the\
+      \ cultists to expose and derail their plans. We have but a few hours. The more\
+      \ cultists we find before midnight, the better.”"
+    ]
 
 resolution1 :: FlavorText
-resolution1 = FlavorText
-  (Just "Resolution 1")
-  [ "You’ve managed to obtain some useful\
-    \ information about the cult and its plans. You can only hope\
-    \ it’s enough."
-  ]
+resolution1 =
+  FlavorText
+    (Just "Resolution 1")
+    [ "You’ve managed to obtain some useful\
+      \ information about the cult and its plans. You can only hope\
+      \ it’s enough."
+    ]
 
 resolution2 :: FlavorText
-resolution2 = FlavorText
-  (Just "Resolution 2")
-  [ "Twelve bells ring out, signaling midnight. You’re\
-    \ out of time; the cult’s ritual will begin shortly. You’ve managed\
-    \ to obtain some useful information about the cult and its plans.\
-    \ You can only hope it’s enough."
-  ]
+resolution2 =
+  FlavorText
+    (Just "Resolution 2")
+    [ "Twelve bells ring out, signaling midnight. You’re\
+      \ out of time; the cult’s ritual will begin shortly. You’ve managed\
+      \ to obtain some useful information about the cult and its plans.\
+      \ You can only hope it’s enough."
+    ]

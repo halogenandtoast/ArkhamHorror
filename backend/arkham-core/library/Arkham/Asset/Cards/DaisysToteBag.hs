@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DaisysToteBag
-  ( DaisysToteBag(..)
-  , daisysToteBag
-  ) where
+module Arkham.Asset.Cards.DaisysToteBag (
+  DaisysToteBag (..),
+  daisysToteBag,
+) where
 
 import Arkham.Prelude
 

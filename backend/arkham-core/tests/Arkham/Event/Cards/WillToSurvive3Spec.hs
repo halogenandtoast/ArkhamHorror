@@ -1,17 +1,17 @@
-module Arkham.Event.Cards.WillToSurvive3Spec
-  ( spec
-  ) where
+module Arkham.Event.Cards.WillToSurvive3Spec (
+  spec,
+) where
 
 import TestImport
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs (..))
 
 spec :: Spec
 spec = describe "Will to Survive (3)" $ do
   it "cancels all tokens for the turn" $ gameTest $ \investigator -> do
-    updateInvestigator investigator
-      $ \attrs -> attrs { investigatorIntellect = 3 }
+    updateInvestigator investigator $
+      \attrs -> attrs {investigatorIntellect = 3}
 
     didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
 
@@ -23,8 +23,8 @@ spec = describe "Will to Survive (3)" $ do
     didPassTest `refShouldBe` True
 
   it "it is cancelled at the end of the turn" $ gameTest $ \investigator -> do
-    updateInvestigator investigator
-      $ \attrs -> attrs { investigatorIntellect = 3 }
+    updateInvestigator investigator $
+      \attrs -> attrs {investigatorIntellect = 3}
 
     didFailTest <- didFailSkillTestBy investigator SkillIntellect 3
 

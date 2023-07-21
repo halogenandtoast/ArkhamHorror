@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.FleshEater
-  ( fleshEater
-  , FleshEater(..)
-  ) where
+module Arkham.Enemy.Cards.FleshEater (
+  fleshEater,
+  FleshEater (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,12 +15,13 @@ newtype FleshEater = FleshEater EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 fleshEater :: EnemyCard FleshEater
-fleshEater = enemyWith
-  FleshEater
-  Cards.fleshEater
-  (4, Static 4, 1)
-  (1, 2)
-  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Attic"))
+fleshEater =
+  enemyWith
+    FleshEater
+    Cards.fleshEater
+    (4, Static 4, 1)
+    (1, 2)
+    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Attic"))
 
 instance RunMessage FleshEater where
   runMessage msg (FleshEater attrs) = FleshEater <$> runMessage msg attrs

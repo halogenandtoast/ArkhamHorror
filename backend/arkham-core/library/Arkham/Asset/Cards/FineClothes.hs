@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.FineClothes
-  ( fineClothes
-  , FineClothes(..)
-  ) where
+module Arkham.Asset.Cards.FineClothes (
+  fineClothes,
+  FineClothes (..),
+) where
 
 import Arkham.Prelude
 

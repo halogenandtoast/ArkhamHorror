@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Intrepid
-  ( intrepid
-  , Intrepid(..)
-  ) where
+module Arkham.Asset.Cards.Intrepid (
+  intrepid,
+  Intrepid (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype Intrepid = Intrepid AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 intrepid :: AssetCard Intrepid
@@ -21,14 +21,16 @@ intrepid = asset Intrepid Cards.intrepid
 
 instance HasModifiersFor Intrepid where
   getModifiersFor (InvestigatorTarget iid) (Intrepid a) =
-    pure $ if controlledBy a iid
-      then toModifiers
-        a
-        [ SkillModifier SkillIntellect 1
-        , SkillModifier SkillCombat 1
-        , SkillModifier SkillAgility 1
-        ]
-      else []
+    pure $
+      if controlledBy a iid
+        then
+          toModifiers
+            a
+            [ SkillModifier SkillIntellect 1
+            , SkillModifier SkillCombat 1
+            , SkillModifier SkillAgility 1
+            ]
+        else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Intrepid where

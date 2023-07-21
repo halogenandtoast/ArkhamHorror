@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.SkillTest.Type where
 
 import Arkham.Prelude

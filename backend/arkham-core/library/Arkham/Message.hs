@@ -841,7 +841,7 @@ chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
 chooseOrRunN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseAmounts
-  :: (Targetable target)
+  :: Targetable target
   => InvestigatorId
   -> Text
   -> AmountTarget

@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.ValentinoRivas
-  ( valentinoRivas
-  , ValentinoRivas(..)
-  )
+module Arkham.Enemy.Cards.ValentinoRivas (
+  valentinoRivas,
+  ValentinoRivas (..),
+)
 where
 
 import Arkham.Prelude

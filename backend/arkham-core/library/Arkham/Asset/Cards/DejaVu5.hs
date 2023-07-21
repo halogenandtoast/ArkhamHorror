@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DejaVu5
-  ( dejaVu5
-  , DejaVu5(..)
-  )
+module Arkham.Asset.Cards.DejaVu5 (
+  dejaVu5,
+  DejaVu5 (..),
+)
 where
 
 import Arkham.Prelude

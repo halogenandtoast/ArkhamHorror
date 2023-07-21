@@ -28,20 +28,20 @@ newtype DepthsOfYothMeta = DepthsOfYothMeta
   deriving stock (Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-incrementDepth :: (HasGame m) => m [Message]
+incrementDepth :: HasGame m => m [Message]
 incrementDepth = do
   addingToCurrentDepth <-
     checkWindows
       [Window Timing.When Window.AddingToCurrentDepth]
   pure [addingToCurrentDepth, ScenarioCountIncrementBy CurrentDepth 1]
 
-getCurrentDepth :: (HasGame m) => m Int
+getCurrentDepth :: HasGame m => m Int
 getCurrentDepth = scenarioCount CurrentDepth
 
-getDepthStart :: (HasGame m) => m LocationId
+getDepthStart :: HasGame m => m LocationId
 getDepthStart = depthLocation <$> getMeta
 
-getMeta :: (HasGame m) => m DepthsOfYothMeta
+getMeta :: HasGame m => m DepthsOfYothMeta
 getMeta = do
   v <- scenarioField ScenarioMeta
   case fromJSON v of
@@ -52,7 +52,7 @@ toMeta :: LocationId -> Value
 toMeta lid = toJSON $ DepthsOfYothMeta lid
 
 getInPursuitEnemyWithHighestEvade
-  :: (HasGame m) => m (Set EnemyId)
+  :: HasGame m => m (Set EnemyId)
 getInPursuitEnemyWithHighestEvade = do
   inPursuit <- getInPursuitEnemies
   evadeValue <-
@@ -65,10 +65,10 @@ getInPursuitEnemyWithHighestEvade = do
       (fieldMap (OutOfPlayEnemyField PursuitZone EnemyEvade) ((== Just evadeValue)))
       (toList inPursuit)
 
-getInPursuitEnemies :: (HasGame m) => m (Set EnemyId)
+getInPursuitEnemies :: HasGame m => m (Set EnemyId)
 getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 
-getPlacePursuitEnemyMessages :: (HasGame m) => m [Message]
+getPlacePursuitEnemyMessages :: HasGame m => m [Message]
 getPlacePursuitEnemyMessages = do
   choices <- toList <$> getInPursuitEnemyWithHighestEvade
   lead <- getLeadInvestigatorId

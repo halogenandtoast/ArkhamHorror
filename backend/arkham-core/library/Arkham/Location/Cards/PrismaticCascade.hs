@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.PrismaticCascade
-  ( prismaticCascade
-  , PrismaticCascade(..)
-  ) where
+module Arkham.Location.Cards.PrismaticCascade (
+  prismaticCascade,
+  PrismaticCascade (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,13 +9,13 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Label ( mkLabel )
-import Arkham.Location.Cards qualified as Cards ( prismaticCascade )
+import Arkham.Label (mkLabel)
+import Arkham.Location.Cards qualified as Cards (prismaticCascade)
 import Arkham.Location.Runner
-import Arkham.Matcher hiding ( DiscoverClues )
+import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Name
 import Arkham.Timing qualified as Timing
-import Control.Monad.Extra ( findM )
+import Control.Monad.Extra (findM)
 
 newtype PrismaticCascade = PrismaticCascade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,21 +27,21 @@ prismaticCascade =
 
 instance HasAbilities PrismaticCascade where
   getAbilities (PrismaticCascade attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ DiscoveringLastClue Timing.After Anyone
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          DiscoveringLastClue Timing.After Anyone $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       push $ toMessage $ randomDiscard iid attrs
       let
-        labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2] ]
+        labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2]]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels
       case availableLabel of
         Just label -> pure . PrismaticCascade $ attrs & labelL .~ label

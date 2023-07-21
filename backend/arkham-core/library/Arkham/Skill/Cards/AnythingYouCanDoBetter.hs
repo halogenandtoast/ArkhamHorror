@@ -1,13 +1,13 @@
-module Arkham.Skill.Cards.AnythingYouCanDoBetter
-  ( anythingYouCanDoBetter
-  , AnythingYouCanDoBetter(..)
-  )
+module Arkham.Skill.Cards.AnythingYouCanDoBetter (
+  anythingYouCanDoBetter,
+  AnythingYouCanDoBetter (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype AnythingYouCanDoBetter = AnythingYouCanDoBetter SkillAttrs

@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.StrangeRelicsMariasInformation
-  ( StrangeRelicsMariasInformation(..)
-  , strangeRelicsMariasInformation
-  ) where
+module Arkham.Act.Cards.StrangeRelicsMariasInformation (
+  StrangeRelicsMariasInformation (..),
+  strangeRelicsMariasInformation,
+) where
 
 import Arkham.Prelude
 
@@ -24,22 +24,25 @@ newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeRelicsMariasInformation :: ActCard StrangeRelicsMariasInformation
-strangeRelicsMariasInformation = act
-  (2, E)
-  StrangeRelicsMariasInformation
-  Cards.strangeRelicsMariasInformation
-  Nothing
+strangeRelicsMariasInformation =
+  act
+    (2, E)
+    StrangeRelicsMariasInformation
+    Cards.strangeRelicsMariasInformation
+    Nothing
 
 instance HasAbilities StrangeRelicsMariasInformation where
   getAbilities (StrangeRelicsMariasInformation a) =
     [ restrictedAbility
-          a
-          1
-          (AssetExists $ assetIs Assets.mariaDeSilva <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( AssetExists $
+          assetIs Assets.mariaDeSilva
+            <> AssetWithClues
+              (AtLeast $ PerPlayer 1)
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide E a
     ]
 
@@ -52,23 +55,23 @@ instance RunMessage StrangeRelicsMariasInformation where
       downtown <- selectJust $ locationIs Locations.downtownFirstBankOfArkham
       rivertown <- selectJust $ locationIs Locations.rivertown
       iids <- getInvestigatorIds
-      pushAll
-        $ [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
-          , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
-          ]
-        <> [ DiscardTopOfEncounterDeck
-               iid
-               1
-               (toSource attrs)
-               (Just $ toTarget attrs)
-           | iid <- iids
-           ]
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.strangeOccurences
-               E
-               (toSource attrs)
-           ]
+      pushAll $
+        [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
+        , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
+        ]
+          <> [ DiscardTopOfEncounterDeck
+              iid
+              1
+              (toSource attrs)
+              (Just $ toTarget attrs)
+             | iid <- iids
+             ]
+          <> [ AdvanceToAct
+                (actDeckId attrs)
+                Acts.strangeOccurences
+                E
+                (toSource attrs)
+             ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target ->
       do

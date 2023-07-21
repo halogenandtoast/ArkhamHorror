@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.StunningBlow
-  ( stunningBlow
-  , StunningBlow(..)
-  ) where
+module Arkham.Skill.Cards.StunningBlow (
+  stunningBlow,
+  StunningBlow (..),
+) where
 
 import Arkham.Prelude
 

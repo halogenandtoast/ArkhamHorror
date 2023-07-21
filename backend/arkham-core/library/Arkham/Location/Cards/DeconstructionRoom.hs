@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DeconstructionRoom
-  ( deconstructionRoom
-  , DeconstructionRoom(..)
-  ) where
+module Arkham.Location.Cards.DeconstructionRoom (
+  deconstructionRoom,
+  DeconstructionRoom (..),
+) where
 
 import Arkham.Prelude
 
@@ -27,23 +27,25 @@ deconstructionRoom =
 -- If you succeed, remember that you "dissected an organ."
 
 instance HasAbilities DeconstructionRoom where
-  getAbilities (DeconstructionRoom attrs) = withBaseAbilities
-    attrs
-    [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
+  getAbilities (DeconstructionRoom attrs) =
+    withBaseAbilities
+      attrs
+      [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
 
 instance RunMessage DeconstructionRoom where
   runMessage msg l@(DeconstructionRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- field LocationClues (toId attrs)
-      push $ beginSkillTest
-        iid
-        (toAbilitySource attrs 1)
-        (InvestigatorTarget iid)
-        SkillCombat
-        (4 + n)
+      push $
+        beginSkillTest
+          iid
+          (toAbilitySource attrs 1)
+          (InvestigatorTarget iid)
+          SkillCombat
+          (4 + n)
       pure l
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Remember DissectedAnOrgan
         pure l
     _ -> DeconstructionRoom <$> runMessage msg attrs

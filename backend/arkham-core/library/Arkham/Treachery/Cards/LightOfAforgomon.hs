@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.LightOfAforgomon
-  ( LightOfAforgomon(..)
-  , lightOfAforgomon
-  ) where
+module Arkham.Treachery.Cards.LightOfAforgomon (
+  LightOfAforgomon (..),
+  lightOfAforgomon,
+) where
 
 import Arkham.Prelude
 
@@ -29,20 +29,24 @@ instance RunMessage LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetActs <-
-        selectListMap ActTarget $ NotAct $ ActWithTreachery $ treacheryIs
-          Cards.lightOfAforgomon
+        selectListMap ActTarget $
+          NotAct $
+            ActWithTreachery $
+              treacheryIs
+                Cards.lightOfAforgomon
       targetAgendas <-
-        selectListMap AgendaTarget
-        $ NotAgenda
-        $ AgendaWithTreachery
-        $ treacheryIs Cards.lightOfAforgomon
+        selectListMap AgendaTarget $
+          NotAgenda $
+            AgendaWithTreachery $
+              treacheryIs Cards.lightOfAforgomon
       when
         (notNull $ targetActs <> targetAgendas)
-        (push $ chooseOne
-          iid
-          [ TargetLabel target [AttachTreachery treacheryId target]
-          | target <- targetActs <> targetAgendas
-          ]
+        ( push $
+            chooseOne
+              iid
+              [ TargetLabel target [AttachTreachery treacheryId target]
+              | target <- targetActs <> targetAgendas
+              ]
         )
       LightOfAforgomon <$> runMessage msg attrs
     _ -> LightOfAforgomon <$> runMessage msg attrs

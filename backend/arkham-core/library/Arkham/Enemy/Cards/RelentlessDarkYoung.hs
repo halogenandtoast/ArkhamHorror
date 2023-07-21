@@ -1,13 +1,13 @@
-module Arkham.Enemy.Cards.RelentlessDarkYoung
-  ( relentlessDarkYoung
-  , RelentlessDarkYoung(..)
-  ) where
+module Arkham.Enemy.Cards.RelentlessDarkYoung (
+  relentlessDarkYoung,
+  RelentlessDarkYoung (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -19,17 +19,19 @@ newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
-relentlessDarkYoung = enemyWith
-  RelentlessDarkYoung
-  Cards.relentlessDarkYoung
-  (4, Static 5, 2)
-  (2, 1)
-  (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
+relentlessDarkYoung =
+  enemyWith
+    RelentlessDarkYoung
+    Cards.relentlessDarkYoung
+    (4, Static 5, 2)
+    (2, 1)
+    (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
 
 instance HasAbilities RelentlessDarkYoung where
-  getAbilities (RelentlessDarkYoung attrs) = withBaseAbilities
-    attrs
-    [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
+  getAbilities (RelentlessDarkYoung attrs) =
+    withBaseAbilities
+      attrs
+      [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
 
 instance RunMessage RelentlessDarkYoung where
   runMessage msg e@(RelentlessDarkYoung attrs) = case msg of

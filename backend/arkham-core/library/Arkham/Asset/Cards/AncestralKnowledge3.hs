@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AncestralKnowledge3
-  ( ancestralKnowledge3
-  , AncestralKnowledge3(..)
-  ) where
+module Arkham.Asset.Cards.AncestralKnowledge3 (
+  ancestralKnowledge3,
+  AncestralKnowledge3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Helpers
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding ( PlaceUnderneath )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -24,10 +24,12 @@ ancestralKnowledge3 = asset AncestralKnowledge3 Cards.ancestralKnowledge3
 
 instance HasAbilities AncestralKnowledge3 where
   getAbilities (AncestralKnowledge3 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-      $ ReactionAbility (DrawingStartingHand Timing.When You) Free
-    , restrictedAbility attrs 2 ability2Criteria $ FastAbility $ ExhaustCost
-      (toTarget attrs)
+    [ restrictedAbility attrs 1 ControlsThis $
+        ReactionAbility (DrawingStartingHand Timing.When You) Free
+    , restrictedAbility attrs 2 ability2Criteria $
+        FastAbility $
+          ExhaustCost
+            (toTarget attrs)
     ]
    where
     ability2Criteria =
@@ -51,10 +53,10 @@ instance RunMessage AncestralKnowledge3 where
       pushAll
         [ FocusCards (assetCardsUnderneath attrs)
         , chooseOne
-          iid
-          [ targetLabel (toCardId c) [addToHand iid c]
-          | c <- assetCardsUnderneath attrs
-          ]
+            iid
+            [ targetLabel (toCardId c) [addToHand iid c]
+            | c <- assetCardsUnderneath attrs
+            ]
         , UnfocusCards
         ]
       pure a

@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.TheStrangerTheShoresOfHali
-  ( TheStrangerTheShoresOfHali(..)
-  , theStrangerTheShoresOfHali
-  ) where
+module Arkham.Effect.Effects.TheStrangerTheShoresOfHali (
+  TheStrangerTheShoresOfHali (..),
+  theStrangerTheShoresOfHali,
+) where
 
 import Arkham.Prelude
 
@@ -24,14 +24,14 @@ theStrangerTheShoresOfHali =
 
 instance HasAbilities TheStrangerTheShoresOfHali where
   getAbilities (TheStrangerTheShoresOfHali attrs) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-      $ mkAbility
-        (ProxySource
-          (LocationMatcherSource LocationWithAnyHorror)
-          (toSource attrs)
-        )
-        1
-        (ForcedAbility $ Leaves Timing.When You ThisLocation)
+    [ limitedAbility (PlayerLimit PerRound 1) $
+        mkAbility
+          ( ProxySource
+              (LocationMatcherSource LocationWithAnyHorror)
+              (toSource attrs)
+          )
+          1
+          (ForcedAbility $ Leaves Timing.When You ThisLocation)
     ]
 
 instance RunMessage TheStrangerTheShoresOfHali where
@@ -40,13 +40,13 @@ instance RunMessage TheStrangerTheShoresOfHali where
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillAgility 2
       pure e
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
-      | isSource attrs source
-      -> do
-        popMessageMatching_ \case
-          MoveFrom _ iid' _ -> iid' == iid
-          _ -> False
-        popMessageMatching_ \case
-          MoveTo movement -> moveTarget movement == toTarget iid
-          _ -> False
-        e <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
+      | isSource attrs source ->
+          do
+            popMessageMatching_ \case
+              MoveFrom _ iid' _ -> iid' == iid
+              _ -> False
+            popMessageMatching_ \case
+              MoveTo movement -> moveTarget movement == toTarget iid
+              _ -> False
+            e <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> TheStrangerTheShoresOfHali <$> runMessage msg attrs

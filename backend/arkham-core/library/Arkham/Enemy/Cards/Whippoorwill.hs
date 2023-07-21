@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.Whippoorwill
-  ( Whippoorwill(..)
-  , whippoorwill
-  ) where
+module Arkham.Enemy.Cards.Whippoorwill (
+  Whippoorwill (..),
+  whippoorwill,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 whippoorwill :: EnemyCard Whippoorwill
@@ -20,7 +20,7 @@ whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)
 instance HasModifiersFor Whippoorwill where
   getModifiersFor (InvestigatorTarget iid) (Whippoorwill attrs) = do
     affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId attrs)
-    pure $ toModifiers attrs [ AnySkillValue (-1) | affected ]
+    pure $ toModifiers attrs [AnySkillValue (-1) | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Whippoorwill where

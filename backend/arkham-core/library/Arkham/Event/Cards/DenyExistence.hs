@@ -1,14 +1,14 @@
-module Arkham.Event.Cards.DenyExistence
-  ( denyExistence
-  , DenyExistence(..)
-  ) where
+module Arkham.Event.Cards.DenyExistence (
+  denyExistence,
+  DenyExistence (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message hiding ( Discarded )
+import Arkham.Message hiding (Discarded)
 import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs
@@ -32,11 +32,11 @@ instance RunMessage DenyExistence where
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
         choices = flip mapMaybe windows $ \w -> case windowType w of
-          Discarded{} -> Just $ go "discard cards" w
-          LostResources{} -> Just $ go "lose resources" w
-          LostActions{} -> Just $ go "lose actions" w
-          WouldTakeDamage{} -> Just $ go "take damage" w
-          WouldTakeHorror{} -> Just $ go "take horror" w
+          Discarded {} -> Just $ go "discard cards" w
+          LostResources {} -> Just $ go "lose resources" w
+          LostActions {} -> Just $ go "lose actions" w
+          WouldTakeDamage {} -> Just $ go "take damage" w
+          WouldTakeHorror {} -> Just $ go "take horror" w
           _ -> Nothing
       push $ chooseOrRunOne iid choices
       pure e

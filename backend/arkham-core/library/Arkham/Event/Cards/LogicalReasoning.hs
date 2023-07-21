@@ -1,9 +1,9 @@
-module Arkham.Event.Cards.LogicalReasoning
-  ( logicalReasoning
-  , LogicalReasoning(..)
-  ) where
+module Arkham.Event.Cards.LogicalReasoning (
+  logicalReasoning,
+  LogicalReasoning (..),
+) where
 
-import Arkham.Prelude hiding ( terror )
+import Arkham.Prelude hiding (terror)
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
@@ -27,30 +27,34 @@ instance RunMessage LogicalReasoning where
       options <- for iids $ \iid' -> do
         mHealHorror <- getHealHorrorMessage attrs 2 iid'
         terrors <-
-          selectList $ TreacheryWithTrait Terror <> TreacheryInThreatAreaOf
-            (InvestigatorWithId iid')
+          selectList $
+            TreacheryWithTrait Terror
+              <> TreacheryInThreatAreaOf
+                (InvestigatorWithId iid')
         pure
           ( iid'
           , [ Label "Heal 2 Horror" [healHorror]
             | healHorror <- maybeToList mHealHorror
             ]
-          <> [ Label
-                 "Discard a Terror"
-                 [ chooseOne
-                     iid'
-                     [ targetLabel terror [Discard (toSource attrs) $ TreacheryTarget terror]
-                     | terror <- terrors
-                     ]
+              <> [ Label
+                  "Discard a Terror"
+                  [ chooseOne
+                      iid'
+                      [ targetLabel terror [Discard (toSource attrs) $ TreacheryTarget terror]
+                      | terror <- terrors
+                      ]
+                  ]
+                 | notNull terrors
                  ]
-             | notNull terrors
-             ]
           )
       let
-        choices = map
-          (\(iid', choices') -> TargetLabel
-            (InvestigatorTarget iid')
-            [chooseOrRunOne iid' choices']
-          )
-          options
+        choices =
+          map
+            ( \(iid', choices') ->
+                TargetLabel
+                  (InvestigatorTarget iid')
+                  [chooseOrRunOne iid' choices']
+            )
+            options
       e <$ pushAll [chooseOrRunOne iid choices]
     _ -> LogicalReasoning <$> runMessage msg attrs

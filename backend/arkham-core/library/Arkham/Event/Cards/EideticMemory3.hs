@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.EideticMemory3
-  ( eideticMemory3
-  , EideticMemory3(..)
-  )
+module Arkham.Event.Cards.EideticMemory3 (
+  eideticMemory3,
+  EideticMemory3 (..),
+)
 where
 
 import Arkham.Prelude
@@ -12,12 +12,12 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding ( DuringTurn )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Trait
 import Arkham.Timing qualified as Timing
+import Arkham.Trait
 import Arkham.Window
 
 newtype EideticMemory3 = EideticMemory3 EventAttrs
@@ -35,24 +35,27 @@ instance RunMessage EideticMemory3 where
       let
         candidates =
           filter (`cardMatch` (CardWithTrait Insight <> Matcher.EventCard)) discards
-        playableWindows = if null windows'
-          then [Window Timing.When (DuringTurn iid)]
-          else windows'
-      playableCards <- filterM
-        (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
-        candidates
-      push $ InitiatePlayCardAsChoose
-        iid
-        (toCard attrs)
-        playableCards
-        [ CreateEffect
-            "03306"
-            Nothing
-            (CardSource $ toCard attrs)
-            (CardIdTarget $ toCardId attrs)
-        ]
-        RemoveChosenCardFromGame
-        playableWindows
-        True
+        playableWindows =
+          if null windows'
+            then [Window Timing.When (DuringTurn iid)]
+            else windows'
+      playableCards <-
+        filterM
+          (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
+          candidates
+      push $
+        InitiatePlayCardAsChoose
+          iid
+          (toCard attrs)
+          playableCards
+          [ CreateEffect
+              "03306"
+              Nothing
+              (CardSource $ toCard attrs)
+              (CardIdTarget $ toCardId attrs)
+          ]
+          RemoveChosenCardFromGame
+          playableWindows
+          True
       pure e
     _ -> EideticMemory3 <$> runMessage msg attrs

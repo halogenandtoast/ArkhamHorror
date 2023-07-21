@@ -1,13 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Name
-  ( module Arkham.Name
-  ) where
+
+module Arkham.Name (
+  module Arkham.Name,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes.GameLogger
-import Arkham.Json
 import Arkham.Helpers
+import Arkham.Json
 import Data.Aeson.TH
 
 data Name = Name
@@ -65,10 +66,11 @@ instance ToJSON a => ToJSON (Labeled a) where
   toJSON l = object ["getLabel" .= getLabel l, "unLabel" .= unLabel l]
 
 instance FromJSON a => FromJSON (Labeled a) where
-  parseJSON = withObject "Labeled" $ \o -> Labeled
-    <$> o .: "getLabel"
-    <*> o .: "unLabel"
+  parseJSON = withObject "Labeled" $ \o ->
+    Labeled
+      <$> o
+      .: "getLabel"
+      <*> o .: "unLabel"
 
 labeled :: Named name => name -> a -> Labeled a
 labeled (toName -> name) = Labeled name
-

@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.GlimpseTheUnthinkable1
-  ( glimpseTheUnthinkable1
-  , GlimpseTheUnthinkable1(..)
-  ) where
+module Arkham.Event.Cards.GlimpseTheUnthinkable1 (
+  glimpseTheUnthinkable1,
+  GlimpseTheUnthinkable1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -32,33 +32,34 @@ instance RunMessage GlimpseTheUnthinkable1 where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       cards <-
-        selectList
-        $ InHandOf (InvestigatorWithId iid)
-        <> BasicCardMatch NonWeakness
-      push $ chooseAmounts
-        iid
-        "Choose number of cards to discard"
-        (MaxAmountTarget $ length cards)
-        [("Number of cards to discard", (0, length cards))]
-        (toTarget attrs)
+        selectList $
+          InHandOf (InvestigatorWithId iid)
+            <> BasicCardMatch NonWeakness
+      push $
+        chooseAmounts
+          iid
+          "Choose number of cards to discard"
+          (MaxAmountTarget $ length cards)
+          [("Number of cards to discard", (0, length cards))]
+          (toTarget attrs)
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let
         n = getChoiceAmount "Number of cards to discard" choices
       cards <-
-        selectList
-        $ InHandOf (InvestigatorWithId iid)
-        <> BasicCardMatch NonWeakness
+        selectList $
+          InHandOf (InvestigatorWithId iid)
+            <> BasicCardMatch NonWeakness
       drawing <- drawCards iid attrs n
       pushAll
         [ chooseN
-          iid
-          n
-          [ TargetLabel
+            iid
+            n
+            [ TargetLabel
               (CardIdTarget $ toCardId c)
               [ShuffleCardsIntoDeck (InvestigatorDeck iid) [c]]
-          | c <- cards
-          ]
+            | c <- cards
+            ]
         , drawing
         ]
 

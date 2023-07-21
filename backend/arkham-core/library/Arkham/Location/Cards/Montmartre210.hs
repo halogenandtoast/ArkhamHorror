@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Montmartre210
-  ( montmartre210
-  , Montmartre210(..)
-  ) where
+module Arkham.Location.Cards.Montmartre210 (
+  montmartre210,
+  Montmartre210 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,33 +22,35 @@ montmartre210 :: LocationCard Montmartre210
 montmartre210 = location Montmartre210 Cards.montmartre210 2 (PerPlayer 1)
 
 instance HasAbilities Montmartre210 where
-  getAbilities (Montmartre210 attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (PlayerLimit PerRound 1)
-      $ restrictedAbility
+  getAbilities (Montmartre210 attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility
           attrs
           1
-          (Here <> AssetExists
-            (AssetControlledBy You
-            <> AssetOneOf [AssetWithUses Ammo, AssetWithUses Supply]
-            )
+          ( Here
+              <> AssetExists
+                ( AssetControlledBy You
+                    <> AssetOneOf [AssetWithUses Ammo, AssetWithUses Supply]
+                )
           )
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> ResourceCost 1
-    | locationRevealed attrs
-    ]
+        $ ActionAbility Nothing
+        $ ActionCost 1
+          <> ResourceCost 1
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Montmartre210 where
   runMessage msg a@(Montmartre210 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       ammoAssets <- selectList $ AssetControlledBy You <> AssetWithUses Ammo
       supplyAssets <- selectList $ AssetControlledBy You <> AssetWithUses Supply
-      push
-        $ chooseOne iid
-        $ [ targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets ]
-        <> [ targetLabel asset [AddUses asset Supply 1]
-           | asset <- supplyAssets
-           ]
+      push $
+        chooseOne iid $
+          [targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets]
+            <> [ targetLabel asset [AddUses asset Supply 1]
+               | asset <- supplyAssets
+               ]
       pure a
     _ -> Montmartre210 <$> runMessage msg attrs

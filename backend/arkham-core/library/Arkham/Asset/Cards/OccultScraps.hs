@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.OccultScraps
-  ( occultScraps
-  , OccultScraps(..)
-  )
+module Arkham.Asset.Cards.OccultScraps (
+  occultScraps,
+  OccultScraps (..),
+)
 where
 
 import Arkham.Prelude

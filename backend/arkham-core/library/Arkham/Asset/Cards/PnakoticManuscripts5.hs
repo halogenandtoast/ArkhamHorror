@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.PnakoticManuscripts5
-  ( pnakoticManuscripts5
-  , pnakoticManuscripts5Effect
-  , PnakoticManuscripts5(..)
-  ) where
+module Arkham.Asset.Cards.PnakoticManuscripts5 (
+  pnakoticManuscripts5,
+  pnakoticManuscripts5Effect,
+  PnakoticManuscripts5 (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Effect.Types
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window(..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype PnakoticManuscripts5 = PnakoticManuscripts5 AssetAttrs
@@ -27,16 +27,16 @@ pnakoticManuscripts5 = asset PnakoticManuscripts5 Cards.pnakoticManuscripts5
 instance HasAbilities PnakoticManuscripts5 where
   getAbilities (PnakoticManuscripts5 a) =
     [ restrictedAbility a 1 ControlsThis
-      $ ReactionAbility
-          (WouldPerformRevelationSkillTest
-            Timing.When
-            (InvestigatorAt YourLocation)
+        $ ReactionAbility
+          ( WouldPerformRevelationSkillTest
+              Timing.When
+              (InvestigatorAt YourLocation)
           )
-      $ UseCost (AssetWithId $ toId a) Secret 1
-    , restrictedAbility a 2 ControlsThis
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> UseCost (AssetWithId $ toId a) Secret 1
+        $ UseCost (AssetWithId $ toId a) Secret 1
+    , restrictedAbility a 2 ControlsThis $
+        ActionAbility Nothing $
+          ActionCost 1
+            <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 getInvestigator :: [Window] -> InvestigatorId
@@ -49,16 +49,18 @@ instance RunMessage PnakoticManuscripts5 where
   runMessage msg a@(PnakoticManuscripts5 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getInvestigator -> iid) _ ->
       do
-        push $ skillTestModifier
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          DoNotDrawChaosTokensForSkillChecks
+        push $
+          skillTestModifier
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            DoNotDrawChaosTokensForSkillChecks
         pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       iids <- selectList $ colocatedWith iid
-      push $ chooseOrRunOne
-        iid
-        [ targetLabel
+      push $
+        chooseOrRunOne
+          iid
+          [ targetLabel
             iid'
             [ createCardEffect
                 Cards.pnakoticManuscripts5
@@ -66,8 +68,8 @@ instance RunMessage PnakoticManuscripts5 where
                 (toSource attrs)
                 (InvestigatorTarget iid')
             ]
-        | iid' <- iids
-        ]
+          | iid' <- iids
+          ]
       pure a
     _ -> PnakoticManuscripts5 <$> runMessage msg attrs
 
@@ -82,7 +84,7 @@ pnakoticManuscripts5Effect =
 instance HasModifiersFor PnakoticManuscripts5Effect where
   getModifiersFor target (PnakoticManuscripts5Effect a)
     | effectTarget a == target = do
-      pure $ toModifiers a [DoNotDrawChaosTokensForSkillChecks]
+        pure $ toModifiers a [DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ = pure []
 
 instance RunMessage PnakoticManuscripts5Effect where

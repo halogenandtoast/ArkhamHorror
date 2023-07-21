@@ -3,18 +3,18 @@ module Arkham.Treachery.Cards.InsatiableBloodlust where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 insatiableBloodlust :: TreacheryCard InsatiableBloodlust
@@ -22,18 +22,22 @@ insatiableBloodlust = treachery InsatiableBloodlust Cards.insatiableBloodlust
 
 instance HasModifiersFor InsatiableBloodlust where
   getModifiersFor (EnemyTarget eid) (InsatiableBloodlust attrs)
-    | treacheryOnEnemy eid attrs = pure $ toModifiers
-      attrs
-      [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
+    | treacheryOnEnemy eid attrs =
+        pure $
+          toModifiers
+            attrs
+            [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities InsatiableBloodlust where
   getAbilities (InsatiableBloodlust x) =
-    [ mkAbility x 1 $ ForcedAbility $ EnemyDealtDamage
-        Timing.After
-        AnyDamageEffect
-        (enemyIs Cards.theRougarou)
-        AnySource
+    [ mkAbility x 1 $
+        ForcedAbility $
+          EnemyDealtDamage
+            Timing.After
+            AnyDamageEffect
+            (enemyIs Cards.theRougarou)
+            AnySource
     ]
 
 instance RunMessage InsatiableBloodlust where
@@ -46,6 +50,7 @@ instance RunMessage InsatiableBloodlust where
           Just eid -> do
             push (AttachTreachery treacheryId (EnemyTarget eid))
         InsatiableBloodlust <$> runMessage msg attrs
-      UseCardAbility _ source 1 _ _ | isSource attrs source ->
-        t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+      UseCardAbility _ source 1 _ _
+        | isSource attrs source ->
+            t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
       _ -> InsatiableBloodlust <$> runMessage msg attrs

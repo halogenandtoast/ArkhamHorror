@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheBrokenRite
-  ( TheBrokenRite(..)
-  , theBrokenRite
-  ) where
+module Arkham.Act.Cards.TheBrokenRite (
+  TheBrokenRite (..),
+  theBrokenRite,
+) where
 
 import Arkham.Prelude
 

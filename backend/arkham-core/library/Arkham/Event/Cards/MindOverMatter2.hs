@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.MindOverMatter2
-  ( MindOverMatter2
-  , mindOverMatter2
-  , mindOverMatter2Effect
-  ) where
+module Arkham.Event.Cards.MindOverMatter2 (
+  MindOverMatter2,
+  mindOverMatter2,
+  mindOverMatter2Effect,
+) where
 
 import Arkham.Prelude
 
@@ -28,10 +28,10 @@ instance RunMessage MindOverMatter2 where
       drawing <- drawCards iid attrs 1
       pushAll
         [ createCardEffect
-          Cards.mindOverMatter2
-          Nothing
-          (toSource attrs)
-          (InvestigatorTarget iid)
+            Cards.mindOverMatter2
+            Nothing
+            (toSource attrs)
+            (InvestigatorTarget iid)
         , drawing
         ]
       pure e
@@ -46,11 +46,13 @@ mindOverMatter2Effect = cardEffect MindOverMatter2Effect Cards.mindOverMatter2
 
 instance HasModifiersFor MindOverMatter2Effect where
   getModifiersFor target (MindOverMatter2Effect a@EffectAttrs {..})
-    | target == effectTarget = pure $ toModifiers
-      a
-      [ AddSkillToOtherSkill SkillIntellect SkillCombat
-      , AddSkillToOtherSkill SkillIntellect SkillAgility
-      ]
+    | target == effectTarget =
+        pure $
+          toModifiers
+            a
+            [ AddSkillToOtherSkill SkillIntellect SkillCombat
+            , AddSkillToOtherSkill SkillIntellect SkillAgility
+            ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MindOverMatter2Effect where

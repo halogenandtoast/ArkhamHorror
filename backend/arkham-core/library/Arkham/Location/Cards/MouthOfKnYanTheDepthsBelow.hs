@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.MouthOfKnYanTheDepthsBelow
-  ( mouthOfKnYanTheDepthsBelow
-  , MouthOfKnYanTheDepthsBelow(..)
-  ) where
+module Arkham.Location.Cards.MouthOfKnYanTheDepthsBelow (
+  mouthOfKnYanTheDepthsBelow,
+  MouthOfKnYanTheDepthsBelow (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,22 +22,24 @@ newtype MouthOfKnYanTheDepthsBelow = MouthOfKnYanTheDepthsBelow LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mouthOfKnYanTheDepthsBelow :: LocationCard MouthOfKnYanTheDepthsBelow
-mouthOfKnYanTheDepthsBelow = location
-  MouthOfKnYanTheDepthsBelow
-  Cards.mouthOfKnYanTheDepthsBelow
-  2
-  (PerPlayer 1)
+mouthOfKnYanTheDepthsBelow =
+  location
+    MouthOfKnYanTheDepthsBelow
+    Cards.mouthOfKnYanTheDepthsBelow
+    2
+    (PerPlayer 1)
 
 instance HasAbilities MouthOfKnYanTheDepthsBelow where
-  getAbilities (MouthOfKnYanTheDepthsBelow attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (MouthOfKnYanTheDepthsBelow attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
         (Here <> HasSupply Compass)
         (ActionAbility Nothing $ ActionCost 1)
-    | locationRevealed attrs
-    ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage MouthOfKnYanTheDepthsBelow where
   runMessage msg l@(MouthOfKnYanTheDepthsBelow attrs) = case msg of
@@ -52,13 +54,13 @@ instance RunMessage MouthOfKnYanTheDepthsBelow where
         [ FocusCards viewing
         , SetScenarioDeck ExplorationDeck $ other <> rest
         , chooseOne
-          iid
-          [ Label
-              "Continue"
-              [ AddToEncounterDiscard c
-              | c <- mapMaybe (preview _EncounterCard) treacheries
-              ]
-          ]
+            iid
+            [ Label
+                "Continue"
+                [ AddToEncounterDiscard c
+                | c <- mapMaybe (preview _EncounterCard) treacheries
+                ]
+            ]
         , UnfocusCards
         , ShuffleDeck deckKey
         ]

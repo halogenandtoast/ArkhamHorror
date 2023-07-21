@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.JeromeDavids
-  ( jeromeDavids
-  , JeromeDavids(..)
-  )
+module Arkham.Asset.Cards.JeromeDavids (
+  jeromeDavids,
+  JeromeDavids (..),
+)
 where
 
 import Arkham.Prelude

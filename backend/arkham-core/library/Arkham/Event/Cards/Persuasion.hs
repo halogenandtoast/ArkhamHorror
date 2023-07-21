@@ -1,17 +1,17 @@
-module Arkham.Event.Cards.Persuasion
-  ( persuasion
-  , Persuasion(..)
-  ) where
+module Arkham.Event.Cards.Persuasion (
+  persuasion,
+  Persuasion (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Matcher hiding ( EnemyEvaded )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -31,15 +31,15 @@ instance RunMessage Persuasion where
       case mlocation of
         Just location -> do
           enemies <-
-            selectWithField EnemySanityDamage
-            $ enemyAt location
-            <> EnemyWithTrait Humanoid
-            <> NonWeaknessEnemy
-            <> CanParleyEnemy iid
+            selectWithField EnemySanityDamage $
+              enemyAt location
+                <> EnemyWithTrait Humanoid
+                <> NonWeaknessEnemy
+                <> CanParleyEnemy iid
           pushAll
             [ chooseOne
-              iid
-              [ targetLabel
+                iid
+                [ targetLabel
                   enemy
                   [ parley
                       iid
@@ -48,12 +48,12 @@ instance RunMessage Persuasion where
                       SkillIntellect
                       (3 + horror)
                   ]
-              | (enemy, horror) <- enemies
-              ]
+                | (enemy, horror) <- enemies
+                ]
             ]
         _ -> error "investigator not at location"
       pure e
-    PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _ -> do
+    PassedSkillTest iid _ _ SkillTestInitiatorTarget {} _ _ -> do
       mSkillTestTarget <- getSkillTestTarget
       case mSkillTestTarget of
         Just (EnemyTarget eid) -> do

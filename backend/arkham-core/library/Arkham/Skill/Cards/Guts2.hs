@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Guts2
-  ( guts2
-  , Guts2(..)
-  ) where
+module Arkham.Skill.Cards.Guts2 (
+  guts2,
+  Guts2 (..),
+) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.HallOfHeresy
-  ( hallOfHeresy
-  , HallOfHeresy(..)
-  ) where
+module Arkham.Location.Cards.HallOfHeresy (
+  hallOfHeresy,
+  HallOfHeresy (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype HallOfHeresy = HallOfHeresy LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hallOfHeresy :: LocationCard HallOfHeresy
@@ -22,9 +22,10 @@ hallOfHeresy =
 instance HasModifiersFor HallOfHeresy where
   getModifiersFor target (HallOfHeresy a) | isTarget a target = do
     hasInvestigator <- selectAny $ InvestigatorAt $ LocationWithId $ toId a
-    pure $ toModifiers
-      a
-      [ InVictoryDisplayForCountingVengeance | hasInvestigator ]
+    pure $
+      toModifiers
+        a
+        [InVictoryDisplayForCountingVengeance | hasInvestigator]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HallOfHeresy where

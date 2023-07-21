@@ -1,9 +1,10 @@
 {-# LANGUAGE QuantifiedConstraints #-}
+
 module Arkham.Field.Matchers where
 
-import Arkham.Prelude
-import Arkham.Field
 import Arkham.Asset.Types
+import Arkham.Field
+import Arkham.Prelude
 import Data.Typeable
 
 -- This module is currently abandoned. It causes a recompilation of Matcher and
@@ -14,7 +15,11 @@ newtype AssetFieldEq = AssetFieldEq (FieldEq Asset)
   deriving newtype (ToJSON, FromJSON, Show, Eq)
 
 data FieldEq a where
-  FieldEq :: (fld ~ Field a typ, Eq typ, Typeable typ, Show fld, Typeable a, ToJSON typ, ToJSON fld, Show typ) => fld -> typ -> FieldEq a
+  FieldEq
+    :: (fld ~ Field a typ, Eq typ, Typeable typ, Show fld, Typeable a, ToJSON typ, ToJSON fld, Show typ)
+    => fld
+    -> typ
+    -> FieldEq a
 
 deriving stock instance Show (FieldEq a)
 

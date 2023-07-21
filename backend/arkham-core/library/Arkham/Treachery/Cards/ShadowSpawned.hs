@@ -1,16 +1,16 @@
-module Arkham.Treachery.Cards.ShadowSpawned
-  ( shadowSpawned
-  , ShadowSpawned(..)
-  ) where
+module Arkham.Treachery.Cards.ShadowSpawned (
+  shadowSpawned,
+  ShadowSpawned (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
@@ -23,12 +23,13 @@ shadowSpawned = treachery ShadowSpawned Cards.shadowSpawned
 instance HasModifiersFor ShadowSpawned where
   getModifiersFor (EnemyTarget eid) (ShadowSpawned attrs)
     | treacheryOnEnemy eid attrs = do
-      n <- field TreacheryResources (treacheryId attrs)
-      pure $ toModifiers
-        attrs
-        ([EnemyFight n, HealthModifier n, EnemyEvade n]
-        <> [ AddKeyword Keyword.Massive | n >= 3 ]
-        )
+        n <- field TreacheryResources (treacheryId attrs)
+        pure $
+          toModifiers
+            attrs
+            ( [EnemyFight n, HealthModifier n, EnemyEvade n]
+                <> [AddKeyword Keyword.Massive | n >= 3]
+            )
   getModifiersFor _ _ = pure []
 
 instance RunMessage ShadowSpawned where

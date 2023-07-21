@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.GrandChamber
-  ( grandChamber
-  , GrandChamber(..)
-  ) where
+module Arkham.Location.Cards.GrandChamber (
+  grandChamber,
+  GrandChamber (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,25 +19,27 @@ newtype GrandChamber = GrandChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandChamber :: LocationCard GrandChamber
-grandChamber = locationWith
-  GrandChamber
-  Cards.grandChamber
-  2
-  (PerPlayer 1)
-  (connectsToL .~ setFromList [LeftOf, RightOf])
+grandChamber =
+  locationWith
+    GrandChamber
+    Cards.grandChamber
+    2
+    (PerPlayer 1)
+    (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasAbilities GrandChamber where
-  getAbilities (GrandChamber attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1
-      $ ForcedAbility
-      $ SkillTestResult
-          Timing.When
-          You
-          (WhileInvestigating $ LocationWithId $ toId attrs)
-      $ ResultOneOf
-          [FailureResult AnyValue, SuccessResult $ LessThan $ Static 2]
-    ]
+  getAbilities (GrandChamber attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.When
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+          $ ResultOneOf
+            [FailureResult AnyValue, SuccessResult $ LessThan $ Static 2]
+      ]
 
 instance RunMessage GrandChamber where
   runMessage msg l@(GrandChamber attrs) = case msg of

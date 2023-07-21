@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.LocationSymbol where
 
 import Arkham.Prelude

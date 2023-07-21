@@ -1,12 +1,12 @@
-module Arkham.Skill.Cards.DesperateSearch
-  ( desperateSearch
-  , DesperateSearch(..)
-  ) where
+module Arkham.Skill.Cards.DesperateSearch (
+  desperateSearch,
+  DesperateSearch (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype DesperateSearch = DesperateSearch SkillAttrs

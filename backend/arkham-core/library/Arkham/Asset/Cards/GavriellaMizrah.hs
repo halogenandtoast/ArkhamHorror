@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.GavriellaMizrah
-  ( gavriellaMizrah
-  , GavriellaMizrah(..)
-  )
+module Arkham.Asset.Cards.GavriellaMizrah (
+  gavriellaMizrah,
+  GavriellaMizrah (..),
+)
 where
 
 import Arkham.Prelude

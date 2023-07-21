@@ -99,13 +99,13 @@ data Question msg
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
   deriving stock (Show, Eq)
 
-targetLabel :: (Targetable target) => target -> [msg] -> UI msg
+targetLabel :: Targetable target => target -> [msg] -> UI msg
 targetLabel = TargetLabel . toTarget
 
-mapTargetLabel :: (Targetable target) => (target -> [msg]) -> [target] -> [UI msg]
+mapTargetLabel :: Targetable target => (target -> [msg]) -> [target] -> [UI msg]
 mapTargetLabel f = map (\c -> targetLabel c (f c))
 
-mapTargetLabelWith :: (Targetable target) => (c -> target) -> (c -> [msg]) -> [c] -> [UI msg]
+mapTargetLabelWith :: Targetable target => (c -> target) -> (c -> [msg]) -> [c] -> [UI msg]
 mapTargetLabelWith g f = map (uncurry targetLabel . (g &&& f))
 
 $(deriveJSON defaultOptions ''GameTokenType)

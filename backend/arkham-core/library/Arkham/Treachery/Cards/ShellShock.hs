@@ -1,16 +1,16 @@
-module Arkham.Treachery.Cards.ShellShock
-  ( shellShock
-  , ShellShock(..)
-  ) where
+module Arkham.Treachery.Cards.ShellShock (
+  shellShock,
+  ShellShock (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Projection
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype ShellShock = ShellShock TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

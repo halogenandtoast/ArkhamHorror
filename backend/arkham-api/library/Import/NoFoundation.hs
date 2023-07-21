@@ -21,4 +21,4 @@ tshow = T.pack . show
 
 headMay :: [a] -> Maybe a
 headMay [] = Nothing
-headMay (x : _ ) = Just x
+headMay (x : _) = Just x

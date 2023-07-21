@@ -2,9 +2,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Entity.Arkham.Step
-  ( module Entity.Arkham.Step
-  ) where
+module Entity.Arkham.Step (
+  module Entity.Arkham.Step,
+) where
 
 import Relude
 

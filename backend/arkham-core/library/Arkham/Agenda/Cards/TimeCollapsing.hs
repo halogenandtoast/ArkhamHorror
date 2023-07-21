@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TimeCollapsing
-  ( TimeCollapsing(..)
-  , timeCollapsing
-  ) where
+module Arkham.Agenda.Cards.TimeCollapsing (
+  TimeCollapsing (..),
+  timeCollapsing,
+) where
 
 import Arkham.Prelude
 
@@ -21,6 +21,7 @@ timeCollapsing = agenda (3, A) TimeCollapsing Cards.timeCollapsing (Static 6)
 
 instance RunMessage TimeCollapsing where
   runMessage msg a@(TimeCollapsing attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ pushAll [ScenarioResolution $ Resolution 2]
+    AdvanceAgenda aid
+      | aid == toId attrs && onSide B attrs ->
+          a <$ pushAll [ScenarioResolution $ Resolution 2]
     _ -> TimeCollapsing <$> runMessage msg attrs

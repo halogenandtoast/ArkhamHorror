@@ -1,17 +1,17 @@
-module Arkham.Asset.Cards.DoubleDouble4
-  ( doubleDouble4
-  , DoubleDouble4(..)
-  ) where
+module Arkham.Asset.Cards.DoubleDouble4 (
+  doubleDouble4,
+  DoubleDouble4 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding ( PlayCard )
+import Arkham.Asset.Runner hiding (PlayCard)
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype DoubleDouble4 = DoubleDouble4 AssetAttrs
@@ -23,13 +23,14 @@ doubleDouble4 = asset DoubleDouble4 Cards.doubleDouble4
 
 instance HasAbilities DoubleDouble4 where
   getAbilities (DoubleDouble4 a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (PlayCard
-          Timing.After
-          You
-          (BasicCardMatch (CardWithType EventType))
-        )
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          ( PlayCard
+              Timing.After
+              You
+              (BasicCardMatch (CardWithType EventType))
+          )
+          (ExhaustCost $ toTarget a)
     ]
 
 getCardPlayed :: [Window] -> Card

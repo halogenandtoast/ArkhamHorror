@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ArcaneEnlightenment
-  ( ArcaneEnlightenment(..)
-  , arcaneEnlightenment
-  ) where
+module Arkham.Asset.Cards.ArcaneEnlightenment (
+  ArcaneEnlightenment (..),
+  arcaneEnlightenment,
+) where
 
 import Arkham.Prelude
 
@@ -19,7 +19,7 @@ arcaneEnlightenment = asset ArcaneEnlightenment Cards.arcaneEnlightenment
 
 instance HasModifiersFor ArcaneEnlightenment where
   getModifiersFor (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =
-    pure [ toModifier attrs (HandSize 1) | controlledBy attrs iid ]
+    pure [toModifier attrs (HandSize 1) | controlledBy attrs iid]
   getModifiersFor _ _ = pure []
 
 slot :: AssetAttrs -> Slot

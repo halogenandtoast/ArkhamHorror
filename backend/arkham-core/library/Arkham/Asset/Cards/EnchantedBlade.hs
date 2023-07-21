@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.EnchantedBlade
-  ( enchantedBlade
-  , EnchantedBlade(..)
-  ) where
+module Arkham.Asset.Cards.EnchantedBlade (
+  enchantedBlade,
+  EnchantedBlade (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,9 +26,9 @@ getPaidUse _ = False
 
 instance HasAbilities EnchantedBlade where
   getAbilities (EnchantedBlade attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ Costs
+    [ restrictedAbility attrs 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          Costs
             [ActionCost 1, UpTo 1 (UseCost (AssetWithId $ toId attrs) Charge 1)]
     ]
 
@@ -38,11 +38,11 @@ instance RunMessage EnchantedBlade where
       do
         pushAll
           [ skillTestModifiers
-            attrs
-            (InvestigatorTarget iid)
-            ([SkillModifier SkillCombat (if paidUse then 2 else 1)]
-            <> [ DamageDealt 1 | paidUse ]
-            )
+              attrs
+              (InvestigatorTarget iid)
+              ( [SkillModifier SkillCombat (if paidUse then 2 else 1)]
+                  <> [DamageDealt 1 | paidUse]
+              )
           , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
           ]
         pure a

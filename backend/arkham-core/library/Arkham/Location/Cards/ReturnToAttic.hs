@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.ReturnToAttic
-  ( returnToAttic
-  , ReturnToAttic(..)
-  ) where
+module Arkham.Location.Cards.ReturnToAttic (
+  returnToAttic,
+  ReturnToAttic (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,14 +23,14 @@ returnToAttic = location ReturnToAttic Cards.returnToAttic 3 (PerPlayer 1)
 
 instance HasAbilities ReturnToAttic where
   getAbilities (ReturnToAttic attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          RevealLocation Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage ReturnToAttic where
   runMessage msg l@(ReturnToAttic attrs) = case msg of

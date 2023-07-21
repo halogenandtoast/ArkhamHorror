@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.HiddenLibrary
-  ( hiddenLibrary
-  , HiddenLibrary(..)
-  ) where
+module Arkham.Location.Cards.HiddenLibrary (
+  hiddenLibrary,
+  HiddenLibrary (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Trait
 
 newtype HiddenLibrary = HiddenLibrary LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hiddenLibrary :: LocationCard HiddenLibrary
@@ -23,8 +23,8 @@ hiddenLibrary = location HiddenLibrary Cards.hiddenLibrary 4 (PerPlayer 3)
 instance HasModifiersFor HiddenLibrary where
   getModifiersFor (LocationTarget lid) (HiddenLibrary attrs)
     | toId attrs == lid = do
-      enemyIsMoving <- isJust <$> selectOne MovingEnemy
-      pure $ toModifiers attrs [ AddTrait Passageway | enemyIsMoving ]
+        enemyIsMoving <- isJust <$> selectOne MovingEnemy
+        pure $ toModifiers attrs [AddTrait Passageway | enemyIsMoving]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HiddenLibrary where

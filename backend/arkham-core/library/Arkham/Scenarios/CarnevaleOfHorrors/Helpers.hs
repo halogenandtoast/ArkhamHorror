@@ -8,7 +8,7 @@ import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 
-getCnidathqua :: (HasGame m) => m (Maybe EnemyId)
+getCnidathqua :: HasGame m => m (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
 
 -- | An across location will be 4 locations away
@@ -25,12 +25,12 @@ getAcrossLocation lid = do
   range :: [Int]
   range = [1 .. 4]
 
-getCounterClockwiseLocation :: (HasGame m) => LocationId -> m (Maybe LocationId)
+getCounterClockwiseLocation :: HasGame m => LocationId -> m (Maybe LocationId)
 getCounterClockwiseLocation lid = do
   counterClockwiseMap <- getCounterClockwiseMap
   pure $ lookup lid counterClockwiseMap
 
-getCounterClockwiseLocations :: (HasGame m) => LocationId -> m [LocationId]
+getCounterClockwiseLocations :: HasGame m => LocationId -> m [LocationId]
 getCounterClockwiseLocations end = do
   counterClockwiseMap <- getCounterClockwiseMap
   pure $ buildList (lookup end counterClockwiseMap) counterClockwiseMap
@@ -40,7 +40,7 @@ getCounterClockwiseLocations end = do
   buildList (Just current) counterClockwiseMap =
     current : buildList (lookup current counterClockwiseMap) counterClockwiseMap
 
-getClockwiseLocations :: (HasGame m) => LocationId -> m [LocationId]
+getClockwiseLocations :: HasGame m => LocationId -> m [LocationId]
 getClockwiseLocations end = do
   clockwiseMap <- getClockwiseMap
   pure $ buildList (lookup end clockwiseMap) clockwiseMap
@@ -50,7 +50,7 @@ getClockwiseLocations end = do
   buildList (Just current) clockwiseMap =
     current : buildList (lookup current clockwiseMap) clockwiseMap
 
-getClockwiseMap :: (HasGame m) => m (Map LocationId LocationId)
+getClockwiseMap :: HasGame m => m (Map LocationId LocationId)
 getClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
@@ -61,7 +61,7 @@ getClockwiseMap = do
       )
       lids
 
-getCounterClockwiseMap :: (HasGame m) => m (Map LocationId LocationId)
+getCounterClockwiseMap :: HasGame m => m (Map LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList

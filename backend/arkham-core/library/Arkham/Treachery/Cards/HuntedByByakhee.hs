@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.HuntedByByakhee
-  ( huntedByByakhee
-  , HuntedByByakhee(..)
-  ) where
+module Arkham.Treachery.Cards.HuntedByByakhee (
+  huntedByByakhee,
+  HuntedByByakhee (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,41 +23,44 @@ huntedByByakhee = treachery HuntedByByakhee Cards.huntedByByakhee
 
 instance RunMessage HuntedByByakhee where
   runMessage msg t@(HuntedByByakhee attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (RevelationSkillTest iid source SkillAgility 6)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (RevelationSkillTest iid source SkillAgility 6)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
-        t <$ pushAll
-          [ DiscardTopOfEncounterDeck
-            iid
-            n
-            (toSource attrs)
-            (Just $ toTarget attrs)
-          , ShuffleDeck Deck.EncounterDeck
-          ]
+          t
+            <$ pushAll
+              [ DiscardTopOfEncounterDeck
+                  iid
+                  n
+                  (toSource attrs)
+                  (Just $ toTarget attrs)
+              , ShuffleDeck Deck.EncounterDeck
+              ]
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let
         isByakhee = member Byakhee . cdCardTraits . toCardDef
         isOmen = member Omen . cdCardTraits . toCardDef
         byakhee = filter isByakhee cards
         omens = filter isOmen cards
-        byakheeMsgs = if null byakhee
-          then []
-          else
-            [ FocusCards $ map EncounterCard cards
-            , chooseOne
-              iid
-              [ targetLabel
-                  (toCardId enemy)
-                  [InvestigatorDrewEncounterCard iid enemy]
-              | enemy <- byakhee
+        byakheeMsgs =
+          if null byakhee
+            then []
+            else
+              [ FocusCards $ map EncounterCard cards
+              , chooseOne
+                  iid
+                  [ targetLabel
+                    (toCardId enemy)
+                    [InvestigatorDrewEncounterCard iid enemy]
+                  | enemy <- byakhee
+                  ]
+              , UnfocusCards
               ]
-            , UnfocusCards
-            ]
-      pushAll
-        $ byakheeMsgs
-        <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-           | not (null omens)
-           ]
+      pushAll $
+        byakheeMsgs
+          <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+             | not (null omens)
+             ]
       pure t
     _ -> HuntedByByakhee <$> runMessage msg attrs

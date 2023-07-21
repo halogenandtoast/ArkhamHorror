@@ -10,8 +10,8 @@ data CurrentUser = CurrentUser
   , email :: Text
   , beta :: Bool
   }
-  deriving stock Generic
-  deriving anyclass ToJSON
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
 
 getApiV1CurrentUserR :: Handler CurrentUser
 getApiV1CurrentUserR = do

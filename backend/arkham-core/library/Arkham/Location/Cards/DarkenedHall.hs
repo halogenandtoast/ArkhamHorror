@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DarkenedHall
-  ( darkenedHall
-  , DarkenedHall(..)
-  ) where
+module Arkham.Location.Cards.DarkenedHall (
+  darkenedHall,
+  DarkenedHall (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,15 +22,16 @@ darkenedHall :: LocationCard DarkenedHall
 darkenedHall = location DarkenedHall Cards.darkenedHall 4 (Static 0)
 
 instance HasAbilities DarkenedHall where
-  getAbilities (DarkenedHall x) = withBaseAbilities
-    x
-    [ mkAbility x 1
-      $ ForcedAbility
-      $ RevealLocation Timing.After Anyone
-      $ LocationWithId
-      $ toId x
-    | locationRevealed x
-    ]
+  getAbilities (DarkenedHall x) =
+    withBaseAbilities
+      x
+      [ mkAbility x 1 $
+        ForcedAbility $
+          RevealLocation Timing.After Anyone $
+            LocationWithId $
+              toId x
+      | locationRevealed x
+      ]
 
 instance RunMessage DarkenedHall where
   runMessage msg (DarkenedHall attrs) = case msg of
@@ -40,11 +41,12 @@ instance RunMessage DarkenedHall where
 
       let placementsWithLabel = zip ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"] placements
 
-      pushAll $ concat
-        [ [ locationPlacement
-          , SetLocationLabel locationId label'
+      pushAll $
+        concat
+          [ [ locationPlacement
+            , SetLocationLabel locationId label'
+            ]
+          | (label', (locationId, locationPlacement)) <- placementsWithLabel
           ]
-        | (label', (locationId, locationPlacement)) <- placementsWithLabel
-        ]
       DarkenedHall <$> runMessage msg attrs
     _ -> DarkenedHall <$> runMessage msg attrs

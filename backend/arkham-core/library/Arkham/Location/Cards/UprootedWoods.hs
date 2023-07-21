@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.UprootedWoods
-  ( uprootedWoods
-  , UprootedWoods(..)
-  ) where
+module Arkham.Location.Cards.UprootedWoods (
+  uprootedWoods,
+  UprootedWoods (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( uprootedWoods )
+import Arkham.Location.Cards qualified as Cards (uprootedWoods)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -23,17 +23,17 @@ uprootedWoods = location UprootedWoods Cards.uprootedWoods 2 (PerPlayer 1)
 
 instance HasAbilities UprootedWoods where
   getAbilities (UprootedWoods attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ restrictedAbility
+        attrs
+        1
+        (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage UprootedWoods where
   runMessage msg l@(UprootedWoods attrs) = case msg of

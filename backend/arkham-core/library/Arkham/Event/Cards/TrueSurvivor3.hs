@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.TrueSurvivor3
-  ( trueSurvivor3
-  , TrueSurvivor3(..)
-  ) where
+module Arkham.Event.Cards.TrueSurvivor3 (
+  trueSurvivor3,
+  TrueSurvivor3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,17 +24,20 @@ instance RunMessage TrueSurvivor3 where
   runMessage msg e@(TrueSurvivor3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectList $ InDiscardOf (InvestigatorWithId iid) <> BasicCardMatch
-          (CardWithTrait Innate)
+        selectList $
+          InDiscardOf (InvestigatorWithId iid)
+            <> BasicCardMatch
+              (CardWithTrait Innate)
       when
         (null targets)
         (error "ScroungeForSupplies expected level 0 card in discard")
-      e <$ pushAll
-        [ chooseN
-          iid
-          3
-          [ TargetLabel (CardIdTarget $ toCardId target) [addToHand iid target]
-          | target <- targets
+      e
+        <$ pushAll
+          [ chooseN
+              iid
+              3
+              [ TargetLabel (CardIdTarget $ toCardId target) [addToHand iid target]
+              | target <- targets
+              ]
           ]
-        ]
     _ -> TrueSurvivor3 <$> runMessage msg attrs

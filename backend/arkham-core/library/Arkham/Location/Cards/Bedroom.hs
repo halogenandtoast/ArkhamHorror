@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( bedroom )
+import Arkham.Location.Cards qualified as Cards (bedroom)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -20,16 +20,16 @@ bedroom = location Bedroom Cards.bedroom 2 (PerPlayer 1)
 
 instance HasAbilities Bedroom where
   getAbilities (Bedroom attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-              Timing.After
-              You
-              (WhileInvestigating $ LocationWithId $ toId attrs)
-          $ FailureResult AnyValue
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ SkillTestResult
+          Timing.After
+          You
+          (WhileInvestigating $ LocationWithId $ toId attrs)
+        $ FailureResult AnyValue
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Bedroom where
   runMessage msg l@(Bedroom attrs) = case msg of

@@ -51,7 +51,7 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
                   (HorrorCost (toSource attrs) YouTarget 2)
               )
               & abilityLimitL
-                .~ PlayerLimit PerRound 1
+              .~ PlayerLimit PerRound 1
           ]
         else
           [ mkAbility attrs 1 $

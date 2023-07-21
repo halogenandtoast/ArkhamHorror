@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Coyoacan
-  ( coyoacan
-  , Coyoacan(..)
-  ) where
+module Arkham.Location.Cards.Coyoacan (
+  coyoacan,
+  Coyoacan (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,24 +22,25 @@ coyoacan :: LocationCard Coyoacan
 coyoacan = locationWith Coyoacan Cards.coyoacan 2 (Static 0) (labelL .~ "star")
 
 instance HasAbilities Coyoacan where
-  getAbilities (Coyoacan attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 (Here <> ScenarioDeckWithCard ExplorationDeck)
-      $ ActionAbility (Just Action.Explore)
-      $ ActionCost 1
-      <> OrCost
-           [ DamageCost (toSource attrs) YouTarget 1
-           , HorrorCost (toSource attrs) YouTarget 1
-           ]
-    | locationRevealed attrs
-    ]
+  getAbilities (Coyoacan attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 (Here <> ScenarioDeckWithCard ExplorationDeck) $
+        ActionAbility (Just Action.Explore) $
+          ActionCost 1
+            <> OrCost
+              [ DamageCost (toSource attrs) YouTarget 1
+              , HorrorCost (toSource attrs) YouTarget 1
+              ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Coyoacan where
   runMessage msg l@(Coyoacan attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ Explore iid (toSource attrs)
-        $ CardWithPrintedLocationSymbol
-        $ locationSymbol attrs
+      push $
+        Explore iid (toSource attrs) $
+          CardWithPrintedLocationSymbol $
+            locationSymbol attrs
       pure l
     _ -> Coyoacan <$> runMessage msg attrs

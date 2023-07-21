@@ -1,8 +1,8 @@
-module Arkham.Agenda.Cards.LostMemories
-  ( LostMemories(..)
-  , lostMemories
-  , lostMemoriesEffect
-  ) where
+module Arkham.Agenda.Cards.LostMemories (
+  LostMemories (..),
+  lostMemories,
+  lostMemoriesEffect,
+) where
 
 import Arkham.Prelude
 
@@ -27,8 +27,9 @@ lostMemories :: AgendaCard LostMemories
 lostMemories = agenda (2, A) LostMemories Cards.lostMemories (Static 7)
 
 instance HasModifiersFor LostMemories where
-  getModifiersFor (InvestigatorTarget _) (LostMemories attrs) | onSide A attrs =
-    pure $ toModifiers attrs [HandSize (-2)]
+  getModifiersFor (InvestigatorTarget _) (LostMemories attrs)
+    | onSide A attrs =
+        pure $ toModifiers attrs [HandSize (-2)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LostMemories where
@@ -38,31 +39,32 @@ instance RunMessage LostMemories where
       shouldMoveCustodian <-
         selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
 
-      custodianMessages <- if shouldMoveCustodian
-        then do
-          lead <- getLeadInvestigatorId
-          custodian <- selectJust $ assetIs Assets.theCustodian
-          locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
-          pure
-            $ [ chooseOrRunOne
+      custodianMessages <-
+        if shouldMoveCustodian
+          then do
+            lead <- getLeadInvestigatorId
+            custodian <- selectJust $ assetIs Assets.theCustodian
+            locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
+            pure $
+              [ chooseOrRunOne
                   lead
                   [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
                   | lid <- locationWithMostClues
                   ]
               ]
-        else pure []
+          else pure []
       drawing <- for hasPendant $ \iid -> drawCards iid attrs 2
-      pushAll
-        $ ShuffleEncounterDiscardBackIn
-        : custodianMessages
-        <> drawing
-        <> [ createCardEffect
-               Cards.lostMemories
-               Nothing
-               (toSource attrs)
-               ScenarioTarget
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      pushAll $
+        ShuffleEncounterDiscardBackIn
+          : custodianMessages
+            <> drawing
+            <> [ createCardEffect
+                  Cards.lostMemories
+                  Nothing
+                  (toSource attrs)
+                  ScenarioTarget
+               , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+               ]
       pure a
     _ -> LostMemories <$> runMessage msg attrs
 

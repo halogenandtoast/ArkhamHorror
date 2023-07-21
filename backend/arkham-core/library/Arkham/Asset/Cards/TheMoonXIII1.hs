@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.TheMoonXIII1
-  ( theMoonXiii1
-  , TheMoonXIII1(..)
-  )
+module Arkham.Asset.Cards.TheMoonXIII1 (
+  theMoonXiii1,
+  TheMoonXIII1 (..),
+)
 where
 
 import Arkham.Prelude
@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype TheMoonXIII1 = TheMoonXIII1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMoonXiii1 :: AssetCard TheMoonXIII1

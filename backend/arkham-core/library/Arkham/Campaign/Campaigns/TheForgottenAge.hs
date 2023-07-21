@@ -74,10 +74,10 @@ theForgottenAge difficulty =
     difficulty
     (chaosBagContents difficulty)
 
-initialSupplyPoints :: (HasGame m) => m Int
+initialSupplyPoints :: HasGame m => m Int
 initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
 
-initialResupplyPoints :: (HasGame m) => m Int
+initialResupplyPoints :: HasGame m => m Int
 initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 supplyCost :: Supply -> Int
@@ -173,7 +173,7 @@ instance RunMessage TheForgottenAge where
               s
                 `notElem` investigatorSupplies
                 || s
-                  `elem` [Provisions, Medicine]
+                `elem` [Provisions, Medicine]
             affordableSupplies =
               filter ((<= remaining) . supplyCost) prologueSupplies
             availableSupplies = filter availableSupply affordableSupplies
@@ -431,7 +431,7 @@ instance RunMessage TheForgottenAge where
               s
                 `notElem` investigatorSupplies
                 || s
-                  `elem` [Provisions, Medicine, Gasoline]
+                `elem` [Provisions, Medicine, Gasoline]
             affordableSupplies =
               filter ((<= remaining) . supplyCost) resupplyPointSupplies
             availableSupplies = filter availableSupply affordableSupplies

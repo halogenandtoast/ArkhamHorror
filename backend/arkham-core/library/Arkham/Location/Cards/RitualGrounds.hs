@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( ritualGrounds )
+import Arkham.Location.Cards qualified as Cards (ritualGrounds)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -20,12 +20,14 @@ ritualGrounds = location RitualGrounds Cards.ritualGrounds 2 (PerPlayer 1)
 
 instance HasAbilities RitualGrounds where
   getAbilities (RitualGrounds attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+    withBaseAbilities attrs $
+      [ restrictedAbility attrs 1 Here $
+        ForcedAbility $
+          TurnEnds
             Timing.After
             You
-        | locationRevealed attrs
-        ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage RitualGrounds where
   runMessage msg l@(RitualGrounds attrs) = case msg of

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.CrumblingPrecipice
-  ( crumblingPrecipice
-  , CrumblingPrecipice(..)
-  ) where
+module Arkham.Location.Cards.CrumblingPrecipice (
+  crumblingPrecipice,
+  CrumblingPrecipice (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,42 +20,49 @@ newtype CrumblingPrecipice = CrumblingPrecipice LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crumblingPrecipice :: LocationCard CrumblingPrecipice
-crumblingPrecipice = symbolLabel
-  $ location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)
+crumblingPrecipice =
+  symbolLabel $
+    location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)
 
 instance HasAbilities CrumblingPrecipice where
-  getAbilities (CrumblingPrecipice a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 Here $ ForcedAbility $ AttemptExplore
-        Timing.When
-        You
-    ]
+  getAbilities (CrumblingPrecipice a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 Here $
+          ForcedAbility $
+            AttemptExplore
+              Timing.When
+              You
+      ]
 
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillWillpower
-        4
+      push $
+        beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillWillpower
+          4
       pure l
     FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillWillpower) _ -> do
-      push $ beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillAgility
-        3
+      push $
+        beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillAgility
+          3
       pure l
     FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillAgility) _ -> do
-      push $ beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillCombat
-        2
+      push $
+        beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillCombat
+          2
       pure l
     FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillCombat) _ -> do
       push $ InvestigatorKilled (toSource attrs) iid

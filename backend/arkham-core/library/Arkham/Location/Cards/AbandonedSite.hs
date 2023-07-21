@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.AbandonedSite
-  ( abandonedSite
-  , AbandonedSite(..)
-  ) where
+module Arkham.Location.Cards.AbandonedSite (
+  abandonedSite,
+  AbandonedSite (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype AbandonedSite = AbandonedSite LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 abandonedSite :: LocationCard AbandonedSite

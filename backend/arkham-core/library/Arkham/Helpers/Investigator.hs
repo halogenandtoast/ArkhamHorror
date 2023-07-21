@@ -27,7 +27,7 @@ import Data.Monoid
 import Data.UUID (nil)
 import Data.UUID qualified as UUID
 
-getSkillValue :: (HasGame m) => SkillType -> InvestigatorId -> m Int
+getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = case st of
   SkillWillpower -> field InvestigatorWillpower iid
   SkillIntellect -> field InvestigatorIntellect iid
@@ -36,7 +36,7 @@ getSkillValue st iid = case st of
 
 skillValueFor
   :: forall m
-   . (HasGame m)
+   . HasGame m
   => SkillType
   -> Maybe Action
   -> [ModifierType]
@@ -76,7 +76,7 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
     applyModifier _ n = pure n
 
 baseSkillValueFor
-  :: (HasGame m)
+  :: HasGame m
   => SkillType
   -> Maybe Action
   -> [ModifierType]
@@ -89,7 +89,7 @@ baseSkillValueFor skill _maction tempModifiers iid = do
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
 
-damageValueFor :: (HasGame m) => Int -> InvestigatorId -> m Int
+damageValueFor :: HasGame m => Int -> InvestigatorId -> m Int
 damageValueFor baseValue iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   pure $ foldr applyModifier baseValue modifiers
@@ -98,7 +98,7 @@ damageValueFor baseValue iid = do
   applyModifier NoDamageDealt _ = 0
   applyModifier _ n = n
 
-getHandSize :: (HasGame m) => InvestigatorAttrs -> m Int
+getHandSize :: HasGame m => InvestigatorAttrs -> m Int
 getHandSize attrs = do
   modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
   let ignoreReduction = IgnoreHandSizeReduction `elem` modifiers
@@ -109,7 +109,7 @@ getHandSize attrs = do
         max 0 (n + m)
   applyModifier _ _ n = n
 
-getInHandCount :: (HasGame m) => InvestigatorAttrs -> m Int
+getInHandCount :: HasGame m => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
   let
     cards = investigatorHand attrs
@@ -121,7 +121,7 @@ getInHandCount attrs = do
       pure $ foldl' applyModifier 1 modifiers
   sum <$> traverse getCardHandSize cards
 
-getAbilitiesForTurn :: (HasGame m) => InvestigatorAttrs -> m Int
+getAbilitiesForTurn :: HasGame m => InvestigatorAttrs -> m Int
 getAbilitiesForTurn attrs = do
   modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
@@ -130,7 +130,7 @@ getAbilitiesForTurn attrs = do
   applyModifier _ n = n
 
 getCanDiscoverClues
-  :: (HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
+  :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool
 getCanDiscoverClues attrs lid = do
   modifiers <- getModifiers (toTarget attrs)
   not <$> anyM match modifiers
@@ -139,7 +139,7 @@ getCanDiscoverClues attrs lid = do
   match (CannotDiscoverCluesAt matcher) = elem lid <$> select matcher
   match _ = pure False
 
-getCanSpendClues :: (HasGame m) => InvestigatorAttrs -> m Bool
+getCanSpendClues :: HasGame m => InvestigatorAttrs -> m Bool
 getCanSpendClues attrs = do
   modifiers <- getModifiers (toTarget attrs)
   pure $ not (any match modifiers)
@@ -151,7 +151,7 @@ removeFromSlots
   :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
-fitsAvailableSlots :: (IsCard a) => [SlotType] -> a -> InvestigatorAttrs -> Bool
+fitsAvailableSlots :: IsCard a => [SlotType] -> a -> InvestigatorAttrs -> Bool
 fitsAvailableSlots slotTypes cardDef a =
   null
     ( slotTypes
@@ -161,13 +161,13 @@ fitsAvailableSlots slotTypes cardDef a =
     )
 
 availableSlotTypesFor
-  :: (IsCard a) => SlotType -> a -> InvestigatorAttrs -> [SlotType]
+  :: IsCard a => SlotType -> a -> InvestigatorAttrs -> [SlotType]
 availableSlotTypesFor slotType a attrs =
   case lookup slotType (attrs ^. slotsL) of
     Nothing -> []
     Just slots -> replicate (length (filter (canPutIntoSlot a) slots)) slotType
 
-placeInAvailableSlot :: (IsCard a) => AssetId -> a -> [Slot] -> [Slot]
+placeInAvailableSlot :: IsCard a => AssetId -> a -> [Slot] -> [Slot]
 placeInAvailableSlot _ _ [] = []
 placeInAvailableSlot aid card (x : xs) =
   if canPutIntoSlot card x
@@ -287,7 +287,7 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCost :: (HasGame m) => InvestigatorAttrs -> [Action] -> m Int
+getActionCost :: HasGame m => InvestigatorAttrs -> [Action] -> m Int
 getActionCost attrs as = do
   modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
@@ -296,12 +296,12 @@ getActionCost attrs as = do
     if any (matchTarget attrs match) as then n + m else n
   applyModifier _ n = n
 
-getSpendableClueCount :: (HasGame m) => InvestigatorAttrs -> m Int
+getSpendableClueCount :: HasGame m => InvestigatorAttrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
-getCanAfford :: (HasGame m) => InvestigatorAttrs -> [Action] -> m Bool
+getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActionCount <-
@@ -311,7 +311,7 @@ getCanAfford a@InvestigatorAttrs {..} as = do
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 drawOpeningHand
-  :: (HasCallStack) => InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
+  :: HasCallStack => InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
  where
   go 0 (d, h, cs) = (d, h, cs)
@@ -323,7 +323,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
       else go (m - 1) (d, PlayerCard c : h, cs)
 
 canCommitToAnotherLocation
-  :: (HasGame m) => InvestigatorAttrs -> LocationId -> m Bool
+  :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool
 canCommitToAnotherLocation attrs otherLocation = do
   modifiers <- getModifiers (toTarget attrs)
   anyM permit modifiers
@@ -331,7 +331,7 @@ canCommitToAnotherLocation attrs otherLocation = do
   permit (CanCommitToSkillTestPerformedByAnInvestigatorAt matcher) = member otherLocation <$> select matcher
   permit _ = pure False
 
-findCard :: (HasCallStack) => CardId -> InvestigatorAttrs -> Card
+findCard :: HasCallStack => CardId -> InvestigatorAttrs -> Card
 findCard cardId a =
   fromJustNote "not in hand or discard or deck" $
     findMatch $
@@ -349,7 +349,7 @@ enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 
 modifiedStatsOf
-  :: (HasGame m) => Maybe Action -> InvestigatorId -> m Stats
+  :: HasGame m => Maybe Action -> InvestigatorId -> m Stats
 modifiedStatsOf maction i = do
   modifiers' <- getModifiers (InvestigatorTarget i)
   remainingHealth <- field InvestigatorRemainingHealth i
@@ -369,7 +369,7 @@ modifiedStatsOf maction i = do
       }
 
 getAvailableSkillsFor
-  :: (HasGame m) => SkillType -> InvestigatorId -> m (Set SkillType)
+  :: HasGame m => SkillType -> InvestigatorId -> m (Set SkillType)
 getAvailableSkillsFor skillType iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   pure $ foldr applyModifier (singleton skillType) modifiers
@@ -378,11 +378,11 @@ getAvailableSkillsFor skillType iid = do
     | toReplace == skillType = insertSet toUse skills
   applyModifier _ skills = skills
 
-isEliminated :: (HasGame m) => InvestigatorId -> m Bool
+isEliminated :: HasGame m => InvestigatorId -> m Bool
 isEliminated iid =
   orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
 
-getHandCount :: (HasGame m) => InvestigatorId -> m Int
+getHandCount :: HasGame m => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
 
 getHealHorrorMessage :: (HasGame m, Sourceable a) => a -> Int -> InvestigatorId -> m (Maybe Message)
@@ -431,7 +431,7 @@ getInvestigatorsWithHealHorror a n =
   selectList >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
 
 additionalActionCovers
-  :: (HasGame m) => Source -> Maybe Action -> AdditionalAction -> m Bool
+  :: HasGame m => Source -> Maybe Action -> AdditionalAction -> m Bool
 additionalActionCovers source maction = \case
   TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
     NoRestriction -> member t <$> sourceTraits source
@@ -442,5 +442,5 @@ additionalActionCovers source maction = \case
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True
 
-getCanDrawCards :: (HasGame m) => InvestigatorId -> m Bool
+getCanDrawCards :: HasGame m => InvestigatorId -> m Bool
 getCanDrawCards = selectAny . InvestigatorCanDrawCards . InvestigatorWithId

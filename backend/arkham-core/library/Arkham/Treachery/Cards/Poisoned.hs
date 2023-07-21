@@ -1,14 +1,14 @@
-module Arkham.Treachery.Cards.Poisoned
-  ( poisoned
-  , Poisoned(..)
-  )
+module Arkham.Treachery.Cards.Poisoned (
+  poisoned,
+  Poisoned (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Poisoned = Poisoned TreacheryAttrs

@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.MadnessDies
-  ( MadnessDies(..)
-  , madnessDies
-  ) where
+module Arkham.Agenda.Cards.MadnessDies (
+  MadnessDies (..),
+  madnessDies,
+) where
 
 import Arkham.Prelude
 
@@ -24,7 +24,7 @@ madnessDies = agenda (3, A) MadnessDies Cards.madnessDies (Static 9)
 instance HasModifiersFor MadnessDies where
   getModifiersFor (EnemyTarget eid) (MadnessDies a) = do
     isHastur <- eid `isMatch` EnemyWithTitle "Hastur"
-    pure $ toModifiers a [ EnemyFight 2 | isHastur ]
+    pure $ toModifiers a [EnemyFight 2 | isHastur]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MadnessDies where

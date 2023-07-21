@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.OutOfThisWorld
-  ( OutOfThisWorld(..)
-  , outOfThisWorld
-  ) where
+module Arkham.Act.Cards.OutOfThisWorld (
+  OutOfThisWorld (..),
+  outOfThisWorld,
+) where
 
 import Arkham.Prelude
 
@@ -20,11 +20,12 @@ newtype OutOfThisWorld = OutOfThisWorld ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outOfThisWorld :: ActCard OutOfThisWorld
-outOfThisWorld = act
-  (1, A)
-  OutOfThisWorld
-  Cards.outOfThisWorld
-  (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+outOfThisWorld =
+  act
+    (1, A)
+    OutOfThisWorld
+    Cards.outOfThisWorld
+    (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance HasAbilities OutOfThisWorld where
   getAbilities (OutOfThisWorld x) =
@@ -40,25 +41,27 @@ instance RunMessage OutOfThisWorld where
         ]
       pure a
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ DiscardTopOfEncounterDeck
-        iid
-        3
-        (toSource attrs)
-        (Just $ toTarget attrs)
+      push $
+        DiscardTopOfEncounterDeck
+          iid
+          3
+          (toSource attrs)
+          (Just $ toTarget attrs)
       pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      unless (null locationCards) $ pushAll
-        [ FocusCards (map EncounterCard locationCards)
-        , chooseOne
-          iid
-          [ targetLabel
-              (toCardId location)
-              [ InvestigatorDrewEncounterCard iid location
+      unless (null locationCards) $
+        pushAll
+          [ FocusCards (map EncounterCard locationCards)
+          , chooseOne
+              iid
+              [ targetLabel
+                (toCardId location)
+                [ InvestigatorDrewEncounterCard iid location
+                ]
+              | location <- locationCards
               ]
-          | location <- locationCards
+          , UnfocusCards
           ]
-        , UnfocusCards
-        ]
       pure a
     _ -> OutOfThisWorld <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.SpectralRaven
-  ( spectralRaven
-  , SpectralRaven(..)
-  )
+module Arkham.Enemy.Cards.SpectralRaven (
+  spectralRaven,
+  SpectralRaven (..),
+)
 where
 
 import Arkham.Prelude

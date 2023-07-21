@@ -1,14 +1,14 @@
-module Arkham.Skill.Cards.LastChance
-  ( lastChance
-  , LastChance(..)
-  ) where
+module Arkham.Skill.Cards.LastChance (
+  lastChance,
+  LastChance (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner

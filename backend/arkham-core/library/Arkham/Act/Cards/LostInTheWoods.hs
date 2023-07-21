@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.LostInTheWoods
-  ( LostInTheWoods(..)
-  , lostInTheWoods
-  ) where
+module Arkham.Act.Cards.LostInTheWoods (
+  LostInTheWoods (..),
+  lostInTheWoods,
+) where
 
 import Arkham.Prelude
 
@@ -14,8 +14,8 @@ import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
-import Arkham.Location.Types ( Field (..) )
-import Arkham.Matcher hiding ( EncounterDeck )
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
@@ -25,31 +25,33 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Map.Strict qualified as Map
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LostInTheWoods where
   getModifiersFor (LocationTarget lid) (LostInTheWoods a) = do
     mInFrontOf <- field LocationInFrontOf lid
-    pure $ toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid)
-        $ NotLocation (LocationWithId lid)
-        <> LocationIsInFrontOf (InvestigatorWithId iid)
-      | iid <- maybeToList mInFrontOf
-      ]
+    pure $
+      toModifiers
+        a
+        [ ConnectedToWhen (LocationWithId lid) $
+          NotLocation (LocationWithId lid)
+            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        | iid <- maybeToList mInFrontOf
+        ]
   getModifiersFor (InvestigatorTarget iid) (LostInTheWoods a) = do
-    lids <- selectList
-      $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
+    lids <-
+      selectList $
+        LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
     pure $ toModifiers a $ map CannotEnter lids
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWoods where
   getAbilities (LostInTheWoods a) =
-    [ mkAbility a 1
-        $ Objective
-        $ ReactionAbility (RoundEnds Timing.When)
-        $ GroupClueCost (PerPlayer 2) Anywhere
+    [ mkAbility a 1 $
+        Objective $
+          ReactionAbility (RoundEnds Timing.When) $
+            GroupClueCost (PerPlayer 2) Anywhere
     ]
 
 lostInTheWoods :: ActCard LostInTheWoods
@@ -63,8 +65,9 @@ instance RunMessage LostInTheWoods where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       iids <- getInvestigatorIds
       lead <- getLeadInvestigatorId
-      arkhamWoods <- shuffleM
-        =<< selectList (SetAsideCardMatch $ CardWithTitle "Arkham Woods")
+      arkhamWoods <-
+        shuffleM
+          =<< selectList (SetAsideCardMatch $ CardWithTitle "Arkham Woods")
       placements <- traverse placeLocation arkhamWoods
 
       goatSpawn <- getSetAsideCardsMatching $ cardIs Enemies.goatSpawn
@@ -72,10 +75,10 @@ instance RunMessage LostInTheWoods where
 
       let
         placementMap = Map.fromList $ zip iids placements
-        enemyPairings = if length iids == 4
-          then
-            (lead, relentlessDarkYoung) : zip (deleteFirst lead iids) goatSpawn
-          else zip iids goatSpawn
+        enemyPairings =
+          if length iids == 4
+            then (lead, relentlessDarkYoung) : zip (deleteFirst lead iids) goatSpawn
+            else zip iids goatSpawn
         msgs =
           flip concatMap (zip iids placements) $ \(iid, (lid, placement)) ->
             [ placement
@@ -91,16 +94,17 @@ instance RunMessage LostInTheWoods where
             pure
               [ enemyCreation
               , chooseOne
-                iid
-                [ SkillLabel
+                  iid
+                  [ SkillLabel
                     skillType
                     [beginSkillTest iid attrs enemyId skillType 3]
-                | skillType <- [SkillWillpower, SkillAgility]
-                ]
+                  | skillType <- [SkillWillpower, SkillAgility]
+                  ]
               ]
 
-      piping <- mapMaybe (preview _EncounterCard)
-        <$> getSetAsideCardsMatching (cardIs Treacheries.daemonicPiping)
+      piping <-
+        mapMaybe (preview _EncounterCard)
+          <$> getSetAsideCardsMatching (cardIs Treacheries.daemonicPiping)
 
       let
         pipingMsgs = case nonEmpty piping of
@@ -109,14 +113,14 @@ instance RunMessage LostInTheWoods where
             ShuffleCardsIntoDeck EncounterDeck [EncounterCard x]
               : map AddToEncounterDiscard xs
 
-      pushAll
-        $ msgs
-        <> enemyMsgs
-        <> pipingMsgs
-        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll $
+        msgs
+          <> enemyMsgs
+          <> pipingMsgs
+          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         mTarget <- getSkillTestTarget
         case mTarget of
           Just (EnemyTarget eid) ->

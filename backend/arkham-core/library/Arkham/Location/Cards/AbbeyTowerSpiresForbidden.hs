@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.AbbeyTowerSpiresForbidden
-  ( abbeyTowerSpiresForbidden
-  , AbbeyTowerSpiresForbidden(..)
-  ) where
+module Arkham.Location.Cards.AbbeyTowerSpiresForbidden (
+  abbeyTowerSpiresForbidden,
+  AbbeyTowerSpiresForbidden (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,23 +14,25 @@ import Arkham.Location.Runner
 import Arkham.ScenarioLogKey
 
 newtype AbbeyTowerSpiresForbidden = AbbeyTowerSpiresForbidden LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 abbeyTowerSpiresForbidden :: LocationCard AbbeyTowerSpiresForbidden
-abbeyTowerSpiresForbidden = location
-  AbbeyTowerSpiresForbidden
-  Cards.abbeyTowerSpiresForbidden
-  2
-  (PerPlayer 3)
+abbeyTowerSpiresForbidden =
+  location
+    AbbeyTowerSpiresForbidden
+    Cards.abbeyTowerSpiresForbidden
+    2
+    (PerPlayer 3)
 
 instance HasModifiersFor AbbeyTowerSpiresForbidden where
   getModifiersFor target (AbbeyTowerSpiresForbidden attrs)
     | isTarget attrs target = do
-      foundAGuide <- remembered FoundTheTowerKey
-      pure $ toModifiers
-        attrs
-        [ Blocked | not (locationRevealed attrs) && not foundAGuide ]
+        foundAGuide <- remembered FoundTheTowerKey
+        pure $
+          toModifiers
+            attrs
+            [Blocked | not (locationRevealed attrs) && not foundAGuide]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AbbeyTowerSpiresForbidden where

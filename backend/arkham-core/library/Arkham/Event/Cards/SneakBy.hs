@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.SneakBy
-  ( sneakBy
-  , SneakBy(..)
-  )
+module Arkham.Event.Cards.SneakBy (
+  sneakBy,
+  SneakBy (..),
+)
 where
 
 import Arkham.Prelude

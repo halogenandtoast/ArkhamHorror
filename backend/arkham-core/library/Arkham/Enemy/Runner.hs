@@ -105,14 +105,14 @@ filterOutEnemyUiMessages eid = \case
   FightLabel eid' _ | eid == eid' -> Nothing
   other -> Just other
 
-getInvestigatorsAtSameLocation :: (HasGame m) => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = do
   enemyLocation <- field EnemyLocation (toId attrs)
   case enemyLocation of
     Nothing -> pure []
     Just loc -> selectList $ InvestigatorAt $ LocationWithId loc
 
-getPreyMatcher :: (HasGame m) => EnemyAttrs -> m PreyMatcher
+getPreyMatcher :: HasGame m => EnemyAttrs -> m PreyMatcher
 getPreyMatcher a = do
   modifiers' <- getModifiers (toTarget a)
   pure $ foldl' applyModifier (enemyPrey a) modifiers'
@@ -162,7 +162,7 @@ instance RunMessage EnemyAttrs where
           if Keyword.Aloof
             `notElem` keywords
             && Keyword.Massive
-              `notElem` keywords
+            `notElem` keywords
             && not enemyExhausted
             then do
               prey <- getPreyMatcher a
@@ -374,7 +374,8 @@ instance RunMessage EnemyAttrs where
         ( Keyword.Aloof
             `notElem` keywords
             && (unengaged || Keyword.Massive `elem` keywords)
-            && CannotBeEngaged `notElem` modifiers'
+            && CannotBeEngaged
+            `notElem` modifiers'
             && not enemyExhausted
         )
         $ if Keyword.Massive `elem` keywords
@@ -598,7 +599,7 @@ instance RunMessage EnemyAttrs where
                       `notElem` modifiers'
                    , not enemyExhausted
                       || CanRetaliateWhileExhausted
-                        `elem` modifiers'
+                      `elem` modifiers'
                    ]
             pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
@@ -849,7 +850,7 @@ instance RunMessage EnemyAttrs where
           pure $
             a
               & assignedDamageL
-                %~ insertWith combine source damageAssignment'
+              %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do
       do

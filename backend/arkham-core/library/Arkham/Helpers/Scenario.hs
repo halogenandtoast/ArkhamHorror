@@ -36,14 +36,14 @@ scenarioFieldMapM
   :: (HasCallStack, HasGame m) => Field Scenario a -> (a -> m b) -> m b
 scenarioFieldMapM fld f = selectJust TheScenario >>= fieldMapM fld f
 
-getIsStandalone :: (HasGame m) => m Bool
+getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
-whenStandalone :: (HasGame m) => m () -> m ()
+whenStandalone :: HasGame m => m () -> m ()
 whenStandalone = whenM getIsStandalone
 
 addRandomBasicWeaknessIfNeeded
-  :: (MonadRandom m) => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
@@ -68,38 +68,38 @@ isHardExpert :: ScenarioAttrs -> Bool
 isHardExpert ScenarioAttrs {scenarioDifficulty} =
   scenarioDifficulty `elem` [Hard, Expert]
 
-getScenarioDeck :: (HasGame m) => ScenarioDeckKey -> m [Card]
+getScenarioDeck :: HasGame m => ScenarioDeckKey -> m [Card]
 getScenarioDeck k =
   scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
 
-getEncounterDiscard :: (HasGame m) => ScenarioEncounterDeckKey -> m [EncounterCard]
+getEncounterDiscard :: HasGame m => ScenarioEncounterDeckKey -> m [EncounterCard]
 getEncounterDiscard RegularEncounterDeck = scenarioField ScenarioDiscard
 getEncounterDiscard k =
   scenarioFieldMap ScenarioEncounterDecks (view (at k . non (Deck [], []) . _2))
 
 withStandalone
-  :: (HasGame m) => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
+  :: HasGame m => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
 withStandalone cf sf =
   maybe (sf =<< selectJust TheScenario) cf =<< selectOne TheCampaign
 
-resignedWith :: (HasGame m) => CardDef -> m Bool
+resignedWith :: HasGame m => CardDef -> m Bool
 resignedWith cDef =
   scenarioFieldMap ScenarioResignedCardCodes (elem (toCardCode cDef))
 
-findTopOfDiscard :: (HasGame m) => CardMatcher -> m (Maybe EncounterCard)
+findTopOfDiscard :: HasGame m => CardMatcher -> m (Maybe EncounterCard)
 findTopOfDiscard = fmap listToMaybe . findInDiscard
 
-findInDiscard :: (HasGame m) => CardMatcher -> m [EncounterCard]
+findInDiscard :: HasGame m => CardMatcher -> m [EncounterCard]
 findInDiscard matcher =
   scenarioFieldMap ScenarioDiscard (filter (`cardMatch` matcher))
 
-getOriginalDeck :: (HasGame m) => InvestigatorId -> m (Deck PlayerCard)
+getOriginalDeck :: HasGame m => InvestigatorId -> m (Deck PlayerCard)
 getOriginalDeck iid = do
   dict <- withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
   pure $ findWithDefault mempty iid dict
 
 getKnownRemainingOriginalDeckCards
-  :: (HasGame m) => InvestigatorId -> m [PlayerCard]
+  :: HasGame m => InvestigatorId -> m [PlayerCard]
 getKnownRemainingOriginalDeckCards iid = do
   let onlyPlayerCards = mapMaybe (preview _PlayerCard)
   cards <- unDeck <$> getOriginalDeck iid
@@ -109,7 +109,7 @@ getKnownRemainingOriginalDeckCards iid = do
   let knownNotInDeck = inDiscard <> inHand <> inVictory
   pure $ filter (`notElem` knownNotInDeck) cards
 
-isInVictoryDisplay :: (HasGame m) => CardDef -> m Bool
+isInVictoryDisplay :: HasGame m => CardDef -> m Bool
 isInVictoryDisplay def = scenarioFieldMap ScenarioVictoryDisplay ((elem def) . map toCardDef)
 
 data EncounterDeckHandler = EncounterDeckHandler

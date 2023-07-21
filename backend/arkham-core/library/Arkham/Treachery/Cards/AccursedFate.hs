@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.AccursedFate
-  ( accursedFate
-  , AccursedFate(..)
-  ) where
+module Arkham.Treachery.Cards.AccursedFate (
+  accursedFate,
+  AccursedFate (..),
+) where
 
 import Arkham.Prelude
 
@@ -31,18 +31,19 @@ instance RunMessage AccursedFate where
           case toCard attrs of
             EncounterCard _ -> error "not an encounter card"
             VengeanceCard _ -> error "not a vengeance card"
-            PlayerCard pc -> pushAll
-              [ InvestigatorAssignDamage iid source DamageAny 0 2
-              , RemoveCardFromDeckForCampaign iid pc
-              , AddCardToDeckForCampaign iid theBellTolls
-              , PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard theBellTolls)
-              , RemoveTreachery (toId attrs)
-              ]
+            PlayerCard pc ->
+              pushAll
+                [ InvestigatorAssignDamage iid source DamageAny 0 2
+                , RemoveCardFromDeckForCampaign iid pc
+                , AddCardToDeckForCampaign iid theBellTolls
+                , PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard theBellTolls)
+                , RemoveTreachery (toId attrs)
+                ]
         else do
-          pushAll
-            $ [ InvestigatorAssignDamage iid source DamageAny 0 2
-              , Record TheHourIsNigh
-              ]
+          pushAll $
+            [ InvestigatorAssignDamage iid source DamageAny 0 2
+            , Record TheHourIsNigh
+            ]
 
       pure t
     _ -> AccursedFate <$> runMessage msg attrs

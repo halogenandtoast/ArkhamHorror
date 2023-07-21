@@ -54,7 +54,7 @@ sourceTraits = \case
   CardCostSource _ -> pure mempty
   BothSource _ _ -> error "doesn't make sense, or will solve later"
 
-getSourceController :: (HasGame m) => Source -> m (Maybe InvestigatorId)
+getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
   AssetSource aid -> selectAssetController aid
   EventSource eid -> selectEventController eid

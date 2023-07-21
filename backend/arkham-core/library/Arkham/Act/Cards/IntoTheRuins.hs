@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.IntoTheRuins
-  ( IntoTheRuins(..)
-  , intoTheRuins
-  ) where
+module Arkham.Act.Cards.IntoTheRuins (
+  IntoTheRuins (..),
+  intoTheRuins,
+) where
 
 import Arkham.Prelude
 
@@ -27,38 +27,41 @@ newtype IntoTheRuins = IntoTheRuins ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 intoTheRuins :: ActCard IntoTheRuins
-intoTheRuins = act
-  (1, A)
-  IntoTheRuins
-  Cards.intoTheRuins
-  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+intoTheRuins =
+  act
+    (1, A)
+    IntoTheRuins
+    Cards.intoTheRuins
+    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance HasAbilities IntoTheRuins where
-  getAbilities (IntoTheRuins a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-      $ ActionAbility (Just Action.Explore)
-      $ ActionCost 1
-    ]
+  getAbilities (IntoTheRuins a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
+          ActionAbility (Just Action.Explore) $
+            ActionCost 1
+      ]
 
 instance RunMessage IntoTheRuins where
   runMessage msg a@(IntoTheRuins attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore
-        iid
-        source
-        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $
+        Explore
+          iid
+          source
+          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       chamberOfTime <- getSetAsideCard Locations.chamberOfTime
       hasChalk <- getAnyHasSupply Chalk
-      pushAll
-        $ [ ShuffleCardsIntoDeck
-              (Deck.ScenarioDeckByKey ExplorationDeck)
-              [chamberOfTime]
-          ]
-        <> [ AddToVictory (toTarget attrs) | not hasChalk ]
-        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll $
+        [ ShuffleCardsIntoDeck
+            (Deck.ScenarioDeckByKey ExplorationDeck)
+            [chamberOfTime]
+        ]
+          <> [AddToVictory (toTarget attrs) | not hasChalk]
+          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> IntoTheRuins <$> runMessage msg attrs

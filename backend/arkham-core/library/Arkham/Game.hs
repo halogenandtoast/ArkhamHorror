@@ -424,11 +424,11 @@ withLocationConnectionData
 withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher target
   lmConnectedLocations <- selectList matcher
-  lmInvestigators <- select (InvestigatorAt $ LocationWithId $ toId target)
-  lmEnemies <- select (EnemyAt $ LocationWithId $ toId target)
+  lmInvestigators <- select (investigatorAt $ toId target)
+  lmEnemies <- select (enemyAt $ toId target)
   lmAssets <- select (AssetAtLocation $ toId target)
   lmEvents <- select (EventAt $ LocationWithId $ toId target)
-  lmTreacheries <- select (TreacheryAt $ LocationWithId $ toId target)
+  lmTreacheries <- select (treacheryAt $ toId target)
   pure $ inner `with` LocationMetadata {..}
 
 withAssetMetadata :: (HasGame m) => Asset -> m (With Asset AssetMetadata)
